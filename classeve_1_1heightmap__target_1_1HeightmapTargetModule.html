@@ -1,0 +1,551 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::heightmap_target::HeightmapTargetModule类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1heightmap__target.html">heightmap_target</a></li><li class="navelem"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html">HeightmapTargetModule</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1heightmap__target_1_1HeightmapTargetModule-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::heightmap_target::HeightmapTargetModule类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script-facing composition module for live heightmap editing targets.  
+ <a href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HeightmapTargetModule_8h_source.html">HeightmapTargetModule.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::heightmap_target::HeightmapTargetModule 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1heightmap__target_1_1HeightmapTargetModule.png" usemap="#eve::heightmap_5Ftarget::HeightmapTargetModule_map" alt=""/>
+  <map id="eve::heightmap_5Ftarget::HeightmapTargetModule_map" name="eve::heightmap_5Ftarget::HeightmapTargetModule_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,278,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6eef59ca4148b6dfa7f518e0b08e4679" id="r_a6eef59ca4148b6dfa7f518e0b08e4679"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#a6eef59ca4148b6dfa7f518e0b08e4679">Module_REG</a> (<a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html">HeightmapTargetModule</a>)</td></tr>
+<tr class="separator:a6eef59ca4148b6dfa7f518e0b08e4679"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a045b3a0c697c312ebe73f27a96798e29" id="r_a045b3a0c697c312ebe73f27a96798e29"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1procgen__editing_1_1HeightmapTarget.html">procgen_editing::HeightmapTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#a045b3a0c697c312ebe73f27a96798e29">newTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *heightmap) const</td></tr>
+<tr class="memdesc:a045b3a0c697c312ebe73f27a96798e29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an independently owned adapter over a borrowed heightmap.  <br /></td></tr>
+<tr class="separator:a045b3a0c697c312ebe73f27a96798e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39d601d7194a4ab583453e8d3801f38f" id="r_a39d601d7194a4ab583453e8d3801f38f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#a39d601d7194a4ab583453e8d3801f38f">bind</a> (<a class="el" href="classeve_1_1editor_1_1EditorSession.html">editor::EditorSession</a> *session, <a class="el" href="classeve_1_1procgen__editing_1_1HeightmapTarget.html">procgen_editing::HeightmapTarget</a> *<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) const</td></tr>
+<tr class="memdesc:a39d601d7194a4ab583453e8d3801f38f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind borrowed target and session objects without taking ownership. @thread Owner-thread only.  <br /></td></tr>
+<tr class="separator:a39d601d7194a4ab583453e8d3801f38f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0370249d968cd5ceb6d5cfe3c96ef606" id="r_a0370249d968cd5ceb6d5cfe3c96ef606"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#a0370249d968cd5ceb6d5cfe3c96ef606">applyBrush</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *heightmap, float centerX, float centerY, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float strength) const</td></tr>
+<tr class="memdesc:a0370249d968cd5ceb6d5cfe3c96ef606"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility projection of the canonical structured brush result for scripts.  <br /></td></tr>
+<tr class="separator:a0370249d968cd5ceb6d5cfe3c96ef606"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf18d1f697556247038b3c03a564e22b" id="r_adf18d1f697556247038b3c03a564e22b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#adf18d1f697556247038b3c03a564e22b">newMesh</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *heightmap, float cellSize, float heightScale) const</td></tr>
+<tr class="memdesc:adf18d1f697556247038b3c03a564e22b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility projection that creates a flat-shaded preview mesh. @thread Render-thread only.  <br /></td></tr>
+<tr class="separator:adf18d1f697556247038b3c03a564e22b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfc6469e6a0f9d4b04efc541aeb88fde" id="r_adfc6469e6a0f9d4b04efc541aeb88fde"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#adfc6469e6a0f9d4b04efc541aeb88fde">updateMesh</a> (<a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *graphics, <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *heightmap, float cellSize, float heightScale) const</td></tr>
+<tr class="memdesc:adfc6469e6a0f9d4b04efc541aeb88fde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility projection that updates a flat-shaded preview mesh. @thread Render-thread only.  <br /></td></tr>
+<tr class="separator:adfc6469e6a0f9d4b04efc541aeb88fde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4583b0e7d9ed07109b5a0344ec235cf" id="r_ab4583b0e7d9ed07109b5a0344ec235cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#ab4583b0e7d9ed07109b5a0344ec235cf">newSmoothMesh</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *heightmap, float cellSize, float heightScale) const</td></tr>
+<tr class="memdesc:ab4583b0e7d9ed07109b5a0344ec235cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility projection that creates a smooth-normal preview mesh. @thread Render-thread only.  <br /></td></tr>
+<tr class="separator:ab4583b0e7d9ed07109b5a0344ec235cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79fa0083dafed53d12b8239065875f05" id="r_a79fa0083dafed53d12b8239065875f05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html#a79fa0083dafed53d12b8239065875f05">updateSmoothMesh</a> (<a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *<a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *graphics, <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *heightmap, float cellSize, float heightScale) const</td></tr>
+<tr class="memdesc:a79fa0083dafed53d12b8239065875f05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility projection that updates a smooth-normal preview mesh. @thread Render-thread only.  <br /></td></tr>
+<tr class="separator:a79fa0083dafed53d12b8239065875f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script-facing composition module for live heightmap editing targets. </p>
+
+<p class="definition">在文件 <a class="el" href="HeightmapTargetModule_8h_source.html">HeightmapTargetModule.h</a> 第 <a class="el" href="HeightmapTargetModule_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a0370249d968cd5ceb6d5cfe3c96ef606" name="a0370249d968cd5ceb6d5cfe3c96ef606"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0370249d968cd5ceb6d5cfe3c96ef606">&#9670;&#160;</a></span>applyBrush()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::heightmap_target::HeightmapTargetModule::applyBrush </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility projection of the canonical structured brush result for scripts. </p>
+
+<p class="definition">在文件 <a class="el" href="HeightmapTargetModule_8cpp_source.html">HeightmapTargetModule.cpp</a> 第 <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HeightmapTarget_8cpp_source.html#l00036">eve::procgen_editing::applyHeightmapBrush()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="a39d601d7194a4ab583453e8d3801f38f" name="a39d601d7194a4ab583453e8d3801f38f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39d601d7194a4ab583453e8d3801f38f">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::heightmap_target::HeightmapTargetModule::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">editor::EditorSession</a> *&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen__editing_1_1HeightmapTarget.html">procgen_editing::HeightmapTarget</a> *&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind borrowed target and session objects without taking ownership. @thread Owner-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="HeightmapTargetModule_8cpp_source.html">HeightmapTargetModule.cpp</a> 第 <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00045">eve::editor::EditorSession::bindTarget()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="a6eef59ca4148b6dfa7f518e0b08e4679" name="a6eef59ca4148b6dfa7f518e0b08e4679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6eef59ca4148b6dfa7f518e0b08e4679">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::heightmap_target::HeightmapTargetModule::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html">HeightmapTargetModule</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf18d1f697556247038b3c03a564e22b" name="adf18d1f697556247038b3c03a564e22b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf18d1f697556247038b3c03a564e22b">&#9670;&#160;</a></span>newMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * eve::heightmap_target::HeightmapTargetModule::newMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightScale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility projection that creates a flat-shaded preview mesh. @thread Render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="HeightmapTargetModule_8cpp_source.html">HeightmapTargetModule.cpp</a> 第 <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HeightmapMesh_8cpp_source.html#l00127">eve::procgen_graphics_editing::createHeightmapMesh()</a>.</p>
+
+</div>
+</div>
+<a id="ab4583b0e7d9ed07109b5a0344ec235cf" name="ab4583b0e7d9ed07109b5a0344ec235cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4583b0e7d9ed07109b5a0344ec235cf">&#9670;&#160;</a></span>newSmoothMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * eve::heightmap_target::HeightmapTargetModule::newSmoothMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightScale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility projection that creates a smooth-normal preview mesh. @thread Render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="HeightmapTargetModule_8cpp_source.html">HeightmapTargetModule.cpp</a> 第 <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HeightmapMesh_8cpp_source.html#l00127">eve::procgen_graphics_editing::createHeightmapMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a045b3a0c697c312ebe73f27a96798e29" name="a045b3a0c697c312ebe73f27a96798e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a045b3a0c697c312ebe73f27a96798e29">&#9670;&#160;</a></span>newTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1procgen__editing_1_1HeightmapTarget.html">procgen_editing::HeightmapTarget</a> &gt; eve::heightmap_target::HeightmapTargetModule::newTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *&#160;</td>
+          <td class="paramname"><em>heightmap</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an independently owned adapter over a borrowed heightmap. </p>
+
+<p class="definition">在文件 <a class="el" href="HeightmapTargetModule_8cpp_source.html">HeightmapTargetModule.cpp</a> 第 <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HeightmapTarget_8cpp_source.html#l00031">eve::procgen_editing::createHeightmapTarget()</a>.</p>
+
+</div>
+</div>
+<a id="adfc6469e6a0f9d4b04efc541aeb88fde" name="adfc6469e6a0f9d4b04efc541aeb88fde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfc6469e6a0f9d4b04efc541aeb88fde">&#9670;&#160;</a></span>updateMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::heightmap_target::HeightmapTargetModule::updateMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightScale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility projection that updates a flat-shaded preview mesh. @thread Render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="HeightmapTargetModule_8cpp_source.html">HeightmapTargetModule.cpp</a> 第 <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a> , 以及 <a class="el" href="HeightmapMesh_8cpp_source.html#l00150">eve::procgen_graphics_editing::updateHeightmapMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a79fa0083dafed53d12b8239065875f05" name="a79fa0083dafed53d12b8239065875f05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79fa0083dafed53d12b8239065875f05">&#9670;&#160;</a></span>updateSmoothMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::heightmap_target::HeightmapTargetModule::updateSmoothMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">procgen::Heightmap</a> *&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightScale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility projection that updates a smooth-normal preview mesh. @thread Render-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="HeightmapTargetModule_8cpp_source.html">HeightmapTargetModule.cpp</a> 第 <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a> , 以及 <a class="el" href="HeightmapMesh_8cpp_source.html#l00150">eve::procgen_graphics_editing::updateHeightmapMesh()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/heightmap_target/<a class="el" href="HeightmapTargetModule_8h_source.html">HeightmapTargetModule.h</a></li>
+<li>src/modules/heightmap_target/<a class="el" href="HeightmapTargetModule_8cpp_source.html">HeightmapTargetModule.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1math.html">math</a></li><li class="navelem"><a class="el" href="classeve_1_1math_1_1Math.html">Math</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::math::Math 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a36333ef32edc29295cd496d96ca4b0e0">angle2</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a382ac16b4479caeaaa7fb2cb825b78e7">angleBetween2</a>(float x1, float y1, float x2, float y2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a1c85cd18af0e48b2e78d4067815f3224">approach</a>(float current, float target, float maxDelta) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ab00d4f7d62f6220daacde18665d200c2">bezierCubic</a>(float t, float p0, float p1, float p2, float p3) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ae52e789031cfb9ba1b68e0ebfdda737c">bezierCubic2X</a>(float t, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a901a6bca64605b69b12bb986ac1d799e">bezierCubic2Y</a>(float t, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a0ce0eae62f245ce9de4f87e625b07bbd">bezierQuadratic</a>(float t, float p0, float p1, float p2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a359520047652955b5c673ce08b94d1b8">bezierQuadratic2X</a>(float t, float x0, float y0, float x1, float y1, float x2, float y2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a9e9606d3c03ba896e00ab13603d1af46">bezierQuadratic2Y</a>(float t, float x0, float y0, float x1, float y1, float x2, float y2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#acbdf90acb0900746e5ebc39c65c31b06">bias</a>(float t, float b) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ab3341a9b3fb5fb0e3018a6f1a3b89e4c">bilinear</a>(float v00, float v10, float v01, float v11, float u, float v) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a16512d9af0714f97506748506e7036b1">boxesOverlap</a>(float minAx, float minAy, float minAz, float maxAx, float maxAy, float maxAz, float minBx, float minBy, float minBz, float maxBx, float maxBy, float maxBz) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a3c174a0e2e6ea9335cff1cd8e5dbd901">cartesianAngle</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#abecd003932269c5237a5627785d9c328">cartesianRadius</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a4128dc3774ed161c01309265192dda04">circleRectOverlap</a>(float cx, float cy, float radius, float rx, float ry, float rw, float rh) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#af2ec1dcb849c3772386a5e575f306a7f">circlesOverlap</a>(float x1, float y1, float r1, float x2, float y2, float r2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a8728c739c285cd45e63a212cb4663fbf">clamp</a>(float x, float lo, float hi) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a4106d0904e756f93eae867428dc94363">closestPointOnSegment2X</a>(float px, float py, float ax, float ay, float bx, float by) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a2520cc0a9bf437cd21e51876b0cf1a6a">closestPointOnSegment2Y</a>(float px, float py, float ax, float ay, float bx, float by) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a88284c0d0baf4f84e28f8518e7db22f1">closestPointOnSegment3X</a>(float px, float py, float pz, float ax, float ay, float az, float bx, float by, float bz) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a42a9b1c150f39bebb3ac7153721620cf">closestPointOnSegment3Y</a>(float px, float py, float pz, float ax, float ay, float az, float bx, float by, float bz) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a8c93b8a8ec6701709b4e32ef94b90706">closestPointOnSegment3Z</a>(float px, float py, float pz, float ax, float ay, float az, float bx, float by, float bz) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a85db6e0ab9b1309cf5d2eaa452378249">cross2</a>(float x1, float y1, float x2, float y2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a5b26a1fb35c52d88c850a914e2ecd2d5">degToRad</a>(float deg) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#acba7f70f25a75598e46911cd8da67a09">distance2</a>(float x1, float y1, float x2, float y2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ad421a145bb1e00eeaccc1e3febef86b4">distance3</a>(float x1, float y1, float z1, float x2, float y2, float z2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ae6beecdc036840b851dc5caf52015d70">dot2</a>(float x1, float y1, float x2, float y2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aa24bb68bb5af7f21c64f2e9afa028e34">dot3</a>(float x1, float y1, float z1, float x2, float y2, float z2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a2f217ac1170896a2aeea06f5819a8dff">ease</a>(float t, const std::string &amp;kind) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#af4d2297503a1bd9d250775975ba05b1a">fbm2</a>(float x, float y, int octaves=4, float lacunarity=2.f, float gain=0.5f) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ae63302edb216f3a94fc012fca89900a2">fbm3</a>(float x, float y, float z, int octaves=4, float lacunarity=2.f, float gain=0.5f) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a4a52a0a51120997e072dca92364699d9">fract</a>(float x) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ab2b1bd330dc79bf7d1f2e7ff9d114659">gain</a>(float t, float g) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aad9280309d7af6063751ec512e1eb877">getRandomSeed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ac827c79e8394e0d356d64b5e83d70496">hash1</a>(float x) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a9aac63c0c68cb23116efc7e0eaf2be6c">hash2</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#af9dace80d8fc3ea6338231218dadb3b9">hash3</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ad96f1568a98af16fb37e1fbef35c0cb1">inverseLerp</a>(float a, float b, float x) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ad8eb2b8a9c8b5cb33ec7c72cf6ab7d9f">length2</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a2d51620736e807752105c0103ce2790e">length3</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aeff72580fa9e1e64ba2d400bc569997a">lerp</a>(float a, float b, float t) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ae4acd47f660673e3956057562cfdf59d">lerpAngle</a>(float a, float b, float t) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a21c0c5e4a6605eb766c487c1f0b9070c">Math</a>()</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a1a054545310d486c33582b968abca7de">Module_REG</a>(Math)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a503b2eed9a6f97e8ce600346cfda8018">newMat4</a>()</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#adfe2c05cc8fa27597b7fd29d2821db0a">newMat4RotationZ</a>(float radians)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a1203a3dd1466d1a4c898eefd4992adf7">newMat4Scale</a>(float sx, float sy, float sz)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a25403d0fd6c286e010841f2c26d4d96a">newMat4Translation</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ae0a14cec81f7abbdd4cee5c0f70c5bec">newVec2</a>(float x=0.f, float y=0.f)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aaae2ce55d312c8eceb6f213508b5b557">newVec3</a>(float x=0.f, float y=0.f, float z=0.f)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a4a90c2ecbd7a0fcd66f3c04bb8102878">noise1</a>(float x) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aa24c235402cea9d4b4685b9cd7bafabf">noise2</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a90d0628828dacda47e34e8200427a64f">noise3</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a642f18b9346066bab5d5fcfb843c393f">normalize2X</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a2547c6acfa9cd00ae4d3e01e748d8817">normalize2Y</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a159b55e8b8e85901ad0d8506fd475e54">normalize3X</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a3e36251f7fba6ecc976b277024656429">normalize3Y</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a17d1f5c1da2501d62ab5eebc7f8d4c82">normalize3Z</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a9337290cb220a108e82624232c583bd6">perlin2</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a186952311ceea4a470df04039834a539">perlin3</a>(float x, float y, float z) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ac392b18bc5ac260d7b5159f571dc9dc4">pingPong</a>(float t, float length) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aa55cec11c210ec747967940723a0b24e">pointInBox</a>(float px, float py, float pz, float minX, float minY, float minZ, float maxX, float maxY, float maxZ) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a97b5137c5d86422b14f62c8838b0d24d">pointInCircle</a>(float px, float py, float cx, float cy, float radius) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aee194e062056247c663874dfdc1833e8">pointInRect</a>(float px, float py, float rx, float ry, float rw, float rh) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a07d9cc22e74531a4dd43724730d7532d">pointInSphere</a>(float px, float py, float pz, float cx, float cy, float cz, float radius) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a70e1e53c9e2bbc9d27a5cf76fa50a024">polarX</a>(float radius, float radians) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aed894077ff84db08388bcb293a31678a">polarY</a>(float radius, float radians) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#af227db008973495685c5cc5bd22ffdac">quantize</a>(float x, float stepSize) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ad8ef1ea2556f94f2dab0bcc2fd0a80c4">radToDeg</a>(float rad) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a4a32ea943a1a6022773e922cbf2c448b">random</a>()</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ae2f7886069d82464e02da0069097cd72">randomGaussian</a>(float mean, float stddev)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#af87fcdeb164852483ec4394b2d64bb48">randomInt</a>(int min, int maxInclusive)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a5da84e74e3d70888cb953f0d4fe8436f">randomRange</a>(float min, float max)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a37758c18a760f93d19031b694e27ec04">raycastBox</a>(float ox, float oy, float oz, float dx, float dy, float dz, float minX, float minY, float minZ, float maxX, float maxY, float maxZ) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aeb0e4fa46abba072e9b5f1d060a6bec3">raycastCircle2</a>(float ox, float oy, float dx, float dy, float cx, float cy, float radius) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a365d78e7c58a3c1ca47bcd39a6beffb2">raycastPlane</a>(float ox, float oy, float oz, float dx, float dy, float dz, float px, float py, float pz, float nx, float ny, float nz) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ad1f4b41464e3b61336d1533a26192beb">raycastRect2</a>(float ox, float oy, float dx, float dy, float rx, float ry, float rw, float rh) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#af6591fdae2c1ffe0dbee9152b7a27a72">raycastSphere</a>(float ox, float oy, float oz, float dx, float dy, float dz, float cx, float cy, float cz, float radius) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a5dcc75260a517361aca4eef0b8e8cd4a">rectsOverlap</a>(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ade298e95a2cd4e87eb6cd79bbc1b54d4">remap</a>(float x, float inMin, float inMax, float outMin, float outMax) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ab45fd05ef243078ca092081cf6083f35">ridged2</a>(float x, float y, int octaves=4, float lacunarity=2.f, float gain=0.5f) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aab8af55905a0aefa4aad1bab8b408410">ridged3</a>(float x, float y, float z, int octaves=4, float lacunarity=2.f, float gain=0.5f) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a76605cbbbad677d759998e180998325f">rotate2X</a>(float x, float y, float radians) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a88f1f2368ce0c7cff93ae09196fe5b03">rotate2Y</a>(float x, float y, float radians) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ada75352952e8f4078e98b22f5d517945">segmentsIntersect</a>(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#ad62be29d93d1566ee42e9df8f39745d8">setRandomSeed</a>(uint32_t seed)</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#aa85ec8f595d675efde78c454ae61bc79">setRandomSeedFromTime</a>()</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a82f6c7ab3d3636341915666cf978fb6d">sign</a>(float x) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a42675cd03df1395de45ff38fc105d0a0">smootherstep</a>(float edge0, float edge1, float x) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a58d5619d3706775a85f77a25add49aa0">smoothstep</a>(float edge0, float edge1, float x) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a68526cac1ca1158f2f72d1c02e1078be">snap</a>(float x, float grid) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a1014203e2a584f38af216fa1b6a1abc1">spheresOverlap</a>(float x1, float y1, float z1, float r1, float x2, float y2, float z2, float r2) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a335363773aa05ff49cd78946417e4271">step</a>(float edge, float x) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a20c81dd98e3f5b698985afcf172cda0d">turbulence2</a>(float x, float y, int octaves=4, float lacunarity=2.f, float gain=0.5f) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a1a3bdbaba41e948776be5cb0670a0015">voronoi2</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a7ae26e33eae1afb9ca529361df64d315">voronoiEdge2</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a15314055135e69c2e35e186aff121d9c">warpNoise2</a>(float x, float y, float warpAmp=1.f) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a76eed3aa5316baed5045c763cd8f3fab">wrap</a>(float x, float lo, float hi) const</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html#a5ba4fef99de4615a3814844b5f0dec63">~Math</a>() override=default</td><td class="entry"><a class="el" href="classeve_1_1math_1_1Math.html">eve::math::Math</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

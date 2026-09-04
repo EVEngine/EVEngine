@@ -1,0 +1,480 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::material_editing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1material__editing.html">material_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::material_editing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1material__editing_1_1IMaterialRuntimeSink.html">IMaterialRuntimeSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomic runtime publication boundary for a complete material candidate.  <a href="classeve_1_1material__editing_1_1IMaterialRuntimeSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1material__editing_1_1MaterialCompileResult.html">MaterialCompileResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Material graph compilation value; artifact is published separately.  <a href="structeve_1_1material__editing_1_1MaterialCompileResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html">MaterialDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UI-neutral, serializable material authoring target.  <a href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1material__editing_1_1MaterialEditorService.html">MaterialEditorService</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revision-aware material compile result and preview publication service.  <a href="classeve_1_1material__editing_1_1MaterialEditorService.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1material__editing_1_1MaterialGraphDomain.html">MaterialGraphDomain</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal material domain with typed pin validation and deterministic compile artifacts.  <a href="classeve_1_1material__editing_1_1MaterialGraphDomain.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1material__editing_1_1MaterialPublishingTarget.html">MaterialPublishingTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Candidate-first material operation target with live commit/undo publication.  <a href="classeve_1_1material__editing_1_1MaterialPublishingTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a6b1536c86cfd47402c42b09962deadd5" id="r_a6b1536c86cfd47402c42b09962deadd5"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a6b1536c86cfd47402c42b09962deadd5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a6b1536c86cfd47402c42b09962deadd5">EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:a6b1536c86cfd47402c42b09962deadd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a5a0c19b24ad7d50c118fb9ba204ad5" id="r_a1a5a0c19b24ad7d50c118fb9ba204ad5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a1a5a0c19b24ad7d50c118fb9ba204ad5">EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:a1a5a0c19b24ad7d50c118fb9ba204ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae51cb38b2583014fe70b6fd0b391785e" id="r_ae51cb38b2583014fe70b6fd0b391785e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#ae51cb38b2583014fe70b6fd0b391785e">EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:ae51cb38b2583014fe70b6fd0b391785e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a476aa049947adddbb0000fcabe30f567" id="r_a476aa049947adddbb0000fcabe30f567"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a476aa049947adddbb0000fcabe30f567">EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:a476aa049947adddbb0000fcabe30f567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3045ce69e095f2e053d9dd76234b5687" id="r_a3045ce69e095f2e053d9dd76234b5687"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a3045ce69e095f2e053d9dd76234b5687">GraphPinDirection</a> = <a class="el" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">editing::GraphPinDirection</a></td></tr>
+<tr class="memdesc:a3045ce69e095f2e053d9dd76234b5687"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility aliases; canonical graph contracts live in editing.  <br /></td></tr>
+<tr class="separator:a3045ce69e095f2e053d9dd76234b5687"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad7fdbc1b6713ab2a2e9803f13f8fe32" id="r_aad7fdbc1b6713ab2a2e9803f13f8fe32"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#aad7fdbc1b6713ab2a2e9803f13f8fe32">GraphPinRecord</a> = <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">editing::GraphPinRecord</a></td></tr>
+<tr class="separator:aad7fdbc1b6713ab2a2e9803f13f8fe32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7c652f600abb3130d443e5de2810ed6" id="r_ae7c652f600abb3130d443e5de2810ed6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#ae7c652f600abb3130d443e5de2810ed6">GraphNodeRecord</a> = <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">editing::GraphNodeRecord</a></td></tr>
+<tr class="separator:ae7c652f600abb3130d443e5de2810ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a860e0bdd2e1db01346af9d3e77110900" id="r_a860e0bdd2e1db01346af9d3e77110900"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a860e0bdd2e1db01346af9d3e77110900">GraphEdgeRecord</a> = <a class="el" href="structeve_1_1editing_1_1GraphEdgeRecord.html">editing::GraphEdgeRecord</a></td></tr>
+<tr class="separator:a860e0bdd2e1db01346af9d3e77110900"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0c35c347745df22b6017c8435fa7e4f" id="r_ad0c35c347745df22b6017c8435fa7e4f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#ad0c35c347745df22b6017c8435fa7e4f">GraphDocumentData</a> = <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">editing::GraphDocumentData</a></td></tr>
+<tr class="separator:ad0c35c347745df22b6017c8435fa7e4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a623f0b6a88f52e4be7e51e92486ba96d" id="r_a623f0b6a88f52e4be7e51e92486ba96d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a623f0b6a88f52e4be7e51e92486ba96d">GraphConnectionDecision</a> = <a class="el" href="structeve_1_1editing_1_1GraphConnectionDecision.html">editing::GraphConnectionDecision</a></td></tr>
+<tr class="separator:a623f0b6a88f52e4be7e51e92486ba96d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5587a107e1f8a8cf3f8a2e46b35d4082" id="r_a5587a107e1f8a8cf3f8a2e46b35d4082"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a5587a107e1f8a8cf3f8a2e46b35d4082">GraphDocument</a> = <a class="el" href="classeve_1_1editing_1_1GraphDocument.html">editing::GraphDocument</a></td></tr>
+<tr class="separator:a5587a107e1f8a8cf3f8a2e46b35d4082"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab246ed5bd408cc8c7825393849b40d26" id="r_ab246ed5bd408cc8c7825393849b40d26"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#ab246ed5bd408cc8c7825393849b40d26">IGraphDomainProvider</a> = <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html">editing::IGraphDomainProvider</a></td></tr>
+<tr class="separator:ab246ed5bd408cc8c7825393849b40d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a6f938d9df0ebd0ad15b9eab4897f3655" id="r_a6f938d9df0ebd0ad15b9eab4897f3655"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a6f938d9df0ebd0ad15b9eab4897f3655">registerEditingCommands</a> (<a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a6f938d9df0ebd0ad15b9eab4897f3655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register Material-owned property commands with a generic editing host.  <br /></td></tr>
+<tr class="separator:a6f938d9df0ebd0ad15b9eab4897f3655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a3625e81925364070fbc9da24ebc1dd" id="r_a8a3625e81925364070fbc9da24ebc1dd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1material__editing.html#a8a3625e81925364070fbc9da24ebc1dd">number</a> (const <a class="el" href="namespaceeve_1_1material__editing.html#ae51cb38b2583014fe70b6fd0b391785e">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a8a3625e81925364070fbc9da24ebc1dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a476aa049947adddbb0000fcabe30f567" name="a476aa049947adddbb0000fcabe30f567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a476aa049947adddbb0000fcabe30f567">&#9670;&#160;</a></span>EditorDiagnostic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a> <a class="el" href="namespaceeve_1_1material__editing.html#a476aa049947adddbb0000fcabe30f567">eve::material_editing::EditorDiagnostic</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b1536c86cfd47402c42b09962deadd5" name="a6b1536c86cfd47402c42b09962deadd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b1536c86cfd47402c42b09962deadd5">&#9670;&#160;</a></span>EditorResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1material__editing.html#a6b1536c86cfd47402c42b09962deadd5">eve::material_editing::EditorResult</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a5a0c19b24ad7d50c118fb9ba204ad5" name="a1a5a0c19b24ad7d50c118fb9ba204ad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a5a0c19b24ad7d50c118fb9ba204ad5">&#9670;&#160;</a></span>EditorStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a> <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::material_editing::EditorStatus</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae51cb38b2583014fe70b6fd0b391785e" name="ae51cb38b2583014fe70b6fd0b391785e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae51cb38b2583014fe70b6fd0b391785e">&#9670;&#160;</a></span>EditorValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> <a class="el" href="namespaceeve_1_1material__editing.html#ae51cb38b2583014fe70b6fd0b391785e">eve::material_editing::EditorValue</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a623f0b6a88f52e4be7e51e92486ba96d" name="a623f0b6a88f52e4be7e51e92486ba96d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a623f0b6a88f52e4be7e51e92486ba96d">&#9670;&#160;</a></span>GraphConnectionDecision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1GraphConnectionDecision.html">eve::material_editing::GraphConnectionDecision</a> = typedef <a class="el" href="structeve_1_1editing_1_1GraphConnectionDecision.html">editing::GraphConnectionDecision</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5587a107e1f8a8cf3f8a2e46b35d4082" name="a5587a107e1f8a8cf3f8a2e46b35d4082"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5587a107e1f8a8cf3f8a2e46b35d4082">&#9670;&#160;</a></span>GraphDocument</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1editing_1_1GraphDocument.html">eve::material_editing::GraphDocument</a> = typedef <a class="el" href="classeve_1_1editing_1_1GraphDocument.html">editing::GraphDocument</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0c35c347745df22b6017c8435fa7e4f" name="ad0c35c347745df22b6017c8435fa7e4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0c35c347745df22b6017c8435fa7e4f">&#9670;&#160;</a></span>GraphDocumentData</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">eve::material_editing::GraphDocumentData</a> = typedef <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">editing::GraphDocumentData</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a860e0bdd2e1db01346af9d3e77110900" name="a860e0bdd2e1db01346af9d3e77110900"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a860e0bdd2e1db01346af9d3e77110900">&#9670;&#160;</a></span>GraphEdgeRecord</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1GraphEdgeRecord.html">eve::material_editing::GraphEdgeRecord</a> = typedef <a class="el" href="structeve_1_1editing_1_1GraphEdgeRecord.html">editing::GraphEdgeRecord</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7c652f600abb3130d443e5de2810ed6" name="ae7c652f600abb3130d443e5de2810ed6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7c652f600abb3130d443e5de2810ed6">&#9670;&#160;</a></span>GraphNodeRecord</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">eve::material_editing::GraphNodeRecord</a> = typedef <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">editing::GraphNodeRecord</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3045ce69e095f2e053d9dd76234b5687" name="a3045ce69e095f2e053d9dd76234b5687"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3045ce69e095f2e053d9dd76234b5687">&#9670;&#160;</a></span>GraphPinDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">eve::material_editing::GraphPinDirection</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">editing::GraphPinDirection</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility aliases; canonical graph contracts live in editing. </p>
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad7fdbc1b6713ab2a2e9803f13f8fe32" name="aad7fdbc1b6713ab2a2e9803f13f8fe32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad7fdbc1b6713ab2a2e9803f13f8fe32">&#9670;&#160;</a></span>GraphPinRecord</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">eve::material_editing::GraphPinRecord</a> = typedef <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">editing::GraphPinRecord</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab246ed5bd408cc8c7825393849b40d26" name="ab246ed5bd408cc8c7825393849b40d26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab246ed5bd408cc8c7825393849b40d26">&#9670;&#160;</a></span>IGraphDomainProvider</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html">eve::material_editing::IGraphDomainProvider</a> = typedef <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html">editing::IGraphDomainProvider</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialGraph_8h_source.html">MaterialGraph.h</a> 第 <a class="el" href="MaterialGraph_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a8a3625e81925364070fbc9da24ebc1dd" name="a8a3625e81925364070fbc9da24ebc1dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a3625e81925364070fbc9da24ebc1dd">&#9670;&#160;</a></span>number()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::material_editing::number </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1material__editing.html#ae51cb38b2583014fe70b6fd0b391785e">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MaterialRuntime_8cpp_source.html">MaterialRuntime.cpp</a> 第 <a class="el" href="MaterialRuntime_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a6f938d9df0ebd0ad15b9eab4897f3655" name="a6f938d9df0ebd0ad15b9eab4897f3655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f938d9df0ebd0ad15b9eab4897f3655">&#9670;&#160;</a></span>registerEditingCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::material_editing::registerEditingCommands </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register Material-owned property commands with a generic editing host. </p>
+
+<p class="definition">在文件 <a class="el" href="MaterialEditingCommands_8cpp_source.html">MaterialEditingCommands.cpp</a> 第 <a class="el" href="MaterialEditingCommands_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060ab51ca26c6c89cfc9bec338f7a0d3e0c8">eve::editing::Absolute</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="EditingProperty_8h_source.html#l00121">eve::editing::IPropertyProvider::editingCapabilityId()</a>, <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="EditingCommandRegistry_8h_source.html#l00013">eve::editing::EditingCommandDescriptor::id</a>, <a class="el" href="EditingProtocol_8h_source.html#l00066">eve::editing::CommandPlan::operations</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="EditingProtocol_8h_source.html#l00047">eve::editing::CommandRequest::payload</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a>, <a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a65f0d15ca87a6458217c81455433d8a5">eve::editing::IEditingCommandRegistry::registerPlannedCommand()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00067">eve::editing::CommandPlan::summary</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MaterialEditorModule_8cpp_source.html#l00113">eve::material_editor::MaterialEditorModule::MaterialEditorModule()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/StatusSystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">StatusSystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="StatusSystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// 状态（buff/debuff）系统：把 RPG EffectDefinition 适配到通用</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// effects::EffectContainer，并由 RPG executor 驱动 modifier / 周期结算。</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">//</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// 可插拔扩展点（与 inventory 模块同风格）：</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">//  - registerApplyCondition  — 免疫 / 抗性 / 互斥等&quot;能否施加&quot;判断</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">//  - registerStackPolicy     — 内置 none/refresh/extend/stack 之外的自定义叠加策略</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">//  - registerLifecycleHook   — 施加/刷新/叠层/移除/到期时的副作用（UI、成就、VFX）</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">//  - EffectDefinition::extra / StatusInstance::props — 任意自定义字段无需扩结构体</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="StatusTypes_8h.html">rpg/StatusTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">struct </span>EffectDefinition;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1StatusSystem.html">   25</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1StatusSystem.html">StatusSystem</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1StatusSystem.html#a1b30afc839160c4891b2f1d92b76c812">   31</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1rpg_1_1StatusSystem.html#a1b30afc839160c4891b2f1d92b76c812">ApplyCondition</a> = std::function&lt;bool(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1EffectDefinition.html">EffectDefinition</a> &amp;def,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                               <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::string &amp;outReason)&gt;;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1StatusSystem.html#a219d4e009f864be545a33bf764e6cdcc">   42</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1rpg_1_1StatusSystem.html#a219d4e009f864be545a33bf764e6cdcc">StackPolicyFn</a> = std::function&lt;int(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <a class="code hl_struct" href="structeve_1_1rpg_1_1StatusInstance.html">StatusInstance</a> &amp;existing,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                             <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1EffectDefinition.html">EffectDefinition</a> &amp;def, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)&gt;;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1StatusSystem.html#ad43f8003cfd71256798f8dae013478b7">   46</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1rpg_1_1StatusSystem.html#ad43f8003cfd71256798f8dae013478b7">LifecycleHook</a> = std::function&lt;void(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1StatusChangeEvent.html">StatusChangeEvent</a> &amp;ev)&gt;;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a7af41c75eccb10abe1b8203009a8b622">registerApplyCondition</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_typedef" href="classeve_1_1rpg_1_1StatusSystem.html#a1b30afc839160c4891b2f1d92b76c812">ApplyCondition</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a474670b910b6403d6af355ba6abcbbad">unregisterApplyCondition</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a24c9c9ee45e5f20caca8502ea0292e3f">hasApplyCondition</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#ab5878a7cc1e580f33db0d725eae647ab">clearApplyConditions</a>();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a8b09b4309c9d1701e755bacc82b2c381">registerStackPolicy</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_typedef" href="classeve_1_1rpg_1_1StatusSystem.html#a219d4e009f864be545a33bf764e6cdcc">StackPolicyFn</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#ab4ed9b142dfacb408575ef266e1b8fcf">unregisterStackPolicy</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a252c0dc9aa58ca7f4657d6c52a1224e8">hasStackPolicy</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a0e3618cda95ffdee0bbfcb019f551363">clearStackPolicies</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#aaa2addbee8ffdbf9d33ae547d4f091fd">registerLifecycleHook</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_typedef" href="classeve_1_1rpg_1_1StatusSystem.html#ad43f8003cfd71256798f8dae013478b7">LifecycleHook</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a194e3e0de484bbb76f997ef08b45a381">unregisterLifecycleHook</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a2f2019725137a0deec0993970d21d989">hasLifecycleHook</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a483b91e944e80380a6e6dc80ff93f7c3">clearLifecycleHooks</a>();</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#af4499cbc9cc31d8219a3a5794bea053e">apply</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> std::string &amp;effectId,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                                <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a> = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a1ac2d62e8bab246d86e4b498dd18efea">remove</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> instanceId);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#aaef2376f9a9405951599dfe39c71da66">removeByEffect</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> std::string &amp;effectId);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a5cacdee43abea3f6c0e87d00cef0a41e">removeBySource</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#ae51781bcded2c249469b8cdab0dcae99">removeByTag</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> std::string &amp;tag);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a3e0bf7e8182ef7c01ccd9fc1921fa51e">hasEffect</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> std::string &amp;effectId);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a5be4569d451967e2496fba5da40fad88">hasTag</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> std::string &amp;tag);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a9d4fecffa1cf6e536e4232b0294d9314">getActiveCount</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#af410849d5f9db98b1726f9144267fba3">getActiveEffectId</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a2419b10e8afdcd6d51630da0fa19cdbd">getActiveStacks</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">static</span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#afe8725afeaa08da847043987cce38586">getActiveRemaining</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a3682d447aaedce2896d658d185e766b0">getActiveInstanceId</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a1040aeb69d7e8123938fa40437426f61">getActiveSource</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a9da8f6284575c25fe109461c7604d966">getProp</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                               <span class="keyword">const</span> std::string &amp;fallback = {});</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a055ae90b1b2510749ae379105ab76f2f">setProp</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> instanceId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                        <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;StatusUpdateSummary&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#ab1ddbf3e3383561aa63fa846d4e92b3b">update</a>(<span class="keywordtype">double</span> dt);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a5b6e8e74af88653031625ae815434224">pollTicks</a>(std::vector&lt;StatusTickEvent&gt; &amp;out);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1StatusSystem.html#a2ac81a1ef4c434209048e62ed3db3775">pollChanges</a>(std::vector&lt;StatusChangeEvent&gt; &amp;out);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> emitChange(<a class="code hl_struct" href="structeve_1_1rpg_1_1StatusChangeEvent.html">StatusChangeEvent</a> ev);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, ApplyCondition&gt; &amp;applyConditions();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, StackPolicyFn&gt; &amp;stackPolicies();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, LifecycleHook&gt; &amp;lifecycleHooks();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>};</div>
+</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aStatusTypes_8h_html"><div class="ttname"><a href="StatusTypes_8h.html">StatusTypes.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html">eve::rpg::StatusSystem</a></div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8h_source.html#l00025">StatusSystem.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a055ae90b1b2510749ae379105ab76f2f"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a055ae90b1b2510749ae379105ab76f2f">eve::rpg::StatusSystem::setProp</a></div><div class="ttdeci">static bool setProp(RPGActor *actor, int instanceId, const std::string &amp;key, const std::string &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00719">StatusSystem.cpp:719</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a0e3618cda95ffdee0bbfcb019f551363"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a0e3618cda95ffdee0bbfcb019f551363">eve::rpg::StatusSystem::clearStackPolicies</a></div><div class="ttdeci">static void clearStackPolicies()</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00292">StatusSystem.cpp:292</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a1040aeb69d7e8123938fa40437426f61"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a1040aeb69d7e8123938fa40437426f61">eve::rpg::StatusSystem::getActiveSource</a></div><div class="ttdeci">static std::string getActiveSource(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00702">StatusSystem.cpp:702</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a194e3e0de484bbb76f997ef08b45a381"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a194e3e0de484bbb76f997ef08b45a381">eve::rpg::StatusSystem::unregisterLifecycleHook</a></div><div class="ttdeci">static void unregisterLifecycleHook(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00298">StatusSystem.cpp:298</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a1ac2d62e8bab246d86e4b498dd18efea"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a1ac2d62e8bab246d86e4b498dd18efea">eve::rpg::StatusSystem::remove</a></div><div class="ttdeci">static eve::Result&lt; void &gt; remove(RPGActor *actor, int instanceId)</div><div class="ttdoc">Removal of one status by its legacy adapter id.</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00573">StatusSystem.cpp:573</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a1b30afc839160c4891b2f1d92b76c812"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a1b30afc839160c4891b2f1d92b76c812">eve::rpg::StatusSystem::ApplyCondition</a></div><div class="ttdeci">std::function&lt; bool(RPGActor *actor, const EffectDefinition &amp;def, const std::string &amp;source, std::string &amp;outReason)&gt; ApplyCondition</div><div class="ttdoc">施加前条件：返回 false 表示拒绝施加。 全部已注册条件按注册表遍历（AND）；任一失败则 apply 返回 -1 并产生 action=&quot;reject&quot; 事件。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8h_source.html#l00031">StatusSystem.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a219d4e009f864be545a33bf764e6cdcc"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a219d4e009f864be545a33bf764e6cdcc">eve::rpg::StatusSystem::StackPolicyFn</a></div><div class="ttdeci">std::function&lt; int(RPGActor *actor, StatusInstance &amp;existing, const EffectDefinition &amp;def, const std::string &amp;source)&gt; StackPolicyFn</div><div class="ttdoc">自定义叠加策略：在已有效果的临时 StatusInstance projection 上运行。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8h_source.html#l00042">StatusSystem.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a2419b10e8afdcd6d51630da0fa19cdbd"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a2419b10e8afdcd6d51630da0fa19cdbd">eve::rpg::StatusSystem::getActiveStacks</a></div><div class="ttdeci">static int getActiveStacks(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00681">StatusSystem.cpp:681</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a24c9c9ee45e5f20caca8502ea0292e3f"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a24c9c9ee45e5f20caca8502ea0292e3f">eve::rpg::StatusSystem::hasApplyCondition</a></div><div class="ttdeci">static bool hasApplyCondition(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00280">StatusSystem.cpp:280</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a252c0dc9aa58ca7f4657d6c52a1224e8"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a252c0dc9aa58ca7f4657d6c52a1224e8">eve::rpg::StatusSystem::hasStackPolicy</a></div><div class="ttdeci">static bool hasStackPolicy(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00290">StatusSystem.cpp:290</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a2ac81a1ef4c434209048e62ed3db3775"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a2ac81a1ef4c434209048e62ed3db3775">eve::rpg::StatusSystem::pollChanges</a></div><div class="ttdeci">static void pollChanges(std::vector&lt; StatusChangeEvent &gt; &amp;out)</div><div class="ttdoc">取出并清空自上次调用以来累积的生命周期变更事件。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00842">StatusSystem.cpp:842</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a2f2019725137a0deec0993970d21d989"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a2f2019725137a0deec0993970d21d989">eve::rpg::StatusSystem::hasLifecycleHook</a></div><div class="ttdeci">static bool hasLifecycleHook(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00300">StatusSystem.cpp:300</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a3682d447aaedce2896d658d185e766b0"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a3682d447aaedce2896d658d185e766b0">eve::rpg::StatusSystem::getActiveInstanceId</a></div><div class="ttdeci">static int getActiveInstanceId(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00696">StatusSystem.cpp:696</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a3e0bf7e8182ef7c01ccd9fc1921fa51e"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a3e0bf7e8182ef7c01ccd9fc1921fa51e">eve::rpg::StatusSystem::hasEffect</a></div><div class="ttdeci">static bool hasEffect(RPGActor *actor, const std::string &amp;effectId)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00660">StatusSystem.cpp:660</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a474670b910b6403d6af355ba6abcbbad"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a474670b910b6403d6af355ba6abcbbad">eve::rpg::StatusSystem::unregisterApplyCondition</a></div><div class="ttdeci">static void unregisterApplyCondition(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00278">StatusSystem.cpp:278</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a483b91e944e80380a6e6dc80ff93f7c3"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a483b91e944e80380a6e6dc80ff93f7c3">eve::rpg::StatusSystem::clearLifecycleHooks</a></div><div class="ttdeci">static void clearLifecycleHooks()</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00302">StatusSystem.cpp:302</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a5b6e8e74af88653031625ae815434224"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a5b6e8e74af88653031625ae815434224">eve::rpg::StatusSystem::pollTicks</a></div><div class="ttdeci">static void pollTicks(std::vector&lt; StatusTickEvent &gt; &amp;out)</div><div class="ttdoc">取出并清空自上次调用以来累积的周期 tick 事件（push/poll 风格，见 event 模块）。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00836">StatusSystem.cpp:836</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a5be4569d451967e2496fba5da40fad88"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a5be4569d451967e2496fba5da40fad88">eve::rpg::StatusSystem::hasTag</a></div><div class="ttdeci">static bool hasTag(RPGActor *actor, const std::string &amp;tag)</div><div class="ttdoc">是否存在任一效果定义带有该 tag 的活动实例。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00664">StatusSystem.cpp:664</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a5cacdee43abea3f6c0e87d00cef0a41e"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a5cacdee43abea3f6c0e87d00cef0a41e">eve::rpg::StatusSystem::removeBySource</a></div><div class="ttdeci">static int removeBySource(RPGActor *actor, const std::string &amp;source)</div><div class="ttdoc">移除该 actor 身上所有 source 匹配的实例；返回移除数量。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00646">StatusSystem.cpp:646</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a7af41c75eccb10abe1b8203009a8b622"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a7af41c75eccb10abe1b8203009a8b622">eve::rpg::StatusSystem::registerApplyCondition</a></div><div class="ttdeci">static void registerApplyCondition(const std::string &amp;name, ApplyCondition fn)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00274">StatusSystem.cpp:274</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a8b09b4309c9d1701e755bacc82b2c381"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a8b09b4309c9d1701e755bacc82b2c381">eve::rpg::StatusSystem::registerStackPolicy</a></div><div class="ttdeci">static void registerStackPolicy(const std::string &amp;name, StackPolicyFn fn)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00284">StatusSystem.cpp:284</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a9d4fecffa1cf6e536e4232b0294d9314"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a9d4fecffa1cf6e536e4232b0294d9314">eve::rpg::StatusSystem::getActiveCount</a></div><div class="ttdeci">static int getActiveCount(RPGActor *actor)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00673">StatusSystem.cpp:673</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_a9da8f6284575c25fe109461c7604d966"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#a9da8f6284575c25fe109461c7604d966">eve::rpg::StatusSystem::getProp</a></div><div class="ttdeci">static std::string getProp(RPGActor *actor, int instanceId, const std::string &amp;key, const std::string &amp;fallback={})</div><div class="ttdoc">按实例 id 读写 props；找不到实例时 get 返回 fallback，set 返回 false。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00708">StatusSystem.cpp:708</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_aaa2addbee8ffdbf9d33ae547d4f091fd"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#aaa2addbee8ffdbf9d33ae547d4f091fd">eve::rpg::StatusSystem::registerLifecycleHook</a></div><div class="ttdeci">static void registerLifecycleHook(const std::string &amp;name, LifecycleHook fn)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00294">StatusSystem.cpp:294</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_aaef2376f9a9405951599dfe39c71da66"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#aaef2376f9a9405951599dfe39c71da66">eve::rpg::StatusSystem::removeByEffect</a></div><div class="ttdeci">static int removeByEffect(RPGActor *actor, const std::string &amp;effectId)</div><div class="ttdoc">移除该 actor 身上所有 effectId 匹配的实例；返回移除数量。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00639">StatusSystem.cpp:639</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_ab1ddbf3e3383561aa63fa846d4e92b3b"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#ab1ddbf3e3383561aa63fa846d4e92b3b">eve::rpg::StatusSystem::update</a></div><div class="ttdeci">static eve::Result&lt; StatusUpdateSummary &gt; update(double dt)</div><div class="ttdoc">Advance all live RPG status executors with an injected simulation delta.</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00729">StatusSystem.cpp:729</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_ab4ed9b142dfacb408575ef266e1b8fcf"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#ab4ed9b142dfacb408575ef266e1b8fcf">eve::rpg::StatusSystem::unregisterStackPolicy</a></div><div class="ttdeci">static void unregisterStackPolicy(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00288">StatusSystem.cpp:288</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_ab5878a7cc1e580f33db0d725eae647ab"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#ab5878a7cc1e580f33db0d725eae647ab">eve::rpg::StatusSystem::clearApplyConditions</a></div><div class="ttdeci">static void clearApplyConditions()</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00282">StatusSystem.cpp:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_ad43f8003cfd71256798f8dae013478b7"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#ad43f8003cfd71256798f8dae013478b7">eve::rpg::StatusSystem::LifecycleHook</a></div><div class="ttdeci">std::function&lt; void(const StatusChangeEvent &amp;ev)&gt; LifecycleHook</div><div class="ttdoc">生命周期钩子：每次产生 StatusChangeEvent 时同步回调（在事件入队之后）。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8h_source.html#l00046">StatusSystem.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_ae51781bcded2c249469b8cdab0dcae99"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#ae51781bcded2c249469b8cdab0dcae99">eve::rpg::StatusSystem::removeByTag</a></div><div class="ttdeci">static int removeByTag(RPGActor *actor, const std::string &amp;tag)</div><div class="ttdoc">移除该 actor 身上所有 tag 匹配（效果定义带该 tag）的实例；返回移除数量。</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00653">StatusSystem.cpp:653</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_af410849d5f9db98b1726f9144267fba3"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#af410849d5f9db98b1726f9144267fba3">eve::rpg::StatusSystem::getActiveEffectId</a></div><div class="ttdeci">static std::string getActiveEffectId(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00675">StatusSystem.cpp:675</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_af4499cbc9cc31d8219a3a5794bea053e"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#af4499cbc9cc31d8219a3a5794bea053e">eve::rpg::StatusSystem::apply</a></div><div class="ttdeci">static eve::Result&lt; int &gt; apply(RPGActor *actor, const std::string &amp;effectId, const std::string &amp;source=&quot;&quot;)</div><div class="ttdoc">Status application backed by the generic EffectContainer.</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00315">StatusSystem.cpp:315</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1StatusSystem_html_afe8725afeaa08da847043987cce38586"><div class="ttname"><a href="classeve_1_1rpg_1_1StatusSystem.html#afe8725afeaa08da847043987cce38586">eve::rpg::StatusSystem::getActiveRemaining</a></div><div class="ttdeci">static float getActiveRemaining(RPGActor *actor, int index)</div><div class="ttdef"><b>Definition</b> <a href="StatusSystem_8cpp_source.html#l00690">StatusSystem.cpp:690</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00030">Settlement.cpp:30</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EffectDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1EffectDefinition.html">eve::rpg::EffectDefinition</a></div><div class="ttdef"><b>Definition</b> <a href="Effect_8h_source.html#l00032">Effect.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StatusChangeEvent_html"><div class="ttname"><a href="structeve_1_1rpg_1_1StatusChangeEvent.html">eve::rpg::StatusChangeEvent</a></div><div class="ttdoc">状态生命周期变更事件（施加 / 刷新 / 叠层 / 延长 / 移除 / 到期 / 拒绝）。 与 StatusTickEvent 分开：tick 是周期性数值触发，change 是实例结构变化。</div><div class="ttdef"><b>Definition</b> <a href="StatusTypes_8h_source.html#l00084">StatusTypes.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StatusInstance_html"><div class="ttname"><a href="structeve_1_1rpg_1_1StatusInstance.html">eve::rpg::StatusInstance</a></div><div class="ttdoc">Legacy RPG projection of one effects::EffectInstance.</div><div class="ttdef"><b>Definition</b> <a href="StatusTypes_8h_source.html#l00026">StatusTypes.h:26</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

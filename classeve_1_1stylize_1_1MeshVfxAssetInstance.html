@@ -1,0 +1,590 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::stylize::MeshVfxAssetInstance类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></li><li class="navelem"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html">MeshVfxAssetInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1stylize_1_1MeshVfxAssetInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::stylize::MeshVfxAssetInstance类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning runtime instantiated from one immutable <a class="el" href="structeve_1_1stylize_1_1MeshVfxAsset.html" title="Versioned, backend-neutral description of a real-time mesh effect.">MeshVfxAsset</a> snapshot. @ownership Owns all layer runtimes and the optional trail; target meshes remain borrowed by renderer resolution. @thread Simulation-thread affine. Rendering must consume layers on the render thread. @reentrancy Does not invoke callbacks.  
+ <a href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MeshVfxAsset_8h_source.html">MeshVfxAsset.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a66f34f493579929feb89cf6b824847c0" id="r_a66f34f493579929feb89cf6b824847c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a66f34f493579929feb89cf6b824847c0">bindTarget</a> (<a class="el" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">MeshEffectTargetHandle</a> <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a66f34f493579929feb89cf6b824847c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind every layer to the same authoritative target handle.  <br /></td></tr>
+<tr class="separator:a66f34f493579929feb89cf6b824847c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a317244869d609d1f3d17cdd7faa978f6" id="r_a317244869d609d1f3d17cdd7faa978f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a317244869d609d1f3d17cdd7faa978f6">play</a> () noexcept</td></tr>
+<tr class="memdesc:a317244869d609d1f3d17cdd7faa978f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin every layer and clear prior trail samples.  <br /></td></tr>
+<tr class="separator:a317244869d609d1f3d17cdd7faa978f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21cbbd622d668efcc1b53aa7513421ec" id="r_a21cbbd622d668efcc1b53aa7513421ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a21cbbd622d668efcc1b53aa7513421ec">stop</a> (float fadeOutSeconds=-1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a21cbbd622d668efcc1b53aa7513421ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop every layer using an optional fade override.  <br /></td></tr>
+<tr class="separator:a21cbbd622d668efcc1b53aa7513421ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52a534dafccf54c0d52ae36c51e86c3a" id="r_a52a534dafccf54c0d52ae36c51e86c3a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a52a534dafccf54c0d52ae36c51e86c3a">update</a> (float dtSeconds)</td></tr>
+<tr class="memdesc:a52a534dafccf54c0d52ae36c51e86c3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance every layer and the optional trail with caller-supplied simulation time.  <br /></td></tr>
+<tr class="separator:a52a534dafccf54c0d52ae36c51e86c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92d580b538a989912c5a0662a13314a9" id="r_a92d580b538a989912c5a0662a13314a9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a92d580b538a989912c5a0662a13314a9">drainEvents</a> ()</td></tr>
+<tr class="memdesc:a92d580b538a989912c5a0662a13314a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move all timeline events crossed since the previous drain.  <br /></td></tr>
+<tr class="separator:a92d580b538a989912c5a0662a13314a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2d62ab247c46ebb3daf34c0f17ab021" id="r_ad2d62ab247c46ebb3daf34c0f17ab021"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">TrailAppendResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#ad2d62ab247c46ebb3daf34c0f17ab021">sampleTrail</a> (const <a class="el" href="classeve_1_1IAttachmentPointSource.html">eve::IAttachmentPointSource</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="memdesc:ad2d62ab247c46ebb3daf34c0f17ab021"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample authored root/tip attachments and append one trail segment.  <br /></td></tr>
+<tr class="separator:ad2d62ab247c46ebb3daf34c0f17ab021"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b6821eb7946e7825a5ddb331cbc5ff3" id="r_a8b6821eb7946e7825a5ddb331cbc5ff3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1stylize_1_1MeshVfxAnimationDispatch.html">MeshVfxAnimationDispatch</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a8b6821eb7946e7825a5ddb331cbc5ff3">processAnimationEvents</a> (const <a class="el" href="classeve_1_1IAnimationEventSource.html">eve::IAnimationEventSource</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="memdesc:a8b6821eb7946e7825a5ddb331cbc5ff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply authored lifecycle mappings for events emitted by the latest animation update.  <br /></td></tr>
+<tr class="separator:a8b6821eb7946e7825a5ddb331cbc5ff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc2cc9f63a475bf69e3a08238ec3c82e" id="r_afc2cc9f63a475bf69e3a08238ec3c82e"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#afc2cc9f63a475bf69e3a08238ec3c82e">layerCount</a> () const noexcept</td></tr>
+<tr class="memdesc:afc2cc9f63a475bf69e3a08238ec3c82e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of independently rendered mesh layers.  <br /></td></tr>
+<tr class="separator:afc2cc9f63a475bf69e3a08238ec3c82e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54a0a3e71cfc2bf8b28724b225bc7e6c" id="r_a54a0a3e71cfc2bf8b28724b225bc7e6c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a54a0a3e71cfc2bf8b28724b225bc7e6c">layer</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a54a0a3e71cfc2bf8b28724b225bc7e6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one owned layer; throws std::out_of_range for an invalid index.  <br /></td></tr>
+<tr class="separator:a54a0a3e71cfc2bf8b28724b225bc7e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab54805640cdc348c9bc2bec40134db51" id="r_ab54805640cdc348c9bc2bec40134db51"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#ab54805640cdc348c9bc2bec40134db51">layer</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ab54805640cdc348c9bc2bec40134db51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one owned layer; throws std::out_of_range for an invalid index.  <br /></td></tr>
+<tr class="separator:ab54805640cdc348c9bc2bec40134db51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa792cbe2fadc24f8b7a83c2b3e3f4a01" id="r_aa792cbe2fadc24f8b7a83c2b3e3f4a01"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#aa792cbe2fadc24f8b7a83c2b3e3f4a01">hasTrail</a> () const noexcept</td></tr>
+<tr class="memdesc:aa792cbe2fadc24f8b7a83c2b3e3f4a01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this composition owns a trail emitter.  <br /></td></tr>
+<tr class="separator:aa792cbe2fadc24f8b7a83c2b3e3f4a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e463299068f4ad22c9f14b47c0ee136" id="r_a3e463299068f4ad22c9f14b47c0ee136"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a3e463299068f4ad22c9f14b47c0ee136">trail</a> ()</td></tr>
+<tr class="memdesc:a3e463299068f4ad22c9f14b47c0ee136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the owned trail; throws when this asset has no trail.  <br /></td></tr>
+<tr class="separator:a3e463299068f4ad22c9f14b47c0ee136"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ac252dc4102c441c64bf4618e53d095e5" id="r_ac252dc4102c441c64bf4618e53d095e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html">MeshVfxAssetInstance</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#ac252dc4102c441c64bf4618e53d095e5">create</a> (const <a class="el" href="structeve_1_1stylize_1_1MeshVfxAsset.html">MeshVfxAsset</a> &amp;asset)</td></tr>
+<tr class="memdesc:ac252dc4102c441c64bf4618e53d095e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build independent runtime state for every asset layer.  <br /></td></tr>
+<tr class="separator:ac252dc4102c441c64bf4618e53d095e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning runtime instantiated from one immutable <a class="el" href="structeve_1_1stylize_1_1MeshVfxAsset.html" title="Versioned, backend-neutral description of a real-time mesh effect.">MeshVfxAsset</a> snapshot. @ownership Owns all layer runtimes and the optional trail; target meshes remain borrowed by renderer resolution. @thread Simulation-thread affine. Rendering must consume layers on the render thread. @reentrancy Does not invoke callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8h_source.html">MeshVfxAsset.h</a> 第 <a class="el" href="MeshVfxAsset_8h_source.html#l00104">104</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a66f34f493579929feb89cf6b824847c0" name="a66f34f493579929feb89cf6b824847c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66f34f493579929feb89cf6b824847c0">&#9670;&#160;</a></span>bindTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshVfxAssetInstance::bindTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">MeshEffectTargetHandle</a>&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind every layer to the same authoritative target handle. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00493">493</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="ac252dc4102c441c64bf4618e53d095e5" name="ac252dc4102c441c64bf4618e53d095e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac252dc4102c441c64bf4618e53d095e5">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html">MeshVfxAssetInstance</a> &gt; &gt; eve::stylize::MeshVfxAssetInstance::create </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1stylize_1_1MeshVfxAsset.html">MeshVfxAsset</a> &amp;&#160;</td>
+          <td class="paramname"><em>asset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build independent runtime state for every asset layer. </p>
+<dl class="section return"><dt>返回</dt><dd>Owned instance or a diagnostic when a style or parameter is incompatible. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00462">462</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00395">eve::stylize::MeshVfxAsset::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Stylize_8cpp_source.html#l00095">eve::stylize::Stylize::createMeshVfxAssetInstance()</a> , 以及 <a class="el" href="MeshVfxTarget_8cpp_source.html#l00187">eve::stylize_editing::MeshVfxPreviewRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a92d580b538a989912c5a0662a13314a9" name="a92d580b538a989912c5a0662a13314a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92d580b538a989912c5a0662a13314a9">&#9670;&#160;</a></span>drainEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::stylize::MeshVfxAssetInstance::drainEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move all timeline events crossed since the previous drain. </p>
+<dl class="section return"><dt>返回</dt><dd>Ordered event names. No user callback is invoked by <a class="el" href="classeve_1_1stylize_1_1MeshVfxAssetInstance.html#a52a534dafccf54c0d52ae36c51e86c3a" title="Advance every layer and the optional trail with caller-supplied simulation time.">update()</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00535">535</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa792cbe2fadc24f8b7a83c2b3e3f4a01" name="aa792cbe2fadc24f8b7a83c2b3e3f4a01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa792cbe2fadc24f8b7a83c2b3e3f4a01">&#9670;&#160;</a></span>hasTrail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::stylize::MeshVfxAssetInstance::hasTrail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this composition owns a trail emitter. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8h_source.html">MeshVfxAsset.h</a> 第 <a class="el" href="MeshVfxAsset_8h_source.html#l00137">137</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54a0a3e71cfc2bf8b28724b225bc7e6c" name="a54a0a3e71cfc2bf8b28724b225bc7e6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54a0a3e71cfc2bf8b28724b225bc7e6c">&#9670;&#160;</a></span>layer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp; eve::stylize::MeshVfxAssetInstance::layer </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one owned layer; throws std::out_of_range for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8h_source.html">MeshVfxAsset.h</a> 第 <a class="el" href="MeshVfxAsset_8h_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ab54805640cdc348c9bc2bec40134db51" name="ab54805640cdc348c9bc2bec40134db51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab54805640cdc348c9bc2bec40134db51">&#9670;&#160;</a></span>layer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp; eve::stylize::MeshVfxAssetInstance::layer </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return one owned layer; throws std::out_of_range for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8h_source.html">MeshVfxAsset.h</a> 第 <a class="el" href="MeshVfxAsset_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="afc2cc9f63a475bf69e3a08238ec3c82e" name="afc2cc9f63a475bf69e3a08238ec3c82e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc2cc9f63a475bf69e3a08238ec3c82e">&#9670;&#160;</a></span>layerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::stylize::MeshVfxAssetInstance::layerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of independently rendered mesh layers. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8h_source.html">MeshVfxAsset.h</a> 第 <a class="el" href="MeshVfxAsset_8h_source.html#l00131">131</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a317244869d609d1f3d17cdd7faa978f6" name="a317244869d609d1f3d17cdd7faa978f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a317244869d609d1f3d17cdd7faa978f6">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshVfxAssetInstance::play </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Begin every layer and clear prior trail samples. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00497">497</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00555">processAnimationEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a8b6821eb7946e7825a5ddb331cbc5ff3" name="a8b6821eb7946e7825a5ddb331cbc5ff3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b6821eb7946e7825a5ddb331cbc5ff3">&#9670;&#160;</a></span>processAnimationEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1stylize_1_1MeshVfxAnimationDispatch.html">MeshVfxAnimationDispatch</a> eve::stylize::MeshVfxAssetInstance::processAnimationEvents </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1IAnimationEventSource.html">eve::IAnimationEventSource</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply authored lifecycle mappings for events emitted by the latest animation update. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00555">555</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshVfxAsset_8h_source.html#l00056">eve::stylize::MeshVfxAnimationDispatch::handled</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="MeshVfxAsset_8h_source.html#l00049">eve::stylize::MeshVfxAnimationTriggers::play</a>, <a class="el" href="MeshVfxAsset_8cpp_source.html#l00497">play()</a>, <a class="el" href="MeshVfxAsset_8h_source.html#l00057">eve::stylize::MeshVfxAnimationDispatch::played</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="MeshVfxAsset_8h_source.html#l00050">eve::stylize::MeshVfxAnimationTriggers::stop</a>, <a class="el" href="MeshVfxAsset_8cpp_source.html#l00506">stop()</a>, <a class="el" href="MeshVfxAsset_8h_source.html#l00058">eve::stylize::MeshVfxAnimationDispatch::stopped</a>, <a class="el" href="MeshVfxAsset_8h_source.html#l00051">eve::stylize::MeshVfxAnimationTriggers::trailBreak</a>, <a class="el" href="MeshVfxAsset_8h_source.html#l00059">eve::stylize::MeshVfxAnimationDispatch::trailBreaks</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+</div>
+</div>
+<a id="ad2d62ab247c46ebb3daf34c0f17ab021" name="ad2d62ab247c46ebb3daf34c0f17ab021"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2d62ab247c46ebb3daf34c0f17ab021">&#9670;&#160;</a></span>sampleTrail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">TrailAppendResult</a> &gt; eve::stylize::MeshVfxAssetInstance::sampleTrail </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1IAttachmentPointSource.html">eve::IAttachmentPointSource</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample authored root/tip attachments and append one trail segment. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00541">541</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a21cbbd622d668efcc1b53aa7513421ec" name="a21cbbd622d668efcc1b53aa7513421ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21cbbd622d668efcc1b53aa7513421ec">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshVfxAssetInstance::stop </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fadeOutSeconds</em> = <code>-1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop every layer using an optional fade override. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00506">506</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00555">processAnimationEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a3e463299068f4ad22c9f14b47c0ee136" name="a3e463299068f4ad22c9f14b47c0ee136"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e463299068f4ad22c9f14b47c0ee136">&#9670;&#160;</a></span>trail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp; eve::stylize::MeshVfxAssetInstance::trail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the owned trail; throws when this asset has no trail. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00579">579</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a52a534dafccf54c0d52ae36c51e86c3a" name="a52a534dafccf54c0d52ae36c51e86c3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52a534dafccf54c0d52ae36c51e86c3a">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshVfxAssetInstance::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance every layer and the optional trail with caller-supplied simulation time. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a> 第 <a class="el" href="MeshVfxAsset_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/stylize/<a class="el" href="MeshVfxAsset_8h_source.html">MeshVfxAsset.h</a></li>
+<li>src/modules/stylize/<a class="el" href="MeshVfxAsset_8cpp_source.html">MeshVfxAsset.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

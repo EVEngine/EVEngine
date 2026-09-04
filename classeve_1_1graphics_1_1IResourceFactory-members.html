@@ -1,0 +1,210 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">IResourceFactory</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::IResourceFactory 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#afe34b54084fecbe5eebf2e6f50d11ccb">bakeMeshMorph</a>(Mesh *mesh)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a0ecfd2fb281000bfc8e7cd0f4ca506e3">getMaxAnisotropy</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a3812ae22c02892eb1dff4ed5decdb62f">newCanvas</a>(int width, int height)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a887e434d0b4d9d72029e8da826ffa54f">newCubemap</a>(int faceSize, const uint8_t *rgbaFaces)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#afd67efcfb1b77017b4b10f2f32ef4f6e">newCubemap</a>(int faceSize, const uint8_t *rgbaFaces, const TextureCreateInfo &amp;info)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a6537ec293e87d4a3e33ad5319b84199c">newFont</a>(font::FontData *data, std::string charset)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a72cd0a743063451736462575fff527a7">newHairShaderFromSpv</a>(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ad5aa1d5cbb5d3c01235aa03122debbc0">newMeshCube</a>(float size)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a9070038431b83e6304b7e1d24949e50f">newMeshCylinder</a>(int slices, int stacks, bool caps)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a98f94ab97738af03d0de220f77657848">newMeshFromArrays</a>(const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#af5a29a007ac152798f2a091c9ff6732f">newMeshFromAssimp</a>(const ::aiMesh &amp;mesh)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#aff5302a7b59b7aa1f9f3ddf6baf4f369">newMeshFromAssimp</a>(const ::aiMesh &amp;mesh, const aiMatrix4x4 &amp;worldTransform)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a0292eb1ae8de3f1a2e81b61f142f974e">newMeshShader</a>(const std::string &amp;vertGlsl, const std::string &amp;fragGlsl)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#abdc1430176b5ff2fed83cbadf1437d27">newMeshShaderFromSpv</a>(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ab67d98661130ef04a1b9aa9bcaae00ab">newMeshShaderFromWgsl</a>(const std::string &amp;vertWgsl, const std::string &amp;fragWgsl)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a88b1e82bc12beea69205e4aa57ec2b90">newMeshSphere</a>(int slices, int stacks)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a085b6dd10968fe48949ede801549f781">newShader</a>(const std::string &amp;vertGlsl, const std::string &amp;fragGlsl)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a8fd984f68cb7652fbb805eaee76c6f50">newShaderFromSpv</a>(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a5a053b3c141f8dbf7170c4434cd693d3">newShaderFromSpvFile</a>(const std::string &amp;vertPath, const std::string &amp;fragPath)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#aaa0b6c0bd837d3eade1833dc59045121">newShaderFromWgsl</a>(const std::string &amp;vertWgsl, const std::string &amp;fragWgsl)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a7d3f7a0f592185fa38c8fdbda3892382">newTexture</a>(int width, int height, const uint8_t *rgba, bool repeatU=false, bool repeatV=false)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#acccd461d429dca2c591f885c29cc0a58">newTexture</a>(int width, int height, const uint8_t *rgba, const TextureCreateInfo &amp;info)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a13eccdb5cb04744f7e70c0b07be02bb9">newTexture</a>(image::ImageData *data)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#aef0070ca64d27095a7b40d0c4cd7eb43">newTexture</a>(image::ImageData *data, const TextureCreateInfo &amp;info)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ade27edda90dcebb8c821d96ef5c727d1">newTextureFromFile</a>(const std::string &amp;filename)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ac1ba78c5e5e1ccf5e188c5a2ffd767ab">newTextureFromFileRepeated</a>(const std::string &amp;filename, bool repeatU, bool repeatV)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ae22556294f4ccf7731807f85c227a57e">newTextureFromImageData</a>(image::ImageData *data, bool repeatU=false, bool repeatV=false)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a3de093c273f0fe33beed6532163d2dc2">newTextureFromImageData</a>(image::ImageData *data, const TextureCreateInfo &amp;info)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a819231cdb9258c0aad704f3b975a2782">newTextureWithSampler</a>(image::ImageData *data, bool repeatU, bool repeatV, bool generateMipmaps, float maxAnisotropy, const std::string &amp;filter, const std::string &amp;mipmap, float lodBias=0.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a77a43e6150b61416d5daf63c7b5adeab">releaseMesh</a>(Mesh *mesh)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#afbdadc9978622cef72895cc8e4f4c518">releaseShader</a>(Shader *shader)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#adbf75e5ba5f97271237354ea28dbe7f8">releaseTexture</a>(Texture *texture)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a86dc2defd091b04e02df33ab4c7d6803">reloadTextureFromFile</a>(const std::string &amp;filename)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a275ebc6f392ce1d917da8ca0c72a6229">setTextureSampler</a>(Texture *texture, const TextureSampler &amp;sampler)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#a0831158498daceb7d2b39052e6fd5e02">updateMeshVertices</a>(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html#ac1c1e4c1e2b5b51a91b825849fb13e0a">~IResourceFactory</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

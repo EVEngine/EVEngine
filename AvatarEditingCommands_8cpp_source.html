@@ -1,0 +1,371 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/avatar_editing/AvatarEditingCommands.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_834e291b662980101c13923f65cb6880.html">avatar_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AvatarEditingCommands.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AvatarEditingCommands_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="AvatarEditingCommands_8h.html">avatar_editing/AvatarEditingCommands.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AvatarTarget_8h.html">avatar_editing/AvatarTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProperty_8h.html">editing/EditingProperty.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1avatar__editing.html">    7</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1avatar__editing.html">eve::avatar_editing</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a>* field(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keywordtype">object</span> = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.<a class="code hl_function" href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">getIf</a>&lt;<a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">editing::Value::Object</a>&gt;();</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (!<span class="keywordtype">object</span>) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = <span class="keywordtype">object</span>-&gt;find(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> found == <span class="keywordtype">object</span>-&gt;end() ? nullptr : &amp;found-&gt;second;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">const</span> std::string* stringField(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a>* entry = field(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> entry ? entry-&gt;<a class="code hl_function" href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">getIf</a>&lt;std::string&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;T&gt;</a> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editing::RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a> selectionFor(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; item,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                                        <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a> selection;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    selection.<a class="code hl_variable" href="structeve_1_1editing_1_1SelectionSnapshot.html#ae4b0f97ee5353f18311d722aa4555f2d">channel</a> = <span class="stringliteral">&quot;avatar&quot;</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionItem.html">editing::SelectionItem</a>     row;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    row.domain = <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120da26e9054be7f40079575582b7ad3f7363">editing::SelectionDomain::Asset</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    row.target = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a>(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.targetId());</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    row.item   = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">editing::StableId</a>(item);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    row.<a class="code hl_variable" href="structeve_1_1ui_1_1WidgetDesc.html#a09296ade714faa1ac1832642f6645b44">type</a>   = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    selection.<a class="code hl_variable" href="structeve_1_1editing_1_1SelectionSnapshot.html#a870bab55af4d7419d3a85524ff853d10">items</a>.push_back(row);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    selection.<a class="code hl_variable" href="structeve_1_1editing_1_1SelectionSnapshot.html#ab7c1317efd3acf00aa4516165afafd6a">primary</a> = row;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> selection;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><a class="code hl_class" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html">AvatarDocumentTarget</a>* asAvatar(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">return</span> <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html">AvatarDocumentTarget</a>*<span class="keyword">&gt;</span>(&amp;<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;editing::CommandPlan&gt;</a> propertySet(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a>&amp;      <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1CommandRequest.html">editing::CommandRequest</a>&amp; request) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">auto</span>* <a class="code hl_variable" href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a> = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a>*<span class="keyword">&gt;</span>(</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.queryCapability(<a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">editing::CapabilityId</a>(<span class="stringliteral">&quot;eve.editor.target.avatar-properties&quot;</span>)));</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a>)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_variable" href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a> = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a>*<span class="keyword">&gt;</span>(</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.queryCapability(<a class="code hl_function" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editing::IPropertyProvider::editingCapabilityId</a>()));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* item = stringField(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;item&quot;</span>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> = stringField(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;type&quot;</span>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = stringField(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;path&quot;</span>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a>* <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> = field(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;value&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a> || !item || !<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> || !<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> || !<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">return</span> error&lt;editing::CommandPlan&gt;(editing::Status::Rejected, <span class="stringliteral">&quot;avatar.editing.property-payload&quot;</span>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                           <span class="stringliteral">&quot;Avatar property requires a property target, item, type, path and value&quot;</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">auto</span> operation = <a class="code hl_variable" href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a>-&gt;makeSet(selectionFor(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, *item, *<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>), <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a>(*<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), *<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                                         <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060ab51ca26c6c89cfc9bec338f7a0d3e0c8">editing::PropertySetMode::Absolute</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">if</span> (!operation.ok())</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">return</span> error&lt;editing::CommandPlan&gt;(operation.code(), <span class="stringliteral">&quot;avatar.editing.property-operation&quot;</span>,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                           <span class="stringliteral">&quot;Avatar target rejected the property value&quot;</span>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1CommandPlan.html">editing::CommandPlan</a> plan;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    plan.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandPlan.html#a5e27a94b85211ecfceb58061c4232316">operations</a>.push_back(std::move(operation.value()));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    plan.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandPlan.html#ab971990978a98cd3de788cf8dba4ead1">summary</a> = <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">editing::Value::Object</a>{{<span class="stringliteral">&quot;item&quot;</span>, *item}, {<span class="stringliteral">&quot;path&quot;</span>, *<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>}};</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;editing::CommandPlan&gt;(std::move(plan));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;editing::CommandPlan&gt;</a> layerCreate(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a>&amp;      <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1CommandRequest.html">editing::CommandRequest</a>&amp; request) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">auto</span>* avatar = asAvatar(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keywordtype">id</span> = stringField(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> = stringField(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;name&quot;</span>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* texture = stringField(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;texture&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">if</span> (!avatar || !<span class="keywordtype">id</span> || !<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> || !texture)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">return</span> error&lt;editing::CommandPlan&gt;(editing::Status::Rejected, <span class="stringliteral">&quot;avatar.editing.layer-payload&quot;</span>,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                           <span class="stringliteral">&quot;Avatar layer create requires a document target, id, name and texture&quot;</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_struct" href="structeve_1_1avatar__editing_1_1AvatarLayerValue.html">AvatarLayerValue</a> <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>.<a class="code hl_variable" href="structeve_1_1avatar__editing_1_1AvatarLayerValue.html#a0760b29ba6b25ff03ba84f107402810a">id</a>           = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a>(*<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>.name         = *<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>.textureAsset = *texture;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">auto</span> operation     = avatar-&gt;makeCreateLayer(<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (!operation.ok())</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">return</span> error&lt;editing::CommandPlan&gt;(operation.code(), <span class="stringliteral">&quot;avatar.editing.layer-operation&quot;</span>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                           <span class="stringliteral">&quot;Avatar target rejected the layer&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1CommandPlan.html">editing::CommandPlan</a> plan;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    plan.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandPlan.html#a5e27a94b85211ecfceb58061c4232316">operations</a>.push_back(std::move(operation.value()));</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    plan.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandPlan.html#ab971990978a98cd3de788cf8dba4ead1">summary</a> = <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">editing::Value::Object</a>{{<span class="stringliteral">&quot;id&quot;</span>, *<span class="keywordtype">id</span>}, {<span class="stringliteral">&quot;name&quot;</span>, *<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>}};</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;editing::CommandPlan&gt;(std::move(plan));</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;editing::CommandPlan&gt;</a> parameterCreate(<a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a>&amp;      <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                                                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1CommandRequest.html">editing::CommandRequest</a>&amp; request) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">auto</span>* avatar = asAvatar(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keywordtype">id</span> = stringField(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> = stringField(request.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">payload</a>, <span class="stringliteral">&quot;name&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">if</span> (!avatar || !<span class="keywordtype">id</span> || !<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> error&lt;editing::CommandPlan&gt;(editing::Status::Rejected, <span class="stringliteral">&quot;avatar.editing.parameter-payload&quot;</span>,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                                           <span class="stringliteral">&quot;Avatar parameter create requires a document target, id and name&quot;</span>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_struct" href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html">AvatarParameterValue</a> parameter;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    parameter.<a class="code hl_variable" href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html#a628af310bab647e1d72739a15b5bb581">id</a>   = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a>(*<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    parameter.<a class="code hl_variable" href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html#af6e5390e889f8db39d828482f31b35b7">name</a> = *<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">auto</span> operation = avatar-&gt;makeCreateParameter(parameter);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (!operation.ok())</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">return</span> error&lt;editing::CommandPlan&gt;(operation.code(), <span class="stringliteral">&quot;avatar.editing.parameter-operation&quot;</span>,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                                           <span class="stringliteral">&quot;Avatar target rejected the parameter&quot;</span>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1CommandPlan.html">editing::CommandPlan</a> plan;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    plan.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandPlan.html#a5e27a94b85211ecfceb58061c4232316">operations</a>.push_back(std::move(operation.value()));</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    plan.<a class="code hl_variable" href="structeve_1_1editing_1_1CommandPlan.html#ab971990978a98cd3de788cf8dba4ead1">summary</a> = <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">editing::Value::Object</a>{{<span class="stringliteral">&quot;id&quot;</span>, *<span class="keywordtype">id</span>}, {<span class="stringliteral">&quot;name&quot;</span>, *<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>}};</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;editing::CommandPlan&gt;(std::move(plan));</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> registerOne(<a class="code hl_class" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a>&amp; registry, <span class="keyword">const</span> <span class="keywordtype">char</span>* <span class="keywordtype">id</span>, <span class="keyword">const</span> <span class="keywordtype">char</span>* display,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                                  <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">editing::EditingCommandPlanner</a> planner) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditingCommandDescriptor.html">editing::EditingCommandDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.<a class="code hl_variable" href="structeve_1_1editing_1_1EditingCommandDescriptor.html#ad924f45a08869f30aa729b74157ed278">id</a>                = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#abab06456c15fc263bb2c585849371eea">editing::CommandId</a>(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.ownerModule       = <span class="stringliteral">&quot;avatar_editing&quot;</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.displayName       = display;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.category          = <span class="stringliteral">&quot;Avatar&quot;</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.automationAllowed = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">return</span> registry.<a class="code hl_function" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a65f0d15ca87a6458217c81455433d8a5">registerPlannedCommand</a>(std::move(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>), std::move(planner));</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="foldopen" id="foldopen00127" data-start="{" data-end="}">
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="namespaceeve_1_1avatar__editing.html#a89da4c5dc186f79ba8c652d8513b9114">  127</a></span><a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1avatar__editing.html#a89da4c5dc186f79ba8c652d8513b9114">registerEditingCommands</a>(<a class="code hl_class" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a>&amp; registry) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keyword">auto</span> registered = registerOne(registry, <span class="stringliteral">&quot;avatar.property.set.v1&quot;</span>, <span class="stringliteral">&quot;Set avatar property&quot;</span>, propertySet);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">if</span> (!registered.ok()) <span class="keywordflow">return</span> registered;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    registered = registerOne(registry, <span class="stringliteral">&quot;avatar.layer.create.v1&quot;</span>, <span class="stringliteral">&quot;Create avatar layer&quot;</span>, layerCreate);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">if</span> (!registered.ok()) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        registry.<a class="code hl_function" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#ac71def4c7cfd22e505036eb316589893">unregisterOwner</a>(<span class="stringliteral">&quot;avatar_editing&quot;</span>).ignore(<span class="stringliteral">&quot;avatar command registration rollback&quot;</span>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordflow">return</span> registered;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    registered = registerOne(registry, <span class="stringliteral">&quot;avatar.parameter.create.v1&quot;</span>, <span class="stringliteral">&quot;Create avatar parameter&quot;</span>, parameterCreate);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">if</span> (!registered.ok())</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        registry.<a class="code hl_function" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#ac71def4c7cfd22e505036eb316589893">unregisterOwner</a>(<span class="stringliteral">&quot;avatar_editing&quot;</span>).ignore(<span class="stringliteral">&quot;avatar command registration rollback&quot;</span>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordflow">return</span> registered;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}</div>
+</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>}  <span class="comment">// namespace eve::avatar_editing</span></div>
+</div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00021">ActionTimelineWidget.cpp:21</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aAvatarEditingCommands_8h_html"><div class="ttname"><a href="AvatarEditingCommands_8h.html">AvatarEditingCommands.h</a></div></div>
+<div class="ttc" id="aAvatarTarget_8h_html"><div class="ttname"><a href="AvatarTarget_8h.html">AvatarTarget.h</a></div></div>
+<div class="ttc" id="aEditingProperty_8h_html"><div class="ttname"><a href="EditingProperty_8h.html">EditingProperty.h</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aMapObjectContract_8cpp_html_a40e5a3359abf90a92f01ea7be31f0178"><div class="ttname"><a href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a></div><div class="ttdeci">std::map&lt; std::string, PropertyRule &gt; properties</div><div class="ttdef"><b>Definition</b> <a href="MapObjectContract_8cpp_source.html#l00077">MapObjectContract.cpp:77</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00146">Pathfinder.cpp:146</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar__editing_1_1AvatarDocumentTarget_html"><div class="ttname"><a href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html">eve::avatar_editing::AvatarDocumentTarget</a></div><div class="ttdoc">Revisioned image/Live2D/VRoid Avatar authoring asset.</div><div class="ttdef"><b>Definition</b> <a href="AvatarTarget_8h_source.html#l00074">AvatarTarget.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditingCommandRegistry_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditingCommandRegistry.html">eve::editing::IEditingCommandRegistry</a></div><div class="ttdoc">Lower-layer registration boundary implemented by an editor or runtime editing host.</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00030">EditingCommandRegistry.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditingCommandRegistry_html_a65f0d15ca87a6458217c81455433d8a5"><div class="ttname"><a href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a65f0d15ca87a6458217c81455433d8a5">eve::editing::IEditingCommandRegistry::registerPlannedCommand</a></div><div class="ttdeci">virtual Result&lt; void &gt; registerPlannedCommand(EditingCommandDescriptor descriptor, EditingCommandPlanner planner)=0</div><div class="ttdoc">Register or replace one domain-owned planned command.</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditingCommandRegistry_html_ac71def4c7cfd22e505036eb316589893"><div class="ttname"><a href="classeve_1_1editing_1_1IEditingCommandRegistry.html#ac71def4c7cfd22e505036eb316589893">eve::editing::IEditingCommandRegistry::unregisterOwner</a></div><div class="ttdeci">virtual Result&lt; std::size_t &gt; unregisterOwner(const std::string &amp;ownerModule)=0</div><div class="ttdoc">Remove every command registered by one domain module.</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IPropertyProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></div><div class="ttdoc">UI-independent property access for an immutable selection snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00117">EditingProperty.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IPropertyProvider_html_aa07e163a9dafdd187f5e74a2208192e5"><div class="ttname"><a href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">eve::editing::IPropertyProvider::editingCapabilityId</a></div><div class="ttdeci">static CapabilityId editingCapabilityId()</div><div class="ttdoc">Stable capability identity for generic property editing.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8h_source.html#l00121">EditingProperty.h:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00075">EditingIds.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00020">EditingValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_af38afcaa2d6048edb43ecc098158a3f2"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#af38afcaa2d6048edb43ecc098158a3f2">eve::editing::Value::getIf</a></div><div class="ttdeci">const T * getIf() const</div><div class="ttdoc">Return an immediately borrowed typed value.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00050">EditingValue.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1avatar__editing_html"><div class="ttname"><a href="namespaceeve_1_1avatar__editing.html">eve::avatar_editing</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarEditingCommands_8cpp_source.html#l00007">AvatarEditingCommands.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1avatar__editing_html_a89da4c5dc186f79ba8c652d8513b9114"><div class="ttname"><a href="namespaceeve_1_1avatar__editing.html#a89da4c5dc186f79ba8c652d8513b9114">eve::avatar_editing::registerEditingCommands</a></div><div class="ttdeci">editing::Result&lt; void &gt; registerEditingCommands(editing::IEditingCommandRegistry &amp;registry)</div><div class="ttdoc">Register Avatar-owned property and structure commands with a generic editing host.</div><div class="ttdef"><b>Definition</b> <a href="AvatarEditingCommands_8cpp_source.html#l00127">AvatarEditingCommands.cpp:127</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2b0f525a0b733bb08ccf8109b114213b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a></div><div class="ttdeci">StrongId&lt; TargetIdTag &gt; TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00054">EditingIds.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2d916283d8333abd61ff13f34344f5d6"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">eve::editing::ObjectId</a></div><div class="ttdeci">StrongId&lt; ObjectIdTag &gt; ObjectId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00062">EditingIds.h:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a3b5cef655231a09cdf9a90d51fd9345e"><div class="ttname"><a href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">eve::editing::EditingCommandPlanner</a></div><div class="ttdeci">std::function&lt; Result&lt; CommandPlan &gt;(IEditableTarget &amp;, const CommandRequest &amp;)&gt; EditingCommandPlanner</div><div class="ttdoc">Side-effect-free planner invoked with the resolved target.</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00021">EditingCommandRegistry.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a60962f18b15404d7942fbae13fd833be"><div class="ttname"><a href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">eve::editing::StableId</a></div><div class="ttdeci">StrongId&lt; StableIdTag &gt; StableId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00061">EditingIds.h:61</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a642f65bf61b271dc4b599f4069b93060ab51ca26c6c89cfc9bec338f7a0d3e0c8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060ab51ca26c6c89cfc9bec338f7a0d3e0c8">eve::editing::PropertySetMode::Absolute</a></div><div class="ttdeci">@ Absolute</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_abab06456c15fc263bb2c585849371eea"><div class="ttname"><a href="namespaceeve_1_1editing.html#abab06456c15fc263bb2c585849371eea">eve::editing::CommandId</a></div><div class="ttdeci">StrongId&lt; CommandIdTag &gt; CommandId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00055">EditingIds.h:55</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_acad0563ee185b57a7f139690f3b2120da26e9054be7f40079575582b7ad3f7363"><div class="ttname"><a href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120da26e9054be7f40079575582b7ad3f7363">eve::editing::SelectionDomain::Asset</a></div><div class="ttdeci">@ Asset</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar__editing_1_1AvatarLayerValue_html"><div class="ttname"><a href="structeve_1_1avatar__editing_1_1AvatarLayerValue.html">eve::avatar_editing::AvatarLayerValue</a></div><div class="ttdoc">Stable image layer in an Avatar asset.</div><div class="ttdef"><b>Definition</b> <a href="AvatarTarget_8h_source.html#l00052">AvatarTarget.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar__editing_1_1AvatarLayerValue_html_a0760b29ba6b25ff03ba84f107402810a"><div class="ttname"><a href="structeve_1_1avatar__editing_1_1AvatarLayerValue.html#a0760b29ba6b25ff03ba84f107402810a">eve::avatar_editing::AvatarLayerValue::id</a></div><div class="ttdeci">ObjectId id</div><div class="ttdef"><b>Definition</b> <a href="AvatarTarget_8h_source.html#l00053">AvatarTarget.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar__editing_1_1AvatarParameterValue_html"><div class="ttname"><a href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html">eve::avatar_editing::AvatarParameterValue</a></div><div class="ttdoc">Reflected Avatar parameter and its initial value.</div><div class="ttdef"><b>Definition</b> <a href="AvatarTarget_8h_source.html#l00061">AvatarTarget.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar__editing_1_1AvatarParameterValue_html_a628af310bab647e1d72739a15b5bb581"><div class="ttname"><a href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html#a628af310bab647e1d72739a15b5bb581">eve::avatar_editing::AvatarParameterValue::id</a></div><div class="ttdeci">ObjectId id</div><div class="ttdef"><b>Definition</b> <a href="AvatarTarget_8h_source.html#l00062">AvatarTarget.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1avatar__editing_1_1AvatarParameterValue_html_af6e5390e889f8db39d828482f31b35b7"><div class="ttname"><a href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html#af6e5390e889f8db39d828482f31b35b7">eve::avatar_editing::AvatarParameterValue::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="AvatarTarget_8h_source.html#l00063">AvatarTarget.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1CommandPlan_html"><div class="ttname"><a href="structeve_1_1editing_1_1CommandPlan.html">eve::editing::CommandPlan</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00053">EditingProtocol.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1CommandPlan_html_a5e27a94b85211ecfceb58061c4232316"><div class="ttname"><a href="structeve_1_1editing_1_1CommandPlan.html#a5e27a94b85211ecfceb58061c4232316">eve::editing::CommandPlan::operations</a></div><div class="ttdeci">std::vector&lt; DomainOperation &gt; operations</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00066">EditingProtocol.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1CommandPlan_html_ab971990978a98cd3de788cf8dba4ead1"><div class="ttname"><a href="structeve_1_1editing_1_1CommandPlan.html#ab971990978a98cd3de788cf8dba4ead1">eve::editing::CommandPlan::summary</a></div><div class="ttdeci">Value summary</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00067">EditingProtocol.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1CommandRequest_html"><div class="ttname"><a href="structeve_1_1editing_1_1CommandRequest.html">eve::editing::CommandRequest</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00045">EditingProtocol.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1CommandRequest_html_ae652d34cd953d420b1a770f799f360bb"><div class="ttname"><a href="structeve_1_1editing_1_1CommandRequest.html#ae652d34cd953d420b1a770f799f360bb">eve::editing::CommandRequest::payload</a></div><div class="ttdeci">Value payload</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00047">EditingProtocol.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditingCommandDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditingCommandDescriptor.html">eve::editing::EditingCommandDescriptor</a></div><div class="ttdoc">Domain-owned metadata for one planned editing command.</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00012">EditingCommandRegistry.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditingCommandDescriptor_html_ad924f45a08869f30aa729b74157ed278"><div class="ttname"><a href="structeve_1_1editing_1_1EditingCommandDescriptor.html#ad924f45a08869f30aa729b74157ed278">eve::editing::EditingCommandDescriptor::id</a></div><div class="ttdeci">CommandId id</div><div class="ttdef"><b>Definition</b> <a href="EditingCommandRegistry_8h_source.html#l00013">EditingCommandRegistry.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionItem_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionItem.html">eve::editing::SelectionItem</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00009">EditingSelection.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::editing::SelectionSnapshot</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00016">EditingSelection.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html_a870bab55af4d7419d3a85524ff853d10"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html#a870bab55af4d7419d3a85524ff853d10">eve::editing::SelectionSnapshot::items</a></div><div class="ttdeci">std::vector&lt; SelectionItem &gt; items</div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00018">EditingSelection.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html_ab7c1317efd3acf00aa4516165afafd6a"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html#ab7c1317efd3acf00aa4516165afafd6a">eve::editing::SelectionSnapshot::primary</a></div><div class="ttdeci">std::optional&lt; SelectionItem &gt; primary</div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00019">EditingSelection.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html_ae4b0f97ee5353f18311d722aa4555f2d"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html#ae4b0f97ee5353f18311d722aa4555f2d">eve::editing::SelectionSnapshot::channel</a></div><div class="ttdeci">std::string channel</div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00017">EditingSelection.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WidgetDesc_html_a09296ade714faa1ac1832642f6645b44"><div class="ttname"><a href="structeve_1_1ui_1_1WidgetDesc.html#a09296ade714faa1ac1832642f6645b44">eve::ui::WidgetDesc::type</a></div><div class="ttdeci">NodeType type</div><div class="ttdef"><b>Definition</b> <a href="Widget_8h_source.html#l00015">Widget.h:15</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

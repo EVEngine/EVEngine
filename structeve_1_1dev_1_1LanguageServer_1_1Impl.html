@@ -1,0 +1,804 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::LanguageServer::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1LanguageServer.html">LanguageServer</a></li><li class="navelem"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1dev_1_1LanguageServer_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::LanguageServer::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa17eddd4b47e335b70d853152881d088" id="r_aa17eddd4b47e335b70d853152881d088"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#aa17eddd4b47e335b70d853152881d088">Impl</a> (std::string <a class="el" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>)</td></tr>
+<tr class="separator:aa17eddd4b47e335b70d853152881d088"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34c3950c27cef702d31b56211bf685c3" id="r_a34c3950c27cef702d31b56211bf685c3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a34c3950c27cef702d31b56211bf685c3">canonicalUri</a> (const std::string &amp;uri) const</td></tr>
+<tr class="separator:a34c3950c27cef702d31b56211bf685c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73ae52174b0666be91d85fa05d3e6105" id="r_a73ae52174b0666be91d85fa05d3e6105"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a73ae52174b0666be91d85fa05d3e6105">identity</a> (std::string_view uri) const</td></tr>
+<tr class="separator:a73ae52174b0666be91d85fa05d3e6105"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48c2db721dc77933189f050b09e8ac1c" id="r_a48c2db721dc77933189f050b09e8ac1c"><td class="memItemLeft" align="right" valign="top">const std::string *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a48c2db721dc77933189f050b09e8ac1c">sourceFor</a> (std::string_view uri) const</td></tr>
+<tr class="separator:a48c2db721dc77933189f050b09e8ac1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59091e9245d60843e10cb58358675b8f" id="r_a59091e9245d60843e10cb58358675b8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a59091e9245d60843e10cb58358675b8f">update</a> (const std::string &amp;uri, std::string <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="separator:a59091e9245d60843e10cb58358675b8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6768e06925876950fe9a5a1c28f11d9" id="r_ae6768e06925876950fe9a5a1c28f11d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#ae6768e06925876950fe9a5a1c28f11d9">close</a> (const std::string &amp;uri)</td></tr>
+<tr class="separator:ae6768e06925876950fe9a5a1c28f11d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50dc4d04a2a2b0953b0490aecb32b67c" id="r_a50dc4d04a2a2b0953b0490aecb32b67c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptDiagnostic.html">script::ScriptDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a50dc4d04a2a2b0953b0490aecb32b67c">diagnostics</a> (std::string_view uri) const</td></tr>
+<tr class="separator:a50dc4d04a2a2b0953b0490aecb32b67c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad47c8a641a91800f64b0ba281f48623f" id="r_ad47c8a641a91800f64b0ba281f48623f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptCompletion.html">script::ScriptCompletion</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#ad47c8a641a91800f64b0ba281f48623f">complete</a> (std::string_view uri, <a class="el" href="structeve_1_1dev_1_1lsp_1_1Position.html">lsp::Position</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) const</td></tr>
+<tr class="separator:ad47c8a641a91800f64b0ba281f48623f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3c6fa907607fa338c21bf9287b7c5fb" id="r_ac3c6fa907607fa338c21bf9287b7c5fb"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1script_1_1ScriptHover.html">script::ScriptHover</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#ac3c6fa907607fa338c21bf9287b7c5fb">hover</a> (std::string_view uri, <a class="el" href="structeve_1_1dev_1_1lsp_1_1Position.html">lsp::Position</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) const</td></tr>
+<tr class="separator:ac3c6fa907607fa338c21bf9287b7c5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69b442364a5067ece28ec76387e687ee" id="r_a69b442364a5067ece28ec76387e687ee"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1dev_1_1LanguageSignatureHelp.html">LanguageSignatureHelp</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a69b442364a5067ece28ec76387e687ee">signatureHelp</a> (std::string_view uri, <a class="el" href="structeve_1_1dev_1_1lsp_1_1Position.html">lsp::Position</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) const</td></tr>
+<tr class="separator:a69b442364a5067ece28ec76387e687ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ac960cab4274d3d8b26fbeaafe15989" id="r_a1ac960cab4274d3d8b26fbeaafe15989"><td class="memItemLeft" align="right" valign="top">std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a1ac960cab4274d3d8b26fbeaafe15989">pathForCanonical</a> (std::string_view canonical) const</td></tr>
+<tr class="separator:a1ac960cab4274d3d8b26fbeaafe15989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c3d63235b395663d8cc74d970e7b8b3" id="r_a3c3d63235b395663d8cc74d970e7b8b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a3c3d63235b395663d8cc74d970e7b8b3">indexProject</a> ()</td></tr>
+<tr class="separator:a3c3d63235b395663d8cc74d970e7b8b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad759e6721ec54686dd4118dd042414c7" id="r_ad759e6721ec54686dd4118dd042414c7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#ad759e6721ec54686dd4118dd042414c7">root_</a></td></tr>
+<tr class="separator:ad759e6721ec54686dd4118dd042414c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5844962ec4034c2e2ed2ce030b80421c" id="r_a5844962ec4034c2e2ed2ce030b80421c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Runtime.html">eve::Runtime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a5844962ec4034c2e2ed2ce030b80421c">runtime_</a></td></tr>
+<tr class="separator:a5844962ec4034c2e2ed2ce030b80421c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78e2344c5c750c1cc0142f172d8ea7b7" id="r_a78e2344c5c750c1cc0142f172d8ea7b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">lsp::WorkspaceIndex</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a78e2344c5c750c1cc0142f172d8ea7b7">index_</a></td></tr>
+<tr class="separator:a78e2344c5c750c1cc0142f172d8ea7b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2418c113698ebec348bc36ce2e8566f2" id="r_a2418c113698ebec348bc36ce2e8566f2"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a2418c113698ebec348bc36ce2e8566f2">documents_</a></td></tr>
+<tr class="separator:a2418c113698ebec348bc36ce2e8566f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08900b460e1279faf7e341fd7ceafa9c" id="r_a08900b460e1279faf7e341fd7ceafa9c"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a08900b460e1279faf7e341fd7ceafa9c">canonical_</a></td></tr>
+<tr class="separator:a08900b460e1279faf7e341fd7ceafa9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2f79d69df08d04fc9697dbac6778b3d" id="r_af2f79d69df08d04fc9697dbac6778b3d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#af2f79d69df08d04fc9697dbac6778b3d">knownModules_</a></td></tr>
+<tr class="separator:af2f79d69df08d04fc9697dbac6778b3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadb50935fd68efb6f3a86e745da85f9b" id="r_aadb50935fd68efb6f3a86e745da85f9b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#aadb50935fd68efb6f3a86e745da85f9b">activeModules_</a></td></tr>
+<tr class="separator:aadb50935fd68efb6f3a86e745da85f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a128e88740927676909fdc720c731a897" id="r_a128e88740927676909fdc720c731a897"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#a128e88740927676909fdc720c731a897">slotClass_</a></td></tr>
+<tr class="separator:a128e88740927676909fdc720c731a897"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac09064f38d1f64d8c7b6e1584319b1bc" id="r_ac09064f38d1f64d8c7b6e1584319b1bc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1LanguageServer_1_1Impl.html#ac09064f38d1f64d8c7b6e1584319b1bc">shutdown_</a> = false</td></tr>
+<tr class="separator:ac09064f38d1f64d8c7b6e1584319b1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00608">608</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa17eddd4b47e335b70d853152881d088" name="aa17eddd4b47e335b70d853152881d088"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa17eddd4b47e335b70d853152881d088">&#9670;&#160;</a></span>Impl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::LanguageServer::Impl::Impl </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>root</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">609</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00865">activeModules_</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00839">indexProject()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00864">knownModules_</a>, <a class="el" href="namespaceeve.html#a736a683bf3975b310f884f8a257b67b5">eve::module_list_content</a>, <a class="el" href="ScriptModule_8cpp_source.html#l00321">eve::script::ScriptModuleResolver::registerProvider()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00859">root_</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00860">runtime_</a>, <a class="el" href="Runtime_8cpp_source.html#l00464">eve::Runtime::scriptModules()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00866">slotClass_</a> , 以及 <a class="el" href="CaveMesh_8cpp_source.html#l00123">split</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a34c3950c27cef702d31b56211bf685c3" name="a34c3950c27cef702d31b56211bf685c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34c3950c27cef702d31b56211bf685c3">&#9670;&#160;</a></span>canonicalUri()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::LanguageServer::Impl::canonicalUri </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>uri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00629">629</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00859">root_</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00640">identity()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00651">update()</a>.</p>
+
+</div>
+</div>
+<a id="ae6768e06925876950fe9a5a1c28f11d9" name="ae6768e06925876950fe9a5a1c28f11d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6768e06925876950fe9a5a1c28f11d9">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::LanguageServer::Impl::close </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>uri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00662">662</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00863">canonical_</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00862">documents_</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00875">eve::dev::LanguageServer::fileUriFromPath()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00861">index_</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00832">pathForCanonical()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00290">eve::dev::lsp::WorkspaceIndex::remove()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00204">eve::dev::lsp::WorkspaceIndex::update()</a>.</p>
+
+</div>
+</div>
+<a id="ad47c8a641a91800f64b0ba281f48623f" name="ad47c8a641a91800f64b0ba281f48623f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad47c8a641a91800f64b0ba281f48623f">&#9670;&#160;</a></span>complete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptCompletion.html">script::ScriptCompletion</a> &gt; eve::dev::LanguageServer::Impl::complete </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1dev_1_1lsp_1_1Position.html">lsp::Position</a>&#160;</td>
+          <td class="paramname"><em>position</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">693</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00865">activeModules_</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00452">eve::script::ScriptCompiler::bindings()</a>, <a class="el" href="ECS_8cpp_source.html#l00021">cls</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00461">eve::script::ScriptCompiler::completions()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00279">eve::script::BindingContractRegistry::hasScriptClass()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00640">identity()</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00425">eve::script::ScriptCompiler::metadata()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00860">runtime_</a>, <a class="el" href="Runtime_8cpp_source.html#l00468">eve::Runtime::scriptCompiler()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00866">slotClass_</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00286">eve::script::BindingContractRegistry::snapshot()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00646">sourceFor()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+</div>
+</div>
+<a id="a50dc4d04a2a2b0953b0490aecb32b67c" name="a50dc4d04a2a2b0953b0490aecb32b67c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50dc4d04a2a2b0953b0490aecb32b67c">&#9670;&#160;</a></span>diagnostics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1script_1_1ScriptDiagnostic.html">script::ScriptDiagnostic</a> &gt; eve::dev::LanguageServer::Impl::diagnostics </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00678">678</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00865">activeModules_</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00523">eve::script::ScriptCompiler::diagnostics()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00862">documents_</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00640">identity()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00864">knownModules_</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00860">runtime_</a>, <a class="el" href="Runtime_8cpp_source.html#l00468">eve::Runtime::scriptCompiler()</a> , 以及 <a class="el" href="ScriptCompiler_8cpp_source.html#l00590">eve::script::ScriptCompiler::validateProjectConfig()</a>.</p>
+
+</div>
+</div>
+<a id="ac3c6fa907607fa338c21bf9287b7c5fb" name="ac3c6fa907607fa338c21bf9287b7c5fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3c6fa907607fa338c21bf9287b7c5fb">&#9670;&#160;</a></span>hover()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1script_1_1ScriptHover.html">script::ScriptHover</a> &gt; eve::dev::LanguageServer::Impl::hover </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1dev_1_1lsp_1_1Position.html">lsp::Position</a>&#160;</td>
+          <td class="paramname"><em>position</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">781</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00459">eve::dev::lsp::WorkspaceIndex::definition()</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00501">eve::script::ScriptCompiler::hover()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">hover()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00640">identity()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00861">index_</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00860">runtime_</a>, <a class="el" href="Runtime_8cpp_source.html#l00468">eve::Runtime::scriptCompiler()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00866">slotClass_</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00646">sourceFor()</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00110">eve::script::ScriptHover::symbol</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">hover()</a>.</p>
+
+</div>
+</div>
+<a id="a73ae52174b0666be91d85fa05d3e6105" name="a73ae52174b0666be91d85fa05d3e6105"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73ae52174b0666be91d85fa05d3e6105">&#9670;&#160;</a></span>identity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::LanguageServer::Impl::identity </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00640">640</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00863">canonical_</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00629">canonicalUri()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">complete()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00678">diagnostics()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">hover()</a>.</p>
+
+</div>
+</div>
+<a id="a3c3d63235b395663d8cc74d970e7b8b3" name="a3c3d63235b395663d8cc74d970e7b8b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c3d63235b395663d8cc74d970e7b8b3">&#9670;&#160;</a></span>indexProject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::LanguageServer::Impl::indexProject </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00839">839</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00875">eve::dev::LanguageServer::fileUriFromPath()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00861">index_</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00859">root_</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00204">eve::dev::lsp::WorkspaceIndex::update()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">Impl()</a>.</p>
+
+</div>
+</div>
+<a id="a1ac960cab4274d3d8b26fbeaafe15989" name="a1ac960cab4274d3d8b26fbeaafe15989"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ac960cab4274d3d8b26fbeaafe15989">&#9670;&#160;</a></span>pathForCanonical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::filesystem::path eve::dev::LanguageServer::Impl::pathForCanonical </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonical</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00832">832</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00859">root_</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00662">close()</a>.</p>
+
+</div>
+</div>
+<a id="a69b442364a5067ece28ec76387e687ee" name="a69b442364a5067ece28ec76387e687ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69b442364a5067ece28ec76387e687ee">&#9670;&#160;</a></span>signatureHelp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1dev_1_1LanguageSignatureHelp.html">LanguageSignatureHelp</a> &gt; eve::dev::LanguageServer::Impl::signatureHelp </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1dev_1_1lsp_1_1Position.html">lsp::Position</a>&#160;</td>
+          <td class="paramname"><em>position</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00804">804</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageServer_8hpp_source.html#l00043">eve::dev::LanguageSignatureHelp::activeParameter</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00452">eve::script::ScriptCompiler::bindings()</a>, <a class="el" href="LanguageServer_8hpp_source.html#l00041">eve::dev::LanguageSignatureHelp::documentation</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00139">eve::script::BindingContract::documentationId</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00258">eve::script::BindingContractRegistry::findMethod()</a>, <a class="el" href="LanguageServer_8hpp_source.html#l00040">eve::dev::LanguageSignatureHelp::label</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00132">eve::script::BindingContract::method</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00133">eve::script::BindingContract::parameters</a>, <a class="el" href="LanguageServer_8hpp_source.html#l00042">eve::dev::LanguageSignatureHelp::parameters</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00134">eve::script::BindingContract::returnType</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00860">runtime_</a>, <a class="el" href="ScriptCompiler_8h_source.html#l00131">eve::script::BindingContract::scriptClass</a>, <a class="el" href="Runtime_8cpp_source.html#l00468">eve::Runtime::scriptCompiler()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00646">sourceFor()</a>.</p>
+
+</div>
+</div>
+<a id="a48c2db721dc77933189f050b09e8ac1c" name="a48c2db721dc77933189f050b09e8ac1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48c2db721dc77933189f050b09e8ac1c">&#9670;&#160;</a></span>sourceFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string * eve::dev::LanguageServer::Impl::sourceFor </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>uri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00646">646</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00862">documents_</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">complete()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">hover()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00804">signatureHelp()</a>.</p>
+
+</div>
+</div>
+<a id="a59091e9245d60843e10cb58358675b8f" name="a59091e9245d60843e10cb58358675b8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59091e9245d60843e10cb58358675b8f">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::LanguageServer::Impl::update </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>uri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00651">651</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00863">canonical_</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00629">canonicalUri()</a>, <a class="el" href="Runtime_8cpp_source.html#l00483">eve::Runtime::compileSource()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00862">documents_</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00861">index_</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00860">runtime_</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00204">eve::dev::lsp::WorkspaceIndex::update()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="aadb50935fd68efb6f3a86e745da85f9b" name="aadb50935fd68efb6f3a86e745da85f9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadb50935fd68efb6f3a86e745da85f9b">&#9670;&#160;</a></span>activeModules_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::dev::LanguageServer::Impl::activeModules_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00865">865</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">complete()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00678">diagnostics()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">Impl()</a>.</p>
+
+</div>
+</div>
+<a id="a08900b460e1279faf7e341fd7ceafa9c" name="a08900b460e1279faf7e341fd7ceafa9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08900b460e1279faf7e341fd7ceafa9c">&#9670;&#160;</a></span>canonical_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, std::string&gt; eve::dev::LanguageServer::Impl::canonical_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00863">863</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00662">close()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00640">identity()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00651">update()</a>.</p>
+
+</div>
+</div>
+<a id="a2418c113698ebec348bc36ce2e8566f2" name="a2418c113698ebec348bc36ce2e8566f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2418c113698ebec348bc36ce2e8566f2">&#9670;&#160;</a></span>documents_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, std::string&gt; eve::dev::LanguageServer::Impl::documents_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00862">862</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00662">close()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00678">diagnostics()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00646">sourceFor()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00651">update()</a>.</p>
+
+</div>
+</div>
+<a id="a78e2344c5c750c1cc0142f172d8ea7b7" name="a78e2344c5c750c1cc0142f172d8ea7b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78e2344c5c750c1cc0142f172d8ea7b7">&#9670;&#160;</a></span>index_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">lsp::WorkspaceIndex</a> eve::dev::LanguageServer::Impl::index_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00861">861</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00662">close()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">hover()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00839">indexProject()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00651">update()</a>.</p>
+
+</div>
+</div>
+<a id="af2f79d69df08d04fc9697dbac6778b3d" name="af2f79d69df08d04fc9697dbac6778b3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2f79d69df08d04fc9697dbac6778b3d">&#9670;&#160;</a></span>knownModules_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::dev::LanguageServer::Impl::knownModules_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00864">864</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00678">diagnostics()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">Impl()</a>.</p>
+
+</div>
+</div>
+<a id="ad759e6721ec54686dd4118dd042414c7" name="ad759e6721ec54686dd4118dd042414c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad759e6721ec54686dd4118dd042414c7">&#9670;&#160;</a></span>root_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::LanguageServer::Impl::root_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00859">859</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00629">canonicalUri()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">Impl()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00839">indexProject()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00832">pathForCanonical()</a>.</p>
+
+</div>
+</div>
+<a id="a5844962ec4034c2e2ed2ce030b80421c" name="a5844962ec4034c2e2ed2ce030b80421c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5844962ec4034c2e2ed2ce030b80421c">&#9670;&#160;</a></span>runtime_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Runtime.html">eve::Runtime</a> eve::dev::LanguageServer::Impl::runtime_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00860">860</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">complete()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00678">diagnostics()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">hover()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">Impl()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00804">signatureHelp()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00651">update()</a>.</p>
+
+</div>
+</div>
+<a id="ac09064f38d1f64d8c7b6e1584319b1bc" name="ac09064f38d1f64d8c7b6e1584319b1bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac09064f38d1f64d8c7b6e1584319b1bc">&#9670;&#160;</a></span>shutdown_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::LanguageServer::Impl::shutdown_ = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00867">867</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a128e88740927676909fdc720c731a897" name="a128e88740927676909fdc720c731a897"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a128e88740927676909fdc720c731a897">&#9670;&#160;</a></span>slotClass_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, std::string&gt; eve::dev::LanguageServer::Impl::slotClass_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a> 第 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00866">866</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00693">complete()</a>, <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00781">hover()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">Impl()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="devtools_2LanguageServer_8cpp_source.html">LanguageServer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

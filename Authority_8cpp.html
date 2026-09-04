@@ -1,0 +1,225 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/authority/Authority.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_cc1678e0ab5aec175a0edf649467910f.html">authority</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">Authority.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Authority_8h_source.html">authority/Authority.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Json_8h_source.html">common/Json.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SquirrelBinding_8h_source.html">common/SquirrelBinding.h</a>&quot;</code><br />
+<code>#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;iomanip&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div>
+<p><a href="Authority_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1authority" id="r_namespaceeve_1_1authority"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1authority.html">eve::authority</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a334f380ed157caca5e26410a8c2f500e" id="r_a334f380ed157caca5e26410a8c2f500e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1authority.html#a334f380ed157caca5e26410a8c2f500e">eve::authority::effectName</a> (<a class="el" href="namespaceeve_1_1authority.html#a85f202f55be8cfcf160f67c05cb9b15a">RuleEffect</a> effect)</td></tr>
+<tr class="memdesc:a334f380ed157caca5e26410a8c2f500e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable lowercase name of a rule effect.  <br /></td></tr>
+<tr class="separator:a334f380ed157caca5e26410a8c2f500e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a949df6d26a30ad4a7c88537d7272d2c6" id="r_a949df6d26a30ad4a7c88537d7272d2c6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1authority.html#a949df6d26a30ad4a7c88537d7272d2c6">eve::authority::eventKindName</a> (<a class="el" href="namespaceeve_1_1authority.html#a7bf8186434a5123980d68167196baa1a">EventKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="memdesc:a949df6d26a30ad4a7c88537d7272d2c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable lowercase name of an event kind.  <br /></td></tr>
+<tr class="separator:a949df6d26a30ad4a7c88537d7272d2c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f2a5fa71943011445986b0eb1f2cbb3" id="r_a0f2a5fa71943011445986b0eb1f2cbb3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1authority.html#a0f2a5fa71943011445986b0eb1f2cbb3">eve::authority::Module_IMPL</a> (<a class="el" href="classeve_1_1authority_1_1Authority.html">Authority</a>, new <a class="el" href="classeve_1_1authority_1_1Authority.html">Authority</a>())</td></tr>
+<tr class="separator:a0f2a5fa71943011445986b0eb1f2cbb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a7e214a50596aaa2c6748b6e36dda4f63" name="a7e214a50596aaa2c6748b6e36dda4f63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e214a50596aaa2c6748b6e36dda4f63">&#9670;&#160;</a></span>reference</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AuthorityStoreHandleRef reference</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01409">eve::procgen::Procgen::abortSystem()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00073">eve::editor::ProjectSettingsTarget::applyDomainOperation()</a>, <a class="el" href="ImportCommon_8h_source.html#l00047">eve::asset_import::detail::assetRef()</a>, <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00130">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::audioSource()</a>, <a class="el" href="Procgen_8cpp_source.html#l01370">eve::procgen::Procgen::commitSystem()</a>, <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00317">eve::vehicle::VehicleDefinitionRuntime::create()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00390">eve::weapon::WeaponDefinitionRuntime::create()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00197">eve::rpg::SkillDefinitionRuntime::create()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00477">eve::climbing::ClimbingAnchorGraphInstance::edgesFrom()</a>, <a class="el" href="ClimbingRegistry_8cpp_source.html#l00059">eve::climbing::Climbing::isAnchorGraphStale()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00227">eve::statepatch::Store::isBatchStale()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00680">eve::statepatch::StatePatch::isBatchStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01956">eve::procgen::Procgen::isCloudFieldStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01972">eve::procgen::Procgen::isCloudShadowStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l02238">eve::procgen::Procgen::isHeightmapStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l02116">eve::procgen::Procgen::isMeshBuildStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l00398">eve::procgen::Procgen::isOutputStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l02037">eve::procgen::Procgen::isPbrMaterialStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l00444">eve::procgen::Procgen::isPointSetStale()</a>, <a class="el" href="Authority_8cpp_source.html#l00425">eve::authority::Authority::isStale()</a>, <a class="el" href="ClimbingRegistry_8cpp_source.html#l00030">eve::climbing::Climbing::isStale()</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00596">eve::orders::Orders::isStale()</a>, <a class="el" href="Decision_8cpp_source.html#l00437">eve::decision::Decision::isStale()</a>, <a class="el" href="Effects_8cpp_source.html#l00102">eve::effects::Effects::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01302">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01364">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l00426">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01821">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01306">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01875">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l00374">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01301">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01298">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01303">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l01259">eve::procgen::Procgen::isStale()</a>, <a class="el" href="Sensing_8cpp_source.html#l00188">eve::sensing::Sensing::isStale()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00702">eve::statepatch::StatePatch::isStale()</a>, <a class="el" href="Tactics_8cpp_source.html#l00724">eve::tactics::Tactics::isStale()</a>, <a class="el" href="Production_8cpp_source.html#l00725">eve::production::Production::isStale()</a>, <a class="el" href="Procgen_8cpp_source.html#l02219">eve::procgen::Procgen::isTerrainSamplerStale()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00187">eve::editor::ProjectSettingsTarget::loadSnapshot()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00138">eve::editor::ProjectSettingsTarget::makeSet()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00364">eve::weapon::parseWeaponDefinition()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00350">eve::asset_import::prepareGltfImport()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00063">eve::asset_import::prepareImageImport()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00043">eve::ui::projectWorldAnchor()</a>, <a class="el" href="BiomeRuntime_8cpp_source.html#l00019">eve::biome_editing::BiomeDocumentRuntime::publish()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00116">eve::editor::ProjectSettingsTarget::read()</a>, <a class="el" href="Procgen_8cpp_source.html#l01294">eve::procgen::Procgen::release()</a>, <a class="el" href="Procgen_8cpp_source.html#l01296">eve::procgen::Procgen::release()</a>, <a class="el" href="Procgen_8cpp_source.html#l01293">eve::procgen::Procgen::release()</a>, <a class="el" href="Procgen_8cpp_source.html#l01290">eve::procgen::Procgen::release()</a>, <a class="el" href="Procgen_8cpp_source.html#l01295">eve::procgen::Procgen::release()</a>, <a class="el" href="Procgen_8cpp_source.html#l01257">eve::procgen::Procgen::release()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00225">eve::statepatch::Store::releaseBatch()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00668">eve::statepatch::StatePatch::releaseBatch()</a>, <a class="el" href="Procgen_8cpp_source.html#l01952">eve::procgen::Procgen::releaseCloudField()</a>, <a class="el" href="Procgen_8cpp_source.html#l01968">eve::procgen::Procgen::releaseCloudShadow()</a>, <a class="el" href="Procgen_8cpp_source.html#l02234">eve::procgen::Procgen::releaseHeightmap()</a>, <a class="el" href="Procgen_8cpp_source.html#l02112">eve::procgen::Procgen::releaseMeshBuild()</a>, <a class="el" href="Procgen_8cpp_source.html#l02033">eve::procgen::Procgen::releasePbrMaterial()</a>, <a class="el" href="Procgen_8cpp_source.html#l00440">eve::procgen::Procgen::releasePointSet()</a>, <a class="el" href="Procgen_8cpp_source.html#l02215">eve::procgen::Procgen::releaseTerrainSampler()</a>, <a class="el" href="StoryEvent_8cpp_source.html#l00064">eve::rpg::StoryEventCatalogue::replaceFromJsonStrict()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00623">eve::climbing::ClimbingAnchorGraphInstance::reserve()</a>, <a class="el" href="EditorPhysicsAsset_8cpp_source.html#l00059">eve::editor::AssetDatabasePhysicsColliderResolver::resolve()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00221">eve::statepatch::Store::resolveBatch()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00660">eve::statepatch::StatePatch::resolveBatch()</a>, <a class="el" href="Procgen_8cpp_source.html#l01278">eve::procgen::Procgen::resolveBiomeRules()</a>, <a class="el" href="Procgen_8cpp_source.html#l01948">eve::procgen::Procgen::resolveCloudField()</a>, <a class="el" href="Procgen_8cpp_source.html#l01964">eve::procgen::Procgen::resolveCloudShadow()</a>, <a class="el" href="Procgen_8cpp_source.html#l02230">eve::procgen::Procgen::resolveHeightmap()</a>, <a class="el" href="Procgen_8cpp_source.html#l01286">eve::procgen::Procgen::resolveLSystem()</a>, <a class="el" href="Procgen_8cpp_source.html#l02108">eve::procgen::Procgen::resolveMeshBuild()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00412">eve::climbing::ClimbingAnchorGraphInstance::resolveNode()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00422">eve::climbing::ClimbingAnchorGraphInstance::resolveNodeKinematics()</a>, <a class="el" href="Procgen_8cpp_source.html#l02029">eve::procgen::Procgen::resolvePbrMaterial()</a>, <a class="el" href="Procgen_8cpp_source.html#l01274">eve::procgen::Procgen::resolvePointGraph()</a>, <a class="el" href="Procgen_8cpp_source.html#l00436">eve::procgen::Procgen::resolvePointSet()</a>, <a class="el" href="Procgen_8cpp_source.html#l01269">eve::procgen::Procgen::resolveRuntimeGeneration()</a>, <a class="el" href="Procgen_8cpp_source.html#l01282">eve::procgen::Procgen::resolveShapeGrammar()</a>, <a class="el" href="Procgen_8cpp_source.html#l01253">eve::procgen::Procgen::resolveSpatialData()</a>, <a class="el" href="Procgen_8cpp_source.html#l02210">eve::procgen::Procgen::resolveTerrainSampler()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00086">eve::definitions_editing::DefinitionDocument::setReferences()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00160">eve::definitions_editing::DefinitionDocument::snapshotValue()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00175">eve::editor::ProjectSettingsTarget::snapshotValue()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00124">eve::definitions_editing::DefinitionDocument::validate()</a> , 以及 <a class="el" href="Sensing_8cpp_source.html#l00196">eve::sensing::ScriptSensingWorld::~ScriptSensingWorld()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

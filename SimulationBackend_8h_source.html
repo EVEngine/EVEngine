@@ -1,0 +1,412 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/SimulationBackend.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SimulationBackend.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SimulationBackend_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;ostream&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>b2World;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">   31</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">Cpu</a>,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38">Gpu</a>,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba9134493b11bb1d7801d8a1e1fe31ef8a">MockAccelerator</a>,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">   38</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">SimulationBackendDomain</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a4d76529bd9ee0e72a21141dd19475aac">World2D</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a1bae019c5bafde4144268902e62dbf5e">Cloth2D</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a29ae03aad9b5970bf4ecabc20b8529a1">SurfaceFluid</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">   47</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a90875be77cd9edc14c16d939b34cfbbb">BitExact</a>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">ToleranceBounded</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a98c30e0498572049c798ca03ec44b44b">ExplicitlyNondeterministic</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#a2913d37c7743eab656eb4cb53efc71e9">   57</a></span>[[nodiscard]] <span class="keyword">constexpr</span> std::string_view <a class="code hl_function" href="namespaceeve_1_1physics.html#a2913d37c7743eab656eb4cb53efc71e9">simulationBackendKindName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">SimulationBackendKind::Cpu</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;cpu&quot;</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38">SimulationBackendKind::Gpu</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;gpu&quot;</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba9134493b11bb1d7801d8a1e1fe31ef8a">SimulationBackendKind::MockAccelerator</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;mock_accelerator&quot;</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#af69bfc7c156c5fc220e5cdc074c2b746">   67</a></span>[[nodiscard]] <span class="keyword">constexpr</span> std::string_view <a class="code hl_function" href="namespaceeve_1_1physics.html#af69bfc7c156c5fc220e5cdc074c2b746">simulationDeterminismName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> determinism) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">switch</span> (determinism) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a90875be77cd9edc14c16d939b34cfbbb">SimulationDeterminism::BitExact</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;bit_exact&quot;</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">SimulationDeterminism::ToleranceBounded</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;tolerance_bounded&quot;</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a98c30e0498572049c798ca03ec44b44b">SimulationDeterminism::ExplicitlyNondeterministic</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;explicitly_nondeterministic&quot;</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#a147ce914e496902ed5af36bde2bfc28f">   77</a></span><span class="keyword">inline</span> std::ostream&amp; <a class="code hl_function" href="namespaceeve_1_1physics.html#a147ce914e496902ed5af36bde2bfc28f">operator&lt;&lt;</a>(std::ostream&amp; stream, <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> stream &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1physics.html#a2913d37c7743eab656eb4cb53efc71e9">simulationBackendKindName</a>(<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#ab17a0745282b122938f2cd9de8cf88c1">   82</a></span><span class="keyword">inline</span> std::ostream&amp; <a class="code hl_function" href="namespaceeve_1_1physics.html#a147ce914e496902ed5af36bde2bfc28f">operator&lt;&lt;</a>(std::ostream&amp; stream, <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> determinism) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> stream &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1physics.html#af69bfc7c156c5fc220e5cdc074c2b746">simulationDeterminismName</a>(determinism);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#aae90b9d63f8076e9ec80145c36fcb8d8">   92</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a> = <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="};">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationSettings.html">  101</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationSettings.html#a814089563e8bd5f423b463b14dd76209">  103</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationSettings.html#a814089563e8bd5f423b463b14dd76209">velocityIterations</a> = 8;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationSettings.html#a1b62719e3a52da2dcd6df4e198b1f7e8">  105</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationSettings.html#a1b62719e3a52da2dcd6df4e198b1f7e8">positionIterations</a> = 3;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationSettings.html#a373b9cb673b7871b66995f920fc2dc2e">  107</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationSettings.html#a373b9cb673b7871b66995f920fc2dc2e">subStepCount</a> = 4;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>};</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="};">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationObservation.html">  117</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationObservation.html#aef8bfb5b7c40807e15064b3492c650a6">  119</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationObservation.html#aef8bfb5b7c40807e15064b3492c650a6">stepCount</a> = 0;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationObservation.html#aeba704d6d4a408b993dbff95d50a63f4">  121</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationObservation.html#aeba704d6d4a408b993dbff95d50a63f4">lastTick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationObservation.html#a7dc1c48646808cf0a5bc8432f957891d">  123</a></span>    <a class="code hl_class" href="classeve_1_1Duration.html">eve::Duration</a> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationObservation.html#a7dc1c48646808cf0a5bc8432f957891d">simulatedDuration</a> = <a class="code hl_function" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">eve::Duration::zero</a>();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationObservation.html#abb860fb8b32af553c58705f065196c33">  125</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationObservation.html#abb860fb8b32af553c58705f065196c33">simulatedSeconds</a> = 0.0;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationObservation.html#a9cd51d74e1fb45e1601a4970c8b86c19">  127</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationObservation.html#a9cd51d74e1fb45e1601a4970c8b86c19">lastDeltaSeconds</a> = 0.f;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>};</div>
+</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="foldopen" id="foldopen00139" data-start="{" data-end="};">
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1ISimulationBackend.html">  139</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1ISimulationBackend.html">ISimulationBackend</a> {</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">  142</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    [[nodiscard(<span class="stringliteral">&quot;check the step outcome or explicitly ignore it&quot;</span>)]]</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1ISimulationBackend.html#a29e5cb31452eaadf312522b2ddaafa0b">  151</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1physics_1_1ISimulationBackend.html#a29e5cb31452eaadf312522b2ddaafa0b">step</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a>&amp; settings) = 0;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    [[nodiscard(<span class="stringliteral">&quot;inspect simulation progress or explicitly ignore it&quot;</span>)]]</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1ISimulationBackend.html#a11a8e09cf239e3899592c779d48a5032">  158</a></span>    <span class="keyword">virtual</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> <a class="code hl_function" href="classeve_1_1physics_1_1ISimulationBackend.html#a11a8e09cf239e3899592c779d48a5032">observation</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1ISimulationBackend.html#a82a8e64a28853aa0c51da564a5b136ae">  164</a></span>    [[nodiscard]] virtual <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="code hl_function" href="classeve_1_1physics_1_1ISimulationBackend.html#a82a8e64a28853aa0c51da564a5b136ae">kind</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1ISimulationBackend.html#ac16a11fbede61795119d03f323c3809c">  170</a></span>    [[nodiscard]] virtual <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> <a class="code hl_function" href="classeve_1_1physics_1_1ISimulationBackend.html#ac16a11fbede61795119d03f323c3809c">determinism</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    [[nodiscard(&quot;check backend <a class="code hl_function" href="classeve_1_1physics_1_1ISimulationBackend.html#a11a8e09cf239e3899592c779d48a5032">observation</a> restore&quot;)]]</div>
+<div class="foldopen" id="foldopen00181" data-start="{" data-end="}">
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1ISimulationBackend.html#a0afa52c7c90a1575bed612e94332f41e">  181</a></span>    virtual <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1physics_1_1ISimulationBackend.html#a0afa52c7c90a1575bed612e94332f41e">restoreObservation</a>(const <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a>&amp; <span class="comment">/*observation*/</span>) {</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a>, <span class="stringliteral">&quot;This simulation backend does not support observation restore&quot;</span>,</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="stringliteral">&quot;physics.simulationBackend.restoreObservation&quot;</span>));</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    }</div>
+</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>};</div>
+</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="foldopen" id="foldopen00196" data-start="{" data-end="};">
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html">  196</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html">IAcceleratorBackendProvider</a> {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#ae33ba93d57ad37833ca065a244168ad2">  198</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#ae33ba93d57ad37833ca065a244168ad2">capabilityName</a> = <span class="stringliteral">&quot;eve.physics.IAcceleratorBackendProvider&quot;</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#a4426fdee22482acab5df87d386df3f41">  201</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#a4426fdee22482acab5df87d386df3f41">~IAcceleratorBackendProvider</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#aec9c44b1e5d1ce566bec8b17c7f214f0">  208</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#aec9c44b1e5d1ce566bec8b17c7f214f0">supports</a>(<a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">SimulationBackendDomain</a> domain) <span class="keyword">const</span> <span class="keyword">noexcept</span> = 0;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    [[nodiscard(<span class="stringliteral">&quot;inspect provider creation or explicitly fall back&quot;</span>)]]</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#a71540f78bb98166a31b1f33acf78a97b">  217</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;ISimulationBackend&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#a71540f78bb98166a31b1f33acf78a97b">create</a>(<a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">SimulationBackendDomain</a> domain, <span class="keywordtype">void</span>* state) = 0;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>};</div>
+</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="foldopen" id="foldopen00226" data-start="{" data-end="};">
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationBackendSelection.html">  226</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1SimulationBackendSelection.html">SimulationBackendSelection</a> {</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationBackendSelection.html#adfa5fe76c73fa4460881d8f0285200ea">  228</a></span>    std::unique_ptr&lt;ISimulationBackend&gt; <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationBackendSelection.html#adfa5fe76c73fa4460881d8f0285200ea">backend</a>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationBackendSelection.html#a251ade9c81b89fe55cacdeeb7f22e736">  230</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationBackendSelection.html#a251ade9c81b89fe55cacdeeb7f22e736">requestedKind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">SimulationBackendKind::Cpu</a>;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationBackendSelection.html#a582f701dabd4fc888a5a9a94f204884d">  232</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationBackendSelection.html#a582f701dabd4fc888a5a9a94f204884d">actualKind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">SimulationBackendKind::Cpu</a>;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1SimulationBackendSelection.html#a17b5e956ed6e8fa23703e2dac5ca9726">  234</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1physics_1_1SimulationBackendSelection.html#a17b5e956ed6e8fa23703e2dac5ca9726">usedFallback</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>};</div>
+</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#a1d8dc68b18c894df92a1492ff51671d9">  238</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1physics.html#a1d8dc68b18c894df92a1492ff51671d9">SimulationStepCallback</a> = void (*)(<span class="keywordtype">void</span>* context, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>,</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>                                        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a>&amp; settings) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span><span class="keyword">namespace </span><a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a> {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>[[nodiscard(<span class="stringliteral">&quot;check simulation-step validation&quot;</span>)]]</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> validateSimulationStep(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a>&amp; settings,</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                                         <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a>&amp; observation);</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>[[nodiscard(<span class="stringliteral">&quot;check observation advancement&quot;</span>)]]</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;SimulationObservation&gt;</a> advanceSimulationObservation(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a>&amp; current,</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                                                                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp;   <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>[[nodiscard(<span class="stringliteral">&quot;check observation validation&quot;</span>)]]</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> validateSimulationObservation(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a>&amp; observation, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>[[nodiscard(<span class="stringliteral">&quot;retain the backend until its borrowed world is destroyed&quot;</span>)]]</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>std::unique_ptr&lt;ISimulationBackend&gt; makeBox2DSimulationBackend(b2World* <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>[[nodiscard(<span class="stringliteral">&quot;retain the backend while its callback state is live&quot;</span>)]]</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>std::unique_ptr&lt;ISimulationBackend&gt; makeCallbackSimulationBackend(<span class="keywordtype">void</span>* context, <a class="code hl_typedef" href="namespaceeve_1_1physics.html#a1d8dc68b18c894df92a1492ff51671d9">SimulationStepCallback</a> callback,</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                                                                  <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>,</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                                                                  <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> determinism);</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>[[nodiscard(<span class="stringliteral">&quot;retain the mock backend for contract execution&quot;</span>)]]</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>std::unique_ptr&lt;ISimulationBackend&gt; makeMockAcceleratorBackend();</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>[[nodiscard(<span class="stringliteral">&quot;inspect the selected backend and fallback diagnostics&quot;</span>)]]</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;SimulationBackendSelection&gt;</a> selectSimulationBackend(<a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">SimulationBackendDomain</a>             domain,</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>                                                                std::unique_ptr&lt;ISimulationBackend&gt; cpuBackend,</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>                                                                <span class="keywordtype">void</span>* <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, <span class="keywordtype">bool</span> preferAccelerator = <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span> </div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>}  <span class="comment">// namespace detail</span></div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ac58d00c955de8df4981a75b37f466578"><div class="ttname"><a href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a></div><div class="ttdeci">int detail</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00111">PrototypeKit.cpp:111</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html"><div class="ttname"><a href="classeve_1_1Duration.html">eve::Duration</a></div><div class="ttdoc">Signed, fixed-resolution simulation duration in nanoseconds.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00041">Time.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html_a9de3e023afa73e0361442ee7a7097bde"><div class="ttname"><a href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">eve::Duration::zero</a></div><div class="ttdeci">static constexpr Duration zero() noexcept</div><div class="ttdoc">Return zero duration.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00058">Time.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></div><div class="ttdoc">Interactive 3D cloth — Verlet particles + distance constraints. Meter space, +Y up,...</div><div class="ttdef"><b>Definition</b> <a href="Cloth3D_8h_source.html#l00028">Cloth3D.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1IAcceleratorBackendProvider_html"><div class="ttname"><a href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html">eve::physics::IAcceleratorBackendProvider</a></div><div class="ttdoc">Optional provider that creates an accelerator backend for domain state.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00196">SimulationBackend.h:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1IAcceleratorBackendProvider_html_a4426fdee22482acab5df87d386df3f41"><div class="ttname"><a href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#a4426fdee22482acab5df87d386df3f41">eve::physics::IAcceleratorBackendProvider::~IAcceleratorBackendProvider</a></div><div class="ttdeci">virtual ~IAcceleratorBackendProvider()=default</div><div class="ttdoc">Releases the provider; it does not own the domain state.</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1IAcceleratorBackendProvider_html_a71540f78bb98166a31b1f33acf78a97b"><div class="ttname"><a href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#a71540f78bb98166a31b1f33acf78a97b">eve::physics::IAcceleratorBackendProvider::create</a></div><div class="ttdeci">virtual eve::Result&lt; std::unique_ptr&lt; ISimulationBackend &gt; &gt; create(SimulationBackendDomain domain, void *state)=0</div><div class="ttdoc">Creates an accelerator backend for a borrowed domain state.</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1IAcceleratorBackendProvider_html_ae33ba93d57ad37833ca065a244168ad2"><div class="ttname"><a href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#ae33ba93d57ad37833ca065a244168ad2">eve::physics::IAcceleratorBackendProvider::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00198">SimulationBackend.h:198</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1IAcceleratorBackendProvider_html_aec9c44b1e5d1ce566bec8b17c7f214f0"><div class="ttname"><a href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#aec9c44b1e5d1ce566bec8b17c7f214f0">eve::physics::IAcceleratorBackendProvider::supports</a></div><div class="ttdeci">virtual bool supports(SimulationBackendDomain domain) const noexcept=0</div><div class="ttdoc">Reports whether this provider implements a domain.</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></div><div class="ttdoc">Minimal observable contract for physics simulation providers.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00139">SimulationBackend.h:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html_a0afa52c7c90a1575bed612e94332f41e"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html#a0afa52c7c90a1575bed612e94332f41e">eve::physics::ISimulationBackend::restoreObservation</a></div><div class="ttdeci">virtual eve::Result&lt; void &gt; restoreObservation(const SimulationObservation &amp;)</div><div class="ttdoc">Restores progress metadata after the owner restores its state.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00181">SimulationBackend.h:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html_a11a8e09cf239e3899592c779d48a5032"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html#a11a8e09cf239e3899592c779d48a5032">eve::physics::ISimulationBackend::observation</a></div><div class="ttdeci">virtual SimulationObservation observation() const noexcept=0</div><div class="ttdoc">Returns completed-step observables by value.</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html_a247d718f8968b22c8b1ee121d2790f7e"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">eve::physics::ISimulationBackend::~ISimulationBackend</a></div><div class="ttdeci">virtual ~ISimulationBackend()=default</div><div class="ttdoc">Releases the backend; borrowed domain state is not destroyed.</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html_a29e5cb31452eaadf312522b2ddaafa0b"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html#a29e5cb31452eaadf312522b2ddaafa0b">eve::physics::ISimulationBackend::step</a></div><div class="ttdeci">virtual eve::Result&lt; void &gt; step(const eve::SimulationStep &amp;step, const SimulationSettings &amp;settings)=0</div><div class="ttdoc">Advances the borrowed solver state by one checked fixed step.</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html_a82a8e64a28853aa0c51da564a5b136ae"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html#a82a8e64a28853aa0c51da564a5b136ae">eve::physics::ISimulationBackend::kind</a></div><div class="ttdeci">virtual SimulationBackendKind kind() const noexcept=0</div><div class="ttdoc">Identifies the provider family.</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html_ac16a11fbede61795119d03f323c3809c"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html#ac16a11fbede61795119d03f323c3809c">eve::physics::ISimulationBackend::determinism</a></div><div class="ttdeci">virtual SimulationDeterminism determinism() const noexcept=0</div><div class="ttdoc">Returns the provider's replay/determinism guarantee.</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00050">World3D.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00035">Climbing.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a147ce914e496902ed5af36bde2bfc28f"><div class="ttname"><a href="namespaceeve_1_1physics.html#a147ce914e496902ed5af36bde2bfc28f">eve::physics::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, SimulationBackendKind kind)</div><div class="ttdoc">Writes a backend kind for diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00077">SimulationBackend.h:77</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a1d8dc68b18c894df92a1492ff51671d9"><div class="ttname"><a href="namespaceeve_1_1physics.html#a1d8dc68b18c894df92a1492ff51671d9">eve::physics::SimulationStepCallback</a></div><div class="ttdeci">void(*)(void *context, const eve::SimulationStep &amp;step, const SimulationSettings &amp;settings) noexcept SimulationStepCallback</div><div class="ttdoc">Callback used by a domain-owned CPU or test backend adapter.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00238">SimulationBackend.h:239</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a2913d37c7743eab656eb4cb53efc71e9"><div class="ttname"><a href="namespaceeve_1_1physics.html#a2913d37c7743eab656eb4cb53efc71e9">eve::physics::simulationBackendKindName</a></div><div class="ttdeci">constexpr std::string_view simulationBackendKindName(SimulationBackendKind kind) noexcept</div><div class="ttdoc">Returns the stable backend-kind spelling.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00057">SimulationBackend.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fb"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">eve::physics::SimulationBackendKind</a></div><div class="ttdeci">SimulationBackendKind</div><div class="ttdoc">Kind of implementation that owns a simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00031">SimulationBackend.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38">eve::physics::SimulationBackendKind::Gpu</a></div><div class="ttdeci">@ Gpu</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">eve::physics::SimulationBackendKind::Cpu</a></div><div class="ttdeci">@ Cpu</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fba9134493b11bb1d7801d8a1e1fe31ef8a"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba9134493b11bb1d7801d8a1e1fe31ef8a">eve::physics::SimulationBackendKind::MockAccelerator</a></div><div class="ttdeci">@ MockAccelerator</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a7d8538622ecace62d228f842ec9c31f9"><div class="ttname"><a href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">eve::physics::SimulationBackendDomain</a></div><div class="ttdeci">SimulationBackendDomain</div><div class="ttdoc">Domain state consumed by an accelerator provider.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00038">SimulationBackend.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a7d8538622ecace62d228f842ec9c31f9a1bae019c5bafde4144268902e62dbf5e"><div class="ttname"><a href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a1bae019c5bafde4144268902e62dbf5e">eve::physics::SimulationBackendDomain::Cloth2D</a></div><div class="ttdeci">@ Cloth2D</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a7d8538622ecace62d228f842ec9c31f9a29ae03aad9b5970bf4ecabc20b8529a1"><div class="ttname"><a href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a29ae03aad9b5970bf4ecabc20b8529a1">eve::physics::SimulationBackendDomain::SurfaceFluid</a></div><div class="ttdeci">@ SurfaceFluid</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a7d8538622ecace62d228f842ec9c31f9a4d76529bd9ee0e72a21141dd19475aac"><div class="ttname"><a href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a4d76529bd9ee0e72a21141dd19475aac">eve::physics::SimulationBackendDomain::World2D</a></div><div class="ttdeci">@ World2D</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_aa67e2557397fd06af07a4a5fd74f8d14"><div class="ttname"><a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">eve::physics::SimulationDeterminism</a></div><div class="ttdeci">SimulationDeterminism</div><div class="ttdoc">Determinism guarantee made by a simulation backend.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00047">SimulationBackend.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059"><div class="ttname"><a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">eve::physics::SimulationDeterminism::ToleranceBounded</a></div><div class="ttdeci">@ ToleranceBounded</div><div class="ttdoc">Results are equivalent within a documented numeric tolerance.</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_aa67e2557397fd06af07a4a5fd74f8d14a90875be77cd9edc14c16d939b34cfbbb"><div class="ttname"><a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a90875be77cd9edc14c16d939b34cfbbb">eve::physics::SimulationDeterminism::BitExact</a></div><div class="ttdeci">@ BitExact</div><div class="ttdoc">Same inputs produce identical bits under the declared runtime.</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_aa67e2557397fd06af07a4a5fd74f8d14a98c30e0498572049c798ca03ec44b44b"><div class="ttname"><a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a98c30e0498572049c798ca03ec44b44b">eve::physics::SimulationDeterminism::ExplicitlyNondeterministic</a></div><div class="ttdeci">@ ExplicitlyNondeterministic</div><div class="ttdoc">Results may vary and are not suitable for replay equality.</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_af69bfc7c156c5fc220e5cdc074c2b746"><div class="ttname"><a href="namespaceeve_1_1physics.html#af69bfc7c156c5fc220e5cdc074c2b746">eve::physics::simulationDeterminismName</a></div><div class="ttdeci">constexpr std::string_view simulationDeterminismName(SimulationDeterminism determinism) noexcept</div><div class="ttdoc">Returns the stable determinism-contract spelling.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00067">SimulationBackend.h:67</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationBackendSelection_html"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationBackendSelection.html">eve::physics::SimulationBackendSelection</a></div><div class="ttdoc">Result of choosing an optional accelerator or CPU alternate path.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00226">SimulationBackend.h:226</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationBackendSelection_html_a17b5e956ed6e8fa23703e2dac5ca9726"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationBackendSelection.html#a17b5e956ed6e8fa23703e2dac5ca9726">eve::physics::SimulationBackendSelection::usedFallback</a></div><div class="ttdeci">bool usedFallback</div><div class="ttdoc">Whether CPU was selected after an accelerator request.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00234">SimulationBackend.h:234</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationBackendSelection_html_a251ade9c81b89fe55cacdeeb7f22e736"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationBackendSelection.html#a251ade9c81b89fe55cacdeeb7f22e736">eve::physics::SimulationBackendSelection::requestedKind</a></div><div class="ttdeci">SimulationBackendKind requestedKind</div><div class="ttdoc">Provider family requested by the owner.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00230">SimulationBackend.h:230</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationBackendSelection_html_a582f701dabd4fc888a5a9a94f204884d"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationBackendSelection.html#a582f701dabd4fc888a5a9a94f204884d">eve::physics::SimulationBackendSelection::actualKind</a></div><div class="ttdeci">SimulationBackendKind actualKind</div><div class="ttdoc">Provider family actually selected.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00232">SimulationBackend.h:232</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationBackendSelection_html_adfa5fe76c73fa4460881d8f0285200ea"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationBackendSelection.html#adfa5fe76c73fa4460881d8f0285200ea">eve::physics::SimulationBackendSelection::backend</a></div><div class="ttdeci">std::unique_ptr&lt; ISimulationBackend &gt; backend</div><div class="ttdoc">Owning selected backend; it borrows the supplied domain state.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00228">SimulationBackend.h:228</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationObservation_html"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationObservation.html">eve::physics::SimulationObservation</a></div><div class="ttdoc">Observable backend progress shared by CPU and accelerator providers.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00117">SimulationBackend.h:117</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationObservation_html_a7dc1c48646808cf0a5bc8432f957891d"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationObservation.html#a7dc1c48646808cf0a5bc8432f957891d">eve::physics::SimulationObservation::simulatedDuration</a></div><div class="ttdeci">eve::Duration simulatedDuration</div><div class="ttdoc">Accumulated logical simulation time, never wall-clock time.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00123">SimulationBackend.h:123</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationObservation_html_a9cd51d74e1fb45e1601a4970c8b86c19"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationObservation.html#a9cd51d74e1fb45e1601a4970c8b86c19">eve::physics::SimulationObservation::lastDeltaSeconds</a></div><div class="ttdeci">float lastDeltaSeconds</div><div class="ttdoc">Duration consumed by the most recently completed step.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00127">SimulationBackend.h:127</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationObservation_html_abb860fb8b32af553c58705f065196c33"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationObservation.html#abb860fb8b32af553c58705f065196c33">eve::physics::SimulationObservation::simulatedSeconds</a></div><div class="ttdeci">double simulatedSeconds</div><div class="ttdoc">Accumulated logical simulation time in seconds.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00125">SimulationBackend.h:125</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationObservation_html_aeba704d6d4a408b993dbff95d50a63f4"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationObservation.html#aeba704d6d4a408b993dbff95d50a63f4">eve::physics::SimulationObservation::lastTick</a></div><div class="ttdeci">eve::SimulationTick lastTick</div><div class="ttdoc">Tick of the most recently completed step.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00121">SimulationBackend.h:121</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationObservation_html_aef8bfb5b7c40807e15064b3492c650a6"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationObservation.html#aef8bfb5b7c40807e15064b3492c650a6">eve::physics::SimulationObservation::stepCount</a></div><div class="ttdeci">std::uint64_t stepCount</div><div class="ttdoc">Number of completed steps since backend creation.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00119">SimulationBackend.h:119</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationSettings_html"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationSettings.html">eve::physics::SimulationSettings</a></div><div class="ttdoc">Validated solver policy for one simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00101">SimulationBackend.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationSettings_html_a1b62719e3a52da2dcd6df4e198b1f7e8"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationSettings.html#a1b62719e3a52da2dcd6df4e198b1f7e8">eve::physics::SimulationSettings::positionIterations</a></div><div class="ttdeci">int positionIterations</div><div class="ttdoc">Positive rigid-body position iteration count.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00105">SimulationBackend.h:105</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationSettings_html_a373b9cb673b7871b66995f920fc2dc2e"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationSettings.html#a373b9cb673b7871b66995f920fc2dc2e">eve::physics::SimulationSettings::subStepCount</a></div><div class="ttdeci">int subStepCount</div><div class="ttdoc">Positive specialized-solver substep count.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00107">SimulationBackend.h:107</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationSettings_html_a814089563e8bd5f423b463b14dd76209"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationSettings.html#a814089563e8bd5f423b463b14dd76209">eve::physics::SimulationSettings::velocityIterations</a></div><div class="ttdeci">int velocityIterations</div><div class="ttdoc">Positive rigid-body velocity iteration count.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00103">SimulationBackend.h:103</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

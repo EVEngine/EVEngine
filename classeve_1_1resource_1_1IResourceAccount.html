@@ -1,0 +1,484 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::resource::IResourceAccount类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1resource.html">resource</a></li><li class="navelem"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">IResourceAccount</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1resource_1_1IResourceAccount-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::resource::IResourceAccount类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Provider-neutral resource account contract.  
+ <a href="classeve_1_1resource_1_1IResourceAccount.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::resource::IResourceAccount 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1resource_1_1IResourceAccount.png" usemap="#eve::resource::IResourceAccount_map" alt=""/>
+  <map id="eve::resource::IResourceAccount_map" name="eve::resource::IResourceAccount_map">
+<area href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html" title="Restricts one AttributeSetResourceAccount to Mana or Stamina." alt="eve::attributes::AttributeResourceAccountAdapter" shape="rect" coords="0,56,289,80"/>
+<area href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html" title="Adapts integral AttributeSet base values to IResourceAccount." alt="eve::attributes::AttributeSetResourceAccount" shape="rect" coords="299,56,588,80"/>
+<area href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html" title="Adapts one caller-owned EconomyLedger to IResourceAccount." alt="eve::economy::EconomyLedgerResourceAccount" shape="rect" coords="598,56,887,80"/>
+<area href="classeve_1_1inventory_1_1InventoryResourceAccount.html" title="Adapts one Bag&#39;s item quantities to the common resource protocol." alt="eve::inventory::InventoryResourceAccount" shape="rect" coords="897,56,1186,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a72a98cafbcad86b0f10076c9a93a829f" id="r_a72a98cafbcad86b0f10076c9a93a829f"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#a72a98cafbcad86b0f10076c9a93a829f">~IResourceAccount</a> ()=default</td></tr>
+<tr class="separator:a72a98cafbcad86b0f10076c9a93a829f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad05e62c0c67c2d5d6cc89e1a34d310c4" id="r_ad05e62c0c67c2d5d6cc89e1a34d310c4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Affordability.html">Affordability</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#ad05e62c0c67c2d5d6cc89e1a34d310c4">canAfford</a> (const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;<a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) const =0</td></tr>
+<tr class="memdesc:ad05e62c0c67c2d5d6cc89e1a34d310c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query whether a cost can be paid from currently available funds.  <br /></td></tr>
+<tr class="separator:ad05e62c0c67c2d5d6cc89e1a34d310c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7980ac1f9f73552817b59cdbdb931fd4" id="r_a7980ac1f9f73552817b59cdbdb931fd4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Reservation.html">Reservation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#a7980ac1f9f73552817b59cdbdb931fd4">reserve</a> (const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;<a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>)=0</td></tr>
+<tr class="memdesc:a7980ac1f9f73552817b59cdbdb931fd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserve all items of a cost without changing visible balances.  <br /></td></tr>
+<tr class="separator:a7980ac1f9f73552817b59cdbdb931fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7cf0c293c1caf0efa82d6ed959690e0" id="r_ac7cf0c293c1caf0efa82d6ed959690e0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">Receipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#ac7cf0c293c1caf0efa82d6ed959690e0">debit</a> (const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;<a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>)=0</td></tr>
+<tr class="memdesc:ac7cf0c293c1caf0efa82d6ed959690e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically debit all items immediately.  <br /></td></tr>
+<tr class="separator:ac7cf0c293c1caf0efa82d6ed959690e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e224d43b9d9a240f4d27e20296c4085" id="r_a1e224d43b9d9a240f4d27e20296c4085"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">Receipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#a1e224d43b9d9a240f4d27e20296c4085">credit</a> (const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;<a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>)=0</td></tr>
+<tr class="memdesc:a1e224d43b9d9a240f4d27e20296c4085"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically credit all items immediately.  <br /></td></tr>
+<tr class="separator:a1e224d43b9d9a240f4d27e20296c4085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50027bdbae7f26a3a6e97d7d1ea45be8" id="r_a50027bdbae7f26a3a6e97d7d1ea45be8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">Receipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#a50027bdbae7f26a3a6e97d7d1ea45be8">commit</a> (const <a class="el" href="structeve_1_1resource_1_1Reservation.html">Reservation</a> &amp;reservation)=0</td></tr>
+<tr class="memdesc:a50027bdbae7f26a3a6e97d7d1ea45be8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit one active reservation as an atomic debit.  <br /></td></tr>
+<tr class="separator:a50027bdbae7f26a3a6e97d7d1ea45be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3099c0d5a5c081c400eeb9b476b032d" id="r_af3099c0d5a5c081c400eeb9b476b032d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html#af3099c0d5a5c081c400eeb9b476b032d">rollback</a> (const <a class="el" href="structeve_1_1resource_1_1Reservation.html">Reservation</a> &amp;reservation)=0</td></tr>
+<tr class="memdesc:af3099c0d5a5c081c400eeb9b476b032d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release one active reservation without changing balances.  <br /></td></tr>
+<tr class="separator:af3099c0d5a5c081c400eeb9b476b032d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Provider-neutral resource account contract. </p>
+<p>Balances are authoritative in the implementation. Reservations reduce available balance without changing the observable balance; commit applies a debit and rollback only releases the reservation. Every multi-resource operation must preflight all entries and leave the provider unchanged on failure. Implementations are synchronous and must document any stronger thread-affinity rule; the protocol never retains callbacks or borrowed arguments after a call returns. </p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a> 第 <a class="el" href="ResourceAccount_8h_source.html#l00308">308</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a72a98cafbcad86b0f10076c9a93a829f" name="a72a98cafbcad86b0f10076c9a93a829f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72a98cafbcad86b0f10076c9a93a829f">&#9670;&#160;</a></span>~IResourceAccount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::resource::IResourceAccount::~IResourceAccount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad05e62c0c67c2d5d6cc89e1a34d310c4" name="ad05e62c0c67c2d5d6cc89e1a34d310c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad05e62c0c67c2d5d6cc89e1a34d310c4">&#9670;&#160;</a></span>canAfford()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Affordability.html">Affordability</a> &gt; eve::resource::IResourceAccount::canAfford </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>cost</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query whether a cost can be paid from currently available funds. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cost</td><td>Valid canonical cost borrowed for the call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Structured affordability, or a failed <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> for invalid input/provider failure. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html#a0bb0d974a2429ed8d2f2449b33a6556b">eve::attributes::AttributeResourceAccountAdapter</a>, <a class="el" href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html#a2984339081ba9463ced1972088c129e8">eve::attributes::AttributeSetResourceAccount</a>, <a class="el" href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html#ac649718a2e90c0e7533b92a54b3c5ec9">eve::economy::EconomyLedgerResourceAccount</a> , 以及 <a class="el" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#ade488650b56015c140394794d32ac1fc">eve::inventory::InventoryResourceAccount</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00073">eve::weapon::WeaponControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a50027bdbae7f26a3a6e97d7d1ea45be8" name="a50027bdbae7f26a3a6e97d7d1ea45be8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50027bdbae7f26a3a6e97d7d1ea45be8">&#9670;&#160;</a></span>commit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">Receipt</a> &gt; eve::resource::IResourceAccount::commit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1resource_1_1Reservation.html">Reservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>reservation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Commit one active reservation as an atomic debit. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reservation</td><td>Credential borrowed for the call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A debit receipt, or Conflict/NotFound without partial mutation. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html#a34a380bf80f3c9c1489bee8f66b984a0">eve::attributes::AttributeResourceAccountAdapter</a>, <a class="el" href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html#a729836605deceab27e211df551adfc1b">eve::attributes::AttributeSetResourceAccount</a>, <a class="el" href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html#aef76e704b0bf4e42bf887fabab89e172">eve::economy::EconomyLedgerResourceAccount</a> , 以及 <a class="el" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a8f69984af682e75a5a60919eb2bb1080">eve::inventory::InventoryResourceAccount</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00043">eve::transaction::ResourceDebitParticipant::commit()</a>.</p>
+
+</div>
+</div>
+<a id="a1e224d43b9d9a240f4d27e20296c4085" name="a1e224d43b9d9a240f4d27e20296c4085"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e224d43b9d9a240f4d27e20296c4085">&#9670;&#160;</a></span>credit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">Receipt</a> &gt; eve::resource::IResourceAccount::credit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>cost</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically credit all items immediately. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cost</td><td>Valid canonical positive quantities borrowed for the call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A credit receipt, or a failure with no state mutation. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html#a926011223b56e460de57fb222eab6884">eve::attributes::AttributeResourceAccountAdapter</a>, <a class="el" href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html#a7942110444fe9f81d97d0ab1dc859c2b">eve::attributes::AttributeSetResourceAccount</a>, <a class="el" href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html#acb27a78e27b3a105e5b62f12a8b3c183">eve::economy::EconomyLedgerResourceAccount</a> , 以及 <a class="el" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a5df5dfa128a150b2c81afe3bc691b3cb">eve::inventory::InventoryResourceAccount</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00402">eve::rts::RTSProductionActionAdapter::cancel()</a>, <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00067">eve::transaction::ResourceDebitParticipant::compensate()</a> , 以及 <a class="el" href="RTS_8cpp_source.html#l01899">eve::rts::RTS::configureScriptWorld()</a>.</p>
+
+</div>
+</div>
+<a id="ac7cf0c293c1caf0efa82d6ed959690e0" name="ac7cf0c293c1caf0efa82d6ed959690e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7cf0c293c1caf0efa82d6ed959690e0">&#9670;&#160;</a></span>debit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">Receipt</a> &gt; eve::resource::IResourceAccount::debit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>cost</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically debit all items immediately. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cost</td><td>Valid canonical cost borrowed for the call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A debit receipt, or a failure with no state mutation. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html#aa2a65b9b18ea558aa3531d4ab843856d">eve::attributes::AttributeResourceAccountAdapter</a>, <a class="el" href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html#ada2f03a85813a73da2100a22022c2919">eve::attributes::AttributeSetResourceAccount</a>, <a class="el" href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html#a2767d526932c3a943fbef5e84ef707ab">eve::economy::EconomyLedgerResourceAccount</a> , 以及 <a class="el" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a21a6e8927abd76f366ff235e22dc48b6">eve::inventory::InventoryResourceAccount</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTS_8cpp_source.html#l01899">eve::rts::RTS::configureScriptWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a7980ac1f9f73552817b59cdbdb931fd4" name="a7980ac1f9f73552817b59cdbdb931fd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7980ac1f9f73552817b59cdbdb931fd4">&#9670;&#160;</a></span>reserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Reservation.html">Reservation</a> &gt; eve::resource::IResourceAccount::reserve </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;&#160;</td>
+          <td class="paramname"><em>cost</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reserve all items of a cost without changing visible balances. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cost</td><td>Valid canonical cost borrowed for the call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A reservation credential, or a failure with no state mutation. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html#aff8fdbb4486fd90d8600704580038310">eve::attributes::AttributeResourceAccountAdapter</a>, <a class="el" href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html#ab90ea5c712ec792a57c4d1cd46c9cbd2">eve::attributes::AttributeSetResourceAccount</a>, <a class="el" href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html#ae51386d98ee1a86e6c137d98d4918d9e">eve::economy::EconomyLedgerResourceAccount</a> , 以及 <a class="el" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a0c9ade406adfb29dad7a5676a47cc3df">eve::inventory::InventoryResourceAccount</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00029">eve::transaction::ResourceDebitParticipant::prepare()</a>.</p>
+
+</div>
+</div>
+<a id="af3099c0d5a5c081c400eeb9b476b032d" name="af3099c0d5a5c081c400eeb9b476b032d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3099c0d5a5c081c400eeb9b476b032d">&#9670;&#160;</a></span>rollback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::resource::IResourceAccount::rollback </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1resource_1_1Reservation.html">Reservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>reservation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release one active reservation without changing balances. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reservation</td><td>Credential borrowed for the call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on the first rollback; duplicate/foreign credentials fail explicitly. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html#a98bf078a5703b7f41bf70fcef422f4d8">eve::attributes::AttributeResourceAccountAdapter</a>, <a class="el" href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html#ab6fb31d0d901859db0fc90192125e564">eve::attributes::AttributeSetResourceAccount</a>, <a class="el" href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html#aaf2fc7c10faffc5817f69e72f4386dfb">eve::economy::EconomyLedgerResourceAccount</a> , 以及 <a class="el" href="classeve_1_1inventory_1_1InventoryResourceAccount.html#a67c605a7a55ac3c4880569e515925c1e">eve::inventory::InventoryResourceAccount</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ResourceAccountParticipant_8cpp_source.html#l00055">eve::transaction::ResourceDebitParticipant::rollback()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

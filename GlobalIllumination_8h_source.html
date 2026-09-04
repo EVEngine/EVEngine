@@ -1,0 +1,351 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/GlobalIllumination.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GlobalIllumination.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GlobalIllumination_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>Canvas;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html">   28</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a49070022fcef9b7158486ea5c4e5a67a">   31</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a49070022fcef9b7158486ea5c4e5a67a">~GlobalIllumination</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a8e12517372658af60502f222681142f7">   33</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a8e12517372658af60502f222681142f7">GlobalIllumination</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a66c7620c2a1b4720d6b5b2f08cac27ee">   34</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a66c7620c2a1b4720d6b5b2f08cac27ee">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a504f39adac5d341c722f0d798d08678c">setQuality</a>(<span class="keyword">const</span> std::string &amp;quality);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a5547fc172056cff3e2d8af349e301d25">   38</a></span>    std::string <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a5547fc172056cff3e2d8af349e301d25">getQuality</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> quality_; }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a56da28b82562909246db83a31f0515ea">setCamera</a>(<span class="keywordtype">float</span> eyeX, <span class="keywordtype">float</span> eyeY, <span class="keywordtype">float</span> eyeZ, <span class="keywordtype">float</span> targetX, <span class="keywordtype">float</span> targetY, <span class="keywordtype">float</span> targetZ,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                   <span class="keywordtype">float</span> upX, <span class="keywordtype">float</span> upY, <span class="keywordtype">float</span> upZ, <span class="keywordtype">float</span> fovYDeg, <span class="keywordtype">float</span> aspect, <span class="keywordtype">float</span> nearZ,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                   <span class="keywordtype">float</span> farZ);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#aa596fa0b100acea2d79a5ec009ff9c4c">setInvViewProj</a>(<span class="keyword">const</span> glm::mat4 &amp;invViewProj);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#ab69c04956b54ec2fcb2a4004971d35b9">   50</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#ab69c04956b54ec2fcb2a4004971d35b9">setWorldNormalTexture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal) { worldNormal_ = worldNormal; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#aec9ac936948f8f46832a6171c623aa14">   52</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#aec9ac936948f8f46832a6171c623aa14">setAlbedoTexture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>) { albedo_ = <a class="code hl_variable" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1c2b02027dd2e47e0ed51b03aab8ee82">   54</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1c2b02027dd2e47e0ed51b03aab8ee82">setTemporalMotionTexture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *motionDepth) { temporalMotionDepth_ = motionDepth; }</div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="}">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#aa3b6ad3d78d224ddc2ed5445fe0a321d">   56</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#aa3b6ad3d78d224ddc2ed5445fe0a321d">setDepthPyramid</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *atlas, <span class="keywordtype">int</span> levels) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        depthPyramid_ = atlas;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        depthPyramidLevels_ = levels;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1b487b2221aa234adc3b29510a80f1b1">   61</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1b487b2221aa234adc3b29510a80f1b1">invalidateHistory</a>() { historyValid_ = <span class="keyword">false</span>; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a6a45d9ad07cfd43fcecb112868c0f350">setRadius</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a9c979c188021c9c610d453c50d33890c">setIntensity</a>(<span class="keywordtype">float</span> intensity);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a9921589d0c573def300977af54bd7b0a">setThickness</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1a53f05f22f93e80a4afb359e1887426">setResolutionScale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a247f8561c5ac342d0fead743d9890c25">setLightDirection</a>(<span class="keywordtype">float</span> dx, <span class="keywordtype">float</span> dy, <span class="keywordtype">float</span> dz);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#ad13d82125fa16333db5aeb093c4bf843">setLightColor</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a97f3c4714b0d7a9938a05cad6aec60ae">   72</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a97f3c4714b0d7a9938a05cad6aec60ae">getRadius</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> radius_; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a19a8e62c2dc23b049bb541fa14ba0a36">   73</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a19a8e62c2dc23b049bb541fa14ba0a36">getIntensity</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> intensity_; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#ad22bb1d0c678af969073b094494fc596">   75</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#ad22bb1d0c678af969073b094494fc596">getThickness</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> thickness_; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#a7b9a054f76c7b2afd4989af125e3f514">   76</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a7b9a054f76c7b2afd4989af125e3f514">getResolutionScale</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> resolutionScale_; }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1b5c0272e94d08ad2e4b440e410f27e0">hasParam</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a666d1826bf30db1c824ab286a9925885">setFloat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#ae7e2a6cec4b596e4580ed60d32543cfe">getFloat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a63a722f362892a16e369efb7aee190a9">getSampleCount</a>() <span class="keyword">const</span>;</div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#ac6884d16590770b06007e61ccbb9af8f">   84</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#ac6884d16590770b06007e61ccbb9af8f">getSpatialPassCount</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">return</span> quality_ == <span class="stringliteral">&quot;ultra&quot;</span> ? 3 : quality_ == <span class="stringliteral">&quot;high&quot;</span> ? 2 : quality_ == <span class="stringliteral">&quot;medium&quot;</span> ? 1 : 0;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a030905a192f6b7903e71a69d23025b30">applyFromDepth</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *packedAlbedo);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#ade2492242fd37dd2b0d71514ed57303f">applyFromDepthTo</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *packedAlbedo, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1efa9dc95a9dfc94e7b7a25575a979ab">applyFromSceneTo</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a1efa9dc95a9dfc94e7b7a25575a979ab">applyFromSceneTo</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a09607621a9472b9e587975ee8a9e4ce2">getWorkingCanvas</a>();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a3d57865503c98424975c5e4c0eff9445">getWorkingTexture</a>();</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#a17ace29b43e990867c00a035d063994e">applyFromScene</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GlobalIllumination.html#aa8575a1c53c18f51d006fea4797ead8e">  107</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1GlobalIllumination.html#aa8575a1c53c18f51d006fea4797ead8e">getShader</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ssgi_; }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> applyQualityDefaults();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span> uploadUniforms(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordtype">void</span> drawFullscreen(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *getGiCanvas();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">void</span> ensureHistory(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> resolveTemporal(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *current);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *ssgi_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *temporal_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    std::string quality_ = <span class="stringliteral">&quot;medium&quot;</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    glm::mat4 invViewProj_{1.f};</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">float</span> nearZ_ = 0.1f;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">float</span> farZ_ = 100.f;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">float</span> radius_ = 1.25f;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">float</span> intensity_ = 0.45f;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">float</span> thickness_ = 0.2f;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">float</span> temporalCurrentWeight_ = 0.16f;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">float</span> spatialFilterStrength_ = 0.5f;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">float</span> resolutionScale_ = 1.f;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    glm::vec3 lightDir_{0.4f, 1.f, 0.3f};</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    glm::vec3 lightColor_{1.f, 1.f, 1.f};</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    Canvas *giCanvas_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    Texture *worldNormal_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    Texture *albedo_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    Texture *temporalMotionDepth_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    Texture *depthPyramid_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">int</span> depthPyramidLevels_ = 0;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    Canvas *historyA_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    Canvas *historyB_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    Canvas *historyRead_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    Canvas *historyWrite_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    Canvas *spatialA_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    Canvas *spatialB_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    glm::mat4 previousViewProj_{1.f};</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    glm::vec3 previousEye_{0.f};</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    glm::vec3 previousForward_{0.f, 0.f, -1.f};</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">float</span> previousFovY_ = 0.f;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordtype">float</span> previousAspect_ = 1.f;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordtype">bool</span> historyValid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">bool</span> viewProjValid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordtype">bool</span> cameraValid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordtype">int</span> historyWidth_ = 0;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">int</span> historyHeight_ = 0;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    uint32_t samplingFrame_ = 0;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>};</div>
+</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a9bddad7a0f5d61aefe107acf47f09549"><div class="ttname"><a href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a></div><div class="ttdeci">float thickness</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00083">CaveMesh.cpp:83</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_ab7584fa1f0ea319cb0ecfaf835116c72"><div class="ttname"><a href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a></div><div class="ttdeci">Texture * albedo</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00093">ModelRenderer.cpp:93</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a1673907d4d89d763bb7b94ec1eeb7b60"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a></div><div class="ttdeci">uint8_t g</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00035">PrototypeTextures.cpp:35</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aSpriteStack_8cpp_html_aefa993834f8df4a73caaf0185139b880"><div class="ttname"><a href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color</a></div><div class="ttdeci">image::ImageData::Colorf color</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00039">SpriteStack.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html">eve::graphics::GlobalIllumination</a></div><div class="ttdoc">Screen-space single-bounce GI (SSGI). @lifetime All texture arguments are borrowed for the duration o...</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00028">GlobalIllumination.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a030905a192f6b7903e71a69d23025b30"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a030905a192f6b7903e71a69d23025b30">eve::graphics::GlobalIllumination::applyFromDepth</a></div><div class="ttdeci">void applyFromDepth(Graphics *gfx, Texture *packedAlbedo)</div><div class="ttdoc">Overlay bounced light onto the currently bound canvas / screen. Packed path (tests): RGB=albedo/lit,...</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00315">GlobalIllumination.cpp:315</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a09607621a9472b9e587975ee8a9e4ce2"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a09607621a9472b9e587975ee8a9e4ce2">eve::graphics::GlobalIllumination::getWorkingCanvas</a></div><div class="ttdeci">Canvas * getWorkingCanvas()</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00342">GlobalIllumination.cpp:342</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a17ace29b43e990867c00a035d063994e"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a17ace29b43e990867c00a035d063994e">eve::graphics::GlobalIllumination::applyFromScene</a></div><div class="ttdeci">void applyFromScene(Graphics *gfx, Texture *color, Texture *hwDepth)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00323">GlobalIllumination.cpp:323</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a19a8e62c2dc23b049bb541fa14ba0a36"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a19a8e62c2dc23b049bb541fa14ba0a36">eve::graphics::GlobalIllumination::getIntensity</a></div><div class="ttdeci">float getIntensity() const</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00073">GlobalIllumination.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a1a53f05f22f93e80a4afb359e1887426"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a1a53f05f22f93e80a4afb359e1887426">eve::graphics::GlobalIllumination::setResolutionScale</a></div><div class="ttdeci">void setResolutionScale(float scale)</div><div class="ttdoc">Set internal GI resolution scale in the range 0.25 to 1.0.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00202">GlobalIllumination.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a1b487b2221aa234adc3b29510a80f1b1"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a1b487b2221aa234adc3b29510a80f1b1">eve::graphics::GlobalIllumination::invalidateHistory</a></div><div class="ttdeci">void invalidateHistory()</div><div class="ttdoc">Discard temporal GI history after a render-chain discontinuity.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00061">GlobalIllumination.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a1b5c0272e94d08ad2e4b440e410f27e0"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a1b5c0272e94d08ad2e4b440e410f27e0">eve::graphics::GlobalIllumination::hasParam</a></div><div class="ttdeci">bool hasParam(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00229">GlobalIllumination.cpp:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a1c2b02027dd2e47e0ed51b03aab8ee82"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a1c2b02027dd2e47e0ed51b03aab8ee82">eve::graphics::GlobalIllumination::setTemporalMotionTexture</a></div><div class="ttdeci">void setTemporalMotionTexture(Texture *motionDepth)</div><div class="ttdoc">Set packed linear-depth and motion texture used by temporal GI resolve.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00054">GlobalIllumination.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a1efa9dc95a9dfc94e7b7a25575a979ab"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a1efa9dc95a9dfc94e7b7a25575a979ab">eve::graphics::GlobalIllumination::applyFromSceneTo</a></div><div class="ttdeci">void applyFromSceneTo(Graphics *gfx, Texture *color, Texture *hwDepth, Canvas *dest)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00414">GlobalIllumination.cpp:414</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a247f8561c5ac342d0fead743d9890c25"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a247f8561c5ac342d0fead743d9890c25">eve::graphics::GlobalIllumination::setLightDirection</a></div><div class="ttdeci">void setLightDirection(float dx, float dy, float dz)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00210">GlobalIllumination.cpp:210</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a3d57865503c98424975c5e4c0eff9445"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a3d57865503c98424975c5e4c0eff9445">eve::graphics::GlobalIllumination::getWorkingTexture</a></div><div class="ttdeci">Texture * getWorkingTexture()</div><div class="ttdoc">Temporally resolved GI texture, or the raw working texture before history exists. @lifetime Returned ...</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00346">GlobalIllumination.cpp:346</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a49070022fcef9b7158486ea5c4e5a67a"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a49070022fcef9b7158486ea5c4e5a67a">eve::graphics::GlobalIllumination::~GlobalIllumination</a></div><div class="ttdeci">~GlobalIllumination()</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a504f39adac5d341c722f0d798d08678c"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a504f39adac5d341c722f0d798d08678c">eve::graphics::GlobalIllumination::setQuality</a></div><div class="ttdeci">void setQuality(const std::string &amp;quality)</div><div class="ttdoc">&quot;low&quot; | &quot;medium&quot; | &quot;high&quot; | &quot;ultra&quot; (unknown becomes medium).</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00133">GlobalIllumination.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a5547fc172056cff3e2d8af349e301d25"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a5547fc172056cff3e2d8af349e301d25">eve::graphics::GlobalIllumination::getQuality</a></div><div class="ttdeci">std::string getQuality() const</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00038">GlobalIllumination.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a56da28b82562909246db83a31f0515ea"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a56da28b82562909246db83a31f0515ea">eve::graphics::GlobalIllumination::setCamera</a></div><div class="ttdeci">void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ)</div><div class="ttdoc">Camera for depth reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by applyFromDepth.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00156">GlobalIllumination.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a63a722f362892a16e369efb7aee190a9"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a63a722f362892a16e369efb7aee190a9">eve::graphics::GlobalIllumination::getSampleCount</a></div><div class="ttdeci">int getSampleCount() const</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00257">GlobalIllumination.cpp:257</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a666d1826bf30db1c824ab286a9925885"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a666d1826bf30db1c824ab286a9925885">eve::graphics::GlobalIllumination::setFloat</a></div><div class="ttdeci">void setFloat(const std::string &amp;name, float value)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00233">GlobalIllumination.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a66c7620c2a1b4720d6b5b2f08cac27ee"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a66c7620c2a1b4720d6b5b2f08cac27ee">eve::graphics::GlobalIllumination::operator=</a></div><div class="ttdeci">GlobalIllumination &amp; operator=(const GlobalIllumination &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a6a45d9ad07cfd43fcecb112868c0f350"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a6a45d9ad07cfd43fcecb112868c0f350">eve::graphics::GlobalIllumination::setRadius</a></div><div class="ttdeci">void setRadius(float radius)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00187">GlobalIllumination.cpp:187</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a7b9a054f76c7b2afd4989af125e3f514"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a7b9a054f76c7b2afd4989af125e3f514">eve::graphics::GlobalIllumination::getResolutionScale</a></div><div class="ttdeci">float getResolutionScale() const</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00076">GlobalIllumination.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a8e12517372658af60502f222681142f7"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a8e12517372658af60502f222681142f7">eve::graphics::GlobalIllumination::GlobalIllumination</a></div><div class="ttdeci">GlobalIllumination(const GlobalIllumination &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a97f3c4714b0d7a9938a05cad6aec60ae"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a97f3c4714b0d7a9938a05cad6aec60ae">eve::graphics::GlobalIllumination::getRadius</a></div><div class="ttdeci">float getRadius() const</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00072">GlobalIllumination.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a9921589d0c573def300977af54bd7b0a"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a9921589d0c573def300977af54bd7b0a">eve::graphics::GlobalIllumination::setThickness</a></div><div class="ttdeci">void setThickness(float thickness)</div><div class="ttdoc">Set world-space hit thickness used to reject screen-space GI leaks.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00197">GlobalIllumination.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_a9c979c188021c9c610d453c50d33890c"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#a9c979c188021c9c610d453c50d33890c">eve::graphics::GlobalIllumination::setIntensity</a></div><div class="ttdeci">void setIntensity(float intensity)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00192">GlobalIllumination.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_aa3b6ad3d78d224ddc2ed5445fe0a321d"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#aa3b6ad3d78d224ddc2ed5445fe0a321d">eve::graphics::GlobalIllumination::setDepthPyramid</a></div><div class="ttdeci">void setDepthPyramid(Texture *atlas, int levels)</div><div class="ttdoc">Set the shared horizontally packed RG min/max depth hierarchy.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00056">GlobalIllumination.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_aa596fa0b100acea2d79a5ec009ff9c4c"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#aa596fa0b100acea2d79a5ec009ff9c4c">eve::graphics::GlobalIllumination::setInvViewProj</a></div><div class="ttdeci">void setInvViewProj(const glm::mat4 &amp;invViewProj)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00142">GlobalIllumination.cpp:142</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_aa8575a1c53c18f51d006fea4797ead8e"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#aa8575a1c53c18f51d006fea4797ead8e">eve::graphics::GlobalIllumination::getShader</a></div><div class="ttdeci">Shader * getShader() const</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00107">GlobalIllumination.h:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_ab69c04956b54ec2fcb2a4004971d35b9"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#ab69c04956b54ec2fcb2a4004971d35b9">eve::graphics::GlobalIllumination::setWorldNormalTexture</a></div><div class="ttdeci">void setWorldNormalTexture(Texture *worldNormal)</div><div class="ttdoc">Set the GBuffer world-normal texture used for guided GI sampling.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00050">GlobalIllumination.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_ac6884d16590770b06007e61ccbb9af8f"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#ac6884d16590770b06007e61ccbb9af8f">eve::graphics::GlobalIllumination::getSpatialPassCount</a></div><div class="ttdeci">int getSpatialPassCount() const</div><div class="ttdoc">Number of explicit A-trous prefilter passes for the active quality.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00084">GlobalIllumination.h:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_ad13d82125fa16333db5aeb093c4bf843"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#ad13d82125fa16333db5aeb093c4bf843">eve::graphics::GlobalIllumination::setLightColor</a></div><div class="ttdeci">void setLightColor(float r, float g, float b)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00221">GlobalIllumination.cpp:221</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_ad22bb1d0c678af969073b094494fc596"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#ad22bb1d0c678af969073b094494fc596">eve::graphics::GlobalIllumination::getThickness</a></div><div class="ttdeci">float getThickness() const</div><div class="ttdoc">Return world-space GI hit thickness.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00075">GlobalIllumination.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_ade2492242fd37dd2b0d71514ed57303f"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#ade2492242fd37dd2b0d71514ed57303f">eve::graphics::GlobalIllumination::applyFromDepthTo</a></div><div class="ttdeci">void applyFromDepthTo(Graphics *gfx, Texture *packedAlbedo, Canvas *dest)</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00333">GlobalIllumination.cpp:333</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_ae7e2a6cec4b596e4580ed60d32543cfe"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#ae7e2a6cec4b596e4580ed60d32543cfe">eve::graphics::GlobalIllumination::getFloat</a></div><div class="ttdeci">float getFloat(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8cpp_source.html#l00248">GlobalIllumination.cpp:248</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html_aec9ac936948f8f46832a6171c623aa14"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html#aec9ac936948f8f46832a6171c623aa14">eve::graphics::GlobalIllumination::setAlbedoTexture</a></div><div class="ttdeci">void setAlbedoTexture(Texture *albedo)</div><div class="ttdoc">Set receiver albedo used for energy-conserving diffuse GI response.</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00052">GlobalIllumination.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

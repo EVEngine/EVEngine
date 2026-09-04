@@ -1,0 +1,375 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::AutosaveService类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1AutosaveService.html">AutosaveService</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1AutosaveService-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::AutosaveService类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Autosave coordinator that never overwrites the formal document URI.  
+ <a href="classeve_1_1editor_1_1AutosaveService.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorDiskDocumentStore_8h_source.html">EditorDiskDocumentStore.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a59a9bb816f05dc5f400bbfb7f33e83fc" id="r_a59a9bb816f05dc5f400bbfb7f33e83fc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1AutosaveService.html#a59a9bb816f05dc5f400bbfb7f33e83fc">AutosaveService</a> (<a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html">IAtomicDocumentStore</a> *store, std::string projectId)</td></tr>
+<tr class="memdesc:a59a9bb816f05dc5f400bbfb7f33e83fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an autosave namespace.  <br /></td></tr>
+<tr class="separator:a59a9bb816f05dc5f400bbfb7f33e83fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a3f594263a7cd5fd3c0cb3448a6860c" id="r_a0a3f594263a7cd5fd3c0cb3448a6860c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1StoredDocument.html">StoredDocument</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1AutosaveService.html#a0a3f594263a7cd5fd3c0cb3448a6860c">writeDraft</a> (const <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &amp;snapshot, const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;content)</td></tr>
+<tr class="memdesc:a0a3f594263a7cd5fd3c0cb3448a6860c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write one revisioned draft under autosave://project/document.draft.  <br /></td></tr>
+<tr class="separator:a0a3f594263a7cd5fd3c0cb3448a6860c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf3a21fab2196d79d2ec348bf02424a0" id="r_acf3a21fab2196d79d2ec348bf02424a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AutosaveDraft.html">AutosaveDraft</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1AutosaveService.html#acf3a21fab2196d79d2ec348bf02424a0">readDraft</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document) const</td></tr>
+<tr class="memdesc:acf3a21fab2196d79d2ec348bf02424a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a draft and validate its schema.  <br /></td></tr>
+<tr class="separator:acf3a21fab2196d79d2ec348bf02424a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bc27c40f6079b9f73cb1a83f2d8775e" id="r_a9bc27c40f6079b9f73cb1a83f2d8775e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1AutosaveService.html#a9bc27c40f6079b9f73cb1a83f2d8775e">shouldOfferRecovery</a> (const <a class="el" href="structeve_1_1editor_1_1AutosaveDraft.html">AutosaveDraft</a> &amp;draft, const <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &amp;formal) const</td></tr>
+<tr class="memdesc:a9bc27c40f6079b9f73cb1a83f2d8775e"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when a newer draft differs from the current formal disk base.  <br /></td></tr>
+<tr class="separator:a9bc27c40f6079b9f73cb1a83f2d8775e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0b2706937bfd56c196ed1b147ef779e" id="r_ab0b2706937bfd56c196ed1b147ef779e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1AutosaveService.html#ab0b2706937bfd56c196ed1b147ef779e">draftUri</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document) const</td></tr>
+<tr class="memdesc:ab0b2706937bfd56c196ed1b147ef779e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable draft URI for one document.  <br /></td></tr>
+<tr class="separator:ab0b2706937bfd56c196ed1b147ef779e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Autosave coordinator that never overwrites the formal document URI. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDiskDocumentStore_8h_source.html">EditorDiskDocumentStore.h</a> 第 <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00056">56</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a59a9bb816f05dc5f400bbfb7f33e83fc" name="a59a9bb816f05dc5f400bbfb7f33e83fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59a9bb816f05dc5f400bbfb7f33e83fc">&#9670;&#160;</a></span>AutosaveService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::AutosaveService::AutosaveService </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html">IAtomicDocumentStore</a> *&#160;</td>
+          <td class="paramname"><em>store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>projectId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an autosave namespace. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">store</td><td>Non-owning atomic store that outlives this service. </td></tr>
+    <tr><td class="paramname">projectId</td><td>Stable project identity used in draft URIs. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditorDiskDocumentStore_8h_source.html">EditorDiskDocumentStore.h</a> 第 <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab0b2706937bfd56c196ed1b147ef779e" name="ab0b2706937bfd56c196ed1b147ef779e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0b2706937bfd56c196ed1b147ef779e">&#9670;&#160;</a></span>draftUri()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::AutosaveService::draftUri </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the stable draft URI for one document. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html">EditorDiskDocumentStore.cpp</a> 第 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00197">readDraft()</a> , 以及 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00174">writeDraft()</a>.</p>
+
+</div>
+</div>
+<a id="acf3a21fab2196d79d2ec348bf02424a0" name="acf3a21fab2196d79d2ec348bf02424a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf3a21fab2196d79d2ec348bf02424a0">&#9670;&#160;</a></span>readDraft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AutosaveDraft.html">AutosaveDraft</a> &gt; eve::editor::AutosaveService::readDraft </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a draft and validate its schema. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html">EditorDiskDocumentStore.cpp</a> 第 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00049">eve::editor::AutosaveDraft::baseDiskHash</a>, <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00052">eve::editor::AutosaveDraft::content</a>, <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00048">eve::editor::AutosaveDraft::document</a>, <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00166">draftUri()</a>, <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00051">eve::editor::AutosaveDraft::editRevision</a>, <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#aee640a6d7bb1d4c94dd8d18b30212432">eve::editor::IAtomicDocumentStore::read()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00050">eve::editor::AutosaveDraft::schemaVersion</a> , 以及 <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>.</p>
+
+</div>
+</div>
+<a id="a9bc27c40f6079b9f73cb1a83f2d8775e" name="a9bc27c40f6079b9f73cb1a83f2d8775e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bc27c40f6079b9f73cb1a83f2d8775e">&#9670;&#160;</a></span>shouldOfferRecovery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::AutosaveService::shouldOfferRecovery </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1AutosaveDraft.html">AutosaveDraft</a> &amp;&#160;</td>
+          <td class="paramname"><em>draft</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>formal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when a newer draft differs from the current formal disk base. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html">EditorDiskDocumentStore.cpp</a> 第 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00049">eve::editor::AutosaveDraft::baseDiskHash</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00056">eve::editor::DocumentSnapshot::diskContentHash</a>, <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00048">eve::editor::AutosaveDraft::document</a>, <a class="el" href="EditorDiskDocumentStore_8h_source.html#l00051">eve::editor::AutosaveDraft::editRevision</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00050">eve::editor::DocumentSnapshot::id</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00055">eve::editor::DocumentSnapshot::revision</a> , 以及 <a class="el" href="EditorDocumentService_8h_source.html#l00043">eve::editor::DocumentRevision::saved</a>.</p>
+
+</div>
+</div>
+<a id="a0a3f594263a7cd5fd3c0cb3448a6860c" name="a0a3f594263a7cd5fd3c0cb3448a6860c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a3f594263a7cd5fd3c0cb3448a6860c">&#9670;&#160;</a></span>writeDraft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1StoredDocument.html">StoredDocument</a> &gt; eve::editor::AutosaveService::writeDraft </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>content</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write one revisioned draft under autosave://project/document.draft. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html">EditorDiskDocumentStore.cpp</a> 第 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00246">eve::Result&lt; T &gt;::code()</a>, <a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#a1a258756aba633b97ce6087a40436038">eve::editor::IAtomicDocumentStore::compareAndSwap()</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00056">eve::editor::DocumentSnapshot::diskContentHash</a>, <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00166">draftUri()</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00042">eve::editor::DocumentRevision::edit</a>, <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="Evpack_8cpp_source.html#l00177">hash</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00050">eve::editor::DocumentSnapshot::id</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#aee640a6d7bb1d4c94dd8d18b30212432">eve::editor::IAtomicDocumentStore::read()</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00055">eve::editor::DocumentSnapshot::revision</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00330">eve::editor::EditorSession::autosaveDocument()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorDiskDocumentStore_8h_source.html">EditorDiskDocumentStore.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorDiskDocumentStore_8cpp_source.html">EditorDiskDocumentStore.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

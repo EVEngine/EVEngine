@@ -1,0 +1,421 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::PropertyComponent类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1PropertyComponent.html">PropertyComponent</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1PropertyComponent-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::PropertyComponent类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1ui_1_1Component.html" title="React-style UI component: implement build(), call setState / markDirty, then rebuild()....">Component</a> wrapper that becomes dirty when its bound model changes.  
+ <a href="classeve_1_1ui_1_1PropertyComponent.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PropertyView_8h_source.html">PropertyView.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::ui::PropertyComponent 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1ui_1_1PropertyComponent.png" usemap="#eve::ui::PropertyComponent_map" alt=""/>
+  <map id="eve::ui::PropertyComponent_map" name="eve::ui::PropertyComponent_map">
+<area href="classeve_1_1ui_1_1Component.html" title="React-style UI component: implement build(), call setState / markDirty, then rebuild()...." alt="eve::ui::Component" shape="rect" coords="0,0,167,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2a7b52c21c79ccc4421ffd66f829d8d1" id="r_a2a7b52c21c79ccc4421ffd66f829d8d1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#a2a7b52c21c79ccc4421ffd66f829d8d1">PropertyComponent</a> (<a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">property_access::IPropertyAccess</a> *<a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#a11543e284f91ac6fb978d16a3d2433c4">model</a>=nullptr, <a class="el" href="structeve_1_1ui_1_1PropertyViewOptions.html">PropertyViewOptions</a> <a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="separator:a2a7b52c21c79ccc4421ffd66f829d8d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2045522a06c0075f3783f399a4e935e3" id="r_a2045522a06c0075f3783f399a4e935e3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#a2045522a06c0075f3783f399a4e935e3">~PropertyComponent</a> () override=default</td></tr>
+<tr class="separator:a2045522a06c0075f3783f399a4e935e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ba255f40094a0ba73b482283f2a832f" id="r_a3ba255f40094a0ba73b482283f2a832f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#a3ba255f40094a0ba73b482283f2a832f">bind</a> (<a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">property_access::IPropertyAccess</a> *<a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#a11543e284f91ac6fb978d16a3d2433c4">model</a>)</td></tr>
+<tr class="memdesc:a3ba255f40094a0ba73b482283f2a832f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the model and reconnect change observation.  <br /></td></tr>
+<tr class="separator:a3ba255f40094a0ba73b482283f2a832f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11543e284f91ac6fb978d16a3d2433c4" id="r_a11543e284f91ac6fb978d16a3d2433c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">property_access::IPropertyAccess</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#a11543e284f91ac6fb978d16a3d2433c4">model</a> () const</td></tr>
+<tr class="memdesc:a11543e284f91ac6fb978d16a3d2433c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the currently bound property model, or null when unbound.  <br /></td></tr>
+<tr class="separator:a11543e284f91ac6fb978d16a3d2433c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c5c36a4c553e28331bfc3e3b7ad47b3" id="r_a9c5c36a4c553e28331bfc3e3b7ad47b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#a9c5c36a4c553e28331bfc3e3b7ad47b3">setOptions</a> (<a class="el" href="structeve_1_1ui_1_1PropertyViewOptions.html">PropertyViewOptions</a> <a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</td></tr>
+<tr class="memdesc:a9c5c36a4c553e28331bfc3e3b7ad47b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace generation policy and mark the component dirty.  <br /></td></tr>
+<tr class="separator:a9c5c36a4c553e28331bfc3e3b7ad47b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa94148efc06fe66783a1402dda49a34d" id="r_aa94148efc06fe66783a1402dda49a34d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#aa94148efc06fe66783a1402dda49a34d">build</a> () override</td></tr>
+<tr class="memdesc:aa94148efc06fe66783a1402dda49a34d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the current schema-driven tree.  <br /></td></tr>
+<tr class="separator:aa94148efc06fe66783a1402dda49a34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1ui_1_1Component"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1ui_1_1Component')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1ui_1_1Component.html">eve::ui::Component</a></td></tr>
+<tr class="memitem:a3acd25e4b9cc1c80958524a086315a19 inherit pub_methods_classeve_1_1ui_1_1Component" id="r_a3acd25e4b9cc1c80958524a086315a19"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#a3acd25e4b9cc1c80958524a086315a19">~Component</a> ()=default</td></tr>
+<tr class="separator:a3acd25e4b9cc1c80958524a086315a19 inherit pub_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdabc4a00842fd6116382b487ecbb82d inherit pub_methods_classeve_1_1ui_1_1Component" id="r_acdabc4a00842fd6116382b487ecbb82d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#acdabc4a00842fd6116382b487ecbb82d">attach</a> (<a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> <a class="el" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a>)</td></tr>
+<tr class="separator:acdabc4a00842fd6116382b487ecbb82d inherit pub_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ee395e84a1a5274def845ad5e733cb5 inherit pub_methods_classeve_1_1ui_1_1Component" id="r_a7ee395e84a1a5274def845ad5e733cb5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#a7ee395e84a1a5274def845ad5e733cb5">mountAs</a> (const std::string &amp;hostName)</td></tr>
+<tr class="separator:a7ee395e84a1a5274def845ad5e733cb5 inherit pub_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5c5d1a8041c836b68b83ac59543cdd7 inherit pub_methods_classeve_1_1ui_1_1Component" id="r_ad5c5d1a8041c836b68b83ac59543cdd7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a> () const noexcept</td></tr>
+<tr class="memdesc:ad5c5d1a8041c836b68b83ac59543cdd7 inherit pub_methods_classeve_1_1ui_1_1Component"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the attached host handle, or an empty handle before attach.  <br /></td></tr>
+<tr class="separator:ad5c5d1a8041c836b68b83ac59543cdd7 inherit pub_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ec3b265e0aa1112a9891b0993f7151b inherit pub_methods_classeve_1_1ui_1_1Component" id="r_a3ec3b265e0aa1112a9891b0993f7151b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#a3ec3b265e0aa1112a9891b0993f7151b">rebuild</a> (bool forceFull=false)</td></tr>
+<tr class="memdesc:a3ec3b265e0aa1112a9891b0993f7151b inherit pub_methods_classeve_1_1ui_1_1Component"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild tree onto host (reconcile by key when possible).  <br /></td></tr>
+<tr class="separator:a3ec3b265e0aa1112a9891b0993f7151b inherit pub_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70950aea542088db96e0cb32d6d297b4 inherit pub_methods_classeve_1_1ui_1_1Component" id="r_a70950aea542088db96e0cb32d6d297b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#a70950aea542088db96e0cb32d6d297b4">markDirty</a> ()</td></tr>
+<tr class="separator:a70950aea542088db96e0cb32d6d297b4 inherit pub_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f519b64dd735726a39d203cb55e97eb inherit pub_methods_classeve_1_1ui_1_1Component" id="r_a0f519b64dd735726a39d203cb55e97eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#a0f519b64dd735726a39d203cb55e97eb">isDirty</a> () const</td></tr>
+<tr class="separator:a0f519b64dd735726a39d203cb55e97eb inherit pub_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3fa888fb2b6578c91381a8f486871d0 inherit pub_methods_classeve_1_1ui_1_1Component" id="r_ac3fa888fb2b6578c91381a8f486871d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#ac3fa888fb2b6578c91381a8f486871d0">updateIfDirty</a> ()</td></tr>
+<tr class="memdesc:ac3fa888fb2b6578c91381a8f486871d0 inherit pub_methods_classeve_1_1ui_1_1Component"><td class="mdescLeft">&#160;</td><td class="mdescRight">If dirty, rebuild and clear flag. Returns true if rebuilt.  <br /></td></tr>
+<tr class="separator:ac3fa888fb2b6578c91381a8f486871d0 inherit pub_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pro_methods_classeve_1_1ui_1_1Component"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classeve_1_1ui_1_1Component')"><img src="closed.png" alt="-"/>&#160;Protected 成员函数 继承自 <a class="el" href="classeve_1_1ui_1_1Component.html">eve::ui::Component</a></td></tr>
+<tr class="memitem:a45380b1297969efde50240780b6b6e30 inherit pro_methods_classeve_1_1ui_1_1Component" id="r_a45380b1297969efde50240780b6b6e30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1Component.html#a45380b1297969efde50240780b6b6e30">setState</a> ()</td></tr>
+<tr class="memdesc:a45380b1297969efde50240780b6b6e30 inherit pro_methods_classeve_1_1ui_1_1Component"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subclasses call after mutating local state that affects <a class="el" href="classeve_1_1ui_1_1Component.html#a25e50a42bbd488548d1a8d7474c64639">build()</a>.  <br /></td></tr>
+<tr class="separator:a45380b1297969efde50240780b6b6e30 inherit pro_methods_classeve_1_1ui_1_1Component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1ui_1_1Component.html" title="React-style UI component: implement build(), call setState / markDirty, then rebuild()....">Component</a> wrapper that becomes dirty when its bound model changes. </p>
+
+<p class="definition">在文件 <a class="el" href="PropertyView_8h_source.html">PropertyView.h</a> 第 <a class="el" href="PropertyView_8h_source.html#l00041">41</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2a7b52c21c79ccc4421ffd66f829d8d1" name="a2a7b52c21c79ccc4421ffd66f829d8d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a7b52c21c79ccc4421ffd66f829d8d1">&#9670;&#160;</a></span>PropertyComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::PropertyComponent::PropertyComponent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">property_access::IPropertyAccess</a> *&#160;</td>
+          <td class="paramname"><em>model</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1PropertyViewOptions.html">PropertyViewOptions</a>&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PropertyView_8cpp_source.html">PropertyView.cpp</a> 第 <a class="el" href="PropertyView_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2045522a06c0075f3783f399a4e935e3" name="a2045522a06c0075f3783f399a4e935e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2045522a06c0075f3783f399a4e935e3">&#9670;&#160;</a></span>~PropertyComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::PropertyComponent::~PropertyComponent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3ba255f40094a0ba73b482283f2a832f" name="a3ba255f40094a0ba73b482283f2a832f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ba255f40094a0ba73b482283f2a832f">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::PropertyComponent::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">property_access::IPropertyAccess</a> *&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the model and reconnect change observation. </p>
+
+<p class="definition">在文件 <a class="el" href="PropertyView_8cpp_source.html">PropertyView.cpp</a> 第 <a class="el" href="PropertyView_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Subscription_8cpp_source.html#l00025">eve::Subscription::dispose()</a>, <a class="el" href="Component_8h_source.html#l00029">eve::ui::Component::markDirty()</a> , 以及 <a class="el" href="PropertyView_8h_source.html#l00057">model()</a>.</p>
+
+</div>
+</div>
+<a id="aa94148efc06fe66783a1402dda49a34d" name="aa94148efc06fe66783a1402dda49a34d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa94148efc06fe66783a1402dda49a34d">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::PropertyComponent::build </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build the current schema-driven tree. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1ui_1_1Component.html#a25e50a42bbd488548d1a8d7474c64639">eve::ui::Component</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PropertyView_8cpp_source.html">PropertyView.cpp</a> 第 <a class="el" href="PropertyView_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PropertyView_8cpp_source.html#l00205">eve::ui::buildPropertyView()</a>, <a class="el" href="Widget_8cpp_source.html#l00641">eve::ui::column()</a> , 以及 <a class="el" href="PropertyView_8h_source.html#l00012">eve::ui::PropertyViewOptions::idPrefix</a>.</p>
+
+</div>
+</div>
+<a id="a11543e284f91ac6fb978d16a3d2433c4" name="a11543e284f91ac6fb978d16a3d2433c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11543e284f91ac6fb978d16a3d2433c4">&#9670;&#160;</a></span>model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">property_access::IPropertyAccess</a> * eve::ui::PropertyComponent::model </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the currently bound property model, or null when unbound. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable model supplied by the caller. @ownership <a class="el" href="classeve_1_1ui_1_1PropertyComponent.html" title="Component wrapper that becomes dirty when its bound model changes.">PropertyComponent</a> does not own the model; the caller must keep it alive. @lifetime Valid until <a class="el" href="classeve_1_1ui_1_1PropertyComponent.html#a3ba255f40094a0ba73b482283f2a832f" title="Replace the model and reconnect change observation.">bind()</a> replaces it or the model is destroyed; do not retain across frames without external lifetime control. @thread Call on the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> thread. @reentrancy The accessor invokes no callbacks and is invalid across bind/rebuild mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PropertyView_8h_source.html">PropertyView.h</a> 第 <a class="el" href="PropertyView_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PropertyView_8cpp_source.html#l00257">bind()</a>.</p>
+
+</div>
+</div>
+<a id="a9c5c36a4c553e28331bfc3e3b7ad47b3" name="a9c5c36a4c553e28331bfc3e3b7ad47b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c5c36a4c553e28331bfc3e3b7ad47b3">&#9670;&#160;</a></span>setOptions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::PropertyComponent::setOptions </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1ui_1_1PropertyViewOptions.html">PropertyViewOptions</a>&#160;</td>
+          <td class="paramname"><em>options</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace generation policy and mark the component dirty. </p>
+
+<p class="definition">在文件 <a class="el" href="PropertyView_8cpp_source.html">PropertyView.cpp</a> 第 <a class="el" href="PropertyView_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Component_8h_source.html#l00029">eve::ui::Component::markDirty()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="PropertyView_8h_source.html">PropertyView.h</a></li>
+<li>src/modules/ui/<a class="el" href="PropertyView_8cpp_source.html">PropertyView.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::IWindowSurfaceHost类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1IWindowSurfaceHost.html">IWindowSurfaceHost</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1IWindowSurfaceHost-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::IWindowSurfaceHost类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Render-surface host for the window module (provided by graphics).  
+ <a href="classeve_1_1IWindowSurfaceHost.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="WindowSurfaceHost_8h_source.html">WindowSurfaceHost.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::IWindowSurfaceHost 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1IWindowSurfaceHost.png" usemap="#eve::IWindowSurfaceHost_map" alt=""/>
+  <map id="eve::IWindowSurfaceHost_map" name="eve::IWindowSurfaceHost_map">
+<area href="classeve_1_1graphics_1_1Graphics.html" alt="eve::graphics::Graphics" shape="rect" coords="102,56,297,80"/>
+<area href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html" alt="eve::graphics::vulkan::Graphics" shape="rect" coords="0,112,195,136"/>
+<area href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html" alt="eve::graphics::webgpu::Graphics" shape="rect" coords="205,112,400,136"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1d234e96d7cbda404fbaba1236b56cef" id="r_a1d234e96d7cbda404fbaba1236b56cef"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IWindowSurfaceHost.html#a1d234e96d7cbda404fbaba1236b56cef">~IWindowSurfaceHost</a> ()=default</td></tr>
+<tr class="separator:a1d234e96d7cbda404fbaba1236b56cef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d9f4eb5164566dbc12bb7e247032e98" id="r_a7d9f4eb5164566dbc12bb7e247032e98"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IWindowSurfaceHost.html#a7d9f4eb5164566dbc12bb7e247032e98">initWithWindow</a> (void *nativeWindow)=0</td></tr>
+<tr class="memdesc:a7d9f4eb5164566dbc12bb7e247032e98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the render surface to a freshly created native window.  <br /></td></tr>
+<tr class="separator:a7d9f4eb5164566dbc12bb7e247032e98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7301e18f98446f511818da502f7dc40f" id="r_a7301e18f98446f511818da502f7dc40f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IWindowSurfaceHost.html#a7301e18f98446f511818da502f7dc40f">setViewportSize</a> (int logicalWidth, int logicalHeight, int pixelWidth, int pixelHeight)=0</td></tr>
+<tr class="memdesc:a7301e18f98446f511818da502f7dc40f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical and pixel viewport after creation or resize.  <br /></td></tr>
+<tr class="separator:a7301e18f98446f511818da502f7dc40f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06bcc11d624cb644a709e4ec35344867" id="r_a06bcc11d624cb644a709e4ec35344867"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IWindowSurfaceHost.html#a06bcc11d624cb644a709e4ec35344867">onNativeWindowDestroyed</a> ()=0</td></tr>
+<tr class="memdesc:a06bcc11d624cb644a709e4ec35344867"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native window is about to be destroyed; drop the surface/swapchain.  <br /></td></tr>
+<tr class="separator:a06bcc11d624cb644a709e4ec35344867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed048053a8bd8467323598366d508447" id="r_aed048053a8bd8467323598366d508447"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IWindowSurfaceHost.html#aed048053a8bd8467323598366d508447">setActive</a> (bool <a class="el" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>)=0</td></tr>
+<tr class="memdesc:aed048053a8bd8467323598366d508447"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause/resume presenting (mobile background/foreground).  <br /></td></tr>
+<tr class="separator:aed048053a8bd8467323598366d508447"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86e48d2ddce37b268c8907b5d7332d78" id="r_a86e48d2ddce37b268c8907b5d7332d78"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IWindowSurfaceHost.html#a86e48d2ddce37b268c8907b5d7332d78">requestSurfaceRecreate</a> ()=0</td></tr>
+<tr class="memdesc:a86e48d2ddce37b268c8907b5d7332d78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild the render surface on the next frame (mobile foreground).  <br /></td></tr>
+<tr class="separator:a86e48d2ddce37b268c8907b5d7332d78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a120cfad7f48370ba538a90a50d45577a" id="r_a120cfad7f48370ba538a90a50d45577a"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IWindowSurfaceHost.html#a120cfad7f48370ba538a90a50d45577a">capabilityName</a> = &quot;IWindowSurfaceHost&quot;</td></tr>
+<tr class="separator:a120cfad7f48370ba538a90a50d45577a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Render-surface host for the window module (provided by graphics). </p>
+
+<p class="definition">在文件 <a class="el" href="WindowSurfaceHost_8h_source.html">WindowSurfaceHost.h</a> 第 <a class="el" href="WindowSurfaceHost_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1d234e96d7cbda404fbaba1236b56cef" name="a1d234e96d7cbda404fbaba1236b56cef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d234e96d7cbda404fbaba1236b56cef">&#9670;&#160;</a></span>~IWindowSurfaceHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::IWindowSurfaceHost::~IWindowSurfaceHost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7d9f4eb5164566dbc12bb7e247032e98" name="a7d9f4eb5164566dbc12bb7e247032e98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d9f4eb5164566dbc12bb7e247032e98">&#9670;&#160;</a></span>initWithWindow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IWindowSurfaceHost::initWithWindow </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>nativeWindow</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind the render surface to a freshly created native window. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a62c3afb5f5bc73720dbfe30c03ebfd14">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a7e374092ab4ee3e201763c145ae62ed4">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a602f127c983ee273bc195c969a3a8c45">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a06bcc11d624cb644a709e4ec35344867" name="a06bcc11d624cb644a709e4ec35344867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06bcc11d624cb644a709e4ec35344867">&#9670;&#160;</a></span>onNativeWindowDestroyed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IWindowSurfaceHost::onNativeWindowDestroyed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Native window is about to be destroyed; drop the surface/swapchain. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a078da6b2a7a375e2b68070fb1ffc8936">eve::graphics::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a0fd3aee095cfb17a24d4be6f5ea2d30a">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a86e48d2ddce37b268c8907b5d7332d78" name="a86e48d2ddce37b268c8907b5d7332d78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86e48d2ddce37b268c8907b5d7332d78">&#9670;&#160;</a></span>requestSurfaceRecreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IWindowSurfaceHost::requestSurfaceRecreate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Rebuild the render surface on the next frame (mobile foreground). </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#abd920cae7928f5b03aeccf265d7ecff6">eve::graphics::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ae5ed909a9ae3ab98c39f31fe92c6165c">eve::graphics::vulkan::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#af76c345486742783ff0d242a73deab23">eve::graphics::webgpu::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aed048053a8bd8467323598366d508447" name="aed048053a8bd8467323598366d508447"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed048053a8bd8467323598366d508447">&#9670;&#160;</a></span>setActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IWindowSurfaceHost::setActive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pause/resume presenting (mobile background/foreground). </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a220a246691d594def61f21bb693bb4e2">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a7301e18f98446f511818da502f7dc40f" name="a7301e18f98446f511818da502f7dc40f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7301e18f98446f511818da502f7dc40f">&#9670;&#160;</a></span>setViewportSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IWindowSurfaceHost::setViewportSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>logicalWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>logicalHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pixelWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pixelHeight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Logical and pixel viewport after creation or resize. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a85564b3f42d6cb803a2abd15b92a0512">eve::graphics::vulkan::Graphics</a>, <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1Graphics.html#a505875b441d99611d8c1d254cc0fec34">eve::graphics::webgpu::Graphics</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ae6e682959f23542837d369e58ec30eb1">eve::graphics::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a120cfad7f48370ba538a90a50d45577a" name="a120cfad7f48370ba538a90a50d45577a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a120cfad7f48370ba538a90a50d45577a">&#9670;&#160;</a></span>capabilityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::IWindowSurfaceHost::capabilityName = &quot;IWindowSurfaceHost&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WindowSurfaceHost_8h_source.html">WindowSurfaceHost.h</a> 第 <a class="el" href="WindowSurfaceHost_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="WindowSurfaceHost_8h_source.html">WindowSurfaceHost.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

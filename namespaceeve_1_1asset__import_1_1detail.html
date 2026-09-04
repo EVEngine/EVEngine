@@ -1,0 +1,420 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset_import::detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__import.html">asset_import</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__import_1_1detail.html">detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset_import::detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a4cf204329c882041f2183b19af0c0700" id="r_a4cf204329c882041f2183b19af0c0700"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a4cf204329c882041f2183b19af0c0700"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a> (<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> code, std::string message, std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>={})</td></tr>
+<tr class="separator:a4cf204329c882041f2183b19af0c0700"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bec4edd0427191572ee50a9b98ff2e9" id="r_a1bec4edd0427191572ee50a9b98ff2e9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1detail.html#a1bec4edd0427191572ee50a9b98ff2e9">sha256</a> (std::span&lt; const std::uint8_t &gt; bytes)</td></tr>
+<tr class="separator:a1bec4edd0427191572ee50a9b98ff2e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd13cb28f9a5f3555a5db9f2497206a5" id="r_abd13cb28f9a5f3555a5db9f2497206a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">asset::EvaManifest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1detail.html#abd13cb28f9a5f3555a5db9f2497206a5">baseManifest</a> (const <a class="el" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">ImportPackageIdentity</a> &amp;package, std::string_view importer)</td></tr>
+<tr class="separator:abd13cb28f9a5f3555a5db9f2497206a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac664c655bbe3daa7f01d6ccc37ee073d" id="r_ac664c655bbe3daa7f01d6ccc37ee073d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1AssetRef.html">AssetRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1detail.html#ac664c655bbe3daa7f01d6ccc37ee073d">assetRef</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:ac664c655bbe3daa7f01d6ccc37ee073d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d98f38bab3a7107a148b0ca0e56ec16" id="r_a6d98f38bab3a7107a148b0ca0e56ec16"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1detail.html#a6d98f38bab3a7107a148b0ca0e56ec16">extension</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a6d98f38bab3a7107a148b0ca0e56ec16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fa3df8cd3518e8cb0306547f321d960" id="r_a9fa3df8cd3518e8cb0306547f321d960"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset__import_1_1detail.html#a9fa3df8cd3518e8cb0306547f321d960">finalizeImportReport</a> (<a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &amp;prepared, const <a class="el" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">ImportPackageIdentity</a> &amp;package, std::string_view sourceEngine, std::string_view sourceVersion, <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> <a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="memdesc:a9fa3df8cd3518e8cb0306547f321d960"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append the deterministic mandatory import report and bind it from provenance.  <br /></td></tr>
+<tr class="separator:a9fa3df8cd3518e8cb0306547f321d960"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="ac664c655bbe3daa7f01d6ccc37ee073d" name="ac664c655bbe3daa7f01d6ccc37ee073d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac664c655bbe3daa7f01d6ccc37ee073d">&#9670;&#160;</a></span>assetRef()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1AssetRef.html">AssetRef</a> &gt; eve::asset_import::detail::assetRef </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ImportCommon_8h_source.html">ImportCommon.h</a> 第 <a class="el" href="ImportCommon_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ResourceRef_8cpp_source.html#l00026">eve::AssetRef::fromId()</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00350">eve::asset_import::prepareGltfImport()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00063">eve::asset_import::prepareImageImport()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00193">eve::asset_import::prepareLegacyAnimationImport()</a>.</p>
+
+</div>
+</div>
+<a id="abd13cb28f9a5f3555a5db9f2497206a5" name="abd13cb28f9a5f3555a5db9f2497206a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd13cb28f9a5f3555a5db9f2497206a5">&#9670;&#160;</a></span>baseManifest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">asset::EvaManifest</a> &gt; eve::asset_import::detail::baseManifest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">ImportPackageIdentity</a> &amp;&#160;</td>
+          <td class="paramname"><em>package</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>importer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ImportCommon_8h_source.html">ImportCommon.h</a> 第 <a class="el" href="ImportCommon_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="EvaManifest_8h_source.html#l00064">eve::asset::EvaManifest::packageId</a>, <a class="el" href="AssetImporter_8h_source.html#l00032">eve::asset_import::ImportPackageIdentity::packageId</a>, <a class="el" href="EvaManifest_8h_source.html#l00065">eve::asset::EvaManifest::packageName</a>, <a class="el" href="AssetImporter_8h_source.html#l00033">eve::asset_import::ImportPackageIdentity::packageName</a>, <a class="el" href="EvaManifest_8h_source.html#l00066">eve::asset::EvaManifest::packageVersion</a>, <a class="el" href="AssetImporter_8h_source.html#l00034">eve::asset_import::ImportPackageIdentity::packageVersion</a>, <a class="el" href="EvaManifest_8h_source.html#l00070">eve::asset::EvaManifest::provenance</a>, <a class="el" href="AssetImporter_8h_source.html#l00035">eve::asset_import::ImportPackageIdentity::provenance</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00350">eve::asset_import::prepareGltfImport()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00063">eve::asset_import::prepareImageImport()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00193">eve::asset_import::prepareLegacyAnimationImport()</a> , 以及 <a class="el" href="UnityImporter_8cpp_source.html#l00350">eve::asset_import::prepareUnityProjectImport()</a>.</p>
+
+</div>
+</div>
+<a id="a6d98f38bab3a7107a148b0ca0e56ec16" name="a6d98f38bab3a7107a148b0ca0e56ec16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d98f38bab3a7107a148b0ca0e56ec16">&#9670;&#160;</a></span>extension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::asset_import::detail::extension </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ImportCommon_8h_source.html">ImportCommon.h</a> 第 <a class="el" href="ImportCommon_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a4cf204329c882041f2183b19af0c0700" name="a4cf204329c882041f2183b19af0c0700"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf204329c882041f2183b19af0c0700">&#9670;&#160;</a></span>failure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; T &gt; eve::asset_import::detail::failure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ImportCommon_8h_source.html">ImportCommon.h</a> 第 <a class="el" href="ImportCommon_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9fa3df8cd3518e8cb0306547f321d960" name="a9fa3df8cd3518e8cb0306547f321d960"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fa3df8cd3518e8cb0306547f321d960">&#9670;&#160;</a></span>finalizeImportReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_import::detail::finalizeImportReport </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1asset__import_1_1PreparedAssetImport.html">PreparedAssetImport</a> &amp;&#160;</td>
+          <td class="paramname"><em>prepared</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">ImportPackageIdentity</a> &amp;&#160;</td>
+          <td class="paramname"><em>package</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>sourceEngine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>sourceVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append the deterministic mandatory import report and bind it from provenance. </p>
+
+<p class="definition">在文件 <a class="el" href="ImportReport_8cpp_source.html">ImportReport.cpp</a> 第 <a class="el" href="ImportReport_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="EvaManifest_8h_source.html#l00067">eve::asset::EvaManifest::assets</a>, <a class="el" href="AssetImporter_8h_source.html#l00083">eve::asset_import::PreparedAssetImport::findings</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="AssetImporter_8h_source.html#l00081">eve::asset_import::PreparedAssetImport::manifest</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="AssetImporter_8h_source.html#l00033">eve::asset_import::ImportPackageIdentity::packageName</a>, <a class="el" href="AssetImporter_8h_source.html#l00034">eve::asset_import::ImportPackageIdentity::packageVersion</a>, <a class="el" href="EvaManifest_8h_source.html#l00070">eve::asset::EvaManifest::provenance</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a> , 以及 <a class="el" href="AssetImporter_8h_source.html#l00084">eve::asset_import::PreparedAssetImport::sourceMappings</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00350">eve::asset_import::prepareGltfImport()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00063">eve::asset_import::prepareImageImport()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00193">eve::asset_import::prepareLegacyAnimationImport()</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00350">eve::asset_import::prepareUnityProjectImport()</a> , 以及 <a class="el" href="UnrealImporter_8cpp_source.html#l00126">eve::asset_import::prepareUnrealM4Import()</a>.</p>
+
+</div>
+</div>
+<a id="a1bec4edd0427191572ee50a9b98ff2e9" name="a1bec4edd0427191572ee50a9b98ff2e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bec4edd0427191572ee50a9b98ff2e9">&#9670;&#160;</a></span>sha256()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::asset_import::detail::sha256 </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ImportCommon_8h_source.html">ImportCommon.h</a> 第 <a class="el" href="ImportCommon_8h_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HashFunction_8cpp_source.html#l00589">eve::data::HashFunction::getHashFunction()</a>, <a class="el" href="classeve_1_1data_1_1HashFunction.html#ad0acb85a88a85b696d3599552eb139b3">eve::data::HashFunction::hash()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GltfImporter_8cpp_source.html#l00350">eve::asset_import::prepareGltfImport()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00063">eve::asset_import::prepareImageImport()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00193">eve::asset_import::prepareLegacyAnimationImport()</a> , 以及 <a class="el" href="UnrealImporter_8cpp_source.html#l00126">eve::asset_import::prepareUnrealM4Import()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

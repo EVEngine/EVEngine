@@ -1,0 +1,341 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/profiler_editing/ProfilerModel.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6e77c5a196b227d1ac8dcd316a8f7c65.html">profiler_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ProfilerModel.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ProfilerModel_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProtocol_8h.html">editing/EditingProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;deque&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1profiler.html">eve::profiler</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Profiler;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">struct </span>ProfilerFrameSnapshot;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}  <span class="comment">// namespace eve::profiler</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1profiler__editing.html">eve::profiler_editing</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1profiler__editing.html#add1e52fa6b0f05b6a2edb8a716c95bee">   17</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">editing::DiagnosticSeverity</a>; <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Diagnostic.html">EditorDiagnostic</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1profiler__editing.html#a7f98b8923cbe7f6f98d7653ffa5bde87">   18</a></span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;<span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult</a>=<a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;T&gt;</a>; <span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1profiler__editing.html#a5678b725c2bf9e3f59a27d06a0318e25">   19</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html">EditorProfilerZone</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    std::string <span class="keyword">module</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a2b3a7e2a7922cb01db53934f0caad4d5">   24</a></span>    std::string <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a2b3a7e2a7922cb01db53934f0caad4d5">name</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#aa0c17c99140a4ba59242f044d07457db">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#aa0c17c99140a4ba59242f044d07457db">thread</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a7f500a80bac3ce0090c8a57ca2d294dd">   26</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a7f500a80bac3ce0090c8a57ca2d294dd">selfMs</a>  = 0.0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a1003d721d7f8151102301305494b86ab">   27</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a1003d721d7f8151102301305494b86ab">totalMs</a> = 0.0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a1d7e2a310f9b2b05b60a0041281bd761">   28</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a1d7e2a310f9b2b05b60a0041281bd761">count</a>   = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#aed33cb229ba506cf1cf823a17916898c">   29</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#aed33cb229ba506cf1cf823a17916898c">depth</a>   = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html">EditorProfilerFrame</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a7305213dd406018bf9eb06e78a7af674">   34</a></span>    std::uint64_t                 <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a7305213dd406018bf9eb06e78a7af674">sequence</a> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a691f5a3d64f8f66f1e4bbcc900aec6d2">   35</a></span>    <span class="keywordtype">double</span>                        <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a691f5a3d64f8f66f1e4bbcc900aec6d2">cpuFrameMs</a> = 0.0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#ade14b6ba81d8d418e010453f03d3e8b2">   36</a></span>    <span class="keywordtype">double</span>                        <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#ade14b6ba81d8d418e010453f03d3e8b2">gpuFrameMs</a> = 0.0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a22cc8d06f21a47e8dd218be69e651da4">   37</a></span>    <span class="keywordtype">bool</span>                          <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a22cc8d06f21a47e8dd218be69e651da4">gpuTimingAvailable</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">   38</a></span>    std::vector&lt;EditorProfilerZone&gt; <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">zones</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9">   42</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9">EditorProfilerSort</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a5547f699ec33a786df256c235a17a9f4">SelfTime</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9abdb1fc413c8484190aa7a939e8b90a0c">TotalTime</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9ae93f994f01c537c4e2f7d8528c3eb5e9">Count</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a49ee3087348e8d44e1feda1917443987">Name</a> };</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html">EditorProfilerQuery</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::string        <span class="keyword">module</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a6ba77c6cff52b39b26dfff92fc92fbf0">   47</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a6ba77c6cff52b39b26dfff92fc92fbf0">thread</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a9bb590845029a07ee92029c6d7e76b1d">   48</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a9bb590845029a07ee92029c6d7e76b1d">text</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a613472a79e10da774d90d8681372bffc">   49</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9">EditorProfilerSort</a> <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a613472a79e10da774d90d8681372bffc">sort</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a5547f699ec33a786df256c235a17a9f4">EditorProfilerSort::SelfTime</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a2bfff81b011a6ce1462cf4a08e55d04f">   50</a></span>    <span class="keywordtype">bool</span>               <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a2bfff81b011a6ce1462cf4a08e55d04f">descending</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#ab7af4b844a98a1e04c9a0ee813041353">   51</a></span>    std::size_t        <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#ab7af4b844a98a1e04c9a0ee813041353">limit</a> = 500;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>};</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="};">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html">   55</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html">EditorProfilerModuleSummary</a> {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    std::string <span class="keyword">module</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#aa621d9fdf10baf427a4b1b531245efbd">   57</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#aa621d9fdf10baf427a4b1b531245efbd">selfMs</a> = 0.0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#aecfee30941ba24612b304a6d877a7b53">   58</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#aecfee30941ba24612b304a6d877a7b53">totalMs</a> = 0.0;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#ab8a9f10165e75f680529dfd6b4f4832a">   59</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#ab8a9f10165e75f680529dfd6b4f4832a">count</a> = 0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#a3b78e9baa28102c133a59eb09dd87962">   60</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#a3b78e9baa28102c133a59eb09dd87962">zones</a> = 0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>};</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="};">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html">   64</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html">EditorProfilerBudgets</a> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a1f394aba3b2dae2f222d0032808f9a21">   65</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a1f394aba3b2dae2f222d0032808f9a21">cpuFrameMs</a> = 16.667;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#ab876597f0ebe11beb74b2e0adee49a66">   66</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#ab876597f0ebe11beb74b2e0adee49a66">gpuFrameMs</a> = 16.667;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a47155d2448cb9cd73ff749c1a1d238c5">   67</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a47155d2448cb9cd73ff749c1a1d238c5">zoneSelfMs</a> = 4.0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#abd912d1cc22fea0bb0185a454b90dc6c">   68</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#abd912d1cc22fea0bb0185a454b90dc6c">historyFrames</a> = 300;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="};">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html">   77</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html">EditorProfilerModel</a> {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a0c2c579bc9b2b82ca5364b354f5d770c">   80</a></span>    <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a0c2c579bc9b2b82ca5364b354f5d770c">EditorProfilerModel</a>();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a6e7ddcb3e90bd4764c2511abdb3f3f4e">configure</a>(<a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html">EditorProfilerBudgets</a> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">budgets</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a53528ee7cc6b36036cf21374a5783386">ingest</a>(<a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html">EditorProfilerFrame</a> frame);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a626f87c34ff7a80a9de01d58df5571b4">clear</a>();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">  100</a></span>    <a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html">EditorProfilerBudgets</a> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">budgets</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> budgets_; }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a194d09c4b2ac73025f30b28d76407e02">  103</a></span>    <span class="keyword">const</span> std::deque&lt;EditorProfilerFrame&gt;&amp; <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a194d09c4b2ac73025f30b28d76407e02">history</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> history_; }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::vector&lt;EditorProfilerZone&gt; <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a5753b5f4d2522fe9f19c435b8c16aef2">query</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html">EditorProfilerQuery</a>&amp; <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a5753b5f4d2522fe9f19c435b8c16aef2">query</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::vector&lt;EditorProfilerModuleSummary&gt; <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#ac22566259a61e058c7e2e3edb9ad4e75">moduleSummary</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a57fa5e9b41d9a1801e696b24bffc9afc">diagnostics</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html">EditorProfilerBudgets</a>          budgets_;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::deque&lt;EditorProfilerFrame&gt; history_;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>};</div>
+</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="foldopen" id="foldopen00124" data-start="{" data-end="};">
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerCollector.html">  124</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1profiler__editing_1_1EditorProfilerCollector.html">EditorProfilerCollector</a> {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerCollector.html#a799828eaf8f78f7f12d2bbdfbbb6356c">collect</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1profiler_1_1Profiler.html">profiler::Profiler</a>&amp; profiler,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                                             <a class="code hl_class" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html">EditorProfilerModel</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>};</div>
+</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}  <span class="comment">// namespace eve::profiler_editing</span></div>
+<div class="ttc" id="aEditingProtocol_8h_html"><div class="ttname"><a href="EditingProtocol_8h.html">EditingProtocol.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ade56622421c713a8290c025626759118"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00734">RenderSystem3D.cpp:734</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler_1_1Profiler_html"><div class="ttname"><a href="classeve_1_1profiler_1_1Profiler.html">eve::profiler::Profiler</a></div><div class="ttdoc">Script-facing wrapper around the engine-wide profiler core (eve::prof, see common/Profile....</div><div class="ttdef"><b>Definition</b> <a href="Profiler_8h_source.html#l00063">Profiler.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerCollector_html"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerCollector.html">eve::profiler_editing::EditorProfilerCollector</a></div><div class="ttdoc">Optional profiler-module bridge that copies one completed runtime frame. @thread Main-thread only,...</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00124">ProfilerModel.h:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerCollector_html_a799828eaf8f78f7f12d2bbdfbbb6356c"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerCollector.html#a799828eaf8f78f7f12d2bbdfbbb6356c">eve::profiler_editing::EditorProfilerCollector::collect</a></div><div class="ttdeci">EditorResult&lt; void &gt; collect(const profiler::Profiler &amp;profiler, EditorProfilerModel &amp;model) const</div><div class="ttdoc">Copy and ingest the latest runtime frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerRuntime_8cpp_source.html#l00009">ProfilerRuntime.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html">eve::profiler_editing::EditorProfilerModel</a></div><div class="ttdoc">Bounded owning profiler history and deterministic presentation queries. @thread Main-thread only....</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00077">ProfilerModel.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a0c2c579bc9b2b82ca5364b354f5d770c"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a0c2c579bc9b2b82ca5364b354f5d770c">eve::profiler_editing::EditorProfilerModel::EditorProfilerModel</a></div><div class="ttdeci">EditorProfilerModel()</div><div class="ttdoc">Construct with default budgets and a 300-frame history.</div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a194d09c4b2ac73025f30b28d76407e02"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a194d09c4b2ac73025f30b28d76407e02">eve::profiler_editing::EditorProfilerModel::history</a></div><div class="ttdeci">const std::deque&lt; EditorProfilerFrame &gt; &amp; history() const</div><div class="ttdoc">Return the bounded owning frame history.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00103">ProfilerModel.h:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a4af9ea2bc5d439ae21aaa98949ffae97"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">eve::profiler_editing::EditorProfilerModel::budgets</a></div><div class="ttdeci">EditorProfilerBudgets budgets() const</div><div class="ttdoc">Return the current editor-only budgets by value.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00100">ProfilerModel.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a53528ee7cc6b36036cf21374a5783386"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a53528ee7cc6b36036cf21374a5783386">eve::profiler_editing::EditorProfilerModel::ingest</a></div><div class="ttdeci">EditorResult&lt; void &gt; ingest(EditorProfilerFrame frame)</div><div class="ttdoc">Append an owning completed-frame snapshot.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00039">ProfilerModel.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a5753b5f4d2522fe9f19c435b8c16aef2"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a5753b5f4d2522fe9f19c435b8c16aef2">eve::profiler_editing::EditorProfilerModel::query</a></div><div class="ttdeci">std::vector&lt; EditorProfilerZone &gt; query(const EditorProfilerQuery &amp;query) const</div><div class="ttdoc">Query and sort copied hotspot rows from the latest frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00064">ProfilerModel.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a57fa5e9b41d9a1801e696b24bffc9afc"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a57fa5e9b41d9a1801e696b24bffc9afc">eve::profiler_editing::EditorProfilerModel::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics() const</div><div class="ttdoc">Produce CPU/GPU/zone budget diagnostics for the latest frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00113">ProfilerModel.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a626f87c34ff7a80a9de01d58df5571b4"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a626f87c34ff7a80a9de01d58df5571b4">eve::profiler_editing::EditorProfilerModel::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clear retained frames without changing configured budgets.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00062">ProfilerModel.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a6e7ddcb3e90bd4764c2511abdb3f3f4e"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a6e7ddcb3e90bd4764c2511abdb3f3f4e">eve::profiler_editing::EditorProfilerModel::configure</a></div><div class="ttdeci">EditorResult&lt; void &gt; configure(EditorProfilerBudgets budgets)</div><div class="ttdoc">Validate and atomically replace editor-only performance budgets.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00027">ProfilerModel.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_ac22566259a61e058c7e2e3edb9ad4e75"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#ac22566259a61e058c7e2e3edb9ad4e75">eve::profiler_editing::EditorProfilerModel::moduleSummary</a></div><div class="ttdeci">std::vector&lt; EditorProfilerModuleSummary &gt; moduleSummary() const</div><div class="ttdoc">Aggregate copied rows by module for the latest frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00092">ProfilerModel.cpp:92</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a011e7c6c3a26ea959d34a63beca22c19"><div class="ttname"><a href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">eve::editing::DiagnosticSeverity</a></div><div class="ttdeci">eve::Severity DiagnosticSeverity</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00015">EditingResult.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html">eve::profiler_editing</a></div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00009">ProfilerModel.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9">eve::profiler_editing::EditorProfilerSort</a></div><div class="ttdeci">EditorProfilerSort</div><div class="ttdoc">Sort key used by the profiler hotspot table.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00042">ProfilerModel.h:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9a49ee3087348e8d44e1feda1917443987"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a49ee3087348e8d44e1feda1917443987">eve::profiler_editing::EditorProfilerSort::Name</a></div><div class="ttdeci">@ Name</div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9a5547f699ec33a786df256c235a17a9f4"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a5547f699ec33a786df256c235a17a9f4">eve::profiler_editing::EditorProfilerSort::SelfTime</a></div><div class="ttdeci">@ SelfTime</div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9abdb1fc413c8484190aa7a939e8b90a0c"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9abdb1fc413c8484190aa7a939e8b90a0c">eve::profiler_editing::EditorProfilerSort::TotalTime</a></div><div class="ttdeci">@ TotalTime</div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9ae93f994f01c537c4e2f7d8528c3eb5e9"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9ae93f994f01c537c4e2f7d8528c3eb5e9">eve::profiler_editing::EditorProfilerSort::Count</a></div><div class="ttdeci">@ Count</div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler_html"><div class="ttname"><a href="namespaceeve_1_1profiler.html">eve::profiler</a></div><div class="ttdef"><b>Definition</b> <a href="Profiler_8cpp_source.html#l00011">Profiler.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Stable severity of a diagnostic, independent of its display text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00020">Diagnostic.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html">eve::profiler_editing::EditorProfilerBudgets</a></div><div class="ttdoc">Configurable performance budgets used only for editor diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00064">ProfilerModel.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html_a1f394aba3b2dae2f222d0032808f9a21"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a1f394aba3b2dae2f222d0032808f9a21">eve::profiler_editing::EditorProfilerBudgets::cpuFrameMs</a></div><div class="ttdeci">double cpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00065">ProfilerModel.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html_a47155d2448cb9cd73ff749c1a1d238c5"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a47155d2448cb9cd73ff749c1a1d238c5">eve::profiler_editing::EditorProfilerBudgets::zoneSelfMs</a></div><div class="ttdeci">double zoneSelfMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00067">ProfilerModel.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html_ab876597f0ebe11beb74b2e0adee49a66"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#ab876597f0ebe11beb74b2e0adee49a66">eve::profiler_editing::EditorProfilerBudgets::gpuFrameMs</a></div><div class="ttdeci">double gpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00066">ProfilerModel.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html_abd912d1cc22fea0bb0185a454b90dc6c"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#abd912d1cc22fea0bb0185a454b90dc6c">eve::profiler_editing::EditorProfilerBudgets::historyFrames</a></div><div class="ttdeci">std::size_t historyFrames</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00068">ProfilerModel.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html">eve::profiler_editing::EditorProfilerFrame</a></div><div class="ttdoc">One owning completed-frame sample retained by the editor.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00033">ProfilerModel.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a22cc8d06f21a47e8dd218be69e651da4"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a22cc8d06f21a47e8dd218be69e651da4">eve::profiler_editing::EditorProfilerFrame::gpuTimingAvailable</a></div><div class="ttdeci">bool gpuTimingAvailable</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00037">ProfilerModel.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a691f5a3d64f8f66f1e4bbcc900aec6d2"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a691f5a3d64f8f66f1e4bbcc900aec6d2">eve::profiler_editing::EditorProfilerFrame::cpuFrameMs</a></div><div class="ttdeci">double cpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00035">ProfilerModel.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a7305213dd406018bf9eb06e78a7af674"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a7305213dd406018bf9eb06e78a7af674">eve::profiler_editing::EditorProfilerFrame::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00034">ProfilerModel.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a8dc9d999ef4e1ecd2112538b35f6c3e4"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">eve::profiler_editing::EditorProfilerFrame::zones</a></div><div class="ttdeci">std::vector&lt; EditorProfilerZone &gt; zones</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00038">ProfilerModel.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_ade14b6ba81d8d418e010453f03d3e8b2"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#ade14b6ba81d8d418e010453f03d3e8b2">eve::profiler_editing::EditorProfilerFrame::gpuFrameMs</a></div><div class="ttdeci">double gpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00036">ProfilerModel.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerModuleSummary_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html">eve::profiler_editing::EditorProfilerModuleSummary</a></div><div class="ttdoc">Aggregated module timing for the latest completed frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00055">ProfilerModel.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerModuleSummary_html_a3b78e9baa28102c133a59eb09dd87962"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#a3b78e9baa28102c133a59eb09dd87962">eve::profiler_editing::EditorProfilerModuleSummary::zones</a></div><div class="ttdeci">int zones</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00060">ProfilerModel.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerModuleSummary_html_aa621d9fdf10baf427a4b1b531245efbd"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#aa621d9fdf10baf427a4b1b531245efbd">eve::profiler_editing::EditorProfilerModuleSummary::selfMs</a></div><div class="ttdeci">std::string double selfMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00057">ProfilerModel.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerModuleSummary_html_ab8a9f10165e75f680529dfd6b4f4832a"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#ab8a9f10165e75f680529dfd6b4f4832a">eve::profiler_editing::EditorProfilerModuleSummary::count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00059">ProfilerModel.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerModuleSummary_html_aecfee30941ba24612b304a6d877a7b53"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerModuleSummary.html#aecfee30941ba24612b304a6d877a7b53">eve::profiler_editing::EditorProfilerModuleSummary::totalMs</a></div><div class="ttdeci">double totalMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00058">ProfilerModel.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerQuery_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html">eve::profiler_editing::EditorProfilerQuery</a></div><div class="ttdoc">Non-persistent query applied to the latest profiler frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00045">ProfilerModel.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerQuery_html_a2bfff81b011a6ce1462cf4a08e55d04f"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a2bfff81b011a6ce1462cf4a08e55d04f">eve::profiler_editing::EditorProfilerQuery::descending</a></div><div class="ttdeci">bool descending</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00050">ProfilerModel.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerQuery_html_a613472a79e10da774d90d8681372bffc"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a613472a79e10da774d90d8681372bffc">eve::profiler_editing::EditorProfilerQuery::sort</a></div><div class="ttdeci">EditorProfilerSort sort</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00049">ProfilerModel.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerQuery_html_a6ba77c6cff52b39b26dfff92fc92fbf0"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a6ba77c6cff52b39b26dfff92fc92fbf0">eve::profiler_editing::EditorProfilerQuery::thread</a></div><div class="ttdeci">std::string std::string thread</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00047">ProfilerModel.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerQuery_html_a9bb590845029a07ee92029c6d7e76b1d"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#a9bb590845029a07ee92029c6d7e76b1d">eve::profiler_editing::EditorProfilerQuery::text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00048">ProfilerModel.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerQuery_html_ab7af4b844a98a1e04c9a0ee813041353"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html#ab7af4b844a98a1e04c9a0ee813041353">eve::profiler_editing::EditorProfilerQuery::limit</a></div><div class="ttdeci">std::size_t limit</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00051">ProfilerModel.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerZone_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html">eve::profiler_editing::EditorProfilerZone</a></div><div class="ttdoc">One owning profiler hotspot row projected for editor presentation.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00022">ProfilerModel.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerZone_html_a1003d721d7f8151102301305494b86ab"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a1003d721d7f8151102301305494b86ab">eve::profiler_editing::EditorProfilerZone::totalMs</a></div><div class="ttdeci">double totalMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00027">ProfilerModel.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerZone_html_a1d7e2a310f9b2b05b60a0041281bd761"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a1d7e2a310f9b2b05b60a0041281bd761">eve::profiler_editing::EditorProfilerZone::count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00028">ProfilerModel.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerZone_html_a2b3a7e2a7922cb01db53934f0caad4d5"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a2b3a7e2a7922cb01db53934f0caad4d5">eve::profiler_editing::EditorProfilerZone::name</a></div><div class="ttdeci">std::string std::string name</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00024">ProfilerModel.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerZone_html_a7f500a80bac3ce0090c8a57ca2d294dd"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#a7f500a80bac3ce0090c8a57ca2d294dd">eve::profiler_editing::EditorProfilerZone::selfMs</a></div><div class="ttdeci">double selfMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00026">ProfilerModel.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerZone_html_aa0c17c99140a4ba59242f044d07457db"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#aa0c17c99140a4ba59242f044d07457db">eve::profiler_editing::EditorProfilerZone::thread</a></div><div class="ttdeci">std::string thread</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00025">ProfilerModel.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerZone_html_aed33cb229ba506cf1cf823a17916898c"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html#aed33cb229ba506cf1cf823a17916898c">eve::profiler_editing::EditorProfilerZone::depth</a></div><div class="ttdeci">int depth</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00029">ProfilerModel.h:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

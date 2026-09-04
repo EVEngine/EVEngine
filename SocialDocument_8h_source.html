@@ -1,0 +1,329 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/social_editing/SocialDocument.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25ad25a2d216f9dc9f1319ed7cabb8d6.html">social_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SocialDocument.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SocialDocument_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditableTarget_8h.html">editing/EditableTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditingAuthority_8h.html">editing/EditingAuthority.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1social.html">eve::social</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>SocialGraph;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1social__editing.html">eve::social_editing</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a40466a5c29d474d47015f8f66f2781ee">   16</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>       = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a03798ad98bec2e7daaa9bc59b183a072">   17</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a> = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">editing::DiagnosticSeverity</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#af821c6aee794683fd315a0f4f4d6ea32">   18</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>    = <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a733529e31db1480887b7ee85c9cb143a">   19</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>         = <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a9a8e2ef17070d0e231b3eadc4406c34e">   20</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Diagnostic.html">EditorDiagnostic</a>   = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#af028aafa02aade18a72dc2837401a230">   22</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult</a>                  = <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;T&gt;</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a64182fd269aca1e3748099c578c8252f">   23</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>                  = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#ae378f194ecca9a517aa6362d95af168e">   24</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>                   = <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">editing::Value</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a21585bb7835027e1c730dffbfad327e2">   25</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a>        = <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#abc441e04347c38ce1dcd5f67ed65f3aa">   26</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">IDomainOperationTargetStaging</a> = <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">editing::IDomainOperationTargetStaging</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#aadab0bfc29375877546d76c45eccc65a">   27</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>               = <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a89c6214d649f0b80a6219febe08a56ac">   28</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1social__editing.html#a89c6214d649f0b80a6219febe08a56ac">Revision</a>                      = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a20c5f0f2feb3b52c9ad2b32548240048">   29</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>                        = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a0412fd457ce46e0d5667c725c7a7ba70">   30</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>                      = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">editing::StableId</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a692aed029f8aca92adc1f9f3bb351d62">   31</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>              = <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social__editing.html#a3ae42e1e720e4db332ef18260d33d732">   32</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a>                      = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEntityRecord.html">   35</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1social__editing_1_1SocialEntityRecord.html">SocialEntityRecord</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEntityRecord.html#a4f2977295557d50463a69788da764b67">   36</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>    <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEntityRecord.html#a4f2977295557d50463a69788da764b67">id</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEntityRecord.html#aa9fa33ab81a2c9cfd160c94f91bf0d88">   37</a></span>    std::string <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEntityRecord.html#aa9fa33ab81a2c9cfd160c94f91bf0d88">label</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEntityRecord.html#a3cecf9000f959d21be19d4bdffb1d1fe">   38</a></span>    std::string <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEntityRecord.html#a3cecf9000f959d21be19d4bdffb1d1fe">category</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html">   42</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html">SocialEdgeRecord</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a508f78b60dc498e05b2caacfefc869f8">   43</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>    <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a508f78b60dc498e05b2caacfefc869f8">id</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a3ac46f8913135102cfffc9921c4e92b1">   44</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>    <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a3ac46f8913135102cfffc9921c4e92b1">source</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a114817b7dd01e4dcbc91b60671c537bd">   45</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>    <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a114817b7dd01e4dcbc91b60671c537bd">target</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a1b599aff6cf5a3de7a91645316f1a988">   46</a></span>    std::string <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a1b599aff6cf5a3de7a91645316f1a988">kind</a> = <span class="stringliteral">&quot;relation&quot;</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#afb9149516f7bd60c0b4ca5a086939a8b">   47</a></span>    std::string <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#afb9149516f7bd60c0b4ca5a086939a8b">type</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a91c94b41ee9eba7319abaada2af8cf72">   48</a></span>    <span class="keywordtype">double</span>      <a class="code hl_variable" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a91c94b41ee9eba7319abaada2af8cf72">weight</a> = 1.0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="};">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html">   52</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html">SocialDocumentTarget</a> final : <span class="keyword">public</span> <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                   <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                   <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">IDomainOperationTargetStaging</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#aba1bb295876d3442f5095bd5247bf7fd">   56</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#aba1bb295876d3442f5095bd5247bf7fd">editorCapabilityId</a>() { <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1social__editing.html#a40466a5c29d474d47015f8f66f2781ee">CapabilityId</a>(<span class="stringliteral">&quot;eve.editor.target.social-graph&quot;</span>); }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html">SocialDocumentTarget</a>(std::string <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a4582bfd0df2d57c4f7641949c48225ce">   58</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a>         <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a4582bfd0df2d57c4f7641949c48225ce">targetId</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1social__editing.html#a3ae42e1e720e4db332ef18260d33d732">TargetId</a>(id_); }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#ae04563a953203e9ed1afcc51dd2f64a1">   59</a></span>    std::uint64_t    <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#ae04563a953203e9ed1afcc51dd2f64a1">revision</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a7f8ab2f49739ec3803371ce64eca162b">   60</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>       <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a7f8ab2f49739ec3803371ce64eca162b">dirtyRegion</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> dirty_; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#abae33f1d7b69c90189293bfe26921b61">   61</a></span>    <span class="keywordtype">void</span>             <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#abae33f1d7b69c90189293bfe26921b61">clearDirtyRegion</a>()<span class="keyword"> override </span>{ dirty_.<a class="code hl_function" href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">clear</a>(); }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#abb7e9dc6c711e42a5bcb62218b66ca7d">describe</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span>*                                   <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#ab80c3f75ef7a770cef1f54c76156ca78">queryCapability</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>&amp; <a class="code hl_function" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a>                      <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#abc78f71fcd0c91bff9ba17cc89988bf1">applyDomainOperation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>&amp; operation) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::unique_ptr&lt;IDomainOperationTarget&gt; <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#aaa462566eb2c599a5d48b9b5416666af">cloneDomainState</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#ad94807ebe8091ec0561839735317b0d2">commitDomainState</a>(std::unique_ptr&lt;IDomainOperationTarget&gt; candidate) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::vector&lt;SocialEntityRecord&gt; <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a71752db7c4b6af99089cf67011d61748">entities</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::vector&lt;SocialEdgeRecord&gt; <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a88492070eaa4828aa01fdff13d2bd4ca">edges</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#aabad50f2c4308dfc3fc641e7bbc63cbc">makeSetEntity</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1social__editing_1_1SocialEntityRecord.html">SocialEntityRecord</a>&amp; entity) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a093b9ecff11447ed092956d7ce1b2f81">makeDeleteEntity</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a1c57dd6364bb8d90da62f68d13cc14b2">makeSetEdge</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1social__editing_1_1SocialEdgeRecord.html">SocialEdgeRecord</a>&amp; edge) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a3b0daedd2e7cdc0c81854c84f5f482bb">makeDeleteEdge</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a50a01da10e92d2d6153535a0509fbdda">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a7dfa4a4612ea4695a242e4e7983c2556">snapshotValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#acd9c3015f47a80c13f150253673d64e5">loadSnapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; snapshot);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::string                            id_;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_typedef" href="namespaceeve_1_1social__editing.html#a89c6214d649f0b80a6219febe08a56ac">Revision</a>                               revision_ = 1;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>                             dirty_;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    std::map&lt;StableId, SocialEntityRecord&gt; entities_;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::map&lt;StableId, SocialEdgeRecord&gt;   edges_;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="};">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeve_1_1social__editing_1_1SocialRuntimeApplier.html">   97</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1social__editing_1_1SocialRuntimeApplier.html">SocialRuntimeApplier</a> {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1social__editing_1_1SocialRuntimeApplier.html#ab0084e488c867246a45ad96e05d247c3">apply</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1social__editing_1_1SocialDocumentTarget.html">SocialDocumentTarget</a>&amp; document, <a class="code hl_class" href="classeve_1_1social_1_1SocialGraph.html">social::SocialGraph</a>* runtime) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>};</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}  <span class="comment">// namespace eve::social_editing</span></div>
+<div class="ttc" id="aEditableTarget_8h_html"><div class="ttname"><a href="EditableTarget_8h.html">EditableTarget.h</a></div></div>
+<div class="ttc" id="aEditingAuthority_8h_html"><div class="ttname"><a href="EditingAuthority_8h.html">EditingAuthority.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTargetStaging_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></div><div class="ttdoc">Optional candidate/publish capability for atomic domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00025">EditingTargetOperations.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></div><div class="ttdoc">Editable-target capability that applies owning domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00011">EditingTargetOperations.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html_a1e541660312c789b59e0a247f6e614ac"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">eve::editing::IEditableTarget::capability</a></div><div class="ttdeci">eve::OptionalRef&lt; C &gt; capability()</div><div class="ttdoc">Query a capability through its interface-owned stable identity.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00068">EditableTarget.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html">eve::social::SocialGraph</a></div><div class="ttdoc">Indexed ownership, control, assignment, and typed-relation graph.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00032">SocialGraph.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html">eve::social_editing::SocialDocumentTarget</a></div><div class="ttdoc">UI-neutral revisioned social graph authoring document.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00052">SocialDocument.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a093b9ecff11447ed092956d7ce1b2f81"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a093b9ecff11447ed092956d7ce1b2f81">eve::social_editing::SocialDocumentTarget::makeDeleteEntity</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeDeleteEntity(const StableId &amp;id) const</div><div class="ttdoc">Plan deletion of an entity and reject it while edges reference it.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00144">SocialDocument.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a1c57dd6364bb8d90da62f68d13cc14b2"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a1c57dd6364bb8d90da62f68d13cc14b2">eve::social_editing::SocialDocumentTarget::makeSetEdge</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSetEdge(const SocialEdgeRecord &amp;edge) const</div><div class="ttdoc">Plan reversible edge creation or replacement.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00157">SocialDocument.cpp:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a3b0daedd2e7cdc0c81854c84f5f482bb"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a3b0daedd2e7cdc0c81854c84f5f482bb">eve::social_editing::SocialDocumentTarget::makeDeleteEdge</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeDeleteEdge(const StableId &amp;id) const</div><div class="ttdoc">Plan reversible edge deletion.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00173">SocialDocument.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a4582bfd0df2d57c4f7641949c48225ce"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a4582bfd0df2d57c4f7641949c48225ce">eve::social_editing::SocialDocumentTarget::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00058">SocialDocument.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a50a01da10e92d2d6153535a0509fbdda"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a50a01da10e92d2d6153535a0509fbdda">eve::social_editing::SocialDocumentTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdoc">Validate references, uniqueness constraints and finite weights.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00180">SocialDocument.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a71752db7c4b6af99089cf67011d61748"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a71752db7c4b6af99089cf67011d61748">eve::social_editing::SocialDocumentTarget::entities</a></div><div class="ttdeci">std::vector&lt; SocialEntityRecord &gt; entities() const</div><div class="ttdoc">Enumerate entities in stable order.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00133">SocialDocument.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a7dfa4a4612ea4695a242e4e7983c2556"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a7dfa4a4612ea4695a242e4e7983c2556">eve::social_editing::SocialDocumentTarget::snapshotValue</a></div><div class="ttdeci">EditorValue snapshotValue() const</div><div class="ttdoc">Capture deterministic schema-version-one graph content.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00204">SocialDocument.cpp:204</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a7f8ab2f49739ec3803371ce64eca162b"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a7f8ab2f49739ec3803371ce64eca162b">eve::social_editing::SocialDocumentTarget::dirtyRegion</a></div><div class="ttdeci">EditRegion dirtyRegion() const override</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00060">SocialDocument.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_a88492070eaa4828aa01fdff13d2bd4ca"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#a88492070eaa4828aa01fdff13d2bd4ca">eve::social_editing::SocialDocumentTarget::edges</a></div><div class="ttdeci">std::vector&lt; SocialEdgeRecord &gt; edges() const</div><div class="ttdoc">Enumerate edges in stable order.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00134">SocialDocument.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_aaa462566eb2c599a5d48b9b5416666af"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#aaa462566eb2c599a5d48b9b5416666af">eve::social_editing::SocialDocumentTarget::cloneDomainState</a></div><div class="ttdeci">std::unique_ptr&lt; IDomainOperationTarget &gt; cloneDomainState() const override</div><div class="ttdoc">Clone the complete target state into an owning detached candidate.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00123">SocialDocument.cpp:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_aabad50f2c4308dfc3fc641e7bbc63cbc"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#aabad50f2c4308dfc3fc641e7bbc63cbc">eve::social_editing::SocialDocumentTarget::makeSetEntity</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSetEntity(const SocialEntityRecord &amp;entity) const</div><div class="ttdoc">Plan reversible entity creation or replacement.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00135">SocialDocument.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_ab80c3f75ef7a770cef1f54c76156ca78"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#ab80c3f75ef7a770cef1f54c76156ca78">eve::social_editing::SocialDocumentTarget::queryCapability</a></div><div class="ttdeci">void * queryCapability(const CapabilityId &amp;capability) override</div><div class="ttdoc">Query an optional target capability.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00084">SocialDocument.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_aba1bb295876d3442f5095bd5247bf7fd"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#aba1bb295876d3442f5095bd5247bf7fd">eve::social_editing::SocialDocumentTarget::editorCapabilityId</a></div><div class="ttdeci">static CapabilityId editorCapabilityId()</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00056">SocialDocument.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_abae33f1d7b69c90189293bfe26921b61"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#abae33f1d7b69c90189293bfe26921b61">eve::social_editing::SocialDocumentTarget::clearDirtyRegion</a></div><div class="ttdeci">void clearDirtyRegion() override</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00061">SocialDocument.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_abb7e9dc6c711e42a5bcb62218b66ca7d"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#abb7e9dc6c711e42a5bcb62218b66ca7d">eve::social_editing::SocialDocumentTarget::describe</a></div><div class="ttdeci">TargetDescriptor describe() const override</div><div class="ttdoc">Describe the target for tools and automation.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00081">SocialDocument.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_abc78f71fcd0c91bff9ba17cc89988bf1"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#abc78f71fcd0c91bff9ba17cc89988bf1">eve::social_editing::SocialDocumentTarget::applyDomainOperation</a></div><div class="ttdeci">EditorResult&lt; void &gt; applyDomainOperation(const DomainOperation &amp;operation) override</div><div class="ttdoc">Apply one validated domain operation.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00087">SocialDocument.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_acd9c3015f47a80c13f150253673d64e5"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#acd9c3015f47a80c13f150253673d64e5">eve::social_editing::SocialDocumentTarget::loadSnapshot</a></div><div class="ttdeci">EditorResult&lt; void &gt; loadSnapshot(const EditorValue &amp;snapshot)</div><div class="ttdoc">Atomically load a validated graph snapshot.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00217">SocialDocument.cpp:217</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_ad94807ebe8091ec0561839735317b0d2"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#ad94807ebe8091ec0561839735317b0d2">eve::social_editing::SocialDocumentTarget::commitDomainState</a></div><div class="ttdeci">EditorResult&lt; void &gt; commitDomainState(std::unique_ptr&lt; IDomainOperationTarget &gt; candidate) override</div><div class="ttdoc">Atomically publish a validated candidate state.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00126">SocialDocument.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialDocumentTarget_html_ae04563a953203e9ed1afcc51dd2f64a1"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialDocumentTarget.html#ae04563a953203e9ed1afcc51dd2f64a1">eve::social_editing::SocialDocumentTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00059">SocialDocument.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialRuntimeApplier_html"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialRuntimeApplier.html">eve::social_editing::SocialRuntimeApplier</a></div><div class="ttdoc">Publishes a complete validated social document to a runtime SocialGraph.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00097">SocialDocument.h:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1social__editing_1_1SocialRuntimeApplier_html_ab0084e488c867246a45ad96e05d247c3"><div class="ttname"><a href="classeve_1_1social__editing_1_1SocialRuntimeApplier.html#ab0084e488c867246a45ad96e05d247c3">eve::social_editing::SocialRuntimeApplier::apply</a></div><div class="ttdeci">EditorResult&lt; void &gt; apply(const SocialDocumentTarget &amp;document, social::SocialGraph *runtime) const</div><div class="ttdef"><b>Definition</b> <a href="SocialRuntime_8cpp_source.html#l00005">SocialRuntime.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a011e7c6c3a26ea959d34a63beca22c19"><div class="ttname"><a href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">eve::editing::DiagnosticSeverity</a></div><div class="ttdeci">eve::Severity DiagnosticSeverity</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00015">EditingResult.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2b0f525a0b733bb08ccf8109b114213b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a></div><div class="ttdeci">StrongId&lt; TargetIdTag &gt; TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00054">EditingIds.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a60962f18b15404d7942fbae13fd833be"><div class="ttname"><a href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">eve::editing::StableId</a></div><div class="ttdeci">StrongId&lt; StableIdTag &gt; StableId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00061">EditingIds.h:61</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a80e450b5eb4cf0da7c013972cc572568"><div class="ttname"><a href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">eve::editing::CapabilityId</a></div><div class="ttdeci">StrongId&lt; CapabilityIdTag &gt; CapabilityId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00058">EditingIds.h:58</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1social__editing_html"><div class="ttname"><a href="namespaceeve_1_1social__editing.html">eve::social_editing</a></div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8cpp_source.html#l00007">SocialDocument.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1social__editing_html_a3ae42e1e720e4db332ef18260d33d732"><div class="ttname"><a href="namespaceeve_1_1social__editing.html#a3ae42e1e720e4db332ef18260d33d732">eve::social_editing::TargetId</a></div><div class="ttdeci">editing::TargetId TargetId</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00032">SocialDocument.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1social__editing_html_a40466a5c29d474d47015f8f66f2781ee"><div class="ttname"><a href="namespaceeve_1_1social__editing.html#a40466a5c29d474d47015f8f66f2781ee">eve::social_editing::CapabilityId</a></div><div class="ttdeci">editing::CapabilityId CapabilityId</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00016">SocialDocument.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1social__editing_html_a89c6214d649f0b80a6219febe08a56ac"><div class="ttname"><a href="namespaceeve_1_1social__editing.html#a89c6214d649f0b80a6219febe08a56ac">eve::social_editing::Revision</a></div><div class="ttdeci">editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00028">SocialDocument.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1social_html"><div class="ttname"><a href="namespaceeve_1_1social.html">eve::social</a></div><div class="ttdef"><b>Definition</b> <a href="Social_8cpp_source.html#l00005">Social.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Stable severity of a diagnostic, independent of its display text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00020">Diagnostic.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html">eve::editing::EditRegion</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00008">EditableTarget.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html_acc33c22f9fc876d717944a1fe94a932c"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">eve::editing::EditRegion::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00011">EditableTarget.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TargetDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1TargetDescriptor.html">eve::editing::TargetDescriptor</a></div><div class="ttdoc">Stable discovery metadata exposed by every editable target.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00032">EditableTarget.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEdgeRecord_html"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEdgeRecord.html">eve::social_editing::SocialEdgeRecord</a></div><div class="ttdoc">Directed ownership, control, assignment or weighted relation edge.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00042">SocialDocument.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEdgeRecord_html_a114817b7dd01e4dcbc91b60671c537bd"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a114817b7dd01e4dcbc91b60671c537bd">eve::social_editing::SocialEdgeRecord::target</a></div><div class="ttdeci">StableId target</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00045">SocialDocument.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEdgeRecord_html_a1b599aff6cf5a3de7a91645316f1a988"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a1b599aff6cf5a3de7a91645316f1a988">eve::social_editing::SocialEdgeRecord::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00046">SocialDocument.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEdgeRecord_html_a3ac46f8913135102cfffc9921c4e92b1"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a3ac46f8913135102cfffc9921c4e92b1">eve::social_editing::SocialEdgeRecord::source</a></div><div class="ttdeci">StableId source</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00044">SocialDocument.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEdgeRecord_html_a508f78b60dc498e05b2caacfefc869f8"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a508f78b60dc498e05b2caacfefc869f8">eve::social_editing::SocialEdgeRecord::id</a></div><div class="ttdeci">StableId id</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00043">SocialDocument.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEdgeRecord_html_a91c94b41ee9eba7319abaada2af8cf72"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#a91c94b41ee9eba7319abaada2af8cf72">eve::social_editing::SocialEdgeRecord::weight</a></div><div class="ttdeci">double weight</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00048">SocialDocument.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEdgeRecord_html_afb9149516f7bd60c0b4ca5a086939a8b"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEdgeRecord.html#afb9149516f7bd60c0b4ca5a086939a8b">eve::social_editing::SocialEdgeRecord::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00047">SocialDocument.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEntityRecord_html"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEntityRecord.html">eve::social_editing::SocialEntityRecord</a></div><div class="ttdoc">Stable social-graph entity metadata for graph presenters.</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00035">SocialDocument.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEntityRecord_html_a3cecf9000f959d21be19d4bdffb1d1fe"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEntityRecord.html#a3cecf9000f959d21be19d4bdffb1d1fe">eve::social_editing::SocialEntityRecord::category</a></div><div class="ttdeci">std::string category</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00038">SocialDocument.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEntityRecord_html_a4f2977295557d50463a69788da764b67"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEntityRecord.html#a4f2977295557d50463a69788da764b67">eve::social_editing::SocialEntityRecord::id</a></div><div class="ttdeci">StableId id</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00036">SocialDocument.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1social__editing_1_1SocialEntityRecord_html_aa9fa33ab81a2c9cfd160c94f91bf0d88"><div class="ttname"><a href="structeve_1_1social__editing_1_1SocialEntityRecord.html#aa9fa33ab81a2c9cfd160c94f91bf0d88">eve::social_editing::SocialEntityRecord::label</a></div><div class="ttdeci">std::string label</div><div class="ttdef"><b>Definition</b> <a href="SocialDocument_8h_source.html#l00037">SocialDocument.h:37</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

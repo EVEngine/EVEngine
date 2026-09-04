@@ -1,0 +1,1209 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::AtmosphereVolume类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html">AtmosphereVolume</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1AtmosphereVolume-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::AtmosphereVolume类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Camera-frustum volume used by the volumetric fog passes and CPU references.  
+ <a href="classeve_1_1graphics_1_1AtmosphereVolume.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abb0fd505f49e3c784c15dc9fc2b688d9" id="r_abb0fd505f49e3c784c15dc9fc2b688d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#abb0fd505f49e3c784c15dc9fc2b688d9">resize</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, int <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>)</td></tr>
+<tr class="memdesc:abb0fd505f49e3c784c15dc9fc2b688d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize the froxel grid and clear all media.  <br /></td></tr>
+<tr class="separator:abb0fd505f49e3c784c15dc9fc2b688d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a871dd03a698401d61ad1ab90a55968" id="r_a0a871dd03a698401d61ad1ab90a55968"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a0a871dd03a698401d61ad1ab90a55968">clear</a> ()</td></tr>
+<tr class="memdesc:a0a871dd03a698401d61ad1ab90a55968"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all media and integrated lighting without changing dimensions.  <br /></td></tr>
+<tr class="separator:a0a871dd03a698401d61ad1ab90a55968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefe812f633207523389633ba75c0c72d" id="r_aefe812f633207523389633ba75c0c72d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#aefe812f633207523389633ba75c0c72d">getWidth</a> () const</td></tr>
+<tr class="separator:aefe812f633207523389633ba75c0c72d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78ae02bf209a6c6f656c683c07e220e5" id="r_a78ae02bf209a6c6f656c683c07e220e5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a78ae02bf209a6c6f656c683c07e220e5">getHeight</a> () const</td></tr>
+<tr class="separator:a78ae02bf209a6c6f656c683c07e220e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a802724a7463f9e63abb1984bd1b32ee8" id="r_a802724a7463f9e63abb1984bd1b32ee8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a802724a7463f9e63abb1984bd1b32ee8">getDepth</a> () const</td></tr>
+<tr class="separator:a802724a7463f9e63abb1984bd1b32ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe7748e5f16d1746c5e41be990c63b7c" id="r_abe7748e5f16d1746c5e41be990c63b7c"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#abe7748e5f16d1746c5e41be990c63b7c">getFroxelCount</a> () const</td></tr>
+<tr class="separator:abe7748e5f16d1746c5e41be990c63b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35cc09d320ae47ccf00e2c3e60cf9079" id="r_a35cc09d320ae47ccf00e2c3e60cf9079"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a35cc09d320ae47ccf00e2c3e60cf9079">setDepthRange</a> (float nearDistance, float farDistance)</td></tr>
+<tr class="memdesc:a35cc09d320ae47ccf00e2c3e60cf9079"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the world-distance range represented by logarithmic Z slices.  <br /></td></tr>
+<tr class="separator:a35cc09d320ae47ccf00e2c3e60cf9079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6c43d20426cdb6a91ffdec8633d6e27" id="r_aa6c43d20426cdb6a91ffdec8633d6e27"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#aa6c43d20426cdb6a91ffdec8633d6e27">getNearDistance</a> () const</td></tr>
+<tr class="separator:aa6c43d20426cdb6a91ffdec8633d6e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4701e0f914b190ceb85b89500ec44bc6" id="r_a4701e0f914b190ceb85b89500ec44bc6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a4701e0f914b190ceb85b89500ec44bc6">getFarDistance</a> () const</td></tr>
+<tr class="separator:a4701e0f914b190ceb85b89500ec44bc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac771e89b3ef66d087e8c65ca32f21960" id="r_ac771e89b3ef66d087e8c65ca32f21960"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#ac771e89b3ef66d087e8c65ca32f21960">sliceDistance</a> (int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="memdesc:ac771e89b3ef66d087e8c65ca32f21960"><td class="mdescLeft">&#160;</td><td class="mdescRight">World distance at the center of a Z slice.  <br /></td></tr>
+<tr class="separator:ac771e89b3ef66d087e8c65ca32f21960"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae772d8f63ab3c0029288ac7984b78474" id="r_ae772d8f63ab3c0029288ac7984b78474"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#ae772d8f63ab3c0029288ac7984b78474">sliceForDistance</a> (float distance) const</td></tr>
+<tr class="memdesc:ae772d8f63ab3c0029288ac7984b78474"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a world distance into a clamped slice index.  <br /></td></tr>
+<tr class="separator:ae772d8f63ab3c0029288ac7984b78474"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41d6f01161b5c7f207679a23ca3c6e56" id="r_a41d6f01161b5c7f207679a23ca3c6e56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1FogFroxel.html">FogFroxel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a41d6f01161b5c7f207679a23ca3c6e56">at</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a41d6f01161b5c7f207679a23ca3c6e56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read or write one froxel; indices are clamped to the grid.  <br /></td></tr>
+<tr class="separator:a41d6f01161b5c7f207679a23ca3c6e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f8d9e3a20064a79eb1e6df243392cec" id="r_a7f8d9e3a20064a79eb1e6df243392cec"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1FogFroxel.html">FogFroxel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a7f8d9e3a20064a79eb1e6df243392cec">at</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="separator:a7f8d9e3a20064a79eb1e6df243392cec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5d5caeb24af30b7683fe545d058b0f9" id="r_aa5d5caeb24af30b7683fe545d058b0f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#aa5d5caeb24af30b7683fe545d058b0f9">injectHeightFog</a> (float baseExtinction, const glm::vec3 &amp;<a class="el" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>, float baseHeight, float heightFalloff, float minWorldY, float maxWorldY)</td></tr>
+<tr class="memdesc:aa5d5caeb24af30b7683fe545d058b0f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a global exponential-height medium to every froxel.  <br /></td></tr>
+<tr class="separator:aa5d5caeb24af30b7683fe545d058b0f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf7407a04deec9613b608c275f4e40f5" id="r_acf7407a04deec9613b608c275f4e40f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#acf7407a04deec9613b608c275f4e40f5">injectLocalVolume</a> (const <a class="el" href="classeve_1_1graphics_1_1FogVolume.html">FogVolume</a> &amp;volume, const glm::vec3 &amp;worldMin, const glm::vec3 &amp;worldMax)</td></tr>
+<tr class="memdesc:acf7407a04deec9613b608c275f4e40f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Voxelize one analytic local volume over the supplied world bounds.  <br /></td></tr>
+<tr class="separator:acf7407a04deec9613b608c275f4e40f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99ed3362e29482f4a90f4bd848a305c2" id="r_a99ed3362e29482f4a90f4bd848a305c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a99ed3362e29482f4a90f4bd848a305c2">injectLocalVolumeFrustum</a> (const <a class="el" href="classeve_1_1graphics_1_1FogVolume.html">FogVolume</a> &amp;volume, const glm::mat4 &amp;invViewProj)</td></tr>
+<tr class="memdesc:a99ed3362e29482f4a90f4bd848a305c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Voxelize one analytic local volume in the active camera frustum.  <br /></td></tr>
+<tr class="separator:a99ed3362e29482f4a90f4bd848a305c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaf661bc1c11298bfcbc5c7750617e2e" id="r_acaf661bc1c11298bfcbc5c7750617e2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#acaf661bc1c11298bfcbc5c7750617e2e">injectDensityGraph</a> (const <a class="el" href="classeve_1_1graphics_1_1VolumeDensityGraph.html">VolumeDensityGraph</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, const glm::vec3 &amp;worldMin, const glm::vec3 &amp;worldMax, float extinctionScale, const glm::vec3 &amp;<a class="el" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:acaf661bc1c11298bfcbc5c7750617e2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Voxelize a procedural density graph into this volume.  <br /></td></tr>
+<tr class="separator:acaf661bc1c11298bfcbc5c7750617e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c7cdf0560edd06705e820710647b9a5" id="r_a4c7cdf0560edd06705e820710647b9a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a4c7cdf0560edd06705e820710647b9a5">injectSparseVolume</a> (const <a class="el" href="classeve_1_1graphics_1_1SparseVolumeTexture.html">SparseVolumeTexture</a> &amp;texture, float extinctionScale=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a4c7cdf0560edd06705e820710647b9a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resample a pre-baked sparse volume into this working volume.  <br /></td></tr>
+<tr class="separator:a4c7cdf0560edd06705e820710647b9a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefc9ca69d982900575e67d62e5821554" id="r_aefc9ca69d982900575e67d62e5821554"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#aefc9ca69d982900575e67d62e5821554">integrate</a> (const glm::vec3 &amp;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a1591ea0f27f1977991944f530de58061">lightColor</a>, float phaseScale=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aefc9ca69d982900575e67d62e5821554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integrate scattering and transmittance along every view ray.  <br /></td></tr>
+<tr class="separator:aefc9ca69d982900575e67d62e5821554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee45afcd8f34573d86451738a6b24e33" id="r_aee45afcd8f34573d86451738a6b24e33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#aee45afcd8f34573d86451738a6b24e33">integrateLocalLights</a> (const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1VolumetricLight.html">VolumetricLight</a> &gt; &amp;lights, const glm::vec3 &amp;worldMin, const glm::vec3 &amp;worldMax, const glm::vec3 &amp;ambientLight)</td></tr>
+<tr class="memdesc:aee45afcd8f34573d86451738a6b24e33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inject local lights and integrate the volume in one reference pass.  <br /></td></tr>
+<tr class="separator:aee45afcd8f34573d86451738a6b24e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b0504b57999ef2e0413fd04fdba4791" id="r_a3b0504b57999ef2e0413fd04fdba4791"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#a3b0504b57999ef2e0413fd04fdba4791">setLightVisibility</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float visibility)</td></tr>
+<tr class="memdesc:a3b0504b57999ef2e0413fd04fdba4791"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the main-light shadow visibility for one froxel.  <br /></td></tr>
+<tr class="separator:a3b0504b57999ef2e0413fd04fdba4791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9933c4cf1adb3c02ab334a21ac77b41" id="r_aa9933c4cf1adb3c02ab334a21ac77b41"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#aa9933c4cf1adb3c02ab334a21ac77b41">blendHistory</a> (const <a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html">AtmosphereVolume</a> &amp;history, float historyWeight, float rejectionThreshold)</td></tr>
+<tr class="memdesc:aa9933c4cf1adb3c02ab334a21ac77b41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blend integrated lighting with a reprojected history volume.  <br /></td></tr>
+<tr class="separator:aa9933c4cf1adb3c02ab334a21ac77b41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa960b9feab07dacd1f8dc4235886c906" id="r_aa960b9feab07dacd1f8dc4235886c906"><td class="memItemLeft" align="right" valign="top">const glm::vec4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#aa960b9feab07dacd1f8dc4235886c906">integratedAt</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="memdesc:aa960b9feab07dacd1f8dc4235886c906"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cumulative RGB in-scattering and A transmittance at a froxel.  <br /></td></tr>
+<tr class="separator:aa960b9feab07dacd1f8dc4235886c906"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aede74baefda5e5cb7613ddf569074885" id="r_aede74baefda5e5cb7613ddf569074885"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#aede74baefda5e5cb7613ddf569074885">sampleIntegrated</a> (float <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, float <a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float distance) const</td></tr>
+<tr class="memdesc:aede74baefda5e5cb7613ddf569074885"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query cumulative fog for a transparent fragment.  <br /></td></tr>
+<tr class="separator:aede74baefda5e5cb7613ddf569074885"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7e9f22db99902b96fd0fd963c295343" id="r_ad7e9f22db99902b96fd0fd963c295343"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1FogFroxel.html">FogFroxel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html#ad7e9f22db99902b96fd0fd963c295343">sampleMedia</a> (float <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, float <a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>) const</td></tr>
+<tr class="memdesc:ad7e9f22db99902b96fd0fd963c295343"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample raw media with normalized volume coordinates.  <br /></td></tr>
+<tr class="separator:ad7e9f22db99902b96fd0fd963c295343"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Camera-frustum volume used by the volumetric fog passes and CPU references. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a> 第 <a class="el" href="AtmosphereVolume_8h_source.html#l00035">35</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a41d6f01161b5c7f207679a23ca3c6e56" name="a41d6f01161b5c7f207679a23ca3c6e56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41d6f01161b5c7f207679a23ca3c6e56">&#9670;&#160;</a></span>at() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1FogFroxel.html">FogFroxel</a> &amp; eve::graphics::AtmosphereVolume::at </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read or write one froxel; indices are clamped to the grid. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00139">injectDensityGraph()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00056">injectHeightFog()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00076">injectLocalVolume()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00104">injectLocalVolumeFrustum()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00164">injectSparseVolume()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00182">integrate()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00208">integrateLocalLights()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00286">sampleMedia()</a> , 以及 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00249">setLightVisibility()</a>.</p>
+
+</div>
+</div>
+<a id="a7f8d9e3a20064a79eb1e6df243392cec" name="a7f8d9e3a20064a79eb1e6df243392cec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f8d9e3a20064a79eb1e6df243392cec">&#9670;&#160;</a></span>at() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1FogFroxel.html">FogFroxel</a> &amp; eve::graphics::AtmosphereVolume::at </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aa9933c4cf1adb3c02ab334a21ac77b41" name="aa9933c4cf1adb3c02ab334a21ac77b41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9933c4cf1adb3c02ab334a21ac77b41">&#9670;&#160;</a></span>blendHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::graphics::AtmosphereVolume::blendHistory </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html">AtmosphereVolume</a> &amp;&#160;</td>
+          <td class="paramname"><em>history</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>historyWeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rejectionThreshold</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Blend integrated lighting with a reprojected history volume. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">history</td><td>Previous frame already mapped into this grid. </td></tr>
+    <tr><td class="paramname">historyWeight</td><td>Base history weight in [0,1]. </td></tr>
+    <tr><td class="paramname">rejectionThreshold</td><td>Relative luminance delta that rejects history. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of froxels whose history was rejected. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>.</p>
+
+</div>
+</div>
+<a id="a0a871dd03a698401d61ad1ab90a55968" name="a0a871dd03a698401d61ad1ab90a55968"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a871dd03a698401d61ad1ab90a55968">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all media and integrated lighting without changing dimensions. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a802724a7463f9e63abb1984bd1b32ee8" name="a802724a7463f9e63abb1984bd1b32ee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a802724a7463f9e63abb1984bd1b32ee8">&#9670;&#160;</a></span>getDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::AtmosphereVolume::getDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a> 第 <a class="el" href="AtmosphereVolume_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4701e0f914b190ceb85b89500ec44bc6" name="a4701e0f914b190ceb85b89500ec44bc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4701e0f914b190ceb85b89500ec44bc6">&#9670;&#160;</a></span>getFarDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AtmosphereVolume::getFarDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a> 第 <a class="el" href="AtmosphereVolume_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abe7748e5f16d1746c5e41be990c63b7c" name="abe7748e5f16d1746c5e41be990c63b7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe7748e5f16d1746c5e41be990c63b7c">&#9670;&#160;</a></span>getFroxelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::graphics::AtmosphereVolume::getFroxelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a> 第 <a class="el" href="AtmosphereVolume_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78ae02bf209a6c6f656c683c07e220e5" name="a78ae02bf209a6c6f656c683c07e220e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78ae02bf209a6c6f656c683c07e220e5">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::AtmosphereVolume::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a> 第 <a class="el" href="AtmosphereVolume_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa6c43d20426cdb6a91ffdec8633d6e27" name="aa6c43d20426cdb6a91ffdec8633d6e27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6c43d20426cdb6a91ffdec8633d6e27">&#9670;&#160;</a></span>getNearDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AtmosphereVolume::getNearDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a> 第 <a class="el" href="AtmosphereVolume_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aefe812f633207523389633ba75c0c72d" name="aefe812f633207523389633ba75c0c72d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefe812f633207523389633ba75c0c72d">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::AtmosphereVolume::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a> 第 <a class="el" href="AtmosphereVolume_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acaf661bc1c11298bfcbc5c7750617e2e" name="acaf661bc1c11298bfcbc5c7750617e2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acaf661bc1c11298bfcbc5c7750617e2e">&#9670;&#160;</a></span>injectDensityGraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::injectDensityGraph </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1VolumeDensityGraph.html">VolumeDensityGraph</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>worldMin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>worldMax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extinctionScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>albedo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Voxelize a procedural density graph into this volume. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00093">albedo</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aa5d5caeb24af30b7683fe545d058b0f9" name="aa5d5caeb24af30b7683fe545d058b0f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5d5caeb24af30b7683fe545d058b0f9">&#9670;&#160;</a></span>injectHeightFog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::injectHeightFog </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>baseExtinction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>albedo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>baseHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightFalloff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minWorldY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxWorldY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a global exponential-height medium to every froxel. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">baseExtinction</td><td>Extinction coefficient at baseHeight. </td></tr>
+    <tr><td class="paramname">albedo</td><td>Single-scattering albedo in [0,1]. </td></tr>
+    <tr><td class="paramname">baseHeight</td><td>World height where density is baseExtinction. </td></tr>
+    <tr><td class="paramname">heightFalloff</td><td>Exponential falloff per world unit. </td></tr>
+    <tr><td class="paramname">minWorldY</td><td>World height represented by the first Y row. </td></tr>
+    <tr><td class="paramname">maxWorldY</td><td>World height represented by the last Y row. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00093">albedo</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="acf7407a04deec9613b608c275f4e40f5" name="acf7407a04deec9613b608c275f4e40f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf7407a04deec9613b608c275f4e40f5">&#9670;&#160;</a></span>injectLocalVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::injectLocalVolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1FogVolume.html">FogVolume</a> &amp;&#160;</td>
+          <td class="paramname"><em>volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>worldMin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>worldMax</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Voxelize one analytic local volume over the supplied world bounds. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="FogVolume_8h_source.html#l00031">eve::graphics::FogVolume::getAlbedo()</a>, <a class="el" href="FogVolume_8h_source.html#l00037">eve::graphics::FogVolume::getAnisotropy()</a>, <a class="el" href="FogVolume_8h_source.html#l00034">eve::graphics::FogVolume::getEmissive()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="FogVolume_8cpp_source.html#l00047">eve::graphics::FogVolume::sampleExtinction()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a99ed3362e29482f4a90f4bd848a305c2" name="a99ed3362e29482f4a90f4bd848a305c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99ed3362e29482f4a90f4bd848a305c2">&#9670;&#160;</a></span>injectLocalVolumeFrustum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::injectLocalVolumeFrustum </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1FogVolume.html">FogVolume</a> &amp;&#160;</td>
+          <td class="paramname"><em>volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>invViewProj</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Voxelize one analytic local volume in the active camera frustum. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="FogVolume_8h_source.html#l00031">eve::graphics::FogVolume::getAlbedo()</a>, <a class="el" href="FogVolume_8h_source.html#l00037">eve::graphics::FogVolume::getAnisotropy()</a>, <a class="el" href="FogVolume_8h_source.html#l00034">eve::graphics::FogVolume::getEmissive()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="FogVolume_8cpp_source.html#l00047">eve::graphics::FogVolume::sampleExtinction()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00032">sliceDistance()</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a4c7cdf0560edd06705e820710647b9a5" name="a4c7cdf0560edd06705e820710647b9a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c7cdf0560edd06705e820710647b9a5">&#9670;&#160;</a></span>injectSparseVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::injectSparseVolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1SparseVolumeTexture.html">SparseVolumeTexture</a> &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extinctionScale</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resample a pre-baked sparse volume into this working volume. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="SparseVolumeTexture_8cpp_source.html#l00088">eve::graphics::SparseVolumeTexture::sample()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aefc9ca69d982900575e67d62e5821554" name="aefc9ca69d982900575e67d62e5821554"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefc9ca69d982900575e67d62e5821554">&#9670;&#160;</a></span>integrate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::integrate </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>lightColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>phaseScale</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Integrate scattering and transmittance along every view ray. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lightColor</td><td>Incident radiance after shadowing. </td></tr>
+    <tr><td class="paramname">phaseScale</td><td>Phase-function multiplier for this light direction. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00048">lightColor</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00032">sliceDistance()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aa960b9feab07dacd1f8dc4235886c906" name="aa960b9feab07dacd1f8dc4235886c906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa960b9feab07dacd1f8dc4235886c906">&#9670;&#160;</a></span>integratedAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const glm::vec4 &amp; eve::graphics::AtmosphereVolume::integratedAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cumulative RGB in-scattering and A transmittance at a froxel. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00279">sampleIntegrated()</a>.</p>
+
+</div>
+</div>
+<a id="aee45afcd8f34573d86451738a6b24e33" name="aee45afcd8f34573d86451738a6b24e33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee45afcd8f34573d86451738a6b24e33">&#9670;&#160;</a></span>integrateLocalLights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::integrateLocalLights </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1VolumetricLight.html">VolumetricLight</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>worldMin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>worldMax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>ambientLight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inject local lights and integrate the volume in one reference pass. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lights</td><td>Point lights; callers should pass the clustered/cull-selected subset. </td></tr>
+    <tr><td class="paramname">worldMin</td><td>World bounds represented by the volume. </td></tr>
+    <tr><td class="paramname">worldMax</td><td>World bounds represented by the volume. </td></tr>
+    <tr><td class="paramname">ambientLight</td><td>Sky/indirect radiance available in all froxels. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00032">sliceDistance()</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="abb0fd505f49e3c784c15dc9fc2b688d9" name="abb0fd505f49e3c784c15dc9fc2b688d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb0fd505f49e3c784c15dc9fc2b688d9">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::resize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resize the froxel grid and clear all media. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00010">eve::graphics::AtmosphereClipmap::configure()</a>.</p>
+
+</div>
+</div>
+<a id="aede74baefda5e5cb7613ddf569074885" name="aede74baefda5e5cb7613ddf569074885"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aede74baefda5e5cb7613ddf569074885">&#9670;&#160;</a></span>sampleIntegrated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::AtmosphereVolume::sampleIntegrated </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query cumulative fog for a transparent fragment. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">u</td><td>Horizontal screen coordinate in [0,1]. </td></tr>
+    <tr><td class="paramname">v</td><td>Vertical screen coordinate in [0,1]. </td></tr>
+    <tr><td class="paramname">distance</td><td>Linear camera distance in world units. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00275">integratedAt()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00038">sliceForDistance()</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="ad7e9f22db99902b96fd0fd963c295343" name="ad7e9f22db99902b96fd0fd963c295343"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7e9f22db99902b96fd0fd963c295343">&#9670;&#160;</a></span>sampleMedia()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1FogFroxel.html">FogFroxel</a> eve::graphics::AtmosphereVolume::sampleMedia </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample raw media with normalized volume coordinates. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00048">eve::graphics::AtmosphereClipmap::sample()</a>.</p>
+
+</div>
+</div>
+<a id="a35cc09d320ae47ccf00e2c3e60cf9079" name="a35cc09d320ae47ccf00e2c3e60cf9079"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35cc09d320ae47ccf00e2c3e60cf9079">&#9670;&#160;</a></span>setDepthRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::setDepthRange </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearDistance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farDistance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the world-distance range represented by logarithmic Z slices. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtmosphereClipmap_8cpp_source.html#l00010">eve::graphics::AtmosphereClipmap::configure()</a>.</p>
+
+</div>
+</div>
+<a id="a3b0504b57999ef2e0413fd04fdba4791" name="a3b0504b57999ef2e0413fd04fdba4791"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b0504b57999ef2e0413fd04fdba4791">&#9670;&#160;</a></span>setLightVisibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AtmosphereVolume::setLightVisibility </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>visibility</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the main-light shadow visibility for one froxel. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00053">at()</a>, <a class="el" href="AtmosphereVolume_8h_source.html#l00022">eve::graphics::FogFroxel::lightVisibility</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ac771e89b3ef66d087e8c65ca32f21960" name="ac771e89b3ef66d087e8c65ca32f21960"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac771e89b3ef66d087e8c65ca32f21960">&#9670;&#160;</a></span>sliceDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AtmosphereVolume::sliceDistance </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World distance at the center of a Z slice. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00104">injectLocalVolumeFrustum()</a>, <a class="el" href="AtmosphereVolume_8cpp_source.html#l00182">integrate()</a> , 以及 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00208">integrateLocalLights()</a>.</p>
+
+</div>
+</div>
+<a id="ae772d8f63ab3c0029288ac7984b78474" name="ae772d8f63ab3c0029288ac7984b78474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae772d8f63ab3c0029288ac7984b78474">&#9670;&#160;</a></span>sliceForDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::AtmosphereVolume::sliceForDistance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert a world distance into a clamped slice index. </p>
+
+<p class="definition">在文件 <a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a> 第 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtmosphereVolume_8cpp_source.html#l00279">sampleIntegrated()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="AtmosphereVolume_8h_source.html">AtmosphereVolume.h</a></li>
+<li>src/modules/graphics/<a class="el" href="AtmosphereVolume_8cpp_source.html">AtmosphereVolume.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

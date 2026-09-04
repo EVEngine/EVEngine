@@ -1,0 +1,289 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/sensing/Sensing.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e83e372481ad83f7bc4ebb27f8e1729d.html">sensing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Sensing.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Sensing_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BorrowedRef_8h.html">common/BorrowedRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelOwnership_8h.html">common/SquirrelOwnership.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1sensing.html">eve::sensing</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Subject.html">   18</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sensing_1_1Subject.html">Subject</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Subject.html#a14b9ed3242e8d481e2fee56632fdf53a">   19</a></span>    std::string           <a class="code hl_variable" href="structeve_1_1sensing_1_1Subject.html#a14b9ed3242e8d481e2fee56632fdf53a">id</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Subject.html#a26d66ae71e4f193ea5169373e85d4025">   20</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1sensing_1_1Subject.html#a26d66ae71e4f193ea5169373e85d4025">x</a> = 0, <a class="code hl_variable" href="structeve_1_1sensing_1_1Subject.html#a3d50ac978d9383f513d893ee42cc40f9">y</a> = 0;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Subject.html#a468238c923e3c02f6c9668a5f615912a">   21</a></span>    std::string           <a class="code hl_variable" href="structeve_1_1sensing_1_1Subject.html#a468238c923e3c02f6c9668a5f615912a">faction</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Subject.html#a46696e7b27e07899dee38fc4daf8caa7">   22</a></span>    std::set&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1sensing_1_1Subject.html#a46696e7b27e07899dee38fc4daf8caa7">tags</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Subject.html#ac2e0afac014edf7fda162b183a98833f">   23</a></span>    std::set&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1sensing_1_1Subject.html#ac2e0afac014edf7fda162b183a98833f">visibleTo</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Candidate.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sensing_1_1Candidate.html">Candidate</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Candidate.html#a9a2826aa78ddccd771e14493f720dca0">   28</a></span>    std::string <a class="code hl_variable" href="structeve_1_1sensing_1_1Candidate.html#a9a2826aa78ddccd771e14493f720dca0">id</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1Candidate.html#ae1b8d5883690624f6ab4d1ce08371c03">   29</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1sensing_1_1Candidate.html#adc19dd50920dce2017fd0cec6570146e">x</a> = 0, <a class="code hl_variable" href="structeve_1_1sensing_1_1Candidate.html#a4e071009e98dec7a074ced8f1f57112b">y</a> = 0, <a class="code hl_variable" href="structeve_1_1sensing_1_1Candidate.html#ae1b8d5883690624f6ab4d1ce08371c03">distance</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1SensingWorld.html">   33</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1SensingWorld.html#a64c83d7ebbcc70a5041ada8500b8598d">upsert</a>(std::string_view <span class="keywordtype">id</span>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, std::string_view faction,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                           std::string_view tagsCsv, std::string_view visibleToCsv);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1SensingWorld.html#ab473250940e149b9b018393dfe78077e">remove</a>(std::string_view <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1SensingWorld.html#a33e2f19982981a4df8af84bd679a8e3a">circle</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, std::string_view requireTagsCsv,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                          std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                          std::string_view excludeFactionsCsv, std::string_view visibleTo, <span class="keywordtype">int</span> limit);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1SensingWorld.html#a669f0774c91bd91e834c373191f8ea48">box</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, std::string_view requireTagsCsv,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                       std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                       std::string_view excludeFactionsCsv, std::string_view visibleTo, <span class="keywordtype">int</span> limit);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    [[nodiscard]] <a class="code hl_typedef" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef&lt;const Candidate&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1SensingWorld.html#ae29adcab9f01961a91f7de74362faabc">resultAt</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    std::string <a class="code hl_function" href="classeve_1_1sensing_1_1SensingWorld.html#a3e07a06bab16d234a7e6b581906b1364">snapshotJson</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1SensingWorld.html#a2726e0793ba55bd553e5f39774f1bbe5">restoreJson</a>(<span class="keyword">const</span> std::string&amp; json);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">bool</span>                           accepts(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1sensing_1_1Subject.html">Subject</a>&amp;, <span class="keyword">const</span> std::set&lt;std::string&gt;&amp;, <span class="keyword">const</span> std::set&lt;std::string&gt;&amp;,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                           <span class="keyword">const</span> std::set&lt;std::string&gt;&amp;, <span class="keyword">const</span> std::set&lt;std::string&gt;&amp;, std::string_view) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">int</span>  finish(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">int</span> limit);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::map&lt;std::string, Subject&gt; subjects_;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::vector&lt;Candidate&gt;         results_;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">   71</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">SensingWorldHandleTag</a> {};</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="namespaceeve_1_1sensing.html#a3c44a225d596c34383dd5c422b94796d">   73</a></span><span class="keyword">using </span><a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">SensingWorldHandleRef</a> = <a class="code hl_struct" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef&lt;SensingWorldHandleTag&gt;</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="};">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1Sensing.html">   76</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1Sensing.html#accef0f5ff3d0e1230a3f75b1011bea54">   78</a></span>    <a class="code hl_function" href="classeve_1_1sensing_1_1Sensing.html#accef0f5ff3d0e1230a3f75b1011bea54">Module_REG</a>(<a class="code hl_class" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;SensingWorldHandleRef&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1Sensing.html#a29272b53b015b5ac878764e6117b6c8c">newWorld</a>();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1script_1_1Borrowed.html">eve::script::Borrowed&lt;SensingWorld&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1Sensing.html#a9918d54b781030e64da9174eb42bb283">resolve</a>(<a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">SensingWorldHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_variable" href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a>(<a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">SensingWorldHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sensing_1_1Sensing.html#a5636f6e1fa0b816122bda45e79595c8d">isStale</a>(<a class="code hl_class" href="structeve_1_1script_1_1RuntimeHandleRef.html">SensingWorldHandleRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;SensingWorld, SensingWorldHandleTag&gt;</a> worlds_;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>};</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}  <span class="comment">// namespace eve::sensing</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAuthority_8cpp_html_a7e214a50596aaa2c6748b6e36dda4f63"><div class="ttname"><a href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a></div><div class="ttdeci">AuthorityStoreHandleRef reference</div><div class="ttdef"><b>Definition</b> <a href="Authority_8cpp_source.html#l00024">Authority.cpp:24</a></div></div>
+<div class="ttc" id="aBorrowedRef_8h_html"><div class="ttname"><a href="BorrowedRef_8h.html">BorrowedRef.h</a></div><div class="ttdoc">Vocabulary aliases for nullable and checked borrowed references.</div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aProcgen_8cpp_html_a9ec61e0d400a00436d584301088ae052"><div class="ttname"><a href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; void &gt;()&gt; release</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00074">Procgen.cpp:74</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSquirrelOwnership_8h_html"><div class="ttname"><a href="SquirrelOwnership_8h.html">SquirrelOwnership.h</a></div><div class="ttdoc">Explicit Value/Owned/Borrowed semantics at the Squirrel boundary.</div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00045">Module.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1Borrowed_html"><div class="ttname"><a href="classeve_1_1script_1_1Borrowed.html">eve::script::Borrowed</a></div><div class="ttdoc">Non-owning C++ observation with no implicit lifetime extension.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelOwnership_8h_source.html#l00076">SquirrelOwnership.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1RuntimeObjectRegistry_html"><div class="ttname"><a href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a></div><div class="ttdoc">Slot/generation registry whose objects are exclusively unique-owned.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelOwnership_8h_source.html#l00220">SquirrelOwnership.h:220</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html">eve::sensing::SensingWorld</a></div><div class="ttdoc">Gameplay-facing 2D candidate query service; it never values or selects targets.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00033">Sensing.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html_a2726e0793ba55bd553e5f39774f1bbe5"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html#a2726e0793ba55bd553e5f39774f1bbe5">eve::sensing::SensingWorld::restoreJson</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreJson(const std::string &amp;json)</div><div class="ttdoc">Restores a snapshot transactionally.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00146">Sensing.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html_a33e2f19982981a4df8af84bd679a8e3a"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html#a33e2f19982981a4df8af84bd679a8e3a">eve::sensing::SensingWorld::circle</a></div><div class="ttdeci">eve::Result&lt; int &gt; circle(float x, float y, float radius, std::string_view requireTagsCsv, std::string_view excludeTagsCsv, std::string_view includeFactionsCsv, std::string_view excludeFactionsCsv, std::string_view visibleTo, int limit)</div><div class="ttdoc">Queries a circle. Filters are CSV; empty fields disable that filter.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00102">Sensing.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html_a3e07a06bab16d234a7e6b581906b1364"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html#a3e07a06bab16d234a7e6b581906b1364">eve::sensing::SensingWorld::snapshotJson</a></div><div class="ttdeci">std::string snapshotJson() const</div><div class="ttdoc">Exports deterministic JSON.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00133">Sensing.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html_a64c83d7ebbcc70a5041ada8500b8598d"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html#a64c83d7ebbcc70a5041ada8500b8598d">eve::sensing::SensingWorld::upsert</a></div><div class="ttdeci">eve::Result&lt; void &gt; upsert(std::string_view id, float x, float y, std::string_view faction, std::string_view tagsCsv, std::string_view visibleToCsv)</div><div class="ttdoc">Inserts or replaces mirrored facts. CSV fields contain comma-separated stable keys.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00069">Sensing.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html_a669f0774c91bd91e834c373191f8ea48"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html#a669f0774c91bd91e834c373191f8ea48">eve::sensing::SensingWorld::box</a></div><div class="ttdeci">eve::Result&lt; int &gt; box(float minX, float minY, float maxX, float maxY, std::string_view requireTagsCsv, std::string_view excludeTagsCsv, std::string_view includeFactionsCsv, std::string_view excludeFactionsCsv, std::string_view visibleTo, int limit)</div><div class="ttdoc">Queries an axis-aligned box with the same filters as circle().</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00115">Sensing.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html_ab473250940e149b9b018393dfe78077e"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html#ab473250940e149b9b018393dfe78077e">eve::sensing::SensingWorld::remove</a></div><div class="ttdeci">eve::Result&lt; void &gt; remove(std::string_view id)</div><div class="ttdoc">Removes mirrored facts, or returns NotFound when the id is absent.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00078">Sensing.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html_ae29adcab9f01961a91f7de74362faabc"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html#ae29adcab9f01961a91f7de74362faabc">eve::sensing::SensingWorld::resultAt</a></div><div class="ttdeci">eve::OptionalRef&lt; const Candidate &gt; resultAt(int index) const</div><div class="ttdoc">Returns a candidate from the most recent query, or null for an invalid index.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00129">Sensing.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1Sensing_html"><div class="ttname"><a href="classeve_1_1sensing_1_1Sensing.html">eve::sensing::Sensing</a></div><div class="ttdoc">Script factory for independent sensing worlds.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00076">Sensing.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1Sensing_html_a29272b53b015b5ac878764e6117b6c8c"><div class="ttname"><a href="classeve_1_1sensing_1_1Sensing.html#a29272b53b015b5ac878764e6117b6c8c">eve::sensing::Sensing::newWorld</a></div><div class="ttdeci">static eve::Result&lt; SensingWorldHandleRef &gt; newWorld()</div><div class="ttdoc">Script factory for independent sensing worlds.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00172">Sensing.cpp:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1Sensing_html_a5636f6e1fa0b816122bda45e79595c8d"><div class="ttname"><a href="classeve_1_1sensing_1_1Sensing.html#a5636f6e1fa0b816122bda45e79595c8d">eve::sensing::Sensing::isStale</a></div><div class="ttdeci">static bool isStale(SensingWorldHandleRef reference) noexcept</div><div class="ttdoc">Reports whether a world reference is stale.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00188">Sensing.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1Sensing_html_a9918d54b781030e64da9174eb42bb283"><div class="ttname"><a href="classeve_1_1sensing_1_1Sensing.html#a9918d54b781030e64da9174eb42bb283">eve::sensing::Sensing::resolve</a></div><div class="ttdeci">static eve::script::Borrowed&lt; SensingWorld &gt; resolve(SensingWorldHandleRef reference) noexcept</div><div class="ttdoc">Resolves a live sensing world as a non-owning observation.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8cpp_source.html#l00176">Sensing.cpp:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1Sensing_html_accef0f5ff3d0e1230a3f75b1011bea54"><div class="ttname"><a href="classeve_1_1sensing_1_1Sensing.html#accef0f5ff3d0e1230a3f75b1011bea54">eve::sensing::Sensing::Module_REG</a></div><div class="ttdeci">Module_REG(Sensing)</div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html"><div class="ttname"><a href="namespaceeve_1_1sensing.html">eve::sensing</a></div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00241">RTSSystems.h:241</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a503b0fa2c99caf9c2f8d2144f64c683f"><div class="ttname"><a href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a></div><div class="ttdeci">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt; OptionalRef</div><div class="ttdoc">Optional borrowed reference; it does not extend T's lifetime.</div><div class="ttdef"><b>Definition</b> <a href="BorrowedRef_8h_source.html#l00024">BorrowedRef.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1RuntimeHandleRef_html"><div class="ttname"><a href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef&lt; SensingWorldHandleTag &gt;</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Candidate_html"><div class="ttname"><a href="structeve_1_1sensing_1_1Candidate.html">eve::sensing::Candidate</a></div><div class="ttdoc">A deterministic candidate returned by a spatial query.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00027">Sensing.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Candidate_html_a4e071009e98dec7a074ced8f1f57112b"><div class="ttname"><a href="structeve_1_1sensing_1_1Candidate.html#a4e071009e98dec7a074ced8f1f57112b">eve::sensing::Candidate::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00029">Sensing.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Candidate_html_a9a2826aa78ddccd771e14493f720dca0"><div class="ttname"><a href="structeve_1_1sensing_1_1Candidate.html#a9a2826aa78ddccd771e14493f720dca0">eve::sensing::Candidate::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00028">Sensing.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Candidate_html_adc19dd50920dce2017fd0cec6570146e"><div class="ttname"><a href="structeve_1_1sensing_1_1Candidate.html#adc19dd50920dce2017fd0cec6570146e">eve::sensing::Candidate::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00029">Sensing.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Candidate_html_ae1b8d5883690624f6ab4d1ce08371c03"><div class="ttname"><a href="structeve_1_1sensing_1_1Candidate.html#ae1b8d5883690624f6ab4d1ce08371c03">eve::sensing::Candidate::distance</a></div><div class="ttdeci">float distance</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00029">Sensing.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1SensingWorldHandleTag_html"><div class="ttname"><a href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">eve::sensing::SensingWorldHandleTag</a></div><div class="ttdoc">Handle domain for module-owned sensing worlds.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00071">Sensing.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Subject_html"><div class="ttname"><a href="structeve_1_1sensing_1_1Subject.html">eve::sensing::Subject</a></div><div class="ttdoc">Mirrored gameplay facts used by candidate queries.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00018">Sensing.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Subject_html_a14b9ed3242e8d481e2fee56632fdf53a"><div class="ttname"><a href="structeve_1_1sensing_1_1Subject.html#a14b9ed3242e8d481e2fee56632fdf53a">eve::sensing::Subject::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00019">Sensing.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Subject_html_a26d66ae71e4f193ea5169373e85d4025"><div class="ttname"><a href="structeve_1_1sensing_1_1Subject.html#a26d66ae71e4f193ea5169373e85d4025">eve::sensing::Subject::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00020">Sensing.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Subject_html_a3d50ac978d9383f513d893ee42cc40f9"><div class="ttname"><a href="structeve_1_1sensing_1_1Subject.html#a3d50ac978d9383f513d893ee42cc40f9">eve::sensing::Subject::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00020">Sensing.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Subject_html_a46696e7b27e07899dee38fc4daf8caa7"><div class="ttname"><a href="structeve_1_1sensing_1_1Subject.html#a46696e7b27e07899dee38fc4daf8caa7">eve::sensing::Subject::tags</a></div><div class="ttdeci">std::set&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00022">Sensing.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Subject_html_a468238c923e3c02f6c9668a5f615912a"><div class="ttname"><a href="structeve_1_1sensing_1_1Subject.html#a468238c923e3c02f6c9668a5f615912a">eve::sensing::Subject::faction</a></div><div class="ttdeci">std::string faction</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00021">Sensing.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1Subject_html_ac2e0afac014edf7fda162b183a98833f"><div class="ttname"><a href="structeve_1_1sensing_1_1Subject.html#ac2e0afac014edf7fda162b183a98833f">eve::sensing::Subject::visibleTo</a></div><div class="ttdeci">std::set&lt; std::string &gt; visibleTo</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00023">Sensing.h:23</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

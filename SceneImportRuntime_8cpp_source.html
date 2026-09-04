@@ -1,0 +1,274 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/sceneloader_editing/SceneImportRuntime.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_837b511c9e6d55e08d502a6aa3c8007f.html">sceneloader_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SceneImportRuntime.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SceneImportRuntime_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="SceneLoader_8h.html">sceneloader/SceneLoader.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="SceneImportTarget_8h.html">sceneloader_editing/SceneImportTarget.h</a>&quot;</span></div>
+<div class="foldopen" id="foldopen00004" data-start="{" data-end="}">
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno"><a class="line" href="namespaceeve_1_1sceneloader__editing.html">    4</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1sceneloader__editing.html">eve::sceneloader_editing</a> {</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;T&gt;</a> fail(<a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, std::string <a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">RuleId</a>(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>), std::move(<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>));</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1sceneloader__editing_1_1SceneImportPreflightRuntime.html#a5f4bca1a025e6302b417694bd3249a69">   11</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;SceneImportPreflight&gt;</a> <a class="code hl_function" href="classeve_1_1sceneloader__editing_1_1SceneImportPreflightRuntime.html#a5f4bca1a025e6302b417694bd3249a69">SceneImportPreflightRuntime::inspect</a>(</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1sceneloader__editing_1_1SceneImportTarget.html">SceneImportTarget</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="code hl_class" href="classeve_1_1sceneloader_1_1SceneLoader.html">sceneloader::SceneLoader</a>* loader)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">if</span> (!loader)</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keywordflow">return</span> fail&lt;SceneImportPreflight&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.scene-import.loader&quot;</span>,</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>                                          <span class="stringliteral">&quot;SceneLoader is required&quot;</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">auto</span> diagnostics = <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.validate();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> : diagnostics)</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.severity() == DiagnosticSeverity::Error)</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;SceneImportPreflight&gt;::failure</a>(<a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>(EditorStatus::Rejected, diagnostics));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp;              <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.<a class="code hl_function" href="classeve_1_1Result.html#a4185a5624803a273bf2b753b7a7c658c">value</a>();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_struct" href="structeve_1_1sceneloader_1_1LoadOptions.html">sceneloader::LoadOptions</a> o;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a035282711d6f9e5abb8d99637058d439">triangulate</a>              = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.triangulate;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a379b46115cb0a5b3682f664d6120edf9">generateNormalsIfMissing</a> = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.generateNormals;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#aeb8b76599b898799484836ce84791b07">joinIdenticalVertices</a>    = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.joinVertices;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac27eb74f23fda8fdb777ae4e3726e468">flipUVs</a>                  = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.flipUvs;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a792968ce3df94e01146372933f695bb0">improveCacheLocality</a>     = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.improveCache;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a2006c883697e215324fe76cca63328c8">sharedMeshes</a>             = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.sharedMeshes;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a1db208540321b658e7489f3d5f19fce2">mipmaps</a>                  = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.mipmaps;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a140a966d1b3df71c9cb33446cd3cc56b">importLights</a>             = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.importLights;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#ac674924bef61e54b0ae85e538643f712">importCameras</a>            = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.importCameras;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    o.<a class="code hl_variable" href="structeve_1_1sceneloader_1_1LoadOptions.html#a4869a2b5dbc01fdac59611fd9dd499d2">importAnimations</a>         = <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.importAnimations;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">auto</span> inspected             = loader-&gt;<a class="code hl_function" href="classeve_1_1sceneloader_1_1SceneLoader.html#a2284c00059b11f86162765c54aa9731e">inspect</a>(<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>.sourceAsset, o);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (!inspected.hasValue()) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* primary = inspected.status().primaryDiagnostic();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">return</span> fail&lt;SceneImportPreflight&gt;(EditorStatus::Failed, <span class="stringliteral">&quot;editor.scene-import.decode&quot;</span>,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                          primary ? primary-&gt;message() : <span class="stringliteral">&quot;Scene import inspection failed&quot;</span>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp;          <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = inspected.value();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_struct" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html">SceneImportPreflight</a> out;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ad9d93f143e1ecd2dabd3703bb7f5a0b0">sourceRevision</a> = <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>.revision();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#aed77c7dc48c057d732d4969c1adc5e44">nodes</a>          = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.nodeCount;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ab1bb274333df444218cdaf23fc81588c">meshNodes</a>      = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.meshNodeCount;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ab40cae26b1cbdb8a5e6dec2b8869e04b">added</a>          = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.diff.added;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#aa123e46055ae6b006f75053b8a25ce63">removed</a>        = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.diff.removed;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#abd73e1400102d13a58052d9c358c2e05">modified</a>       = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.diff.modified;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ad3b43f807a1768a692f4435b8d3f7d85">moved</a>          = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.diff.moved;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#a5d7c2b37ed6bf147602330b5e8b58aae">warnings</a>       = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.warnings;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ae97b5ceb5785aac3e07b9330985b7069">sockets</a>        = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.sockets;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    out.<a class="code hl_variable" href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#aa986664bfc7c56ddbeb452223ddfe37c">collisions</a>     = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.collisions;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> : <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.warnings)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        diagnostics.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>(<span class="stringliteral">&quot;editor.scene-import.warning&quot;</span>), DiagnosticSeverity::Warning, <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;SceneImportPreflight&gt;(std::move(out), std::move(diagnostics));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}  <span class="comment">// namespace eve::sceneloader_editing</span></div>
+</div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aSceneImportTarget_8h_html"><div class="ttname"><a href="SceneImportTarget_8h.html">SceneImportTarget.h</a></div></div>
+<div class="ttc" id="aSceneLoader_8h_html"><div class="ttname"><a href="SceneLoader_8h.html">SceneLoader.h</a></div></div>
+<div class="ttc" id="aVirtualGeometryRenderer_8cpp_html_a68147cce833d98b698183d68629e38d5"><div class="ttname"><a href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="VirtualGeometryRenderer_8cpp_source.html#l00018">VirtualGeometryRenderer.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a4185a5624803a273bf2b753b7a7c658c"><div class="ttname"><a href="classeve_1_1Result.html#a4185a5624803a273bf2b753b7a7c658c">eve::Result::value</a></div><div class="ttdeci">const T &amp; value() const &amp;</div><div class="ttdoc">Borrow the value from a const lvalue after checking success.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00275">Result.h:275</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></div><div class="ttdoc">Loads a 3D scene (glTF / OBJ / FBX / GLB ... via Assimp/medialoader) into the ECS scene tree.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00148">SceneLoader.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader_1_1SceneLoader_html_a2284c00059b11f86162765c54aa9731e"><div class="ttname"><a href="classeve_1_1sceneloader_1_1SceneLoader.html#a2284c00059b11f86162765c54aa9731e">eve::sceneloader::SceneLoader::inspect</a></div><div class="ttdeci">eve::Result&lt; SceneInspection &gt; inspect(const std::string &amp;path, const LoadOptions &amp;options={})</div><div class="ttdoc">Decode with explicit options and return copied metadata without mounting or GPU upload.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l01063">SceneLoader.cpp:1063</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader__editing_1_1SceneImportPreflightRuntime_html_a5f4bca1a025e6302b417694bd3249a69"><div class="ttname"><a href="classeve_1_1sceneloader__editing_1_1SceneImportPreflightRuntime.html#a5f4bca1a025e6302b417694bd3249a69">eve::sceneloader_editing::SceneImportPreflightRuntime::inspect</a></div><div class="ttdeci">EditorResult&lt; SceneImportPreflight &gt; inspect(const SceneImportTarget &amp;, sceneloader::SceneLoader *) const</div><div class="ttdef"><b>Definition</b> <a href="SceneImportRuntime_8cpp_source.html#l00011">SceneImportRuntime.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1sceneloader__editing_1_1SceneImportTarget_html"><div class="ttname"><a href="classeve_1_1sceneloader__editing_1_1SceneImportTarget.html">eve::sceneloader_editing::SceneImportTarget</a></div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00024">SceneImportTarget.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1sceneloader__editing_html"><div class="ttname"><a href="namespaceeve_1_1sceneloader__editing.html">eve::sceneloader_editing</a></div><div class="ttdef"><b>Definition</b> <a href="SceneImportRuntime_8cpp_source.html#l00004">SceneImportRuntime.cpp:4</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html">eve::sceneloader::LoadOptions</a></div><div class="ttdoc">Options controlling how a 3D scene file is decoded and mounted.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00110">SceneLoader.h:110</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a035282711d6f9e5abb8d99637058d439"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a035282711d6f9e5abb8d99637058d439">eve::sceneloader::LoadOptions::triangulate</a></div><div class="ttdeci">bool triangulate</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00111">SceneLoader.h:111</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a140a966d1b3df71c9cb33446cd3cc56b"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a140a966d1b3df71c9cb33446cd3cc56b">eve::sceneloader::LoadOptions::importLights</a></div><div class="ttdeci">bool importLights</div><div class="ttdoc">Import aiLight entries as graphics::Light3D entities.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00121">SceneLoader.h:121</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a1db208540321b658e7489f3d5f19fce2"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a1db208540321b658e7489f3d5f19fce2">eve::sceneloader::LoadOptions::mipmaps</a></div><div class="ttdeci">bool mipmaps</div><div class="ttdoc">Generate mipmaps + anisotropic filtering for imported textures.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00119">SceneLoader.h:119</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a2006c883697e215324fe76cca63328c8"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a2006c883697e215324fe76cca63328c8">eve::sceneloader::LoadOptions::sharedMeshes</a></div><div class="ttdeci">bool sharedMeshes</div><div class="ttdoc">Reuse one GPU mesh when several nodes reference the same aiMesh.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00117">SceneLoader.h:117</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a379b46115cb0a5b3682f664d6120edf9"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a379b46115cb0a5b3682f664d6120edf9">eve::sceneloader::LoadOptions::generateNormalsIfMissing</a></div><div class="ttdeci">bool generateNormalsIfMissing</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00112">SceneLoader.h:112</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a4869a2b5dbc01fdac59611fd9dd499d2"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a4869a2b5dbc01fdac59611fd9dd499d2">eve::sceneloader::LoadOptions::importAnimations</a></div><div class="ttdeci">bool importAnimations</div><div class="ttdoc">Import aiAnimation clips (skeleton + clips exposed via accessors).</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00125">SceneLoader.h:125</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_a792968ce3df94e01146372933f695bb0"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#a792968ce3df94e01146372933f695bb0">eve::sceneloader::LoadOptions::improveCacheLocality</a></div><div class="ttdeci">bool improveCacheLocality</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00115">SceneLoader.h:115</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_ac27eb74f23fda8fdb777ae4e3726e468"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#ac27eb74f23fda8fdb777ae4e3726e468">eve::sceneloader::LoadOptions::flipUVs</a></div><div class="ttdeci">bool flipUVs</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00114">SceneLoader.h:114</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_ac674924bef61e54b0ae85e538643f712"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#ac674924bef61e54b0ae85e538643f712">eve::sceneloader::LoadOptions::importCameras</a></div><div class="ttdeci">bool importCameras</div><div class="ttdoc">Import aiCamera entries as inactive graphics::Camera3D entities.</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00123">SceneLoader.h:123</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader_1_1LoadOptions_html_aeb8b76599b898799484836ce84791b07"><div class="ttname"><a href="structeve_1_1sceneloader_1_1LoadOptions.html#aeb8b76599b898799484836ce84791b07">eve::sceneloader::LoadOptions::joinIdenticalVertices</a></div><div class="ttdeci">bool joinIdenticalVertices</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8h_source.html#l00113">SceneLoader.h:113</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html">eve::sceneloader_editing::SceneImportPreflight</a></div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00063">SceneImportTarget.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_a5d7c2b37ed6bf147602330b5e8b58aae"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#a5d7c2b37ed6bf147602330b5e8b58aae">eve::sceneloader_editing::SceneImportPreflight::warnings</a></div><div class="ttdeci">std::vector&lt; std::string &gt; warnings</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00066">SceneImportTarget.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_aa123e46055ae6b006f75053b8a25ce63"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#aa123e46055ae6b006f75053b8a25ce63">eve::sceneloader_editing::SceneImportPreflight::removed</a></div><div class="ttdeci">int removed</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00065">SceneImportTarget.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_aa986664bfc7c56ddbeb452223ddfe37c"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#aa986664bfc7c56ddbeb452223ddfe37c">eve::sceneloader_editing::SceneImportPreflight::collisions</a></div><div class="ttdeci">std::vector&lt; std::string &gt; collisions</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00066">SceneImportTarget.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_ab1bb274333df444218cdaf23fc81588c"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ab1bb274333df444218cdaf23fc81588c">eve::sceneloader_editing::SceneImportPreflight::meshNodes</a></div><div class="ttdeci">int meshNodes</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00065">SceneImportTarget.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_ab40cae26b1cbdb8a5e6dec2b8869e04b"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ab40cae26b1cbdb8a5e6dec2b8869e04b">eve::sceneloader_editing::SceneImportPreflight::added</a></div><div class="ttdeci">int added</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00065">SceneImportTarget.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_abd73e1400102d13a58052d9c358c2e05"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#abd73e1400102d13a58052d9c358c2e05">eve::sceneloader_editing::SceneImportPreflight::modified</a></div><div class="ttdeci">int modified</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00065">SceneImportTarget.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_ad3b43f807a1768a692f4435b8d3f7d85"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ad3b43f807a1768a692f4435b8d3f7d85">eve::sceneloader_editing::SceneImportPreflight::moved</a></div><div class="ttdeci">int moved</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00065">SceneImportTarget.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_ad9d93f143e1ecd2dabd3703bb7f5a0b0"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ad9d93f143e1ecd2dabd3703bb7f5a0b0">eve::sceneloader_editing::SceneImportPreflight::sourceRevision</a></div><div class="ttdeci">editing::Revision sourceRevision</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00064">SceneImportTarget.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_ae97b5ceb5785aac3e07b9330985b7069"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#ae97b5ceb5785aac3e07b9330985b7069">eve::sceneloader_editing::SceneImportPreflight::sockets</a></div><div class="ttdeci">std::vector&lt; std::string &gt; sockets</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00066">SceneImportTarget.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1sceneloader__editing_1_1SceneImportPreflight_html_aed77c7dc48c057d732d4969c1adc5e44"><div class="ttname"><a href="structeve_1_1sceneloader__editing_1_1SceneImportPreflight.html#aed77c7dc48c057d732d4969c1adc5e44">eve::sceneloader_editing::SceneImportPreflight::nodes</a></div><div class="ttdeci">int nodes</div><div class="ttdef"><b>Definition</b> <a href="SceneImportTarget_8h_source.html#l00065">SceneImportTarget.h:65</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

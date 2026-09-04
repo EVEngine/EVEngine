@@ -1,0 +1,812 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::climbing::ClimbingAdvance结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1climbing.html">climbing</a></li><li class="navelem"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html">ClimbingAdvance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1climbing_1_1ClimbingAdvance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::climbing::ClimbingAdvance结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning output of one execution tick.  
+ <a href="structeve_1_1climbing_1_1ClimbingAdvance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Climbing_8h_source.html">Climbing.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab3a873f911ff377da7ab5317946a9077" id="r_ab3a873f911ff377da7ab5317946a9077"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfc">ClimbingPhase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#ab3a873f911ff377da7ab5317946a9077">phase</a> = <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcae599161956d626eda4cb0a5ffb85271c">ClimbingPhase::Idle</a></td></tr>
+<tr class="separator:ab3a873f911ff377da7ab5317946a9077"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af851ecd6d487aba23da776be99d71041" id="r_af851ecd6d487aba23da776be99d71041"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#af851ecd6d487aba23da776be99d71041">actionId</a></td></tr>
+<tr class="separator:af851ecd6d487aba23da776be99d71041"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbe7a99bb30e78d0a325631bd8f4d05b" id="r_adbe7a99bb30e78d0a325631bd8f4d05b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#adbe7a99bb30e78d0a325631bd8f4d05b">feet</a></td></tr>
+<tr class="separator:adbe7a99bb30e78d0a325631bd8f4d05b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d18b0e044cd62f40c9274aec61b4b96" id="r_a3d18b0e044cd62f40c9274aec61b4b96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a3d18b0e044cd62f40c9274aec61b4b96">desiredDelta</a></td></tr>
+<tr class="separator:a3d18b0e044cd62f40c9274aec61b4b96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8751b439ef5746efe44dc66be83d9a92" id="r_a8751b439ef5746efe44dc66be83d9a92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a8751b439ef5746efe44dc66be83d9a92">actualDelta</a></td></tr>
+<tr class="separator:a8751b439ef5746efe44dc66be83d9a92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd6b20cf08805ccd004280f6ce0627e" id="r_a5fd6b20cf08805ccd004280f6ce0627e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a5fd6b20cf08805ccd004280f6ce0627e">warpResidual</a></td></tr>
+<tr class="separator:a5fd6b20cf08805ccd004280f6ce0627e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a828792d28814f5f2ed42fed24624a3c0" id="r_a828792d28814f5f2ed42fed24624a3c0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a828792d28814f5f2ed42fed24624a3c0">normalizedTime</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a828792d28814f5f2ed42fed24624a3c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1608e726350d2e20c0edfbec23c276ae" id="r_a1608e726350d2e20c0edfbec23c276ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a1608e726350d2e20c0edfbec23c276ae">constrained</a> = false</td></tr>
+<tr class="separator:a1608e726350d2e20c0edfbec23c276ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a544625277e414c51c7913bfd79ca8ddb" id="r_a544625277e414c51c7913bfd79ca8ddb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a544625277e414c51c7913bfd79ca8ddb">grounded</a> = false</td></tr>
+<tr class="separator:a544625277e414c51c7913bfd79ca8ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428c91285795c3722a4efc951fcd5d05" id="r_a428c91285795c3722a4efc951fcd5d05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590f">HangSupport</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a428c91285795c3722a4efc951fcd5d05">support</a> = <a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590fa6adf97f83acf6453d4a6a4b1070f3754">HangSupport::None</a></td></tr>
+<tr class="separator:a428c91285795c3722a4efc951fcd5d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abedcba1323e4e76d5e14a260f699164b" id="r_abedcba1323e4e76d5e14a260f699164b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#abedcba1323e4e76d5e14a260f699164b">leftHandAnchor</a></td></tr>
+<tr class="separator:abedcba1323e4e76d5e14a260f699164b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add96990e2fc21dce21f040d71e617e81" id="r_add96990e2fc21dce21f040d71e617e81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#add96990e2fc21dce21f040d71e617e81">rightHandAnchor</a></td></tr>
+<tr class="separator:add96990e2fc21dce21f040d71e617e81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05636963d7374cec0563e175fd487958" id="r_a05636963d7374cec0563e175fd487958"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a05636963d7374cec0563e175fd487958">contactWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a05636963d7374cec0563e175fd487958"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae334bf9586aacd236ce998ac266935e7" id="r_ae334bf9586aacd236ce998ac266935e7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#ae334bf9586aacd236ce998ac266935e7">leftHandWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae334bf9586aacd236ce998ac266935e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4669770dc13d3c1383f17d13778e11b6" id="r_a4669770dc13d3c1383f17d13778e11b6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a4669770dc13d3c1383f17d13778e11b6">rightHandWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4669770dc13d3c1383f17d13778e11b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3a7a944b63980252fc476cc1bfba154" id="r_ac3a7a944b63980252fc476cc1bfba154"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#ac3a7a944b63980252fc476cc1bfba154">compactCollisionRequested</a> = false</td></tr>
+<tr class="separator:ac3a7a944b63980252fc476cc1bfba154"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bc69f92b8a4a6620671e6a07c9765f8" id="r_a9bc69f92b8a4a6620671e6a07c9765f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a9bc69f92b8a4a6620671e6a07c9765f8">compactCollisionActive</a> = false</td></tr>
+<tr class="separator:a9bc69f92b8a4a6620671e6a07c9765f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6328e7b5b3cfaaa74f030a3ad67da07" id="r_af6328e7b5b3cfaaa74f030a3ad67da07"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#af6328e7b5b3cfaaa74f030a3ad67da07">branchWindowOpen</a> = false</td></tr>
+<tr class="separator:af6328e7b5b3cfaaa74f030a3ad67da07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbcf344fce5e1605fefee57eea9e432d" id="r_abbcf344fce5e1605fefee57eea9e432d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#abbcf344fce5e1605fefee57eea9e432d">branchComboTag</a></td></tr>
+<tr class="memdesc:abbcf344fce5e1605fefee57eea9e432d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active authored combo tag; empty for notify-only or terminal branch availability.  <br /></td></tr>
+<tr class="separator:abbcf344fce5e1605fefee57eea9e432d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a128533867e039ede161504737d7f74c0" id="r_a128533867e039ede161504737d7f74c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1climbing.html#a0c90e23dd460d557efb3ac463500332f">ClimbingExecutionId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a128533867e039ede161504737d7f74c0">executionId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">ClimbingExecutionId::zero</a>()</td></tr>
+<tr class="separator:a128533867e039ede161504737d7f74c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9d69758a2a5cd44fcff1f0ea3cf7d8d" id="r_aa9d69758a2a5cd44fcff1f0ea3cf7d8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#aa9d69758a2a5cd44fcff1f0ea3cf7d8d">appliedWarp</a></td></tr>
+<tr class="separator:aa9d69758a2a5cd44fcff1f0ea3cf7d8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f9564b0de8e098835b362596c418427" id="r_a7f9564b0de8e098835b362596c418427"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a7f9564b0de8e098835b362596c418427">desiredYawDelta</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7f9564b0de8e098835b362596c418427"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a629d0aebf63a187abb7a0070231f3f8b" id="r_a629d0aebf63a187abb7a0070231f3f8b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a629d0aebf63a187abb7a0070231f3f8b">cameraCueProfile</a></td></tr>
+<tr class="memdesc:a629d0aebf63a187abb7a0070231f3f8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning presentation hint; consumers may ignore it without affecting simulation.  <br /></td></tr>
+<tr class="separator:a629d0aebf63a187abb7a0070231f3f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a345c2d4ea0839f39fdf772fcd980ae3d" id="r_a345c2d4ea0839f39fdf772fcd980ae3d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a345c2d4ea0839f39fdf772fcd980ae3d">cameraCue</a></td></tr>
+<tr class="memdesc:a345c2d4ea0839f39fdf772fcd980ae3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Action-local camera cue resolved from the immutable execution definition.  <br /></td></tr>
+<tr class="separator:a345c2d4ea0839f39fdf772fcd980ae3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add8a4c5b2c60650341900fa637b66b15" id="r_add8a4c5b2c60650341900fa637b66b15"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#add8a4c5b2c60650341900fa637b66b15">animationClipId</a></td></tr>
+<tr class="memdesc:add8a4c5b2c60650341900fa637b66b15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable animation clip id resolved from the immutable action definition.  <br /></td></tr>
+<tr class="separator:add8a4c5b2c60650341900fa637b66b15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32f139c47e08dfa23fe4aea15c2e5117" id="r_a32f139c47e08dfa23fe4aea15c2e5117"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a32f139c47e08dfa23fe4aea15c2e5117">animationGraphNodeId</a></td></tr>
+<tr class="memdesc:a32f139c47e08dfa23fe4aea15c2e5117"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable external animation-graph node id; the game adapter resolves it to its graph handle.  <br /></td></tr>
+<tr class="separator:a32f139c47e08dfa23fe4aea15c2e5117"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a724f41fea724bb0bccfa0979fdfe64" id="r_a7a724f41fea724bb0bccfa0979fdfe64"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a7a724f41fea724bb0bccfa0979fdfe64">animationMirrored</a> = false</td></tr>
+<tr class="memdesc:a7a724f41fea724bb0bccfa0979fdfe64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the selected action requests the mirrored presentation variant.  <br /></td></tr>
+<tr class="separator:a7a724f41fea724bb0bccfa0979fdfe64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f75f10d9c544ac6135dd3e61c016369" id="r_a2f75f10d9c544ac6135dd3e61c016369"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a2f75f10d9c544ac6135dd3e61c016369">leftFootWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a2f75f10d9c544ac6135dd3e61c016369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Left-foot constraint weight resolved from the immutable action contact windows.  <br /></td></tr>
+<tr class="separator:a2f75f10d9c544ac6135dd3e61c016369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a167d9f0e03ec74724ec2aa5aa1bdc1ba" id="r_a167d9f0e03ec74724ec2aa5aa1bdc1ba"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#a167d9f0e03ec74724ec2aa5aa1bdc1ba">rightFootWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a167d9f0e03ec74724ec2aa5aa1bdc1ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Right-foot constraint weight resolved from the immutable action contact windows.  <br /></td></tr>
+<tr class="separator:a167d9f0e03ec74724ec2aa5aa1bdc1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae974f0b85e0a2de708092c6bf9a69237" id="r_ae974f0b85e0a2de708092c6bf9a69237"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#ae974f0b85e0a2de708092c6bf9a69237">pelvisWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ae974f0b85e0a2de708092c6bf9a69237"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pelvis constraint weight resolved from the immutable action contact windows.  <br /></td></tr>
+<tr class="separator:ae974f0b85e0a2de708092c6bf9a69237"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae391010878929b2867b03fa1a77918e4" id="r_ae391010878929b2867b03fa1a77918e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#ae391010878929b2867b03fa1a77918e4">terminalVelocity</a></td></tr>
+<tr class="memdesc:ae391010878929b2867b03fa1a77918e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative velocity policy output for the receiving locomotion owner.  <br /></td></tr>
+<tr class="separator:ae391010878929b2867b03fa1a77918e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab95c82a397794146126b4d3337fa27c8" id="r_ab95c82a397794146126b4d3337fa27c8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html#ab95c82a397794146126b4d3337fa27c8">hasTerminalVelocity</a> = false</td></tr>
+<tr class="memdesc:ab95c82a397794146126b4d3337fa27c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether terminalVelocity must replace velocity derived from this tick's displacement.  <br /></td></tr>
+<tr class="separator:ab95c82a397794146126b4d3337fa27c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning output of one execution tick. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00524">524</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="af851ecd6d487aba23da776be99d71041" name="af851ecd6d487aba23da776be99d71041"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af851ecd6d487aba23da776be99d71041">&#9670;&#160;</a></span>actionId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::climbing::ClimbingAdvance::actionId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00526">526</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00919">eve::climbing::ClimbingRuntime::advance()</a>.</p>
+
+</div>
+</div>
+<a id="a8751b439ef5746efe44dc66be83d9a92" name="a8751b439ef5746efe44dc66be83d9a92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8751b439ef5746efe44dc66be83d9a92">&#9670;&#160;</a></span>actualDelta</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a> eve::climbing::ClimbingAdvance::actualDelta</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00529">529</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add8a4c5b2c60650341900fa637b66b15" name="add8a4c5b2c60650341900fa637b66b15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add8a4c5b2c60650341900fa637b66b15">&#9670;&#160;</a></span>animationClipId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::climbing::ClimbingAdvance::animationClipId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable animation clip id resolved from the immutable action definition. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00553">553</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a32f139c47e08dfa23fe4aea15c2e5117" name="a32f139c47e08dfa23fe4aea15c2e5117"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32f139c47e08dfa23fe4aea15c2e5117">&#9670;&#160;</a></span>animationGraphNodeId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::climbing::ClimbingAdvance::animationGraphNodeId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable external animation-graph node id; the game adapter resolves it to its graph handle. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00555">555</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a724f41fea724bb0bccfa0979fdfe64" name="a7a724f41fea724bb0bccfa0979fdfe64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a724f41fea724bb0bccfa0979fdfe64">&#9670;&#160;</a></span>animationMirrored</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::climbing::ClimbingAdvance::animationMirrored = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether the selected action requests the mirrored presentation variant. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00557">557</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa9d69758a2a5cd44fcff1f0ea3cf7d8d" name="aa9d69758a2a5cd44fcff1f0ea3cf7d8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9d69758a2a5cd44fcff1f0ea3cf7d8d">&#9670;&#160;</a></span>appliedWarp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a> eve::climbing::ClimbingAdvance::appliedWarp</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00546">546</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abbcf344fce5e1605fefee57eea9e432d" name="abbcf344fce5e1605fefee57eea9e432d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbcf344fce5e1605fefee57eea9e432d">&#9670;&#160;</a></span>branchComboTag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::climbing::ClimbingAdvance::branchComboTag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Active authored combo tag; empty for notify-only or terminal branch availability. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00544">544</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af6328e7b5b3cfaaa74f030a3ad67da07" name="af6328e7b5b3cfaaa74f030a3ad67da07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6328e7b5b3cfaaa74f030a3ad67da07">&#9670;&#160;</a></span>branchWindowOpen</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::climbing::ClimbingAdvance::branchWindowOpen = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00542">542</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a345c2d4ea0839f39fdf772fcd980ae3d" name="a345c2d4ea0839f39fdf772fcd980ae3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a345c2d4ea0839f39fdf772fcd980ae3d">&#9670;&#160;</a></span>cameraCue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::climbing::ClimbingAdvance::cameraCue</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Action-local camera cue resolved from the immutable execution definition. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00551">551</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a629d0aebf63a187abb7a0070231f3f8b" name="a629d0aebf63a187abb7a0070231f3f8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a629d0aebf63a187abb7a0070231f3f8b">&#9670;&#160;</a></span>cameraCueProfile</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::climbing::ClimbingAdvance::cameraCueProfile</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Owning presentation hint; consumers may ignore it without affecting simulation. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00549">549</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9bc69f92b8a4a6620671e6a07c9765f8" name="a9bc69f92b8a4a6620671e6a07c9765f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bc69f92b8a4a6620671e6a07c9765f8">&#9670;&#160;</a></span>compactCollisionActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::climbing::ClimbingAdvance::compactCollisionActive = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00541">541</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac3a7a944b63980252fc476cc1bfba154" name="ac3a7a944b63980252fc476cc1bfba154"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3a7a944b63980252fc476cc1bfba154">&#9670;&#160;</a></span>compactCollisionRequested</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::climbing::ClimbingAdvance::compactCollisionRequested = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00540">540</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1608e726350d2e20c0edfbec23c276ae" name="a1608e726350d2e20c0edfbec23c276ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1608e726350d2e20c0edfbec23c276ae">&#9670;&#160;</a></span>constrained</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::climbing::ClimbingAdvance::constrained = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00532">532</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05636963d7374cec0563e175fd487958" name="a05636963d7374cec0563e175fd487958"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05636963d7374cec0563e175fd487958">&#9670;&#160;</a></span>contactWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::climbing::ClimbingAdvance::contactWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00537">537</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPose_8cpp_source.html#l00034">eve::climbing::applyClimbingPose()</a>.</p>
+
+</div>
+</div>
+<a id="a3d18b0e044cd62f40c9274aec61b4b96" name="a3d18b0e044cd62f40c9274aec61b4b96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d18b0e044cd62f40c9274aec61b4b96">&#9670;&#160;</a></span>desiredDelta</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a> eve::climbing::ClimbingAdvance::desiredDelta</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00528">528</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7f9564b0de8e098835b362596c418427" name="a7f9564b0de8e098835b362596c418427"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f9564b0de8e098835b362596c418427">&#9670;&#160;</a></span>desiredYawDelta</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::climbing::ClimbingAdvance::desiredYawDelta = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00547">547</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a128533867e039ede161504737d7f74c0" name="a128533867e039ede161504737d7f74c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a128533867e039ede161504737d7f74c0">&#9670;&#160;</a></span>executionId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a0c90e23dd460d557efb3ac463500332f">ClimbingExecutionId</a> eve::climbing::ClimbingAdvance::executionId = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">ClimbingExecutionId::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00545">545</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adbe7a99bb30e78d0a325631bd8f4d05b" name="adbe7a99bb30e78d0a325631bd8f4d05b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbe7a99bb30e78d0a325631bd8f4d05b">&#9670;&#160;</a></span>feet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a> eve::climbing::ClimbingAdvance::feet</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00527">527</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a544625277e414c51c7913bfd79ca8ddb" name="a544625277e414c51c7913bfd79ca8ddb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a544625277e414c51c7913bfd79ca8ddb">&#9670;&#160;</a></span>grounded</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::climbing::ClimbingAdvance::grounded = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00533">533</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab95c82a397794146126b4d3337fa27c8" name="ab95c82a397794146126b4d3337fa27c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab95c82a397794146126b4d3337fa27c8">&#9670;&#160;</a></span>hasTerminalVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::climbing::ClimbingAdvance::hasTerminalVelocity = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether terminalVelocity must replace velocity derived from this tick's displacement. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00567">567</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2f75f10d9c544ac6135dd3e61c016369" name="a2f75f10d9c544ac6135dd3e61c016369"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f75f10d9c544ac6135dd3e61c016369">&#9670;&#160;</a></span>leftFootWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::climbing::ClimbingAdvance::leftFootWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Left-foot constraint weight resolved from the immutable action contact windows. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00559">559</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abedcba1323e4e76d5e14a260f699164b" name="abedcba1323e4e76d5e14a260f699164b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abedcba1323e4e76d5e14a260f699164b">&#9670;&#160;</a></span>leftHandAnchor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a> eve::climbing::ClimbingAdvance::leftHandAnchor</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00535">535</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPose_8cpp_source.html#l00034">eve::climbing::applyClimbingPose()</a>.</p>
+
+</div>
+</div>
+<a id="ae334bf9586aacd236ce998ac266935e7" name="ae334bf9586aacd236ce998ac266935e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae334bf9586aacd236ce998ac266935e7">&#9670;&#160;</a></span>leftHandWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::climbing::ClimbingAdvance::leftHandWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00538">538</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPose_8cpp_source.html#l00034">eve::climbing::applyClimbingPose()</a>.</p>
+
+</div>
+</div>
+<a id="a828792d28814f5f2ed42fed24624a3c0" name="a828792d28814f5f2ed42fed24624a3c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a828792d28814f5f2ed42fed24624a3c0">&#9670;&#160;</a></span>normalizedTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::climbing::ClimbingAdvance::normalizedTime = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00531">531</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae974f0b85e0a2de708092c6bf9a69237" name="ae974f0b85e0a2de708092c6bf9a69237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae974f0b85e0a2de708092c6bf9a69237">&#9670;&#160;</a></span>pelvisWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::climbing::ClimbingAdvance::pelvisWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pelvis constraint weight resolved from the immutable action contact windows. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00563">563</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3a873f911ff377da7ab5317946a9077" name="ab3a873f911ff377da7ab5317946a9077"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3a873f911ff377da7ab5317946a9077">&#9670;&#160;</a></span>phase</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfc">ClimbingPhase</a> eve::climbing::ClimbingAdvance::phase = <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcae599161956d626eda4cb0a5ffb85271c">ClimbingPhase::Idle</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00525">525</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a167d9f0e03ec74724ec2aa5aa1bdc1ba" name="a167d9f0e03ec74724ec2aa5aa1bdc1ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a167d9f0e03ec74724ec2aa5aa1bdc1ba">&#9670;&#160;</a></span>rightFootWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::climbing::ClimbingAdvance::rightFootWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Right-foot constraint weight resolved from the immutable action contact windows. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00561">561</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add96990e2fc21dce21f040d71e617e81" name="add96990e2fc21dce21f040d71e617e81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add96990e2fc21dce21f040d71e617e81">&#9670;&#160;</a></span>rightHandAnchor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a> eve::climbing::ClimbingAdvance::rightHandAnchor</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00536">536</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPose_8cpp_source.html#l00034">eve::climbing::applyClimbingPose()</a>.</p>
+
+</div>
+</div>
+<a id="a4669770dc13d3c1383f17d13778e11b6" name="a4669770dc13d3c1383f17d13778e11b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4669770dc13d3c1383f17d13778e11b6">&#9670;&#160;</a></span>rightHandWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::climbing::ClimbingAdvance::rightHandWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00539">539</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPose_8cpp_source.html#l00034">eve::climbing::applyClimbingPose()</a>.</p>
+
+</div>
+</div>
+<a id="a428c91285795c3722a4efc951fcd5d05" name="a428c91285795c3722a4efc951fcd5d05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428c91285795c3722a4efc951fcd5d05">&#9670;&#160;</a></span>support</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590f">HangSupport</a> eve::climbing::ClimbingAdvance::support = <a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590fa6adf97f83acf6453d4a6a4b1070f3754">HangSupport::None</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00534">534</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae391010878929b2867b03fa1a77918e4" name="ae391010878929b2867b03fa1a77918e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae391010878929b2867b03fa1a77918e4">&#9670;&#160;</a></span>terminalVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a> eve::climbing::ClimbingAdvance::terminalVelocity</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Authoritative velocity policy output for the receiving locomotion owner. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00565">565</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5fd6b20cf08805ccd004280f6ce0627e" name="a5fd6b20cf08805ccd004280f6ce0627e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fd6b20cf08805ccd004280f6ce0627e">&#9670;&#160;</a></span>warpResidual</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a> eve::climbing::ClimbingAdvance::warpResidual</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00530">530</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/climbing/<a class="el" href="Climbing_8h_source.html">Climbing.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

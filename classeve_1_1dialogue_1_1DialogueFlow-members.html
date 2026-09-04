@@ -1,0 +1,241 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dialogue.html">dialogue</a></li><li class="navelem"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">DialogueFlow</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::dialogue::DialogueFlow 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3ee4a13da683505d0ef2c61a4ccef770">addToneRule</a>(const std::string &amp;expression, const std::string &amp;prefix, const std::string &amp;suffix, const std::string &amp;find, const std::string &amp;replacement)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3a2d7a1b087dbf7d71f3f09938d9937b">advance</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a408042b080430d70ddf559860263111a">advanceChecked</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#abdc2971978038a9a0ba8744dc2d4d9ec">applyDocument</a>(ConversationDocument *document)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#ab0071bbc925ed1d1bc6a43bdf7ddca83">applyStateMutations</a>(std::span&lt; const eve::StateMutation &gt; mutations, const eve::MutationContext &amp;context) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#aa44718f143dc43fd6e5ca98da24acd84">captureState</a>(StateValue &amp;out) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#abadc1c8d36ee4eee86fe425c821b930b">captureStateJson</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3b554c8736317f1e7b95366f60190beb">clear</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a484338a5648d6ff967c3971b12d67025">clearExpressionEvaluator</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a8180c972d2997360005cc6cb462dd5cb">clearIntegration</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#aa744a7947bd45fed509721681f4860ec">clearMigrations</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#acd6cdc3635d219254c2393da36bdde3e">clearToneRules</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#ac81407820f3b7454d90d99091330a721">configureIntegration</a>(IntegrationConfig config)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a67afc9db5fbb4d517f502a71ad9722da">DialogueFlow</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#aeaca029273f1af804cf70c1a82b14a4b">exportLocalizationCsv</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a79df236dea8a87a4eb9bb4194ed730f3">exportMissingLocalizationCsv</a>(const std::string &amp;locale) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a1c65c69ab37322ff43d032c1513e7f7a">exportVoiceRecordingCsv</a>(const std::string &amp;locale) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a67dd3fe927b5e03ce70f4e9fbde37b86">getConversationCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a31c7df7389832c427e22cc0041ab9cf1">getConversationId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#adc751f9819442f9db6f13b9b7ce475dd">getConversationId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#afe0130b4351e13d53b5c948d6af141e9">getDiagnosticCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#adf8bb2ffd26efe8b6d3a6a23b29fd2e4">getDiagnosticLine</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a45153b423082b16ee669c48857134567">getDiagnosticMessage</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a7f4c6e2d71600f705932e4db6a7ca301">getDiagnosticPath</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a14e67cf45757e325bc60b1f8c2e122d2">getDiagnosticSeverity</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3cbf51d4f4bf407def5d66fa201134ad">getDocument</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a15f92fea5fa278c5bc105f5580e14036">getI18nKey</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#addcd6ff0e226fd35e14f5fe809f0b104">getLastLoadChanged</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3fa17d48d44052b1ccb90ce2118da58d">getLocale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#ab11c1f57843ee348889dda5affddaebd">getNodeId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#af0fb867e1d7fd1e3f3d9515ca6fc8b69">getNodeKind</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#ac93344c980365f0216bb6e0ea8fc7b86">getPool</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a56e7d49fb0b7dc538367bd933e585dae">getRouteCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a7e12cc7d4c3cae83880271e1d6826543">getRouteId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a21b70be1a76f8bcbad743322d79ebae2">getSpeaker</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#aa7a87fb0715e86b45e2b5366b8435480">getText</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a5a9a3fc09c05a36080975ff982c51378">getVoice</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3ebe9d6eecdfdad6eb11283c5a258ec2">getVoiceDuration</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#aa9f26f846212f2e2a9bc31afe36aa557">getVoiceStatus</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#ab9609512e35ae67466fb33b970622508">hasConversation</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#ae97ac9742111d2127bdb8201bf0fa4e6">importLocalizationCsv</a>(const std::string &amp;csv, const std::string &amp;defaultLocale)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#afe21cd584845e93ae98e99ee433b981c">importTwee</a>(const std::string &amp;source, const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a5414961a2e6a61f22459a3d52a9debbc">importYarn</a>(const std::string &amp;source, const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a0d816eebcb68a542344124cefc3efd86">isActive</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#af74ecbd56960779db9dd45213d169d96">isBlocked</a>() const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a79499fe93258fc88dde0ac50015693d7">lintAll</a>()</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a2eae48d4f0cb882da6407e8bc124a883">loadFromDnut</a>(const std::string &amp;source, const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a848326a4913df81964676e3b470af338">loadFromDnutFile</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a4b7910d33972f1f88bc595255d999d8e">Module_REG</a>(DialogueFlow)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a39d9fd55cbfaf521923abb9b761f135d">newDocument</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a5d9aff7d2f4473ed7348a0c7248c89b8">registerMigration</a>(const std::string &amp;assetId, int fromVersion, const std::string &amp;currentAssetId, const std::string &amp;nodeMap)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a8e67c349a8a7489ac82b447954aea9a5">reloadFromDnut</a>(const std::string &amp;source, const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a73f20a7d031b1db916c73873a1657673">removeSource</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a88f3b8a0b830d8aafd3d9a282aa55dbf">renameConversation</a>(const std::string &amp;oldId, const std::string &amp;newId)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a3b6b86ae6fa51fe92ea9c9211b439c76">renameNode</a>(const std::string &amp;conversationId, const std::string &amp;oldId, const std::string &amp;newId)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a2b46dadb53d78f2c6f78297e76b1724d">restoreState</a>(const StateValue &amp;in, std::string *error=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a4cf0e283b33f2a15a78d9df33fc8ff12">restoreStateJson</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a398242eeef536129ce8d81c60b475264">select</a>(const std::string &amp;routeId)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a199b62674dc2c1042550e48ce3f13efa">setExpressionEvaluator</a>(ssq::Object fn)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a1072b031a074cbfd6acfee830a0b9612">setLocale</a>(const std::string &amp;locale)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#aab5ecc3106c103a224c547edd0bc6b56">start</a>(const std::string &amp;id, ssq::Object bindings)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a414d6e2f9194467b6ad358e43d34e483">startChecked</a>(const std::string &amp;id, ssq::Object bindings)</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a0ae5a6c63238dd3c36bac77dc3149551">stateContext</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#acc5b23531b4f1937688e62ded4d3388e">validateLocalization</a>(const eve::i18n::I18n &amp;localization, const std::string &amp;locale) const</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html#a32f9a166cae59ed11985eed3fa9ba2a6">~DialogueFlow</a>() override</td><td class="entry"><a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html">eve::dialogue::DialogueFlow</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

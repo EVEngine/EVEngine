@@ -1,0 +1,1662 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset.html">asset</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1AssetCookProfile.html">AssetCookProfile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit deterministic target profile for one runtime variant.  <a href="structeve_1_1asset_1_1AssetCookProfile.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1AssetCookReceipt.html">AssetCookReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result of a completed and reopened deterministic Cook.  <a href="structeve_1_1asset_1_1AssetCookReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1AtomicAssetPackageStore.html">AtomicAssetPackageStore</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filesystem publisher whose failed prepare/verify leaves the destination unchanged.  <a href="classeve_1_1asset_1_1AtomicAssetPackageStore.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1AvailableAssetDependency.html">AvailableAssetDependency</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One externally supplied asset available to a Cook dependency closure.  <a href="structeve_1_1asset_1_1AvailableAssetDependency.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1CookedCanonicalImage.html">CookedCanonicalImage</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> definition and typed RGBA8 bulk generated from one canonical image source.  <a href="structeve_1_1asset_1_1CookedCanonicalImage.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1CookedCanonicalPcgGraph.html">CookedCanonicalPcgGraph</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> metadata and deterministic PointGraph definition for one canonical PCG graph.  <a href="structeve_1_1asset_1_1CookedCanonicalPcgGraph.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fully admitted source archive with its typed manifest and payloads.  <a href="structeve_1_1asset_1_1EvaArchive.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaArchiveEntry.html">EvaArchiveEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One owning regular-file entry inside an <code>.eva</code> archive.  <a href="structeve_1_1asset_1_1EvaArchiveEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Admission budgets applied before allocating decoded archive entries.  <a href="structeve_1_1asset_1_1EvaArchiveLimits.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaAssetChange.html">EvaAssetChange</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One canonical asset identity changed between source packages.  <a href="structeve_1_1asset_1_1EvaAssetChange.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaAssetEntry.html">EvaAssetEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One typed asset definition in an <code>.eva</code> archive.  <a href="structeve_1_1asset_1_1EvaAssetEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaDependency.html">EvaDependency</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One directed dependency between stable asset identities.  <a href="structeve_1_1asset_1_1EvaDependency.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaDependencyValidation.html">EvaDependencyValidation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable result of validating a package dependency closure.  <a href="structeve_1_1asset_1_1EvaDependencyValidation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validated, owning <code>.eva</code> manifest.  <a href="structeve_1_1asset_1_1EvaManifest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaPackageDiff.html">EvaPackageDiff</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministically ordered semantic package difference.  <a href="structeve_1_1asset_1_1EvaPackageDiff.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1Evpack.html">Evpack</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fully admitted owning runtime pack.  <a href="classeve_1_1asset_1_1Evpack.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackAssetHandle.html">EvpackAssetHandle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-scoped stable-reference resolution across mounted packages.  <a href="structeve_1_1asset_1_1EvpackAssetHandle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackBuild.html">EvpackBuild</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete input to deterministic <code>.evpack</code> assembly.  <a href="structeve_1_1asset_1_1EvpackBuild.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">EvpackCapabilities</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actual runtime device capabilities used for variant selection.  <a href="structeve_1_1asset_1_1EvpackCapabilities.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackChunk.html">EvpackChunk</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Admitted immutable chunk metadata.  <a href="structeve_1_1asset_1_1EvpackChunk.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackChunkHandle.html">EvpackChunkHandle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-scoped handle to one verified chunk in a mounted package.  <a href="structeve_1_1asset_1_1EvpackChunkHandle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackChunkInput.html">EvpackChunkInput</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cooker-owned uncompressed chunk before deterministic package assembly.  <a href="structeve_1_1asset_1_1EvpackChunkInput.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-scoped handle to one mounted runtime package.  <a href="structeve_1_1asset_1_1EvpackHandle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> limits checked before package allocations and hash work.  <a href="structeve_1_1asset_1_1EvpackLimits.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackMountReceipt.html">EvpackMountReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt returned after an atomic registry publication.  <a href="structeve_1_1asset_1_1EvpackMountReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1EvpackRangeMount.html">EvpackRangeMount</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Admitted metadata plus an immutable range source retained by shared ownership.  <a href="classeve_1_1asset_1_1EvpackRangeMount.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1EvpackRangeSource.html">EvpackRangeSource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract immutable byte-range provider for files, mmap, HTTP or object storage.  <a href="classeve_1_1asset_1_1EvpackRangeSource.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1EvpackRegistry.html">EvpackRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread-safe owner of current runtime package generations.  <a href="classeve_1_1asset_1_1EvpackRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackRegistryEvent.html">EvpackRegistryEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable lifecycle event delivered to registry subscribers.  <a href="structeve_1_1asset_1_1EvpackRegistryEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html">EvpackRegistrySubscription</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque identity used to cancel a registry subscription.  <a href="structeve_1_1asset_1_1EvpackRegistrySubscription.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1EvpackResourceReader.html">EvpackResourceReader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable reader retaining an admitted pack by shared ownership.  <a href="classeve_1_1asset_1_1EvpackResourceReader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackSignature.html">EvpackSignature</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed-size detached publisher signature stored in a v1 runtime pack.  <a href="structeve_1_1asset_1_1EvpackSignature.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1EvpackSignatureVerifier.html">EvpackSignatureVerifier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> trust provider supplied by the application/project policy.  <a href="classeve_1_1asset_1_1EvpackSignatureVerifier.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1EvpackSigner.html">EvpackSigner</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tool-side provider that signs the authenticated 32-byte package metadata digest.  <a href="classeve_1_1asset_1_1EvpackSigner.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trust inputs kept separate from size/resource limits.  <a href="structeve_1_1asset_1_1EvpackTrust.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackUnmountReceipt.html">EvpackUnmountReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt proving one generation was atomically unmounted.  <a href="structeve_1_1asset_1_1EvpackUnmountReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackVariant.html">EvpackVariant</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capability-addressed runtime representation; list order is fallback order.  <a href="structeve_1_1asset_1_1EvpackVariant.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvpackVariantSelection.html">EvpackVariantSelection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of ordered capability variant selection.  <a href="structeve_1_1asset_1_1EvpackVariantSelection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1FileEvpackRangeSource.html">FileEvpackRangeSource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread-safe file-backed range source; each request owns its file stream.  <a href="classeve_1_1asset_1_1FileEvpackRangeSource.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1PackagePublishReceipt.html">PackagePublishReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Durable information returned only after atomic replacement succeeds.  <a href="structeve_1_1asset_1_1PackagePublishReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning admitted mount candidate that has not changed observable registry state.  <a href="classeve_1_1asset_1_1PreparedEvpackMount.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1RuntimeAssetChunk.html">RuntimeAssetChunk</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One decoded runtime chunk with its admitted semantic metadata.  <a href="structeve_1_1asset_1_1RuntimeAssetChunk.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1RuntimeAssetPayload.html">RuntimeAssetPayload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning backend-neutral payload returned to a domain decoder.  <a href="structeve_1_1asset_1_1RuntimeAssetPayload.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1RuntimeDefinitionLimits.html">RuntimeDefinitionLimits</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structural and allocation limits for untrusted EVDEF metadata.  <a href="structeve_1_1asset_1_1RuntimeDefinitionLimits.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a4652ed76347727cb2bf6c1ce80f31713" id="r_a4652ed76347727cb2bf6c1ce80f31713"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a4652ed76347727cb2bf6c1ce80f31713">CookPublication</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset.html#a4652ed76347727cb2bf6c1ce80f31713aaa2b2974298d9dd11d11f7dd0d211da5">LocalInspection</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a4652ed76347727cb2bf6c1ce80f31713a61504cf5296183dc82cb3ca0d8f74b7f">PublicDistribution</a>
+ }</td></tr>
+<tr class="memdesc:a4652ed76347727cb2bf6c1ce80f31713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publication policy controls license admission without making legal inferences.  <a href="namespaceeve_1_1asset.html#a4652ed76347727cb2bf6c1ce80f31713">更多...</a><br /></td></tr>
+<tr class="separator:a4652ed76347727cb2bf6c1ce80f31713"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a938425a725644af5524d2d79c42e95b5" id="r_a938425a725644af5524d2d79c42e95b5"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5">EvaAssetChangeKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5af29ddbfb905eb2593fdcdfb243f9af85">Added</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5a93f07b720ebf7d1246512569761a5804">Removed</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5a820dbd2b8f606aff866c0bbfb6b737c1">Changed</a>
+ }</td></tr>
+<tr class="memdesc:a938425a725644af5524d2d79c42e95b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable asset-level change classification.  <a href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5">更多...</a><br /></td></tr>
+<tr class="separator:a938425a725644af5524d2d79c42e95b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b90488bd2a2660761a79d2b70bd0472" id="r_a4b90488bd2a2660761a79d2b70bd0472"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a4b90488bd2a2660761a79d2b70bd0472">PackagePublishGateDecision</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset.html#a4b90488bd2a2660761a79d2b70bd0472af262fae0a2f17e8c1eb4e9eddb0160e4">Proceed</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a4b90488bd2a2660761a79d2b70bd0472ad98ac12774fca5c3cbaffe276840c55f">Reject</a>
+ }</td></tr>
+<tr class="memdesc:a4b90488bd2a2660761a79d2b70bd0472"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit test/tool gate result immediately before atomic replacement.  <a href="namespaceeve_1_1asset.html#a4b90488bd2a2660761a79d2b70bd0472">更多...</a><br /></td></tr>
+<tr class="separator:a4b90488bd2a2660761a79d2b70bd0472"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e65f9442f82013f69bd56bc9a7aced7" id="r_a9e65f9442f82013f69bd56bc9a7aced7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">EvaDependencyKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed">RuntimeRequired</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3">RuntimeOptional</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0">Build</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257">Editor</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819">Source</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630">Platform</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a9e65f9442f82013f69bd56bc9a7aced7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dependency role recorded by a source asset archive.  <a href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">更多...</a><br /></td></tr>
+<tr class="separator:a9e65f9442f82013f69bd56bc9a7aced7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe152c3f2e5d653a27c0ae4b3ee5d1b5" id="r_afe152c3f2e5d653a27c0ae4b3ee5d1b5"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5">EvpackChunkKind</a> : std::uint16_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5a0b890b1926b90387673882e6ccae7fdc">Definition</a> = 1
+, <a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5a4c3246a186dddf08c2c1165f04c2276d">Bulk</a> = 2
+, <a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aeae835e83c0494a376229f254f7d3392">Stream</a> = 3
+, <a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a> = 4
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5a3beb75d1563ebc22253341be4ce57f44">Dictionary</a> = 5
+, <a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aebef1b2fc20cbfea10d6c666cfae0c2b">DebugName</a> = 6
+<br />
+ }</td></tr>
+<tr class="memdesc:afe152c3f2e5d653a27c0ae4b3ee5d1b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Semantic role of a runtime chunk.  <a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5">更多...</a><br /></td></tr>
+<tr class="separator:afe152c3f2e5d653a27c0ae4b3ee5d1b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84df6f4b4a428240b32e2923c8cb9662" id="r_a84df6f4b4a428240b32e2923c8cb9662"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">EvpackCodec</a> : std::uint16_t { <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
+, <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a0c8468c9ff2f38e853335e1e40ade4c3">Zstd</a> = 1
+ }</td></tr>
+<tr class="memdesc:a84df6f4b4a428240b32e2923c8cb9662"><td class="mdescLeft">&#160;</td><td class="mdescRight">Physical outer compression applied to one runtime chunk.  <a href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">更多...</a><br /></td></tr>
+<tr class="separator:a84df6f4b4a428240b32e2923c8cb9662"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48918f927faa7894d460ae431677f97d" id="r_a48918f927faa7894d460ae431677f97d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a48918f927faa7894d460ae431677f97d">EvpackSignaturePolicy</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset.html#a48918f927faa7894d460ae431677f97dae88caf4fc41e7c27f17c828a8025165e">AllowUnsignedDevelopment</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a48918f927faa7894d460ae431677f97da8ea81cc7cda32b62365943849fe7d040">RequireTrustedSignature</a>
+ }</td></tr>
+<tr class="memdesc:a48918f927faa7894d460ae431677f97d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Admission policy for unsigned development packages.  <a href="namespaceeve_1_1asset.html#a48918f927faa7894d460ae431677f97d">更多...</a><br /></td></tr>
+<tr class="separator:a48918f927faa7894d460ae431677f97d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a465daee04418e183de6a96a50613e845" id="r_a465daee04418e183de6a96a50613e845"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845">EvpackRegistryEventKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845aab4e7334a8f96cc4068b7de43e57b9e4">Mounted</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845ab3f23170be598de0771ac94684114f94">Replaced</a>
+, <a class="el" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845afe64567c054d4cc06578a041b1f88296">Unmounted</a>
+ }</td></tr>
+<tr class="memdesc:a465daee04418e183de6a96a50613e845"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable registry lifecycle operation dispatched after commit and outside locks.  <a href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845">更多...</a><br /></td></tr>
+<tr class="separator:a465daee04418e183de6a96a50613e845"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a33b1b6c3cae88a6fec7cd7a3aef6a395" id="r_a33b1b6c3cae88a6fec7cd7a3aef6a395"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1AssetCookProfile.html">AssetCookProfile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a33b1b6c3cae88a6fec7cd7a3aef6a395">assetCookProfileForTarget</a> (std::string_view <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a33b1b6c3cae88a6fec7cd7a3aef6a395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a stable CLI/tool target name to its exact capability profile.  <br /></td></tr>
+<tr class="separator:a33b1b6c3cae88a6fec7cd7a3aef6a395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6298a4ca1f94b555790acc0ec30415c7" id="r_a6298a4ca1f94b555790acc0ec30415c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1AssetCookReceipt.html">AssetCookReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a6298a4ca1f94b555790acc0ec30415c7">cookEvaToEvpack</a> (const <a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="structeve_1_1asset_1_1AssetCookProfile.html">AssetCookProfile</a> &amp;profile, const <a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a> &amp;evaLimits={}, const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;evpackLimits={})</td></tr>
+<tr class="memdesc:a6298a4ca1f94b555790acc0ec30415c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cook an admitted source archive into one target-specific runtime pack.  <br /></td></tr>
+<tr class="separator:a6298a4ca1f94b555790acc0ec30415c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbb46c83ed063c4d770327f420fc5067" id="r_acbb46c83ed063c4d770327f420fc5067"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaDependencyValidation.html">EvaDependencyValidation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#acbb46c83ed063c4d770327f420fc5067">validateEvaDependencies</a> (const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;manifest, std::span&lt; const <a class="el" href="structeve_1_1asset_1_1AvailableAssetDependency.html">AvailableAssetDependency</a> &gt; available={})</td></tr>
+<tr class="memdesc:acbb46c83ed063c4d770327f420fc5067"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate local/external references, expected types and required-edge acyclicity.  <br /></td></tr>
+<tr class="separator:acbb46c83ed063c4d770327f420fc5067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36366cd4d911915e7db06c65b11a48ca" id="r_a36366cd4d911915e7db06c65b11a48ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaPackageDiff.html">EvaPackageDiff</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a36366cd4d911915e7db06c65b11a48ca">diffEvaManifests</a> (const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;before, const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;after)</td></tr>
+<tr class="memdesc:a36366cd4d911915e7db06c65b11a48ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare two admitted manifests without using paths, timestamps or archive order.  <br /></td></tr>
+<tr class="separator:a36366cd4d911915e7db06c65b11a48ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4509e5ace9cc7865a16e88c5d4577a2" id="r_af4509e5ace9cc7865a16e88c5d4577a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">SchemaVersion</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#af4509e5ace9cc7865a16e88c5d4577a2">currentAssetSchemaVersion</a> (std::string_view <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="memdesc:af4509e5ace9cc7865a16e88c5d4577a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current supported definition version for a canonical asset type.  <br /></td></tr>
+<tr class="separator:af4509e5ace9cc7865a16e88c5d4577a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01bb3e0e0e459b997c887d854896a9e3" id="r_a01bb3e0e0e459b997c887d854896a9e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a01bb3e0e0e459b997c887d854896a9e3">migrateEvaArchive</a> (<a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a> &amp;limits={})</td></tr>
+<tr class="memdesc:a01bb3e0e0e459b997c887d854896a9e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Migrate every definition in an owning archive to its current schema.  <br /></td></tr>
+<tr class="separator:a01bb3e0e0e459b997c887d854896a9e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f7c7dae101743387d684eb7b2147fac" id="r_a0f7c7dae101743387d684eb7b2147fac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1CookedCanonicalImage.html">CookedCanonicalImage</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a0f7c7dae101743387d684eb7b2147fac">cookCanonicalImageRgba8</a> (std::span&lt; const std::uint8_t &gt; definition, std::span&lt; const std::uint8_t &gt; encodedSource, std::uint64_t maximumDecodedBytes)</td></tr>
+<tr class="memdesc:a0f7c7dae101743387d684eb7b2147fac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate <code><a class="el" href="namespaceeve_1_1image.html">eve.image</a>/2</code> JSON and decode its PNG source into bounded EVIMG RGBA8.  <br /></td></tr>
+<tr class="separator:a0f7c7dae101743387d684eb7b2147fac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5a77bae021b110fa79a7119fb676344" id="r_aa5a77bae021b110fa79a7119fb676344"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1CookedCanonicalPcgGraph.html">CookedCanonicalPcgGraph</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#aa5a77bae021b110fa79a7119fb676344">cookCanonicalPcgGraph</a> (std::span&lt; const std::uint8_t &gt; definition, std::uint32_t maximumRules, std::uint64_t maximumPlanBytes)</td></tr>
+<tr class="memdesc:aa5a77bae021b110fa79a7119fb676344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compile <code>eve.pcg-graph/1</code> terrain scatter rules to a bounded PointGraph plan.  <br /></td></tr>
+<tr class="separator:aa5a77bae021b110fa79a7119fb676344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab304a85b5036fe0d4b082fd4f805a1d0" id="r_ab304a85b5036fe0d4b082fd4f805a1d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#ab304a85b5036fe0d4b082fd4f805a1d0">buildEvaArchive</a> (const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;manifest, std::vector&lt; <a class="el" href="structeve_1_1asset_1_1EvaArchiveEntry.html">EvaArchiveEntry</a> &gt; <a class="el" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>, const <a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a> &amp;limits={})</td></tr>
+<tr class="memdesc:ab304a85b5036fe0d4b082fd4f805a1d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a deterministic ZIP64 <code>.eva</code>, selecting raw Deflate only when smaller than Store.  <br /></td></tr>
+<tr class="separator:ab304a85b5036fe0d4b082fd4f805a1d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6499d63f573001ab262f9998839ef6dd" id="r_a6499d63f573001ab262f9998839ef6dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a6499d63f573001ab262f9998839ef6dd">parseEvaArchive</a> (std::span&lt; const std::uint8_t &gt; bytes, const <a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a> &amp;limits={})</td></tr>
+<tr class="memdesc:a6499d63f573001ab262f9998839ef6dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and fully verify an untrusted <code>.eva</code> ZIP64 image.  <br /></td></tr>
+<tr class="separator:a6499d63f573001ab262f9998839ef6dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5632706977133703460ffcf072b8537c" id="r_a5632706977133703460ffcf072b8537c"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a5632706977133703460ffcf072b8537c">evaDependencyKindName</a> (<a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">EvaDependencyKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:a5632706977133703460ffcf072b8537c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable manifest spelling for a dependency role.  <br /></td></tr>
+<tr class="separator:a5632706977133703460ffcf072b8537c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1e4de965b559c08fc2582a109f5a8ab" id="r_ac1e4de965b559c08fc2582a109f5a8ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#ac1e4de965b559c08fc2582a109f5a8ab">parseEvaManifest</a> (std::string_view json)</td></tr>
+<tr class="memdesc:ac1e4de965b559c08fc2582a109f5a8ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and validate canonical <code>.eva</code> manifest JSON.  <br /></td></tr>
+<tr class="separator:ac1e4de965b559c08fc2582a109f5a8ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e51de284e1aa0a7a5825f4771facc1c" id="r_a9e51de284e1aa0a7a5825f4771facc1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a9e51de284e1aa0a7a5825f4771facc1c">serializeEvaManifest</a> (const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;manifest)</td></tr>
+<tr class="memdesc:a9e51de284e1aa0a7a5825f4771facc1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize a validated manifest as deterministic compact JSON.  <br /></td></tr>
+<tr class="separator:a9e51de284e1aa0a7a5825f4771facc1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6e790968fc9acbd7033bcdacba43cf7" id="r_af6e790968fc9acbd7033bcdacba43cf7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#af6e790968fc9acbd7033bcdacba43cf7">buildEvpack</a> (<a class="el" href="structeve_1_1asset_1_1EvpackBuild.html">EvpackBuild</a> build, const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;limits={})</td></tr>
+<tr class="memdesc:af6e790968fc9acbd7033bcdacba43cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build deterministic little-endian <code>.evpack</code> bytes from validated Cook output.  <br /></td></tr>
+<tr class="separator:af6e790968fc9acbd7033bcdacba43cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af77f5a9d80854b688b7e5337dec30555" id="r_af77f5a9d80854b688b7e5337dec30555"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1asset_1_1Evpack.html">Evpack</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#af77f5a9d80854b688b7e5337dec30555">parseEvpackMetadata</a> (std::span&lt; const std::uint8_t &gt; metadataPrefix, std::uint64_t packageSize, const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;limits={}, const <a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a> &amp;trust={})</td></tr>
+<tr class="memdesc:af77f5a9d80854b688b7e5337dec30555"><td class="mdescLeft">&#160;</td><td class="mdescRight">Admit only the contiguous header/manifest/TOC prefix of a range-readable package.  <br /></td></tr>
+<tr class="separator:af77f5a9d80854b688b7e5337dec30555"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a937fe8b3dc95ae8169a09d3ccb18217a" id="r_a937fe8b3dc95ae8169a09d3ccb18217a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1asset_1_1Evpack.html">Evpack</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a937fe8b3dc95ae8169a09d3ccb18217a">parseEvpack</a> (std::span&lt; const std::uint8_t &gt; bytes, const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;limits={}, const <a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a> &amp;trust={})</td></tr>
+<tr class="memdesc:a937fe8b3dc95ae8169a09d3ccb18217a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse, bound-check and hash-verify a complete untrusted <code>.evpack</code>.  <br /></td></tr>
+<tr class="separator:a937fe8b3dc95ae8169a09d3ccb18217a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a369d2afc478c31a024c966a7bec3d3e5" id="r_a369d2afc478c31a024c966a7bec3d3e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvpackVariantSelection.html">EvpackVariantSelection</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a369d2afc478c31a024c966a7bec3d3e5">selectEvpackVariant</a> (const <a class="el" href="classeve_1_1asset_1_1Evpack.html">Evpack</a> &amp;pack, const <a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">EvpackCapabilities</a> &amp;capabilities)</td></tr>
+<tr class="memdesc:a369d2afc478c31a024c966a7bec3d3e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select the first explicitly ordered variant satisfied by device capabilities.  <br /></td></tr>
+<tr class="separator:a369d2afc478c31a024c966a7bec3d3e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca2da0810196598cc707dffac09cb08f" id="r_aca2da0810196598cc707dffac09cb08f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#aca2da0810196598cc707dffac09cb08f">compressEvpackChunk</a> (<a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">EvpackCodec</a> codec, std::span&lt; const std::uint8_t &gt; decoded)</td></tr>
+<tr class="memdesc:aca2da0810196598cc707dffac09cb08f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compress decoded chunk bytes using the selected stable wire codec.  <br /></td></tr>
+<tr class="separator:aca2da0810196598cc707dffac09cb08f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afafc9de131002a6c1d68b70314b71319" id="r_afafc9de131002a6c1d68b70314b71319"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#afafc9de131002a6c1d68b70314b71319">decompressEvpackChunk</a> (<a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">EvpackCodec</a> codec, std::span&lt; const std::uint8_t &gt; <a class="el" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>, std::uint64_t <a class="el" href="EvaArchive_8cpp.html#a732404bf374b7938930cc95be7a40590">decodedSize</a>, std::uint64_t maximumDecodedBytes)</td></tr>
+<tr class="memdesc:afafc9de131002a6c1d68b70314b71319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode one chunk into its authenticated canonical bytes.  <br /></td></tr>
+<tr class="separator:afafc9de131002a6c1d68b70314b71319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26cb994a70d66a8f3c5b4d14da1c2d4c" id="r_a26cb994a70d66a8f3c5b4d14da1c2d4c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a26cb994a70d66a8f3c5b4d14da1c2d4c">evpackCodecBuildIdentity</a> (<a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">EvpackCodec</a> codec)</td></tr>
+<tr class="memdesc:a26cb994a70d66a8f3c5b4d14da1c2d4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable codec implementation identity included in deterministic Cook keys.  <br /></td></tr>
+<tr class="separator:a26cb994a70d66a8f3c5b4d14da1c2d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ac0df103af5ae629dd5bb823ab22061" id="r_a6ac0df103af5ae629dd5bb823ab22061"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1asset_1_1EvpackRangeMount.html">EvpackRangeMount</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a6ac0df103af5ae629dd5bb823ab22061">prepareEvpackRangeMount</a> (std::shared_ptr&lt; const <a class="el" href="classeve_1_1asset_1_1EvpackRangeSource.html">EvpackRangeSource</a> &gt; <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;limits={}, const <a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a> &amp;trust={})</td></tr>
+<tr class="memdesc:a6ac0df103af5ae629dd5bb823ab22061"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read only header/manifest/TOC and prepare on-demand range loading.  <br /></td></tr>
+<tr class="separator:a6ac0df103af5ae629dd5bb823ab22061"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28b621a2df48e34a41db33b5c679bb02" id="r_a28b621a2df48e34a41db33b5c679bb02"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a28b621a2df48e34a41db33b5c679bb02">prepareEvpackMount</a> (std::span&lt; const std::uint8_t &gt; bytes, const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;limits={}, const <a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a> &amp;trust={})</td></tr>
+<tr class="memdesc:a28b621a2df48e34a41db33b5c679bb02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fully parse and verify package bytes without publishing them.  <br /></td></tr>
+<tr class="separator:a28b621a2df48e34a41db33b5c679bb02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02ae528d332aef24c20628c5343c0277" id="r_a02ae528d332aef24c20628c5343c0277"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a02ae528d332aef24c20628c5343c0277">encodeRuntimeDefinition</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, const <a class="el" href="structeve_1_1asset_1_1RuntimeDefinitionLimits.html">RuntimeDefinitionLimits</a> &amp;limits={})</td></tr>
+<tr class="memdesc:a02ae528d332aef24c20628c5343c0277"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode an owning metadata tree as deterministic <code>EVDEF\0\1</code> bytes.  <br /></td></tr>
+<tr class="separator:a02ae528d332aef24c20628c5343c0277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61121b000ea7a5f23b09cb504734e60d" id="r_a61121b000ea7a5f23b09cb504734e60d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1asset.html#a61121b000ea7a5f23b09cb504734e60d">decodeRuntimeDefinition</a> (std::span&lt; const std::uint8_t &gt; bytes, const <a class="el" href="structeve_1_1asset_1_1RuntimeDefinitionLimits.html">RuntimeDefinitionLimits</a> &amp;limits={})</td></tr>
+<tr class="memdesc:a61121b000ea7a5f23b09cb504734e60d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a bounded <code>EVDEF\0\1</code> metadata tree without a JSON parser.  <br /></td></tr>
+<tr class="separator:a61121b000ea7a5f23b09cb504734e60d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a4652ed76347727cb2bf6c1ce80f31713" name="a4652ed76347727cb2bf6c1ce80f31713"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4652ed76347727cb2bf6c1ce80f31713">&#9670;&#160;</a></span>CookPublication</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset.html#a4652ed76347727cb2bf6c1ce80f31713">eve::asset::CookPublication</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Publication policy controls license admission without making legal inferences. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a4652ed76347727cb2bf6c1ce80f31713aaa2b2974298d9dd11d11f7dd0d211da5" name="a4652ed76347727cb2bf6c1ce80f31713aaa2b2974298d9dd11d11f7dd0d211da5"></a>LocalInspection&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4652ed76347727cb2bf6c1ce80f31713a61504cf5296183dc82cb3ca0d8f74b7f" name="a4652ed76347727cb2bf6c1ce80f31713a61504cf5296183dc82cb3ca0d8f74b7f"></a>PublicDistribution&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AssetCooker_8h_source.html">AssetCooker.h</a> 第 <a class="el" href="AssetCooker_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a938425a725644af5524d2d79c42e95b5" name="a938425a725644af5524d2d79c42e95b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a938425a725644af5524d2d79c42e95b5">&#9670;&#160;</a></span>EvaAssetChangeKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5">eve::asset::EvaAssetChangeKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable asset-level change classification. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a938425a725644af5524d2d79c42e95b5af29ddbfb905eb2593fdcdfb243f9af85" name="a938425a725644af5524d2d79c42e95b5af29ddbfb905eb2593fdcdfb243f9af85"></a>Added&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a938425a725644af5524d2d79c42e95b5a93f07b720ebf7d1246512569761a5804" name="a938425a725644af5524d2d79c42e95b5a93f07b720ebf7d1246512569761a5804"></a>Removed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a938425a725644af5524d2d79c42e95b5a820dbd2b8f606aff866c0bbfb6b737c1" name="a938425a725644af5524d2d79c42e95b5a820dbd2b8f606aff866c0bbfb6b737c1"></a>Changed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AssetDiff_8h_source.html">AssetDiff.h</a> 第 <a class="el" href="AssetDiff_8h_source.html#l00010">10</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e65f9442f82013f69bd56bc9a7aced7" name="a9e65f9442f82013f69bd56bc9a7aced7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e65f9442f82013f69bd56bc9a7aced7">&#9670;&#160;</a></span>EvaDependencyKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">eve::asset::EvaDependencyKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Dependency role recorded by a source asset archive. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed" name="a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed"></a>RuntimeRequired&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3" name="a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3"></a>RuntimeOptional&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0" name="a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0"></a>Build&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257" name="a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257"></a>Editor&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819" name="a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819"></a>Source&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630" name="a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630"></a>Platform&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe152c3f2e5d653a27c0ae4b3ee5d1b5" name="afe152c3f2e5d653a27c0ae4b3ee5d1b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe152c3f2e5d653a27c0ae4b3ee5d1b5">&#9670;&#160;</a></span>EvpackChunkKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5">eve::asset::EvpackChunkKind</a> : std::uint16_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Semantic role of a runtime chunk. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="afe152c3f2e5d653a27c0ae4b3ee5d1b5a0b890b1926b90387673882e6ccae7fdc" name="afe152c3f2e5d653a27c0ae4b3ee5d1b5a0b890b1926b90387673882e6ccae7fdc"></a>Definition&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afe152c3f2e5d653a27c0ae4b3ee5d1b5a4c3246a186dddf08c2c1165f04c2276d" name="afe152c3f2e5d653a27c0ae4b3ee5d1b5a4c3246a186dddf08c2c1165f04c2276d"></a>Bulk&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afe152c3f2e5d653a27c0ae4b3ee5d1b5aeae835e83c0494a376229f254f7d3392" name="afe152c3f2e5d653a27c0ae4b3ee5d1b5aeae835e83c0494a376229f254f7d3392"></a>Stream&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660" name="afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"></a>Shader&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afe152c3f2e5d653a27c0ae4b3ee5d1b5a3beb75d1563ebc22253341be4ce57f44" name="afe152c3f2e5d653a27c0ae4b3ee5d1b5a3beb75d1563ebc22253341be4ce57f44"></a>Dictionary&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afe152c3f2e5d653a27c0ae4b3ee5d1b5aebef1b2fc20cbfea10d6c666cfae0c2b" name="afe152c3f2e5d653a27c0ae4b3ee5d1b5aebef1b2fc20cbfea10d6c666cfae0c2b"></a>DebugName&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Evpack_8h_source.html">Evpack.h</a> 第 <a class="el" href="Evpack_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a84df6f4b4a428240b32e2923c8cb9662" name="a84df6f4b4a428240b32e2923c8cb9662"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84df6f4b4a428240b32e2923c8cb9662">&#9670;&#160;</a></span>EvpackCodec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">eve::asset::EvpackCodec</a> : std::uint16_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Physical outer compression applied to one runtime chunk. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a84df6f4b4a428240b32e2923c8cb9662a6adf97f83acf6453d4a6a4b1070f3754" name="a84df6f4b4a428240b32e2923c8cb9662a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a84df6f4b4a428240b32e2923c8cb9662a0c8468c9ff2f38e853335e1e40ade4c3" name="a84df6f4b4a428240b32e2923c8cb9662a0c8468c9ff2f38e853335e1e40ade4c3"></a>Zstd&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Evpack_8h_source.html">Evpack.h</a> 第 <a class="el" href="Evpack_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a465daee04418e183de6a96a50613e845" name="a465daee04418e183de6a96a50613e845"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a465daee04418e183de6a96a50613e845">&#9670;&#160;</a></span>EvpackRegistryEventKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845">eve::asset::EvpackRegistryEventKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observable registry lifecycle operation dispatched after commit and outside locks. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a465daee04418e183de6a96a50613e845aab4e7334a8f96cc4068b7de43e57b9e4" name="a465daee04418e183de6a96a50613e845aab4e7334a8f96cc4068b7de43e57b9e4"></a>Mounted&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a465daee04418e183de6a96a50613e845ab3f23170be598de0771ac94684114f94" name="a465daee04418e183de6a96a50613e845ab3f23170be598de0771ac94684114f94"></a>Replaced&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a465daee04418e183de6a96a50613e845afe64567c054d4cc06578a041b1f88296" name="a465daee04418e183de6a96a50613e845afe64567c054d4cc06578a041b1f88296"></a>Unmounted&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EvpackRegistry_8h_source.html">EvpackRegistry.h</a> 第 <a class="el" href="EvpackRegistry_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a48918f927faa7894d460ae431677f97d" name="a48918f927faa7894d460ae431677f97d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48918f927faa7894d460ae431677f97d">&#9670;&#160;</a></span>EvpackSignaturePolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset.html#a48918f927faa7894d460ae431677f97d">eve::asset::EvpackSignaturePolicy</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Admission policy for unsigned development packages. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a48918f927faa7894d460ae431677f97dae88caf4fc41e7c27f17c828a8025165e" name="a48918f927faa7894d460ae431677f97dae88caf4fc41e7c27f17c828a8025165e"></a>AllowUnsignedDevelopment&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a48918f927faa7894d460ae431677f97da8ea81cc7cda32b62365943849fe7d040" name="a48918f927faa7894d460ae431677f97da8ea81cc7cda32b62365943849fe7d040"></a>RequireTrustedSignature&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Evpack_8h_source.html">Evpack.h</a> 第 <a class="el" href="Evpack_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b90488bd2a2660761a79d2b70bd0472" name="a4b90488bd2a2660761a79d2b70bd0472"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b90488bd2a2660761a79d2b70bd0472">&#9670;&#160;</a></span>PackagePublishGateDecision</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1asset.html#a4b90488bd2a2660761a79d2b70bd0472">eve::asset::PackagePublishGateDecision</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit test/tool gate result immediately before atomic replacement. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a4b90488bd2a2660761a79d2b70bd0472af262fae0a2f17e8c1eb4e9eddb0160e4" name="a4b90488bd2a2660761a79d2b70bd0472af262fae0a2f17e8c1eb4e9eddb0160e4"></a>Proceed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4b90488bd2a2660761a79d2b70bd0472ad98ac12774fca5c3cbaffe276840c55f" name="a4b90488bd2a2660761a79d2b70bd0472ad98ac12774fca5c3cbaffe276840c55f"></a>Reject&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AssetPackageStore_8h_source.html">AssetPackageStore.h</a> 第 <a class="el" href="AssetPackageStore_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a33b1b6c3cae88a6fec7cd7a3aef6a395" name="a33b1b6c3cae88a6fec7cd7a3aef6a395"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33b1b6c3cae88a6fec7cd7a3aef6a395">&#9670;&#160;</a></span>assetCookProfileForTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1AssetCookProfile.html">AssetCookProfile</a> &gt; eve::asset::assetCookProfileForTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a stable CLI/tool target name to its exact capability profile. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>One of the documented <code>&lt;os&gt;-&lt;arch&gt;-&lt;graphics&gt;</code> target names. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A local-inspection profile, or Unsupported for an unknown target. @thread Worker-safe; returns an owning value and uses no shared mutable state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AssetCooker_8cpp_source.html">AssetCooker.cpp</a> 第 <a class="el" href="AssetCooker_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1asset.html#a4652ed76347727cb2bf6c1ce80f31713aaa2b2974298d9dd11d11f7dd0d211da5">LocalInspection</a>, <a class="el" href="AssetCooker_8h_source.html#l00023">eve::asset::AssetCookProfile::publication</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="AssetCooker_8h_source.html#l00022">eve::asset::AssetCookProfile::variant</a>.</p>
+
+</div>
+</div>
+<a id="ab304a85b5036fe0d4b082fd4f805a1d0" name="ab304a85b5036fe0d4b082fd4f805a1d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab304a85b5036fe0d4b082fd4f805a1d0">&#9670;&#160;</a></span>buildEvaArchive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt; eve::asset::buildEvaArchive </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;&#160;</td>
+          <td class="paramname"><em>manifest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1asset_1_1EvaArchiveEntry.html">EvaArchiveEntry</a> &gt;&#160;</td>
+          <td class="paramname"><em>entries</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a deterministic ZIP64 <code>.eva</code>, selecting raw Deflate only when smaller than Store. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">manifest</td><td>Typed manifest written as the root <code>manifest.json</code> entry. </td></tr>
+    <tr><td class="paramname">entries</td><td>Regular payload files; callers must not supply <code>manifest.json</code>. </td></tr>
+    <tr><td class="paramname">limits</td><td><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> budgets enforced before construction. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Complete owning archive bytes or a structured diagnostic. @thread Worker-safe when inputs are not concurrently mutated. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvaArchive_8cpp_source.html">EvaArchive.cpp</a> 第 <a class="el" href="EvaArchive_8cpp_source.html#l00414">414</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="EvaArchive_8h_source.html#l00020">eve::asset::EvaArchiveLimits::maximumArchiveBytes</a>, <a class="el" href="EvaArchive_8h_source.html#l00022">eve::asset::EvaArchiveLimits::maximumDecodedBytes</a>, <a class="el" href="EvaArchive_8h_source.html#l00024">eve::asset::EvaArchiveLimits::maximumEntries</a>, <a class="el" href="EvaArchive_8h_source.html#l00021">eve::asset::EvaArchiveLimits::maximumEntryBytes</a>, <a class="el" href="EvaArchive_8h_source.html#l00023">eve::asset::EvaArchiveLimits::maximumManifestBytes</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">parseEvaManifest()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">serializeEvaManifest()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a>, <a class="el" href="AssetMigration_8cpp_source.html#l00130">migrateEvaArchive()</a> , 以及 <a class="el" href="AssetPackageStore_8cpp_source.html#l00138">eve::asset::AtomicAssetPackageStore::publishEva()</a>.</p>
+
+</div>
+</div>
+<a id="af6e790968fc9acbd7033bcdacba43cf7" name="af6e790968fc9acbd7033bcdacba43cf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6e790968fc9acbd7033bcdacba43cf7">&#9670;&#160;</a></span>buildEvpack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt; eve::asset::buildEvpack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1asset_1_1EvpackBuild.html">EvpackBuild</a>&#160;</td>
+          <td class="paramname"><em>build</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build deterministic little-endian <code>.evpack</code> bytes from validated Cook output. </p>
+
+<p class="definition">在文件 <a class="el" href="Evpack_8cpp_source.html">Evpack.cpp</a> 第 <a class="el" href="Evpack_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Evpack_8h_source.html#l00107">eve::asset::EvpackChunkInput::alignment</a>, <a class="el" href="Evpack_8h_source.html#l00100">eve::asset::EvpackChunkInput::assetId</a>, <a class="el" href="Evpack_8h_source.html#l00115">eve::asset::EvpackBuild::buildId</a>, <a class="el" href="Evpack_8h_source.html#l00109">eve::asset::EvpackChunkInput::bytes</a>, <a class="el" href="Evpack_8h_source.html#l00117">eve::asset::EvpackBuild::chunks</a>, <a class="el" href="Evpack_8h_source.html#l00106">eve::asset::EvpackChunkInput::codec</a>, <a class="el" href="EvpackCompression_8cpp_source.html#l00018">compressEvpackChunk()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="Evpack_8h_source.html#l00108">eve::asset::EvpackChunkInput::dependencies</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="Evpack_8h_source.html#l00124">eve::asset::EvpackLimits::maximumChunkBytes</a>, <a class="el" href="Evpack_8h_source.html#l00127">eve::asset::EvpackLimits::maximumChunks</a>, <a class="el" href="Evpack_8h_source.html#l00125">eve::asset::EvpackLimits::maximumDecodedBytes</a>, <a class="el" href="Evpack_8h_source.html#l00129">eve::asset::EvpackLimits::maximumDependencies</a>, <a class="el" href="Evpack_8h_source.html#l00126">eve::asset::EvpackLimits::maximumMetadataBytes</a>, <a class="el" href="Evpack_8h_source.html#l00123">eve::asset::EvpackLimits::maximumPackageBytes</a>, <a class="el" href="Evpack_8h_source.html#l00128">eve::asset::EvpackLimits::maximumVariants</a>, <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="el" href="Evpack_8h_source.html#l00114">eve::asset::EvpackBuild::packageId</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="Evpack_8h_source.html#l00102">eve::asset::EvpackChunkInput::schemaVersion</a>, <a class="el" href="Evpack_8h_source.html#l00118">eve::asset::EvpackBuild::signer</a>, <a class="el" href="Evpack_8h_source.html#l00101">eve::asset::EvpackChunkInput::type</a>, <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00063">variant</a>, <a class="el" href="Evpack_8h_source.html#l00103">eve::asset::EvpackChunkInput::variantIndex</a>, <a class="el" href="Evpack_8h_source.html#l00116">eve::asset::EvpackBuild::variants</a> , 以及 <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a0c8468c9ff2f38e853335e1e40ade4c3">Zstd</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a>.</p>
+
+</div>
+</div>
+<a id="aca2da0810196598cc707dffac09cb08f" name="aca2da0810196598cc707dffac09cb08f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca2da0810196598cc707dffac09cb08f">&#9670;&#160;</a></span>compressEvpackChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt; eve::asset::compressEvpackChunk </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">EvpackCodec</a>&#160;</td>
+          <td class="paramname"><em>codec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>decoded</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compress decoded chunk bytes using the selected stable wire codec. </p>
+
+<p class="definition">在文件 <a class="el" href="EvpackCompression_8cpp_source.html">EvpackCompression.cpp</a> 第 <a class="el" href="EvpackCompression_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a0c8468c9ff2f38e853335e1e40ade4c3">Zstd</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldArchive_8cpp_source.html#l00145">eve::pixelworld_streaming::archiveChunkBatch()</a> , 以及 <a class="el" href="Evpack_8cpp_source.html#l00253">buildEvpack()</a>.</p>
+
+</div>
+</div>
+<a id="a0f7c7dae101743387d684eb7b2147fac" name="a0f7c7dae101743387d684eb7b2147fac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f7c7dae101743387d684eb7b2147fac">&#9670;&#160;</a></span>cookCanonicalImageRgba8()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1CookedCanonicalImage.html">CookedCanonicalImage</a> &gt; eve::asset::cookCanonicalImageRgba8 </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>encodedSource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>maximumDecodedBytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate <code><a class="el" href="namespaceeve_1_1image.html">eve.image</a>/2</code> JSON and decode its PNG source into bounded EVIMG RGBA8. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">definition</td><td>Canonical source definition bytes. </td></tr>
+    <tr><td class="paramname">encodedSource</td><td>PNG bytes referenced by the definition. </td></tr>
+    <tr><td class="paramname">maximumDecodedBytes</td><td>Upper bound including the EVIMG header and pixels. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning runtime candidate; JPEG and unsupported PNG modes fail explicitly. @thread Worker-safe; uses no global decoder state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CanonicalImageCook_8cpp_source.html">CanonicalImageCook.cpp</a> 第 <a class="el" href="CanonicalImageCook_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00069">eve::Value::asInt()</a>, <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00010">encoding</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Value_8h_source.html#l00091">eve::Value::isInt64()</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00063">eve::asset_import::prepareImageImport()</a>.</p>
+
+</div>
+</div>
+<a id="aa5a77bae021b110fa79a7119fb676344" name="aa5a77bae021b110fa79a7119fb676344"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5a77bae021b110fa79a7119fb676344">&#9670;&#160;</a></span>cookCanonicalPcgGraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1CookedCanonicalPcgGraph.html">CookedCanonicalPcgGraph</a> &gt; eve::asset::cookCanonicalPcgGraph </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>maximumRules</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>maximumPlanBytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compile <code>eve.pcg-graph/1</code> terrain scatter rules to a bounded PointGraph plan. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">definition</td><td>Canonical JSON definition owned by the caller for this call. </td></tr>
+    <tr><td class="paramname">maximumRules</td><td>Upper bound on accepted scatter rules and generated branches. </td></tr>
+    <tr><td class="paramname">maximumPlanBytes</td><td>Upper bound on the owning execution-plan result. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Transactional owning Cook result; malformed or unsupported graphs are rejected. @thread Worker-safe; uses no shared mutable state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CanonicalPcgCook_8cpp_source.html">CanonicalPcgCook.cpp</a> 第 <a class="el" href="CanonicalPcgCook_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00069">eve::Value::asInt()</a>, <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00091">eve::Value::isInt64()</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a>.</p>
+
+</div>
+</div>
+<a id="a6298a4ca1f94b555790acc0ec30415c7" name="a6298a4ca1f94b555790acc0ec30415c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6298a4ca1f94b555790acc0ec30415c7">&#9670;&#160;</a></span>cookEvaToEvpack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1AssetCookReceipt.html">AssetCookReceipt</a> &gt; eve::asset::cookEvaToEvpack </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1AssetCookProfile.html">AssetCookProfile</a> &amp;&#160;</td>
+          <td class="paramname"><em>profile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>evaLimits</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>evpackLimits</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cook an admitted source archive into one target-specific runtime pack. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Owning source archive; it is revalidated before Cook. </td></tr>
+    <tr><td class="paramname">profile</td><td>Explicit capability and publication policy. </td></tr>
+    <tr><td class="paramname">evaLimits</td><td>Source revalidation budgets. </td></tr>
+    <tr><td class="paramname">evpackLimits</td><td><a class="el" href="classeve_1_1Runtime.html">Runtime</a> package budgets. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Verified package bytes and deterministic receipt. @thread Worker-safe when source is not concurrently mutated. @reentrancy Does not execute scripts, tools, network requests or callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AssetCooker_8cpp_source.html">AssetCooker.cpp</a> 第 <a class="el" href="AssetCooker_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaManifest_8h_source.html#l00067">eve::asset::EvaManifest::assets</a>, <a class="el" href="AssetCooker_8h_source.html#l00026">eve::asset::AssetCookProfile::availableDependencies</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0">Build</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00414">buildEvaArchive()</a>, <a class="el" href="Evpack_8cpp_source.html#l00253">buildEvpack()</a>, <a class="el" href="Evpack_8h_source.html#l00115">eve::asset::EvpackBuild::buildId</a>, <a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5a4c3246a186dddf08c2c1165f04c2276d">Bulk</a>, <a class="el" href="AssetCooker_8h_source.html#l00024">eve::asset::AssetCookProfile::bulkAlignment</a>, <a class="el" href="EvaArchive_8h_source.html#l00031">eve::asset::EvaArchiveEntry::bytes</a>, <a class="el" href="AssetCooker_8h_source.html#l00025">eve::asset::AssetCookProfile::chunkCodec</a>, <a class="el" href="Evpack_8h_source.html#l00117">eve::asset::EvpackBuild::chunks</a>, <a class="el" href="CanonicalImageCook_8cpp_source.html#l00164">cookCanonicalImageRgba8()</a>, <a class="el" href="CanonicalPcgCook_8cpp_source.html#l00040">cookCanonicalPcgGraph()</a>, <a class="el" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5a0b890b1926b90387673882e6ccae7fdc">Definition</a>, <a class="el" href="EvaManifest_8h_source.html#l00068">eve::asset::EvaManifest::dependencies</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257">Editor</a>, <a class="el" href="EvaArchive_8h_source.html#l00037">eve::asset::EvaArchive::entries</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EvaManifest_8h_source.html#l00043">eve::asset::EvaDependency::from</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="ResourceRef_8h_source.html#l00063">eve::AssetRef::id()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00129">image</a>, <a class="el" href="EvaManifest_8h_source.html#l00045">eve::asset::EvaDependency::kind</a>, <a class="el" href="EvaArchive_8h_source.html#l00036">eve::asset::EvaArchive::manifest</a>, <a class="el" href="Evpack_8h_source.html#l00124">eve::asset::EvpackLimits::maximumChunkBytes</a>, <a class="el" href="AssetMigration_8cpp_source.html#l00130">migrateEvaArchive()</a>, <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EvaManifest_8h_source.html#l00064">eve::asset::EvaManifest::packageId</a>, <a class="el" href="Evpack_8h_source.html#l00114">eve::asset::EvpackBuild::packageId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00509">parseEvaArchive()</a>, <a class="el" href="Evpack_8cpp_source.html#l00524">parseEvpack()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="EvaArchive_8h_source.html#l00030">eve::asset::EvaArchiveEntry::path</a>, <a class="el" href="AssetCooker_8h_source.html#l00023">eve::asset::AssetCookProfile::publication</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3">RuntimeOptional</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00313">serializeEvaManifest()</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819">Source</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Evpack_8h_source.html#l00081">eve::asset::EvpackVariant::textureFamilies</a>, <a class="el" href="EvaManifest_8h_source.html#l00044">eve::asset::EvaDependency::to</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="AssetDependency_8cpp_source.html#l00039">validateEvaDependencies()</a>, <a class="el" href="AssetCooker_8h_source.html#l00022">eve::asset::AssetCookProfile::variant</a> , 以及 <a class="el" href="Evpack_8h_source.html#l00116">eve::asset::EvpackBuild::variants</a>.</p>
+
+</div>
+</div>
+<a id="af4509e5ace9cc7865a16e88c5d4577a2" name="af4509e5ace9cc7865a16e88c5d4577a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4509e5ace9cc7865a16e88c5d4577a2">&#9670;&#160;</a></span>currentAssetSchemaVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">SchemaVersion</a> &gt; eve::asset::currentAssetSchemaVersion </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current supported definition version for a canonical asset type. </p>
+
+<p class="definition">在文件 <a class="el" href="AssetMigration_8cpp_source.html">AssetMigration.cpp</a> 第 <a class="el" href="AssetMigration_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetMigration_8cpp_source.html#l00115">currentAssetSchemaVersion()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetMigration_8cpp_source.html#l00115">currentAssetSchemaVersion()</a> , 以及 <a class="el" href="AssetMigration_8cpp_source.html#l00130">migrateEvaArchive()</a>.</p>
+
+</div>
+</div>
+<a id="a61121b000ea7a5f23b09cb504734e60d" name="a61121b000ea7a5f23b09cb504734e60d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61121b000ea7a5f23b09cb504734e60d">&#9670;&#160;</a></span>decodeRuntimeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::asset::decodeRuntimeDefinition </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1RuntimeDefinitionLimits.html">RuntimeDefinitionLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode a bounded <code>EVDEF\0\1</code> metadata tree without a JSON parser. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> after exact-length, canonical-key and finite-number validation. @thread Worker-safe; no shared mutable state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeDefinition_8cpp_source.html">RuntimeDefinition.cpp</a> 第 <a class="el" href="RuntimeDefinition_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeDefinition_8h_source.html#l00016">eve::asset::RuntimeDefinitionLimits::maximumBytes</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackPointGraphLoader_8cpp_source.html#l00024">eve::asset_procgen::EvpackPointGraphLoader::load()</a>, <a class="el" href="EvpackInstanceSetLoader_8cpp_source.html#l00035">eve::asset_procgen::EvpackInstanceSetLoader::load()</a>, <a class="el" href="EvpackTerrainMaterialLoader_8cpp_source.html#l00035">eve::asset_procgen::EvpackTerrainMaterialLoader::load()</a>, <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00055">eve::asset_scene::EvpackSceneTemplateLoader::load()</a> , 以及 <a class="el" href="EvpackTerrainLoader_8cpp_source.html#l00042">eve::asset_procgen::EvpackTerrainLoader::load()</a>.</p>
+
+</div>
+</div>
+<a id="afafc9de131002a6c1d68b70314b71319" name="afafc9de131002a6c1d68b70314b71319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afafc9de131002a6c1d68b70314b71319">&#9670;&#160;</a></span>decompressEvpackChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt; eve::asset::decompressEvpackChunk </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">EvpackCodec</a>&#160;</td>
+          <td class="paramname"><em>codec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>stored</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>decodedSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>maximumDecodedBytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode one chunk into its authenticated canonical bytes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">codec</td><td>Physical codec recorded in the TOC. </td></tr>
+    <tr><td class="paramname">stored</td><td>Untrusted stored bytes. </td></tr>
+    <tr><td class="paramname">decodedSize</td><td>Exact output size admitted from the TOC. </td></tr>
+    <tr><td class="paramname">maximumDecodedBytes</td><td>Caller budget checked before allocation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackCompression_8cpp_source.html">EvpackCompression.cpp</a> 第 <a class="el" href="EvpackCompression_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00154">decodedSize</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a0c8468c9ff2f38e853335e1e40ade4c3">Zstd</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Evpack_8cpp_source.html#l00545">eve::asset::Evpack::decodeChunk()</a>, <a class="el" href="PixelWorldArchive_8cpp_source.html#l00197">eve::pixelworld_streaming::decodeChunkBatchArchive()</a> , 以及 <a class="el" href="EvpackRange_8cpp_source.html#l00107">eve::asset::EvpackRangeMount::readChunk()</a>.</p>
+
+</div>
+</div>
+<a id="a36366cd4d911915e7db06c65b11a48ca" name="a36366cd4d911915e7db06c65b11a48ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36366cd4d911915e7db06c65b11a48ca">&#9670;&#160;</a></span>diffEvaManifests()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaPackageDiff.html">EvaPackageDiff</a> &gt; eve::asset::diffEvaManifests </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;&#160;</td>
+          <td class="paramname"><em>before</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;&#160;</td>
+          <td class="paramname"><em>after</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compare two admitted manifests without using paths, timestamps or archive order. </p>
+
+<p class="definition">在文件 <a class="el" href="AssetDiff_8cpp_source.html">AssetDiff.cpp</a> 第 <a class="el" href="AssetDiff_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5af29ddbfb905eb2593fdcdfb243f9af85">Added</a>, <a class="el" href="AssetDiff_8h_source.html#l00026">eve::asset::EvaPackageDiff::assets</a>, <a class="el" href="EvaManifest_8h_source.html#l00067">eve::asset::EvaManifest::assets</a>, <a class="el" href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5a820dbd2b8f606aff866c0bbfb6b737c1">Changed</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="namespaceeve_1_1asset.html#a938425a725644af5524d2d79c42e95b5a93f07b720ebf7d1246512569761a5804">Removed</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>.</p>
+
+</div>
+</div>
+<a id="a02ae528d332aef24c20628c5343c0277" name="a02ae528d332aef24c20628c5343c0277"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02ae528d332aef24c20628c5343c0277">&#9670;&#160;</a></span>encodeRuntimeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; std::uint8_t &gt; &gt; eve::asset::encodeRuntimeDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1RuntimeDefinitionLimits.html">RuntimeDefinitionLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode an owning metadata tree as deterministic <code>EVDEF\0\1</code> bytes. </p>
+<dl class="section return"><dt>返回</dt><dd>Canonical little-endian bytes; object keys use <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>'s sorted order. @thread Worker-safe when value is not concurrently mutated. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeDefinition_8cpp_source.html">RuntimeDefinition.cpp</a> 第 <a class="el" href="RuntimeDefinition_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a5632706977133703460ffcf072b8537c" name="a5632706977133703460ffcf072b8537c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5632706977133703460ffcf072b8537c">&#9670;&#160;</a></span>evaDependencyKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::asset::evaDependencyKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7">EvaDependencyKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable manifest spelling for a dependency role. </p>
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8cpp_source.html">EvaManifest.cpp</a> 第 <a class="el" href="EvaManifest_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7ac74c1f42f141c011ca6bd8b1114fc3d0">Build</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a344a7f427fb765610ef96eb7bce95257">Editor</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630">Platform</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a76870d25a5aea284ca99419f4f259cd3">RuntimeOptional</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7afbdb83a13bbbe0974d59b561f63133ed">RuntimeRequired</a> , 以及 <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7af31bbdd1b3e85bccd652680e16935819">Source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvaManifest_8cpp_source.html#l00313">serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="a26cb994a70d66a8f3c5b4d14da1c2d4c" name="a26cb994a70d66a8f3c5b4d14da1c2d4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26cb994a70d66a8f3c5b4d14da1c2d4c">&#9670;&#160;</a></span>evpackCodecBuildIdentity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::asset::evpackCodecBuildIdentity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662">EvpackCodec</a>&#160;</td>
+          <td class="paramname"><em>codec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable codec implementation identity included in deterministic Cook keys. </p>
+
+<p class="definition">在文件 <a class="el" href="EvpackCompression_8cpp_source.html">EvpackCompression.cpp</a> 第 <a class="el" href="EvpackCompression_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a6adf97f83acf6453d4a6a4b1070f3754">None</a> , 以及 <a class="el" href="namespaceeve_1_1asset.html#a84df6f4b4a428240b32e2923c8cb9662a0c8468c9ff2f38e853335e1e40ade4c3">Zstd</a>.</p>
+
+</div>
+</div>
+<a id="a01bb3e0e0e459b997c887d854896a9e3" name="a01bb3e0e0e459b997c887d854896a9e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01bb3e0e0e459b997c887d854896a9e3">&#9670;&#160;</a></span>migrateEvaArchive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a> &gt; eve::asset::migrateEvaArchive </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a>&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Migrate every definition in an owning archive to its current schema. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Source value consumed only after every migration and invariant validates. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A fully rebuilt owning candidate; the caller decides whether to publish it. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Supports the current version and N-1. Unknown newer versions and downgrade requests are rejected. No files or registries are mutated by this operation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AssetMigration_8cpp_source.html">AssetMigration.cpp</a> 第 <a class="el" href="AssetMigration_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00414">buildEvaArchive()</a>, <a class="el" href="AssetMigration_8cpp_source.html#l00115">currentAssetSchemaVersion()</a>, <a class="el" href="AssetMigration_8cpp_source.html#l00130">migrateEvaArchive()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00509">parseEvaArchive()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a> , 以及 <a class="el" href="AssetMigration_8cpp_source.html#l00130">migrateEvaArchive()</a>.</p>
+
+</div>
+</div>
+<a id="a6499d63f573001ab262f9998839ef6dd" name="a6499d63f573001ab262f9998839ef6dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6499d63f573001ab262f9998839ef6dd">&#9670;&#160;</a></span>parseEvaArchive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaArchive.html">EvaArchive</a> &gt; eve::asset::parseEvaArchive </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaArchiveLimits.html">EvaArchiveLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse and fully verify an untrusted <code>.eva</code> ZIP64 image. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bytes</td><td>Complete archive bytes whose lifetime need only cover this call. </td></tr>
+    <tr><td class="paramname">limits</td><td><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> budgets checked before decoded allocations. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning admitted archive or a structured diagnostic. @thread Worker-safe; no state is retained across calls. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvaArchive_8cpp_source.html">EvaArchive.cpp</a> 第 <a class="el" href="EvaArchive_8cpp_source.html#l00509">509</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00155">compressedSize</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00153">crc</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00154">decodedSize</a>, <a class="el" href="EvaArchive_8h_source.html#l00037">eve::asset::EvaArchive::entries</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2212711f2a9b639465a69644e985391b">eve::HashMismatch</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00156">localOffset</a>, <a class="el" href="EvaArchive_8h_source.html#l00036">eve::asset::EvaArchive::manifest</a>, <a class="el" href="EvaArchive_8h_source.html#l00020">eve::asset::EvaArchiveLimits::maximumArchiveBytes</a>, <a class="el" href="EvaArchive_8h_source.html#l00022">eve::asset::EvaArchiveLimits::maximumDecodedBytes</a>, <a class="el" href="EvaArchive_8h_source.html#l00024">eve::asset::EvaArchiveLimits::maximumEntries</a>, <a class="el" href="EvaArchive_8h_source.html#l00021">eve::asset::EvaArchiveLimits::maximumEntryBytes</a>, <a class="el" href="EvaArchive_8h_source.html#l00023">eve::asset::EvaArchiveLimits::maximumManifestBytes</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00157">method</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">parseEvaManifest()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="EvaArchive_8h_source.html#l00030">eve::asset::EvaArchiveEntry::path</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a>, <a class="el" href="AssetMigration_8cpp_source.html#l00130">migrateEvaArchive()</a> , 以及 <a class="el" href="AssetPackageStore_8cpp_source.html#l00138">eve::asset::AtomicAssetPackageStore::publishEva()</a>.</p>
+
+</div>
+</div>
+<a id="ac1e4de965b559c08fc2582a109f5a8ab" name="ac1e4de965b559c08fc2582a109f5a8ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1e4de965b559c08fc2582a109f5a8ab">&#9670;&#160;</a></span>parseEvaManifest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &gt; eve::asset::parseEvaManifest </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse and validate canonical <code>.eva</code> manifest JSON. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Untrusted UTF-8 JSON bytes from <code>manifest.json</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An owning validated manifest or a structured diagnostic. @thread Worker-safe when each call owns its input and result. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8cpp_source.html">EvaManifest.cpp</a> 第 <a class="el" href="EvaManifest_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaManifest_8h_source.html#l00067">eve::asset::EvaManifest::assets</a>, <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="EvaManifest_8h_source.html#l00068">eve::asset::EvaManifest::dependencies</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="EvaManifest_8h_source.html#l00069">eve::asset::EvaManifest::entrypoints</a>, <a class="el" href="EvaManifest_8h_source.html#l00071">eve::asset::EvaManifest::extensions</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="EvaManifest_8h_source.html#l00061">eve::asset::EvaManifest::kSchema</a>, <a class="el" href="EvaManifest_8h_source.html#l00062">eve::asset::EvaManifest::kVersion</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="EvaManifest_8h_source.html#l00064">eve::asset::EvaManifest::packageId</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">packageId</a>, <a class="el" href="EvaManifest_8h_source.html#l00065">eve::asset::EvaManifest::packageName</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">packageName</a>, <a class="el" href="EvaManifest_8h_source.html#l00066">eve::asset::EvaManifest::packageVersion</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">packageVersion</a>, <a class="el" href="Identity_8h_source.html#l00080">eve::detail::Id128&lt; Tag &gt;::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="namespaceeve_1_1asset.html#a9e65f9442f82013f69bd56bc9a7aced7a419f3742e6de8e0ec4b22cce005e7630">Platform</a>, <a class="el" href="EvaManifest_8h_source.html#l00070">eve::asset::EvaManifest::provenance</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvaArchive_8cpp_source.html#l00414">buildEvaArchive()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00509">parseEvaArchive()</a>.</p>
+
+</div>
+</div>
+<a id="a937fe8b3dc95ae8169a09d3ccb18217a" name="a937fe8b3dc95ae8169a09d3ccb18217a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a937fe8b3dc95ae8169a09d3ccb18217a">&#9670;&#160;</a></span>parseEvpack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1asset_1_1Evpack.html">Evpack</a> &gt; eve::asset::parseEvpack </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a> &amp;&#160;</td>
+          <td class="paramname"><em>trust</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse, bound-check and hash-verify a complete untrusted <code>.evpack</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="Evpack_8cpp_source.html">Evpack.cpp</a> 第 <a class="el" href="Evpack_8cpp_source.html#l00524">524</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a> , 以及 <a class="el" href="AssetPackageStore_8cpp_source.html#l00167">eve::asset::AtomicAssetPackageStore::publishEvpack()</a>.</p>
+
+</div>
+</div>
+<a id="af77f5a9d80854b688b7e5337dec30555" name="af77f5a9d80854b688b7e5337dec30555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af77f5a9d80854b688b7e5337dec30555">&#9670;&#160;</a></span>parseEvpackMetadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1asset_1_1Evpack.html">Evpack</a> &gt; eve::asset::parseEvpackMetadata </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>metadataPrefix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>packageSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a> &amp;&#160;</td>
+          <td class="paramname"><em>trust</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Admit only the contiguous header/manifest/TOC prefix of a range-readable package. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">metadataPrefix</td><td>Bytes from offset zero through the end of the TOC. </td></tr>
+    <tr><td class="paramname">packageSize</td><td>Authoritative total source size used to validate chunk ranges. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Metadata-only <a class="el" href="classeve_1_1asset_1_1Evpack.html" title="Fully admitted owning runtime pack.">Evpack</a> index; <code>chunkBytes()</code> intentionally rejects it. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Chunk hashes are verified later by the range mount before bytes reach a decoder. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Evpack_8cpp_source.html">Evpack.cpp</a> 第 <a class="el" href="Evpack_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a28b621a2df48e34a41db33b5c679bb02" name="a28b621a2df48e34a41db33b5c679bb02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28b621a2df48e34a41db33b5c679bb02">&#9670;&#160;</a></span>prepareEvpackMount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a> &gt; eve::asset::prepareEvpackMount </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint8_t &gt;&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a> &amp;&#160;</td>
+          <td class="paramname"><em>trust</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fully parse and verify package bytes without publishing them. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bytes</td><td>Untrusted complete package bytes, copied into the candidate. </td></tr>
+    <tr><td class="paramname">limits</td><td>Admission budgets. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate suitable for an explicit commit. @thread Worker-safe. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackRegistry_8cpp_source.html">EvpackRegistry.cpp</a> 第 <a class="el" href="EvpackRegistry_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ac0df103af5ae629dd5bb823ab22061" name="a6ac0df103af5ae629dd5bb823ab22061"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ac0df103af5ae629dd5bb823ab22061">&#9670;&#160;</a></span>prepareEvpackRangeMount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1asset_1_1EvpackRangeMount.html">EvpackRangeMount</a> &gt; eve::asset::prepareEvpackRangeMount </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classeve_1_1asset_1_1EvpackRangeSource.html">EvpackRangeSource</a> &gt;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a> &amp;&#160;</td>
+          <td class="paramname"><em>limits</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a> &amp;&#160;</td>
+          <td class="paramname"><em>trust</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read only header/manifest/TOC and prepare on-demand range loading. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Immutable source retained for the mount lifetime. </td></tr>
+    <tr><td class="paramname">limits</td><td>Metadata and chunk budgets. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Prepared range mount; no chunk payload has been fetched yet. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvpackRange_8cpp_source.html">EvpackRange.cpp</a> 第 <a class="el" href="EvpackRange_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a369d2afc478c31a024c966a7bec3d3e5" name="a369d2afc478c31a024c966a7bec3d3e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a369d2afc478c31a024c966a7bec3d3e5">&#9670;&#160;</a></span>selectEvpackVariant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvpackVariantSelection.html">EvpackVariantSelection</a> &gt; eve::asset::selectEvpackVariant </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset_1_1Evpack.html">Evpack</a> &amp;&#160;</td>
+          <td class="paramname"><em>pack</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvpackCapabilities.html">EvpackCapabilities</a> &amp;&#160;</td>
+          <td class="paramname"><em>capabilities</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select the first explicitly ordered variant satisfied by device capabilities. </p>
+<dl class="section return"><dt>返回</dt><dd>Selected index and whether an ordered fallback after index zero was used. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Evpack_8cpp_source.html">Evpack.cpp</a> 第 <a class="el" href="Evpack_8cpp_source.html#l00564">564</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="Evpack_8h_source.html#l00167">eve::asset::Evpack::variants()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvpackResourceReader_8cpp_source.html#l00015">eve::asset::EvpackResourceReader::read()</a> , 以及 <a class="el" href="EvpackRegistry_8cpp_source.html#l00167">eve::asset::EvpackRegistry::resolveAsset()</a>.</p>
+
+</div>
+</div>
+<a id="a9e51de284e1aa0a7a5825f4771facc1c" name="a9e51de284e1aa0a7a5825f4771facc1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e51de284e1aa0a7a5825f4771facc1c">&#9670;&#160;</a></span>serializeEvaManifest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::asset::serializeEvaManifest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;&#160;</td>
+          <td class="paramname"><em>manifest</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize a validated manifest as deterministic compact JSON. </p>
+<dl class="section return"><dt>返回</dt><dd>Canonical JSON or a serialization diagnostic. @thread Worker-safe when the manifest is not concurrently mutated. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8cpp_source.html">EvaManifest.cpp</a> 第 <a class="el" href="EvaManifest_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaManifest_8h_source.html#l00067">eve::asset::EvaManifest::assets</a>, <a class="el" href="EvaManifest_8h_source.html#l00068">eve::asset::EvaManifest::dependencies</a>, <a class="el" href="EvaManifest_8h_source.html#l00069">eve::asset::EvaManifest::entrypoints</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00126">evaDependencyKindName()</a>, <a class="el" href="EvaManifest_8h_source.html#l00071">eve::asset::EvaManifest::extensions</a>, <a class="el" href="Identity_8h_source.html#l00122">eve::detail::Id128&lt; Tag &gt;::format()</a>, <a class="el" href="EvaManifest_8h_source.html#l00061">eve::asset::EvaManifest::kSchema</a>, <a class="el" href="EvaManifest_8h_source.html#l00062">eve::asset::EvaManifest::kVersion</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="EvaManifest_8h_source.html#l00064">eve::asset::EvaManifest::packageId</a>, <a class="el" href="EvaManifest_8h_source.html#l00065">eve::asset::EvaManifest::packageName</a>, <a class="el" href="EvaManifest_8h_source.html#l00066">eve::asset::EvaManifest::packageVersion</a>, <a class="el" href="EvaManifest_8h_source.html#l00070">eve::asset::EvaManifest::provenance</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvaArchive_8cpp_source.html#l00414">buildEvaArchive()</a> , 以及 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a>.</p>
+
+</div>
+</div>
+<a id="acbb46c83ed063c4d770327f420fc5067" name="acbb46c83ed063c4d770327f420fc5067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbb46c83ed063c4d770327f420fc5067">&#9670;&#160;</a></span>validateEvaDependencies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1asset_1_1EvaDependencyValidation.html">EvaDependencyValidation</a> &gt; eve::asset::validateEvaDependencies </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a> &amp;&#160;</td>
+          <td class="paramname"><em>manifest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1asset_1_1AvailableAssetDependency.html">AvailableAssetDependency</a> &gt;&#160;</td>
+          <td class="paramname"><em>available</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate local/external references, expected types and required-edge acyclicity. </p>
+
+<p class="definition">在文件 <a class="el" href="AssetDependency_8cpp_source.html">AssetDependency.cpp</a> 第 <a class="el" href="AssetDependency_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaManifest_8h_source.html#l00067">eve::asset::EvaManifest::assets</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">cookEvaToEvpack()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

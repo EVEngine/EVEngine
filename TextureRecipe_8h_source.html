@@ -1,0 +1,330 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/texture/TextureRecipe.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_58df875c20f4dbb0276e827a5bf00a98.html">texture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TextureRecipe.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TextureRecipe_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Params_8h.html">procgen/Params.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ParamSchema_8h.html">procgen/ParamSchema.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ColorRamp_8h.html">procgen/texture/ColorRamp.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="NoiseField_8h.html">procgen/texture/NoiseField.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1image.html">eve::image</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">ImageData</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">   22</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">TextureRecipeFn</a> = std::function&lt;std::unique_ptr&lt;image::ImageData&gt;(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, std::string &amp;<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)&gt;;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a> &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#af87db9b8047f8d463e0ba9a307ca871a">instance</a>();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#aa861d72cf900025b075031eac50a62d4">registerRecipe</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <a class="code hl_typedef" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">TextureRecipeFn</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#aa861d72cf900025b075031eac50a62d4">registerRecipe</a>(<a class="code hl_struct" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, <a class="code hl_typedef" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">TextureRecipeFn</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a15a752d2cc717c2c666908adaea8d487">has</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    [[nodiscard]] std::unique_ptr&lt;image::ImageData&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a71b1804a9d83ca71e7f5d34f3093c072">generate</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                                             std::string &amp;<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#abf3ec1d581528e114fe13afcfdc8a6cd">list</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a2f6f528b013971342cafb48baf05aa0d">applyDefaults</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#ae4c5e73786fe368f1890f8d9ab3e83db">registerBuiltins</a>();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">struct </span>Entry {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_typedef" href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">TextureRecipeFn</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    };</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">TextureRecipeRegistry</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::unordered_map&lt;std::string, Entry&gt; recipes_;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">bool</span> builtinsRegistered_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="};">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html">   65</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TextureGenContext.html">TextureGenContext</a> {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#ad634f2eb8b126b4dc8e806b63eab7997">   66</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#ad634f2eb8b126b4dc8e806b63eab7997">width</a>     = 64;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#a3cc5057e5dd26497cedd4adc72be68b7">   67</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#a3cc5057e5dd26497cedd4adc72be68b7">height</a>    = 64;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#a70ca96a6fd1b5e7af5fa953076d0df63">   68</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#a70ca96a6fd1b5e7af5fa953076d0df63">seed</a>      = 1;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#af8aa628328720ae7b8dbe5b27d025e79">   69</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#af8aa628328720ae7b8dbe5b27d025e79">scale</a>     = 4.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#a50794c56ef73c318e22379d05b352190">   70</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#a50794c56ef73c318e22379d05b352190">octaves</a>   = 4;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#a5f3cd8d1d95b1c28838af8235c4b3fe1">   71</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#a5f3cd8d1d95b1c28838af8235c4b3fe1">colors</a>    = 6;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#aba7973a947e40bb59512901b34e5cebf">   72</a></span>    <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#aba7973a947e40bb59512901b34e5cebf">pixelSize</a> = 1;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#a3839dbc2c5144fefd1f5226321828488">   73</a></span>    <span class="keywordtype">bool</span>     <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#a3839dbc2c5144fefd1f5226321828488">seamless</a>  = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureGenContext.html#a999079934e24fa8c9051e038b91dac37">   74</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureGenContext.html#a999079934e24fa8c9051e038b91dac37">warpAmp</a>   = 1.f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TextureGenContext.html">TextureGenContext</a> <a class="code hl_function" href="structeve_1_1procgen_1_1TextureGenContext.html#aba439dc80f745073ce51ebaaaca77bcf">fromParams</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>};</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#abb660c4511755d43adc44a683052175d">paintHeightToImage</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;img, <span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ColorRamp.html">ColorRamp</a> &amp;ramp, <span class="keywordtype">int</span> bands, <span class="keywordtype">int</span> pixelSize);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#ac9e7a6b4f01bdd22ace858dffcbad60f">fillHeightField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TextureGenContext.html">TextureGenContext</a> &amp;ctx,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                     <span class="keyword">const</span> std::function&lt;<span class="keywordtype">float</span>(<span class="keywordtype">float</span>, <span class="keywordtype">float</span>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1NoiseField.html">NoiseField</a> &amp;)&gt; &amp;<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                     std::vector&lt;float&gt; &amp;<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>[[nodiscard]] std::unique_ptr&lt;image::ImageData&gt; <a class="code hl_function" href="namespaceeve_1_1procgen.html#af83a8a543cc895041dab31d6fc4c45b9">heightToNormalImage</a>(<span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                                                                    <span class="keywordtype">float</span> strength, <span class="keywordtype">bool</span> seamless);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="};">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrParams.html">   98</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1PbrParams.html">PbrParams</a> {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrParams.html#abba32247e91c9ceb9ab6f5622ed37023">   99</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#abba32247e91c9ceb9ab6f5622ed37023">roughnessLow</a>      = 0.45f;  <span class="comment">// roughness at the low end of displacement</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrParams.html#aa57684dadcb5b44283636fc02cc6707f">  100</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#aa57684dadcb5b44283636fc02cc6707f">roughnessHigh</a>     = 0.85f;  <span class="comment">// roughness at the high end of displacement</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrParams.html#a536546a71db1f3e6b48b095c99cb5819">  101</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a536546a71db1f3e6b48b095c99cb5819">metallic</a>          = 0.f;    <span class="comment">// uniform metalness (0..1)</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrParams.html#a668db6ffebb9a0ee1b13f049cb63e3ad">  102</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a668db6ffebb9a0ee1b13f049cb63e3ad">normalStrength</a>    = 4.f;    <span class="comment">// normal-map height strength</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrParams.html#a0df9f69a858d27461975d1bb18580364">  103</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a0df9f69a858d27461975d1bb18580364">aoStrength</a>        = 1.f;    <span class="comment">// cavity/ambient-occlusion strength</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PbrParams.html#a177d2c4a6ca54301de7196e039ea7e8a">  104</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a177d2c4a6ca54301de7196e039ea7e8a">heightStrength</a>    = 1.f;    <span class="comment">// height-map displacement scale</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1PbrParams.html">PbrParams</a> <a class="code hl_function" href="structeve_1_1procgen_1_1PbrParams.html#aac5c4217a3cd762f59c07427439a96ec">fromParams</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="foldopen" id="foldopen00114" data-start="{" data-end="};">
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureRecipeDef.html">  114</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TextureRecipeDef.html">TextureRecipeDef</a> {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a4f059397109a138aea4eb0259edbc2bb">  115</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a4f059397109a138aea4eb0259edbc2bb">id</a>;  <span class="comment">// albedo recipe id, e.g. &quot;tex.marble&quot;</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">  116</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1ColorRamp.html">ColorRamp</a>   <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">albedo</a>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a3e1d7266f1ed5644afcc8499aa0b0dfb">  117</a></span>    std::function&lt;float(<span class="keywordtype">float</span>, <span class="keywordtype">float</span>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1NoiseField.html">NoiseField</a> &amp;)&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a3e1d7266f1ed5644afcc8499aa0b0dfb">height</a>;  <span class="comment">// clamped to [0,1]</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">  118</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1PbrParams.html">PbrParams</a>   <a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>};</div>
+</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="keyword">const</span> std::vector&lt;TextureRecipeDef&gt; &amp;<a class="code hl_function" href="namespaceeve_1_1procgen.html#aa664d3a7ce24d7076289851c35e6047d">builtinTextureDefs</a>();</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><a class="code hl_struct" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a90e420daf32259440b3b3e5c8f04fee5">makeTextureRecipeDescriptor</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TextureRecipeDef.html">TextureRecipeDef</a> &amp;definition);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aColorRamp_8h_html"><div class="ttname"><a href="ColorRamp_8h.html">ColorRamp.h</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aNoiseField_8h_html"><div class="ttname"><a href="NoiseField_8h.html">NoiseField.h</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aParamSchema_8h_html"><div class="ttname"><a href="ParamSchema_8h.html">ParamSchema.h</a></div></div>
+<div class="ttc" id="aParams_8h_html"><div class="ttname"><a href="Params_8h.html">Params.h</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a551d430cf2ccceca90f2f17e1921dc6a"><div class="ttname"><a href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a></div><div class="ttdeci">std::vector&lt; OperationParam &gt; params</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00024">PointGraph.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00033">ImageData.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html">eve::procgen::Params</a></div><div class="ttdoc">Owning, typed generation parameters.</div><div class="ttdef"><b>Definition</b> <a href="Params_8h_source.html#l00025">Params.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TextureRecipeRegistry_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TextureRecipeRegistry.html">eve::procgen::TextureRecipeRegistry</a></div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00024">TextureRecipe.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TextureRecipeRegistry_html_a15a752d2cc717c2c666908adaea8d487"><div class="ttname"><a href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a15a752d2cc717c2c666908adaea8d487">eve::procgen::TextureRecipeRegistry::has</a></div><div class="ttdeci">bool has(const std::string &amp;id) const</div><div class="ttdoc">Test whether a recipe exists.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00029">TextureRecipe.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TextureRecipeRegistry_html_a2f6f528b013971342cafb48baf05aa0d"><div class="ttname"><a href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a2f6f528b013971342cafb48baf05aa0d">eve::procgen::TextureRecipeRegistry::applyDefaults</a></div><div class="ttdeci">bool applyDefaults(const std::string &amp;id, Params &amp;params) const</div><div class="ttdoc">Fill missing values from metadata.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00048">TextureRecipe.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TextureRecipeRegistry_html_a71b1804a9d83ca71e7f5d34f3093c072"><div class="ttname"><a href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#a71b1804a9d83ca71e7f5d34f3093c072">eve::procgen::TextureRecipeRegistry::generate</a></div><div class="ttdeci">std::unique_ptr&lt; image::ImageData &gt; generate(const std::string &amp;id, const Params &amp;params, std::string &amp;error) const</div><div class="ttdoc">Generates an image and transfers its unique ownership to the caller.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00033">TextureRecipe.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TextureRecipeRegistry_html_aa861d72cf900025b075031eac50a62d4"><div class="ttname"><a href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#aa861d72cf900025b075031eac50a62d4">eve::procgen::TextureRecipeRegistry::registerRecipe</a></div><div class="ttdeci">void registerRecipe(const std::string &amp;id, TextureRecipeFn fn)</div><div class="ttdoc">Register a recipe without metadata.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00017">TextureRecipe.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TextureRecipeRegistry_html_abf3ec1d581528e114fe13afcfdc8a6cd"><div class="ttname"><a href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#abf3ec1d581528e114fe13afcfdc8a6cd">eve::procgen::TextureRecipeRegistry::list</a></div><div class="ttdeci">std::vector&lt; std::string &gt; list() const</div><div class="ttdoc">List registered recipe ids.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00055">TextureRecipe.cpp:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TextureRecipeRegistry_html_ae4c5e73786fe368f1890f8d9ab3e83db"><div class="ttname"><a href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#ae4c5e73786fe368f1890f8d9ab3e83db">eve::procgen::TextureRecipeRegistry::registerBuiltins</a></div><div class="ttdeci">void registerBuiltins()</div><div class="ttdoc">Register engine-provided recipes once.</div><div class="ttdef"><b>Definition</b> <a href="BuiltinTextures_8cpp_source.html#l00486">BuiltinTextures.cpp:486</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TextureRecipeRegistry_html_af87db9b8047f8d463e0ba9a307ca871a"><div class="ttname"><a href="classeve_1_1procgen_1_1TextureRecipeRegistry.html#af87db9b8047f8d463e0ba9a307ca871a">eve::procgen::TextureRecipeRegistry::instance</a></div><div class="ttdeci">static TextureRecipeRegistry &amp; instance()</div><div class="ttdoc">Access the process-wide texture recipe registry.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00012">TextureRecipe.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">eve::artifact::PartKind::ImageData</a></div><div class="ttdeci">@ ImageData</div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html"><div class="ttname"><a href="namespaceeve_1_1image.html">eve::image</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00023">AvatarInstance.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a5e238d74b5a5b126aa08a902aa19011f"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a5e238d74b5a5b126aa08a902aa19011f">eve::procgen::TextureRecipeFn</a></div><div class="ttdeci">std::function&lt; std::unique_ptr&lt; image::ImageData &gt;(const Params &amp;params, std::string &amp;error)&gt; TextureRecipeFn</div><div class="ttdoc">Recipe returns a newly owned RGBA8 image, or null on failure.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00022">TextureRecipe.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a90e420daf32259440b3b3e5c8f04fee5"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a90e420daf32259440b3b3e5c8f04fee5">eve::procgen::makeTextureRecipeDescriptor</a></div><div class="ttdeci">RecipeDescriptor makeTextureRecipeDescriptor(const TextureRecipeDef &amp;definition)</div><div class="ttdoc">Build editable metadata for a texture definition.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00088">TextureRecipe.cpp:88</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aa664d3a7ce24d7076289851c35e6047d"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aa664d3a7ce24d7076289851c35e6047d">eve::procgen::builtinTextureDefs</a></div><div class="ttdeci">const std::vector&lt; TextureRecipeDef &gt; &amp; builtinTextureDefs()</div><div class="ttdoc">All built-in texture definitions (albedo + PBR). Populated lazily.</div><div class="ttdef"><b>Definition</b> <a href="BuiltinTextures_8cpp_source.html#l00481">BuiltinTextures.cpp:481</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_abb660c4511755d43adc44a683052175d"><div class="ttname"><a href="namespaceeve_1_1procgen.html#abb660c4511755d43adc44a683052175d">eve::procgen::paintHeightToImage</a></div><div class="ttdeci">void paintHeightToImage(image::ImageData &amp;img, const std::vector&lt; float &gt; &amp;height, int w, int h, const ColorRamp &amp;ramp, int bands, int pixelSize)</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00128">TextureRecipe.cpp:128</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ac9e7a6b4f01bdd22ace858dffcbad60f"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ac9e7a6b4f01bdd22ace858dffcbad60f">eve::procgen::fillHeightField</a></div><div class="ttdeci">void fillHeightField(const TextureGenContext &amp;ctx, const std::function&lt; float(float, float, const NoiseField &amp;)&gt; &amp;fn, std::vector&lt; float &gt; &amp;height)</div><div class="ttdoc">Sample a height function over the full [w×h] grid into height (clamped to [0,1]).</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00108">TextureRecipe.cpp:108</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_af83a8a543cc895041dab31d6fc4c45b9"><div class="ttname"><a href="namespaceeve_1_1procgen.html#af83a8a543cc895041dab31d6fc4c45b9">eve::procgen::heightToNormalImage</a></div><div class="ttdeci">std::unique_ptr&lt; image::ImageData &gt; heightToNormalImage(const std::vector&lt; float &gt; &amp;height, int w, int h, float strength, bool seamless)</div><div class="ttdoc">Builds a normal-map image and transfers its unique ownership to the caller.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00148">TextureRecipe.cpp:148</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00030">Settlement.cpp:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ColorRamp_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ColorRamp.html">eve::procgen::ColorRamp</a></div><div class="ttdoc">Piecewise-linear color ramp in t∈[0,1], with optional hard banding.</div><div class="ttdef"><b>Definition</b> <a href="ColorRamp_8h_source.html#l00013">ColorRamp.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1NoiseField_html"><div class="ttname"><a href="structeve_1_1procgen_1_1NoiseField.html">eve::procgen::NoiseField</a></div><div class="ttdoc">Deterministic value-noise helpers for pixel textures. When periodX/periodY &gt; 0, lattice wraps for sea...</div><div class="ttdef"><b>Definition</b> <a href="NoiseField_8h_source.html#l00011">NoiseField.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html">eve::procgen::PbrParams</a></div><div class="ttdoc">PBR surface defaults for a generated material. Every map in a PBR set is derived from the same displa...</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00098">TextureRecipe.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a0df9f69a858d27461975d1bb18580364"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a0df9f69a858d27461975d1bb18580364">eve::procgen::PbrParams::aoStrength</a></div><div class="ttdeci">float aoStrength</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00103">TextureRecipe.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a177d2c4a6ca54301de7196e039ea7e8a"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a177d2c4a6ca54301de7196e039ea7e8a">eve::procgen::PbrParams::heightStrength</a></div><div class="ttdeci">float heightStrength</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00104">TextureRecipe.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a536546a71db1f3e6b48b095c99cb5819"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a536546a71db1f3e6b48b095c99cb5819">eve::procgen::PbrParams::metallic</a></div><div class="ttdeci">float metallic</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00101">TextureRecipe.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a668db6ffebb9a0ee1b13f049cb63e3ad"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a668db6ffebb9a0ee1b13f049cb63e3ad">eve::procgen::PbrParams::normalStrength</a></div><div class="ttdeci">float normalStrength</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00102">TextureRecipe.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_aa57684dadcb5b44283636fc02cc6707f"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#aa57684dadcb5b44283636fc02cc6707f">eve::procgen::PbrParams::roughnessHigh</a></div><div class="ttdeci">float roughnessHigh</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00100">TextureRecipe.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_aac5c4217a3cd762f59c07427439a96ec"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#aac5c4217a3cd762f59c07427439a96ec">eve::procgen::PbrParams::fromParams</a></div><div class="ttdeci">static PbrParams fromParams(const Params &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00077">TextureRecipe.cpp:77</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_abba32247e91c9ceb9ab6f5622ed37023"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#abba32247e91c9ceb9ab6f5622ed37023">eve::procgen::PbrParams::roughnessLow</a></div><div class="ttdeci">float roughnessLow</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00099">TextureRecipe.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1RecipeDescriptor_html"><div class="ttname"><a href="structeve_1_1procgen_1_1RecipeDescriptor.html">eve::procgen::RecipeDescriptor</a></div><div class="ttdoc">Complete metadata and parameter schema shared by every procgen recipe family.</div><div class="ttdef"><b>Definition</b> <a href="ParamSchema_8h_source.html#l00052">ParamSchema.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html">eve::procgen::TextureGenContext</a></div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00065">TextureRecipe.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_a3839dbc2c5144fefd1f5226321828488"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#a3839dbc2c5144fefd1f5226321828488">eve::procgen::TextureGenContext::seamless</a></div><div class="ttdeci">bool seamless</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00073">TextureRecipe.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_a3cc5057e5dd26497cedd4adc72be68b7"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#a3cc5057e5dd26497cedd4adc72be68b7">eve::procgen::TextureGenContext::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00067">TextureRecipe.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_a50794c56ef73c318e22379d05b352190"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#a50794c56ef73c318e22379d05b352190">eve::procgen::TextureGenContext::octaves</a></div><div class="ttdeci">int octaves</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00070">TextureRecipe.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_a5f3cd8d1d95b1c28838af8235c4b3fe1"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#a5f3cd8d1d95b1c28838af8235c4b3fe1">eve::procgen::TextureGenContext::colors</a></div><div class="ttdeci">int colors</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00071">TextureRecipe.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_a70ca96a6fd1b5e7af5fa953076d0df63"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#a70ca96a6fd1b5e7af5fa953076d0df63">eve::procgen::TextureGenContext::seed</a></div><div class="ttdeci">uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00068">TextureRecipe.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_a999079934e24fa8c9051e038b91dac37"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#a999079934e24fa8c9051e038b91dac37">eve::procgen::TextureGenContext::warpAmp</a></div><div class="ttdeci">float warpAmp</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00074">TextureRecipe.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_aba439dc80f745073ce51ebaaaca77bcf"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#aba439dc80f745073ce51ebaaaca77bcf">eve::procgen::TextureGenContext::fromParams</a></div><div class="ttdeci">static TextureGenContext fromParams(const Params &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8cpp_source.html#l00063">TextureRecipe.cpp:63</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_aba7973a947e40bb59512901b34e5cebf"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#aba7973a947e40bb59512901b34e5cebf">eve::procgen::TextureGenContext::pixelSize</a></div><div class="ttdeci">int pixelSize</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00072">TextureRecipe.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_ad634f2eb8b126b4dc8e806b63eab7997"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#ad634f2eb8b126b4dc8e806b63eab7997">eve::procgen::TextureGenContext::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00066">TextureRecipe.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureGenContext_html_af8aa628328720ae7b8dbe5b27d025e79"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureGenContext.html#af8aa628328720ae7b8dbe5b27d025e79">eve::procgen::TextureGenContext::scale</a></div><div class="ttdeci">float scale</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00069">TextureRecipe.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html">eve::procgen::TextureRecipeDef</a></div><div class="ttdoc">A procedural texture is fully described by an albedo ramp + a displacement field + PBR knobs....</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00114">TextureRecipe.h:114</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a3e1d7266f1ed5644afcc8499aa0b0dfb"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a3e1d7266f1ed5644afcc8499aa0b0dfb">eve::procgen::TextureRecipeDef::height</a></div><div class="ttdeci">std::function&lt; float(float, float, const NoiseField &amp;)&gt; height</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00117">TextureRecipe.h:117</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a4f059397109a138aea4eb0259edbc2bb"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a4f059397109a138aea4eb0259edbc2bb">eve::procgen::TextureRecipeDef::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00115">TextureRecipe.h:115</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a6e04e728e3378cea3f1fb071005f001f"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">eve::procgen::TextureRecipeDef::albedo</a></div><div class="ttdeci">ColorRamp albedo</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00116">TextureRecipe.h:116</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_ae1239ec4e580915f5017adf58f7c2718"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">eve::procgen::TextureRecipeDef::pbr</a></div><div class="ttdeci">PbrParams pbr</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00118">TextureRecipe.h:118</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

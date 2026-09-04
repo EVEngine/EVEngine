@@ -1,0 +1,287 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui_editor/EditorUiSkinPreview.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_aa3f26d94c390a64088598562edf19b7.html">ui_editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorUiSkinPreview.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorUiSkinPreview_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorUiDocumentTarget_8h.html">ui_editor/EditorUiDocumentTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiTextureMetadata.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1UiTextureMetadata.html">UiTextureMetadata</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiTextureMetadata.html#a44debd54bf1a3f152a9c83fdb0693ceb">   11</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1UiTextureMetadata.html#a44debd54bf1a3f152a9c83fdb0693ceb">width</a> = 0.0;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiTextureMetadata.html#ac4b076dfa1b1d5d59e4e2c7b74f64d04">   12</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1UiTextureMetadata.html#ac4b076dfa1b1d5d59e4e2c7b74f64d04">height</a> = 0.0;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>};</div>
+</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html">   16</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html">IUiSkinAssetResolver</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#a6a8161f8de634207712d42cf5660d1b9">   18</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#a6a8161f8de634207712d42cf5660d1b9">~IUiSkinAssetResolver</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#a97d0fdf61bb07edb939ef202ba992e71">   20</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;UiTextureMetadata&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#a97d0fdf61bb07edb939ef202ba992e71">texture</a>(<span class="keyword">const</span> std::string&amp; asset) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#ad944dcfffa388a9cca7cd32038164f2f">   22</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#ad944dcfffa388a9cca7cd32038164f2f">font</a>(<span class="keyword">const</span> std::string&amp; asset) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020">   25</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020">UiSkinDrawKind</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020abe53a0541a6d36f6ecb879fa2c584b08">Image</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020a9dffbf69ffba8bc38bc4e01abf4b1675">Text</a> };</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1UiSkinDrawCommand.html">UiSkinDrawCommand</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ae2a07a46a4796b55904ed95ae51373da">   29</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020">UiSkinDrawKind</a> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ae2a07a46a4796b55904ed95ae51373da">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020abe53a0541a6d36f6ecb879fa2c584b08">UiSkinDrawKind::Image</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a84f81e1b25427f8415890a222ec48b30">   30</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">ObjectId</a> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a84f81e1b25427f8415890a222ec48b30">widget</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a36c82893219a65a5b0cc9a70e7d88573">   31</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a36c82893219a65a5b0cc9a70e7d88573">asset</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#aa1e9761005f0871b03235738f4b53873">   32</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#aa1e9761005f0871b03235738f4b53873">text</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#aea5dcc84b7fd304f842ccf0936086c99">   33</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#af123a8e55f39d4e54ab85d41e0247e18">x</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a0a800ff37233dfc7c6093e5c5b34a441">y</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#aad82c0eabf7844dd5dc4bfa2f0753c38">width</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#aea5dcc84b7fd304f842ccf0936086c99">height</a> = 0.0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ac4dfc96ce0b52c167f1beb596c8d1d81">   34</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a39a633b2635defa51553ecb095ce76ef">clipX</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a989beb334318f811a6303f66ecf02ddc">clipY</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a353f2ee510cc11c5619130ee37ced573">clipWidth</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ac4dfc96ce0b52c167f1beb596c8d1d81">clipHeight</a> = 0.0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a81f0e7a944a8fe4e04beba8aa3ea1a5b">   35</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a81f0e7a944a8fe4e04beba8aa3ea1a5b">u0</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a8f11286b485e846f9cf73587aaea37a7">v0</a> = 0.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ad782fcc61c08ca358f2444d2e98d45d9">u1</a> = 1.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a52877629279fd03983dae458aa2138f4">v1</a> = 1.0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a4381edda634156ead0236fde6ec95c53">   36</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a6ba488aeef45fe1a9cd799b8d8be54c0">r</a> = 1.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a815a7426e04d690fb329dcc8b25b7e39">g</a> = 1.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ade7c71a1712d4314d3be95f7f51ee869">b</a> = 1.0, <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a4381edda634156ead0236fde6ec95c53">a</a> = 1.0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a45d076920db437a3b1841ffa5699bcb9">   37</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a45d076920db437a3b1841ffa5699bcb9">fontSize</a> = 16.0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawPlan.html">   41</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1UiSkinDrawPlan.html">UiSkinDrawPlan</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a35424e642f27ae83d59b999f840f799e">   42</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a35424e642f27ae83d59b999f840f799e">status</a> = EditorStatus::Failed;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a5a8040bc4fab1e85fcc2c1bd365f4b55">   43</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a5a8040bc4fab1e85fcc2c1bd365f4b55">documentRevision</a> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a559c359f805b005cfaed53112cd585e9">   44</a></span>    std::vector&lt;UiSkinDrawCommand&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a559c359f805b005cfaed53112cd585e9">commands</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a66e17b0e2fc1d7c8ec156d398ef6741a">   45</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a66e17b0e2fc1d7c8ec156d398ef6741a">diagnostics</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>};</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1UiSkinPreviewPlanner.html">   49</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1UiSkinPreviewPlanner.html">UiSkinPreviewPlanner</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1UiSkinDrawPlan.html">UiSkinDrawPlan</a> <a class="code hl_function" href="classeve_1_1editor_1_1UiSkinPreviewPlanner.html#aa24b7745b10cf1019b0ff7ee8b0fe2c3">build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html">UiDocumentTarget</a>&amp; document, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html">UiPreviewSnapshot</a>&amp; preview,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                         <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IUiSkinAssetResolver.html">IUiSkinAssetResolver</a>&amp; assets) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html">   57</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html">IUiSkinPlanRenderer</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html#afaad4f74c757589a0660f11a24b111a1">   59</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html#afaad4f74c757589a0660f11a24b111a1">~IUiSkinPlanRenderer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html#a4e06b584fa8dbb2ff1479472b1fb76d1">   61</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html#a4e06b584fa8dbb2ff1479472b1fb76d1">render</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1UiSkinDrawPlan.html">UiSkinDrawPlan</a>&amp; plan) = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditorUiDocumentTarget_8h_html"><div class="ttname"><a href="EditorUiDocumentTarget_8h.html">EditorUiDocumentTarget.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IUiSkinAssetResolver_html"><div class="ttname"><a href="classeve_1_1editor_1_1IUiSkinAssetResolver.html">eve::editor::IUiSkinAssetResolver</a></div><div class="ttdoc">Asset metadata boundary used by renderer-neutral UI preview planning.</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00016">EditorUiSkinPreview.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IUiSkinAssetResolver_html_a6a8161f8de634207712d42cf5660d1b9"><div class="ttname"><a href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#a6a8161f8de634207712d42cf5660d1b9">eve::editor::IUiSkinAssetResolver::~IUiSkinAssetResolver</a></div><div class="ttdeci">virtual ~IUiSkinAssetResolver()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IUiSkinAssetResolver_html_a97d0fdf61bb07edb939ef202ba992e71"><div class="ttname"><a href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#a97d0fdf61bb07edb939ef202ba992e71">eve::editor::IUiSkinAssetResolver::texture</a></div><div class="ttdeci">virtual EditorResult&lt; UiTextureMetadata &gt; texture(const std::string &amp;asset) const =0</div><div class="ttdoc">Resolve texture dimensions, returning NotFound for missing assets.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IUiSkinAssetResolver_html_ad944dcfffa388a9cca7cd32038164f2f"><div class="ttname"><a href="classeve_1_1editor_1_1IUiSkinAssetResolver.html#ad944dcfffa388a9cca7cd32038164f2f">eve::editor::IUiSkinAssetResolver::font</a></div><div class="ttdeci">virtual EditorResult&lt; void &gt; font(const std::string &amp;asset) const =0</div><div class="ttdoc">Report whether a font asset can be resolved.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IUiSkinPlanRenderer_html"><div class="ttname"><a href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html">eve::editor::IUiSkinPlanRenderer</a></div><div class="ttdoc">Narrow presentation boundary consuming a renderer-neutral UI skin plan.</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00057">EditorUiSkinPreview.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IUiSkinPlanRenderer_html_a4e06b584fa8dbb2ff1479472b1fb76d1"><div class="ttname"><a href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html#a4e06b584fa8dbb2ff1479472b1fb76d1">eve::editor::IUiSkinPlanRenderer::render</a></div><div class="ttdeci">virtual EditorResult&lt; void &gt; render(const UiSkinDrawPlan &amp;plan)=0</div><div class="ttdoc">Draw all commands in document order into the active target.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IUiSkinPlanRenderer_html_afaad4f74c757589a0660f11a24b111a1"><div class="ttname"><a href="classeve_1_1editor_1_1IUiSkinPlanRenderer.html#afaad4f74c757589a0660f11a24b111a1">eve::editor::IUiSkinPlanRenderer::~IUiSkinPlanRenderer</a></div><div class="ttdeci">virtual ~IUiSkinPlanRenderer()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1UiSkinPreviewPlanner_html"><div class="ttname"><a href="classeve_1_1editor_1_1UiSkinPreviewPlanner.html">eve::editor::UiSkinPreviewPlanner</a></div><div class="ttdoc">Builds deterministic text/texture commands without touching runtime graphics.</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00049">EditorUiSkinPreview.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1UiSkinPreviewPlanner_html_aa24b7745b10cf1019b0ff7ee8b0fe2c3"><div class="ttname"><a href="classeve_1_1editor_1_1UiSkinPreviewPlanner.html#aa24b7745b10cf1019b0ff7ee8b0fe2c3">eve::editor::UiSkinPreviewPlanner::build</a></div><div class="ttdeci">UiSkinDrawPlan build(const UiDocumentTarget &amp;document, const UiPreviewSnapshot &amp;preview, const IUiSkinAssetResolver &amp;assets) const</div><div class="ttdoc">Resolve assets and fit/clamp widget content against a layout preview.</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8cpp_source.html#l00023">EditorUiSkinPreview.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentTarget_html"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentTarget.html">eve::ui_editing::UiDocumentTarget</a></div><div class="ttdoc">Serializable UI authoring document with hierarchy and inspector capabilities.</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00131">UiDocument.h:135</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ad73c66d26a307aca0b7a76dc0c12e020"><div class="ttname"><a href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020">eve::editor::UiSkinDrawKind</a></div><div class="ttdeci">UiSkinDrawKind</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00025">EditorUiSkinPreview.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ad73c66d26a307aca0b7a76dc0c12e020a9dffbf69ffba8bc38bc4e01abf4b1675"><div class="ttname"><a href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020a9dffbf69ffba8bc38bc4e01abf4b1675">eve::editor::UiSkinDrawKind::Text</a></div><div class="ttdeci">@ Text</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ad73c66d26a307aca0b7a76dc0c12e020abe53a0541a6d36f6ecb879fa2c584b08"><div class="ttname"><a href="namespaceeve_1_1editor.html#ad73c66d26a307aca0b7a76dc0c12e020abe53a0541a6d36f6ecb879fa2c584b08">eve::editor::UiSkinDrawKind::Image</a></div><div class="ttdeci">@ Image</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aee556a1a4c69319bef3bea3c87db4db6"><div class="ttname"><a href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">eve::editor::Revision</a></div><div class="ttdeci">eve::editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="EditorProtocol_8h_source.html#l00009">EditorProtocol.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html">eve::editor::UiSkinDrawCommand</a></div><div class="ttdoc">One deterministic text or image command, including effective clipping.</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00028">EditorUiSkinPreview.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a0a800ff37233dfc7c6093e5c5b34a441"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a0a800ff37233dfc7c6093e5c5b34a441">eve::editor::UiSkinDrawCommand::y</a></div><div class="ttdeci">double y</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00033">EditorUiSkinPreview.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a353f2ee510cc11c5619130ee37ced573"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a353f2ee510cc11c5619130ee37ced573">eve::editor::UiSkinDrawCommand::clipWidth</a></div><div class="ttdeci">double clipWidth</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00034">EditorUiSkinPreview.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a36c82893219a65a5b0cc9a70e7d88573"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a36c82893219a65a5b0cc9a70e7d88573">eve::editor::UiSkinDrawCommand::asset</a></div><div class="ttdeci">std::string asset</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00031">EditorUiSkinPreview.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a39a633b2635defa51553ecb095ce76ef"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a39a633b2635defa51553ecb095ce76ef">eve::editor::UiSkinDrawCommand::clipX</a></div><div class="ttdeci">double clipX</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00034">EditorUiSkinPreview.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a4381edda634156ead0236fde6ec95c53"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a4381edda634156ead0236fde6ec95c53">eve::editor::UiSkinDrawCommand::a</a></div><div class="ttdeci">double a</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00036">EditorUiSkinPreview.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a45d076920db437a3b1841ffa5699bcb9"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a45d076920db437a3b1841ffa5699bcb9">eve::editor::UiSkinDrawCommand::fontSize</a></div><div class="ttdeci">double fontSize</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00037">EditorUiSkinPreview.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a52877629279fd03983dae458aa2138f4"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a52877629279fd03983dae458aa2138f4">eve::editor::UiSkinDrawCommand::v1</a></div><div class="ttdeci">double v1</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00035">EditorUiSkinPreview.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a6ba488aeef45fe1a9cd799b8d8be54c0"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a6ba488aeef45fe1a9cd799b8d8be54c0">eve::editor::UiSkinDrawCommand::r</a></div><div class="ttdeci">double r</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00036">EditorUiSkinPreview.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a815a7426e04d690fb329dcc8b25b7e39"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a815a7426e04d690fb329dcc8b25b7e39">eve::editor::UiSkinDrawCommand::g</a></div><div class="ttdeci">double g</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00036">EditorUiSkinPreview.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a81f0e7a944a8fe4e04beba8aa3ea1a5b"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a81f0e7a944a8fe4e04beba8aa3ea1a5b">eve::editor::UiSkinDrawCommand::u0</a></div><div class="ttdeci">double u0</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00035">EditorUiSkinPreview.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a84f81e1b25427f8415890a222ec48b30"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a84f81e1b25427f8415890a222ec48b30">eve::editor::UiSkinDrawCommand::widget</a></div><div class="ttdeci">ObjectId widget</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00030">EditorUiSkinPreview.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a8f11286b485e846f9cf73587aaea37a7"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a8f11286b485e846f9cf73587aaea37a7">eve::editor::UiSkinDrawCommand::v0</a></div><div class="ttdeci">double v0</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00035">EditorUiSkinPreview.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_a989beb334318f811a6303f66ecf02ddc"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#a989beb334318f811a6303f66ecf02ddc">eve::editor::UiSkinDrawCommand::clipY</a></div><div class="ttdeci">double clipY</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00034">EditorUiSkinPreview.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_aa1e9761005f0871b03235738f4b53873"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#aa1e9761005f0871b03235738f4b53873">eve::editor::UiSkinDrawCommand::text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00032">EditorUiSkinPreview.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_aad82c0eabf7844dd5dc4bfa2f0753c38"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#aad82c0eabf7844dd5dc4bfa2f0753c38">eve::editor::UiSkinDrawCommand::width</a></div><div class="ttdeci">double width</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00033">EditorUiSkinPreview.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_ac4dfc96ce0b52c167f1beb596c8d1d81"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ac4dfc96ce0b52c167f1beb596c8d1d81">eve::editor::UiSkinDrawCommand::clipHeight</a></div><div class="ttdeci">double clipHeight</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00034">EditorUiSkinPreview.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_ad782fcc61c08ca358f2444d2e98d45d9"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ad782fcc61c08ca358f2444d2e98d45d9">eve::editor::UiSkinDrawCommand::u1</a></div><div class="ttdeci">double u1</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00035">EditorUiSkinPreview.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_ade7c71a1712d4314d3be95f7f51ee869"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ade7c71a1712d4314d3be95f7f51ee869">eve::editor::UiSkinDrawCommand::b</a></div><div class="ttdeci">double b</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00036">EditorUiSkinPreview.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_ae2a07a46a4796b55904ed95ae51373da"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#ae2a07a46a4796b55904ed95ae51373da">eve::editor::UiSkinDrawCommand::kind</a></div><div class="ttdeci">UiSkinDrawKind kind</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00029">EditorUiSkinPreview.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_aea5dcc84b7fd304f842ccf0936086c99"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#aea5dcc84b7fd304f842ccf0936086c99">eve::editor::UiSkinDrawCommand::height</a></div><div class="ttdeci">double height</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00033">EditorUiSkinPreview.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawCommand_html_af123a8e55f39d4e54ab85d41e0247e18"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawCommand.html#af123a8e55f39d4e54ab85d41e0247e18">eve::editor::UiSkinDrawCommand::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00033">EditorUiSkinPreview.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawPlan_html"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawPlan.html">eve::editor::UiSkinDrawPlan</a></div><div class="ttdoc">Revision-bound content plan suitable for graphics or UI-host presenters.</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00041">EditorUiSkinPreview.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawPlan_html_a35424e642f27ae83d59b999f840f799e"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a35424e642f27ae83d59b999f840f799e">eve::editor::UiSkinDrawPlan::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00042">EditorUiSkinPreview.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawPlan_html_a559c359f805b005cfaed53112cd585e9"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a559c359f805b005cfaed53112cd585e9">eve::editor::UiSkinDrawPlan::commands</a></div><div class="ttdeci">std::vector&lt; UiSkinDrawCommand &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00044">EditorUiSkinPreview.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawPlan_html_a5a8040bc4fab1e85fcc2c1bd365f4b55"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a5a8040bc4fab1e85fcc2c1bd365f4b55">eve::editor::UiSkinDrawPlan::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00043">EditorUiSkinPreview.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiSkinDrawPlan_html_a66e17b0e2fc1d7c8ec156d398ef6741a"><div class="ttname"><a href="structeve_1_1editor_1_1UiSkinDrawPlan.html#a66e17b0e2fc1d7c8ec156d398ef6741a">eve::editor::UiSkinDrawPlan::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00045">EditorUiSkinPreview.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiTextureMetadata_html"><div class="ttname"><a href="structeve_1_1editor_1_1UiTextureMetadata.html">eve::editor::UiTextureMetadata</a></div><div class="ttdoc">Dimensions known for an editor-resolved UI texture.</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00010">EditorUiSkinPreview.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiTextureMetadata_html_a44debd54bf1a3f152a9c83fdb0693ceb"><div class="ttname"><a href="structeve_1_1editor_1_1UiTextureMetadata.html#a44debd54bf1a3f152a9c83fdb0693ceb">eve::editor::UiTextureMetadata::width</a></div><div class="ttdeci">double width</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00011">EditorUiSkinPreview.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1UiTextureMetadata_html_ac4b076dfa1b1d5d59e4e2c7b74f64d04"><div class="ttname"><a href="structeve_1_1editor_1_1UiTextureMetadata.html#ac4b076dfa1b1d5d59e4e2c7b74f64d04">eve::editor::UiTextureMetadata::height</a></div><div class="ttdeci">double height</div><div class="ttdef"><b>Definition</b> <a href="EditorUiSkinPreview_8h_source.html#l00012">EditorUiSkinPreview.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewSnapshot_html"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html">eve::ui_editing::UiPreviewSnapshot</a></div><div class="ttdoc">Deterministic UI layout preview used by canvas rendering and picking.</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00209">UiDocument.h:209</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

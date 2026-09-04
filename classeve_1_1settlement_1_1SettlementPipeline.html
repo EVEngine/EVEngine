@@ -1,0 +1,345 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::settlement::SettlementPipeline类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1settlement.html">settlement</a></li><li class="navelem"><a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html">SettlementPipeline</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1settlement_1_1SettlementPipeline-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::settlement::SettlementPipeline类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministically ordered, composable settlement pipeline.  
+ <a href="classeve_1_1settlement_1_1SettlementPipeline.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a15a7ab415b5bba0133f0391bab51a407" id="r_a15a7ab415b5bba0133f0391bab51a407"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html#a15a7ab415b5bba0133f0391bab51a407">StageFunction</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;(<a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">SettlementContext</a> &amp;)&gt;</td></tr>
+<tr class="separator:a15a7ab415b5bba0133f0391bab51a407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aba369cd35d4e982cf54121279a0a29fd" id="r_aba369cd35d4e982cf54121279a0a29fd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html#aba369cd35d4e982cf54121279a0a29fd">SettlementPipeline</a> ()</td></tr>
+<tr class="memdesc:aba369cd35d4e982cf54121279a0a29fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a pipeline with the canonical stages installed.  <br /></td></tr>
+<tr class="separator:aba369cd35d4e982cf54121279a0a29fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2513d2ea1ecd4b6f02851ff7d082b37c" id="r_a2513d2ea1ecd4b6f02851ff7d082b37c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html#a2513d2ea1ecd4b6f02851ff7d082b37c">addStage</a> (<a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51">StageKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>, <a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html#a15a7ab415b5bba0133f0391bab51a407">StageFunction</a> <a class="el" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function</a>)</td></tr>
+<tr class="memdesc:a2513d2ea1ecd4b6f02851ff7d082b37c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add one named custom stage; duplicate names are rejected.  <br /></td></tr>
+<tr class="separator:a2513d2ea1ecd4b6f02851ff7d082b37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a419449bf62fc214fb6c5f91253b84a12" id="r_a419449bf62fc214fb6c5f91253b84a12"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1settlement_1_1SettlementResult.html">SettlementResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html#a419449bf62fc214fb6c5f91253b84a12">settle</a> (const <a class="el" href="structeve_1_1settlement_1_1SettlementRequest.html">SettlementRequest</a> &amp;request, <a class="el" href="classeve_1_1settlement_1_1ISettlementPolicy.html">ISettlementPolicy</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>, <a class="el" href="classeve_1_1game__event_1_1GameEventLog.html">game_event::GameEventLog</a> *<a class="el" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>=nullptr) const</td></tr>
+<tr class="memdesc:a419449bf62fc214fb6c5f91253b84a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute one settlement transaction against a domain policy.  <br /></td></tr>
+<tr class="separator:a419449bf62fc214fb6c5f91253b84a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministically ordered, composable settlement pipeline. </p>
+<p>The constructor installs the eight canonical stages. Additional stages can be inserted into any phase with a stable priority and unique name. Apply, Event and Trigger each have an unregistrable terminal step; custom stages in those phases always run before their terminal step regardless of priority or name. Other ordering is phase, priority, name, then registration sequence. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00365">365</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a15a7ab415b5bba0133f0391bab51a407" name="a15a7ab415b5bba0133f0391bab51a407"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15a7ab415b5bba0133f0391bab51a407">&#9670;&#160;</a></span>StageFunction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html#a15a7ab415b5bba0133f0391bab51a407">eve::settlement::SettlementPipeline::StageFunction</a> =  std::function&lt;<a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt;void&gt;(<a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">SettlementContext</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00367">367</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aba369cd35d4e982cf54121279a0a29fd" name="aba369cd35d4e982cf54121279a0a29fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba369cd35d4e982cf54121279a0a29fd">&#9670;&#160;</a></span>SettlementPipeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::settlement::SettlementPipeline::SettlementPipeline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a pipeline with the canonical stages installed. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51a9639e32cab248434a17ab32237cb3b71">eve::settlement::Apply</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00342">eve::settlement::SettlementContext::applyClamp()</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51af96c4822ae3564826873431190e874dc">eve::settlement::ArmorShield</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51a08825280e3f8137556325061ba67ff8c">eve::settlement::Clamp</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51aa4ecfc70574394990cf17bd83df499f7">eve::settlement::Event</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00034">function</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00191">eve::settlement::SettlementContext::policy()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00357">eve::settlement::SettlementContext::prepareApply()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00375">eve::settlement::SettlementContext::prepareEvent()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00255">eve::settlement::SettlementContext::projectedResult()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00188">eve::settlement::SettlementContext::request()</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51a2d74347cae879c3d68aaaa8f9f0d09ce">eve::settlement::SourceModifiers</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00390">eve::settlement::SettlementContext::synchronizeResult()</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51a4c35b8b122ea7f701f30bef3c848f98c">eve::settlement::TargetMitigation</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51af698f67f5666aff10729d8a1cb1c14d2">eve::settlement::Trigger</a>, <a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51aad3d06d03d94223fa652babc913de686">eve::settlement::Validate</a> , 以及 <a class="el" href="classeve_1_1settlement_1_1ISettlementPolicy.html#a19aa4d6b4c5f7283b732f037ec594a3f">eve::settlement::ISettlementPolicy::validate()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2513d2ea1ecd4b6f02851ff7d082b37c" name="a2513d2ea1ecd4b6f02851ff7d082b37c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2513d2ea1ecd4b6f02851ff7d082b37c">&#9670;&#160;</a></span>addStage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementPipeline::addStage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1settlement.html#a64ed2e2d64fb33abe82a67e2ecd34c51">StageKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html#a15a7ab415b5bba0133f0391bab51a407">StageFunction</a>&#160;</td>
+          <td class="paramname"><em>function</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add one named custom stage; duplicate names are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00034">function</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a419449bf62fc214fb6c5f91253b84a12" name="a419449bf62fc214fb6c5f91253b84a12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a419449bf62fc214fb6c5f91253b84a12">&#9670;&#160;</a></span>settle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1settlement_1_1SettlementResult.html">SettlementResult</a> &gt; eve::settlement::SettlementPipeline::settle </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1settlement_1_1SettlementRequest.html">SettlementRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1settlement_1_1ISettlementPolicy.html">ISettlementPolicy</a> &amp;&#160;</td>
+          <td class="paramname"><em>policy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html">game_event::GameEventLog</a> *&#160;</td>
+          <td class="paramname"><em>events</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute one settlement transaction against a domain policy. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>Owned request data that remains valid for this synchronous call. </td></tr>
+    <tr><td class="paramname">policy</td><td>Borrowed adapter whose domain state outlives this call. </td></tr>
+    <tr><td class="paramname">events</td><td>Optional borrowed event stream; a present stream receives the canonical result event after the policy mutation commits. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A complete result, or a structured failure. Any failure rolls back the prepared mutation and leaves policy state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">480</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="settlement_2Settlement_8h_source.html#l00084">eve::settlement::SettlementStageResult::after</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00099">eve::settlement::SettlementResult::applied</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00083">eve::settlement::SettlementStageResult::before</a>, <a class="el" href="Status_8h_source.html#l00096">eve::Status::code()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00085">eve::settlement::SettlementStageResult::details</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00106">eve::settlement::SettlementResult::event</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00135">events</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Status_8h_source.html#l00084">eve::Status::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00080">eve::settlement::SettlementStageResult::kind</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00064">eve::settlement::SettlementRequest::magnitude</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00194">eve::settlement::SettlementContext::magnitude()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00247">eve::settlement::SettlementContext::mutationViolation()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00081">eve::settlement::SettlementStageResult::name</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00026">pending</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00274">eve::settlement::SettlementContext::pendingApply()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00284">eve::settlement::SettlementContext::pendingEvent()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00098">eve::settlement::SettlementResult::requested</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="GameEvent_8h_source.html#l00183">eve::game_event::GameEvent::sequence</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00252">eve::settlement::SettlementContext::stageDetails()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00105">eve::settlement::SettlementResult::stages</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00082">eve::settlement::SettlementStageResult::status</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00390">eve::settlement::SettlementContext::synchronizeResult()</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00067">eve::settlement::SettlementRequest::tick</a> , 以及 <a class="el" href="settlement_2Settlement_8h_source.html#l00104">eve::settlement::SettlementResult::tick</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/settlement/<a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a></li>
+<li>src/modules/settlement/<a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

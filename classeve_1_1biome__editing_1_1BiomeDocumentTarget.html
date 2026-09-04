@@ -1,0 +1,1141 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::biome_editing::BiomeDocumentTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1biome__editing.html">biome_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html">BiomeDocumentTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1biome__editing_1_1BiomeDocumentTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::biome_editing::BiomeDocumentTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Revisioned BiomeRules asset.  
+ <a href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::biome_editing::BiomeDocumentTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1biome__editing_1_1BiomeDocumentTarget.png" usemap="#eve::biome_5Fediting::BiomeDocumentTarget_map" alt=""/>
+  <map id="eve::biome_5Fediting::BiomeDocumentTarget_map" name="eve::biome_5Fediting::BiomeDocumentTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,261,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="271,56,532,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="542,56,803,80"/>
+<area href="classeve_1_1editing_1_1IPropertyProvider.html" title="UI-independent property access for an immutable selection snapshot." alt="eve::editing::IPropertyProvider" shape="rect" coords="813,56,1074,80"/>
+<area href="classeve_1_1editing_1_1IEditingSnapshotProvider.html" title="Optional capability exposing a deterministic, persistence-safe editing snapshot." alt="eve::editing::IEditingSnapshotProvider" shape="rect" coords="1084,56,1345,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="271,0,532,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a53cbe7ae2954756a939e6828b8de9e29" id="r_a53cbe7ae2954756a939e6828b8de9e29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a53cbe7ae2954756a939e6828b8de9e29">BiomeDocumentTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a53cbe7ae2954756a939e6828b8de9e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c5322bd0cf4523d46a9bd231032b3a" id="r_a92c5322bd0cf4523d46a9bd231032b3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#a26697ed7be57f08d7f4a7ef783184a9e">TargetId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a92c5322bd0cf4523d46a9bd231032b3a">targetId</a> () const override</td></tr>
+<tr class="separator:a92c5322bd0cf4523d46a9bd231032b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe39d947074a3cac5bd75b1460c1d042" id="r_afe39d947074a3cac5bd75b1460c1d042"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#afe39d947074a3cac5bd75b1460c1d042">revision</a> () const override</td></tr>
+<tr class="separator:afe39d947074a3cac5bd75b1460c1d042"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8add5f1532e097ed53f07222e8ebdef" id="r_ac8add5f1532e097ed53f07222e8ebdef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#a8661ebd8c0d40dc40245446efc93087f">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#ac8add5f1532e097ed53f07222e8ebdef">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:ac8add5f1532e097ed53f07222e8ebdef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70a18888d252b9ad6a375d57707225dd" id="r_a70a18888d252b9ad6a375d57707225dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a70a18888d252b9ad6a375d57707225dd">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:a70a18888d252b9ad6a375d57707225dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af42e10dbe9c695bd9139b8fc6a5b4cfb" id="r_af42e10dbe9c695bd9139b8fc6a5b4cfb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#a68390f821544ad9ebec5a6e29773c32f">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#af42e10dbe9c695bd9139b8fc6a5b4cfb">describe</a> () const override</td></tr>
+<tr class="memdesc:af42e10dbe9c695bd9139b8fc6a5b4cfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:af42e10dbe9c695bd9139b8fc6a5b4cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef22f3d850211f447152f741c72a9272" id="r_aef22f3d850211f447152f741c72a9272"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#aef22f3d850211f447152f741c72a9272">queryCapability</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#aeb04cc726bce8a45509f80272aab9c4b">CapabilityId</a> &amp;) override</td></tr>
+<tr class="memdesc:aef22f3d850211f447152f741c72a9272"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query Inspector property and snapshot capabilities. @ownership Borrowed from this target; callers must not delete the pointer. @lifetime Valid until this target is destroyed or replaced by commitDomainState. @thread Owner-thread only.  <br /></td></tr>
+<tr class="separator:aef22f3d850211f447152f741c72a9272"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af97d325e7fe8a20fd1557449bed96c95" id="r_af97d325e7fe8a20fd1557449bed96c95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#af97d325e7fe8a20fd1557449bed96c95">applyDomainOperation</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &amp;) override</td></tr>
+<tr class="memdesc:af97d325e7fe8a20fd1557449bed96c95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:af97d325e7fe8a20fd1557449bed96c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dbb7b3a756fbbec4592838f22e3a204" id="r_a9dbb7b3a756fbbec4592838f22e3a204"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#abaf62990572bc21cbf1ba872815d9cd6">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a9dbb7b3a756fbbec4592838f22e3a204">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:a9dbb7b3a756fbbec4592838f22e3a204"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:a9dbb7b3a756fbbec4592838f22e3a204"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accdd8f85140ac4a3c2b9cd8322add982" id="r_accdd8f85140ac4a3c2b9cd8322add982"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#accdd8f85140ac4a3c2b9cd8322add982">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#abaf62990572bc21cbf1ba872815d9cd6">IDomainOperationTarget</a> &gt;) override</td></tr>
+<tr class="memdesc:accdd8f85140ac4a3c2b9cd8322add982"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:accdd8f85140ac4a3c2b9cd8322add982"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb3b972cb4a22b2cde69687c1f65731f" id="r_afb3b972cb4a22b2cde69687c1f65731f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#afb3b972cb4a22b2cde69687c1f65731f">currentRevision</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;) const override</td></tr>
+<tr class="separator:afb3b972cb4a22b2cde69687c1f65731f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa029dcf4434c2779bbd4418b17ff5aa9" id="r_aa029dcf4434c2779bbd4418b17ff5aa9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#a51671c1029b2b29f7a34e3b4c3d3b6fe">PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#aa029dcf4434c2779bbd4418b17ff5aa9">schema</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;) const override</td></tr>
+<tr class="separator:aa029dcf4434c2779bbd4418b17ff5aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e6029c9956113ed7b7a6b165aada59a" id="r_a7e6029c9956113ed7b7a6b165aada59a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#a4f80abdccac35bf897dd8fc0aa512600">PropertyReadResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a7e6029c9956113ed7b7a6b165aada59a">read</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;, const <a class="el" href="namespaceeve_1_1biome__editing.html#a8e9896cf9e08ad076124b660b2759302">PropertyPath</a> &amp;) const override</td></tr>
+<tr class="separator:a7e6029c9956113ed7b7a6b165aada59a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01b27ff0a36f284e14cd26cc3e0f2069" id="r_a01b27ff0a36f284e14cd26cc3e0f2069"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a01b27ff0a36f284e14cd26cc3e0f2069">makeSet</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;, const <a class="el" href="namespaceeve_1_1biome__editing.html#a8e9896cf9e08ad076124b660b2759302">PropertyPath</a> &amp;, const <a class="el" href="namespaceeve_1_1biome__editing.html#adcb5a91a4fa968fb2999a2c802c2c42a">EditorValue</a> &amp;, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a>) const override</td></tr>
+<tr class="separator:a01b27ff0a36f284e14cd26cc3e0f2069"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc1058f4bfd17cdd9dcfce8276f68d5f" id="r_afc1058f4bfd17cdd9dcfce8276f68d5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#afc1058f4bfd17cdd9dcfce8276f68d5f">makeReset</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;, const <a class="el" href="namespaceeve_1_1biome__editing.html#a8e9896cf9e08ad076124b660b2759302">PropertyPath</a> &amp;) const override</td></tr>
+<tr class="separator:afc1058f4bfd17cdd9dcfce8276f68d5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e0b7701bc3ee1251275ebc2a43c8256" id="r_a0e0b7701bc3ee1251275ebc2a43c8256"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a0e0b7701bc3ee1251275ebc2a43c8256">makeCreateLayer</a> (const <a class="el" href="structeve_1_1biome__editing_1_1BiomeLayerValue.html">BiomeLayerValue</a> &amp;) const</td></tr>
+<tr class="separator:a0e0b7701bc3ee1251275ebc2a43c8256"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26ebf18d26b5bd12393dcbef68008b37" id="r_a26ebf18d26b5bd12393dcbef68008b37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a26ebf18d26b5bd12393dcbef68008b37">makeDeleteLayer</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#aaa173f0d1a0d6166e089dcfa7f402590">ObjectId</a> &amp;) const</td></tr>
+<tr class="separator:a26ebf18d26b5bd12393dcbef68008b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1edfbf524e6167da1d429aa361fb93e4" id="r_a1edfbf524e6167da1d429aa361fb93e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a1edfbf524e6167da1d429aa361fb93e4">makeCreateAsset</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#aaa173f0d1a0d6166e089dcfa7f402590">ObjectId</a> &amp;<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, const <a class="el" href="structeve_1_1biome__editing_1_1BiomeAssetValue.html">BiomeAssetValue</a> &amp;) const</td></tr>
+<tr class="separator:a1edfbf524e6167da1d429aa361fb93e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d661a53ad3e2d3a0d270600dd2ccaf4" id="r_a7d661a53ad3e2d3a0d270600dd2ccaf4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a7d661a53ad3e2d3a0d270600dd2ccaf4">makeDeleteAsset</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#aaa173f0d1a0d6166e089dcfa7f402590">ObjectId</a> &amp;) const</td></tr>
+<tr class="separator:a7d661a53ad3e2d3a0d270600dd2ccaf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ae3189405dc46b7abb9ff4a8a2e676e" id="r_a9ae3189405dc46b7abb9ff4a8a2e676e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a9ae3189405dc46b7abb9ff4a8a2e676e">makeSetExclusions</a> (std::vector&lt; std::string &gt;) const</td></tr>
+<tr class="separator:a9ae3189405dc46b7abb9ff4a8a2e676e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23f84f599491ed6367310cff52ea6003" id="r_a23f84f599491ed6367310cff52ea6003"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1biome__editing_1_1BiomeLayerValue.html">BiomeLayerValue</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a23f84f599491ed6367310cff52ea6003">layers</a> () const</td></tr>
+<tr class="separator:a23f84f599491ed6367310cff52ea6003"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1da9afe1ac8a262f6d30dfc6476f50cb" id="r_a1da9afe1ac8a262f6d30dfc6476f50cb"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a1da9afe1ac8a262f6d30dfc6476f50cb">exclusions</a> () const</td></tr>
+<tr class="separator:a1da9afe1ac8a262f6d30dfc6476f50cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ff55f6375ea5e05f4e33c6045e09d0" id="r_ab5ff55f6375ea5e05f4e33c6045e09d0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a8b3b6d948b04c07d46a0ad0aacad8735">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#ab5ff55f6375ea5e05f4e33c6045e09d0">validate</a> () const</td></tr>
+<tr class="separator:ab5ff55f6375ea5e05f4e33c6045e09d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a8959b01478cd53c5e742ec775840f8" id="r_a1a8959b01478cd53c5e742ec775840f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#adcb5a91a4fa968fb2999a2c802c2c42a">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a1a8959b01478cd53c5e742ec775840f8">snapshotValue</a> () const override</td></tr>
+<tr class="memdesc:a1a8959b01478cd53c5e742ec775840f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture the target without exposing mutable runtime storage.  <br /></td></tr>
+<tr class="separator:a1a8959b01478cd53c5e742ec775840f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a266f8ecc4e738eb94eee4478bf36663e" id="r_a266f8ecc4e738eb94eee4478bf36663e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a266f8ecc4e738eb94eee4478bf36663e">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1biome__editing.html#adcb5a91a4fa968fb2999a2c802c2c42a">EditorValue</a> &amp;)</td></tr>
+<tr class="separator:a266f8ecc4e738eb94eee4478bf36663e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a1a2687f093acd0ca7f4f93af7ff93090"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a1a2687f093acd0ca7f4f93af7ff93090">~IPropertyProvider</a> ()=default</td></tr>
+<tr class="separator:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="memitem:aa00a32f2caa4773935cb1e420cb556f4 inherit pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider" id="r_aa00a32f2caa4773935cb1e420cb556f4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#aa00a32f2caa4773935cb1e420cb556f4">~IEditingSnapshotProvider</a> ()=default</td></tr>
+<tr class="separator:aa00a32f2caa4773935cb1e420cb556f4 inherit pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad3e809d567a3aa1afc7d3bdf6e4e7d18" id="r_ad3e809d567a3aa1afc7d3bdf6e4e7d18"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1biome__editing.html#aeb04cc726bce8a45509f80272aab9c4b">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#ad3e809d567a3aa1afc7d3bdf6e4e7d18">propertyCapabilityId</a> ()</td></tr>
+<tr class="memdesc:ad3e809d567a3aa1afc7d3bdf6e4e7d18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capability identity published by <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#af42e10dbe9c695bd9139b8fc6a5b4cfb" title="Describe the target for tools and automation.">describe()</a> for Inspector property editing.  <br /></td></tr>
+<tr class="separator:ad3e809d567a3aa1afc7d3bdf6e4e7d18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_aa07e163a9dafdd187f5e74a2208192e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity for generic property editing.  <br /></td></tr>
+<tr class="separator:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="memitem:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider" id="r_a4662234a5db91e86c8be8df9d88ebd53"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a4662234a5db91e86c8be8df9d88ebd53">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity shared by every editable domain target.  <br /></td></tr>
+<tr class="separator:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Revisioned BiomeRules asset. </p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a> 第 <a class="el" href="BiomeTarget_8h_source.html#l00058">58</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a53cbe7ae2954756a939e6828b8de9e29" name="a53cbe7ae2954756a939e6828b8de9e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53cbe7ae2954756a939e6828b8de9e29">&#9670;&#160;</a></span>BiomeDocumentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::biome_editing::BiomeDocumentTarget::BiomeDocumentTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af97d325e7fe8a20fd1557449bed96c95" name="af97d325e7fe8a20fd1557449bed96c95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af97d325e7fe8a20fd1557449bed96c95">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; void &gt; eve::biome_editing::BiomeDocumentTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="BiomeTarget_8h_source.html#l00096">exclusions()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="EditingValue_8cpp_source.html#l00050">eve::editing::Value::isWithinLimits()</a>, <a class="el" href="BiomeTarget_8h_source.html#l00095">layers()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeTarget_8cpp_source.html#l00387">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a70a18888d252b9ad6a375d57707225dd" name="a70a18888d252b9ad6a375d57707225dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70a18888d252b9ad6a375d57707225dd">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::biome_editing::BiomeDocumentTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a> 第 <a class="el" href="BiomeTarget_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a9dbb7b3a756fbbec4592838f22e3a204" name="a9dbb7b3a756fbbec4592838f22e3a204"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dbb7b3a756fbbec4592838f22e3a204">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#abaf62990572bc21cbf1ba872815d9cd6">IDomainOperationTarget</a> &gt; eve::biome_editing::BiomeDocumentTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+</div>
+</div>
+<a id="accdd8f85140ac4a3c2b9cd8322add982" name="accdd8f85140ac4a3c2b9cd8322add982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accdd8f85140ac4a3c2b9cd8322add982">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; void &gt; eve::biome_editing::BiomeDocumentTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#abaf62990572bc21cbf1ba872815d9cd6">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="afb3b972cb4a22b2cde69687c1f65731f" name="afb3b972cb4a22b2cde69687c1f65731f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb3b972cb4a22b2cde69687c1f65731f">&#9670;&#160;</a></span>currentRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt; eve::biome_editing::BiomeDocumentTarget::currentRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a5aa963e389bf3586ffa808670142c379">eve::editing::IPropertyProvider</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af42e10dbe9c695bd9139b8fc6a5b4cfb" name="af42e10dbe9c695bd9139b8fc6a5b4cfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af42e10dbe9c695bd9139b8fc6a5b4cfb">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#a68390f821544ad9ebec5a6e29773c32f">TargetDescriptor</a> eve::biome_editing::BiomeDocumentTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00122">eve::editing::IEditingSnapshotProvider::editingCapabilityId()</a> , 以及 <a class="el" href="BiomeTarget_8h_source.html#l00066">propertyCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="ac8add5f1532e097ed53f07222e8ebdef" name="ac8add5f1532e097ed53f07222e8ebdef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8add5f1532e097ed53f07222e8ebdef">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#a8661ebd8c0d40dc40245446efc93087f">EditRegion</a> eve::biome_editing::BiomeDocumentTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a> 第 <a class="el" href="BiomeTarget_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1da9afe1ac8a262f6d30dfc6476f50cb" name="a1da9afe1ac8a262f6d30dfc6476f50cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1da9afe1ac8a262f6d30dfc6476f50cb">&#9670;&#160;</a></span>exclusions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; std::string &gt; &amp; eve::biome_editing::BiomeDocumentTarget::exclusions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a> 第 <a class="el" href="BiomeTarget_8h_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00263">eve::biome_editor::BiomeRulesEditor::addExclusion()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00345">applyDomainOperation()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00374">eve::biome_editor::BiomeRulesEditor::exclusionAsset()</a>, <a class="el" href="BiomeRulesEditor_8h_source.html#l00088">eve::biome_editor::BiomeRulesEditor::exclusionCount()</a>, <a class="el" href="BiomeRuntime_8cpp_source.html#l00019">eve::biome_editing::BiomeDocumentRuntime::publish()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00276">eve::biome_editor::BiomeRulesEditor::removeExclusion()</a> , 以及 <a class="el" href="BiomeTarget_8cpp_source.html#l00307">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a23f84f599491ed6367310cff52ea6003" name="a23f84f599491ed6367310cff52ea6003"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23f84f599491ed6367310cff52ea6003">&#9670;&#160;</a></span>layers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1biome__editing_1_1BiomeLayerValue.html">BiomeLayerValue</a> &gt; &amp; eve::biome_editing::BiomeDocumentTarget::layers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a> 第 <a class="el" href="BiomeTarget_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeTarget_8cpp_source.html#l00345">applyDomainOperation()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00232">eve::biome_editor::BiomeRulesEditor::deleteSelectedLayer()</a>, <a class="el" href="BiomeRulesEditor_8h_source.html#l00075">eve::biome_editor::BiomeRulesEditor::layerCount()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00341">eve::biome_editor::BiomeRulesEditor::layerDensity()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00333">eve::biome_editor::BiomeRulesEditor::layerId()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00337">eve::biome_editor::BiomeRulesEditor::layerName()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00345">eve::biome_editor::BiomeRulesEditor::layerPriority()</a>, <a class="el" href="BiomeRuntime_8cpp_source.html#l00019">eve::biome_editing::BiomeDocumentRuntime::publish()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00173">eve::biome_editor::BiomeRulesEditor::selectAsset()</a> , 以及 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00162">eve::biome_editor::BiomeRulesEditor::selectLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a266f8ecc4e738eb94eee4478bf36663e" name="a266f8ecc4e738eb94eee4478bf36663e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a266f8ecc4e738eb94eee4478bf36663e">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; void &gt; eve::biome_editing::BiomeDocumentTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#adcb5a91a4fa968fb2999a2c802c2c42a">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8cpp_source.html#l00345">applyDomainOperation()</a>, <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a1edfbf524e6167da1d429aa361fb93e4" name="a1edfbf524e6167da1d429aa361fb93e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1edfbf524e6167da1d429aa361fb93e4">&#9670;&#160;</a></span>makeCreateAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt; eve::biome_editing::BiomeDocumentTarget::makeCreateAsset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#aaa173f0d1a0d6166e089dcfa7f402590">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1biome__editing_1_1BiomeAssetValue.html">BiomeAssetValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00243">eve::biome_editor::BiomeRulesEditor::createAsset()</a>.</p>
+
+</div>
+</div>
+<a id="a0e0b7701bc3ee1251275ebc2a43c8256" name="a0e0b7701bc3ee1251275ebc2a43c8256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e0b7701bc3ee1251275ebc2a43c8256">&#9670;&#160;</a></span>makeCreateLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt; eve::biome_editing::BiomeDocumentTarget::makeCreateLayer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1biome__editing_1_1BiomeLayerValue.html">BiomeLayerValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00221">eve::biome_editor::BiomeRulesEditor::createLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a7d661a53ad3e2d3a0d270600dd2ccaf4" name="a7d661a53ad3e2d3a0d270600dd2ccaf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d661a53ad3e2d3a0d270600dd2ccaf4">&#9670;&#160;</a></span>makeDeleteAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt; eve::biome_editing::BiomeDocumentTarget::makeDeleteAsset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#aaa173f0d1a0d6166e089dcfa7f402590">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00256">eve::biome_editor::BiomeRulesEditor::deleteSelectedAsset()</a>.</p>
+
+</div>
+</div>
+<a id="a26ebf18d26b5bd12393dcbef68008b37" name="a26ebf18d26b5bd12393dcbef68008b37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26ebf18d26b5bd12393dcbef68008b37">&#9670;&#160;</a></span>makeDeleteLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt; eve::biome_editing::BiomeDocumentTarget::makeDeleteLayer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#aaa173f0d1a0d6166e089dcfa7f402590">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00232">eve::biome_editor::BiomeRulesEditor::deleteSelectedLayer()</a>.</p>
+
+</div>
+</div>
+<a id="afc1058f4bfd17cdd9dcfce8276f68d5f" name="afc1058f4bfd17cdd9dcfce8276f68d5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc1058f4bfd17cdd9dcfce8276f68d5f">&#9670;&#160;</a></span>makeReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt; eve::biome_editing::BiomeDocumentTarget::makeReset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a8e9896cf9e08ad076124b660b2759302">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a6175bdd491af083643d6cac008e99851">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00211">makeSet()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="BiomeTarget_8cpp_source.html#l00138">schema()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeTarget_8cpp_source.html#l00211">makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a01b27ff0a36f284e14cd26cc3e0f2069" name="a01b27ff0a36f284e14cd26cc3e0f2069"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01b27ff0a36f284e14cd26cc3e0f2069">&#9670;&#160;</a></span>makeSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt; eve::biome_editing::BiomeDocumentTarget::makeSet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a8e9896cf9e08ad076124b660b2759302">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#adcb5a91a4fa968fb2999a2c802c2c42a">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a37fd27faadd63ce4dd990ff525b10cc5">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00249">makeReset()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00138">schema()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeTarget_8cpp_source.html#l00249">makeReset()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00212">eve::biome_editor::BiomeRulesEditor::setAssetWeight()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00185">eve::biome_editor::BiomeRulesEditor::setLayerDensity()</a> , 以及 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00202">eve::biome_editor::BiomeRulesEditor::setLayerPriority()</a>.</p>
+
+</div>
+</div>
+<a id="a9ae3189405dc46b7abb9ff4a8a2e676e" name="a9ae3189405dc46b7abb9ff4a8a2e676e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ae3189405dc46b7abb9ff4a8a2e676e">&#9670;&#160;</a></span>makeSetExclusions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">DomainOperation</a> &gt; eve::biome_editing::BiomeDocumentTarget::makeSetExclusions </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::string &gt;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00263">eve::biome_editor::BiomeRulesEditor::addExclusion()</a> , 以及 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00276">eve::biome_editor::BiomeRulesEditor::removeExclusion()</a>.</p>
+
+</div>
+</div>
+<a id="ad3e809d567a3aa1afc7d3bdf6e4e7d18" name="ad3e809d567a3aa1afc7d3bdf6e4e7d18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3e809d567a3aa1afc7d3bdf6e4e7d18">&#9670;&#160;</a></span>propertyCapabilityId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespaceeve_1_1biome__editing.html#aeb04cc726bce8a45509f80272aab9c4b">CapabilityId</a> eve::biome_editing::BiomeDocumentTarget::propertyCapabilityId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capability identity published by <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#af42e10dbe9c695bd9139b8fc6a5b4cfb" title="Describe the target for tools and automation.">describe()</a> for Inspector property editing. </p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a> 第 <a class="el" href="BiomeTarget_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeTarget_8cpp_source.html#l00100">describe()</a> , 以及 <a class="el" href="BiomeTarget_8cpp_source.html#l00107">queryCapability()</a>.</p>
+
+</div>
+</div>
+<a id="aef22f3d850211f447152f741c72a9272" name="aef22f3d850211f447152f741c72a9272"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef22f3d850211f447152f741c72a9272">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::biome_editing::BiomeDocumentTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#aeb04cc726bce8a45509f80272aab9c4b">CapabilityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query Inspector property and snapshot capabilities. @ownership Borrowed from this target; callers must not delete the pointer. @lifetime Valid until this target is destroyed or replaced by commitDomainState. @thread Owner-thread only. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="EditableTarget_8h_source.html#l00122">eve::editing::IEditingSnapshotProvider::editingCapabilityId()</a> , 以及 <a class="el" href="BiomeTarget_8h_source.html#l00066">propertyCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a7e6029c9956113ed7b7a6b165aada59a" name="a7e6029c9956113ed7b7a6b165aada59a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e6029c9956113ed7b7a6b165aada59a">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#a4f80abdccac35bf897dd8fc0aa512600">PropertyReadResult</a> eve::biome_editing::BiomeDocumentTarget::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a8e9896cf9e08ad076124b660b2759302">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a416f8e8d2ee0880822430acea12f55d8">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00138">schema()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="afe39d947074a3cac5bd75b1460c1d042" name="afe39d947074a3cac5bd75b1460c1d042"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe39d947074a3cac5bd75b1460c1d042">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::biome_editing::BiomeDocumentTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a> 第 <a class="el" href="BiomeTarget_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRuntime_8cpp_source.html#l00019">eve::biome_editing::BiomeDocumentRuntime::publish()</a> , 以及 <a class="el" href="BiomeRulesEditor_8h_source.html#l00068">eve::biome_editor::BiomeRulesEditor::revision()</a>.</p>
+
+</div>
+</div>
+<a id="aa029dcf4434c2779bbd4418b17ff5aa9" name="aa029dcf4434c2779bbd4418b17ff5aa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa029dcf4434c2779bbd4418b17ff5aa9">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#a51671c1029b2b29f7a34e3b4c3d3b6fe">PropertySchema</a> eve::biome_editing::BiomeDocumentTarget::schema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aad2055c613e332305f14ecfd7c3ece44">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProperty_8h_source.html#l00102">eve::editing::PropertySchema::properties</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00138">schema()</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00100">eve::editing::PropertySchema::typeId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeTarget_8cpp_source.html#l00249">makeReset()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00211">makeSet()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00156">read()</a> , 以及 <a class="el" href="BiomeTarget_8cpp_source.html#l00138">schema()</a>.</p>
+
+</div>
+</div>
+<a id="a1a8959b01478cd53c5e742ec775840f8" name="a1a8959b01478cd53c5e742ec775840f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a8959b01478cd53c5e742ec775840f8">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#adcb5a91a4fa968fb2999a2c802c2c42a">EditorValue</a> eve::biome_editing::BiomeDocumentTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capture the target without exposing mutable runtime storage. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a91414d122d58ade824a03fe4e8578a55">eve::editing::IEditingSnapshotProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92c5322bd0cf4523d46a9bd231032b3a" name="a92c5322bd0cf4523d46a9bd231032b3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92c5322bd0cf4523d46a9bd231032b3a">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#a26697ed7be57f08d7f4a7ef783184a9e">TargetId</a> eve::biome_editing::BiomeDocumentTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a> 第 <a class="el" href="BiomeTarget_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5ff55f6375ea5e05f4e33c6045e09d0" name="ab5ff55f6375ea5e05f4e33c6045e09d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ff55f6375ea5e05f4e33c6045e09d0">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1biome__editing.html#a8b3b6d948b04c07d46a0ad0aacad8735">EditorDiagnostic</a> &gt; eve::biome_editing::BiomeDocumentTarget::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a> 第 <a class="el" href="BiomeTarget_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="BiomeTarget_8h_source.html#l00096">exclusions()</a> , 以及 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRuntime_8cpp_source.html#l00019">eve::biome_editing::BiomeDocumentRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/biome_editing/<a class="el" href="BiomeTarget_8h_source.html">BiomeTarget.h</a></li>
+<li>src/modules/biome_editing/<a class="el" href="BiomeTarget_8cpp_source.html">BiomeTarget.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

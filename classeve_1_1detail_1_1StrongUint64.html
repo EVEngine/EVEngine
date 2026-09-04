@@ -1,0 +1,493 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::detail::StrongUint64&lt; Tag &gt; 模板类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1detail.html">detail</a></li><li class="navelem"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1detail_1_1StrongUint64-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::detail::StrongUint64&lt; Tag &gt; 模板类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="StrongUint64_8h_source.html">StrongUint64.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7dd65ca6c3587b4f24261c22f6fd50f6" id="r_a7dd65ca6c3587b4f24261c22f6fd50f6"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#a7dd65ca6c3587b4f24261c22f6fd50f6">StrongUint64</a> () noexcept=default</td></tr>
+<tr class="memdesc:a7dd65ca6c3587b4f24261c22f6fd50f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the zero value.  <br /></td></tr>
+<tr class="separator:a7dd65ca6c3587b4f24261c22f6fd50f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bd38f6ac670bc1a83f913f2c807bfd1" id="r_a9bd38f6ac670bc1a83f913f2c807bfd1"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#a9bd38f6ac670bc1a83f913f2c807bfd1">StrongUint64</a> (std::uint64_t <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#a4e1ffb51e8e6387410884ff57360300d">value</a>) noexcept</td></tr>
+<tr class="memdesc:a9bd38f6ac670bc1a83f913f2c807bfd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a value explicitly from its underlying integer.  <br /></td></tr>
+<tr class="separator:a9bd38f6ac670bc1a83f913f2c807bfd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e1ffb51e8e6387410884ff57360300d" id="r_a4e1ffb51e8e6387410884ff57360300d"><td class="memItemLeft" align="right" valign="top">constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#a4e1ffb51e8e6387410884ff57360300d">value</a> () const noexcept</td></tr>
+<tr class="memdesc:a4e1ffb51e8e6387410884ff57360300d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the underlying value at an explicit protocol boundary.  <br /></td></tr>
+<tr class="separator:a4e1ffb51e8e6387410884ff57360300d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac462d732a1c94f60944b884ac9fdc83d" id="r_ac462d732a1c94f60944b884ac9fdc83d"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#ac462d732a1c94f60944b884ac9fdc83d">isZero</a> () const noexcept</td></tr>
+<tr class="memdesc:ac462d732a1c94f60944b884ac9fdc83d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this value is zero.  <br /></td></tr>
+<tr class="separator:ac462d732a1c94f60944b884ac9fdc83d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a146bfedd1addbdfca60e1cfc9ba562e3" id="r_a146bfedd1addbdfca60e1cfc9ba562e3"><td class="memItemLeft" align="right" valign="top">constexpr std::optional&lt; <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#a146bfedd1addbdfca60e1cfc9ba562e3">incremented</a> () const noexcept</td></tr>
+<tr class="memdesc:a146bfedd1addbdfca60e1cfc9ba562e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next value, or empty instead of unsigned wraparound.  <br /></td></tr>
+<tr class="separator:a146bfedd1addbdfca60e1cfc9ba562e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa0953a6ce6374a85a399e06ef11db5ce" id="r_aa0953a6ce6374a85a399e06ef11db5ce"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">zero</a> () noexcept</td></tr>
+<tr class="memdesc:aa0953a6ce6374a85a399e06ef11db5ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the zero value for this strong type.  <br /></td></tr>
+<tr class="separator:aa0953a6ce6374a85a399e06ef11db5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a17f66c421da7e3a0ea56d04229a61b7c" id="r_a17f66c421da7e3a0ea56d04229a61b7c"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#a17f66c421da7e3a0ea56d04229a61b7c">operator==</a> (const <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a> &amp;, const <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a> &amp;) noexcept=default</td></tr>
+<tr class="separator:a17f66c421da7e3a0ea56d04229a61b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8912eab3d4373d770d9a0802cc1486a1" id="r_a8912eab3d4373d770d9a0802cc1486a1"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#a8912eab3d4373d770d9a0802cc1486a1">operator&lt;=&gt;</a> (const <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a> &amp;, const <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a> &amp;) noexcept=default</td></tr>
+<tr class="separator:a8912eab3d4373d770d9a0802cc1486a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Tag&gt;<br />
+class eve::detail::StrongUint64&lt; Tag &gt;</div>
+<p class="definition">在文件 <a class="el" href="StrongUint64_8h_source.html">StrongUint64.h</a> 第 <a class="el" href="StrongUint64_8h_source.html#l00015">15</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7dd65ca6c3587b4f24261c22f6fd50f6" name="a7dd65ca6c3587b4f24261c22f6fd50f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dd65ca6c3587b4f24261c22f6fd50f6">&#9670;&#160;</a></span>StrongUint64() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; Tag &gt;::StrongUint64 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs the zero value. </p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>.</p>
+
+</div>
+</div>
+<a id="a9bd38f6ac670bc1a83f913f2c807bfd1" name="a9bd38f6ac670bc1a83f913f2c807bfd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bd38f6ac670bc1a83f913f2c807bfd1">&#9670;&#160;</a></span>StrongUint64() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; Tag &gt;::StrongUint64 </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs a value explicitly from its underlying integer. </p>
+
+<p class="definition">在文件 <a class="el" href="StrongUint64_8h_source.html">StrongUint64.h</a> 第 <a class="el" href="StrongUint64_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a146bfedd1addbdfca60e1cfc9ba562e3" name="a146bfedd1addbdfca60e1cfc9ba562e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a146bfedd1addbdfca60e1cfc9ba562e3">&#9670;&#160;</a></span>incremented()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::optional&lt; <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a> &gt; <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; Tag &gt;::incremented </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the next value, or empty instead of unsigned wraparound. </p>
+
+<p class="definition">在文件 <a class="el" href="StrongUint64_8h_source.html">StrongUint64.h</a> 第 <a class="el" href="StrongUint64_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#a7dd65ca6c3587b4f24261c22f6fd50f6">eve::detail::StrongUint64&lt; Tag &gt;::StrongUint64()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Time_8cpp_source.html#l00084">eve::SimulationClock::advance()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a>, <a class="el" href="Definitions_8cpp_source.html#l00398">eve::definitions::DefinitionRegistry::clearEvents()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00393">eve::policyregistry::PolicyRegistry::clearEvents()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00277">eve::policyregistry::PolicyRegistry::enable()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00218">eve::policyregistry::PolicyRegistry::insert()</a>, <a class="el" href="Definitions_8cpp_source.html#l00266">eve::definitions::DefinitionRegistry::insert()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a>, <a class="el" href="building_2ContainerAdapters_8cpp_source.html#l00266">eve::building::BuildingGarrisonContainerAdapter::prepare()</a>, <a class="el" href="CardContainers_8cpp_source.html#l00196">eve::card::CardContainerAdapter::prepare()</a>, <a class="el" href="inventory_2ContainerAdapters_8cpp_source.html#l00247">eve::inventory::InventoryContainerAdapter::prepare()</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00279">eve::vehicle::VehicleSeatContainerAdapter::prepare()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00258">eve::policyregistry::PolicyRegistry::remove()</a>, <a class="el" href="Definitions_8cpp_source.html#l00304">eve::definitions::DefinitionRegistry::remove()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00238">eve::policyregistry::PolicyRegistry::replace()</a>, <a class="el" href="Definitions_8cpp_source.html#l00285">eve::definitions::DefinitionRegistry::replace()</a>, <a class="el" href="Container_8cpp_source.html#l00139">eve::container::TransferService::transfer()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00438">eve::effects::EffectContainer::update()</a>, <a class="el" href="Animation_8cpp_source.html#l00499">eve::animation::Animation::update()</a>, <a class="el" href="AnimPlayer_8cpp_source.html#l00242">eve::animation::AnimPlayer::update()</a> , 以及 <a class="el" href="AnimStateMachine_8cpp_source.html#l00323">eve::animation::AnimStateMachine::update()</a>.</p>
+
+</div>
+</div>
+<a id="ac462d732a1c94f60944b884ac9fdc83d" name="ac462d732a1c94f60944b884ac9fdc83d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac462d732a1c94f60944b884ac9fdc83d">&#9670;&#160;</a></span>isZero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; Tag &gt;::isZero </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether this value is zero. </p>
+
+<p class="definition">在文件 <a class="el" href="StrongUint64_8h_source.html">StrongUint64.h</a> 第 <a class="el" href="StrongUint64_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a>, <a class="el" href="ClimbingServices_8cpp_source.html#l00124">eve::climbing::applyClimbingPose()</a>, <a class="el" href="ClimbingInput_8cpp_source.html#l00056">eve::climbing::ClimbingInputSystem::consume()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00092">eve::definition::InstanceIdentity::create()</a>, <a class="el" href="ClimbingServices_8cpp_source.html#l00109">eve::climbing::dispatchClimbingEvents()</a>, <a class="el" href="ClimbingAnimation_8cpp_source.html#l00103">eve::climbing::driveClimbingGraph()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00258">eve::climbing::encodeClimbingPredictionRequest()</a>, <a class="el" href="AbilityController_8cpp_source.html#l00009">eve::action::PlayerAbilityIntentQueue::enqueue()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00073">eve::definition::DefinitionHandle::isValid()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00117">eve::definition::InstanceIdentity::isValid()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00106">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::Handle::isValid()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00506">eve::climbing::ClimbingAnchorGraphInstance::planRoute()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00747">eve::climbing::ClimbingAnchorGraphInstance::releaseOccupant()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00623">eve::climbing::ClimbingAnchorGraphInstance::reserve()</a>, <a class="el" href="Definitions_8cpp_source.html#l00454">eve::definitions::DefinitionRegistry::restoreJson()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00454">eve::policyregistry::PolicyRegistry::restoreJson()</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00706">eve::climbing::ClimbingAnchorGraphInstance::restoreReservation()</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00375">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::restoreState()</a>, <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00185">eve::climbing::ClimbingRuntime::tryBeginAnchor()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a> , 以及 <a class="el" href="ClimbingServices_8cpp_source.html#l00026">eve::climbing::ClimbingServiceSelectionSystem::tryStart()</a>.</p>
+
+</div>
+</div>
+<a id="a4e1ffb51e8e6387410884ff57360300d" name="a4e1ffb51e8e6387410884ff57360300d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e1ffb51e8e6387410884ff57360300d">&#9670;&#160;</a></span>value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint64_t <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; Tag &gt;::value </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the underlying value at an explicit protocol boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="StrongUint64_8h_source.html">StrongUint64.h</a> 第 <a class="el" href="StrongUint64_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AbilitySystem_8cpp_source.html#l00093">eve::action::AbilityRuntime::activate()</a>, <a class="el" href="Time_8cpp_source.html#l00084">eve::SimulationClock::advance()</a>, <a class="el" href="PixelWorldReplay_8cpp_source.html#l00209">eve::pixelworld_replay::PixelReplayLog::append()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01440">eve::pixelworld::PixelWorld::applyChunkBatch()</a>, <a class="el" href="EditorPropertyModel_8cpp_source.html#l00262">eve::editor::EditorPropertyModel::beginTransaction()</a>, <a class="el" href="Evpack_8cpp_source.html#l00253">eve::asset::buildEvpack()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00339">eve::animation::AnimStateMachine::captureState()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00357">eve::game_event::GameEventLog::clearBefore()</a>, <a class="el" href="AttributeSetResourceAccount_8cpp_source.html#l00311">eve::attributes::AttributeSetResourceAccount::commit()</a>, <a class="el" href="EconomyLedgerResourceAccount_8cpp_source.html#l00330">eve::economy::EconomyLedgerResourceAccount::commit()</a>, <a class="el" href="InventoryResourceAccount_8cpp_source.html#l00300">eve::inventory::InventoryResourceAccount::commit()</a>, <a class="el" href="AttributeSetResourceAccount_8cpp_source.html#l00260">eve::attributes::AttributeSetResourceAccount::credit()</a>, <a class="el" href="EconomyLedgerResourceAccount_8cpp_source.html#l00286">eve::economy::EconomyLedgerResourceAccount::credit()</a>, <a class="el" href="InventoryResourceAccount_8cpp_source.html#l00271">eve::inventory::InventoryResourceAccount::credit()</a>, <a class="el" href="AttributeSetResourceAccount_8cpp_source.html#l00239">eve::attributes::AttributeSetResourceAccount::debit()</a>, <a class="el" href="EconomyLedgerResourceAccount_8cpp_source.html#l00265">eve::economy::EconomyLedgerResourceAccount::debit()</a>, <a class="el" href="InventoryResourceAccount_8cpp_source.html#l00255">eve::inventory::InventoryResourceAccount::debit()</a>, <a class="el" href="PixelWorldArchive_8cpp_source.html#l00197">eve::pixelworld_streaming::decodeChunkBatchArchive()</a>, <a class="el" href="ParticleOffscreenRuntime_8cpp_source.html#l00027">eve::particles_graphics_editing::ParticleEmitterOffscreenPresenter::draw()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00258">eve::climbing::encodeClimbingPredictionRequest()</a>, <a class="el" href="GameplayControlJson_8cpp_source.html#l00196">eve::executeGameplayControlRequest()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00301">eve::game_event::GameEventLog::find()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00057">eve::action::AbilityRuntime::grant()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00204">eve::SnapshotMigrationChain::migrate()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00331">eve::game_event::GameEventLog::querySequence()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00036">eve::rts::RTSCommandLog::queue()</a>, <a class="el" href="PixelWorldReplay_8cpp_source.html#l00238">eve::pixelworld_replay::PixelReplayLog::replay()</a>, <a class="el" href="AttributeSetResourceAccount_8cpp_source.html#l00182">eve::attributes::AttributeSetResourceAccount::reserve()</a>, <a class="el" href="EconomyLedgerResourceAccount_8cpp_source.html#l00211">eve::economy::EconomyLedgerResourceAccount::reserve()</a>, <a class="el" href="InventoryResourceAccount_8cpp_source.html#l00152">eve::inventory::InventoryResourceAccount::reserve()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00432">eve::physics::World::restore()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00561">eve::physics::World3D::restore()</a>, <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00442">eve::climbing::ClimbingRuntime::restore()</a>, <a class="el" href="Definitions_8cpp_source.html#l00454">eve::definitions::DefinitionRegistry::restoreJson()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00454">eve::policyregistry::PolicyRegistry::restoreJson()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00535">eve::game_event::GameEventLog::restoreSnapshot()</a>, <a class="el" href="PixelWorldReplay_8cpp_source.html#l00291">eve::pixelworld_replay::PixelReplayLog::restoreSnapshot()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00250">eve::game_event::EventConsumer::seek()</a>, <a class="el" href="Production_8cpp_source.html#l00489">eve::production::WorkQueue::snapshot()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00122">eve::snapshotEnvelopeValue()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00379">eve::game_event::GameEventLog::snapshotJson()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00389">eve::rts::RTSLockstep::step()</a>, <a class="el" href="ClimbingInput_8cpp_source.html#l00023">eve::climbing::ClimbingInputSystem::submit()</a>, <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00185">eve::climbing::ClimbingRuntime::tryBeginAnchor()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a>, <a class="el" href="ClimbingServices_8cpp_source.html#l00026">eve::climbing::ClimbingServiceSelectionSystem::tryStart()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00136">eve::action::ActionTimeline::validate()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00081">eve::validateSnapshotPayloadMetadata()</a> , 以及 <a class="el" href="EditorPropertyModel_8cpp_source.html#l00143">eve::editor::EditorPropertyModel::write()</a>.</p>
+
+</div>
+</div>
+<a id="aa0953a6ce6374a85a399e06ef11db5ce" name="aa0953a6ce6374a85a399e06ef11db5ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0953a6ce6374a85a399e06ef11db5ce">&#9670;&#160;</a></span>zero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a> <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; Tag &gt;::zero </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the zero value for this strong type. </p>
+
+<p class="definition">在文件 <a class="el" href="StrongUint64_8h_source.html">StrongUint64.h</a> 第 <a class="el" href="StrongUint64_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingServices_8cpp_source.html#l00026">eve::climbing::ClimbingServiceSelectionSystem::tryStart()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a8912eab3d4373d770d9a0802cc1486a1" name="a8912eab3d4373d770d9a0802cc1486a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8912eab3d4373d770d9a0802cc1486a1">&#9670;&#160;</a></span>operator&lt;=&gt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto operator&lt;=&gt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a17f66c421da7e3a0ea56d04229a61b7c" name="a17f66c421da7e3a0ea56d04229a61b7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17f66c421da7e3a0ea56d04229a61b7c">&#9670;&#160;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">StrongUint64</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="StrongUint64_8h_source.html">StrongUint64.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1286 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dialogue::ConversationRunner类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dialogue.html">dialogue</a></li><li class="navelem"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html">ConversationRunner</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1dialogue_1_1ConversationRunner-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dialogue::ConversationRunner类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Explicit conversation executor whose suspension points are node IDs.  
+ <a href="classeve_1_1dialogue_1_1ConversationRunner.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Conversation_8h_source.html">Conversation.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1CommandResult.html">CommandResult</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1Event.html">Event</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:af6a7501d31ba270e435b483f46673964" id="r_af6a7501d31ba270e435b483f46673964"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#af6a7501d31ba270e435b483f46673964">AssetResolver</a> = std::function&lt; const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> *(const std::string &amp;)&gt;</td></tr>
+<tr class="separator:af6a7501d31ba270e435b483f46673964"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd7f24b9a2f6483b4d3d23a35208d170" id="r_acd7f24b9a2f6483b4d3d23a35208d170"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#acd7f24b9a2f6483b4d3d23a35208d170">ExpressionEvaluator</a> = std::function&lt; <a class="el" href="classeve_1_1StateValue.html">StateValue</a>(const std::string &amp;, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;)&gt;</td></tr>
+<tr class="separator:acd7f24b9a2f6483b4d3d23a35208d170"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3679b51f9d091096aaed933a60597671" id="r_a3679b51f9d091096aaed933a60597671"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a3679b51f9d091096aaed933a60597671">CommandHandler</a> = std::function&lt; <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1CommandResult.html">CommandResult</a>(const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;)&gt;</td></tr>
+<tr class="separator:a3679b51f9d091096aaed933a60597671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40ed4f112c8ff45fb486f87da4610089" id="r_a40ed4f112c8ff45fb486f87da4610089"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a40ed4f112c8ff45fb486f87da4610089">ConditionEvaluator</a> = std::function&lt; <a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a>(const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;)&gt;</td></tr>
+<tr class="separator:a40ed4f112c8ff45fb486f87da4610089"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d4740855b6adbf1f9c127ec1c891db3" id="r_a9d4740855b6adbf1f9c127ec1c891db3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a9d4740855b6adbf1f9c127ec1c891db3">CommandRequestDispatcher</a> = std::function&lt; <a class="el" href="structeve_1_1dialogue_1_1CommandResponse.html">CommandResponse</a>(const <a class="el" href="structeve_1_1dialogue_1_1CommandRequest.html">CommandRequest</a> &amp;)&gt;</td></tr>
+<tr class="separator:a9d4740855b6adbf1f9c127ec1c891db3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaa416d683a452a8e53d61019465fa70" id="r_aeaa416d683a452a8e53d61019465fa70"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#aeaa416d683a452a8e53d61019465fa70">EventSink</a> = std::function&lt; void(const <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1Event.html">Event</a> &amp;)&gt;</td></tr>
+<tr class="separator:aeaa416d683a452a8e53d61019465fa70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a47154e751b8b712cd158be6a3e5b0a35" id="r_a47154e751b8b712cd158be6a3e5b0a35"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a47154e751b8b712cd158be6a3e5b0a35">start</a> (const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> *<a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a63ba31fd03a0a24fc5a6e32f0215db27">asset</a>, <a class="el" href="classeve_1_1StateValue.html">StateValue</a> <a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#af7462c59a527e2221cee62cd546e9887">bindings</a>, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a47154e751b8b712cd158be6a3e5b0a35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start an asset with serializable parameter bindings.  <br /></td></tr>
+<tr class="separator:a47154e751b8b712cd158be6a3e5b0a35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1368e04712ec04db764b33fa47c8b04" id="r_ae1368e04712ec04db764b33fa47c8b04"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#ae1368e04712ec04db764b33fa47c8b04">runUntilBlocked</a> (std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:ae1368e04712ec04db764b33fa47c8b04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute non-blocking nodes until a line, choice, wait, or end is reached.  <br /></td></tr>
+<tr class="separator:ae1368e04712ec04db764b33fa47c8b04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dbe30adede5837f9f97eeeaccf15b83" id="r_a1dbe30adede5837f9f97eeeaccf15b83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a1dbe30adede5837f9f97eeeaccf15b83">advance</a> (std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a1dbe30adede5837f9f97eeeaccf15b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continue from the current blocking node.  <br /></td></tr>
+<tr class="separator:a1dbe30adede5837f9f97eeeaccf15b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af033b8b3acf7472992ac13a3d38b0ff0" id="r_af033b8b3acf7472992ac13a3d38b0ff0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#af033b8b3acf7472992ac13a3d38b0ff0">select</a> (const std::string &amp;routeId, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:af033b8b3acf7472992ac13a3d38b0ff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select a route on the current choice node.  <br /></td></tr>
+<tr class="separator:af033b8b3acf7472992ac13a3d38b0ff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad860387b47d8529ff77563a667faaaa1" id="r_ad860387b47d8529ff77563a667faaaa1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#ad860387b47d8529ff77563a667faaaa1">selectRouteForTransaction</a> (const std::string &amp;routeId)</td></tr>
+<tr class="memdesc:ad860387b47d8529ff77563a667faaaa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select a route from an already prepared <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html" title="Visual-novel style dialogue stage. Script: dlg &lt;- eve.Dialogue();">Dialogue</a> transaction.  <br /></td></tr>
+<tr class="separator:ad860387b47d8529ff77563a667faaaa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae168d6707e26f2980b5df0a334821aa1" id="r_ae168d6707e26f2980b5df0a334821aa1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#ae168d6707e26f2980b5df0a334821aa1">resumeCommand</a> (<a class="el" href="classeve_1_1StateValue.html">StateValue</a> result)</td></tr>
+<tr class="memdesc:ae168d6707e26f2980b5df0a334821aa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resume an asynchronous command node with its serialized result.  <br /></td></tr>
+<tr class="separator:ae168d6707e26f2980b5df0a334821aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30874930f01197567bf390287f3a315a" id="r_a30874930f01197567bf390287f3a315a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a30874930f01197567bf390287f3a315a">resumeCommand</a> (<a class="el" href="classeve_1_1Value.html">eve::Value</a> result)</td></tr>
+<tr class="memdesc:a30874930f01197567bf390287f3a315a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resume an asynchronous request command with a canonical result.  <br /></td></tr>
+<tr class="separator:a30874930f01197567bf390287f3a315a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e3902f9a6438bc00c8098112740b610" id="r_a9e3902f9a6438bc00c8098112740b610"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a9e3902f9a6438bc00c8098112740b610">stop</a> ()</td></tr>
+<tr class="memdesc:a9e3902f9a6438bc00c8098112740b610"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop and clear the active instance.  <br /></td></tr>
+<tr class="separator:a9e3902f9a6438bc00c8098112740b610"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a679f30ecb789bf32a0d1813c68f82f3c" id="r_a679f30ecb789bf32a0d1813c68f82f3c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a679f30ecb789bf32a0d1813c68f82f3c">captureState</a> (<a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;out) const</td></tr>
+<tr class="memdesc:a679f30ecb789bf32a0d1813c68f82f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture the complete cursor, locals, bindings, and call stack.  <br /></td></tr>
+<tr class="separator:a679f30ecb789bf32a0d1813c68f82f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9051c0399c138660013f9f9e09821344" id="r_a9051c0399c138660013f9f9e09821344"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a9051c0399c138660013f9f9e09821344">restoreState</a> (const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;in, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a9051c0399c138660013f9f9e09821344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore a captured runner using the configured asset resolver.  <br /></td></tr>
+<tr class="separator:a9051c0399c138660013f9f9e09821344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a325fbb3167bdf5f20e41135dcb713b96" id="r_a325fbb3167bdf5f20e41135dcb713b96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a325fbb3167bdf5f20e41135dcb713b96">setAssetResolver</a> (<a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#af6a7501d31ba270e435b483f46673964">AssetResolver</a> resolver)</td></tr>
+<tr class="separator:a325fbb3167bdf5f20e41135dcb713b96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5f1052102bb74d35deacf2ee8dc95c4" id="r_ab5f1052102bb74d35deacf2ee8dc95c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#ab5f1052102bb74d35deacf2ee8dc95c4">setExpressionEvaluator</a> (<a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#acd7f24b9a2f6483b4d3d23a35208d170">ExpressionEvaluator</a> evaluator)</td></tr>
+<tr class="separator:ab5f1052102bb74d35deacf2ee8dc95c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a403abe6bf133c3ca450b5a649a39c44b" id="r_a403abe6bf133c3ca450b5a649a39c44b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a403abe6bf133c3ca450b5a649a39c44b">setConditionEvaluator</a> (<a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a40ed4f112c8ff45fb486f87da4610089">ConditionEvaluator</a> evaluator)</td></tr>
+<tr class="memdesc:a403abe6bf133c3ca450b5a649a39c44b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate structured route conditions through <a class="el" href="classeve_1_1decision_1_1Condition.html" title="Immutable condition AST node.">decision::Condition</a>.  <br /></td></tr>
+<tr class="separator:a403abe6bf133c3ca450b5a649a39c44b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc643691c75d0c9cc1ffaa806611d2a6" id="r_adc643691c75d0c9cc1ffaa806611d2a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#adc643691c75d0c9cc1ffaa806611d2a6">registerCommand</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a3679b51f9d091096aaed933a60597671">CommandHandler</a> handler)</td></tr>
+<tr class="memdesc:adc643691c75d0c9cc1ffaa806611d2a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a cross-module command without introducing module includes.  <br /></td></tr>
+<tr class="separator:adc643691c75d0c9cc1ffaa806611d2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11fc859b0069a36ab443a895d71b3541" id="r_a11fc859b0069a36ab443a895d71b3541"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a11fc859b0069a36ab443a895d71b3541">unregisterCommand</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a11fc859b0069a36ab443a895d71b3541"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeaf1073c0042aeb51868773ba6c1667" id="r_aaeaf1073c0042aeb51868773ba6c1667"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#aaeaf1073c0042aeb51868773ba6c1667">registerCommandRequest</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="namespaceeve_1_1dialogue.html#aa8fe7ccee008de1c2af741622af042f0">CommandRequestHandler</a> handler)</td></tr>
+<tr class="memdesc:aaeaf1073c0042aeb51868773ba6c1667"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a request-only command owned by an operation/gameplay domain.  <br /></td></tr>
+<tr class="separator:aaeaf1073c0042aeb51868773ba6c1667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd20dab7b1548aa00465368fb70e15e4" id="r_acd20dab7b1548aa00465368fb70e15e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#acd20dab7b1548aa00465368fb70e15e4">unregisterCommandRequest</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:acd20dab7b1548aa00465368fb70e15e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a request-only command handler.  <br /></td></tr>
+<tr class="separator:acd20dab7b1548aa00465368fb70e15e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b5834eb35c2702a419dd3f6f2ce617d" id="r_a2b5834eb35c2702a419dd3f6f2ce617d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a2b5834eb35c2702a419dd3f6f2ce617d">setCommandRequestDispatcher</a> (<a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a9d4740855b6adbf1f9c127ec1c891db3">CommandRequestDispatcher</a> dispatcher)</td></tr>
+<tr class="memdesc:a2b5834eb35c2702a419dd3f6f2ce617d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install one cross-module dispatcher used when no name-specific request handler exists.  <br /></td></tr>
+<tr class="separator:a2b5834eb35c2702a419dd3f6f2ce617d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaff0502da97a65b6bb63d708c54d44c8" id="r_aaff0502da97a65b6bb63d708c54d44c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#aaff0502da97a65b6bb63d708c54d44c8">clearCommandRequestDispatcher</a> ()</td></tr>
+<tr class="memdesc:aaff0502da97a65b6bb63d708c54d44c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the facade-level request dispatcher.  <br /></td></tr>
+<tr class="separator:aaff0502da97a65b6bb63d708c54d44c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac75984db7588f3b8eb572b0d2f782773" id="r_ac75984db7588f3b8eb572b0d2f782773"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#ac75984db7588f3b8eb572b0d2f782773">setEventSink</a> (<a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#aeaa416d683a452a8e53d61019465fa70">EventSink</a> sink)</td></tr>
+<tr class="separator:ac75984db7588f3b8eb572b0d2f782773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02f9e418570a400cf890c9f174a1bdc0" id="r_a02f9e418570a400cf890c9f174a1bdc0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a02f9e418570a400cf890c9f174a1bdc0">isActive</a> () const</td></tr>
+<tr class="separator:a02f9e418570a400cf890c9f174a1bdc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63d956e4fc88889d9e6d7e4b707c678d" id="r_a63d956e4fc88889d9e6d7e4b707c678d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a63d956e4fc88889d9e6d7e4b707c678d">isBlocked</a> () const</td></tr>
+<tr class="separator:a63d956e4fc88889d9e6d7e4b707c678d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63ba31fd03a0a24fc5a6e32f0215db27" id="r_a63ba31fd03a0a24fc5a6e32f0215db27"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a63ba31fd03a0a24fc5a6e32f0215db27">asset</a> () const</td></tr>
+<tr class="separator:a63ba31fd03a0a24fc5a6e32f0215db27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43dda07e861fec1c6ef17e006ed8de0b" id="r_a43dda07e861fec1c6ef17e006ed8de0b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html">ConversationAsset::Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a43dda07e861fec1c6ef17e006ed8de0b">currentNode</a> () const</td></tr>
+<tr class="separator:a43dda07e861fec1c6ef17e006ed8de0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba022665604a218cbe1af20dd747e2e3" id="r_aba022665604a218cbe1af20dd747e2e3"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#aba022665604a218cbe1af20dd747e2e3">currentNodeId</a> () const</td></tr>
+<tr class="separator:aba022665604a218cbe1af20dd747e2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7462c59a527e2221cee62cd546e9887" id="r_af7462c59a527e2221cee62cd546e9887"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#af7462c59a527e2221cee62cd546e9887">bindings</a> () const</td></tr>
+<tr class="separator:af7462c59a527e2221cee62cd546e9887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc6bdb648de7cf2b7c588040f81518da" id="r_afc6bdb648de7cf2b7c588040f81518da"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#afc6bdb648de7cf2b7c588040f81518da">locals</a> () const</td></tr>
+<tr class="separator:afc6bdb648de7cf2b7c588040f81518da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8af27a360113c8dc2669a8a29accb12e" id="r_a8af27a360113c8dc2669a8a29accb12e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a8af27a360113c8dc2669a8a29accb12e">locals</a> ()</td></tr>
+<tr class="separator:a8af27a360113c8dc2669a8a29accb12e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af98f03ff7f8413ccabad08687fc112ba" id="r_af98f03ff7f8413ccabad08687fc112ba"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#af98f03ff7f8413ccabad08687fc112ba">lastConditionResult</a> () const</td></tr>
+<tr class="memdesc:af98f03ff7f8413ccabad08687fc112ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the last structured condition explanation, if evaluated.  <br /></td></tr>
+<tr class="separator:af98f03ff7f8413ccabad08687fc112ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a2bc58a4c7da0bdb79a0c638cc84474" id="r_a3a2bc58a4c7da0bdb79a0c638cc84474"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1dialogue_1_1CommandRequest.html">CommandRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a3a2bc58a4c7da0bdb79a0c638cc84474">lastCommandRequest</a> () const</td></tr>
+<tr class="memdesc:a3a2bc58a4c7da0bdb79a0c638cc84474"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the last request emitted by a command node, if any.  <br /></td></tr>
+<tr class="separator:a3a2bc58a4c7da0bdb79a0c638cc84474"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Explicit conversation executor whose suspension points are node IDs. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00078">78</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="af6a7501d31ba270e435b483f46673964" name="af6a7501d31ba270e435b483f46673964"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6a7501d31ba270e435b483f46673964">&#9670;&#160;</a></span>AssetResolver</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#af6a7501d31ba270e435b483f46673964">eve::dialogue::ConversationRunner::AssetResolver</a> =  std::function&lt;const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a>*(const std::string&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3679b51f9d091096aaed933a60597671" name="a3679b51f9d091096aaed933a60597671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3679b51f9d091096aaed933a60597671">&#9670;&#160;</a></span>CommandHandler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a3679b51f9d091096aaed933a60597671">eve::dialogue::ConversationRunner::CommandHandler</a> =  std::function&lt;<a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1CommandResult.html">CommandResult</a>(const <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&amp;, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&amp;, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d4740855b6adbf1f9c127ec1c891db3" name="a9d4740855b6adbf1f9c127ec1c891db3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d4740855b6adbf1f9c127ec1c891db3">&#9670;&#160;</a></span>CommandRequestDispatcher</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a9d4740855b6adbf1f9c127ec1c891db3">eve::dialogue::ConversationRunner::CommandRequestDispatcher</a> =  std::function&lt;<a class="el" href="structeve_1_1dialogue_1_1CommandResponse.html">CommandResponse</a>(const <a class="el" href="structeve_1_1dialogue_1_1CommandRequest.html">CommandRequest</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40ed4f112c8ff45fb486f87da4610089" name="a40ed4f112c8ff45fb486f87da4610089"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40ed4f112c8ff45fb486f87da4610089">&#9670;&#160;</a></span>ConditionEvaluator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a40ed4f112c8ff45fb486f87da4610089">eve::dialogue::ConversationRunner::ConditionEvaluator</a> =  std::function&lt;<a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a>(const <a class="el" href="classeve_1_1Value.html">eve::Value</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeaa416d683a452a8e53d61019465fa70" name="aeaa416d683a452a8e53d61019465fa70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaa416d683a452a8e53d61019465fa70">&#9670;&#160;</a></span>EventSink</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#aeaa416d683a452a8e53d61019465fa70">eve::dialogue::ConversationRunner::EventSink</a> =  std::function&lt;void(const <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1Event.html">Event</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd7f24b9a2f6483b4d3d23a35208d170" name="acd7f24b9a2f6483b4d3d23a35208d170"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd7f24b9a2f6483b4d3d23a35208d170">&#9670;&#160;</a></span>ExpressionEvaluator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#acd7f24b9a2f6483b4d3d23a35208d170">eve::dialogue::ConversationRunner::ExpressionEvaluator</a> =  std::function&lt;<a class="el" href="classeve_1_1StateValue.html">StateValue</a>(const std::string&amp;, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&amp;, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1dbe30adede5837f9f97eeeaccf15b83" name="a1dbe30adede5837f9f97eeeaccf15b83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dbe30adede5837f9f97eeeaccf15b83">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationRunner::advance </td>
+          <td>(</td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Continue from the current blocking node. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97a458b9dcc0921f46b1192427426d59c10">eve::dialogue::ConversationAsset::Node::Choice</a>, <a class="el" href="Conversation_8cpp_source.html#l00121">currentNode()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00167">runUntilBlocked()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00562">eve::dialogue::DialogueFlow::advanceChecked()</a>.</p>
+
+</div>
+</div>
+<a id="a63ba31fd03a0a24fc5a6e32f0215db27" name="a63ba31fd03a0a24fc5a6e32f0215db27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63ba31fd03a0a24fc5a6e32f0215db27">&#9670;&#160;</a></span>asset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> * eve::dialogue::ConversationRunner::asset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00679">eve::dialogue::DialogueFlow::getConversationId()</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00072">start()</a>.</p>
+
+</div>
+</div>
+<a id="af7462c59a527e2221cee62cd546e9887" name="af7462c59a527e2221cee62cd546e9887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7462c59a527e2221cee62cd546e9887">&#9670;&#160;</a></span>bindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp; eve::dialogue::ConversationRunner::bindings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00696">eve::dialogue::DialogueFlow::getText()</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00072">start()</a>.</p>
+
+</div>
+</div>
+<a id="a679f30ecb789bf32a0d1813c68f82f3c" name="a679f30ecb789bf32a0d1813c68f82f3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a679f30ecb789bf32a0d1813c68f82f3c">&#9670;&#160;</a></span>captureState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationRunner::captureState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture the complete cursor, locals, bindings, and call stack. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8h_source.html#l00037">eve::StateValue::array()</a>, <a class="el" href="StateValue_8cpp_source.html#l00050">eve::StateValue::boolean()</a>, <a class="el" href="StateValue_8h_source.html#l00039">eve::StateValue::object()</a>, <a class="el" href="StateValue_8cpp_source.html#l00062">eve::StateValue::pushBack()</a> , 以及 <a class="el" href="StateValue_8cpp_source.html#l00064">eve::StateValue::set()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8h_source.html#l00192">eve::dialogue::DialogueFlow::captureState()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00775">eve::dialogue::DialogueFlow::captureStateJson()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00262">eve::dialogue::DialogueFlow::reloadFromDnut()</a>, <a class="el" href="Conversation_8cpp_source.html#l00373">resumeCommand()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00572">eve::dialogue::DialogueFlow::select()</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00424">selectRouteForTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="aaff0502da97a65b6bb63d708c54d44c8" name="aaff0502da97a65b6bb63d708c54d44c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaff0502da97a65b6bb63d708c54d44c8">&#9670;&#160;</a></span>clearCommandRequestDispatcher()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::clearCommandRequestDispatcher </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove the facade-level request dispatcher. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00186">eve::dialogue::DialogueFlow::configureIntegration()</a>.</p>
+
+</div>
+</div>
+<a id="a43dda07e861fec1c6ef17e006ed8de0b" name="a43dda07e861fec1c6ef17e006ed8de0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43dda07e861fec1c6ef17e006ed8de0b">&#9670;&#160;</a></span>currentNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html">ConversationAsset::Node</a> * eve::dialogue::ConversationRunner::currentNode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8cpp_source.html#l00017">eve::dialogue::ConversationAsset::findNode()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Conversation_8cpp_source.html#l00398">advance()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00681">eve::dialogue::DialogueFlow::getNodeKind()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00721">eve::dialogue::DialogueFlow::getRouteCount()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00726">eve::dialogue::DialogueFlow::getRouteId()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00696">eve::dialogue::DialogueFlow::getText()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00706">eve::dialogue::DialogueFlow::getVoice()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00716">eve::dialogue::DialogueFlow::getVoiceDuration()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00711">eve::dialogue::DialogueFlow::getVoiceStatus()</a>, <a class="el" href="Conversation_8cpp_source.html#l00373">resumeCommand()</a>, <a class="el" href="Conversation_8cpp_source.html#l00167">runUntilBlocked()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00572">eve::dialogue::DialogueFlow::select()</a>, <a class="el" href="Conversation_8cpp_source.html#l00407">select()</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00424">selectRouteForTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="aba022665604a218cbe1af20dd747e2e3" name="aba022665604a218cbe1af20dd747e2e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba022665604a218cbe1af20dd747e2e3">&#9670;&#160;</a></span>currentNodeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dialogue::ConversationRunner::currentNodeId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8h_source.html#l00176">eve::dialogue::DialogueFlow::getNodeId()</a>.</p>
+
+</div>
+</div>
+<a id="a02f9e418570a400cf890c9f174a1bdc0" name="a02f9e418570a400cf890c9f174a1bdc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02f9e418570a400cf890c9f174a1bdc0">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationRunner::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8h_source.html#l00173">eve::dialogue::DialogueFlow::isActive()</a> , 以及 <a class="el" href="DialogueFlow_8cpp_source.html#l00262">eve::dialogue::DialogueFlow::reloadFromDnut()</a>.</p>
+
+</div>
+</div>
+<a id="a63d956e4fc88889d9e6d7e4b707c678d" name="a63d956e4fc88889d9e6d7e4b707c678d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63d956e4fc88889d9e6d7e4b707c678d">&#9670;&#160;</a></span>isBlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationRunner::isBlocked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8h_source.html#l00174">eve::dialogue::DialogueFlow::isBlocked()</a>.</p>
+
+</div>
+</div>
+<a id="a3a2bc58a4c7da0bdb79a0c638cc84474" name="a3a2bc58a4c7da0bdb79a0c638cc84474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a2bc58a4c7da0bdb79a0c638cc84474">&#9670;&#160;</a></span>lastCommandRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1dialogue_1_1CommandRequest.html">CommandRequest</a> * eve::dialogue::ConversationRunner::lastCommandRequest </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the last request emitted by a command node, if any. </p>
+<dl class="section return"><dt>返回</dt><dd>A nullable borrowed pointer into this runner's cached request. @ownership Borrowed; the runner owns the optional request. @lifetime Valid until another request is emitted, stop, or runner destruction. @thread Affine to the runner's owner thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00196">196</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af98f03ff7f8413ccabad08687fc112ba" name="af98f03ff7f8413ccabad08687fc112ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af98f03ff7f8413ccabad08687fc112ba">&#9670;&#160;</a></span>lastConditionResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a> * eve::dialogue::ConversationRunner::lastConditionResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the last structured condition explanation, if evaluated. </p>
+<dl class="section return"><dt>返回</dt><dd>A nullable borrowed pointer into this runner's cached result. @ownership Borrowed; the runner owns the optional result. @lifetime Valid until the next condition evaluation, stop, or runner destruction. @thread Affine to the runner's owner thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8af27a360113c8dc2669a8a29accb12e" name="a8af27a360113c8dc2669a8a29accb12e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8af27a360113c8dc2669a8a29accb12e">&#9670;&#160;</a></span>locals() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp; eve::dialogue::ConversationRunner::locals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00176">176</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc6bdb648de7cf2b7c588040f81518da" name="afc6bdb648de7cf2b7c588040f81518da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc6bdb648de7cf2b7c588040f81518da">&#9670;&#160;</a></span>locals() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp; eve::dialogue::ConversationRunner::locals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00696">eve::dialogue::DialogueFlow::getText()</a>.</p>
+
+</div>
+</div>
+<a id="adc643691c75d0c9cc1ffaa806611d2a6" name="adc643691c75d0c9cc1ffaa806611d2a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc643691c75d0c9cc1ffaa806611d2a6">&#9670;&#160;</a></span>registerCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::registerCommand </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a3679b51f9d091096aaed933a60597671">CommandHandler</a>&#160;</td>
+          <td class="paramname"><em>handler</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a cross-module command without introducing module includes. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="aaeaf1073c0042aeb51868773ba6c1667" name="aaeaf1073c0042aeb51868773ba6c1667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeaf1073c0042aeb51868773ba6c1667">&#9670;&#160;</a></span>registerCommandRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::registerCommandRequest </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1dialogue.html#aa8fe7ccee008de1c2af741622af042f0">CommandRequestHandler</a>&#160;</td>
+          <td class="paramname"><em>handler</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a request-only command owned by an operation/gameplay domain. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a9051c0399c138660013f9f9e09821344" name="a9051c0399c138660013f9f9e09821344"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9051c0399c138660013f9f9e09821344">&#9670;&#160;</a></span>restoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationRunner::restoreState </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore a captured runner using the configured asset resolver. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>, <a class="el" href="StateValue_8h_source.html#l00064">eve::StateValue::arraySize()</a>, <a class="el" href="StateValue_8h_source.html#l00057">eve::StateValue::asBool()</a>, <a class="el" href="StateValue_8h_source.html#l00053">eve::StateValue::asInt()</a>, <a class="el" href="StateValue_8h_source.html#l00066">eve::StateValue::at()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="StateValue_8cpp_source.html#l00074">eve::StateValue::find()</a>, <a class="el" href="Conversation_8cpp_source.html#l00017">eve::dialogue::ConversationAsset::findNode()</a>, <a class="el" href="StateValue_8h_source.html#l00050">eve::StateValue::isArray()</a>, <a class="el" href="StateValue_8h_source.html#l00047">eve::StateValue::isBool()</a>, <a class="el" href="StateValue_8h_source.html#l00045">eve::StateValue::isInt()</a>, <a class="el" href="StateValue_8h_source.html#l00049">eve::StateValue::isObject()</a>, <a class="el" href="Conversation_8cpp_source.html#l00089">stop()</a> , 以及 <a class="el" href="Conversation_8h_source.html#l00066">eve::dialogue::ConversationAsset::version</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00262">eve::dialogue::DialogueFlow::reloadFromDnut()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00773">eve::dialogue::DialogueFlow::restoreState()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00781">eve::dialogue::DialogueFlow::restoreStateJson()</a>, <a class="el" href="Conversation_8cpp_source.html#l00373">resumeCommand()</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00424">selectRouteForTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="a30874930f01197567bf390287f3a315a" name="a30874930f01197567bf390287f3a315a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30874930f01197567bf390287f3a315a">&#9670;&#160;</a></span>resumeCommand() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dialogue::ConversationRunner::resumeCommand </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resume an asynchronous request command with a canonical result. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>Owned canonical result value converted to dialogue state. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success, or a stable diagnostic while preserving the suspended runner state on failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8cpp_source.html#l00373">resumeCommand()</a> , 以及 <a class="el" href="DialogueState_8cpp_source.html#l00225">eve::dialogue::toDialogueStateValue()</a>.</p>
+
+</div>
+</div>
+<a id="ae168d6707e26f2980b5df0a334821aa1" name="ae168d6707e26f2980b5df0a334821aa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae168d6707e26f2980b5df0a334821aa1">&#9670;&#160;</a></span>resumeCommand() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dialogue::ConversationRunner::resumeCommand </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resume an asynchronous command node with its serialized result. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>Owned result value; it is copied or moved into runner locals. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success, or a stable diagnostic while preserving the suspended runner state on failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Conversation_8cpp_source.html#l00296">captureState()</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97aee97be03cb04119af45014d815621ce1">eve::dialogue::ConversationAsset::Node::Command</a>, <a class="el" href="Conversation_8cpp_source.html#l00121">currentNode()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a9aeb01d4bd882eaacf3ce24f3094350c">eve::DialogueNotWaitingForCommand</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Conversation_8cpp_source.html#l00310">restoreState()</a>, <a class="el" href="Conversation_8cpp_source.html#l00167">runUntilBlocked()</a>, <a class="el" href="StateValue_8cpp_source.html#l00064">eve::StateValue::set()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Conversation_8cpp_source.html#l00394">resumeCommand()</a>.</p>
+
+</div>
+</div>
+<a id="ae1368e04712ec04db764b33fa47c8b04" name="ae1368e04712ec04db764b33fa47c8b04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1368e04712ec04db764b33fa47c8b04">&#9670;&#160;</a></span>runUntilBlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationRunner::runUntilBlocked </td>
+          <td>(</td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute non-blocking nodes until a line, choice, wait, or end is reached. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialogueState_8h_source.html#l00039">eve::dialogue::CommandRequest::arguments</a>, <a class="el" href="DialogueState_8h_source.html#l00040">eve::dialogue::CommandRequest::bindings</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1CommandResult.html#a3798c0178f2f22d142f237251156adf6a4ecc0d90eec1cea3e9db96583a1bb9c2">eve::dialogue::ConversationRunner::CommandResult::Blocked</a>, <a class="el" href="structeve_1_1dialogue_1_1CommandResponse.html#a0412af5a4c1ee375a64335a2c6776a44a4ecc0d90eec1cea3e9db96583a1bb9c2">eve::dialogue::CommandResponse::Blocked</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97adacdb83ade6c4e8878717e206175dfd8">eve::dialogue::ConversationAsset::Node::Branch</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97ac3755e61202abd74da5885d2e9c9160e">eve::dialogue::ConversationAsset::Node::Call</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97a458b9dcc0921f46b1192427426d59c10">eve::dialogue::ConversationAsset::Node::Choice</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1Event.html#a34c1c0989e5e1d5e19ba2b08b4659fb0a458b9dcc0921f46b1192427426d59c10">eve::dialogue::ConversationRunner::Event::Choice</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97aee97be03cb04119af45014d815621ce1">eve::dialogue::ConversationAsset::Node::Command</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1Event.html#a34c1c0989e5e1d5e19ba2b08b4659fb0aee97be03cb04119af45014d815621ce1">eve::dialogue::ConversationRunner::Event::Command</a>, <a class="el" href="Conversation_8cpp_source.html#l00121">currentNode()</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97a87557f11575c0ad78e4e28abedc13b6e">eve::dialogue::ConversationAsset::Node::End</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1Event.html#a34c1c0989e5e1d5e19ba2b08b4659fb0a0157fbb99be9622bdaa6e544270c0622">eve::dialogue::ConversationRunner::Event::Ended</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Conversation_8h_source.html#l00087">eve::dialogue::ConversationRunner::CommandResult::error</a>, <a class="el" href="DialogueState_8h_source.html#l00054">eve::dialogue::CommandResponse::error</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1CommandResult.html#a3798c0178f2f22d142f237251156adf6ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::dialogue::ConversationRunner::CommandResult::Failed</a>, <a class="el" href="structeve_1_1dialogue_1_1CommandResponse.html#a0412af5a4c1ee375a64335a2c6776a44ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::dialogue::CommandResponse::Failed</a>, <a class="el" href="DialogueState_8h_source.html#l00038">eve::dialogue::CommandRequest::kind</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97a4803e6b9e63dabf04de980788d6a13c4">eve::dialogue::ConversationAsset::Node::Line</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1Event.html#a34c1c0989e5e1d5e19ba2b08b4659fb0a4803e6b9e63dabf04de980788d6a13c4">eve::dialogue::ConversationRunner::Event::Line</a>, <a class="el" href="DialogueState_8h_source.html#l00041">eve::dialogue::CommandRequest::locals</a>, <a class="el" href="StateValue_8cpp_source.html#l00170">eve::StateValue::mergeDefaults()</a>, <a class="el" href="DialogueState_8h_source.html#l00037">eve::dialogue::CommandRequest::name</a>, <a class="el" href="StateValue_8h_source.html#l00039">eve::StateValue::object()</a>, <a class="el" href="DialogueState_8h_source.html#l00043">eve::dialogue::CommandRequest::payment</a>, <a class="el" href="StateValue_8cpp_source.html#l00064">eve::StateValue::set()</a>, <a class="el" href="DialogueState_8h_source.html#l00045">eve::dialogue::CommandRequest::stateMutations</a>, <a class="el" href="Conversation_8h_source.html#l00085">eve::dialogue::ConversationRunner::CommandResult::status</a>, <a class="el" href="DialogueState_8h_source.html#l00052">eve::dialogue::CommandResponse::status</a>, <a class="el" href="Conversation_8cpp_source.html#l00089">stop()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="DialogueState_8cpp_source.html#l00203">eve::dialogue::toCanonicalValue()</a>, <a class="el" href="DialogueState_8cpp_source.html#l00225">eve::dialogue::toDialogueStateValue()</a>, <a class="el" href="Conversation_8h_source.html#l00086">eve::dialogue::ConversationRunner::CommandResult::value</a>, <a class="el" href="DialogueState_8h_source.html#l00053">eve::dialogue::CommandResponse::value</a> , 以及 <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97a0f68101772bd5397ef8eb1b632798652">eve::dialogue::ConversationAsset::Node::Wait</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Conversation_8cpp_source.html#l00398">advance()</a>, <a class="el" href="Conversation_8cpp_source.html#l00373">resumeCommand()</a>, <a class="el" href="Conversation_8cpp_source.html#l00424">selectRouteForTransaction()</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00072">start()</a>.</p>
+
+</div>
+</div>
+<a id="af033b8b3acf7472992ac13a3d38b0ff0" name="af033b8b3acf7472992ac13a3d38b0ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af033b8b3acf7472992ac13a3d38b0ff0">&#9670;&#160;</a></span>select()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationRunner::select </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>routeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select a route on the current choice node. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8cpp_source.html#l00121">currentNode()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00424">selectRouteForTransaction()</a>.</p>
+
+</div>
+</div>
+<a id="ad860387b47d8529ff77563a667faaaa1" name="ad860387b47d8529ff77563a667faaaa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad860387b47d8529ff77563a667faaaa1">&#9670;&#160;</a></span>selectRouteForTransaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dialogue::ConversationRunner::selectRouteForTransaction </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>routeId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select a route from an already prepared <a class="el" href="classeve_1_1dialogue_1_1Dialogue.html" title="Visual-novel style dialogue stage. Script: dlg &lt;- eve.Dialogue();">Dialogue</a> transaction. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">routeId</td><td>Stable route identifier on the current choice node. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success, or a stable diagnostic without changing the runner cursor when selection cannot be completed. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This low-level path is reserved for the <a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html" title="Script-facing registry and runner for compiled .dnut conversations.">DialogueFlow</a> transaction participant. It runs on the runner's owner thread and does not retain routeId or invoke callbacks while holding a lock. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Conversation_8cpp_source.html#l00296">captureState()</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97a458b9dcc0921f46b1192427426d59c10">eve::dialogue::ConversationAsset::Node::Choice</a>, <a class="el" href="Condition_8cpp_source.html#l00082">eve::decision::conditionReasonCodeName()</a>, <a class="el" href="Conversation_8cpp_source.html#l00121">currentNode()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a738d3ced3166c554f8530906f955e0c5">eve::DialogueConditionRejected</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a560adc8ea3b75cfd5de32b95562b67d0">eve::DialogueNotWaitingForChoice</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a3202e27a23b96088506b96cfe804c2b0">eve::DialogueRouteNotFound</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Condition_8h_source.html#l00134">eve::decision::ConditionResult::passed()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Condition_8h_source.html#l00136">eve::decision::ConditionResult::reasonCode()</a>, <a class="el" href="Conversation_8cpp_source.html#l00310">restoreState()</a>, <a class="el" href="Conversation_8cpp_source.html#l00167">runUntilBlocked()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00572">eve::dialogue::DialogueFlow::select()</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00407">select()</a>.</p>
+
+</div>
+</div>
+<a id="a325fbb3167bdf5f20e41135dcb713b96" name="a325fbb3167bdf5f20e41135dcb713b96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a325fbb3167bdf5f20e41135dcb713b96">&#9670;&#160;</a></span>setAssetResolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::setAssetResolver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#af6a7501d31ba270e435b483f46673964">AssetResolver</a>&#160;</td>
+          <td class="paramname"><em>resolver</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00174">eve::dialogue::DialogueFlow::DialogueFlow()</a>.</p>
+
+</div>
+</div>
+<a id="a2b5834eb35c2702a419dd3f6f2ce617d" name="a2b5834eb35c2702a419dd3f6f2ce617d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b5834eb35c2702a419dd3f6f2ce617d">&#9670;&#160;</a></span>setCommandRequestDispatcher()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::setCommandRequestDispatcher </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a9d4740855b6adbf1f9c127ec1c891db3">CommandRequestDispatcher</a>&#160;</td>
+          <td class="paramname"><em>dispatcher</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Install one cross-module dispatcher used when no name-specific request handler exists. </p>
+<p>The dispatcher is retained as a callable and runs synchronously on the runner's thread. It must not retain the request or re-enter this runner. <a class="el" href="classeve_1_1dialogue_1_1DialogueFlow.html" title="Script-facing registry and runner for compiled .dnut conversations.">DialogueFlow</a> uses this hook to configure operation and gameplay-action handlers once for its whole facade. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00186">eve::dialogue::DialogueFlow::configureIntegration()</a>.</p>
+
+</div>
+</div>
+<a id="a403abe6bf133c3ca450b5a649a39c44b" name="a403abe6bf133c3ca450b5a649a39c44b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a403abe6bf133c3ca450b5a649a39c44b">&#9670;&#160;</a></span>setConditionEvaluator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::setConditionEvaluator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#a40ed4f112c8ff45fb486f87da4610089">ConditionEvaluator</a>&#160;</td>
+          <td class="paramname"><em>evaluator</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Evaluate structured route conditions through <a class="el" href="classeve_1_1decision_1_1Condition.html" title="Immutable condition AST node.">decision::Condition</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00186">eve::dialogue::DialogueFlow::configureIntegration()</a>.</p>
+
+</div>
+</div>
+<a id="ac75984db7588f3b8eb572b0d2f782773" name="ac75984db7588f3b8eb572b0d2f782773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac75984db7588f3b8eb572b0d2f782773">&#9670;&#160;</a></span>setEventSink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::setEventSink </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#aeaa416d683a452a8e53d61019465fa70">EventSink</a>&#160;</td>
+          <td class="paramname"><em>sink</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5f1052102bb74d35deacf2ee8dc95c4" name="ab5f1052102bb74d35deacf2ee8dc95c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5f1052102bb74d35deacf2ee8dc95c4">&#9670;&#160;</a></span>setExpressionEvaluator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::setExpressionEvaluator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dialogue_1_1ConversationRunner.html#acd7f24b9a2f6483b4d3d23a35208d170">ExpressionEvaluator</a>&#160;</td>
+          <td class="paramname"><em>evaluator</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8h_source.html">Conversation.h</a> 第 <a class="el" href="Conversation_8h_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00174">eve::dialogue::DialogueFlow::DialogueFlow()</a>.</p>
+
+</div>
+</div>
+<a id="a47154e751b8b712cd158be6a3e5b0a35" name="a47154e751b8b712cd158be6a3e5b0a35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47154e751b8b712cd158be6a3e5b0a35">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dialogue::ConversationRunner::start </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> *&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a>&#160;</td>
+          <td class="paramname"><em>bindings</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start an asset with serializable parameter bindings. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Conversation_8h_source.html#l00171">asset()</a>, <a class="el" href="Conversation_8h_source.html#l00174">bindings()</a>, <a class="el" href="Conversation_8h_source.html#l00067">eve::dialogue::ConversationAsset::entry</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="StateValue_8h_source.html#l00049">eve::StateValue::isObject()</a>, <a class="el" href="StateValue_8h_source.html#l00039">eve::StateValue::object()</a>, <a class="el" href="Conversation_8cpp_source.html#l00167">runUntilBlocked()</a>, <a class="el" href="structeve_1_1dialogue_1_1ConversationRunner_1_1Event.html#a34c1c0989e5e1d5e19ba2b08b4659fb0a8428552d86c0d262a542a528af490afa">eve::dialogue::ConversationRunner::Event::Started</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00023">eve::dialogue::ConversationAsset::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00536">eve::dialogue::DialogueFlow::startChecked()</a>.</p>
+
+</div>
+</div>
+<a id="a9e3902f9a6438bc00c8098112740b610" name="a9e3902f9a6438bc00c8098112740b610"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e3902f9a6438bc00c8098112740b610">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop and clear the active instance. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StateValue_8h_source.html#l00039">eve::StateValue::object()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueFlow_8cpp_source.html#l00423">eve::dialogue::DialogueFlow::clear()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00224">eve::dialogue::DialogueFlow::loadFromDnut()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00262">eve::dialogue::DialogueFlow::reloadFromDnut()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00331">eve::dialogue::DialogueFlow::removeSource()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00354">eve::dialogue::DialogueFlow::renameConversation()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00363">eve::dialogue::DialogueFlow::renameNode()</a>, <a class="el" href="Conversation_8cpp_source.html#l00310">restoreState()</a> , 以及 <a class="el" href="Conversation_8cpp_source.html#l00167">runUntilBlocked()</a>.</p>
+
+</div>
+</div>
+<a id="a11fc859b0069a36ab443a895d71b3541" name="a11fc859b0069a36ab443a895d71b3541"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11fc859b0069a36ab443a895d71b3541">&#9670;&#160;</a></span>unregisterCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::unregisterCommand </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="acd20dab7b1548aa00465368fb70e15e4" name="acd20dab7b1548aa00465368fb70e15e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd20dab7b1548aa00465368fb70e15e4">&#9670;&#160;</a></span>unregisterCommandRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dialogue::ConversationRunner::unregisterCommandRequest </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a request-only command handler. </p>
+
+<p class="definition">在文件 <a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a> 第 <a class="el" href="Conversation_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/dialogue/<a class="el" href="Conversation_8h_source.html">Conversation.h</a></li>
+<li>src/modules/dialogue/<a class="el" href="Conversation_8cpp_source.html">Conversation.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

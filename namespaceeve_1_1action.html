@@ -1,0 +1,960 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::action 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1action.html">action</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::action 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1AbilityActivation.html">AbilityActivation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning link between an ability activation and its action execution.  <a href="structeve_1_1action_1_1AbilityActivation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1AbilityControllerRuntime.html">AbilityControllerRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared controller that routes player or AI intents into <a class="el" href="classeve_1_1action_1_1AbilityRuntime.html" title="Owner-thread coordinator for grant and activation state.">AbilityRuntime</a>.  <a href="classeve_1_1action_1_1AbilityControllerRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1AbilityDefinition.html">AbilityDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical immutable-by-convention definition of a grantable ability.  <a href="structeve_1_1action_1_1AbilityDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1AbilityGrantState.html">AbilityGrantState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning snapshot of one granted ability's mutable state.  <a href="structeve_1_1action_1_1AbilityGrantState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1AbilityIntent.html">AbilityIntent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning request to activate one granted ability.  <a href="structeve_1_1action_1_1AbilityIntent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1AbilityRuntime.html">AbilityRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner-thread coordinator for grant and activation state.  <a href="classeve_1_1action_1_1AbilityRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1AbilityTrigger.html">AbilityTrigger</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One gameplay-event trigger declared by an ability definition.  <a href="structeve_1_1action_1_1AbilityTrigger.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionAdvance.html">ActionAdvance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> payload for one deterministic advance call.  <a href="structeve_1_1action_1_1ActionAdvance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html">ActionDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable-by-convention definition of one action kind.  <a href="structeve_1_1action_1_1ActionDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionExecution.html">ActionExecution</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only view of one execution owned by <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a>.  <a href="classeve_1_1action_1_1ActionExecution.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionExecutionIdTag.html">ActionExecutionIdTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque runtime identity for one <a class="el" href="classeve_1_1action_1_1ActionExecution.html" title="Read-only view of one execution owned by ActionRuntime.">ActionExecution</a>.  <a href="structeve_1_1action_1_1ActionExecutionIdTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionNotify.html">ActionNotify</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantaneous typed event placed on an action track.  <a href="structeve_1_1action_1_1ActionNotify.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Context linking a routed event to its action execution.  <a href="structeve_1_1action_1_1ActionNotifyContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionNotifyDescriptor.html">ActionNotifyDescriptor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning editor/runtime contract for one notify type.  <a href="structeve_1_1action_1_1ActionNotifyDescriptor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionNotifyRegistry.html">ActionNotifyRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical notify descriptor owner and runtime handler router.  <a href="classeve_1_1action_1_1ActionNotifyRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionNotifyState.html">ActionNotifyState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed interval with explicit enter/exit boundaries.  <a href="structeve_1_1action_1_1ActionNotifyState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionPreviewCue.html">ActionPreviewCue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning presentation cue derived from a canonical timeline event.  <a href="structeve_1_1action_1_1ActionPreviewCue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionPreviewFrame.html">ActionPreviewFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete frame atomically prepared and then presented by a preview host.  <a href="structeve_1_1action_1_1ActionPreviewFrame.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionPreviewPoint3.html">ActionPreviewPoint3</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One owning 3D point in an animation root-motion trajectory.  <a href="structeve_1_1action_1_1ActionPreviewPoint3.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionRequest.html">ActionRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One caller-owned request to instantiate an action execution.  <a href="structeve_1_1action_1_1ActionRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic action lifecycle coordinator.  <a href="classeve_1_1action_1_1ActionRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionServices.html">ActionServices</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed composition ports used by one <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a> owner.  <a href="structeve_1_1action_1_1ActionServices.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html">ActionTimeline</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical action timeline asset shared by runtime and editor.  <a href="structeve_1_1action_1_1ActionTimeline.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimelineEvent.html">ActionTimelineEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning event projection returned by the runtime sampler.  <a href="structeve_1_1action_1_1ActionTimelineEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTiming.html">ActionTiming</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic simulation durations for the three timed action phases.  <a href="structeve_1_1action_1_1ActionTiming.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTrack.html">ActionTrack</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordered semantic lane in one action timeline.  <a href="structeve_1_1action_1_1ActionTrack.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTransition.html">ActionTransition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One phase change observed while advancing an action.  <a href="structeve_1_1action_1_1ActionTransition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IAbilityIntentSource.html">IAbilityIntentSource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pull boundary shared by player input queues and AI decision adapters.  <a href="classeve_1_1action_1_1IAbilityIntentSource.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionConditionEvaluator.html">IActionConditionEvaluator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only condition composition port.  <a href="classeve_1_1action_1_1IActionConditionEvaluator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionEffectExecutor.html">IActionEffectExecutor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active-phase effect/operation preparation port.  <a href="classeve_1_1action_1_1IActionEffectExecutor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionEffectOperation.html">IActionEffectOperation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-only staged Active operation.  <a href="classeve_1_1action_1_1IActionEffectOperation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionNotifyHandler.html">IActionNotifyHandler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumer-owned handler for one registered notify type.  <a href="classeve_1_1action_1_1IActionNotifyHandler.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html">IActionPreviewSink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host boundary for 3D animation, VFX, audio and camera preview.  <a href="classeve_1_1action_1_1IActionPreviewSink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionResourceProvider.html">IActionResourceProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resource-account lookup port for canonical CostSpec operations.  <a href="classeve_1_1action_1_1IActionResourceProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionRootMotionSource.html">IActionRootMotionSource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional animation provider that samples an owning root-motion polyline.  <a href="classeve_1_1action_1_1IActionRootMotionSource.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionTargetResolver.html">IActionTargetResolver</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Targeting composition port.  <a href="classeve_1_1action_1_1IActionTargetResolver.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1PlayerAbilityIntentQueue.html">PlayerAbilityIntentQueue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner-thread FIFO adapter for player input and command bindings.  <a href="classeve_1_1action_1_1PlayerAbilityIntentQueue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1SensingTargetingAdapter.html">SensingTargetingAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reusable adapter from the sensing TargetingResolver to <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a>.  <a href="classeve_1_1action_1_1SensingTargetingAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:aeb6b71f12765459f9ee8b593fb89e09d" id="r_aeb6b71f12765459f9ee8b593fb89e09d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">AbilityGrantId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; AbilityGrantIdTag &gt;</td></tr>
+<tr class="memdesc:aeb6b71f12765459f9ee8b593fb89e09d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque identity of one owner-to-definition grant.  <br /></td></tr>
+<tr class="separator:aeb6b71f12765459f9ee8b593fb89e09d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67a1486cf04a869dd2782fa654a66459" id="r_a67a1486cf04a869dd2782fa654a66459"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a67a1486cf04a869dd2782fa654a66459">AbilityActivationId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; AbilityActivationIdTag &gt;</td></tr>
+<tr class="memdesc:a67a1486cf04a869dd2782fa654a66459"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque identity of one activation attempt accepted by <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a>.  <br /></td></tr>
+<tr class="separator:a67a1486cf04a869dd2782fa654a66459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf891268bb000725eaa662a94251193e" id="r_adf891268bb000725eaa662a94251193e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#adf891268bb000725eaa662a94251193e">AbilityInstanceId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; AbilityInstanceIdTag &gt;</td></tr>
+<tr class="memdesc:adf891268bb000725eaa662a94251193e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque mutable-instance identity; zero explicitly means NonInstanced.  <br /></td></tr>
+<tr class="separator:adf891268bb000725eaa662a94251193e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96ab42e2e0a0c22be2fd2a059a3dc272" id="r_a96ab42e2e0a0c22be2fd2a059a3dc272"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionExecutionIdTag.html">ActionExecutionIdTag</a> &gt;</td></tr>
+<tr class="separator:a96ab42e2e0a0c22be2fd2a059a3dc272"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:afbeaa062749370393cbf0a9372054e61" id="r_afbeaa062749370393cbf0a9372054e61"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61">AbilityInstancingPolicy</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61a3935128fa76732fe13bc035cec22639d">NonInstanced</a>
+, <a class="el" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61aff258bff42beda10966dc483ccf11e3a">PerOwner</a>
+, <a class="el" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61a6e11cf6b06c17d24f962f2b5fd664d23">PerExecution</a>
+ }</td></tr>
+<tr class="memdesc:afbeaa062749370393cbf0a9372054e61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Controls where mutable ability instance state is allocated.  <a href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61">更多...</a><br /></td></tr>
+<tr class="separator:afbeaa062749370393cbf0a9372054e61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a739c1b8f7fedbaec9489d68bd60136c6" id="r_a739c1b8f7fedbaec9489d68bd60136c6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6">AbilityActivationGroup</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6ae9e003c325eec6946ed1d23c6ac90a21">Independent</a>
+, <a class="el" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6a4c824057461770e7abcfea62af25dbf3">ExclusiveReplaceable</a>
+, <a class="el" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6a3fc82936a018ebb365e39b38d3269085">ExclusiveBlocking</a>
+ }</td></tr>
+<tr class="memdesc:a739c1b8f7fedbaec9489d68bd60136c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concurrency policy modeled after independent and exclusive ability groups.  <a href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6">更多...</a><br /></td></tr>
+<tr class="separator:a739c1b8f7fedbaec9489d68bd60136c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7de5593d842e98fdefb20c44a046f447" id="r_a7de5593d842e98fdefb20c44a046f447"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447">ActionPhase</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447afcdf8a82eba24e303b63b2e49a507ecb">Requested</a>
+, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447ac423b2af9f3f373c6576a8512645da9b">Validating</a>
+, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a3d501c93b1c2ecdb8ca9ffc8ef9c7055">Windup</a>
+, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a4d3d769b812b6faa6b76e1a8abaece2d">Active</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a556b050ce914d18480d6ea30308c7790">Recover</a>
+, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a07ca5050e697392c9ed47e6453f1453f">Completed</a>
+, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447aa149e85a44aeec9140e92733d9ed694e">Cancelled</a>
+, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a7de5593d842e98fdefb20c44a046f447"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lifecycle phase shared by every gameplay action adapter.  <a href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447">更多...</a><br /></td></tr>
+<tr class="separator:a7de5593d842e98fdefb20c44a046f447"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb4f4a0ed7d1642bbcba0cd0f4464577" id="r_abb4f4a0ed7d1642bbcba0cd0f4464577"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577">TargetingMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a9d71760e2dd451db2df354d0fd29cd7f">Explicit</a>
+, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a66c1b4c7f3dc385b68a9fa903ccd016d">Query</a>
+ }</td></tr>
+<tr class="memdesc:abb4f4a0ed7d1642bbcba0cd0f4464577"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects how an action obtains its target set.  <a href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577">更多...</a><br /></td></tr>
+<tr class="separator:abb4f4a0ed7d1642bbcba0cd0f4464577"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abffc8699e8900de8ed3118cd41916ec2" id="r_abffc8699e8900de8ed3118cd41916ec2"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">ActionNotifyShape</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2a54828f327f31abd59f2f459c0247756d">Instant</a>
+, <a class="el" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2a46a2a41cc6e552044816a2d04634545d">State</a>
+ }</td></tr>
+<tr class="memdesc:abffc8699e8900de8ed3118cd41916ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declares whether a notify is instantaneous or an enter/exit state.  <a href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">更多...</a><br /></td></tr>
+<tr class="separator:abffc8699e8900de8ed3118cd41916ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a098bda227449af4b7f75c15a0eb5f2fd" id="r_a098bda227449af4b7f75c15a0eb5f2fd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fd">ActionPreviewReason</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fda63a6a88c066880c5ac42394a22803ca6">Refresh</a>
+, <a class="el" href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fdaed7ecb1dbb9be8c65f909819dac7aa54">Seek</a>
+, <a class="el" href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fda0a86dddc699c7e6fe7f1e43153a5cbee">Advance</a>
+ }</td></tr>
+<tr class="memdesc:a098bda227449af4b7f75c15a0eb5f2fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reason a preview frame is being presented.  <a href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fd">更多...</a><br /></td></tr>
+<tr class="separator:a098bda227449af4b7f75c15a0eb5f2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70f6cdd4922cfc97794533a4a734bb02" id="r_a70f6cdd4922cfc97794533a4a734bb02"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02">ActionPreviewCueKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02a6288740a1cd0de37312619df3b6ddcf3">Gameplay</a>
+, <a class="el" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02a8bb14995267dbe58658b9a4054b716a2">Vfx</a>
+, <a class="el" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02ab22f0418e8ac915eb66f829d262d14a2">Audio</a>
+, <a class="el" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02a967d35e40f3f95b1f538bd248640bf3b">Camera</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02aeb06aec00d27811e119e65554df2f9ce">StateEnter</a>
+, <a class="el" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02a73b5bf268d7c4f3760e1bea353f7dd36">StateExit</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a70f6cdd4922cfc97794533a4a734bb02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Semantic presentation channel selected for one timeline boundary.  <a href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02">更多...</a><br /></td></tr>
+<tr class="separator:a70f6cdd4922cfc97794533a4a734bb02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f707d783b0ee282494cf8357d5ec6c3" id="r_a9f707d783b0ee282494cf8357d5ec6c3"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a9f707d783b0ee282494cf8357d5ec6c3">RootMotionPreviewState</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1action.html#a9f707d783b0ee282494cf8357d5ec6c3a453e6aa38d87b28ccae545967c53004f">Unavailable</a>
+, <a class="el" href="namespaceeve_1_1action.html#a9f707d783b0ee282494cf8357d5ec6c3a78945de8de090e90045d299651a68a9b">Available</a>
+ }</td></tr>
+<tr class="memdesc:a9f707d783b0ee282494cf8357d5ec6c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit availability of root-motion preview data.  <a href="namespaceeve_1_1action.html#a9f707d783b0ee282494cf8357d5ec6c3">更多...</a><br /></td></tr>
+<tr class="separator:a9f707d783b0ee282494cf8357d5ec6c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cd786b4436a9c922521a2318a64de53" id="r_a9cd786b4436a9c922521a2318a64de53"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53">ActionTrackKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ad6b6b668dbca9d4fe774bb654226ebe3">Animation</a>
+, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a6288740a1cd0de37312619df3b6ddcf3">Gameplay</a>
+, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53aa62d22910732d5343689f5117999abfa">Effect</a>
+, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ab22f0418e8ac915eb66f829d262d14a2">Audio</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a967d35e40f3f95b1f538bd248640bf3b">Camera</a>
+, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a4642e767f9251fa40afadbc963f80b7a">Movement</a>
+, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ac101058e7ea21bbbf2a5ac893088e90b">Tag</a>
+, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a90589c47f06eb971d548591f23c285af">Custom</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a9cd786b4436a9c922521a2318a64de53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Semantic lane kind; hosts choose presentation without changing data.  <a href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53">更多...</a><br /></td></tr>
+<tr class="separator:a9cd786b4436a9c922521a2318a64de53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a832973910da9dd22bd54e2316406536a" id="r_a832973910da9dd22bd54e2316406536a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536a">ActionTimelineEventKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7">Notify</a>
+, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">StateEnter</a>
+, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aa73b5bf268d7c4f3760e1bea353f7dd36">StateExit</a>
+ }</td></tr>
+<tr class="memdesc:a832973910da9dd22bd54e2316406536a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boundary emitted by deterministic timeline sampling.  <a href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536a">更多...</a><br /></td></tr>
+<tr class="separator:a832973910da9dd22bd54e2316406536a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a7314b2fd12d7b23632ade4134ab089d1" id="r_a7314b2fd12d7b23632ade4134ab089d1"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a7314b2fd12d7b23632ade4134ab089d1">actionPhaseName</a> (<a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447">ActionPhase</a> <a class="el" href="CaveMesh_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a>) noexcept</td></tr>
+<tr class="memdesc:a7314b2fd12d7b23632ade4134ab089d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable lowercase spelling of an action phase.  <br /></td></tr>
+<tr class="separator:a7314b2fd12d7b23632ade4134ab089d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d87bf324a3728a21354e923090eee21" id="r_a9d87bf324a3728a21354e923090eee21"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a9d87bf324a3728a21354e923090eee21">actionTrackKindName</a> (<a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53">ActionTrackKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:a9d87bf324a3728a21354e923090eee21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable lowercase protocol spelling for a track kind.  <br /></td></tr>
+<tr class="separator:a9d87bf324a3728a21354e923090eee21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb703e1468bc9435d894393c9d25306d" id="r_abb703e1468bc9435d894393c9d25306d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53">ActionTrackKind</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#abb703e1468bc9435d894393c9d25306d">parseActionTrackKind</a> (std::string_view <a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="memdesc:abb703e1468bc9435d894393c9d25306d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a stable track kind spelling.  <br /></td></tr>
+<tr class="separator:abb703e1468bc9435d894393c9d25306d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a5310f98611cfbfe9ee1d88ce458196a8" id="r_a5310f98611cfbfe9ee1d88ce458196a8"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a5310f98611cfbfe9ee1d88ce458196a8">kActionTimelineSchemaId</a> = &quot;eve.action.timeline&quot;</td></tr>
+<tr class="memdesc:a5310f98611cfbfe9ee1d88ce458196a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical schema identifier for persisted action timelines.  <br /></td></tr>
+<tr class="separator:a5310f98611cfbfe9ee1d88ce458196a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a2f84011760be84c26bc5a6b674f5e2" id="r_a4a2f84011760be84c26bc5a6b674f5e2"><td class="memItemLeft" align="right" valign="top">constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1action.html#a4a2f84011760be84c26bc5a6b674f5e2">kActionTimelineSchemaVersion</a> = 1</td></tr>
+<tr class="memdesc:a4a2f84011760be84c26bc5a6b674f5e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current action timeline schema version.  <br /></td></tr>
+<tr class="separator:a4a2f84011760be84c26bc5a6b674f5e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a67a1486cf04a869dd2782fa654a66459" name="a67a1486cf04a869dd2782fa654a66459"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67a1486cf04a869dd2782fa654a66459">&#9670;&#160;</a></span>AbilityActivationId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1action.html#a67a1486cf04a869dd2782fa654a66459">eve::action::AbilityActivationId</a> = typedef <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt;AbilityActivationIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opaque identity of one activation attempt accepted by <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AbilitySystem_8h_source.html">AbilitySystem.h</a> 第 <a class="el" href="AbilitySystem_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb6b71f12765459f9ee8b593fb89e09d" name="aeb6b71f12765459f9ee8b593fb89e09d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb6b71f12765459f9ee8b593fb89e09d">&#9670;&#160;</a></span>AbilityGrantId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">eve::action::AbilityGrantId</a> = typedef <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt;AbilityGrantIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opaque identity of one owner-to-definition grant. </p>
+
+<p class="definition">在文件 <a class="el" href="AbilitySystem_8h_source.html">AbilitySystem.h</a> 第 <a class="el" href="AbilitySystem_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf891268bb000725eaa662a94251193e" name="adf891268bb000725eaa662a94251193e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf891268bb000725eaa662a94251193e">&#9670;&#160;</a></span>AbilityInstanceId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1action.html#adf891268bb000725eaa662a94251193e">eve::action::AbilityInstanceId</a> = typedef <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt;AbilityInstanceIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opaque mutable-instance identity; zero explicitly means NonInstanced. </p>
+
+<p class="definition">在文件 <a class="el" href="AbilitySystem_8h_source.html">AbilitySystem.h</a> 第 <a class="el" href="AbilitySystem_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96ab42e2e0a0c22be2fd2a059a3dc272" name="a96ab42e2e0a0c22be2fd2a059a3dc272"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96ab42e2e0a0c22be2fd2a059a3dc272">&#9670;&#160;</a></span>ActionExecutionId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">eve::action::ActionExecutionId</a> = typedef <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt;<a class="el" href="structeve_1_1action_1_1ActionExecutionIdTag.html">ActionExecutionIdTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a739c1b8f7fedbaec9489d68bd60136c6" name="a739c1b8f7fedbaec9489d68bd60136c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a739c1b8f7fedbaec9489d68bd60136c6">&#9670;&#160;</a></span>AbilityActivationGroup</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6">eve::action::AbilityActivationGroup</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Concurrency policy modeled after independent and exclusive ability groups. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a739c1b8f7fedbaec9489d68bd60136c6ae9e003c325eec6946ed1d23c6ac90a21" name="a739c1b8f7fedbaec9489d68bd60136c6ae9e003c325eec6946ed1d23c6ac90a21"></a>Independent&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a739c1b8f7fedbaec9489d68bd60136c6a4c824057461770e7abcfea62af25dbf3" name="a739c1b8f7fedbaec9489d68bd60136c6a4c824057461770e7abcfea62af25dbf3"></a>ExclusiveReplaceable&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a739c1b8f7fedbaec9489d68bd60136c6a3fc82936a018ebb365e39b38d3269085" name="a739c1b8f7fedbaec9489d68bd60136c6a3fc82936a018ebb365e39b38d3269085"></a>ExclusiveBlocking&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AbilitySystem_8h_source.html">AbilitySystem.h</a> 第 <a class="el" href="AbilitySystem_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afbeaa062749370393cbf0a9372054e61" name="afbeaa062749370393cbf0a9372054e61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbeaa062749370393cbf0a9372054e61">&#9670;&#160;</a></span>AbilityInstancingPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61">eve::action::AbilityInstancingPolicy</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Controls where mutable ability instance state is allocated. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="afbeaa062749370393cbf0a9372054e61a3935128fa76732fe13bc035cec22639d" name="afbeaa062749370393cbf0a9372054e61a3935128fa76732fe13bc035cec22639d"></a>NonInstanced&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afbeaa062749370393cbf0a9372054e61aff258bff42beda10966dc483ccf11e3a" name="afbeaa062749370393cbf0a9372054e61aff258bff42beda10966dc483ccf11e3a"></a>PerOwner&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afbeaa062749370393cbf0a9372054e61a6e11cf6b06c17d24f962f2b5fd664d23" name="afbeaa062749370393cbf0a9372054e61a6e11cf6b06c17d24f962f2b5fd664d23"></a>PerExecution&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AbilitySystem_8h_source.html">AbilitySystem.h</a> 第 <a class="el" href="AbilitySystem_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abffc8699e8900de8ed3118cd41916ec2" name="abffc8699e8900de8ed3118cd41916ec2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abffc8699e8900de8ed3118cd41916ec2">&#9670;&#160;</a></span>ActionNotifyShape</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">eve::action::ActionNotifyShape</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Declares whether a notify is instantaneous or an enter/exit state. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="abffc8699e8900de8ed3118cd41916ec2a54828f327f31abd59f2f459c0247756d" name="abffc8699e8900de8ed3118cd41916ec2a54828f327f31abd59f2f459c0247756d"></a>Instant&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abffc8699e8900de8ed3118cd41916ec2a46a2a41cc6e552044816a2d04634545d" name="abffc8699e8900de8ed3118cd41916ec2a46a2a41cc6e552044816a2d04634545d"></a>State&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ActionNotifyRegistry_8h_source.html">ActionNotifyRegistry.h</a> 第 <a class="el" href="ActionNotifyRegistry_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7de5593d842e98fdefb20c44a046f447" name="a7de5593d842e98fdefb20c44a046f447"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7de5593d842e98fdefb20c44a046f447">&#9670;&#160;</a></span>ActionPhase</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447">eve::action::ActionPhase</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Lifecycle phase shared by every gameplay action adapter. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a7de5593d842e98fdefb20c44a046f447afcdf8a82eba24e303b63b2e49a507ecb" name="a7de5593d842e98fdefb20c44a046f447afcdf8a82eba24e303b63b2e49a507ecb"></a>Requested&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7de5593d842e98fdefb20c44a046f447ac423b2af9f3f373c6576a8512645da9b" name="a7de5593d842e98fdefb20c44a046f447ac423b2af9f3f373c6576a8512645da9b"></a>Validating&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7de5593d842e98fdefb20c44a046f447a3d501c93b1c2ecdb8ca9ffc8ef9c7055" name="a7de5593d842e98fdefb20c44a046f447a3d501c93b1c2ecdb8ca9ffc8ef9c7055"></a>Windup&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7de5593d842e98fdefb20c44a046f447a4d3d769b812b6faa6b76e1a8abaece2d" name="a7de5593d842e98fdefb20c44a046f447a4d3d769b812b6faa6b76e1a8abaece2d"></a>Active&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7de5593d842e98fdefb20c44a046f447a556b050ce914d18480d6ea30308c7790" name="a7de5593d842e98fdefb20c44a046f447a556b050ce914d18480d6ea30308c7790"></a>Recover&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7de5593d842e98fdefb20c44a046f447a07ca5050e697392c9ed47e6453f1453f" name="a7de5593d842e98fdefb20c44a046f447a07ca5050e697392c9ed47e6453f1453f"></a>Completed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7de5593d842e98fdefb20c44a046f447aa149e85a44aeec9140e92733d9ed694e" name="a7de5593d842e98fdefb20c44a046f447aa149e85a44aeec9140e92733d9ed694e"></a>Cancelled&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7de5593d842e98fdefb20c44a046f447ad7c8c85bf79bbe1b7188497c32c3b0ca" name="a7de5593d842e98fdefb20c44a046f447ad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70f6cdd4922cfc97794533a4a734bb02" name="a70f6cdd4922cfc97794533a4a734bb02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70f6cdd4922cfc97794533a4a734bb02">&#9670;&#160;</a></span>ActionPreviewCueKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02">eve::action::ActionPreviewCueKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Semantic presentation channel selected for one timeline boundary. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a70f6cdd4922cfc97794533a4a734bb02a6288740a1cd0de37312619df3b6ddcf3" name="a70f6cdd4922cfc97794533a4a734bb02a6288740a1cd0de37312619df3b6ddcf3"></a>Gameplay&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a70f6cdd4922cfc97794533a4a734bb02a8bb14995267dbe58658b9a4054b716a2" name="a70f6cdd4922cfc97794533a4a734bb02a8bb14995267dbe58658b9a4054b716a2"></a>Vfx&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a70f6cdd4922cfc97794533a4a734bb02ab22f0418e8ac915eb66f829d262d14a2" name="a70f6cdd4922cfc97794533a4a734bb02ab22f0418e8ac915eb66f829d262d14a2"></a>Audio&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a70f6cdd4922cfc97794533a4a734bb02a967d35e40f3f95b1f538bd248640bf3b" name="a70f6cdd4922cfc97794533a4a734bb02a967d35e40f3f95b1f538bd248640bf3b"></a>Camera&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a70f6cdd4922cfc97794533a4a734bb02aeb06aec00d27811e119e65554df2f9ce" name="a70f6cdd4922cfc97794533a4a734bb02aeb06aec00d27811e119e65554df2f9ce"></a>StateEnter&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a70f6cdd4922cfc97794533a4a734bb02a73b5bf268d7c4f3760e1bea353f7dd36" name="a70f6cdd4922cfc97794533a4a734bb02a73b5bf268d7c4f3760e1bea353f7dd36"></a>StateExit&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ActionPreview_8h_source.html">ActionPreview.h</a> 第 <a class="el" href="ActionPreview_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a098bda227449af4b7f75c15a0eb5f2fd" name="a098bda227449af4b7f75c15a0eb5f2fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a098bda227449af4b7f75c15a0eb5f2fd">&#9670;&#160;</a></span>ActionPreviewReason</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fd">eve::action::ActionPreviewReason</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reason a preview frame is being presented. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a098bda227449af4b7f75c15a0eb5f2fda63a6a88c066880c5ac42394a22803ca6" name="a098bda227449af4b7f75c15a0eb5f2fda63a6a88c066880c5ac42394a22803ca6"></a>Refresh&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a098bda227449af4b7f75c15a0eb5f2fdaed7ecb1dbb9be8c65f909819dac7aa54" name="a098bda227449af4b7f75c15a0eb5f2fdaed7ecb1dbb9be8c65f909819dac7aa54"></a>Seek&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a098bda227449af4b7f75c15a0eb5f2fda0a86dddc699c7e6fe7f1e43153a5cbee" name="a098bda227449af4b7f75c15a0eb5f2fda0a86dddc699c7e6fe7f1e43153a5cbee"></a>Advance&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ActionPreview_8h_source.html">ActionPreview.h</a> 第 <a class="el" href="ActionPreview_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a832973910da9dd22bd54e2316406536a" name="a832973910da9dd22bd54e2316406536a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a832973910da9dd22bd54e2316406536a">&#9670;&#160;</a></span>ActionTimelineEventKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536a">eve::action::ActionTimelineEventKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Boundary emitted by deterministic timeline sampling. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7" name="a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7"></a>Notify&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce" name="a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce"></a>StateEnter&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a832973910da9dd22bd54e2316406536aa73b5bf268d7c4f3760e1bea353f7dd36" name="a832973910da9dd22bd54e2316406536aa73b5bf268d7c4f3760e1bea353f7dd36"></a>StateExit&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9cd786b4436a9c922521a2318a64de53" name="a9cd786b4436a9c922521a2318a64de53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cd786b4436a9c922521a2318a64de53">&#9670;&#160;</a></span>ActionTrackKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53">eve::action::ActionTrackKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Semantic lane kind; hosts choose presentation without changing data. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a9cd786b4436a9c922521a2318a64de53ad6b6b668dbca9d4fe774bb654226ebe3" name="a9cd786b4436a9c922521a2318a64de53ad6b6b668dbca9d4fe774bb654226ebe3"></a>Animation&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9cd786b4436a9c922521a2318a64de53a6288740a1cd0de37312619df3b6ddcf3" name="a9cd786b4436a9c922521a2318a64de53a6288740a1cd0de37312619df3b6ddcf3"></a>Gameplay&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9cd786b4436a9c922521a2318a64de53aa62d22910732d5343689f5117999abfa" name="a9cd786b4436a9c922521a2318a64de53aa62d22910732d5343689f5117999abfa"></a>Effect&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9cd786b4436a9c922521a2318a64de53ab22f0418e8ac915eb66f829d262d14a2" name="a9cd786b4436a9c922521a2318a64de53ab22f0418e8ac915eb66f829d262d14a2"></a>Audio&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9cd786b4436a9c922521a2318a64de53a967d35e40f3f95b1f538bd248640bf3b" name="a9cd786b4436a9c922521a2318a64de53a967d35e40f3f95b1f538bd248640bf3b"></a>Camera&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9cd786b4436a9c922521a2318a64de53a4642e767f9251fa40afadbc963f80b7a" name="a9cd786b4436a9c922521a2318a64de53a4642e767f9251fa40afadbc963f80b7a"></a>Movement&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9cd786b4436a9c922521a2318a64de53ac101058e7ea21bbbf2a5ac893088e90b" name="a9cd786b4436a9c922521a2318a64de53ac101058e7ea21bbbf2a5ac893088e90b"></a>Tag&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9cd786b4436a9c922521a2318a64de53a90589c47f06eb971d548591f23c285af" name="a9cd786b4436a9c922521a2318a64de53a90589c47f06eb971d548591f23c285af"></a>Custom&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9f707d783b0ee282494cf8357d5ec6c3" name="a9f707d783b0ee282494cf8357d5ec6c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f707d783b0ee282494cf8357d5ec6c3">&#9670;&#160;</a></span>RootMotionPreviewState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#a9f707d783b0ee282494cf8357d5ec6c3">eve::action::RootMotionPreviewState</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit availability of root-motion preview data. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a9f707d783b0ee282494cf8357d5ec6c3a453e6aa38d87b28ccae545967c53004f" name="a9f707d783b0ee282494cf8357d5ec6c3a453e6aa38d87b28ccae545967c53004f"></a>Unavailable&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9f707d783b0ee282494cf8357d5ec6c3a78945de8de090e90045d299651a68a9b" name="a9f707d783b0ee282494cf8357d5ec6c3a78945de8de090e90045d299651a68a9b"></a>Available&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ActionPreview_8h_source.html">ActionPreview.h</a> 第 <a class="el" href="ActionPreview_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb4f4a0ed7d1642bbcba0cd0f4464577" name="abb4f4a0ed7d1642bbcba0cd0f4464577"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb4f4a0ed7d1642bbcba0cd0f4464577">&#9670;&#160;</a></span>TargetingMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577">eve::action::TargetingMode</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Selects how an action obtains its target set. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754" name="abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"><p>The action has no target selection. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="abb4f4a0ed7d1642bbcba0cd0f4464577a9d71760e2dd451db2df354d0fd29cd7f" name="abb4f4a0ed7d1642bbcba0cd0f4464577a9d71760e2dd451db2df354d0fd29cd7f"></a>Explicit&#160;</td><td class="fielddoc"><p>The request already owns the selected ECS target handles. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="abb4f4a0ed7d1642bbcba0cd0f4464577a66c1b4c7f3dc385b68a9fa903ccd016d" name="abb4f4a0ed7d1642bbcba0cd0f4464577a66c1b4c7f3dc385b68a9fa903ccd016d"></a>Query&#160;</td><td class="fielddoc"><p>The request supplies a sensing query resolved during validation. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a7314b2fd12d7b23632ade4134ab089d1" name="a7314b2fd12d7b23632ade4134ab089d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7314b2fd12d7b23632ade4134ab089d1">&#9670;&#160;</a></span>actionPhaseName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::action::actionPhaseName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447">ActionPhase</a>&#160;</td>
+          <td class="paramname"><em>phase</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable lowercase spelling of an action phase. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed static storage valid for the lifetime of the process. @borrowed The returned pointer must not be freed or retained as mutable data. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8cpp_source.html">Action.cpp</a> 第 <a class="el" href="Action_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a4d3d769b812b6faa6b76e1a8abaece2d">Active</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447aa149e85a44aeec9140e92733d9ed694e">Cancelled</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a07ca5050e697392c9ed47e6453f1453f">Completed</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a556b050ce914d18480d6ea30308c7790">Recover</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447afcdf8a82eba24e303b63b2e49a507ecb">Requested</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447ac423b2af9f3f373c6576a8512645da9b">Validating</a> , 以及 <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a3d501c93b1c2ecdb8ca9ffc8ef9c7055">Windup</a>.</p>
+
+</div>
+</div>
+<a id="a9d87bf324a3728a21354e923090eee21" name="a9d87bf324a3728a21354e923090eee21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d87bf324a3728a21354e923090eee21">&#9670;&#160;</a></span>actionTrackKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::action::actionTrackKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53">ActionTrackKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable lowercase protocol spelling for a track kind. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8cpp_source.html">ActionTimeline.cpp</a> 第 <a class="el" href="ActionTimeline_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ad6b6b668dbca9d4fe774bb654226ebe3">Animation</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ab22f0418e8ac915eb66f829d262d14a2">Audio</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a967d35e40f3f95b1f538bd248640bf3b">Camera</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a90589c47f06eb971d548591f23c285af">Custom</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53aa62d22910732d5343689f5117999abfa">Effect</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a6288740a1cd0de37312619df3b6ddcf3">Gameplay</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a4642e767f9251fa40afadbc963f80b7a">Movement</a> , 以及 <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ac101058e7ea21bbbf2a5ac893088e90b">Tag</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l00105">eve::editor::exposeActionTimelineScriptBindings()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00128">parseActionTrackKind()</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00206">eve::action::ActionTimeline::toValue()</a>.</p>
+
+</div>
+</div>
+<a id="abb703e1468bc9435d894393c9d25306d" name="abb703e1468bc9435d894393c9d25306d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb703e1468bc9435d894393c9d25306d">&#9670;&#160;</a></span>parseActionTrackKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53">ActionTrackKind</a> &gt; eve::action::parseActionTrackKind </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse a stable track kind spelling. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8cpp_source.html">ActionTimeline.cpp</a> 第 <a class="el" href="ActionTimeline_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimeline_8cpp_source.html#l00114">actionTrackKindName()</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ad6b6b668dbca9d4fe774bb654226ebe3">Animation</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ab22f0418e8ac915eb66f829d262d14a2">Audio</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a967d35e40f3f95b1f538bd248640bf3b">Camera</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a90589c47f06eb971d548591f23c285af">Custom</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53aa62d22910732d5343689f5117999abfa">Effect</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a6288740a1cd0de37312619df3b6ddcf3">Gameplay</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53a4642e767f9251fa40afadbc963f80b7a">Movement</a>, <a class="el" href="namespaceeve_1_1action.html#a9cd786b4436a9c922521a2318a64de53ac101058e7ea21bbbf2a5ac893088e90b">Tag</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00237">eve::action::ActionTimeline::fromValue()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a5310f98611cfbfe9ee1d88ce458196a8" name="a5310f98611cfbfe9ee1d88ce458196a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5310f98611cfbfe9ee1d88ce458196a8">&#9670;&#160;</a></span>kActionTimelineSchemaId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::action::kActionTimelineSchemaId = &quot;eve.action.timeline&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Canonical schema identifier for persisted action timelines. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00237">eve::action::ActionTimeline::fromValue()</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00206">eve::action::ActionTimeline::toValue()</a>.</p>
+
+</div>
+</div>
+<a id="a4a2f84011760be84c26bc5a6b674f5e2" name="a4a2f84011760be84c26bc5a6b674f5e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a2f84011760be84c26bc5a6b674f5e2">&#9670;&#160;</a></span>kActionTimelineSchemaVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint64_t eve::action::kActionTimelineSchemaVersion = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current action timeline schema version. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00136">eve::action::ActionTimeline::validate()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

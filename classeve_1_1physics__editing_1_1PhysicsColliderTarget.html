@@ -1,0 +1,905 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics_editing::PhysicsColliderTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics__editing.html">physics_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html">PhysicsColliderTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics__editing_1_1PhysicsColliderTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics_editing::PhysicsColliderTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Serializable, backend-neutral 2D/3D collider authoring target.  
+ <a href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PhysicsTarget_8h_source.html">PhysicsTarget.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics_editing::PhysicsColliderTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1physics__editing_1_1PhysicsColliderTarget.png" usemap="#eve::physics_5Fediting::PhysicsColliderTarget_map" alt=""/>
+  <map id="eve::physics_5Fediting::PhysicsColliderTarget_map" name="eve::physics_5Fediting::PhysicsColliderTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,261,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="271,56,532,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="542,56,803,80"/>
+<area href="classeve_1_1editing_1_1IPropertyProvider.html" title="UI-independent property access for an immutable selection snapshot." alt="eve::editing::IPropertyProvider" shape="rect" coords="813,56,1074,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="271,0,532,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac0f2c664a9a8d0feedb39aae47b4d3c6" id="r_ac0f2c664a9a8d0feedb39aae47b4d3c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#ac0f2c664a9a8d0feedb39aae47b4d3c6">PhysicsColliderTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int dimensions=3)</td></tr>
+<tr class="separator:ac0f2c664a9a8d0feedb39aae47b4d3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaad8904276281ee4e5f37e1a90d70f5d" id="r_aaad8904276281ee4e5f37e1a90d70f5d"><td class="memItemLeft" align="right" valign="top">TargetId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#aaad8904276281ee4e5f37e1a90d70f5d">targetId</a> () const override</td></tr>
+<tr class="separator:aaad8904276281ee4e5f37e1a90d70f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae47bd8fbe2133ec59cf21fb65e9225c2" id="r_ae47bd8fbe2133ec59cf21fb65e9225c2"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#ae47bd8fbe2133ec59cf21fb65e9225c2">revision</a> () const override</td></tr>
+<tr class="separator:ae47bd8fbe2133ec59cf21fb65e9225c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae46a1d74ddd95fe30aded50c0bd5dea4" id="r_ae46a1d74ddd95fe30aded50c0bd5dea4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#ae46a1d74ddd95fe30aded50c0bd5dea4">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:ae46a1d74ddd95fe30aded50c0bd5dea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfa09d4ea5a8de70b23bb8f7aefb8ea1" id="r_acfa09d4ea5a8de70b23bb8f7aefb8ea1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#acfa09d4ea5a8de70b23bb8f7aefb8ea1">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:acfa09d4ea5a8de70b23bb8f7aefb8ea1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfe6df01856b1478bcf9d8020fc0d61a" id="r_acfe6df01856b1478bcf9d8020fc0d61a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#acfe6df01856b1478bcf9d8020fc0d61a">describe</a> () const override</td></tr>
+<tr class="memdesc:acfe6df01856b1478bcf9d8020fc0d61a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:acfe6df01856b1478bcf9d8020fc0d61a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc2ee5eec408dc7f0857bdfe64b222f4" id="r_abc2ee5eec408dc7f0857bdfe64b222f4"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#abc2ee5eec408dc7f0857bdfe64b222f4">queryCapability</a> (const CapabilityId &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="memdesc:abc2ee5eec408dc7f0857bdfe64b222f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional target capability.  <br /></td></tr>
+<tr class="separator:abc2ee5eec408dc7f0857bdfe64b222f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9688fa4024246c8d8ada62f6346e97ea" id="r_a9688fa4024246c8d8ada62f6346e97ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a9688fa4024246c8d8ada62f6346e97ea">applyDomainOperation</a> (const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;operation) override</td></tr>
+<tr class="memdesc:a9688fa4024246c8d8ada62f6346e97ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a9688fa4024246c8d8ada62f6346e97ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaca831924510fac5ae2dacd047816e0a" id="r_aaca831924510fac5ae2dacd047816e0a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#aaca831924510fac5ae2dacd047816e0a">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:aaca831924510fac5ae2dacd047816e0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:aaca831924510fac5ae2dacd047816e0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a807b9b6694c964c16909454672f8f520" id="r_a807b9b6694c964c16909454672f8f520"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a807b9b6694c964c16909454672f8f520">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:a807b9b6694c964c16909454672f8f520"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:a807b9b6694c964c16909454672f8f520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85b55a1d42d1199a9681d7f033a5496a" id="r_a85b55a1d42d1199a9681d7f033a5496a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a85b55a1d42d1199a9681d7f033a5496a">currentRevision</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="separator:a85b55a1d42d1199a9681d7f033a5496a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a043e4bd921d185d1135600d6c7029163" id="r_a043e4bd921d185d1135600d6c7029163"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a043e4bd921d185d1135600d6c7029163">schema</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="separator:a043e4bd921d185d1135600d6c7029163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1757942efacd13aa79ff590eaab4f398" id="r_a1757942efacd13aa79ff590eaab4f398"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a1757942efacd13aa79ff590eaab4f398">read</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="separator:a1757942efacd13aa79ff590eaab4f398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54a7214811100ca25f7002296e5cc7ca" id="r_a54a7214811100ca25f7002296e5cc7ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a54a7214811100ca25f7002296e5cc7ca">makeSet</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="namespaceeve_1_1physics__editing.html#a464356bf57704c1771ba8e2c14501cde">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, PropertySetMode mode) const override</td></tr>
+<tr class="separator:a54a7214811100ca25f7002296e5cc7ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a751558444b876ab1c15476db7d799cd3" id="r_a751558444b876ab1c15476db7d799cd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a751558444b876ab1c15476db7d799cd3">makeReset</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="separator:a751558444b876ab1c15476db7d799cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d053e05293e25a8fe7a8e662071950f" id="r_a4d053e05293e25a8fe7a8e662071950f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics__editing.html#a464356bf57704c1771ba8e2c14501cde">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a4d053e05293e25a8fe7a8e662071950f">snapshotValue</a> () const</td></tr>
+<tr class="memdesc:a4d053e05293e25a8fe7a8e662071950f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture deterministic collider content for asset/scene persistence.  <br /></td></tr>
+<tr class="separator:a4d053e05293e25a8fe7a8e662071950f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b2a3629db7e67e1360e8a0837c9b4d5" id="r_a8b2a3629db7e67e1360e8a0837c9b4d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a8b2a3629db7e67e1360e8a0837c9b4d5">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1physics__editing.html#a464356bf57704c1771ba8e2c14501cde">EditorValue</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a8b2a3629db7e67e1360e8a0837c9b4d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically load a versioned collider snapshot.  <br /></td></tr>
+<tr class="separator:a8b2a3629db7e67e1360e8a0837c9b4d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaab1d34a63a9a9d97c7a97955b2ba6c6" id="r_aaab1d34a63a9a9d97c7a97955b2ba6c6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1physics__editing.html#a20ea1ec6f1964b273e0260f0ef153805">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#aaab1d34a63a9a9d97c7a97955b2ba6c6">validate</a> () const</td></tr>
+<tr class="memdesc:aaab1d34a63a9a9d97c7a97955b2ba6c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report cross-property shape/body problems for inspector overlays.  <br /></td></tr>
+<tr class="separator:aaab1d34a63a9a9d97c7a97955b2ba6c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a3e202dd6b1ca3b75e726a90a82081653"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">queryCapability</a> (const <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>)</td></tr>
+<tr class="memdesc:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional stable capability.  <br /></td></tr>
+<tr class="separator:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a1a2687f093acd0ca7f4f93af7ff93090"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a1a2687f093acd0ca7f4f93af7ff93090">~IPropertyProvider</a> ()=default</td></tr>
+<tr class="separator:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37fd27faadd63ce4dd990ff525b10cc5 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a37fd27faadd63ce4dd990ff525b10cc5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a37fd27faadd63ce4dd990ff525b10cc5">makeSet</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> mode) const =0</td></tr>
+<tr class="separator:a37fd27faadd63ce4dd990ff525b10cc5 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_aa07e163a9dafdd187f5e74a2208192e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity for generic property editing.  <br /></td></tr>
+<tr class="separator:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Serializable, backend-neutral 2D/3D collider authoring target. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8h_source.html">PhysicsTarget.h</a> 第 <a class="el" href="PhysicsTarget_8h_source.html#l00048">48</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac0f2c664a9a8d0feedb39aae47b4d3c6" name="ac0f2c664a9a8d0feedb39aae47b4d3c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0f2c664a9a8d0feedb39aae47b4d3c6">&#9670;&#160;</a></span>PhysicsColliderTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics_editing::PhysicsColliderTarget::PhysicsColliderTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>dimensions</em> = <code>3</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9688fa4024246c8d8ada62f6346e97ea" name="a9688fa4024246c8d8ada62f6346e97ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9688fa4024246c8d8ada62f6346e97ea">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; void &gt; eve::physics_editing::PhysicsColliderTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsPublishingTarget_8cpp_source.html#l00017">eve::physics_editing::PhysicsColliderPublishingTarget::applyDomainOperation()</a>.</p>
+
+</div>
+</div>
+<a id="acfa09d4ea5a8de70b23bb8f7aefb8ea1" name="acfa09d4ea5a8de70b23bb8f7aefb8ea1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfa09d4ea5a8de70b23bb8f7aefb8ea1">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics_editing::PhysicsColliderTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8h_source.html">PhysicsTarget.h</a> 第 <a class="el" href="PhysicsTarget_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsTarget_8h_source.html#l00111">eve::physics_editing::PhysicsColliderPublishingTarget::clearDirtyRegion()</a>.</p>
+
+</div>
+</div>
+<a id="aaca831924510fac5ae2dacd047816e0a" name="aaca831924510fac5ae2dacd047816e0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaca831924510fac5ae2dacd047816e0a">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; eve::physics_editing::PhysicsColliderTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a807b9b6694c964c16909454672f8f520" name="a807b9b6694c964c16909454672f8f520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a807b9b6694c964c16909454672f8f520">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; void &gt; eve::physics_editing::PhysicsColliderTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85b55a1d42d1199a9681d7f033a5496a" name="a85b55a1d42d1199a9681d7f033a5496a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85b55a1d42d1199a9681d7f033a5496a">&#9670;&#160;</a></span>currentRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt; eve::physics_editing::PhysicsColliderTarget::currentRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a5aa963e389bf3586ffa808670142c379">eve::editing::IPropertyProvider</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="acfe6df01856b1478bcf9d8020fc0d61a" name="acfe6df01856b1478bcf9d8020fc0d61a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe6df01856b1478bcf9d8020fc0d61a">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> eve::physics_editing::PhysicsColliderTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsPublishingTarget_8cpp_source.html#l00031">eve::physics_editing::PhysicsColliderPublishingTarget::commitDomainState()</a>.</p>
+
+</div>
+</div>
+<a id="ae46a1d74ddd95fe30aded50c0bd5dea4" name="ae46a1d74ddd95fe30aded50c0bd5dea4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae46a1d74ddd95fe30aded50c0bd5dea4">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> eve::physics_editing::PhysicsColliderTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8h_source.html">PhysicsTarget.h</a> 第 <a class="el" href="PhysicsTarget_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsTarget_8h_source.html#l00110">eve::physics_editing::PhysicsColliderPublishingTarget::dirtyRegion()</a>.</p>
+
+</div>
+</div>
+<a id="a8b2a3629db7e67e1360e8a0837c9b4d5" name="a8b2a3629db7e67e1360e8a0837c9b4d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b2a3629db7e67e1360e8a0837c9b4d5">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; void &gt; eve::physics_editing::PhysicsColliderTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1physics__editing.html#a464356bf57704c1771ba8e2c14501cde">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically load a versioned collider snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsSerialization_8cpp_source.html">PhysicsSerialization.cpp</a> 第 <a class="el" href="PhysicsSerialization_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a751558444b876ab1c15476db7d799cd3" name="a751558444b876ab1c15476db7d799cd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a751558444b876ab1c15476db7d799cd3">&#9670;&#160;</a></span>makeReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::physics_editing::PhysicsColliderTarget::makeReset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a6175bdd491af083643d6cac008e99851">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="PhysicsTarget_8cpp_source.html#l00105">makeSet()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsTarget_8cpp_source.html#l00105">makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a54a7214811100ca25f7002296e5cc7ca" name="a54a7214811100ca25f7002296e5cc7ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54a7214811100ca25f7002296e5cc7ca">&#9670;&#160;</a></span>makeSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics__editing.html#ae5ca4459c595fa702c668f24bca58813">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::physics_editing::PhysicsColliderTarget::makeSet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1physics__editing.html#a464356bf57704c1771ba8e2c14501cde">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PropertySetMode&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProtocol_8h_source.html#l00042">eve::editing::DomainOperation::affectedProperties</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00040">eve::editing::DomainOperation::hasInverse</a>, <a class="el" href="EditingProtocol_8h_source.html#l00039">eve::editing::DomainOperation::inverse</a>, <a class="el" href="PhysicsTarget_8cpp_source.html#l00139">makeReset()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00043">eve::editing::DomainOperation::mergeKey</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsTarget_8cpp_source.html#l00139">makeReset()</a>.</p>
+
+</div>
+</div>
+<a id="abc2ee5eec408dc7f0857bdfe64b222f4" name="abc2ee5eec408dc7f0857bdfe64b222f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc2ee5eec408dc7f0857bdfe64b222f4">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::physics_editing::PhysicsColliderTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const CapabilityId &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an optional target capability. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00068">eve::editing::IEditableTarget::capability()</a>.</p>
+
+</div>
+</div>
+<a id="a1757942efacd13aa79ff590eaab4f398" name="a1757942efacd13aa79ff590eaab4f398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1757942efacd13aa79ff590eaab4f398">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a> eve::physics_editing::PhysicsColliderTarget::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a416f8e8d2ee0880822430acea12f55d8">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="ae47bd8fbe2133ec59cf21fb65e9225c2" name="ae47bd8fbe2133ec59cf21fb65e9225c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae47bd8fbe2133ec59cf21fb65e9225c2">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::physics_editing::PhysicsColliderTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8h_source.html">PhysicsTarget.h</a> 第 <a class="el" href="PhysicsTarget_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsTarget_8h_source.html#l00109">eve::physics_editing::PhysicsColliderPublishingTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a043e4bd921d185d1135600d6c7029163" name="a043e4bd921d185d1135600d6c7029163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a043e4bd921d185d1135600d6c7029163">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> eve::physics_editing::PhysicsColliderTarget::schema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aad2055c613e332305f14ecfd7c3ece44">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a> 第 <a class="el" href="PhysicsTarget_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d053e05293e25a8fe7a8e662071950f" name="a4d053e05293e25a8fe7a8e662071950f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d053e05293e25a8fe7a8e662071950f">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics__editing.html#a464356bf57704c1771ba8e2c14501cde">EditorValue</a> eve::physics_editing::PhysicsColliderTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture deterministic collider content for asset/scene persistence. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsSerialization_8cpp_source.html">PhysicsSerialization.cpp</a> 第 <a class="el" href="PhysicsSerialization_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aaad8904276281ee4e5f37e1a90d70f5d" name="aaad8904276281ee4e5f37e1a90d70f5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaad8904276281ee4e5f37e1a90d70f5d">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TargetId eve::physics_editing::PhysicsColliderTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsTarget_8h_source.html">PhysicsTarget.h</a> 第 <a class="el" href="PhysicsTarget_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsTarget_8h_source.html#l00108">eve::physics_editing::PhysicsColliderPublishingTarget::targetId()</a>.</p>
+
+</div>
+</div>
+<a id="aaab1d34a63a9a9d97c7a97955b2ba6c6" name="aaab1d34a63a9a9d97c7a97955b2ba6c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaab1d34a63a9a9d97c7a97955b2ba6c6">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1physics__editing.html#a20ea1ec6f1964b273e0260f0ef153805">EditorDiagnostic</a> &gt; eve::physics_editing::PhysicsColliderTarget::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Report cross-property shape/body problems for inspector overlays. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsSerialization_8cpp_source.html">PhysicsSerialization.cpp</a> 第 <a class="el" href="PhysicsSerialization_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics_editing/<a class="el" href="PhysicsTarget_8h_source.html">PhysicsTarget.h</a></li>
+<li>src/modules/physics_editing/<a class="el" href="PhysicsSerialization_8cpp_source.html">PhysicsSerialization.cpp</a></li>
+<li>src/modules/physics_editing/<a class="el" href="PhysicsTarget_8cpp_source.html">PhysicsTarget.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

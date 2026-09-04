@@ -1,0 +1,482 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/ResourceAccount.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ResourceAccount.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ResourceAccount_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="StrongUint64_8h.html">common/StrongUint64.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;compare&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;initializer_list&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1detail.html">eve::detail</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1detail_1_1ResourceReservationIdTag.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1detail_1_1ResourceReservationIdTag.html">ResourceReservationIdTag</a> {};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1detail_1_1ResourceReceiptIdTag.html">   29</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1detail_1_1ResourceReceiptIdTag.html">ResourceReceiptIdTag</a> {};</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}  <span class="comment">// namespace eve::detail</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1resource.html">eve::resource</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1ResourceId.html">   36</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">ResourceId</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1ResourceId.html#a2cb19a8c7f1760de3d7c83f460091b05">   39</a></span>    <a class="code hl_function" href="classeve_1_1resource_1_1ResourceId.html#a2cb19a8c7f1760de3d7c83f460091b05">ResourceId</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ResourceId&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1ResourceId.html#a80342f90a0f578c5aeb9bca128e68525">parse</a>(std::string_view <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1ResourceId.html#ae55c5dcad5025238ee8322e06fa8209d">   49</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1resource_1_1ResourceId.html#ae55c5dcad5025238ee8322e06fa8209d">isValid</a>() const noexcept { <span class="keywordflow">return</span> !value_.empty(); }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1ResourceId.html#a79c66e3e585046a21b69326a6ac3e63c">   52</a></span>    [[nodiscard]] <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1resource_1_1ResourceId.html#a79c66e3e585046a21b69326a6ac3e63c">value</a>() const noexcept { <span class="keywordflow">return</span> value_; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1ResourceId.html#a346bdcd110e1c153a0a649e1ceebbdaa">   54</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="classeve_1_1resource_1_1ResourceId.html#a346bdcd110e1c153a0a649e1ceebbdaa">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">ResourceId</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">ResourceId</a>&amp;) <span class="keyword">noexcept</span>  = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1ResourceId.html#a81e0a8eb5d4aefc6675732b9a98ba16b">   55</a></span>    <span class="keyword">friend</span> <span class="keyword">auto</span> <a class="code hl_friend" href="classeve_1_1resource_1_1ResourceId.html#a81e0a8eb5d4aefc6675732b9a98ba16b">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">ResourceId</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">ResourceId</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1resource_1_1ResourceId.html#a2cb19a8c7f1760de3d7c83f460091b05">ResourceId</a>(std::string <a class="code hl_function" href="classeve_1_1resource_1_1ResourceId.html#a79c66e3e585046a21b69326a6ac3e63c">value</a>) : value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_function" href="classeve_1_1resource_1_1ResourceId.html#a79c66e3e585046a21b69326a6ac3e63c">value</a>)) {}</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::string value_;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>};</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="};">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1Amount.html">   70</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1Amount.html#a83bb9680b501a6859301220329a489f4">   73</a></span>    <span class="keyword">constexpr</span> <a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#a83bb9680b501a6859301220329a489f4">Amount</a>() noexcept = default;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1Amount.html#a43461d628724d8cd5379671654dacf9d">   80</a></span>    explicit constexpr <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a>(<a class="code hl_namespace" href="namespacestd.html">std</a>::int64_t <a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#a470af30c362d0ae17bab105445a57291">value</a>) noexcept : value_(<a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#a470af30c362d0ae17bab105445a57291">value</a>) {}</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Amount&gt;</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>(std::int64_t <a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#a470af30c362d0ae17bab105445a57291">value</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1Amount.html#ac59ac1ad9d5e93ce68b3f435a08fc6bc">   90</a></span>    [[nodiscard]] <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a> <a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#ac59ac1ad9d5e93ce68b3f435a08fc6bc">zero</a>() noexcept { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#a83bb9680b501a6859301220329a489f4">Amount</a>(0); }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1Amount.html#a470af30c362d0ae17bab105445a57291">   93</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> std::int64_t <a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#a470af30c362d0ae17bab105445a57291">value</a>() const noexcept { <span class="keywordflow">return</span> value_; }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1Amount.html#aca7662b753d69482700ff4c5d9fab0b1">   96</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#aca7662b753d69482700ff4c5d9fab0b1">isZero</a>() const noexcept { <span class="keywordflow">return</span> value_ == 0; }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Amount&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1Amount.html#a6ef6871ed5378405f0773017ccc00edf">checkedAdd</a>(<a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a> other) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1Amount.html#ab6aa4b8aae400f55771cc05761f60c7f">  104</a></span>    <span class="keyword">friend</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="classeve_1_1resource_1_1Amount.html#ab6aa4b8aae400f55771cc05761f60c7f">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a>&amp;) <span class="keyword">noexcept</span>  = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1Amount.html#a94c9518e8c66366ed46387f80bf67d92">  105</a></span>    <span class="keyword">friend</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_friend" href="classeve_1_1resource_1_1Amount.html#a94c9518e8c66366ed46387f80bf67d92">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::int64_t value_ = 0;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>};</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="foldopen" id="foldopen00112" data-start="{" data-end="};">
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1ResourceCost.html">  112</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1resource_1_1ResourceCost.html">ResourceCost</a> {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1ResourceCost.html#a0dfbe3a5fef454ea1645d628b41e841d">  113</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">ResourceId</a> <a class="code hl_variable" href="structeve_1_1resource_1_1ResourceCost.html#a0dfbe3a5fef454ea1645d628b41e841d">resource</a>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1ResourceCost.html#a7870f7327e874ee94dc395fa96e66243">  114</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a>     <a class="code hl_variable" href="structeve_1_1resource_1_1ResourceCost.html#a7870f7327e874ee94dc395fa96e66243">amount</a>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1ResourceCost.html#a3f7b4c57c9cb831fa355e63006bc1b6d">  116</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1resource_1_1ResourceCost.html#a3f7b4c57c9cb831fa355e63006bc1b6d">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1resource_1_1ResourceCost.html">ResourceCost</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1resource_1_1ResourceCost.html">ResourceCost</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ResourceCost&gt;</a> <a class="code hl_function" href="structeve_1_1resource_1_1ResourceCost.html#a1cf33bdce4be498fd5e83a714ae0e2f4">create</a>(std::string_view resourceId, std::int64_t amountValue);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>};</div>
+</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="foldopen" id="foldopen00128" data-start="{" data-end="};">
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1CostInput.html">  128</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1resource_1_1CostInput.html">CostInput</a> {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1CostInput.html#a6d89986ee55cd9afdc29a1e77b997310">  129</a></span>    std::string_view <a class="code hl_variable" href="structeve_1_1resource_1_1CostInput.html#a6d89986ee55cd9afdc29a1e77b997310">resource</a>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1CostInput.html#afd28a8506f7347540015f6b70ab84743">  130</a></span>    std::int64_t     <a class="code hl_variable" href="structeve_1_1resource_1_1CostInput.html#afd28a8506f7347540015f6b70ab84743">amount</a> = 0;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>};</div>
+</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="foldopen" id="foldopen00140" data-start="{" data-end="};">
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1CostSpec.html">  140</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1CostSpec.html#a42237a9fbc8771fdcdd620d7a22203b9">  143</a></span>    <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#a42237a9fbc8771fdcdd620d7a22203b9">CostSpec</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CostSpec&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#ac2f65d8ce3ed74c35c5f62d4e9979ac0">create</a>(std::vector&lt;ResourceCost&gt; <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">items</a>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CostSpec&gt;</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>(std::initializer_list&lt;CostInput&gt; <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">items</a>);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CostSpec&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#af0c793c557ea3598f296d338b655dbb3">single</a>(std::string_view resource, std::int64_t amount);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1CostSpec.html#aa8bede8e449dab329af1d716d61425b1">  168</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#aa8bede8e449dab329af1d716d61425b1">isValid</a>() const noexcept { <span class="keywordflow">return</span> !items_.empty(); }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1CostSpec.html#a4836842a3592286eaba3669ce5132744">  171</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#a4836842a3592286eaba3669ce5132744">empty</a>() const noexcept { <span class="keywordflow">return</span> items_.empty(); }</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">  178</a></span>    [[nodiscard]] <span class="keyword">const</span> std::vector&lt;ResourceCost&gt;&amp; <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">items</a>() const noexcept { <span class="keywordflow">return</span> items_; }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1CostSpec.html#ac3cabbabc51b889e25f24ed42f914aee">  181</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#ac3cabbabc51b889e25f24ed42f914aee">size</a>() const noexcept { <span class="keywordflow">return</span> items_.size(); }</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1CostSpec.html#a4a7f89a7ad3e5722316b5e549ce17265">  183</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="classeve_1_1resource_1_1CostSpec.html#a4a7f89a7ad3e5722316b5e549ce17265">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#a42237a9fbc8771fdcdd620d7a22203b9">CostSpec</a>(std::vector&lt;ResourceCost&gt; <a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">items</a>) : items_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">items</a>)) {}</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    std::vector&lt;ResourceCost&gt; items_;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>};</div>
+</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="foldopen" id="foldopen00192" data-start="{" data-end="};">
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1ResourceShortfall.html">  192</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1resource_1_1ResourceShortfall.html">ResourceShortfall</a> {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1ResourceShortfall.html#a06afe0a7339ca0b0cf1bd8ea47b839f8">  193</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">ResourceId</a> <a class="code hl_variable" href="structeve_1_1resource_1_1ResourceShortfall.html#a06afe0a7339ca0b0cf1bd8ea47b839f8">resource</a>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1ResourceShortfall.html#af0e91cf2ff98361336770e0d449dcf43">  194</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a>     <a class="code hl_variable" href="structeve_1_1resource_1_1ResourceShortfall.html#af0e91cf2ff98361336770e0d449dcf43">required</a>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1ResourceShortfall.html#aa97f089de61b42804cbc57d5a0062c3e">  195</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1Amount.html">Amount</a>     <a class="code hl_variable" href="structeve_1_1resource_1_1ResourceShortfall.html#aa97f089de61b42804cbc57d5a0062c3e">available</a>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>};</div>
+</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="foldopen" id="foldopen00205" data-start="{" data-end="};">
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Affordability.html">  205</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1resource_1_1Affordability.html">Affordability</a> {</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Affordability.html#ac4f93aa771b5f689e81f3f1069b211b0">  206</a></span>    <span class="keywordtype">bool</span>                           <a class="code hl_variable" href="structeve_1_1resource_1_1Affordability.html#ac4f93aa771b5f689e81f3f1069b211b0">affordable</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Affordability.html#abbfc0ebbffc357a5c41053d9d0b99d9a">  207</a></span>    std::vector&lt;ResourceShortfall&gt; <a class="code hl_variable" href="structeve_1_1resource_1_1Affordability.html#abbfc0ebbffc357a5c41053d9d0b99d9a">shortfalls</a>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Affordability.html#ad3e1b3bcfe75564dc593420d5b0df4c1">  210</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1resource_1_1Affordability.html#ad3e1b3bcfe75564dc593420d5b0df4c1">isAffordable</a>() const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1resource_1_1Affordability.html#ac4f93aa771b5f689e81f3f1069b211b0">affordable</a>; }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>};</div>
+</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="foldopen" id="foldopen00214" data-start="{" data-end="};">
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818d">  214</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818d">ReceiptOperation</a> : std::uint8_t {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818da009534719f8c8221440a5629f497a784">Debit</a>,</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818da0a90b1bc4078f74b6f0d117ec7df65af">Credit</a>,</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>};</div>
+</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno"><a class="line" href="namespaceeve_1_1resource.html#aef3562b50b3a8b0824621ff9f8a666fe">  220</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ReservationId</a> = <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt;eve::detail::ResourceReservationIdTag&gt;</a>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="foldopen" id="foldopen00230" data-start="{" data-end="};">
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1AccountNonce.html">  230</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1resource_1_1AccountNonce.html">AccountNonce</a> {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1AccountNonce.html#a3dc28c124a16482c498b1d946eb94fe3">  233</a></span>    <span class="keyword">constexpr</span> <a class="code hl_function" href="classeve_1_1resource_1_1AccountNonce.html#a3dc28c124a16482c498b1d946eb94fe3">AccountNonce</a>() noexcept = default;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1AccountNonce.html#a05b4139c95c446e1e5d6384c861fbcef">  236</a></span>    [[nodiscard]] constexpr <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t <a class="code hl_function" href="classeve_1_1resource_1_1AccountNonce.html#a05b4139c95c446e1e5d6384c861fbcef">value</a>() const noexcept { <span class="keywordflow">return</span> value_; }</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1AccountNonce.html#a1a82f2dabe35042be6d9d69681c637db">  239</a></span>    [[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1resource_1_1AccountNonce.html#a1a82f2dabe35042be6d9d69681c637db">isZero</a>() const noexcept { <span class="keywordflow">return</span> value_ == 0; }</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1AccountNonce.html#acc68305111517621983ae4b6b4f9f171">  241</a></span>    <span class="keyword">friend</span> <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="classeve_1_1resource_1_1AccountNonce.html#acc68305111517621983ae4b6b4f9f171">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1AccountNonce.html">AccountNonce</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1AccountNonce.html">AccountNonce</a>&amp;) <span class="keyword">noexcept</span>  = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1AccountNonce.html#a94d8516e9c095369e741bd3983bb8823">  242</a></span>    <span class="keyword">friend</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_friend" href="classeve_1_1resource_1_1AccountNonce.html#a94d8516e9c095369e741bd3983bb8823">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1AccountNonce.html">AccountNonce</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1AccountNonce.html">AccountNonce</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keyword">explicit</span> <span class="keyword">constexpr</span> <a class="code hl_function" href="classeve_1_1resource_1_1AccountNonce.html#a3dc28c124a16482c498b1d946eb94fe3">AccountNonce</a>(std::uint64_t <a class="code hl_function" href="classeve_1_1resource_1_1AccountNonce.html#a05b4139c95c446e1e5d6384c861fbcef">value</a>) noexcept : value_(<a class="code hl_function" href="classeve_1_1resource_1_1AccountNonce.html#a05b4139c95c446e1e5d6384c861fbcef">value</a>) {}</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keyword">friend</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;AccountNonce&gt;</a> <a class="code hl_friend" href="classeve_1_1resource_1_1AccountNonce.html#a0bab7db680692f64e7db3f47eaf087e3">allocateAccountNonce</a>();</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    std::uint64_t value_ = 0;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>};</div>
+</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno"><a class="line" href="namespaceeve_1_1resource.html#a18adb3c4277b26b1adb58b64a664c839">  253</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ReceiptId</a> = <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt;eve::detail::ResourceReceiptIdTag&gt;</a>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;AccountNonce&gt;</a> <a class="code hl_function" href="namespaceeve_1_1resource.html#a768e9451ab232b70fe11fb680b12cd78">allocateAccountNonce</a>();</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
+<div class="foldopen" id="foldopen00271" data-start="{" data-end="};">
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Reservation.html">  271</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1resource_1_1Reservation.html">Reservation</a> {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Reservation.html#a7cc7bbaebe243be6226ea1f46e2ab642">  272</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1AccountNonce.html">AccountNonce</a>  <a class="code hl_variable" href="structeve_1_1resource_1_1Reservation.html#a7cc7bbaebe243be6226ea1f46e2ab642">account</a>;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Reservation.html#a6e11434191c4b35f9ea9668de1e4b748">  273</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ReservationId</a> <a class="code hl_variable" href="structeve_1_1resource_1_1Reservation.html#a6e11434191c4b35f9ea9668de1e4b748">id</a>;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Reservation.html#a15e1289fa25ce97e694ce6b7a043b57f">  274</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a>      <a class="code hl_variable" href="structeve_1_1resource_1_1Reservation.html#a15e1289fa25ce97e694ce6b7a043b57f">cost</a>;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Reservation.html#a329af79c8e96c47a8f4430966d1228bd">  277</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1resource_1_1Reservation.html#a329af79c8e96c47a8f4430966d1228bd">isValid</a>() const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1resource_1_1Reservation.html#a7cc7bbaebe243be6226ea1f46e2ab642">account</a>.<a class="code hl_function" href="classeve_1_1resource_1_1AccountNonce.html#a05b4139c95c446e1e5d6384c861fbcef">value</a>() != 0 &amp;&amp; <span class="keywordtype">id</span>.value() != 0 &amp;&amp; <a class="code hl_variable" href="structeve_1_1resource_1_1Reservation.html#a15e1289fa25ce97e694ce6b7a043b57f">cost</a>.<a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#aa8bede8e449dab329af1d716d61425b1">isValid</a>(); }</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>};</div>
+</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
+<div class="foldopen" id="foldopen00286" data-start="{" data-end="};">
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Receipt.html">  286</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1resource_1_1Receipt.html">Receipt</a> {</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Receipt.html#a7991e18fa4c91e79c43c76f6d6283151">  287</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1AccountNonce.html">AccountNonce</a>     <a class="code hl_variable" href="structeve_1_1resource_1_1Receipt.html#a7991e18fa4c91e79c43c76f6d6283151">account</a>;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Receipt.html#ade6fbe2373dcaabaa31c31241ab41b07">  288</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ReceiptId</a>        <a class="code hl_variable" href="structeve_1_1resource_1_1Receipt.html#ade6fbe2373dcaabaa31c31241ab41b07">id</a>;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Receipt.html#ad2d34f96fb3bd08cc394033f9970fc86">  289</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ReservationId</a>    <a class="code hl_variable" href="structeve_1_1resource_1_1Receipt.html#ad2d34f96fb3bd08cc394033f9970fc86">reservation</a>;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Receipt.html#a208cb7ab341475920623d05e6bcd1ed7">  290</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818d">ReceiptOperation</a> <a class="code hl_variable" href="structeve_1_1resource_1_1Receipt.html#a208cb7ab341475920623d05e6bcd1ed7">operation</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818da009534719f8c8221440a5629f497a784">ReceiptOperation::Debit</a>;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Receipt.html#a3331e87c717f66355a240ac9eb93d12e">  291</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a>         <a class="code hl_variable" href="structeve_1_1resource_1_1Receipt.html#a3331e87c717f66355a240ac9eb93d12e">cost</a>;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno"><a class="line" href="structeve_1_1resource_1_1Receipt.html#ad2ed3d218a08192185a538e17dc7eb01">  294</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1resource_1_1Receipt.html#ad2ed3d218a08192185a538e17dc7eb01">isValid</a>() const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1resource_1_1Receipt.html#a7991e18fa4c91e79c43c76f6d6283151">account</a>.<a class="code hl_function" href="classeve_1_1resource_1_1AccountNonce.html#a05b4139c95c446e1e5d6384c861fbcef">value</a>() != 0 &amp;&amp; <span class="keywordtype">id</span>.value() != 0 &amp;&amp; <a class="code hl_variable" href="structeve_1_1resource_1_1Receipt.html#a3331e87c717f66355a240ac9eb93d12e">cost</a>.<a class="code hl_function" href="classeve_1_1resource_1_1CostSpec.html#aa8bede8e449dab329af1d716d61425b1">isValid</a>(); }</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>};</div>
+</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="foldopen" id="foldopen00308" data-start="{" data-end="};">
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1IResourceAccount.html">  308</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">IResourceAccount</a> {</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1IResourceAccount.html#a72a98cafbcad86b0f10076c9a93a829f">  310</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1resource_1_1IResourceAccount.html#a72a98cafbcad86b0f10076c9a93a829f">~IResourceAccount</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1IResourceAccount.html#ad05e62c0c67c2d5d6cc89e1a34d310c4">  317</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Affordability&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1IResourceAccount.html#ad05e62c0c67c2d5d6cc89e1a34d310c4">canAfford</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1IResourceAccount.html#a7980ac1f9f73552817b59cdbdb931fd4">  324</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Reservation&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1IResourceAccount.html#a7980ac1f9f73552817b59cdbdb931fd4">reserve</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) = 0;</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1IResourceAccount.html#ac7cf0c293c1caf0efa82d6ed959690e0">  331</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Receipt&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1IResourceAccount.html#ac7cf0c293c1caf0efa82d6ed959690e0">debit</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) = 0;</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1IResourceAccount.html#a1e224d43b9d9a240f4d27e20296c4085">  338</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Receipt&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1IResourceAccount.html#a1e224d43b9d9a240f4d27e20296c4085">credit</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) = 0;</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span> </div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1IResourceAccount.html#a50027bdbae7f26a3a6e97d7d1ea45be8">  345</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;Receipt&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1IResourceAccount.html#a50027bdbae7f26a3a6e97d7d1ea45be8">commit</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1resource_1_1Reservation.html">Reservation</a>&amp; reservation) = 0;</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno"><a class="line" href="classeve_1_1resource_1_1IResourceAccount.html#af3099c0d5a5c081c400eeb9b476b032d">  352</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1resource_1_1IResourceAccount.html#af3099c0d5a5c081c400eeb9b476b032d">rollback</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1resource_1_1Reservation.html">Reservation</a>&amp; reservation) = 0;</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>};</div>
+</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>}  <span class="comment">// namespace eve::resource</span></div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span> </div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacestd.html">std</a> {</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span> </div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span><span class="keyword">template</span> &lt;&gt;</div>
+<div class="foldopen" id="foldopen00360" data-start="{" data-end="};">
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno"><a class="line" href="structstd_1_1hash_3_01eve_1_1resource_1_1ResourceId_01_4.html">  360</a></span><span class="keyword">struct </span><a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::resource::ResourceId&gt; {</div>
+<div class="foldopen" id="foldopen00362" data-start="{" data-end="}">
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno"><a class="line" href="structstd_1_1hash_3_01eve_1_1resource_1_1ResourceId_01_4.html#adb67106dda9d61747303cd9cef6c0ab2">  362</a></span>    std::size_t <a class="code hl_function" href="structstd_1_1hash_3_01eve_1_1resource_1_1ResourceId_01_4.html#adb67106dda9d61747303cd9cef6c0ab2">operator()</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1resource_1_1ResourceId.html">eve::resource::ResourceId</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        <span class="keywordflow">return</span> std::hash&lt;std::string&gt;{}(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.value());</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    }</div>
+</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>};</div>
+</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>}  <span class="comment">// namespace std</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00037">DialoguePayment.cpp:37</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_a5fb132b1d88427518f97e5e710bc1c93"><div class="ttname"><a href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a></div><div class="ttdeci">std::array&lt; std::uint8_t, 32 &gt; hash</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00177">Evpack.cpp:177</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aStrongUint64_8h_html"><div class="ttname"><a href="StrongUint64_8h.html">StrongUint64.h</a></div><div class="ttdoc">Internal storage primitive for domain-owned unsigned values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; eve::detail::ResourceReservationIdTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1AccountNonce_html"><div class="ttname"><a href="classeve_1_1resource_1_1AccountNonce.html">eve::resource::AccountNonce</a></div><div class="ttdoc">Opaque process-local identity of the account that issued a credential.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00230">ResourceAccount.h:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1AccountNonce_html_a05b4139c95c446e1e5d6384c861fbcef"><div class="ttname"><a href="classeve_1_1resource_1_1AccountNonce.html#a05b4139c95c446e1e5d6384c861fbcef">eve::resource::AccountNonce::value</a></div><div class="ttdeci">constexpr std::uint64_t value() const noexcept</div><div class="ttdoc">Return the opaque numeric value for diagnostics and comparisons.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00236">ResourceAccount.h:236</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1AccountNonce_html_a0bab7db680692f64e7db3f47eaf087e3"><div class="ttname"><a href="classeve_1_1resource_1_1AccountNonce.html#a0bab7db680692f64e7db3f47eaf087e3">eve::resource::AccountNonce::allocateAccountNonce</a></div><div class="ttdeci">friend eve::Result&lt; AccountNonce &gt; allocateAccountNonce()</div><div class="ttdoc">Allocate a process-local account identity for a credential issuer.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8cpp_source.html#l00027">ResourceAccount.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1AccountNonce_html_a1a82f2dabe35042be6d9d69681c637db"><div class="ttname"><a href="classeve_1_1resource_1_1AccountNonce.html#a1a82f2dabe35042be6d9d69681c637db">eve::resource::AccountNonce::isZero</a></div><div class="ttdeci">constexpr bool isZero() const noexcept</div><div class="ttdoc">Whether this nonce is invalid/zero.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00239">ResourceAccount.h:239</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1AccountNonce_html_a3dc28c124a16482c498b1d946eb94fe3"><div class="ttname"><a href="classeve_1_1resource_1_1AccountNonce.html#a3dc28c124a16482c498b1d946eb94fe3">eve::resource::AccountNonce::AccountNonce</a></div><div class="ttdeci">constexpr AccountNonce() noexcept=default</div><div class="ttdoc">Construct the invalid zero nonce.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1AccountNonce_html_a94d8516e9c095369e741bd3983bb8823"><div class="ttname"><a href="classeve_1_1resource_1_1AccountNonce.html#a94d8516e9c095369e741bd3983bb8823">eve::resource::AccountNonce::operator&lt;=&gt;</a></div><div class="ttdeci">friend constexpr auto operator&lt;=&gt;(const AccountNonce &amp;, const AccountNonce &amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1AccountNonce_html_acc68305111517621983ae4b6b4f9f171"><div class="ttname"><a href="classeve_1_1resource_1_1AccountNonce.html#acc68305111517621983ae4b6b4f9f171">eve::resource::AccountNonce::operator==</a></div><div class="ttdeci">friend constexpr bool operator==(const AccountNonce &amp;, const AccountNonce &amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1Amount_html"><div class="ttname"><a href="classeve_1_1resource_1_1Amount.html">eve::resource::Amount</a></div><div class="ttdoc">Non-negative integral quantity used by resource accounts.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00070">ResourceAccount.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1Amount_html_a470af30c362d0ae17bab105445a57291"><div class="ttname"><a href="classeve_1_1resource_1_1Amount.html#a470af30c362d0ae17bab105445a57291">eve::resource::Amount::value</a></div><div class="ttdeci">constexpr std::int64_t value() const noexcept</div><div class="ttdoc">Return the native quantity at an explicit adapter boundary.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00093">ResourceAccount.h:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1Amount_html_a6ef6871ed5378405f0773017ccc00edf"><div class="ttname"><a href="classeve_1_1resource_1_1Amount.html#a6ef6871ed5378405f0773017ccc00edf">eve::resource::Amount::checkedAdd</a></div><div class="ttdeci">eve::Result&lt; Amount &gt; checkedAdd(Amount other) const</div><div class="ttdoc">Add two quantities with overflow checking.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8cpp_source.html#l00057">ResourceAccount.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1Amount_html_a83bb9680b501a6859301220329a489f4"><div class="ttname"><a href="classeve_1_1resource_1_1Amount.html#a83bb9680b501a6859301220329a489f4">eve::resource::Amount::Amount</a></div><div class="ttdeci">constexpr Amount() noexcept=default</div><div class="ttdoc">Construct zero.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1Amount_html_a94c9518e8c66366ed46387f80bf67d92"><div class="ttname"><a href="classeve_1_1resource_1_1Amount.html#a94c9518e8c66366ed46387f80bf67d92">eve::resource::Amount::operator&lt;=&gt;</a></div><div class="ttdeci">friend constexpr auto operator&lt;=&gt;(const Amount &amp;, const Amount &amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1Amount_html_ab6aa4b8aae400f55771cc05761f60c7f"><div class="ttname"><a href="classeve_1_1resource_1_1Amount.html#ab6aa4b8aae400f55771cc05761f60c7f">eve::resource::Amount::operator==</a></div><div class="ttdeci">friend constexpr bool operator==(const Amount &amp;, const Amount &amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1Amount_html_ac59ac1ad9d5e93ce68b3f435a08fc6bc"><div class="ttname"><a href="classeve_1_1resource_1_1Amount.html#ac59ac1ad9d5e93ce68b3f435a08fc6bc">eve::resource::Amount::zero</a></div><div class="ttdeci">static constexpr Amount zero() noexcept</div><div class="ttdoc">Return zero.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00090">ResourceAccount.h:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1Amount_html_aca7662b753d69482700ff4c5d9fab0b1"><div class="ttname"><a href="classeve_1_1resource_1_1Amount.html#aca7662b753d69482700ff4c5d9fab0b1">eve::resource::Amount::isZero</a></div><div class="ttdeci">constexpr bool isZero() const noexcept</div><div class="ttdoc">Whether the quantity is zero.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00096">ResourceAccount.h:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a></div><div class="ttdoc">Immutable canonical multi-resource cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00140">ResourceAccount.h:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html_a42237a9fbc8771fdcdd620d7a22203b9"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html#a42237a9fbc8771fdcdd620d7a22203b9">eve::resource::CostSpec::CostSpec</a></div><div class="ttdeci">CostSpec()=default</div><div class="ttdoc">Construct an invalid empty cost; use create/from/single for input.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html_a4836842a3592286eaba3669ce5132744"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html#a4836842a3592286eaba3669ce5132744">eve::resource::CostSpec::empty</a></div><div class="ttdeci">bool empty() const noexcept</div><div class="ttdoc">Whether this cost has no items.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00171">ResourceAccount.h:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html_a4a7f89a7ad3e5722316b5e549ce17265"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html#a4a7f89a7ad3e5722316b5e549ce17265">eve::resource::CostSpec::operator==</a></div><div class="ttdeci">friend bool operator==(const CostSpec &amp;, const CostSpec &amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html_a6c07a97b46eb4afac2495c0af7108d4d"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">eve::resource::CostSpec::items</a></div><div class="ttdeci">const std::vector&lt; ResourceCost &gt; &amp; items() const noexcept</div><div class="ttdoc">Return canonical items as a read-only borrowed view.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00178">ResourceAccount.h:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html_aa8bede8e449dab329af1d716d61425b1"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html#aa8bede8e449dab329af1d716d61425b1">eve::resource::CostSpec::isValid</a></div><div class="ttdeci">bool isValid() const noexcept</div><div class="ttdoc">Whether this value contains a validated non-empty cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00168">ResourceAccount.h:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html_ac2f65d8ce3ed74c35c5f62d4e9979ac0"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html#ac2f65d8ce3ed74c35c5f62d4e9979ac0">eve::resource::CostSpec::create</a></div><div class="ttdeci">static eve::Result&lt; CostSpec &gt; create(std::vector&lt; ResourceCost &gt; items)</div><div class="ttdoc">Validate and canonicalize resource items.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8cpp_source.html#l00074">ResourceAccount.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html_ac3cabbabc51b889e25f24ed42f914aee"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html#ac3cabbabc51b889e25f24ed42f914aee">eve::resource::CostSpec::size</a></div><div class="ttdeci">std::size_t size() const noexcept</div><div class="ttdoc">Return the number of canonical resource entries.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00181">ResourceAccount.h:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html_af0c793c557ea3598f296d338b655dbb3"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html#af0c793c557ea3598f296d338b655dbb3">eve::resource::CostSpec::single</a></div><div class="ttdeci">static eve::Result&lt; CostSpec &gt; single(std::string_view resource, std::int64_t amount)</div><div class="ttdoc">Build a one-resource cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8cpp_source.html#l00117">ResourceAccount.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a></div><div class="ttdoc">Provider-neutral resource account contract.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00308">ResourceAccount.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html_a1e224d43b9d9a240f4d27e20296c4085"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html#a1e224d43b9d9a240f4d27e20296c4085">eve::resource::IResourceAccount::credit</a></div><div class="ttdeci">virtual eve::Result&lt; Receipt &gt; credit(const CostSpec &amp;cost)=0</div><div class="ttdoc">Atomically credit all items immediately.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html_a50027bdbae7f26a3a6e97d7d1ea45be8"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html#a50027bdbae7f26a3a6e97d7d1ea45be8">eve::resource::IResourceAccount::commit</a></div><div class="ttdeci">virtual eve::Result&lt; Receipt &gt; commit(const Reservation &amp;reservation)=0</div><div class="ttdoc">Commit one active reservation as an atomic debit.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html_a72a98cafbcad86b0f10076c9a93a829f"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html#a72a98cafbcad86b0f10076c9a93a829f">eve::resource::IResourceAccount::~IResourceAccount</a></div><div class="ttdeci">virtual ~IResourceAccount()=default</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html_a7980ac1f9f73552817b59cdbdb931fd4"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html#a7980ac1f9f73552817b59cdbdb931fd4">eve::resource::IResourceAccount::reserve</a></div><div class="ttdeci">virtual eve::Result&lt; Reservation &gt; reserve(const CostSpec &amp;cost)=0</div><div class="ttdoc">Reserve all items of a cost without changing visible balances.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html_ac7cf0c293c1caf0efa82d6ed959690e0"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html#ac7cf0c293c1caf0efa82d6ed959690e0">eve::resource::IResourceAccount::debit</a></div><div class="ttdeci">virtual eve::Result&lt; Receipt &gt; debit(const CostSpec &amp;cost)=0</div><div class="ttdoc">Atomically debit all items immediately.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html_ad05e62c0c67c2d5d6cc89e1a34d310c4"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html#ad05e62c0c67c2d5d6cc89e1a34d310c4">eve::resource::IResourceAccount::canAfford</a></div><div class="ttdeci">virtual eve::Result&lt; Affordability &gt; canAfford(const CostSpec &amp;cost) const =0</div><div class="ttdoc">Query whether a cost can be paid from currently available funds.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html_af3099c0d5a5c081c400eeb9b476b032d"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html#af3099c0d5a5c081c400eeb9b476b032d">eve::resource::IResourceAccount::rollback</a></div><div class="ttdeci">virtual eve::Result&lt; void &gt; rollback(const Reservation &amp;reservation)=0</div><div class="ttdoc">Release one active reservation without changing balances.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1ResourceId_html"><div class="ttname"><a href="classeve_1_1resource_1_1ResourceId.html">eve::resource::ResourceId</a></div><div class="ttdoc">Strong identity of a resource kind, such as mana or gold.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00036">ResourceAccount.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1ResourceId_html_a2cb19a8c7f1760de3d7c83f460091b05"><div class="ttname"><a href="classeve_1_1resource_1_1ResourceId.html#a2cb19a8c7f1760de3d7c83f460091b05">eve::resource::ResourceId::ResourceId</a></div><div class="ttdeci">ResourceId()=default</div><div class="ttdoc">Construct an invalid resource id.</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1ResourceId_html_a346bdcd110e1c153a0a649e1ceebbdaa"><div class="ttname"><a href="classeve_1_1resource_1_1ResourceId.html#a346bdcd110e1c153a0a649e1ceebbdaa">eve::resource::ResourceId::operator==</a></div><div class="ttdeci">friend bool operator==(const ResourceId &amp;, const ResourceId &amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1ResourceId_html_a79c66e3e585046a21b69326a6ac3e63c"><div class="ttname"><a href="classeve_1_1resource_1_1ResourceId.html#a79c66e3e585046a21b69326a6ac3e63c">eve::resource::ResourceId::value</a></div><div class="ttdeci">const std::string &amp; value() const noexcept</div><div class="ttdoc">Return the canonical owned spelling.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00052">ResourceAccount.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1ResourceId_html_a80342f90a0f578c5aeb9bca128e68525"><div class="ttname"><a href="classeve_1_1resource_1_1ResourceId.html#a80342f90a0f578c5aeb9bca128e68525">eve::resource::ResourceId::parse</a></div><div class="ttdeci">static eve::Result&lt; ResourceId &gt; parse(std::string_view text)</div><div class="ttdoc">Parse a resource id at a public input boundary.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8cpp_source.html#l00038">ResourceAccount.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1ResourceId_html_a81e0a8eb5d4aefc6675732b9a98ba16b"><div class="ttname"><a href="classeve_1_1resource_1_1ResourceId.html#a81e0a8eb5d4aefc6675732b9a98ba16b">eve::resource::ResourceId::operator&lt;=&gt;</a></div><div class="ttdeci">friend auto operator&lt;=&gt;(const ResourceId &amp;, const ResourceId &amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1ResourceId_html_ae55c5dcad5025238ee8322e06fa8209d"><div class="ttname"><a href="classeve_1_1resource_1_1ResourceId.html#ae55c5dcad5025238ee8322e06fa8209d">eve::resource::ResourceId::isValid</a></div><div class="ttdeci">bool isValid() const noexcept</div><div class="ttdoc">Whether this id passed the resource-name validation.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00049">ResourceAccount.h:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1detail_html"><div class="ttname"><a href="namespaceeve_1_1detail.html">eve::detail</a></div><div class="ttdef"><b>Definition</b> <a href="EventSequence_8h_source.html#l00008">EventSequence.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1resource_html"><div class="ttname"><a href="namespaceeve_1_1resource.html">eve::resource</a></div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8cpp_source.html#l00009">ResourceAccount.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1resource_html_a768e9451ab232b70fe11fb680b12cd78"><div class="ttname"><a href="namespaceeve_1_1resource.html#a768e9451ab232b70fe11fb680b12cd78">eve::resource::allocateAccountNonce</a></div><div class="ttdeci">eve::Result&lt; AccountNonce &gt; allocateAccountNonce()</div><div class="ttdoc">Allocate a process-local account identity for a credential issuer.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8cpp_source.html#l00027">ResourceAccount.cpp:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1resource_html_ae2e0fbf8389685f0eeffa7d36555818d"><div class="ttname"><a href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818d">eve::resource::ReceiptOperation</a></div><div class="ttdeci">ReceiptOperation</div><div class="ttdoc">Operation represented by a receipt returned from an account.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00214">ResourceAccount.h:214</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1resource_html_ae2e0fbf8389685f0eeffa7d36555818da009534719f8c8221440a5629f497a784"><div class="ttname"><a href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818da009534719f8c8221440a5629f497a784">eve::resource::ReceiptOperation::Debit</a></div><div class="ttdeci">@ Debit</div></div>
+<div class="ttc" id="anamespaceeve_1_1resource_html_ae2e0fbf8389685f0eeffa7d36555818da0a90b1bc4078f74b6f0d117ec7df65af"><div class="ttname"><a href="namespaceeve_1_1resource.html#ae2e0fbf8389685f0eeffa7d36555818da0a90b1bc4078f74b6f0d117ec7df65af">eve::resource::ReceiptOperation::Credit</a></div><div class="ttdeci">@ Credit</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1detail_1_1ResourceReceiptIdTag_html"><div class="ttname"><a href="structeve_1_1detail_1_1ResourceReceiptIdTag.html">eve::detail::ResourceReceiptIdTag</a></div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00029">ResourceAccount.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1detail_1_1ResourceReservationIdTag_html"><div class="ttname"><a href="structeve_1_1detail_1_1ResourceReservationIdTag.html">eve::detail::ResourceReservationIdTag</a></div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00028">ResourceAccount.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Affordability_html"><div class="ttname"><a href="structeve_1_1resource_1_1Affordability.html">eve::resource::Affordability</a></div><div class="ttdoc">Structured answer to a canAfford query.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00205">ResourceAccount.h:205</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Affordability_html_abbfc0ebbffc357a5c41053d9d0b99d9a"><div class="ttname"><a href="structeve_1_1resource_1_1Affordability.html#abbfc0ebbffc357a5c41053d9d0b99d9a">eve::resource::Affordability::shortfalls</a></div><div class="ttdeci">std::vector&lt; ResourceShortfall &gt; shortfalls</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00207">ResourceAccount.h:207</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Affordability_html_ac4f93aa771b5f689e81f3f1069b211b0"><div class="ttname"><a href="structeve_1_1resource_1_1Affordability.html#ac4f93aa771b5f689e81f3f1069b211b0">eve::resource::Affordability::affordable</a></div><div class="ttdeci">bool affordable</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00206">ResourceAccount.h:206</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Affordability_html_ad3e1b3bcfe75564dc593420d5b0df4c1"><div class="ttname"><a href="structeve_1_1resource_1_1Affordability.html#ad3e1b3bcfe75564dc593420d5b0df4c1">eve::resource::Affordability::isAffordable</a></div><div class="ttdeci">bool isAffordable() const noexcept</div><div class="ttdoc">Return whether every item in the queried cost is available.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00210">ResourceAccount.h:210</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1CostInput_html"><div class="ttname"><a href="structeve_1_1resource_1_1CostInput.html">eve::resource::CostInput</a></div><div class="ttdoc">Convenient unvalidated input used by CostSpec::from().</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00128">ResourceAccount.h:128</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1CostInput_html_a6d89986ee55cd9afdc29a1e77b997310"><div class="ttname"><a href="structeve_1_1resource_1_1CostInput.html#a6d89986ee55cd9afdc29a1e77b997310">eve::resource::CostInput::resource</a></div><div class="ttdeci">std::string_view resource</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00129">ResourceAccount.h:129</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1CostInput_html_afd28a8506f7347540015f6b70ab84743"><div class="ttname"><a href="structeve_1_1resource_1_1CostInput.html#afd28a8506f7347540015f6b70ab84743">eve::resource::CostInput::amount</a></div><div class="ttdeci">std::int64_t amount</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00130">ResourceAccount.h:130</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Receipt_html"><div class="ttname"><a href="structeve_1_1resource_1_1Receipt.html">eve::resource::Receipt</a></div><div class="ttdoc">Receipt proving one atomic debit or credit was applied.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00286">ResourceAccount.h:286</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Receipt_html_a208cb7ab341475920623d05e6bcd1ed7"><div class="ttname"><a href="structeve_1_1resource_1_1Receipt.html#a208cb7ab341475920623d05e6bcd1ed7">eve::resource::Receipt::operation</a></div><div class="ttdeci">ReceiptOperation operation</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00290">ResourceAccount.h:290</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Receipt_html_a3331e87c717f66355a240ac9eb93d12e"><div class="ttname"><a href="structeve_1_1resource_1_1Receipt.html#a3331e87c717f66355a240ac9eb93d12e">eve::resource::Receipt::cost</a></div><div class="ttdeci">CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00291">ResourceAccount.h:291</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Receipt_html_a7991e18fa4c91e79c43c76f6d6283151"><div class="ttname"><a href="structeve_1_1resource_1_1Receipt.html#a7991e18fa4c91e79c43c76f6d6283151">eve::resource::Receipt::account</a></div><div class="ttdeci">AccountNonce account</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00287">ResourceAccount.h:287</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Receipt_html_ad2d34f96fb3bd08cc394033f9970fc86"><div class="ttname"><a href="structeve_1_1resource_1_1Receipt.html#ad2d34f96fb3bd08cc394033f9970fc86">eve::resource::Receipt::reservation</a></div><div class="ttdeci">ReservationId reservation</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00289">ResourceAccount.h:289</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Receipt_html_ad2ed3d218a08192185a538e17dc7eb01"><div class="ttname"><a href="structeve_1_1resource_1_1Receipt.html#ad2ed3d218a08192185a538e17dc7eb01">eve::resource::Receipt::isValid</a></div><div class="ttdeci">bool isValid() const noexcept</div><div class="ttdoc">Whether this receipt contains a valid operation identity.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00294">ResourceAccount.h:294</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Receipt_html_ade6fbe2373dcaabaa31c31241ab41b07"><div class="ttname"><a href="structeve_1_1resource_1_1Receipt.html#ade6fbe2373dcaabaa31c31241ab41b07">eve::resource::Receipt::id</a></div><div class="ttdeci">ReceiptId id</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00288">ResourceAccount.h:288</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Reservation_html"><div class="ttname"><a href="structeve_1_1resource_1_1Reservation.html">eve::resource::Reservation</a></div><div class="ttdoc">Reservation credential returned by a successful reserve operation.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00271">ResourceAccount.h:271</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Reservation_html_a15e1289fa25ce97e694ce6b7a043b57f"><div class="ttname"><a href="structeve_1_1resource_1_1Reservation.html#a15e1289fa25ce97e694ce6b7a043b57f">eve::resource::Reservation::cost</a></div><div class="ttdeci">CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00274">ResourceAccount.h:274</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Reservation_html_a329af79c8e96c47a8f4430966d1228bd"><div class="ttname"><a href="structeve_1_1resource_1_1Reservation.html#a329af79c8e96c47a8f4430966d1228bd">eve::resource::Reservation::isValid</a></div><div class="ttdeci">bool isValid() const noexcept</div><div class="ttdoc">Whether this credential has valid account/id identity and cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00277">ResourceAccount.h:277</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Reservation_html_a6e11434191c4b35f9ea9668de1e4b748"><div class="ttname"><a href="structeve_1_1resource_1_1Reservation.html#a6e11434191c4b35f9ea9668de1e4b748">eve::resource::Reservation::id</a></div><div class="ttdeci">ReservationId id</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00273">ResourceAccount.h:273</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1Reservation_html_a7cc7bbaebe243be6226ea1f46e2ab642"><div class="ttname"><a href="structeve_1_1resource_1_1Reservation.html#a7cc7bbaebe243be6226ea1f46e2ab642">eve::resource::Reservation::account</a></div><div class="ttdeci">AccountNonce account</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00272">ResourceAccount.h:272</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceCost_html"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceCost.html">eve::resource::ResourceCost</a></div><div class="ttdoc">One positive resource and quantity pair in a canonical cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00112">ResourceAccount.h:112</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceCost_html_a0dfbe3a5fef454ea1645d628b41e841d"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceCost.html#a0dfbe3a5fef454ea1645d628b41e841d">eve::resource::ResourceCost::resource</a></div><div class="ttdeci">ResourceId resource</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00113">ResourceAccount.h:113</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceCost_html_a1cf33bdce4be498fd5e83a714ae0e2f4"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceCost.html#a1cf33bdce4be498fd5e83a714ae0e2f4">eve::resource::ResourceCost::create</a></div><div class="ttdeci">static eve::Result&lt; ResourceCost &gt; create(std::string_view resourceId, std::int64_t amountValue)</div><div class="ttdoc">Construct and validate one cost item.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8cpp_source.html#l00063">ResourceAccount.cpp:63</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceCost_html_a3f7b4c57c9cb831fa355e63006bc1b6d"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceCost.html#a3f7b4c57c9cb831fa355e63006bc1b6d">eve::resource::ResourceCost::operator==</a></div><div class="ttdeci">friend bool operator==(const ResourceCost &amp;, const ResourceCost &amp;) noexcept=default</div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceCost_html_a7870f7327e874ee94dc395fa96e66243"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceCost.html#a7870f7327e874ee94dc395fa96e66243">eve::resource::ResourceCost::amount</a></div><div class="ttdeci">Amount amount</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00114">ResourceAccount.h:114</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceShortfall_html"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceShortfall.html">eve::resource::ResourceShortfall</a></div><div class="ttdoc">A resource missing from an affordability query.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00192">ResourceAccount.h:192</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceShortfall_html_a06afe0a7339ca0b0cf1bd8ea47b839f8"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceShortfall.html#a06afe0a7339ca0b0cf1bd8ea47b839f8">eve::resource::ResourceShortfall::resource</a></div><div class="ttdeci">ResourceId resource</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00193">ResourceAccount.h:193</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceShortfall_html_aa97f089de61b42804cbc57d5a0062c3e"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceShortfall.html#aa97f089de61b42804cbc57d5a0062c3e">eve::resource::ResourceShortfall::available</a></div><div class="ttdeci">Amount available</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00195">ResourceAccount.h:195</a></div></div>
+<div class="ttc" id="astructeve_1_1resource_1_1ResourceShortfall_html_af0e91cf2ff98361336770e0d449dcf43"><div class="ttname"><a href="structeve_1_1resource_1_1ResourceShortfall.html#af0e91cf2ff98361336770e0d449dcf43">eve::resource::ResourceShortfall::required</a></div><div class="ttdeci">Amount required</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00194">ResourceAccount.h:194</a></div></div>
+<div class="ttc" id="astructstd_1_1hash_3_01eve_1_1resource_1_1ResourceId_01_4_html_adb67106dda9d61747303cd9cef6c0ab2"><div class="ttname"><a href="structstd_1_1hash_3_01eve_1_1resource_1_1ResourceId_01_4.html#adb67106dda9d61747303cd9cef6c0ab2">std::hash&lt; eve::resource::ResourceId &gt;::operator()</a></div><div class="ttdeci">std::size_t operator()(const eve::resource::ResourceId &amp;value) const noexcept</div><div class="ttdoc">Hash a canonical resource id for account reservation maps.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00362">ResourceAccount.h:362</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

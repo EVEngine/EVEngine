@@ -1,0 +1,426 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::climbing::ClimbingPredictionDecision结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1climbing.html">climbing</a></li><li class="navelem"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html">ClimbingPredictionDecision</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="structeve_1_1climbing_1_1ClimbingPredictionDecision-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::climbing::ClimbingPredictionDecision结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Server-to-client decision carrying the authoritative runtime snapshot for reconciliation.  
+ <a href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Climbing_8h_source.html">Climbing.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a23fdeb0876528dfa57a1de412b11629c" id="r_a23fdeb0876528dfa57a1de412b11629c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1climbing.html#a93742a03d86589776fe97b94a7ed7987">ClimbingPredictionSequence</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#a23fdeb0876528dfa57a1de412b11629c">sequence</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">ClimbingPredictionSequence::zero</a>()</td></tr>
+<tr class="separator:a23fdeb0876528dfa57a1de412b11629c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c88e183cd1e29ac78ac5db6dcb5b4e8" id="r_a9c88e183cd1e29ac78ac5db6dcb5b4e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#a9c88e183cd1e29ac78ac5db6dcb5b4e8">clientTick</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</td></tr>
+<tr class="separator:a9c88e183cd1e29ac78ac5db6dcb5b4e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e7811417a6f1d478e49fc6c9af3f72e" id="r_a2e7811417a6f1d478e49fc6c9af3f72e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#a2e7811417a6f1d478e49fc6c9af3f72e">serverTick</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</td></tr>
+<tr class="separator:a2e7811417a6f1d478e49fc6c9af3f72e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8c06e26b8cfcb702cabcd9e971d568e" id="r_ac8c06e26b8cfcb702cabcd9e971d568e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1climbing.html#a6f53518f1d079c5fea52da3e927ac3b3">ClimbingPredictionDisposition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#ac8c06e26b8cfcb702cabcd9e971d568e">disposition</a> = <a class="el" href="namespaceeve_1_1climbing.html#a6f53518f1d079c5fea52da3e927ac3b3ad37b1f6c0512e2118cee17fea015b699">ClimbingPredictionDisposition::Rejected</a></td></tr>
+<tr class="separator:ac8c06e26b8cfcb702cabcd9e971d568e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ace88a2ed522ca6c4b70fd43e2e66e4" id="r_a8ace88a2ed522ca6c4b70fd43e2e66e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6">ClimbingPredictionReason</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#a8ace88a2ed522ca6c4b70fd43e2e66e4">reason</a> = <a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6ad544eb3da2f68d24cf92a8519ed53a31">ClimbingPredictionReason::InvalidRequest</a></td></tr>
+<tr class="separator:a8ace88a2ed522ca6c4b70fd43e2e66e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef50a6c3e4fd77ef04c7b378e01b7e22" id="r_aef50a6c3e4fd77ef04c7b378e01b7e22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1ClimbingCandidateKey.html">ClimbingCandidateKey</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#aef50a6c3e4fd77ef04c7b378e01b7e22">authoritativeCandidate</a></td></tr>
+<tr class="memdesc:aef50a6c3e4fd77ef04c7b378e01b7e22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Server-selected key; fingerprint zero means no authoritative candidate was available.  <br /></td></tr>
+<tr class="separator:aef50a6c3e4fd77ef04c7b378e01b7e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24a3588f3ab00c065358163e1547a561" id="r_a24a3588f3ab00c065358163e1547a561"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#a24a3588f3ab00c065358163e1547a561">authoritativeSnapshot</a></td></tr>
+<tr class="memdesc:a24a3588f3ab00c065358163e1547a561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical server runtime state after the decision, used for rollback/replay reconciliation.  <br /></td></tr>
+<tr class="separator:a24a3588f3ab00c065358163e1547a561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4c9d2b6349e1bd5661698afa1c08a5d" id="r_aa4c9d2b6349e1bd5661698afa1c08a5d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#aa4c9d2b6349e1bd5661698afa1c08a5d">extensionMetadata</a></td></tr>
+<tr class="memdesc:aa4c9d2b6349e1bd5661698afa1c08a5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unknown schema fields retained across decode and encode.  <br /></td></tr>
+<tr class="separator:aa4c9d2b6349e1bd5661698afa1c08a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:afea7f7e6f6f532fec246e128c4348b44" id="r_afea7f7e6f6f532fec246e128c4348b44"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#afea7f7e6f6f532fec246e128c4348b44">SchemaId</a> = &quot;evengine.climbing-prediction-decision&quot;</td></tr>
+<tr class="memdesc:afea7f7e6f6f532fec246e128c4348b44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical cross-process schema id.  <br /></td></tr>
+<tr class="separator:afea7f7e6f6f532fec246e128c4348b44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d4b9ff7c65e0937804fbbc689262e53" id="r_a5d4b9ff7c65e0937804fbbc689262e53"><td class="memItemLeft" align="right" valign="top">static constexpr std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html#a5d4b9ff7c65e0937804fbbc689262e53">SchemaVersion</a> = 1</td></tr>
+<tr class="memdesc:a5d4b9ff7c65e0937804fbbc689262e53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current decision schema version.  <br /></td></tr>
+<tr class="separator:a5d4b9ff7c65e0937804fbbc689262e53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Server-to-client decision carrying the authoritative runtime snapshot for reconciliation. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00425">425</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aef50a6c3e4fd77ef04c7b378e01b7e22" name="aef50a6c3e4fd77ef04c7b378e01b7e22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef50a6c3e4fd77ef04c7b378e01b7e22">&#9670;&#160;</a></span>authoritativeCandidate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1ClimbingCandidateKey.html">ClimbingCandidateKey</a> eve::climbing::ClimbingPredictionDecision::authoritativeCandidate</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Server-selected key; fingerprint zero means no authoritative candidate was available. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00437">437</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a>.</p>
+
+</div>
+</div>
+<a id="a24a3588f3ab00c065358163e1547a561" name="a24a3588f3ab00c065358163e1547a561"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24a3588f3ab00c065358163e1547a561">&#9670;&#160;</a></span>authoritativeSnapshot</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">eve::Value</a> eve::climbing::ClimbingPredictionDecision::authoritativeSnapshot</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical server runtime state after the decision, used for rollback/replay reconciliation. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00439">439</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a>.</p>
+
+</div>
+</div>
+<a id="a9c88e183cd1e29ac78ac5db6dcb5b4e8" name="a9c88e183cd1e29ac78ac5db6dcb5b4e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c88e183cd1e29ac78ac5db6dcb5b4e8">&#9670;&#160;</a></span>clientTick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> eve::climbing::ClimbingPredictionDecision::clientTick = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00432">432</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a>.</p>
+
+</div>
+</div>
+<a id="ac8c06e26b8cfcb702cabcd9e971d568e" name="ac8c06e26b8cfcb702cabcd9e971d568e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8c06e26b8cfcb702cabcd9e971d568e">&#9670;&#160;</a></span>disposition</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a6f53518f1d079c5fea52da3e927ac3b3">ClimbingPredictionDisposition</a> eve::climbing::ClimbingPredictionDecision::disposition = <a class="el" href="namespaceeve_1_1climbing.html#a6f53518f1d079c5fea52da3e927ac3b3ad37b1f6c0512e2118cee17fea015b699">ClimbingPredictionDisposition::Rejected</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00434">434</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a>.</p>
+
+</div>
+</div>
+<a id="aa4c9d2b6349e1bd5661698afa1c08a5d" name="aa4c9d2b6349e1bd5661698afa1c08a5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4c9d2b6349e1bd5661698afa1c08a5d">&#9670;&#160;</a></span>extensionMetadata</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> eve::climbing::ClimbingPredictionDecision::extensionMetadata</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unknown schema fields retained across decode and encode. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00441">441</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a>.</p>
+
+</div>
+</div>
+<a id="a8ace88a2ed522ca6c4b70fd43e2e66e4" name="a8ace88a2ed522ca6c4b70fd43e2e66e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ace88a2ed522ca6c4b70fd43e2e66e4">&#9670;&#160;</a></span>reason</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6">ClimbingPredictionReason</a> eve::climbing::ClimbingPredictionDecision::reason = <a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6ad544eb3da2f68d24cf92a8519ed53a31">ClimbingPredictionReason::InvalidRequest</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00435">435</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a>.</p>
+
+</div>
+</div>
+<a id="afea7f7e6f6f532fec246e128c4348b44" name="afea7f7e6f6f532fec246e128c4348b44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afea7f7e6f6f532fec246e128c4348b44">&#9670;&#160;</a></span>SchemaId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::climbing::ClimbingPredictionDecision::SchemaId = &quot;evengine.climbing-prediction-decision&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Canonical cross-process schema id. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00427">427</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a>.</p>
+
+</div>
+</div>
+<a id="a5d4b9ff7c65e0937804fbbc689262e53" name="a5d4b9ff7c65e0937804fbbc689262e53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d4b9ff7c65e0937804fbbc689262e53">&#9670;&#160;</a></span>SchemaVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int64_t eve::climbing::ClimbingPredictionDecision::SchemaVersion = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current decision schema version. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00429">429</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a>.</p>
+
+</div>
+</div>
+<a id="a23fdeb0876528dfa57a1de412b11629c" name="a23fdeb0876528dfa57a1de412b11629c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23fdeb0876528dfa57a1de412b11629c">&#9670;&#160;</a></span>sequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a93742a03d86589776fe97b94a7ed7987">ClimbingPredictionSequence</a> eve::climbing::ClimbingPredictionDecision::sequence = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">ClimbingPredictionSequence::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00431">431</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a>.</p>
+
+</div>
+</div>
+<a id="a2e7811417a6f1d478e49fc6c9af3f72e" name="a2e7811417a6f1d478e49fc6c9af3f72e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e7811417a6f1d478e49fc6c9af3f72e">&#9670;&#160;</a></span>serverTick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> eve::climbing::ClimbingPredictionDecision::serverTick = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00433">433</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00309">eve::climbing::decodeClimbingPredictionDecision()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00290">eve::climbing::encodeClimbingPredictionDecision()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">eve::climbing::ClimbingRuntime::tryBeginPredicted()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/climbing/<a class="el" href="Climbing_8h_source.html">Climbing.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

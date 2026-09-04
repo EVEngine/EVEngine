@@ -1,0 +1,1303 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::Tracker类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="classeve_1_1rpg_1_1Tracker-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::Tracker类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>一份任务进度 + 本实例事件队列。  
+ <a href="classeve_1_1rpg_1_1Tracker.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Tracker_8h_source.html">Tracker.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7d4d33358cbf6b56538337ab8ed2c0f8" id="r_a7d4d33358cbf6b56538337ab8ed2c0f8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a7d4d33358cbf6b56538337ab8ed2c0f8">Tracker</a> ()</td></tr>
+<tr class="separator:a7d4d33358cbf6b56538337ab8ed2c0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05b4e15a9f3cbe4cb3590ecec9d759e9" id="r_a05b4e15a9f3cbe4cb3590ecec9d759e9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a05b4e15a9f3cbe4cb3590ecec9d759e9">~Tracker</a> ()=default</td></tr>
+<tr class="separator:a05b4e15a9f3cbe4cb3590ecec9d759e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35610b2ef71e47fac220ead530987c35" id="r_a35610b2ef71e47fac220ead530987c35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a35610b2ef71e47fac220ead530987c35">syncAuto</a> ()</td></tr>
+<tr class="memdesc:a35610b2ef71e47fac220ead530987c35"><td class="mdescLeft">&#160;</td><td class="mdescRight">补建 Registry 里尚未出现的条目并按前置解锁。  <br /></td></tr>
+<tr class="separator:a35610b2ef71e47fac220ead530987c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8186de64c32ea88eddfb02689a60d6fa" id="r_a8186de64c32ea88eddfb02689a60d6fa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a8186de64c32ea88eddfb02689a60d6fa">activate</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a8186de64c32ea88eddfb02689a60d6fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">激活任务（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:a8186de64c32ea88eddfb02689a60d6fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a965298be4ee62b7e87c0deb581c2c89d" id="r_a965298be4ee62b7e87c0deb581c2c89d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a965298be4ee62b7e87c0deb581c2c89d">canActivate</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a965298be4ee62b7e87c0deb581c2c89d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9657d5d4a68a4cbebaac17762e4fca2" id="r_af9657d5d4a68a4cbebaac17762e4fca2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#af9657d5d4a68a4cbebaac17762e4fca2">canActivateReason</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:af9657d5d4a68a4cbebaac17762e4fca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9a0ace441ccae98770b0ff20928723b" id="r_ad9a0ace441ccae98770b0ff20928723b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ad9a0ace441ccae98770b0ff20928723b">notify</a> (const std::string &amp;topic, const std::string &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, int amount)</td></tr>
+<tr class="separator:ad9a0ace441ccae98770b0ff20928723b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac458dd9f189fc2cc2648ab312ec32afa" id="r_ac458dd9f189fc2cc2648ab312ec32afa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ac458dd9f189fc2cc2648ab312ec32afa">claim</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:ac458dd9f189fc2cc2648ab312ec32afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">完成任务（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:ac458dd9f189fc2cc2648ab312ec32afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12c6f229c93924ea613239db523269cc" id="r_a12c6f229c93924ea613239db523269cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a12c6f229c93924ea613239db523269cc">reset</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a12c6f229c93924ea613239db523269cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">重置进度（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:a12c6f229c93924ea613239db523269cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b7b78b353812ee85a93dabdd89dcc1a" id="r_a4b7b78b353812ee85a93dabdd89dcc1a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a4b7b78b353812ee85a93dabdd89dcc1a">abandon</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a4b7b78b353812ee85a93dabdd89dcc1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">放弃任务（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:a4b7b78b353812ee85a93dabdd89dcc1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac83707752814e98d24b60ccc6975b9e6" id="r_ac83707752814e98d24b60ccc6975b9e6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ac83707752814e98d24b60ccc6975b9e6">fail</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;reason)</td></tr>
+<tr class="memdesc:ac83707752814e98d24b60ccc6975b9e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">失败任务（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:ac83707752814e98d24b60ccc6975b9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaebeec694eb159a12ec0b7a4949bb9a4" id="r_aaebeec694eb159a12ec0b7a4949bb9a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#aaebeec694eb159a12ec0b7a4949bb9a4">pollEvents</a> ()</td></tr>
+<tr class="memdesc:aaebeec694eb159a12ec0b7a4949bb9a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">把 pending 移到 polled 并清空 pending；随后 getEvent* 读 polled。  <br /></td></tr>
+<tr class="separator:aaebeec694eb159a12ec0b7a4949bb9a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ad8b94a7a9ef702c016f591799c236" id="r_a77ad8b94a7a9ef702c016f591799c236"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a77ad8b94a7a9ef702c016f591799c236">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a77ad8b94a7a9ef702c016f591799c236"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize persistent quest progress as deterministic versioned JSON.  <br /></td></tr>
+<tr class="separator:a77ad8b94a7a9ef702c016f591799c236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab12ff5d9a482ee40e4aba1994724f7ab" id="r_ab12ff5d9a482ee40e4aba1994724f7ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ab12ff5d9a482ee40e4aba1994724f7ab">restoreSnapshotJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:ab12ff5d9a482ee40e4aba1994724f7ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically restore quest progress against the current registry.  <br /></td></tr>
+<tr class="separator:ab12ff5d9a482ee40e4aba1994724f7ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5ade30353dedb7e5710e0c5932de0fd" id="r_ae5ade30353dedb7e5710e0c5932de0fd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ae5ade30353dedb7e5710e0c5932de0fd">getCount</a> () const</td></tr>
+<tr class="separator:ae5ade30353dedb7e5710e0c5932de0fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a738cfbbd2b9afdbf52ee17b6e89d8af8" id="r_a738cfbbd2b9afdbf52ee17b6e89d8af8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a738cfbbd2b9afdbf52ee17b6e89d8af8">getId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a738cfbbd2b9afdbf52ee17b6e89d8af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae377c51439b0d121dec68449c4975a22" id="r_ae377c51439b0d121dec68449c4975a22"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ae377c51439b0d121dec68449c4975a22">getState</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:ae377c51439b0d121dec68449c4975a22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fc77c17e385612234ac01c178861998" id="r_a8fc77c17e385612234ac01c178861998"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a8fc77c17e385612234ac01c178861998">hasTag</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;tag) const</td></tr>
+<tr class="separator:a8fc77c17e385612234ac01c178861998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43ac72a2546422190c9d0797b8e36876" id="r_a43ac72a2546422190c9d0797b8e36876"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a43ac72a2546422190c9d0797b8e36876">getExtra</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="separator:a43ac72a2546422190c9d0797b8e36876"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f52d842b15065c21da8eb6024187ad4" id="r_a7f52d842b15065c21da8eb6024187ad4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a7f52d842b15065c21da8eb6024187ad4">getObjectiveCount</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a7f52d842b15065c21da8eb6024187ad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecf8f97cbdd4bb882c02ea6acb390fb9" id="r_aecf8f97cbdd4bb882c02ea6acb390fb9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#aecf8f97cbdd4bb882c02ea6acb390fb9">getObjectiveId</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aecf8f97cbdd4bb882c02ea6acb390fb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af414befd91c97554e3068c2232c7ae5a" id="r_af414befd91c97554e3068c2232c7ae5a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#af414befd91c97554e3068c2232c7ae5a">getObjectiveCurrent</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:af414befd91c97554e3068c2232c7ae5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a043230a2d1d8abdce51d8353901e7ec3" id="r_a043230a2d1d8abdce51d8353901e7ec3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a043230a2d1d8abdce51d8353901e7ec3">getObjectiveCountRequired</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a043230a2d1d8abdce51d8353901e7ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0607a832bdff4c03e9514edb65de9497" id="r_a0607a832bdff4c03e9514edb65de9497"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a0607a832bdff4c03e9514edb65de9497">isObjectiveDone</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a0607a832bdff4c03e9514edb65de9497"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53e714bad45e768b6e4f409f32417462" id="r_a53e714bad45e768b6e4f409f32417462"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a53e714bad45e768b6e4f409f32417462">getRewardCount</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a53e714bad45e768b6e4f409f32417462"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08be490ebb66cddac9d2958fc84519b5" id="r_a08be490ebb66cddac9d2958fc84519b5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a08be490ebb66cddac9d2958fc84519b5">getRewardType</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int i) const</td></tr>
+<tr class="separator:a08be490ebb66cddac9d2958fc84519b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7f7f1876cd84dcf9e4d0f36da6046db" id="r_ae7f7f1876cd84dcf9e4d0f36da6046db"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ae7f7f1876cd84dcf9e4d0f36da6046db">getRewardId</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int i) const</td></tr>
+<tr class="separator:ae7f7f1876cd84dcf9e4d0f36da6046db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac203e330f8a8652bda54da581281dd70" id="r_ac203e330f8a8652bda54da581281dd70"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ac203e330f8a8652bda54da581281dd70">getRewardAmount</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int i) const</td></tr>
+<tr class="separator:ac203e330f8a8652bda54da581281dd70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a3f885025a5d07951609242fe56a92f" id="r_a5a3f885025a5d07951609242fe56a92f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a5a3f885025a5d07951609242fe56a92f">getEventCount</a> () const</td></tr>
+<tr class="separator:a5a3f885025a5d07951609242fe56a92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a248c733c6e814bd7d196f127e8e0a592" id="r_a248c733c6e814bd7d196f127e8e0a592"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a248c733c6e814bd7d196f127e8e0a592">getEventEntryId</a> (int i) const</td></tr>
+<tr class="separator:a248c733c6e814bd7d196f127e8e0a592"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8541a05fe18fd2db4e5aab7f7d51bab9" id="r_a8541a05fe18fd2db4e5aab7f7d51bab9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a8541a05fe18fd2db4e5aab7f7d51bab9">getEventObjectiveId</a> (int i) const</td></tr>
+<tr class="separator:a8541a05fe18fd2db4e5aab7f7d51bab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a264856bcd1888fa9892778f20904a68c" id="r_a264856bcd1888fa9892778f20904a68c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a264856bcd1888fa9892778f20904a68c">getEventAction</a> (int i) const</td></tr>
+<tr class="separator:a264856bcd1888fa9892778f20904a68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab988b1cb4d8909f1f2ba24a608fdc725" id="r_ab988b1cb4d8909f1f2ba24a608fdc725"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#ab988b1cb4d8909f1f2ba24a608fdc725">getEventTopic</a> (int i) const</td></tr>
+<tr class="separator:ab988b1cb4d8909f1f2ba24a608fdc725"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61706a1e183ef6eb946b634d57ae863b" id="r_a61706a1e183ef6eb946b634d57ae863b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a61706a1e183ef6eb946b634d57ae863b">getEventTarget</a> (int i) const</td></tr>
+<tr class="separator:a61706a1e183ef6eb946b634d57ae863b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a518760ff737058bbc03eec3654affd71" id="r_a518760ff737058bbc03eec3654affd71"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a518760ff737058bbc03eec3654affd71">getEventAmount</a> (int i) const</td></tr>
+<tr class="separator:a518760ff737058bbc03eec3654affd71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd6b951e296610bcf8f810c3b8f2792e" id="r_abd6b951e296610bcf8f810c3b8f2792e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#abd6b951e296610bcf8f810c3b8f2792e">getEventReason</a> (int i) const</td></tr>
+<tr class="separator:abd6b951e296610bcf8f810c3b8f2792e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a3157cb1ee4a26aa20cb3bdb7d704d523" id="r_a3157cb1ee4a26aa20cb3bdb7d704d523"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1rpg_1_1QuestRuntime.html">QuestRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a3157cb1ee4a26aa20cb3bdb7d704d523">entries</a></td></tr>
+<tr class="memdesc:a3157cb1ee4a26aa20cb3bdb7d704d523"><td class="mdescLeft">&#160;</td><td class="mdescRight">运行时条目（QuestSystem 读写；公开以便测试与脚本查询）。  <br /></td></tr>
+<tr class="separator:a3157cb1ee4a26aa20cb3bdb7d704d523"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5556a2564ab3b33fb06e6565ca9c0791" id="r_a5556a2564ab3b33fb06e6565ca9c0791"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#a5556a2564ab3b33fb06e6565ca9c0791">order</a></td></tr>
+<tr class="separator:a5556a2564ab3b33fb06e6565ca9c0791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe59f76741d5f1b6f837f50c5e40d467" id="r_abe59f76741d5f1b6f837f50c5e40d467"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1rpg_1_1QuestEvent.html">QuestEvent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#abe59f76741d5f1b6f837f50c5e40d467">pending</a></td></tr>
+<tr class="separator:abe59f76741d5f1b6f837f50c5e40d467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeafcecbf733995adc7e1b715bf903341" id="r_aeafcecbf733995adc7e1b715bf903341"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1rpg_1_1QuestEvent.html">QuestEvent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Tracker.html#aeafcecbf733995adc7e1b715bf903341">polled</a></td></tr>
+<tr class="separator:aeafcecbf733995adc7e1b715bf903341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>一份任务进度 + 本实例事件队列。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8h_source.html">Tracker.h</a> 第 <a class="el" href="Tracker_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7d4d33358cbf6b56538337ab8ed2c0f8" name="a7d4d33358cbf6b56538337ab8ed2c0f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d4d33358cbf6b56538337ab8ed2c0f8">&#9670;&#160;</a></span>Tracker()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::Tracker::Tracker </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00061">eve::rpg::QuestSystem::syncAuto()</a>.</p>
+
+</div>
+</div>
+<a id="a05b4e15a9f3cbe4cb3590ecec9d759e9" name="a05b4e15a9f3cbe4cb3590ecec9d759e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05b4e15a9f3cbe4cb3590ecec9d759e9">&#9670;&#160;</a></span>~Tracker()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::Tracker::~Tracker </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4b7b78b353812ee85a93dabdd89dcc1a" name="a4b7b78b353812ee85a93dabdd89dcc1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b7b78b353812ee85a93dabdd89dcc1a">&#9670;&#160;</a></span>abandon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Tracker::abandon </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>放弃任务（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00238">eve::rpg::QuestSystem::abandon()</a>.</p>
+
+</div>
+</div>
+<a id="a8186de64c32ea88eddfb02689a60d6fa" name="a8186de64c32ea88eddfb02689a60d6fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8186de64c32ea88eddfb02689a60d6fa">&#9670;&#160;</a></span>activate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Tracker::activate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>激活任务（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00122">eve::rpg::QuestSystem::activate()</a>.</p>
+
+</div>
+</div>
+<a id="a965298be4ee62b7e87c0deb581c2c89d" name="a965298be4ee62b7e87c0deb581c2c89d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a965298be4ee62b7e87c0deb581c2c89d">&#9670;&#160;</a></span>canActivate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Tracker::canActivate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00116">eve::rpg::QuestSystem::canActivate()</a>.</p>
+
+</div>
+</div>
+<a id="af9657d5d4a68a4cbebaac17762e4fca2" name="af9657d5d4a68a4cbebaac17762e4fca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9657d5d4a68a4cbebaac17762e4fca2">&#9670;&#160;</a></span>canActivateReason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::canActivateReason </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00100">eve::rpg::QuestSystem::canActivateReason()</a>.</p>
+
+</div>
+</div>
+<a id="ac458dd9f189fc2cc2648ab312ec32afa" name="ac458dd9f189fc2cc2648ab312ec32afa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac458dd9f189fc2cc2648ab312ec32afa">&#9670;&#160;</a></span>claim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Tracker::claim </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>完成任务（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00174">eve::rpg::QuestSystem::claim()</a>.</p>
+
+</div>
+</div>
+<a id="ac83707752814e98d24b60ccc6975b9e6" name="ac83707752814e98d24b60ccc6975b9e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac83707752814e98d24b60ccc6975b9e6">&#9670;&#160;</a></span>fail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Tracker::fail </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>失败任务（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00240">eve::rpg::QuestSystem::fail()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tracker_8cpp_source.html#l00073">restoreSnapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="ae5ade30353dedb7e5710e0c5932de0fd" name="ae5ade30353dedb7e5710e0c5932de0fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5ade30353dedb7e5710e0c5932de0fd">&#9670;&#160;</a></span>getCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Tracker::getCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00095">entries</a>.</p>
+
+</div>
+</div>
+<a id="a264856bcd1888fa9892778f20904a68c" name="a264856bcd1888fa9892778f20904a68c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a264856bcd1888fa9892778f20904a68c">&#9670;&#160;</a></span>getEventAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getEventAction </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="a518760ff737058bbc03eec3654affd71" name="a518760ff737058bbc03eec3654affd71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a518760ff737058bbc03eec3654affd71">&#9670;&#160;</a></span>getEventAmount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Tracker::getEventAmount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="a5a3f885025a5d07951609242fe56a92f" name="a5a3f885025a5d07951609242fe56a92f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a3f885025a5d07951609242fe56a92f">&#9670;&#160;</a></span>getEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Tracker::getEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="a248c733c6e814bd7d196f127e8e0a592" name="a248c733c6e814bd7d196f127e8e0a592"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a248c733c6e814bd7d196f127e8e0a592">&#9670;&#160;</a></span>getEventEntryId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getEventEntryId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="a8541a05fe18fd2db4e5aab7f7d51bab9" name="a8541a05fe18fd2db4e5aab7f7d51bab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8541a05fe18fd2db4e5aab7f7d51bab9">&#9670;&#160;</a></span>getEventObjectiveId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getEventObjectiveId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="abd6b951e296610bcf8f810c3b8f2792e" name="abd6b951e296610bcf8f810c3b8f2792e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd6b951e296610bcf8f810c3b8f2792e">&#9670;&#160;</a></span>getEventReason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getEventReason </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="a61706a1e183ef6eb946b634d57ae863b" name="a61706a1e183ef6eb946b634d57ae863b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61706a1e183ef6eb946b634d57ae863b">&#9670;&#160;</a></span>getEventTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getEventTarget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="ab988b1cb4d8909f1f2ba24a608fdc725" name="ab988b1cb4d8909f1f2ba24a608fdc725"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab988b1cb4d8909f1f2ba24a608fdc725">&#9670;&#160;</a></span>getEventTopic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getEventTopic </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="a43ac72a2546422190c9d0797b8e36876" name="a43ac72a2546422190c9d0797b8e36876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43ac72a2546422190c9d0797b8e36876">&#9670;&#160;</a></span>getExtra()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getExtra </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a>, <a class="el" href="Quest_8cpp_source.html#l00019">eve::rpg::QuestDefinition::getExtra()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a738cfbbd2b9afdbf52ee17b6e89d8af8" name="a738cfbbd2b9afdbf52ee17b6e89d8af8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a738cfbbd2b9afdbf52ee17b6e89d8af8">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Tracker_8h_source.html#l00096">order</a>.</p>
+
+</div>
+</div>
+<a id="a7f52d842b15065c21da8eb6024187ad4" name="a7f52d842b15065c21da8eb6024187ad4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f52d842b15065c21da8eb6024187ad4">&#9670;&#160;</a></span>getObjectiveCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Tracker::getObjectiveCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00095">entries</a>.</p>
+
+</div>
+</div>
+<a id="a043230a2d1d8abdce51d8353901e7ec3" name="a043230a2d1d8abdce51d8353901e7ec3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a043230a2d1d8abdce51d8353901e7ec3">&#9670;&#160;</a></span>getObjectiveCountRequired()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Tracker::getObjectiveCountRequired </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00095">entries</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="af414befd91c97554e3068c2232c7ae5a" name="af414befd91c97554e3068c2232c7ae5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af414befd91c97554e3068c2232c7ae5a">&#9670;&#160;</a></span>getObjectiveCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Tracker::getObjectiveCurrent </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00095">entries</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aecf8f97cbdd4bb882c02ea6acb390fb9" name="aecf8f97cbdd4bb882c02ea6acb390fb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecf8f97cbdd4bb882c02ea6acb390fb9">&#9670;&#160;</a></span>getObjectiveId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getObjectiveId </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00095">entries</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac203e330f8a8652bda54da581281dd70" name="ac203e330f8a8652bda54da581281dd70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac203e330f8a8652bda54da581281dd70">&#9670;&#160;</a></span>getRewardAmount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::Tracker::getRewardAmount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a> , 以及 <a class="el" href="Quest_8h_source.html#l00031">eve::rpg::QuestDefinition::rewards</a>.</p>
+
+</div>
+</div>
+<a id="a53e714bad45e768b6e4f409f32417462" name="a53e714bad45e768b6e4f409f32417462"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53e714bad45e768b6e4f409f32417462">&#9670;&#160;</a></span>getRewardCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Tracker::getRewardCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a> , 以及 <a class="el" href="Quest_8h_source.html#l00031">eve::rpg::QuestDefinition::rewards</a>.</p>
+
+</div>
+</div>
+<a id="ae7f7f1876cd84dcf9e4d0f36da6046db" name="ae7f7f1876cd84dcf9e4d0f36da6046db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7f7f1876cd84dcf9e4d0f36da6046db">&#9670;&#160;</a></span>getRewardId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getRewardId </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a> , 以及 <a class="el" href="Quest_8h_source.html#l00031">eve::rpg::QuestDefinition::rewards</a>.</p>
+
+</div>
+</div>
+<a id="a08be490ebb66cddac9d2958fc84519b5" name="a08be490ebb66cddac9d2958fc84519b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08be490ebb66cddac9d2958fc84519b5">&#9670;&#160;</a></span>getRewardType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getRewardType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a> , 以及 <a class="el" href="Quest_8h_source.html#l00031">eve::rpg::QuestDefinition::rewards</a>.</p>
+
+</div>
+</div>
+<a id="ae377c51439b0d121dec68449c4975a22" name="ae377c51439b0d121dec68449c4975a22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae377c51439b0d121dec68449c4975a22">&#9670;&#160;</a></span>getState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Tracker::getState </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00095">entries</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a>.</p>
+
+</div>
+</div>
+<a id="a8fc77c17e385612234ac01c178861998" name="a8fc77c17e385612234ac01c178861998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fc77c17e385612234ac01c178861998">&#9670;&#160;</a></span>hasTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Tracker::hasTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a> , 以及 <a class="el" href="Quest_8cpp_source.html#l00015">eve::rpg::QuestDefinition::hasTag()</a>.</p>
+
+</div>
+</div>
+<a id="a0607a832bdff4c03e9514edb65de9497" name="a0607a832bdff4c03e9514edb65de9497"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0607a832bdff4c03e9514edb65de9497">&#9670;&#160;</a></span>isObjectiveDone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Tracker::isObjectiveDone </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00095">entries</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ad9a0ace441ccae98770b0ff20928723b" name="ad9a0ace441ccae98770b0ff20928723b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9a0ace441ccae98770b0ff20928723b">&#9670;&#160;</a></span>notify()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Tracker::notify </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>topic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00145">eve::rpg::QuestSystem::notify()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a>.</p>
+
+</div>
+</div>
+<a id="aaebeec694eb159a12ec0b7a4949bb9a4" name="aaebeec694eb159a12ec0b7a4949bb9a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaebeec694eb159a12ec0b7a4949bb9a4">&#9670;&#160;</a></span>pollEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Tracker::pollEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>把 pending 移到 polled 并清空 pending；随后 getEvent* 读 polled。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00097">pending</a> , 以及 <a class="el" href="Tracker_8h_source.html#l00098">polled</a>.</p>
+
+</div>
+</div>
+<a id="a12c6f229c93924ea613239db523269cc" name="a12c6f229c93924ea613239db523269cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12c6f229c93924ea613239db523269cc">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Tracker::reset </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>重置进度（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00196">eve::rpg::QuestSystem::reset()</a>.</p>
+
+</div>
+</div>
+<a id="ab12ff5d9a482ee40e4aba1994724f7ab" name="ab12ff5d9a482ee40e4aba1994724f7ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab12ff5d9a482ee40e4aba1994724f7ab">&#9670;&#160;</a></span>restoreSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::Tracker::restoreSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically restore quest progress against the current registry. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>UTF-8 JSON produced by <a class="el" href="classeve_1_1rpg_1_1Tracker.html#a77ad8b94a7a9ef702c016f591799c236" title="Serialize persistent quest progress as deterministic versioned JSON.">snapshotJson()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success after one commit, or a structured parse/schema/content failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Unknown fields are ignored for version 1. Missing, removed, duplicated, or reordered quest/objective ids are rejected so content migration cannot silently lose progress. A failure leaves entries, ordering, and both event queues unchanged. @thread Call on the owning simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Value_8cpp_source.html#l00100">eve::Value::arraySize()</a>, <a class="el" href="Value_8cpp_source.html#l00069">eve::Value::asInt()</a>, <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="Value_8cpp_source.html#l00106">eve::Value::at()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Tracker_8h_source.html#l00095">entries</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Tracker_8cpp_source.html#l00035">fail()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00124">eve::Value::find()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Value_8h_source.html#l00097">eve::Value::isArray()</a>, <a class="el" href="Value_8h_source.html#l00091">eve::Value::isInt64()</a>, <a class="el" href="Value_8h_source.html#l00099">eve::Value::isObject()</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00138">objectives</a>, <a class="el" href="Tracker_8h_source.html#l00096">order</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="Tracker_8h_source.html#l00097">pending</a>, <a class="el" href="Tracker_8h_source.html#l00098">polled</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+</div>
+</div>
+<a id="a77ad8b94a7a9ef702c016f591799c236" name="a77ad8b94a7a9ef702c016f591799c236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77ad8b94a7a9ef702c016f591799c236">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::rpg::Tracker::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize persistent quest progress as deterministic versioned JSON. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning JSON using schema <code>eve.rpg.quest-tracker</code> version 1, or a structured failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd><a class="el" href="classeve_1_1Runtime.html">Runtime</a> event queues are transient and are intentionally excluded. The snapshot is bound to the currently registered quest and objective ids. @thread Call on the owning simulation thread; no internal synchronization is performed. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tracker_8h_source.html#l00095">entries</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00138">objectives</a>, <a class="el" href="Tracker_8h_source.html#l00096">order</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGSaveSession_8cpp_source.html#l00338">eve::rpg::RPGSaveSession::snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a35610b2ef71e47fac220ead530987c35" name="a35610b2ef71e47fac220ead530987c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35610b2ef71e47fac220ead530987c35">&#9670;&#160;</a></span>syncAuto()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Tracker::syncAuto </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>补建 Registry 里尚未出现的条目并按前置解锁。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a> 第 <a class="el" href="Tracker_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00061">eve::rpg::QuestSystem::syncAuto()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3157cb1ee4a26aa20cb3bdb7d704d523" name="a3157cb1ee4a26aa20cb3bdb7d704d523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3157cb1ee4a26aa20cb3bdb7d704d523">&#9670;&#160;</a></span>entries</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, <a class="el" href="structeve_1_1rpg_1_1QuestRuntime.html">QuestRuntime</a>&gt; eve::rpg::Tracker::entries</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>运行时条目（QuestSystem 读写；公开以便测试与脚本查询）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Tracker_8h_source.html">Tracker.h</a> 第 <a class="el" href="Tracker_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a>, <a class="el" href="Tracker_8cpp_source.html#l00165">getCount()</a>, <a class="el" href="Tracker_8cpp_source.html#l00187">getObjectiveCount()</a>, <a class="el" href="Tracker_8cpp_source.html#l00206">getObjectiveCountRequired()</a>, <a class="el" href="Tracker_8cpp_source.html#l00199">getObjectiveCurrent()</a>, <a class="el" href="Tracker_8cpp_source.html#l00192">getObjectiveId()</a>, <a class="el" href="Tracker_8cpp_source.html#l00172">getState()</a>, <a class="el" href="Tracker_8cpp_source.html#l00213">isObjectiveDone()</a>, <a class="el" href="Tracker_8cpp_source.html#l00073">restoreSnapshotJson()</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a> , 以及 <a class="el" href="Tracker_8cpp_source.html#l00044">snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a5556a2564ab3b33fb06e6565ca9c0791" name="a5556a2564ab3b33fb06e6565ca9c0791"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5556a2564ab3b33fb06e6565ca9c0791">&#9670;&#160;</a></span>order</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::rpg::Tracker::order</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8h_source.html">Tracker.h</a> 第 <a class="el" href="Tracker_8h_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a>, <a class="el" href="Tracker_8cpp_source.html#l00167">getId()</a>, <a class="el" href="Tracker_8cpp_source.html#l00073">restoreSnapshotJson()</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a> , 以及 <a class="el" href="Tracker_8cpp_source.html#l00044">snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="abe59f76741d5f1b6f837f50c5e40d467" name="abe59f76741d5f1b6f837f50c5e40d467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe59f76741d5f1b6f837f50c5e40d467">&#9670;&#160;</a></span>pending</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1rpg_1_1QuestEvent.html">QuestEvent</a>&gt; eve::rpg::Tracker::pending</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8h_source.html">Tracker.h</a> 第 <a class="el" href="Tracker_8h_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a>, <a class="el" href="Tracker_8cpp_source.html#l00039">pollEvents()</a>, <a class="el" href="Tracker_8cpp_source.html#l00073">restoreSnapshotJson()</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a>.</p>
+
+</div>
+</div>
+<a id="aeafcecbf733995adc7e1b715bf903341" name="aeafcecbf733995adc7e1b715bf903341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeafcecbf733995adc7e1b715bf903341">&#9670;&#160;</a></span>polled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1rpg_1_1QuestEvent.html">QuestEvent</a>&gt; eve::rpg::Tracker::polled</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tracker_8h_source.html">Tracker.h</a> 第 <a class="el" href="Tracker_8h_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a>, <a class="el" href="Tracker_8cpp_source.html#l00255">getEventAction()</a>, <a class="el" href="Tracker_8cpp_source.html#l00270">getEventAmount()</a>, <a class="el" href="Tracker_8cpp_source.html#l00243">getEventCount()</a>, <a class="el" href="Tracker_8cpp_source.html#l00245">getEventEntryId()</a>, <a class="el" href="Tracker_8cpp_source.html#l00250">getEventObjectiveId()</a>, <a class="el" href="Tracker_8cpp_source.html#l00275">getEventReason()</a>, <a class="el" href="Tracker_8cpp_source.html#l00265">getEventTarget()</a>, <a class="el" href="Tracker_8cpp_source.html#l00260">getEventTopic()</a>, <a class="el" href="Tracker_8cpp_source.html#l00039">pollEvents()</a>, <a class="el" href="Tracker_8cpp_source.html#l00073">restoreSnapshotJson()</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="Tracker_8h_source.html">Tracker.h</a></li>
+<li>src/modules/rpg/<a class="el" href="Tracker_8cpp_source.html">Tracker.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

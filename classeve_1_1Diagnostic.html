@@ -1,0 +1,714 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Diagnostic类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1Diagnostic-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Diagnostic类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A structured explanation of a failed, degraded, or noteworthy result.  
+ <a href="classeve_1_1Diagnostic.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2171433ac8bc5364df4250a631c72e31" id="r_a2171433ac8bc5364df4250a631c72e31"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#a2171433ac8bc5364df4250a631c72e31">Diagnostic</a> ()=default</td></tr>
+<tr class="memdesc:a2171433ac8bc5364df4250a631c72e31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty informational diagnostic.  <br /></td></tr>
+<tr class="separator:a2171433ac8bc5364df4250a631c72e31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73b83f031f163dd5300665f92a39ef19" id="r_a73b83f031f163dd5300665f92a39ef19"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#a73b83f031f163dd5300665f92a39ef19">Diagnostic</a> (<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="el" href="classeve_1_1Diagnostic.html#a0b7d32cb3608edde1eeff7c201399fe8">code</a>, <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a> <a class="el" href="classeve_1_1Diagnostic.html#a83c09f6eb8b755ef85b2998e26bd50c8">severity</a>, std::string <a class="el" href="classeve_1_1Diagnostic.html#ae9eb3925b86e9a38a392bcdfad0a87db">message</a>, std::string <a class="el" href="classeve_1_1Diagnostic.html#a0dfaad3a9bf406b6a3279a1edacff294">path</a>={}, <a class="el" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> <a class="el" href="classeve_1_1Diagnostic.html#afc2fb300fe13485ccd6e85e5e8280e9a">details</a>={}, std::string <a class="el" href="classeve_1_1Diagnostic.html#afc7a97ca9c7c84edbd431f7a6aec3b68">source</a>={})</td></tr>
+<tr class="memdesc:a73b83f031f163dd5300665f92a39ef19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a diagnostic with its stable code and human text.  <br /></td></tr>
+<tr class="separator:a73b83f031f163dd5300665f92a39ef19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b7d32cb3608edde1eeff7c201399fe8" id="r_a0b7d32cb3608edde1eeff7c201399fe8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#a0b7d32cb3608edde1eeff7c201399fe8">code</a> () const noexcept</td></tr>
+<tr class="memdesc:a0b7d32cb3608edde1eeff7c201399fe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable machine-readable code.  <br /></td></tr>
+<tr class="separator:a0b7d32cb3608edde1eeff7c201399fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83c09f6eb8b755ef85b2998e26bd50c8" id="r_a83c09f6eb8b755ef85b2998e26bd50c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#a83c09f6eb8b755ef85b2998e26bd50c8">severity</a> () const noexcept</td></tr>
+<tr class="memdesc:a83c09f6eb8b755ef85b2998e26bd50c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Severity for logging and presentation.  <br /></td></tr>
+<tr class="separator:a83c09f6eb8b755ef85b2998e26bd50c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9eb3925b86e9a38a392bcdfad0a87db" id="r_ae9eb3925b86e9a38a392bcdfad0a87db"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#ae9eb3925b86e9a38a392bcdfad0a87db">message</a> () const noexcept</td></tr>
+<tr class="memdesc:ae9eb3925b86e9a38a392bcdfad0a87db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable explanation.  <br /></td></tr>
+<tr class="separator:ae9eb3925b86e9a38a392bcdfad0a87db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dfaad3a9bf406b6a3279a1edacff294" id="r_a0dfaad3a9bf406b6a3279a1edacff294"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#a0dfaad3a9bf406b6a3279a1edacff294">path</a> () const noexcept</td></tr>
+<tr class="memdesc:a0dfaad3a9bf406b6a3279a1edacff294"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional field, property, URI, or logical path.  <br /></td></tr>
+<tr class="separator:a0dfaad3a9bf406b6a3279a1edacff294"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc2fb300fe13485ccd6e85e5e8280e9a" id="r_afc2fb300fe13485ccd6e85e5e8280e9a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#afc2fb300fe13485ccd6e85e5e8280e9a">details</a> () const noexcept</td></tr>
+<tr class="memdesc:afc2fb300fe13485ccd6e85e5e8280e9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured context in insertion order.  <br /></td></tr>
+<tr class="separator:afc2fb300fe13485ccd6e85e5e8280e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7a97ca9c7c84edbd431f7a6aec3b68" id="r_afc7a97ca9c7c84edbd431f7a6aec3b68"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#afc7a97ca9c7c84edbd431f7a6aec3b68">source</a> () const noexcept</td></tr>
+<tr class="memdesc:afc7a97ca9c7c84edbd431f7a6aec3b68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional producer or subsystem that emitted the diagnostic.  <br /></td></tr>
+<tr class="separator:afc7a97ca9c7c84edbd431f7a6aec3b68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69813397fe26670ad22c8602daf1b6d3" id="r_a69813397fe26670ad22c8602daf1b6d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#a69813397fe26670ad22c8602daf1b6d3">addDetail</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a69813397fe26670ad22c8602daf1b6d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add structured context without changing the stable code.  <br /></td></tr>
+<tr class="separator:a69813397fe26670ad22c8602daf1b6d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a802af510c8e74f2c5d1167783daa5584" id="r_a802af510c8e74f2c5d1167783daa5584"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#a802af510c8e74f2c5d1167783daa5584">isError</a> () const noexcept</td></tr>
+<tr class="memdesc:a802af510c8e74f2c5d1167783daa5584"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the diagnostic represents an error or fatal condition.  <br /></td></tr>
+<tr class="separator:a802af510c8e74f2c5d1167783daa5584"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:af797f7520cc62e8273da5afdb59d9ef4" id="r_af797f7520cc62e8273da5afdb59d9ef4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">error</a> (<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="el" href="classeve_1_1Diagnostic.html#a0b7d32cb3608edde1eeff7c201399fe8">code</a>, std::string <a class="el" href="classeve_1_1Diagnostic.html#ae9eb3925b86e9a38a392bcdfad0a87db">message</a>, std::string <a class="el" href="classeve_1_1Diagnostic.html#a0dfaad3a9bf406b6a3279a1edacff294">path</a>={}, <a class="el" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> <a class="el" href="classeve_1_1Diagnostic.html#afc2fb300fe13485ccd6e85e5e8280e9a">details</a>={}, std::string <a class="el" href="classeve_1_1Diagnostic.html#afc7a97ca9c7c84edbd431f7a6aec3b68">source</a>={})</td></tr>
+<tr class="memdesc:af797f7520cc62e8273da5afdb59d9ef4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an error diagnostic with the standard error severity.  <br /></td></tr>
+<tr class="separator:af797f7520cc62e8273da5afdb59d9ef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4610a567bbc009a968d67196f29910" id="r_a7b4610a567bbc009a968d67196f29910"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Diagnostic.html#a7b4610a567bbc009a968d67196f29910">warning</a> (<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="el" href="classeve_1_1Diagnostic.html#a0b7d32cb3608edde1eeff7c201399fe8">code</a>, std::string <a class="el" href="classeve_1_1Diagnostic.html#ae9eb3925b86e9a38a392bcdfad0a87db">message</a>, std::string <a class="el" href="classeve_1_1Diagnostic.html#a0dfaad3a9bf406b6a3279a1edacff294">path</a>={}, <a class="el" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> <a class="el" href="classeve_1_1Diagnostic.html#afc2fb300fe13485ccd6e85e5e8280e9a">details</a>={}, std::string <a class="el" href="classeve_1_1Diagnostic.html#afc7a97ca9c7c84edbd431f7a6aec3b68">source</a>={})</td></tr>
+<tr class="memdesc:a7b4610a567bbc009a968d67196f29910"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a warning diagnostic.  <br /></td></tr>
+<tr class="separator:a7b4610a567bbc009a968d67196f29910"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A structured explanation of a failed, degraded, or noteworthy result. </p>
+<dl class="section note"><dt>注解</dt><dd><code><a class="el" href="classeve_1_1Diagnostic.html#ae9eb3925b86e9a38a392bcdfad0a87db" title="Human-readable explanation.">message()</a></code> is for humans; use <code><a class="el" href="classeve_1_1Diagnostic.html#a0b7d32cb3608edde1eeff7c201399fe8" title="Stable machine-readable code.">code()</a></code> for program decisions. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00094">94</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2171433ac8bc5364df4250a631c72e31" name="a2171433ac8bc5364df4250a631c72e31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2171433ac8bc5364df4250a631c72e31">&#9670;&#160;</a></span>Diagnostic() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Diagnostic::Diagnostic </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty informational diagnostic. </p>
+
+</div>
+</div>
+<a id="a73b83f031f163dd5300665f92a39ef19" name="a73b83f031f163dd5300665f92a39ef19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73b83f031f163dd5300665f92a39ef19">&#9670;&#160;</a></span>Diagnostic() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::Diagnostic::Diagnostic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a>&#160;</td>
+          <td class="paramname"><em>severity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a>&#160;</td>
+          <td class="paramname"><em>details</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a diagnostic with its stable code and human text. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">code</td><td>Stable machine-readable code. </td></tr>
+    <tr><td class="paramname">severity</td><td>Display and logging severity. </td></tr>
+    <tr><td class="paramname">message</td><td>Human-readable explanation; may be empty. </td></tr>
+    <tr><td class="paramname">path</td><td>Optional field, property, URI, or logical path involved. </td></tr>
+    <tr><td class="paramname">details</td><td>Optional structured context. </td></tr>
+    <tr><td class="paramname">source</td><td>Optional producer/boundary name, such as a Squirrel binding or a serialized document importer. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a69813397fe26670ad22c8602daf1b6d3" name="a69813397fe26670ad22c8602daf1b6d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69813397fe26670ad22c8602daf1b6d3">&#9670;&#160;</a></span>addDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::Diagnostic::addDetail </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Add structured context without changing the stable code. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a0b7d32cb3608edde1eeff7c201399fe8" name="a0b7d32cb3608edde1eeff7c201399fe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b7d32cb3608edde1eeff7c201399fe8">&#9670;&#160;</a></span>code()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> eve::Diagnostic::code </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable machine-readable code. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Status_8h_source.html#l00091">eve::Status::failure()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">eve::script::projectDiagnostic()</a>.</p>
+
+</div>
+</div>
+<a id="afc2fb300fe13485ccd6e85e5e8280e9a" name="afc2fb300fe13485ccd6e85e5e8280e9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc2fb300fe13485ccd6e85e5e8280e9a">&#9670;&#160;</a></span>details()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> &amp; eve::Diagnostic::details </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Structured context in insertion order. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingResult_8h_source.html#l00033">eve::editing::diagnosticRule()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">eve::script::projectDiagnostic()</a>.</p>
+
+</div>
+</div>
+<a id="af797f7520cc62e8273da5afdb59d9ef4" name="af797f7520cc62e8273da5afdb59d9ef4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af797f7520cc62e8273da5afdb59d9ef4">&#9670;&#160;</a></span>error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> eve::Diagnostic::error </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a>&#160;</td>
+          <td class="paramname"><em>details</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an error diagnostic with the standard error severity. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Animation_8cpp_source.html#l00438">eve::animation::Animation::advance()</a>, <a class="el" href="AnimLayerMixer_8cpp_source.html#l00187">eve::animation::AnimLayerMixer::advance()</a>, <a class="el" href="AnimPlayer_8cpp_source.html#l00224">eve::animation::AnimPlayer::advance()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00305">eve::animation::AnimStateMachine::advance()</a>, <a class="el" href="AnimSyncGroup_8cpp_source.html#l00022">eve::animation::AnimSyncGroup::advance()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00450">eve::effects::EffectContainer::advance()</a>, <a class="el" href="Production_8cpp_source.html#l00404">eve::production::WorkQueue::advance()</a>, <a class="el" href="Time_8cpp_source.html#l00084">eve::SimulationClock::advance()</a>, <a class="el" href="ParticlePlayback_8cpp_source.html#l00040">eve::particles::advanceEmitterSim()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00260">eve::game_event::GameEventLog::append()</a>, <a class="el" href="PixelWorldReplay_8cpp_source.html#l00209">eve::pixelworld_replay::PixelReplayLog::append()</a>, <a class="el" href="PointSet_8cpp_source.html#l00065">eve::procgen::PointSet::appendPointFrom()</a>, <a class="el" href="AttributeTable_8cpp_source.html#l00038">eve::procgen::AttributeTable::appendRowFrom()</a>, <a class="el" href="GameEvent_8h_source.html#l00290">eve::game_event::GameEventLog::appendTyped()</a>, <a class="el" href="CardEffects_8cpp_source.html#l00096">eve::card::CardEffectAdapter::apply()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00194">eve::effects::EffectContainer::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00184">eve::rts::RTSEffectComponent::apply()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00071">eve::rts::RTSEffectAdapter::apply()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00082">eve::vehicle::VehicleEffectAdapter::apply()</a>, <a class="el" href="WeaponEffects_8cpp_source.html#l00083">eve::weapon::WeaponEffectAdapter::apply()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00115">eve::rts::RTSCommandLog::apply()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00319">eve::effects::EffectContainer::applyCanonical()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00538">eve::procgen::RuntimeGeneration::applyCellUpdate()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01440">eve::pixelworld::PixelWorld::applyChunkBatch()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00519">eve::pixelworld::PixelWorld::applyEdit()</a>, <a class="el" href="RTS_8cpp_source.html#l01556">eve::rts::RTS::applyEffect()</a>, <a class="el" href="Card_8cpp_source.html#l00257">eve::card::Card::applyEffect()</a>, <a class="el" href="RTS_8cpp_source.html#l01549">eve::rts::RTS::applyEffect()</a>, <a class="el" href="WeaponEffects_8cpp_source.html#l00034">eve::weapon::WeaponEffectExecutor::applyImmediate()</a>, <a class="el" href="PointDelta_8cpp_source.html#l00212">eve::procgen::applyPointDelta()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00216">eve::card::CardDefinitionRuntime::applyTo()</a>, <a class="el" href="EffectDefinitionRuntime_8cpp_source.html#l00237">eve::effects::EffectDefinitionRuntime::applyTo()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00230">eve::rpg::SkillDefinitionRuntime::applyTo()</a>, <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00357">eve::vehicle::VehicleDefinitionRuntime::applyTo()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00428">eve::weapon::WeaponDefinitionRuntime::applyTo()</a>, <a class="el" href="PointSet_8cpp_source.html#l00306">eve::procgen::PointSet::assignPointIds()</a>, <a class="el" href="ModelNormals_8cpp_source.html#l00195">eve::model3d::ModelData::bakeNormalMap()</a>, <a class="el" href="Module_8cpp_source.html#l00228">eve::ModuleManager::beginPluginRegistration()</a>, <a class="el" href="RTSTypes_8h_source.html#l00181">eve::rts::EntityLink&lt; Tag &gt;::bind()</a>, <a class="el" href="RTSTypes_8h_source.html#l00236">eve::rts::ServiceLink&lt; Tag &gt;::bind()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00172">eve::rts::RTSEffectComponent::bindSubject()</a>, <a class="el" href="RTS_8cpp_source.html#l01624">eve::rts::RTS::build()</a>, <a class="el" href="NodeDesc_8cpp_source.html#l00296">eve::scene::SceneHost::buildDetachedTree()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00408">eve::buildingfx::BuildingFx::buildEdgeCurveGroupMeshForInstance()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00155">eve::buildingfx::BuildingFx::buildEdgeCurveMesh()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00309">eve::buildingfx::BuildingFx::buildSurfaceCurveMesh()</a>, <a class="el" href="RPG_8cpp_source.html#l00106">eve::rpg::RPG::buyFromShop()</a>, <a class="el" href="RPG_8cpp_source.html#l00168">eve::rpg::RPG::buyShopOffer()</a>, <a class="el" href="Action_8cpp_source.html#l00536">eve::action::ActionRuntime::cancel()</a>, <a class="el" href="RTS_8cpp_source.html#l01663">eve::rts::RTS::cancelProduction()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01061">eve::building::PlacementSystem::canonicalEdge()</a>, <a class="el" href="PixelWorldReplay_8cpp_source.html#l00227">eve::pixelworld_replay::PixelReplayLog::captureCheckpoint()</a>, <a class="el" href="Profiler_8cpp_source.html#l00087">eve::profiler::Profiler::captureFrame()</a>, <a class="el" href="CardContainers_8cpp_source.html#l00063">eve::card::CardContainerAdapter::CardContainerAdapter()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00224">eve::definition::RuntimeInstance&lt; State &gt;::checkDefinition()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01400">eve::pixelworld::PixelWorld::chunkDiagnostics()</a>, <a class="el" href="RPG_8cpp_source.html#l00075">eve::rpg::RPG::claimQuestRewards()</a>, <a class="el" href="PointSet_8cpp_source.html#l00081">eve::procgen::PointSet::clearPointAttributes()</a>, <a class="el" href="ClimbingECS_8h_source.html#l00156">eve::climbing::detail::climbingEcsFailure()</a>, <a class="el" href="RPG_8cpp_source.html#l00085">eve::rpg::RPG::collectWorldLoot()</a>, <a class="el" href="RTS_8cpp_source.html#l00908">eve::rts::RTS::commandUnits()</a>, <a class="el" href="AttributeResourceAccount_8cpp_source.html#l00077">eve::attributes::AttributeResourceAccountAdapter::commit()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00620">eve::statepatch::StoreTransactionParticipant::commit()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00474">eve::inventory::InventorySystem::commitAddBatch()</a>, <a class="el" href="LevelSystem_8cpp_source.html#l00113">eve::rpg::LevelSystem::commitGainXp()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00531">eve::inventory::InventorySystem::commitRemove()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00642">eve::statepatch::StoreTransactionParticipant::compensate()</a>, <a class="el" href="Transaction_8cpp_source.html#l00280">eve::transaction::Coordinator::compensate()</a>, <a class="el" href="Transaction_8cpp_source.html#l00557">eve::transaction::Ledger::create()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00092">eve::definition::InstanceIdentity::create()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00105">eve::ui::DatabasePanel::createInstance()</a>, <a class="el" href="SceneObject_8cpp_source.html#l00007">eve::scene::SceneObject::createObject()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00165">eve::avatar_editing::AvatarDocumentTarget::currentRevision()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00132">eve::biome_editing::BiomeDocumentTarget::currentRevision()</a>, <a class="el" href="Hd2dTarget_8cpp_source.html#l00059">eve::hd2d_editing::Hd2dDocumentTarget::currentRevision()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00067">eve::input_editing::InputMapTarget::currentRevision()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00086">eve::procgen_editing::TextureRecipeTarget::currentRevision()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00042">eve::sceneloader_editing::SceneImportTarget::currentRevision()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00091">eve::voxel_editing::VoxelPaletteTarget::currentRevision()</a>, <a class="el" href="EditingProperty_8h_source.html#l00122">eve::editing::IPropertyProvider::currentRevision()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00194">eve::editor::ActionTimelineTarget::currentRevision()</a>, <a class="el" href="AudioTarget_8cpp_source.html#l00085">eve::audio_editing::AudioSourceTarget::currentRevision()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00030">eve::camera_editing::CameraDocumentTarget::currentRevision()</a>, <a class="el" href="DecalTarget_8cpp_source.html#l00030">eve::decal_editing::DecalDocumentTarget::currentRevision()</a>, <a class="el" href="DefinitionFormRuntime_8cpp_source.html#l00060">eve::definitions_editing::DefinitionSchemaFormTarget::currentRevision()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00101">eve::editor::ProjectSettingsTarget::currentRevision()</a>, <a class="el" href="FluidTarget_8cpp_source.html#l00140">eve::fluids_editing::FluidSimulationTarget::currentRevision()</a>, <a class="el" href="SurfaceFluidTarget_8cpp_source.html#l00178">eve::fluids_editing::SurfaceFluidTarget::currentRevision()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00300">eve::housegen_editing::HouseGenDocumentTarget::currentRevision()</a>, <a class="el" href="LightingTarget_8cpp_source.html#l00147">eve::lighting_editing::LightingPropertyTargetBase::currentRevision()</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00096">eve::material_editing::MaterialDocumentTarget::currentRevision()</a>, <a class="el" href="PhysicsTarget_8cpp_source.html#l00088">eve::physics_editing::PhysicsColliderTarget::currentRevision()</a>, <a class="el" href="PhysicsJointTarget_8cpp_source.html#l00082">eve::physics_editing::PhysicsJointTarget::currentRevision()</a>, <a class="el" href="SceneComponentPayload_8cpp_source.html#l00109">eve::scene_editing::SceneComponentPropertyBindings::currentRevision()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00456">eve::scene_editing::ScenePropertyProvider::currentRevision()</a>, <a class="el" href="SpriteStackTarget_8cpp_source.html#l00053">eve::spritestack_editing::SpriteStackDocumentTarget::currentRevision()</a>, <a class="el" href="MeshVfxTarget_8cpp_source.html#l00076">eve::stylize_editing::MeshVfxAssetTarget::currentRevision()</a>, <a class="el" href="StylizeTarget_8cpp_source.html#l00085">eve::stylize_editing::StylizeRecipeTarget::currentRevision()</a>, <a class="el" href="UiDocumentProperty_8cpp_source.html#l00182">eve::ui_editing::UiDocumentTarget::currentRevision()</a>, <a class="el" href="VirtualGeometryTarget_8cpp_source.html#l00051">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget::currentRevision()</a>, <a class="el" href="UI_8cpp_source.html#l01870">eve::ui::UI::dbUnregister()</a>, <a class="el" href="LevelFormat_8cpp_source.html#l00217">eve::level_editing::LevelFormatRegistry::decode()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00652">eve::building::PlacementWorld::edgeCurveGroup()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00662">eve::building::PlacementWorld::edgeCurveGroupForInstance()</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00237">eve::script::RuntimeObjectRegistry&lt; T, Tag &gt;::emplace()</a>, <a class="el" href="LevelFormat_8cpp_source.html#l00225">eve::level_editing::LevelFormatRegistry::encode()</a>, <a class="el" href="AbilityController_8cpp_source.html#l00009">eve::action::PlayerAbilityIntentQueue::enqueue()</a>, <a class="el" href="UISystem_8cpp_source.html#l01302">eve::ui::UISystem::ensureViewport()</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00330">eve::vehicle::VehicleSeatContainerAdapter::enter()</a>, <a class="el" href="building_2ContainerAdapters_8cpp_source.html#l00314">eve::building::BuildingGarrisonContainerAdapter::enter()</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00319">eve::script::RuntimeObjectRegistry&lt; T, Tag &gt;::erase()</a>, <a class="el" href="DialogueState_8cpp_source.html#l00341">eve::dialogue::DialogueStateContext::evaluate()</a>, <a class="el" href="SurfaceFluidContracts_8cpp_source.html#l00086">eve::fluids::FluidSurfaceConstraintAdapter::evaluate()</a>, <a class="el" href="Transaction_8cpp_source.html#l00187">eve::transaction::Coordinator::execute()</a>, <a class="el" href="building_2ContainerAdapters_8cpp_source.html#l00382">eve::building::BuildingGarrisonContainerAdapter::exit()</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00388">eve::vehicle::VehicleSeatContainerAdapter::exit()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00618">eve::pixelworld::PixelWorld::extractUnsupportedFragments()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00017">eve::scene::failureRecord()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00022">eve::scene::failureValue()</a>, <a class="el" href="GameplayTag_8cpp_source.html#l00081">eve::tags::GameplayTagRegistry::find()</a>, <a class="el" href="Module_8cpp_source.html#l00239">eve::ModuleManager::finishPluginRegistration()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00291">eve::procgen::generatePrototypePiece()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00244">eve::procgen::generatePrototypeTexture()</a>, <a class="el" href="Card_8cpp_source.html#l00243">eve::card::Card::getCardAttribute()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00333">eve::effects::EffectContainer::handleFor()</a>, <a class="el" href="RpgMakerTileImporter_8inl_source.html#l00116">importRpgMakerMap()</a>, <a class="el" href="CardEffects_8cpp_source.html#l00024">eve::card::CardEffectAdapter::initializeTarget()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01063">eve::sceneloader::SceneLoader::inspect()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a>, <a class="el" href="LevelFormat_8cpp_source.html#l00232">eve::level_editing::LevelFormatRegistry::load()</a>, <a class="el" href="Map_8cpp_source.html#l00247">eve::map::Map::loadFromFileWithObjectContract()</a>, <a class="el" href="Map_8cpp_source.html#l00269">eve::map::Map::loadFromTextWithObjectContract()</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00493">eve::script::makeOwnedSquirrelInstance()</a>, <a class="el" href="ModelData_8cpp_source.html#l00177">eve::model3d::ModelData::mapSurfacePointToUv()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00571">eve::procgen::RuntimeGeneration::migrateCellPointIds()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03013">eve::building::PlacementSystem::moveCornerResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03089">eve::building::PlacementSystem::moveFreeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03138">eve::building::PlacementSystem::moveFreeSurfaceResult()</a>, <a class="el" href="RPG_8cpp_source.html#l00383">eve::rpg::RPG::newBattleControl()</a>, <a class="el" href="RPG_8cpp_source.html#l00392">eve::rpg::RPG::newProductControl()</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00181">eve::script::ownSquirrelObject()</a>, <a class="el" href="ImageData_8cpp_source.html#l00498">eve::image::ImageData::paintCircleUv()</a>, <a class="el" href="PixelWorldControl_8cpp_source.html#l00147">eve::pixelworld::PixelWorldControlService::performanceSamples()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01225">eve::building::PlacementSystem::placeCornerResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01758">eve::building::PlacementSystem::placeEdgeCubicBezierOnSurface()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01346">eve::building::PlacementSystem::placeFreeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01392">eve::building::PlacementSystem::placeFreeSurfaceResult()</a>, <a class="el" href="Transaction_8cpp_source.html#l00414">eve::transaction::planFailure()</a>, <a class="el" href="Card_8cpp_source.html#l00284">eve::card::Card::play()</a>, <a class="el" href="CardPlay_8cpp_source.html#l00333">eve::card::CardPlayPaymentAdapter::play()</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00233">eve::graphics::GraphicsArtifactProvider::prepare()</a>, <a class="el" href="map_2ArtifactProvider_8cpp_source.html#l00069">eve::map::MapArtifactProvider::prepare()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00115">eve::scene::SceneArtifactProvider::prepare()</a>, <a class="el" href="building_2ContainerAdapters_8cpp_source.html#l00266">eve::building::BuildingGarrisonContainerAdapter::prepare()</a>, <a class="el" href="CardContainers_8cpp_source.html#l00196">eve::card::CardContainerAdapter::prepare()</a>, <a class="el" href="inventory_2ContainerAdapters_8cpp_source.html#l00247">eve::inventory::InventoryContainerAdapter::prepare()</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00279">eve::vehicle::VehicleSeatContainerAdapter::prepare()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00592">eve::statepatch::StoreTransactionParticipant::prepare()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00433">eve::inventory::InventorySystem::prepareAddBatch()</a>, <a class="el" href="LevelSystem_8cpp_source.html#l00067">eve::rpg::LevelSystem::prepareGainXp()</a>, <a class="el" href="InventorySystem_8cpp_source.html#l00493">eve::inventory::InventorySystem::prepareRemove()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01938">eve::building::PlacementSystem::previewBrush()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01553">eve::building::PlacementSystem::previewEdgePath()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01976">eve::building::PlacementSystem::previewPattern()</a>, <a class="el" href="SurfaceFluidContracts_8cpp_source.html#l00101">eve::fluids::FluidSurfaceConstraintAdapter::project()</a>, <a class="el" href="ArtifactPublish_8cpp_source.html#l00418">eve::procgen::ArtifactPublisher::publish()</a>, <a class="el" href="GeneratedArtifact_8cpp_source.html#l01307">eve::procgen::ArtifactStore::publishBatch()</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00260">eve::vehicle::VehicleSystem::pushOrder()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00369">eve::script::pushValue()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00704">eve::pixelworld::PixelWorld::rasterizeFragment()</a>, <a class="el" href="RTS_8cpp_source.html#l01535">eve::rts::RTS::readUnitAttribute()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02789">eve::building::PlacementSystem::rebuildStructuralLinksResult()</a>, <a class="el" href="LevelFormat_8cpp_source.html#l00189">eve::level_editing::LevelFormatRegistry::registerFormat()</a>, <a class="el" href="Schema_8cpp_source.html#l00196">eve::schema::Schema::registerFromClass()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00855">eve::schema::SchemaRegistry::registerFromJson()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00874">eve::schema::SchemaRegistry::registerFromJsonVersioned()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00357">eve::building::PlacementSystem::registerHeightfieldSurface()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00028">eve::rpg::BattleSystem::registerSkillDamageChecked()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00372">eve::building::PlacementSystem::registerStaticMeshSurface()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00337">eve::building::PlacementSystem::registerSurface()</a>, <a class="el" href="GameplayTag_8cpp_source.html#l00064">eve::tags::GameplayTagRegistry::registerTag()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00997">eve::sceneloader::SceneLoader::reload()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00416">eve::pixelworld::PixelWorld::reloadMaterialCatalog()</a>, <a class="el" href="AnimClipRegistry_8cpp_source.html#l00104">eve::animation::AnimClipRegistry::reloadPath()</a>, <a class="el" href="GeneratedArtifact_8cpp_source.html#l01483">eve::procgen::ArtifactStore::remove()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00903">eve::schema::SchemaRegistry::remove()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00917">eve::schema::SchemaRegistry::remove()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02717">eve::building::PlacementSystem::removeBuildingCascadeResult()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00293">eve::attributes::AttributeSet::removeModifier()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00276">eve::attributes::AttributeSet::removeModifier()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PixelWorldReplay_8cpp_source.html#l00238">eve::pixelworld_replay::PixelReplayLog::replay()</a>, <a class="el" href="Resource_8cpp_source.html#l00126">eve::ResourceManager::request()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00344">eve::effects::EffectContainer::resolve()</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00226">eve::pixelworld::MaterialCatalog::resolve()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00140">eve::effects::EffectContainer::restore()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00282">eve::card::CardDefinitionRuntime::restore()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00432">eve::physics::World::restore()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00561">eve::physics::World3D::restore()</a>, <a class="el" href="ArtifactPublish_8cpp_source.html#l00512">eve::procgen::ArtifactPublisher::restore()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00285">eve::rpg::SkillDefinitionRuntime::restore()</a>, <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00444">eve::vehicle::VehicleDefinitionRuntime::restore()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00524">eve::weapon::WeaponDefinitionRuntime::restore()</a>, <a class="el" href="Fov_8cpp_source.html#l01252">eve::map::Fov::restore()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00402">eve::game_event::GameEventLog::restore()</a>, <a class="el" href="Transaction_8cpp_source.html#l00603">eve::transaction::Ledger::restore()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02586">eve::building::PlacementSystem::restoreEdgeCurveGroupExact()</a>, <a class="el" href="DefinitionRuntime_8h_source.html#l00325">eve::definition::RuntimeInstance&lt; State &gt;::restoreExact()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00072">eve::procgen::MeshBuild::restoreGroupData()</a>, <a class="el" href="Authority_8cpp_source.html#l00297">eve::authority::Store::restoreJson()</a>, <a class="el" href="Sensing_8cpp_source.html#l00146">eve::sensing::SensingWorld::restoreJson()</a>, <a class="el" href="SimulationBackend_8h_source.html#l00181">eve::physics::ISimulationBackend::restoreObservation()</a>, <a class="el" href="Cloth_8cpp_source.html#l00594">eve::physics::Cloth::restoreObservation()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l01092">eve::physics::Cloth3D::restoreObservation()</a>, <a class="el" href="ClothGPU_8cpp_source.html#l00648">eve::physics::ClothGPU::restoreObservation()</a>, <a class="el" href="LevelSystem_8cpp_source.html#l00038">eve::rpg::LevelSystem::restoreProgression()</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00117">eve::definition::restoreRuntimeInstance()</a>, <a class="el" href="Tracker_8cpp_source.html#l00073">eve::rpg::Tracker::restoreSnapshotJson()</a>, <a class="el" href="ArtifactPublication_8cpp_source.html#l00011">eve::artifact::ProviderContract::restoreState()</a>, <a class="el" href="GeneratedArtifact_8cpp_source.html#l01526">eve::procgen::ArtifactStore::restoreState()</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00387">eve::graphics::GraphicsArtifactProvider::restoreState()</a>, <a class="el" href="map_2ArtifactProvider_8cpp_source.html#l00165">eve::map::MapArtifactProvider::restoreState()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00198">eve::scene::SceneArtifactProvider::restoreState()</a>, <a class="el" href="AttributeResourceAccount_8cpp_source.html#l00088">eve::attributes::AttributeResourceAccountAdapter::rollback()</a>, <a class="el" href="ParticleSystem_8cpp_source.html#l00332">eve::particles::runParticleSimulation()</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00050">eve::definition::detail::runtimeSnapshotShape()</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00035">eve::definition::detail::runtimeSnapshotUint()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00781">eve::avatar::AvatarInstance::sampleAttachmentPoint()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01610">eve::building::PlacementSystem::sampleEdgeCubicBezier()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01703">eve::building::PlacementSystem::sampleEdgeCurveSurface()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00407">eve::building::PlacementSystem::sampleSurface()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00431">eve::building::PlacementSystem::sampleSurfacePatch()</a>, <a class="el" href="LevelFormat_8cpp_source.html#l00244">eve::level_editing::LevelFormatRegistry::save()</a>, <a class="el" href="AnimationTime_8h_source.html#l00013">eve::animation::detail::secondsForStep()</a>, <a class="el" href="GameplayTagPicker_8cpp_source.html#l00015">eve::editor::GameplayTagPicker::select()</a>, <a class="el" href="RPG_8cpp_source.html#l00178">eve::rpg::RPG::sellShopOffer()</a>, <a class="el" href="RPG_8cpp_source.html#l00116">eve::rpg::RPG::sellToShop()</a>, <a class="el" href="Battle_8cpp_source.html#l00148">eve::rpg::Battle::setActionByPolicyChecked()</a>, <a class="el" href="Battle_8cpp_source.html#l00096">eve::rpg::Battle::setActionChecked()</a>, <a class="el" href="Crowd_8cpp_source.html#l00656">eve::crowd::Crowd::setAgentAvoidancePriority()</a>, <a class="el" href="Card_8cpp_source.html#l00250">eve::card::Card::setCardAttribute()</a>, <a class="el" href="Card_8cpp_source.html#l00219">eve::card::Card::setCardPlayCondition()</a>, <a class="el" href="RTS_8cpp_source.html#l01645">eve::rts::RTS::setProductionResourceReserve()</a>, <a class="el" href="GameplayTagPicker_8cpp_source.html#l00007">eve::editor::GameplayTagPicker::setRoot()</a>, <a class="el" href="CardEffects_8cpp_source.html#l00049">eve::card::CardEffectExecutor::settle()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00037">eve::rts::RTSEffectExecutor::settle()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00045">eve::vehicle::VehicleEffectExecutor::settle()</a>, <a class="el" href="WeaponEffects_8cpp_source.html#l00048">eve::weapon::WeaponEffectExecutor::settle()</a>, <a class="el" href="RPG_8cpp_source.html#l00096">eve::rpg::RPG::settleBattleVictory()</a>, <a class="el" href="RPG_8cpp_source.html#l00246">eve::rpg::RPG::settleEncounterVictory()</a>, <a class="el" href="RTS_8cpp_source.html#l01542">eve::rts::RTS::setUnitAttribute()</a>, <a class="el" href="Time_8cpp_source.html#l00048">eve::MonotonicTimestamp::since()</a>, <a class="el" href="building_2ContainerAdapters_8cpp_source.html#l00203">eve::building::BuildingGarrisonContainerAdapter::snapshot()</a>, <a class="el" href="CardContainers_8cpp_source.html#l00138">eve::card::CardContainerAdapter::snapshot()</a>, <a class="el" href="inventory_2ContainerAdapters_8cpp_source.html#l00144">eve::inventory::InventoryContainerAdapter::snapshot()</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00209">eve::vehicle::VehicleSeatContainerAdapter::snapshot()</a>, <a class="el" href="ArtifactPublish_8cpp_source.html#l00475">eve::procgen::ArtifactPublisher::snapshot()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00347">eve::rts::AttributeComponent::snapshot()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01363">eve::pixelworld::PixelWorld::snapshotChunksInRegion()</a>, <a class="el" href="Tracker_8cpp_source.html#l00044">eve::rpg::Tracker::snapshotJson()</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00083">eve::definition::snapshotRuntimeInstance()</a>, <a class="el" href="ArtifactPublication_8cpp_source.html#l00005">eve::artifact::ProviderContract::snapshotState()</a>, <a class="el" href="GeneratedArtifact_8cpp_source.html#l01504">eve::procgen::ArtifactStore::snapshotState()</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00355">eve::graphics::GraphicsArtifactProvider::snapshotState()</a>, <a class="el" href="map_2ArtifactProvider_8cpp_source.html#l00137">eve::map::MapArtifactProvider::snapshotState()</a>, <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00392">eve::physics::PhysicsArtifactProvider::snapshotState()</a>, <a class="el" href="Transaction_8cpp_source.html#l00366">eve::transaction::Plan::stage()</a>, <a class="el" href="GeneratedArtifact_8cpp_source.html#l01399">eve::procgen::ArtifactStore::stagePublish()</a>, <a class="el" href="Fluids_8cpp_source.html#l00173">eve::fluids::FluidSimulator::step()</a>, <a class="el" href="Cloth_8cpp_source.html#l00573">eve::physics::Cloth::step()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l01071">eve::physics::Cloth3D::step()</a>, <a class="el" href="ClothGPU_8cpp_source.html#l00625">eve::physics::ClothGPU::step()</a>, <a class="el" href="World_8cpp_source.html#l00330">eve::physics::World::step()</a>, <a class="el" href="World3D_8cpp_source.html#l00669">eve::physics::World3D::step()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00389">eve::rts::RTSLockstep::step()</a>, <a class="el" href="PixelWorldControl_8cpp_source.html#l00097">eve::pixelworld::PixelWorldControlService::step()</a>, <a class="el" href="Json_8cpp_source.html#l00563">eve::json::stringify()</a>, <a class="el" href="BeamSkillEffect_8cpp_source.html#l00092">eve::stylize::BeamSkillEffect::submit()</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00361">eve::script::RuntimeObjectRegistry&lt; T, Tag &gt;::take()</a>, <a class="el" href="Container_8cpp_source.html#l00139">eve::container::TransferService::transfer()</a>, <a class="el" href="PointSet_8cpp_source.html#l00367">eve::procgen::PointSet::trySetBoolAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00327">eve::procgen::PointSet::trySetFloatAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00347">eve::procgen::PointSet::trySetIntAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00290">eve::procgen::PointSet::trySetPointId()</a>, <a class="el" href="PointSet_8cpp_source.html#l00417">eve::procgen::PointSet::trySetStringAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00387">eve::procgen::PointSet::trySetVectorAttribute()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00438">eve::effects::EffectContainer::update()</a>, <a class="el" href="Animation_8cpp_source.html#l00499">eve::animation::Animation::update()</a>, <a class="el" href="AnimPlayer_8cpp_source.html#l00242">eve::animation::AnimPlayer::update()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00323">eve::animation::AnimStateMachine::update()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00435">eve::buildingfx::BuildingFx::updateEdgeCurvePreview()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00459">eve::buildingfx::BuildingFx::updateEdgeCurveSurfacePreview()</a>, <a class="el" href="Graphics_8cpp_source.html#l01637">eve::graphics::Graphics::updateTextureFromImageData()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00694">eve::graphics::vulkan::Graphics::updateTextureRegions()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02387">eve::graphics::webgpu::Graphics::updateTextureRegions()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00022">eve::rts::RTSEffectExecutor::validate()</a>, <a class="el" href="VehicleEffects_8cpp_source.html#l00028">eve::vehicle::VehicleEffectExecutor::validate()</a>, <a class="el" href="WeaponEffects_8cpp_source.html#l00026">eve::weapon::WeaponEffectExecutor::validate()</a>, <a class="el" href="building_2ContainerAdapters_8cpp_source.html#l00230">eve::building::BuildingGarrisonContainerAdapter::validateInsert()</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00234">eve::vehicle::VehicleSeatContainerAdapter::validateInsert()</a>, <a class="el" href="Schema_8cpp_source.html#l00398">eve::schema::Schema::validateJson()</a>, <a class="el" href="Schema_8cpp_source.html#l00405">eve::schema::Schema::validateJsonVersioned()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00462">eve::dialogue::DialogueFlow::validateLocalization()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00197">eve::animation::AnimClip::validateNotifyContract()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00356">eve::script::valueFromSquirrel()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00342">eve::script::valueFromSquirrel()</a>, <a class="el" href="Resource_8cpp_source.html#l00201">eve::ResourceManager::waitFor()</a> , 以及 <a class="el" href="SurfaceFluidContracts_8cpp_source.html#l00115">eve::fluids::FluidSurfaceConstraintAdapter::walk()</a>.</p>
+
+</div>
+</div>
+<a id="a802af510c8e74f2c5d1167783daa5584" name="a802af510c8e74f2c5d1167783daa5584"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a802af510c8e74f2c5d1167783daa5584">&#9670;&#160;</a></span>isError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::Diagnostic::isError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the diagnostic represents an error or fatal condition. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a902b0d55fddef6f8d651fe1035b7d4bd">eve::Error</a> , 以及 <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a882384ec38ce8d9582b57e70861730e4">eve::Fatal</a>.</p>
+
+</div>
+</div>
+<a id="ae9eb3925b86e9a38a392bcdfad0a87db" name="ae9eb3925b86e9a38a392bcdfad0a87db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9eb3925b86e9a38a392bcdfad0a87db">&#9670;&#160;</a></span>message()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::Diagnostic::message </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Human-readable explanation. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DialogueState_8cpp_source.html#l00341">eve::dialogue::DialogueStateContext::evaluate()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">eve::script::projectDiagnostic()</a>.</p>
+
+</div>
+</div>
+<a id="a0dfaad3a9bf406b6a3279a1edacff294" name="a0dfaad3a9bf406b6a3279a1edacff294"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dfaad3a9bf406b6a3279a1edacff294">&#9670;&#160;</a></span>path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::Diagnostic::path </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Optional field, property, URI, or logical path. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">eve::script::projectDiagnostic()</a>.</p>
+
+</div>
+</div>
+<a id="a83c09f6eb8b755ef85b2998e26bd50c8" name="a83c09f6eb8b755ef85b2998e26bd50c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83c09f6eb8b755ef85b2998e26bd50c8">&#9670;&#160;</a></span>severity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a> eve::Diagnostic::severity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Severity for logging and presentation. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">eve::script::projectDiagnostic()</a>.</p>
+
+</div>
+</div>
+<a id="afc7a97ca9c7c84edbd431f7a6aec3b68" name="afc7a97ca9c7c84edbd431f7a6aec3b68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7a97ca9c7c84edbd431f7a6aec3b68">&#9670;&#160;</a></span>source()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::Diagnostic::source </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Optional producer or subsystem that emitted the diagnostic. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00386">eve::script::projectDiagnostic()</a>.</p>
+
+</div>
+</div>
+<a id="a7b4610a567bbc009a968d67196f29910" name="a7b4610a567bbc009a968d67196f29910"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4610a567bbc009a968d67196f29910">&#9670;&#160;</a></span>warning()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Diagnostic.html">Diagnostic</a> eve::Diagnostic::warning </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a>&#160;</td>
+          <td class="paramname"><em>details</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a warning diagnostic. </p>
+
+<p class="definition">在文件 <a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a> 第 <a class="el" href="Diagnostic_8h_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fluids_8cpp_source.html#l00173">eve::fluids::FluidSimulator::step()</a> , 以及 <a class="el" href="Container_8cpp_source.html#l00139">eve::container::TransferService::transfer()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Diagnostic_8h_source.html">Diagnostic.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

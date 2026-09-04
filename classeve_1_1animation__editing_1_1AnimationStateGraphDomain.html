@@ -1,0 +1,375 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation_editing::AnimationStateGraphDomain类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation__editing.html">animation_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html">AnimationStateGraphDomain</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation_editing::AnimationStateGraphDomain类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>animation.state</code> graph domain matching AnimStateMachine semantics.  
+ <a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimationGraph_8h_source.html">AnimationGraph.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::animation_editing::AnimationStateGraphDomain 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.png" usemap="#eve::animation_5Fediting::AnimationStateGraphDomain_map" alt=""/>
+  <map id="eve::animation_5Fediting::AnimationStateGraphDomain_map" name="eve::animation_5Fediting::AnimationStateGraphDomain_map">
+<area href="classeve_1_1editing_1_1IGraphDomainProvider.html" title="Domain-owned typed connection policy." alt="eve::editing::IGraphDomainProvider" shape="rect" coords="0,0,302,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7361350a4344bcd6b7f70ac53e0f8b31" id="r_a7361350a4344bcd6b7f70ac53e0f8b31"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a7361350a4344bcd6b7f70ac53e0f8b31">domain</a> () const override</td></tr>
+<tr class="separator:a7361350a4344bcd6b7f70ac53e0f8b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7f980d9eb0e98b32a198a23435aebda" id="r_af7f980d9eb0e98b32a198a23435aebda"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#af7f980d9eb0e98b32a198a23435aebda">canConnect</a> (const <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> &amp;<a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, const <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> &amp;<a class="el" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>) const override</td></tr>
+<tr class="separator:af7f980d9eb0e98b32a198a23435aebda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab83f5ca94ffdcbebab6774a69d8aa89e" id="r_ab83f5ca94ffdcbebab6774a69d8aa89e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#ab83f5ca94ffdcbebab6774a69d8aa89e">makeStateNode</a> (const GraphNodeId &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;clipAsset) const</td></tr>
+<tr class="memdesc:ab83f5ca94ffdcbebab6774a69d8aa89e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a state node referencing one animation clip asset.  <br /></td></tr>
+<tr class="separator:ab83f5ca94ffdcbebab6774a69d8aa89e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac055a9eac5f0c886e64b6bc5a927aff" id="r_aac055a9eac5f0c886e64b6bc5a927aff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#aac055a9eac5f0c886e64b6bc5a927aff">makeTransitionNode</a> (const GraphNodeId &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:aac055a9eac5f0c886e64b6bc5a927aff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a transition node with default blend metadata.  <br /></td></tr>
+<tr class="separator:aac055a9eac5f0c886e64b6bc5a927aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8763c1c4cfbd0b1238b0fdd6ccfff694" id="r_a8763c1c4cfbd0b1238b0fdd6ccfff694"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">AnimationGraphCompileResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#a8763c1c4cfbd0b1238b0fdd6ccfff694">compile</a> (const <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>) const</td></tr>
+<tr class="memdesc:a8763c1c4cfbd0b1238b0fdd6ccfff694"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and compile a graph into a deterministic runtime-neutral definition.  <br /></td></tr>
+<tr class="separator:a8763c1c4cfbd0b1238b0fdd6ccfff694"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IGraphDomainProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IGraphDomainProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html">eve::editing::IGraphDomainProvider</a></td></tr>
+<tr class="memitem:a93e9722dc346f927854cf2a8eb8bbc25 inherit pub_methods_classeve_1_1editing_1_1IGraphDomainProvider" id="r_a93e9722dc346f927854cf2a8eb8bbc25"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html#a93e9722dc346f927854cf2a8eb8bbc25">~IGraphDomainProvider</a> ()=default</td></tr>
+<tr class="separator:a93e9722dc346f927854cf2a8eb8bbc25 inherit pub_methods_classeve_1_1editing_1_1IGraphDomainProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><code>animation.state</code> graph domain matching AnimStateMachine semantics. </p>
+<p>State nodes store clip asset references; transition nodes store blend/exit metadata and one optional float/bool/trigger condition. <a class="el" href="classeve_1_1Runtime.html">Runtime</a> pointers are deliberately resolved only by the animation host after compilation. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationGraph_8h_source.html">AnimationGraph.h</a> 第 <a class="el" href="AnimationGraph_8h_source.html#l00043">43</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="af7f980d9eb0e98b32a198a23435aebda" name="af7f980d9eb0e98b32a198a23435aebda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7f980d9eb0e98b32a198a23435aebda">&#9670;&#160;</a></span>canConnect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a> eve::animation_editing::AnimationStateGraphDomain::canConnect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>to</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html#ab948d421c547534a0708c1ce47923f4d">eve::editing::IGraphDomainProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationGraph_8cpp_source.html">AnimationGraph.cpp</a> 第 <a class="el" href="AnimationGraph_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingGraph_8h_source.html#l00049">eve::editing::GraphConnectionDecision::allowed</a>, <a class="el" href="EditingGraph_8h_source.html#l00050">eve::editing::GraphConnectionDecision::diagnostics</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a> , 以及 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a>.</p>
+
+</div>
+</div>
+<a id="a8763c1c4cfbd0b1238b0fdd6ccfff694" name="a8763c1c4cfbd0b1238b0fdd6ccfff694"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8763c1c4cfbd0b1238b0fdd6ccfff694">&#9670;&#160;</a></span>compile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">AnimationGraphCompileResult</a> eve::animation_editing::AnimationStateGraphDomain::compile </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and compile a graph into a deterministic runtime-neutral definition. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationGraph_8cpp_source.html">AnimationGraph.cpp</a> 第 <a class="el" href="AnimationGraph_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00036">blend</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="AnimationGraph_8h_source.html#l00032">eve::animation_editing::AnimationGraphCompileResult::definition</a>, <a class="el" href="AnimationGraph_8h_source.html#l00033">eve::animation_editing::AnimationGraphCompileResult::diagnostics</a>, <a class="el" href="AnimationGraph_8h_source.html#l00031">eve::animation_editing::AnimationGraphCompileResult::documentRevision</a>, <a class="el" href="AnimationGraph_8h_source.html#l00045">domain()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a>, <a class="el" href="LanguageText_8cpp_source.html#l00015">quote</a>, <a class="el" href="AnimationGraph_8h_source.html#l00030">eve::animation_editing::AnimationGraphCompileResult::status</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationGraphRuntime_8cpp_source.html#l00027">eve::animation_editing::AnimationStateGraphRuntimeBuilder::build()</a>.</p>
+
+</div>
+</div>
+<a id="a7361350a4344bcd6b7f70ac53e0f8b31" name="a7361350a4344bcd6b7f70ac53e0f8b31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7361350a4344bcd6b7f70ac53e0f8b31">&#9670;&#160;</a></span>domain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editing::AnimationStateGraphDomain::domain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html#ae057c0ef4047a3fe46c377ab8cea6eba">eve::editing::IGraphDomainProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationGraph_8h_source.html">AnimationGraph.h</a> 第 <a class="el" href="AnimationGraph_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationGraph_8cpp_source.html#l00094">compile()</a>.</p>
+
+</div>
+</div>
+<a id="ab83f5ca94ffdcbebab6774a69d8aa89e" name="ab83f5ca94ffdcbebab6774a69d8aa89e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab83f5ca94ffdcbebab6774a69d8aa89e">&#9670;&#160;</a></span>makeStateNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a> &gt; eve::animation_editing::AnimationStateGraphDomain::makeStateNode </td>
+          <td>(</td>
+          <td class="paramtype">const GraphNodeId &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>clipAsset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a state node referencing one animation clip asset. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationGraph_8cpp_source.html">AnimationGraph.cpp</a> 第 <a class="el" href="AnimationGraph_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aac055a9eac5f0c886e64b6bc5a927aff" name="aac055a9eac5f0c886e64b6bc5a927aff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac055a9eac5f0c886e64b6bc5a927aff">&#9670;&#160;</a></span>makeTransitionNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a> &gt; eve::animation_editing::AnimationStateGraphDomain::makeTransitionNode </td>
+          <td>(</td>
+          <td class="paramtype">const GraphNodeId &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a transition node with default blend metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationGraph_8cpp_source.html">AnimationGraph.cpp</a> 第 <a class="el" href="AnimationGraph_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation_editing/<a class="el" href="AnimationGraph_8h_source.html">AnimationGraph.h</a></li>
+<li>src/modules/animation_editing/<a class="el" href="AnimationGraph_8cpp_source.html">AnimationGraph.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,970 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon::WeaponDefinitionRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li><li class="navelem"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon::WeaponDefinitionRuntime类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Binds a typed <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html" title="武器模板（registerWeaponsFromJson 注册，进程级注册表）。">WeaponDefinition</a> to one mutable runtime instance.  
+ <a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="WeaponDefinitionRuntime_8h_source.html">WeaponDefinitionRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a53d3631f66d1ae8bfbe2ac8d990e37cb" id="r_a53d3631f66d1ae8bfbe2ac8d990e37cb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a53d3631f66d1ae8bfbe2ac8d990e37cb">WeaponDefinitionRuntime</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:a53d3631f66d1ae8bfbe2ac8d990e37cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52363fe1021e40b09404c5a367e3fe9f" id="r_a52363fe1021e40b09404c5a367e3fe9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a52363fe1021e40b09404c5a367e3fe9f">operator=</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:a52363fe1021e40b09404c5a367e3fe9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a624548d58c5cfb4937bda821e72429c3" id="r_a624548d58c5cfb4937bda821e72429c3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a624548d58c5cfb4937bda821e72429c3">WeaponDefinitionRuntime</a> (const <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a624548d58c5cfb4937bda821e72429c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7312736be1473ab97061f88e24d939a3" id="r_a7312736be1473ab97061f88e24d939a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a7312736be1473ab97061f88e24d939a3">operator=</a> (const <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a7312736be1473ab97061f88e24d939a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab95a424c05c9d6ae39ef4d52b3a59cba" id="r_ab95a424c05c9d6ae39ef4d52b3a59cba"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ab95a424c05c9d6ae39ef4d52b3a59cba">~WeaponDefinitionRuntime</a> ()=default</td></tr>
+<tr class="separator:ab95a424c05c9d6ae39ef4d52b3a59cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af82b1c028f7e8edfe9cb283d3a0bdc7b" id="r_af82b1c028f7e8edfe9cb283d3a0bdc7b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#af82b1c028f7e8edfe9cb283d3a0bdc7b">identity</a> () const noexcept</td></tr>
+<tr class="memdesc:af82b1c028f7e8edfe9cb283d3a0bdc7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the common instance identity and exact definition generation.  <br /></td></tr>
+<tr class="separator:af82b1c028f7e8edfe9cb283d3a0bdc7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fc5e22361e4386304ded1b860145c21" id="r_a0fc5e22361e4386304ded1b860145c21"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a0fc5e22361e4386304ded1b860145c21">state</a> () const noexcept</td></tr>
+<tr class="memdesc:a0fc5e22361e4386304ded1b860145c21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow mutable typed firing/resource state.  <br /></td></tr>
+<tr class="separator:a0fc5e22361e4386304ded1b860145c21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad888f6f500a41981abbe35cae51c44af" id="r_ad888f6f500a41981abbe35cae51c44af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ad888f6f500a41981abbe35cae51c44af">state</a> () noexcept</td></tr>
+<tr class="memdesc:ad888f6f500a41981abbe35cae51c44af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutate typed firing/resource state on the owner thread.  <br /></td></tr>
+<tr class="separator:ad888f6f500a41981abbe35cae51c44af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aece3fe1647fc0bb038ea69a293cc605a" id="r_aece3fe1647fc0bb038ea69a293cc605a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">eve::definition::DefinitionHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aece3fe1647fc0bb038ea69a293cc605a">definitionHandle</a> () const noexcept</td></tr>
+<tr class="memdesc:aece3fe1647fc0bb038ea69a293cc605a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the exact generation-qualified definition handle.  <br /></td></tr>
+<tr class="separator:aece3fe1647fc0bb038ea69a293cc605a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6a288d89ba4c68bd85a47077f0d15f6" id="r_ac6a288d89ba4c68bd85a47077f0d15f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a> () const</td></tr>
+<tr class="memdesc:ac6a288d89ba4c68bd85a47077f0d15f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve the current strongly typed <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html" title="武器模板（registerWeaponsFromJson 注册，进程级注册表）。">WeaponDefinition</a> projection.  <br /></td></tr>
+<tr class="separator:ac6a288d89ba4c68bd85a47077f0d15f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31e4556995ee5d61afc10152b5a9ac92" id="r_a31e4556995ee5d61afc10152b5a9ac92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a31e4556995ee5d61afc10152b5a9ac92">reloadPolicy</a> () const noexcept</td></tr>
+<tr class="memdesc:a31e4556995ee5d61afc10152b5a9ac92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the policy used by the next reload call.  <br /></td></tr>
+<tr class="separator:a31e4556995ee5d61afc10152b5a9ac92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae36983686568a6d5e85ecf56cff8a589" id="r_ae36983686568a6d5e85ecf56cff8a589"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ae36983686568a6d5e85ecf56cff8a589">setActive</a> (bool <a class="el" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>) noexcept</td></tr>
+<tr class="memdesc:ae36983686568a6d5e85ecf56cff8a589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the active guard used by RejectWhileActive.  <br /></td></tr>
+<tr class="separator:ae36983686568a6d5e85ecf56cff8a589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee68951dfcac5336dda5a75dee3c22a5" id="r_aee68951dfcac5336dda5a75dee3c22a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aee68951dfcac5336dda5a75dee3c22a5">isActive</a> () const noexcept</td></tr>
+<tr class="memdesc:aee68951dfcac5336dda5a75dee3c22a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the instance is active.  <br /></td></tr>
+<tr class="separator:aee68951dfcac5336dda5a75dee3c22a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08f8cd0b78cbebb5c51045a1a86d54bb" id="r_a08f8cd0b78cbebb5c51045a1a86d54bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a08f8cd0b78cbebb5c51045a1a86d54bb">applyTo</a> (<a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> *entity) const</td></tr>
+<tr class="memdesc:a08f8cd0b78cbebb5c51045a1a86d54bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically project this runtime into a borrowed <a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html" title="武器实体：数据全部在组件里，行为在 WeaponSystem。">WeaponEntity</a>.  <br /></td></tr>
+<tr class="separator:a08f8cd0b78cbebb5c51045a1a86d54bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84c4de56f84d8cacd3c720143a4a24b7" id="r_a84c4de56f84d8cacd3c720143a4a24b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">eve::definition::ReloadOutcome</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a84c4de56f84d8cacd3c720143a4a24b7">reload</a> (<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:a84c4de56f84d8cacd3c720143a4a24b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reload the registry's current generation using a typed policy.  <br /></td></tr>
+<tr class="separator:a84c4de56f84d8cacd3c720143a4a24b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97fc9eaf5806466c377a942409cdb06a" id="r_a97fc9eaf5806466c377a942409cdb06a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a97fc9eaf5806466c377a942409cdb06a">snapshot</a> (<a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> <a class="el" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a97fc9eaf5806466c377a942409cdb06a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture stable typed runtime state in the common <a class="el" href="structeve_1_1SnapshotEnvelope.html" title="Stable outer format shared by persistence and cross-process snapshots.">SnapshotEnvelope</a>.  <br /></td></tr>
+<tr class="separator:a97fc9eaf5806466c377a942409cdb06a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa517411642a245104781909ca160e04b" id="r_aa517411642a245104781909ca160e04b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aa517411642a245104781909ca160e04b">snapshotJson</a> (<a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> <a class="el" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:aa517411642a245104781909ca160e04b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a97fc9eaf5806466c377a942409cdb06a" title="Capture stable typed runtime state in the common SnapshotEnvelope.">snapshot()</a> as canonical deterministic JSON.  <br /></td></tr>
+<tr class="separator:aa517411642a245104781909ca160e04b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3c024e5192eab95fcd53dc6e35ddfce" id="r_ac3c024e5192eab95fcd53dc6e35ddfce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac3c024e5192eab95fcd53dc6e35ddfce">restore</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a97fc9eaf5806466c377a942409cdb06a">snapshot</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:ac3c024e5192eab95fcd53dc6e35ddfce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify and restore a same-generation snapshot transactionally.  <br /></td></tr>
+<tr class="separator:ac3c024e5192eab95fcd53dc6e35ddfce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ae5757d6382b4dd17d880dc115ffdd9ae" id="r_ae5757d6382b4dd17d880dc115ffdd9ae"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ae5757d6382b4dd17d880dc115ffdd9ae">create</a> (<a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;registry, <a class="el" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a> <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>=<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>)</td></tr>
+<tr class="memdesc:ae5757d6382b4dd17d880dc115ffdd9ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create from a common <code>weapon:&lt;name&gt;</code> definition reference.  <br /></td></tr>
+<tr class="separator:ae5757d6382b4dd17d880dc115ffdd9ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7834d29d01ebc77e5e8198dfb1b608c" id="r_ad7834d29d01ebc77e5e8198dfb1b608c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ad7834d29d01ebc77e5e8198dfb1b608c">create</a> (<a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;registry, std::string_view definitionId, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>=<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>)</td></tr>
+<tr class="memdesc:ad7834d29d01ebc77e5e8198dfb1b608c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create from a <code>weapon:&lt;definitionId&gt;</code> logical name.  <br /></td></tr>
+<tr class="separator:ad7834d29d01ebc77e5e8198dfb1b608c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a181769e188d5e475c778eb609eb28cc7" id="r_a181769e188d5e475c778eb609eb28cc7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a181769e188d5e475c778eb609eb28cc7">create</a> (<a class="el" href="classeve_1_1weapon_1_1Weapon.html">Weapon</a> &amp;module, std::string_view definitionId, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId, <a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>=<a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>)</td></tr>
+<tr class="memdesc:a181769e188d5e475c778eb609eb28cc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create through the existing <a class="el" href="classeve_1_1weapon_1_1Weapon.html" title="武器模块（eve.Weapon）。">Weapon</a> module facade.  <br /></td></tr>
+<tr class="separator:a181769e188d5e475c778eb609eb28cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Binds a typed <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html" title="武器模板（registerWeaponsFromJson 注册，进程级注册表）。">WeaponDefinition</a> to one mutable runtime instance. </p>
+<p>The registry is borrowed and must outlive this adapter. All calls are synchronous and owner-thread affine. <code>RebuildInstance</code> is the default policy: changing a definition preserves compatible firing state while clamping it to the new typed limits. <code>RejectWhileActive</code> rejects replacement while the instance is marked active. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8h_source.html">WeaponDefinitionRuntime.h</a> 第 <a class="el" href="WeaponDefinitionRuntime_8h_source.html#l00066">66</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a53d3631f66d1ae8bfbe2ac8d990e37cb" name="a53d3631f66d1ae8bfbe2ac8d990e37cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53d3631f66d1ae8bfbe2ac8d990e37cb">&#9670;&#160;</a></span>WeaponDefinitionRuntime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::weapon::WeaponDefinitionRuntime::WeaponDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a624548d58c5cfb4937bda821e72429c3" name="a624548d58c5cfb4937bda821e72429c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a624548d58c5cfb4937bda821e72429c3">&#9670;&#160;</a></span>WeaponDefinitionRuntime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::weapon::WeaponDefinitionRuntime::WeaponDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab95a424c05c9d6ae39ef4d52b3a59cba" name="ab95a424c05c9d6ae39ef4d52b3a59cba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab95a424c05c9d6ae39ef4d52b3a59cba">&#9670;&#160;</a></span>~WeaponDefinitionRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::weapon::WeaponDefinitionRuntime::~WeaponDefinitionRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a08f8cd0b78cbebb5c51045a1a86d54bb" name="a08f8cd0b78cbebb5c51045a1a86d54bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08f8cd0b78cbebb5c51045a1a86d54bb">&#9670;&#160;</a></span>applyTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::weapon::WeaponDefinitionRuntime::applyTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a> *&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically project this runtime into a borrowed <a class="el" href="classeve_1_1weapon_1_1WeaponEntity.html" title="武器实体：数据全部在组件里，行为在 WeaponSystem。">WeaponEntity</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entity</td><td>Borrowed ECS entity. The adapter does not retain it. @ownership Borrowed; ECS owns the entity and its components. @lifetime The pointer is used only during this synchronous call. @thread Must be called on the entity's owner thread. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success or a structured projection failure. Failure leaves the entity unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">definition()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00407">identity()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00426">isActive()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00411">state()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ae5757d6382b4dd17d880dc115ffdd9ae" name="ae5757d6382b4dd17d880dc115ffdd9ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5757d6382b4dd17d880dc115ffdd9ae">&#9670;&#160;</a></span>create() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &gt; eve::weapon::WeaponDefinitionRuntime::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a>&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em> = <code><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create from a common <code>weapon:&lt;name&gt;</code> definition reference. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">registry</td><td>Borrowed registry containing the definition. </td></tr>
+    <tr><td class="paramname">definition</td><td>Logical weapon definition reference. </td></tr>
+    <tr><td class="paramname">instanceId</td><td>Non-nil persistent identity for this weapon instance. </td></tr>
+    <tr><td class="paramname">policy</td><td>Policy used by subsequent reload calls. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A typed adapter or a structured resolution/parse failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DefinitionRuntime_8h_source.html#l00199">eve::definition::RuntimeInstance&lt; State &gt;::create()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">definition()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00390">create()</a> , 以及 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00401">create()</a>.</p>
+
+</div>
+</div>
+<a id="ad7834d29d01ebc77e5e8198dfb1b608c" name="ad7834d29d01ebc77e5e8198dfb1b608c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7834d29d01ebc77e5e8198dfb1b608c">&#9670;&#160;</a></span>create() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &gt; eve::weapon::WeaponDefinitionRuntime::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>definitionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em> = <code><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create from a <code>weapon:&lt;definitionId&gt;</code> logical name. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00373">create()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ResourceRef_8cpp_source.html#l00050">eve::DefinitionRef::fromId()</a>, <a class="el" href="Identity_8cpp_source.html#l00048">eve::LogicalId::fromParts()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a> , 以及 <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>.</p>
+
+</div>
+</div>
+<a id="a181769e188d5e475c778eb609eb28cc7" name="a181769e188d5e475c778eb609eb28cc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a181769e188d5e475c778eb609eb28cc7">&#9670;&#160;</a></span>create() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &gt; eve::weapon::WeaponDefinitionRuntime::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1Weapon.html">Weapon</a> &amp;&#160;</td>
+          <td class="paramname"><em>module</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>definitionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em> = <code><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create through the existing <a class="el" href="classeve_1_1weapon_1_1Weapon.html" title="武器模块（eve.Weapon）。">Weapon</a> module facade. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00401">401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00373">create()</a>, <a class="el" href="Weapon_8h_source.html#l00047">eve::weapon::Weapon::definitionRegistry()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>.</p>
+
+</div>
+</div>
+<a id="ac6a288d89ba4c68bd85a47077f0d15f6" name="ac6a288d89ba4c68bd85a47077f0d15f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6a288d89ba4c68bd85a47077f0d15f6">&#9670;&#160;</a></span>definition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &gt; eve::weapon::WeaponDefinitionRuntime::definition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve the current strongly typed <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html" title="武器模板（registerWeaponsFromJson 注册，进程级注册表）。">WeaponDefinition</a> projection. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">419</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">definition()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00415">definitionHandle()</a> , 以及 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00407">identity()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00428">applyTo()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00373">create()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">definition()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00471">reload()</a> , 以及 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00524">restore()</a>.</p>
+
+</div>
+</div>
+<a id="aece3fe1647fc0bb038ea69a293cc605a" name="aece3fe1647fc0bb038ea69a293cc605a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aece3fe1647fc0bb038ea69a293cc605a">&#9670;&#160;</a></span>definitionHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1definition_1_1DefinitionHandle.html">eve::definition::DefinitionHandle</a> eve::weapon::WeaponDefinitionRuntime::definitionHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the exact generation-qualified definition handle. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">definition()</a> , 以及 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00524">restore()</a>.</p>
+
+</div>
+</div>
+<a id="af82b1c028f7e8edfe9cb283d3a0bdc7b" name="af82b1c028f7e8edfe9cb283d3a0bdc7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af82b1c028f7e8edfe9cb283d3a0bdc7b">&#9670;&#160;</a></span>identity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1definition_1_1InstanceIdentity.html">eve::definition::InstanceIdentity</a> &amp; eve::weapon::WeaponDefinitionRuntime::identity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the common instance identity and exact definition generation. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00428">applyTo()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">definition()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00471">reload()</a> , 以及 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00524">restore()</a>.</p>
+
+</div>
+</div>
+<a id="aee68951dfcac5336dda5a75dee3c22a5" name="aee68951dfcac5336dda5a75dee3c22a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee68951dfcac5336dda5a75dee3c22a5">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::weapon::WeaponDefinitionRuntime::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the instance is active. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00426">426</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00428">applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="a7312736be1473ab97061f88e24d939a3" name="a7312736be1473ab97061f88e24d939a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7312736be1473ab97061f88e24d939a3">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp; eve::weapon::WeaponDefinitionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a52363fe1021e40b09404c5a367e3fe9f" name="a52363fe1021e40b09404c5a367e3fe9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52363fe1021e40b09404c5a367e3fe9f">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp; eve::weapon::WeaponDefinitionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a84c4de56f84d8cacd3c720143a4a24b7" name="a84c4de56f84d8cacd3c720143a4a24b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84c4de56f84d8cacd3c720143a4a24b7">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1definition_1_1ReloadOutcome.html">eve::definition::ReloadOutcome</a> &gt; eve::weapon::WeaponDefinitionRuntime::reload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reload the registry's current generation using a typed policy. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00471">471</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponTypes_8h_source.html#l00265">eve::weapon::Resource::cost</a>, <a class="el" href="WeaponDefinitionRuntime_8h_source.html#l00050">eve::weapon::WeaponRuntimeState::currentSpread</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">definition()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00407">identity()</a>, <a class="el" href="WeaponTypes_8h_source.html#l00266">eve::weapon::Resource::infinite</a>, <a class="el" href="WeaponTypes_8h_source.html#l00261">eve::weapon::Resource::kind</a>, <a class="el" href="WeaponTypes_8h_source.html#l00263">eve::weapon::Resource::max</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="WeaponTypes_8h_source.html#l00264">eve::weapon::Resource::regen</a>, <a class="el" href="WeaponTypes_8h_source.html#l00268">eve::weapon::Resource::reserve</a>, <a class="el" href="WeaponDefinitionRuntime_8h_source.html#l00043">eve::weapon::WeaponRuntimeState::resource</a>, <a class="el" href="WeaponDefinitionRuntime_8h_source.html#l00053">eve::weapon::WeaponRuntimeState::selector</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="WeaponTypes_8h_source.html#l00262">eve::weapon::Resource::value</a>.</p>
+
+</div>
+</div>
+<a id="a31e4556995ee5d61afc10152b5a9ac92" name="a31e4556995ee5d61afc10152b5a9ac92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31e4556995ee5d61afc10152b5a9ac92">&#9670;&#160;</a></span>reloadPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> eve::weapon::WeaponDefinitionRuntime::reloadPolicy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the policy used by the next reload call. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8h_source.html">WeaponDefinitionRuntime.h</a> 第 <a class="el" href="WeaponDefinitionRuntime_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac3c024e5192eab95fcd53dc6e35ddfce" name="ac3c024e5192eab95fcd53dc6e35ddfce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3c024e5192eab95fcd53dc6e35ddfce">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::weapon::WeaponDefinitionRuntime::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Verify and restore a same-generation snapshot transactionally. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure leaves all typed runtime state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00524">524</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00419">definition()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00415">definitionHandle()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00407">identity()</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00117">eve::definition::restoreRuntimeInstance()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="ae36983686568a6d5e85ecf56cff8a589" name="ae36983686568a6d5e85ecf56cff8a589"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae36983686568a6d5e85ecf56cff8a589">&#9670;&#160;</a></span>setActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::weapon::WeaponDefinitionRuntime::setActive </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>active</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the active guard used by RejectWhileActive. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>.</p>
+
+</div>
+</div>
+<a id="a97fc9eaf5806466c377a942409cdb06a" name="a97fc9eaf5806466c377a942409cdb06a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97fc9eaf5806466c377a942409cdb06a">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt; eve::weapon::WeaponDefinitionRuntime::snapshot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td>
+          <td class="paramname"><em>revision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture stable typed runtime state in the common <a class="el" href="structeve_1_1SnapshotEnvelope.html" title="Stable outer format shared by persistence and cross-process snapshots.">SnapshotEnvelope</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00507">507</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00083">eve::definition::snapshotRuntimeInstance()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00516">snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="aa517411642a245104781909ca160e04b" name="aa517411642a245104781909ca160e04b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa517411642a245104781909ca160e04b">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::weapon::WeaponDefinitionRuntime::snapshotJson </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td>
+          <td class="paramname"><em>revision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize <a class="el" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a97fc9eaf5806466c377a942409cdb06a" title="Capture stable typed runtime state in the common SnapshotEnvelope.">snapshot()</a> as canonical deterministic JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00516">516</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00507">snapshot()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a0fc5e22361e4386304ded1b860145c21" name="a0fc5e22361e4386304ded1b860145c21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fc5e22361e4386304ded1b860145c21">&#9670;&#160;</a></span>state() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a> &amp; eve::weapon::WeaponDefinitionRuntime::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow mutable typed firing/resource state. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00428">applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="ad888f6f500a41981abbe35cae51c44af" name="ad888f6f500a41981abbe35cae51c44af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad888f6f500a41981abbe35cae51c44af">&#9670;&#160;</a></span>state() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a> &amp; eve::weapon::WeaponDefinitionRuntime::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mutate typed firing/resource state on the owner thread. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a> 第 <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/weapon/<a class="el" href="WeaponDefinitionRuntime_8h_source.html">WeaponDefinitionRuntime.h</a></li>
+<li>src/modules/weapon/<a class="el" href="WeaponDefinitionRuntime_8cpp_source.html">WeaponDefinitionRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

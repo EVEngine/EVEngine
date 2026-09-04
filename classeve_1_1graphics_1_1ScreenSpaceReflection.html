@@ -1,0 +1,1353 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::ScreenSpaceReflection类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1ScreenSpaceReflection-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::ScreenSpaceReflection类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Screen-space reflections (SSR) as a fullscreen post pass. @lifetime All <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> and texture arguments are borrowed by this effect.  
+ <a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac4924e49d63dbeeea55f3f44d1ae9d2d" id="r_ac4924e49d63dbeeea55f3f44d1ae9d2d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ac4924e49d63dbeeea55f3f44d1ae9d2d">ScreenSpaceReflection</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:ac4924e49d63dbeeea55f3f44d1ae9d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c4b1fe0b2edccb03a8b97148b4684ba" id="r_a1c4b1fe0b2edccb03a8b97148b4684ba"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a1c4b1fe0b2edccb03a8b97148b4684ba">~ScreenSpaceReflection</a> ()</td></tr>
+<tr class="separator:a1c4b1fe0b2edccb03a8b97148b4684ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5eb434e0e30432490e5309ed4036036c" id="r_a5eb434e0e30432490e5309ed4036036c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a5eb434e0e30432490e5309ed4036036c">ScreenSpaceReflection</a> (const <a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp;)=delete</td></tr>
+<tr class="separator:a5eb434e0e30432490e5309ed4036036c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4f45b66cd17694a9d652038034b1b83" id="r_ae4f45b66cd17694a9d652038034b1b83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae4f45b66cd17694a9d652038034b1b83">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp;)=delete</td></tr>
+<tr class="separator:ae4f45b66cd17694a9d652038034b1b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a139f52072a5c09ebaa8ed65d8462f9a5" id="r_a139f52072a5c09ebaa8ed65d8462f9a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a139f52072a5c09ebaa8ed65d8462f9a5">setCamera</a> (float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ)</td></tr>
+<tr class="memdesc:a139f52072a5c09ebaa8ed65d8462f9a5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for depth reconstruction (RH + ZO). Builds inv(viewProj) + near/far.  <br /></td></tr>
+<tr class="separator:a139f52072a5c09ebaa8ed65d8462f9a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab04c5117e5e038f7b5722625ec31df41" id="r_ab04c5117e5e038f7b5722625ec31df41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ab04c5117e5e038f7b5722625ec31df41">setInvViewProj</a> (const glm::mat4 &amp;invViewProj)</td></tr>
+<tr class="separator:ab04c5117e5e038f7b5722625ec31df41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af740ed1069b94ca4cf00539383872432" id="r_af740ed1069b94ca4cf00539383872432"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#af740ed1069b94ca4cf00539383872432">setTemporalMotionTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *motionDepth)</td></tr>
+<tr class="memdesc:af740ed1069b94ca4cf00539383872432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set packed linear-depth and motion texture used by temporal SSR resolve.  <br /></td></tr>
+<tr class="separator:af740ed1069b94ca4cf00539383872432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae408d3f4f017ae95cfa55064e9fbb214" id="r_ae408d3f4f017ae95cfa55064e9fbb214"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae408d3f4f017ae95cfa55064e9fbb214">setDepthPyramid</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *atlas, int levels)</td></tr>
+<tr class="memdesc:ae408d3f4f017ae95cfa55064e9fbb214"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the shared horizontally packed RG min/max depth hierarchy.  <br /></td></tr>
+<tr class="separator:ae408d3f4f017ae95cfa55064e9fbb214"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05e254afd6d3494248734f48274f9e02" id="r_a05e254afd6d3494248734f48274f9e02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a05e254afd6d3494248734f48274f9e02">invalidateHistory</a> ()</td></tr>
+<tr class="memdesc:a05e254afd6d3494248734f48274f9e02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard temporal reflection history after a render-chain discontinuity.  <br /></td></tr>
+<tr class="separator:a05e254afd6d3494248734f48274f9e02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b7f7212f650805eddbccbab08f137be" id="r_a6b7f7212f650805eddbccbab08f137be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a6b7f7212f650805eddbccbab08f137be">setEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a6b7f7212f650805eddbccbab08f137be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable the pass. When disabled it emits transparent (0 hit).  <br /></td></tr>
+<tr class="separator:a6b7f7212f650805eddbccbab08f137be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a746cae7e5990906745d1d807103bfd78" id="r_a746cae7e5990906745d1d807103bfd78"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a746cae7e5990906745d1d807103bfd78">getEnabled</a> () const</td></tr>
+<tr class="separator:a746cae7e5990906745d1d807103bfd78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a205a2fcdb632cbce29e8e945e899c0c8" id="r_a205a2fcdb632cbce29e8e945e899c0c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a205a2fcdb632cbce29e8e945e899c0c8">setQuality</a> (const std::string &amp;quality)</td></tr>
+<tr class="memdesc:a205a2fcdb632cbce29e8e945e899c0c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set "low", "medium", "high" or "ultra" SSR quality preset.  <br /></td></tr>
+<tr class="separator:a205a2fcdb632cbce29e8e945e899c0c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04e20b62d5b99d27af200d06850230d0" id="r_a04e20b62d5b99d27af200d06850230d0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a04e20b62d5b99d27af200d06850230d0">getQuality</a> () const</td></tr>
+<tr class="memdesc:a04e20b62d5b99d27af200d06850230d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the active SSR quality preset.  <br /></td></tr>
+<tr class="separator:a04e20b62d5b99d27af200d06850230d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a93b5cb1acc8321660bcbdbee33f71f" id="r_a6a93b5cb1acc8321660bcbdbee33f71f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a6a93b5cb1acc8321660bcbdbee33f71f">setMaxDistance</a> (float meters)</td></tr>
+<tr class="separator:a6a93b5cb1acc8321660bcbdbee33f71f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0567d796afbb7b9206bdc5f532abac8" id="r_aa0567d796afbb7b9206bdc5f532abac8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#aa0567d796afbb7b9206bdc5f532abac8">setStepLength</a> (float meters)</td></tr>
+<tr class="separator:aa0567d796afbb7b9206bdc5f532abac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a49ca611ab15759cc5f4f452b50e649" id="r_a8a49ca611ab15759cc5f4f452b50e649"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a8a49ca611ab15759cc5f4f452b50e649">setMaxSteps</a> (int <a class="el" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>)</td></tr>
+<tr class="separator:a8a49ca611ab15759cc5f4f452b50e649"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a779cf18929733d8b30bd313daf065453" id="r_a779cf18929733d8b30bd313daf065453"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a779cf18929733d8b30bd313daf065453">setThickness</a> (float meters)</td></tr>
+<tr class="separator:a779cf18929733d8b30bd313daf065453"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb4f2a2c8a6d6f5cca516b18f3e8c0a6" id="r_abb4f2a2c8a6d6f5cca516b18f3e8c0a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#abb4f2a2c8a6d6f5cca516b18f3e8c0a6">setStrength</a> (float strength)</td></tr>
+<tr class="separator:abb4f2a2c8a6d6f5cca516b18f3e8c0a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb7800d62edb43bc7820f7c126ea6967" id="r_aeb7800d62edb43bc7820f7c126ea6967"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#aeb7800d62edb43bc7820f7c126ea6967">setMaxRoughness</a> (float <a class="el" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>)</td></tr>
+<tr class="memdesc:aeb7800d62edb43bc7820f7c126ea6967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skip SSR above this material roughness and rely on reflection backup.  <br /></td></tr>
+<tr class="separator:aeb7800d62edb43bc7820f7c126ea6967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70ace72c59194d123c8696b621cf32ea" id="r_a70ace72c59194d123c8696b621cf32ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a70ace72c59194d123c8696b621cf32ea">setResolutionScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:a70ace72c59194d123c8696b621cf32ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set internal SSR resolution scale in the range 0.25 to 1.0.  <br /></td></tr>
+<tr class="separator:a70ace72c59194d123c8696b621cf32ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20f90b944e2fb9b42085b9144b9b5deb" id="r_a20f90b944e2fb9b42085b9144b9b5deb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a20f90b944e2fb9b42085b9144b9b5deb">getStrength</a> () const</td></tr>
+<tr class="separator:a20f90b944e2fb9b42085b9144b9b5deb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00d08086649dc551a6c505a7d9b768a3" id="r_a00d08086649dc551a6c505a7d9b768a3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a00d08086649dc551a6c505a7d9b768a3">getMaxRoughness</a> () const</td></tr>
+<tr class="separator:a00d08086649dc551a6c505a7d9b768a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59ac41a252ae92caa9f43deadcb7f63e" id="r_a59ac41a252ae92caa9f43deadcb7f63e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a59ac41a252ae92caa9f43deadcb7f63e">getResolutionScale</a> () const</td></tr>
+<tr class="separator:a59ac41a252ae92caa9f43deadcb7f63e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af45b7c584715b9ed8eba09c477506821" id="r_af45b7c584715b9ed8eba09c477506821"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#af45b7c584715b9ed8eba09c477506821">hasParam</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:af45b7c584715b9ed8eba09c477506821"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb3c6fbe44790c1e1d64d5ef4eca1183" id="r_adb3c6fbe44790c1e1d64d5ef4eca1183"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adb3c6fbe44790c1e1d64d5ef4eca1183">setFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:adb3c6fbe44790c1e1d64d5ef4eca1183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdba4b5cd8a8a7fec289eb6cc8296c13" id="r_acdba4b5cd8a8a7fec289eb6cc8296c13"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#acdba4b5cd8a8a7fec289eb6cc8296c13">getFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:acdba4b5cd8a8a7fec289eb6cc8296c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d751bf2606c7153e3fb58ddae77a4fa" id="r_a0d751bf2606c7153e3fb58ddae77a4fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a0d751bf2606c7153e3fb58ddae77a4fa">applyFromSceneTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *sceneColor, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="memdesc:a0d751bf2606c7153e3fb58ddae77a4fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the SSR result into the currently bound canvas / dest.  <br /></td></tr>
+<tr class="separator:a0d751bf2606c7153e3fb58ddae77a4fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe3dc0b44cf4aae8a2d2b1a0f544c1c7" id="r_abe3dc0b44cf4aae8a2d2b1a0f544c1c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#abe3dc0b44cf4aae8a2d2b1a0f544c1c7">applyFromSceneTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *sceneColor, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="memdesc:abe3dc0b44cf4aae8a2d2b1a0f544c1c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write SSR using albedo to preserve diffuse energy during reflection replacement.  <br /></td></tr>
+<tr class="separator:abe3dc0b44cf4aae8a2d2b1a0f544c1c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6652ec8de33a70918e65e90d26fc040" id="r_ae6652ec8de33a70918e65e90d26fc040"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ae6652ec8de33a70918e65e90d26fc040">applyFromScene</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *sceneColor, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>=nullptr)</td></tr>
+<tr class="memdesc:ae6652ec8de33a70918e65e90d26fc040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write SSR into the currently bound canvas / screen.  <br /></td></tr>
+<tr class="separator:ae6652ec8de33a70918e65e90d26fc040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dcf122565da41dda021348ab360ec78" id="r_a8dcf122565da41dda021348ab360ec78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a8dcf122565da41dda021348ab360ec78">getReflectionCanvas</a> ()</td></tr>
+<tr class="memdesc:a8dcf122565da41dda021348ab360ec78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned reflection canvas (created on first use at the current target size).  <br /></td></tr>
+<tr class="separator:a8dcf122565da41dda021348ab360ec78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46b0ee721076c31a0cf30513f9eec22e" id="r_a46b0ee721076c31a0cf30513f9eec22e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a46b0ee721076c31a0cf30513f9eec22e">getReflectionTexture</a> ()</td></tr>
+<tr class="memdesc:a46b0ee721076c31a0cf30513f9eec22e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The reflection texture from the owned canvas, or nullptr before first apply.  <br /></td></tr>
+<tr class="separator:a46b0ee721076c31a0cf30513f9eec22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c5d9df74950e83aa44239af9f652eb4" id="r_a2c5d9df74950e83aa44239af9f652eb4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#a2c5d9df74950e83aa44239af9f652eb4">hasValidHistory</a> () const</td></tr>
+<tr class="memdesc:a2c5d9df74950e83aa44239af9f652eb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">True once a temporally resolved reflection frame is safe to sample.  <br /></td></tr>
+<tr class="separator:a2c5d9df74950e83aa44239af9f652eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab973946628e6be51191d7dc5a5c16cd9" id="r_ab973946628e6be51191d7dc5a5c16cd9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#ab973946628e6be51191d7dc5a5c16cd9">getSpatialPassCount</a> () const</td></tr>
+<tr class="memdesc:ab973946628e6be51191d7dc5a5c16cd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of explicit A-trous prefilter passes for the active quality.  <br /></td></tr>
+<tr class="separator:ab973946628e6be51191d7dc5a5c16cd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adefb24e908689d14140f0877107cab02" id="r_adefb24e908689d14140f0877107cab02"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html#adefb24e908689d14140f0877107cab02">getShader</a> () const</td></tr>
+<tr class="separator:adefb24e908689d14140f0877107cab02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Screen-space reflections (SSR) as a fullscreen post pass. @lifetime All <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> and texture arguments are borrowed by this effect. </p>
+<p>Reads the lit scene color, hardware depth (D32) and world normal, and for each pixel ray-marches the reflected ray in screen space. Where the ray hits geometry it emits the reflected scene color with A = hit validity, so a surface (e.g. <a class="el" href="classeve_1_1graphics_1_1Water.html" title="Dynamic water surface with sky reflection and animated ripples.">Water</a>) can blend it over an env-cubemap backup.</p>
+<p>Mirrors <a class="el" href="classeve_1_1graphics_1_1GlobalIllumination.html" title="Screen-space single-bounce GI (SSGI). @lifetime All texture arguments are borrowed for the duration o...">GlobalIllumination</a> and can be invoked manually with applyFromSceneTo. <a class="el" href="classeve_1_1graphics_1_1RenderSystem3D.html">RenderSystem3D</a> also runs it automatically when <code>ssr</code> or <code>reflectionChain</code> is enabled in <a class="el" href="classeve_1_1graphics_1_1RenderControl.html" title="Declarative, compilable 3D render control.">RenderControl</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac4924e49d63dbeeea55f3f44d1ae9d2d" name="ac4924e49d63dbeeea55f3f44d1ae9d2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4924e49d63dbeeea55f3f44d1ae9d2d">&#9670;&#160;</a></span>ScreenSpaceReflection() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::ScreenSpaceReflection::ScreenSpaceReflection </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1c4b1fe0b2edccb03a8b97148b4684ba" name="a1c4b1fe0b2edccb03a8b97148b4684ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c4b1fe0b2edccb03a8b97148b4684ba">&#9670;&#160;</a></span>~ScreenSpaceReflection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::ScreenSpaceReflection::~ScreenSpaceReflection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5eb434e0e30432490e5309ed4036036c" name="a5eb434e0e30432490e5309ed4036036c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5eb434e0e30432490e5309ed4036036c">&#9670;&#160;</a></span>ScreenSpaceReflection() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::ScreenSpaceReflection::ScreenSpaceReflection </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae6652ec8de33a70918e65e90d26fc040" name="ae6652ec8de33a70918e65e90d26fc040"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6652ec8de33a70918e65e90d26fc040">&#9670;&#160;</a></span>applyFromScene()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::applyFromScene </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>sceneColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>worldNormal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>albedo</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write SSR into the currently bound canvas / screen. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00093">albedo</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a1a5d556d9ed9e6c42dbdd26a1d899d0b">eve::graphics::Graphics::drawTexturedRectShader4()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="Graphics_8h_source.html#l00412">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="Texture_8cpp_source.html#l00033">eve::graphics::Texture::getHeight()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00411">eve::graphics::Graphics::getWidth()</a>, <a class="el" href="Texture_8cpp_source.html#l00028">eve::graphics::Texture::getWidth()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00292">applyFromSceneTo()</a>.</p>
+
+</div>
+</div>
+<a id="a0d751bf2606c7153e3fb58ddae77a4fa" name="a0d751bf2606c7153e3fb58ddae77a4fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d751bf2606c7153e3fb58ddae77a4fa">&#9670;&#160;</a></span>applyFromSceneTo() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::applyFromSceneTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>sceneColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>worldNormal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write the SSR result into the currently bound canvas / dest. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00078">applyFromSceneTo()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00078">applyFromSceneTo()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="abe3dc0b44cf4aae8a2d2b1a0f544c1c7" name="abe3dc0b44cf4aae8a2d2b1a0f544c1c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe3dc0b44cf4aae8a2d2b1a0f544c1c7">&#9670;&#160;</a></span>applyFromSceneTo() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::applyFromSceneTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>sceneColor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>worldNormal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>albedo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write SSR using albedo to preserve diffuse energy during reflection replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00093">albedo</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00327">applyFromScene()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a746cae7e5990906745d1d807103bfd78" name="a746cae7e5990906745d1d807103bfd78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a746cae7e5990906745d1d807103bfd78">&#9670;&#160;</a></span>getEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ScreenSpaceReflection::getEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acdba4b5cd8a8a7fec289eb6cc8296c13" name="acdba4b5cd8a8a7fec289eb6cc8296c13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdba4b5cd8a8a7fec289eb6cc8296c13">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ScreenSpaceReflection::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00071">eve::graphics::Shader::getFromVar()</a>, <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a00d08086649dc551a6c505a7d9b768a3" name="a00d08086649dc551a6c505a7d9b768a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00d08086649dc551a6c505a7d9b768a3">&#9670;&#160;</a></span>getMaxRoughness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ScreenSpaceReflection::getMaxRoughness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a04e20b62d5b99d27af200d06850230d0" name="a04e20b62d5b99d27af200d06850230d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04e20b62d5b99d27af200d06850230d0">&#9670;&#160;</a></span>getQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::ScreenSpaceReflection::getQuality </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the active SSR quality preset. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a8dcf122565da41dda021348ab360ec78" name="a8dcf122565da41dda021348ab360ec78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dcf122565da41dda021348ab360ec78">&#9670;&#160;</a></span>getReflectionCanvas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> * eve::graphics::ScreenSpaceReflection::getReflectionCanvas </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Owned reflection canvas (created on first use at the current target size). </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00306">306</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8h_source.html#l00412">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00414">eve::graphics::Graphics::getPixelHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00413">eve::graphics::Graphics::getPixelWidth()</a>, <a class="el" href="Graphics_8h_source.html#l00411">eve::graphics::Graphics::getWidth()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ac4290cf6519dff495b47342905d210fa">eve::graphics::Graphics::newHDRCanvas()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00321">getReflectionTexture()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a46b0ee721076c31a0cf30513f9eec22e" name="a46b0ee721076c31a0cf30513f9eec22e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46b0ee721076c31a0cf30513f9eec22e">&#9670;&#160;</a></span>getReflectionTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::ScreenSpaceReflection::getReflectionTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The reflection texture from the owned canvas, or nullptr before first apply. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00306">getReflectionCanvas()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Water_8cpp_source.html#l00169">eve::graphics::Water::draw()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a59ac41a252ae92caa9f43deadcb7f63e" name="a59ac41a252ae92caa9f43deadcb7f63e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59ac41a252ae92caa9f43deadcb7f63e">&#9670;&#160;</a></span>getResolutionScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ScreenSpaceReflection::getResolutionScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adefb24e908689d14140f0877107cab02" name="adefb24e908689d14140f0877107cab02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adefb24e908689d14140f0877107cab02">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::ScreenSpaceReflection::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab973946628e6be51191d7dc5a5c16cd9" name="ab973946628e6be51191d7dc5a5c16cd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab973946628e6be51191d7dc5a5c16cd9">&#9670;&#160;</a></span>getSpatialPassCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ScreenSpaceReflection::getSpatialPassCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of explicit A-trous prefilter passes for the active quality. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20f90b944e2fb9b42085b9144b9b5deb" name="a20f90b944e2fb9b42085b9144b9b5deb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20f90b944e2fb9b42085b9144b9b5deb">&#9670;&#160;</a></span>getStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ScreenSpaceReflection::getStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af45b7c584715b9ed8eba09c477506821" name="af45b7c584715b9ed8eba09c477506821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af45b7c584715b9ed8eba09c477506821">&#9670;&#160;</a></span>hasParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ScreenSpaceReflection::hasParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a2c5d9df74950e83aa44239af9f652eb4" name="a2c5d9df74950e83aa44239af9f652eb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c5d9df74950e83aa44239af9f652eb4">&#9670;&#160;</a></span>hasValidHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ScreenSpaceReflection::hasValidHistory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True once a temporally resolved reflection frame is safe to sample. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Water_8cpp_source.html#l00169">eve::graphics::Water::draw()</a>.</p>
+
+</div>
+</div>
+<a id="a05e254afd6d3494248734f48274f9e02" name="a05e254afd6d3494248734f48274f9e02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05e254afd6d3494248734f48274f9e02">&#9670;&#160;</a></span>invalidateHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::invalidateHistory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Discard temporal reflection history after a render-chain discontinuity. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4f45b66cd17694a9d652038034b1b83" name="ae4f45b66cd17694a9d652038034b1b83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4f45b66cd17694a9d652038034b1b83">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp; eve::graphics::ScreenSpaceReflection::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a139f52072a5c09ebaa8ed65d8462f9a5" name="a139f52072a5c09ebaa8ed65d8462f9a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a139f52072a5c09ebaa8ed65d8462f9a5">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setCamera </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for depth reconstruction (RH + ZO). Builds inv(viewProj) + near/far. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00681">eye</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00687">fovRad</a>, <a class="el" href="ClipSpace_8h_source.html#l00022">eve::graphics::perspectiveVulkanRH_ZO()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00683">proj</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00076">setInvViewProj()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="ae408d3f4f017ae95cfa55064e9fbb214" name="ae408d3f4f017ae95cfa55064e9fbb214"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae408d3f4f017ae95cfa55064e9fbb214">&#9670;&#160;</a></span>setDepthPyramid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setDepthPyramid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>atlas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>levels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the shared horizontally packed RG min/max depth hierarchy. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a6b7f7212f650805eddbccbab08f137be" name="a6b7f7212f650805eddbccbab08f137be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b7f7212f650805eddbccbab08f137be">&#9670;&#160;</a></span>setEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable/disable the pass. When disabled it emits transparent (0 hit). </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="adb3c6fbe44790c1e1d64d5ef4eca1183" name="adb3c6fbe44790c1e1d64d5ef4eca1183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb3c6fbe44790c1e1d64d5ef4eca1183">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00229">setMaxDistance()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00234">setMaxRoughness()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00231">setMaxSteps()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00230">setStepLength()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00233">setStrength()</a> , 以及 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00232">setThickness()</a>.</p>
+
+</div>
+</div>
+<a id="ab04c5117e5e038f7b5722625ec31df41" name="ab04c5117e5e038f7b5722625ec31df41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab04c5117e5e038f7b5722625ec31df41">&#9670;&#160;</a></span>setInvViewProj()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setInvViewProj </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>invViewProj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00099">eve::graphics::Shader::sendMatrix()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00150">setCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a6a93b5cb1acc8321660bcbdbee33f71f" name="a6a93b5cb1acc8321660bcbdbee33f71f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a93b5cb1acc8321660bcbdbee33f71f">&#9670;&#160;</a></span>setMaxDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setMaxDistance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>meters</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00249">setFloat()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aeb7800d62edb43bc7820f7c126ea6967" name="aeb7800d62edb43bc7820f7c126ea6967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb7800d62edb43bc7820f7c126ea6967">&#9670;&#160;</a></span>setMaxRoughness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setMaxRoughness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>roughness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Skip SSR above this material roughness and rely on reflection backup. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00249">setFloat()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00188">setQuality()</a>.</p>
+
+</div>
+</div>
+<a id="a8a49ca611ab15759cc5f4f452b50e649" name="a8a49ca611ab15759cc5f4f452b50e649"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a49ca611ab15759cc5f4f452b50e649">&#9670;&#160;</a></span>setMaxSteps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setMaxSteps </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>steps</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00249">setFloat()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00188">setQuality()</a>.</p>
+
+</div>
+</div>
+<a id="a205a2fcdb632cbce29e8e945e899c0c8" name="a205a2fcdb632cbce29e8e945e899c0c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a205a2fcdb632cbce29e8e945e899c0c8">&#9670;&#160;</a></span>setQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setQuality </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set "low", "medium", "high" or "ultra" SSR quality preset. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00234">setMaxRoughness()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00231">setMaxSteps()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00237">setResolutionScale()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00230">setStepLength()</a> , 以及 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00232">setThickness()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a70ace72c59194d123c8696b621cf32ea" name="a70ace72c59194d123c8696b621cf32ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70ace72c59194d123c8696b621cf32ea">&#9670;&#160;</a></span>setResolutionScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setResolutionScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set internal SSR resolution scale in the range 0.25 to 1.0. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00188">setQuality()</a>.</p>
+
+</div>
+</div>
+<a id="aa0567d796afbb7b9206bdc5f532abac8" name="aa0567d796afbb7b9206bdc5f532abac8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0567d796afbb7b9206bdc5f532abac8">&#9670;&#160;</a></span>setStepLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setStepLength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>meters</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00249">setFloat()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00188">setQuality()</a>.</p>
+
+</div>
+</div>
+<a id="abb4f2a2c8a6d6f5cca516b18f3e8c0a6" name="abb4f2a2c8a6d6f5cca516b18f3e8c0a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb4f2a2c8a6d6f5cca516b18f3e8c0a6">&#9670;&#160;</a></span>setStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setStrength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00249">setFloat()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="af740ed1069b94ca4cf00539383872432" name="af740ed1069b94ca4cf00539383872432"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af740ed1069b94ca4cf00539383872432">&#9670;&#160;</a></span>setTemporalMotionTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setTemporalMotionTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>motionDepth</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set packed linear-depth and motion texture used by temporal SSR resolve. </p>
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a> 第 <a class="el" href="ScreenSpaceReflection_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a779cf18929733d8b30bd313daf065453" name="a779cf18929733d8b30bd313daf065453"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a779cf18929733d8b30bd313daf065453">&#9670;&#160;</a></span>setThickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ScreenSpaceReflection::setThickness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>meters</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a> 第 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00249">setFloat()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00188">setQuality()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="ScreenSpaceReflection_8h_source.html">ScreenSpaceReflection.h</a></li>
+<li>src/modules/graphics/<a class="el" href="ScreenSpaceReflection_8cpp_source.html">ScreenSpaceReflection.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

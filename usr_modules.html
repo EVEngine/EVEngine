@@ -1,0 +1,263 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 模块使用手册</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">模块使用手册</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><a class="el" href="usr_env.html">运行环境与输入</a></p>
+<p><a class="el" href="usr_assets.html">资源与 I/O</a></p>
+<p><a class="el" href="usr_gameplay.html">游戏玩法</a></p>
+<p><a class="el" href="usr_scene.html">表现与场景</a></p>
+<p><a class="el" href="usr_advanced.html">高级能力</a></p>
+<h1>模块使用手册</h1>
+<p>本目录按模块说明 EVEngine 面向 Squirrel 游戏脚本公开的能力。每篇包含入口、最小示例、至少两个目标导向任务、当前绑定的 API 快查和生命周期注意事项。</p>
+<blockquote class="doxtable">
+<p>&zwj;使用前提：从<a href="https://github.com/EVEngine/EVEngine/releases">官网发布页</a>下载并解压对应平台的 SDK（无需编译引擎），然后用 <code>eve run &lt;游戏目录&gt;</code> 运行；本手册适用于 SDK 中的全部模块。 </p>
+</blockquote>
+<p>模块可以按需裁剪：见 <a class="el" href="TRIMMING_8md.html">按需裁剪模块</a>。脚本里用 <code>has_module("slot")</code> 判断某个模块在当前构建中是否存在（下载的 SDK 默认包含全部模块）。</p>
+<p>首次查阅前请阅读 <a class="el" href="API-CONVENTIONS_8md.html">API 使用约定</a>，了解模块对象、辅助对象、生命周期与“C++ public 方法不一定是脚本 API”的边界。 本轮逐章核对的实现、测试证据与结论记录在 <a href="https://github.com/EVEngine/EVEngine/blob/main/docs/usr/REVIEW.md">用户模块文档 Review</a>。</p>
+<h2>运行环境与输入</h2>
+<ul>
+<li><a class="el" href="window_8md.html">窗口</a>：创建和配置单一游戏窗口。</li>
+<li><a class="el" href="event_8md.html">事件</a>：泵送平台事件，并用字符串消息队列在模块或线程之间传递通知。</li>
+<li><a class="el" href="rx_8md.html">响应式编程</a>：UniRx 风格推送流，Subject 家族 + LINQ 操作符 + ReactiveProperty + 事件桥接。</li>
+<li><a class="el" href="timer_8md.html">计时器</a>：读取启动后的高精度时间和帧间隔。</li>
+<li><a class="el" href="system_8md.html">系统信息</a>：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。</li>
+<li><a class="el" href="keyboard_8md.html">键盘</a>：查询按键状态、键盘重复和文本输入。</li>
+<li><a class="el" href="mouse_8md.html">鼠标</a>：查询鼠标位置、按键和指针可见状态；当前脚本绑定不含相对模式设置。</li>
+<li><a class="el" href="touch_8md.html">触摸</a>：按索引读取当前触点数量和归一化/屏幕坐标。</li>
+<li><a class="el" href="joystick_8md.html">手柄</a>：查询手柄数量、读取轴/按钮/方向帽、管理 SDL GameController 映射，并支持振动。</li>
+</ul>
+<h2>资源与 I/O</h2>
+<ul>
+<li><a class="el" href="filesystem_8md.html">文件系统与热重载</a>：通过统一虚拟文件系统读写、枚举、挂载并监视游戏资源。</li>
+<li><a class="el" href="data_8md.html">数据</a>：管理 ByteData/DataView、压缩、哈希以及 JSON/XML 文档。</li>
+<li><a class="el" href="image_8md.html">图像</a>：说明图像模块的脚本绑定边界，以及通过字体字形获得 ImageData 的可用路径。</li>
+<li><a class="el" href="font_8md.html">字体</a>：从文件或内存创建 FontData，并读取字形度量和位图。</li>
+<li><a class="el" href="i18n_8md.html">本地化</a>：按语言载入 JSON 翻译表、点号键取值、占位符与复数规则、默认语言回退。</li>
+<li><a class="el" href="sound_8md.html">声音数据</a>：读取声音数据、解码器和采样信息，供 Audio 创建 Source。</li>
+<li><a class="el" href="audio_8md.html">音频播放</a>：创建可播放 Source，控制音量、音高、循环、进度和 3D 声源位置。</li>
+<li><a class="el" href="model3d_8md.html">3D 模型</a>：通过 medialoader/Assimp 载入模型数据，再交给图形模块渲染。</li>
+<li><a class="el" href="network_8md.html">网络</a>：提供 HTTP 请求、TCP 客户端/服务端和基础网络状态。</li>
+<li>数据库：SQLite 连接、JSON 行接口与轻量 ORM，用于存档与配置表。</li>
+</ul>
+<h2>游戏玩法</h2>
+<ul>
+<li><a class="el" href="entity_8md.html">脚本 ECS</a>：通过 Component、Entity 和 System 声明数据组合与批量更新逻辑。</li>
+<li><a class="el" href="physics_8md.html">物理（Box2D / Box3D）</a>：2D World/Body/Fixture（像素坐标 + meter）与 3D World3D/Body3D/Shape3D（米）；接触事件与 <code>rayCast</code> / <code>queryAABB</code> / <code>testPoint</code> 拾取查询。</li>
+<li><a class="el" href="map_8md.html">Tilemap</a>：创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染。</li>
+<li><a class="el" href="particles_8md.html">粒子</a>：用代码或 JSON 创建发射器，配置运动、颜色、寿命并进行更新和渲染。</li>
+<li><a class="el" href="pixelworld_8md.html">像素物质世界</a>：64×64 分块的确定性沙、水、火焰与可破坏二维材料仿真。</li>
+<li><a class="el" href="pixelworld__replay_8md.html">PixelWorld 确定性重放</a>：命令日志、周期 checkpoint 与首个 Tick/Chunk 分歧定位。</li>
+<li><a class="el" href="pixelworld__streaming_8md.html">PixelWorld 兴趣区 Streaming</a>：Chunk 兴趣区、增量更新、驱逐 tombstone 与权威校正。</li>
+<li><a class="el" href="pixelworld__editor_8md.html">PixelWorld Catalog 编辑器</a>：可挂载的材质浏览、属性、反应与相变规则事务式编辑面板。</li>
+<li><a class="el" href="animation_8md.html">动画</a>：Tween 补间、3D 骨骼播放（状态机 / Motion Matching）、控制论程序动画（<code>ControlAnim</code> / <code>ControlPose</code>）、以及拖尾轨迹（<code>AnimTrail</code>）。</li>
+<li><a class="el" href="climbing_8md.html">攀爬与跑酷</a>：前方障碍/顶部落点探测、确定性动作选择，以及受 Physics 胶囊体约束的 vault / mantle 执行。</li>
+<li><a class="el" href="rpg_8md.html">RPG 系统</a>：组合属性、效果、状态、技能、施法与伤害结算。</li>
+<li><a class="el" href="inventory_8md.html">背包 / 物品栏</a>：物品定义、背包容器、转移、装备栏与可插拔接纳/容量/堆叠规则。</li>
+<li><a class="el" href="cardgame_8md.html">卡牌游戏工具</a>：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌与费用置灰（参考 UiCard）。</li>
+<li><a class="el" href="building_8md.html">建筑放置</a>：策略 / 经营类建筑定义、格子占用、鬼影预览与可插拔校验/吸附。</li>
+<li>建筑可视化：把放置世界和鬼影同步为 2D/3D 视觉并绘制放置网格。</li>
+<li>程序化房屋：数据驱动的房屋生成（组件库 + 请求 → 布局 JSON）。</li>
+<li><a class="el" href="procgen_8md.html">程序化生成</a>：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。</li>
+<li>武器系统：数据驱动的武器、弹药池、挂点、瞄准、开火、装填与事件查询。</li>
+<li>载具系统：载具定义、移动命令、座位和炮塔、伤害以及 2D/3D 物理接入。</li>
+<li>通用效果：按主体管理可堆叠、可过期的效果及其结构化载荷与事件。</li>
+<li>原子状态补丁：用带冲突检查的批次原子修改 JSON 状态，并支持脏键、事件和快照。</li>
+<li>通用命令队列：确定性优先级命令、抢占、超时、载荷、生命周期事件和快照。</li>
+<li>社会关系图：所有权、控制权、角色指派和带权有向关系。</li>
+<li>生产队列：按 owner 分配并行槽位，确定性推进可暂停、恢复的生产任务。</li>
+<li>权限规则：按 actor、scope 和 capability 仲裁有优先级、可过期的允许/拒绝规则。</li>
+</ul>
+<h2>表现与场景</h2>
+<ul>
+<li><a class="el" href="graphics_8md.html">图形渲染</a>：清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染；Camera2D/3D 提供屏幕↔世界与拾取射线。</li>
+<li><a class="el" href="voxel_8md.html">体素</a>：32³ chunk 体素世界，贪婪矩形合并 + 实例化渲染、跨 chunk 接缝消隐、顶点 AO、DDA 射线拾取、自动流式地形生成与存档。</li>
+<li><a class="el" href="spritestack_8md.html">Sprite-Stacking</a>：把 3D 模型切成多层 RGBA 图，以叠片方式渲染成伪 3D 物体（经典 billboard 切片 / 水平俯视切片）。</li>
+<li><a class="el" href="daynight_8md.html">昼夜循环</a>：随时间驱动的太阳轨道、程序化天空盒（IBL），以及月光 / 星光 / 火焰 / 萤火虫等夜间光照系统。</li>
+<li><a class="el" href="weather_8md.html">天气系统</a>：实时降水 / 闪电 / 风场，含雨、雪、雷暴预置与风暴氛围。</li>
+<li>可交互积雪：深度场积雪，真实位移深坑 + POM 微细节 + 降雪回填（脚印 / 弹坑 / 行走痕迹）。</li>
+<li>Avatar 分层渲染：Image 图层 / Live2D / VRoid 立绘，表达式、口型与动作。</li>
+<li>对话与剧情：角色舞台、打字机、选项分支、口型与台词池（.dnut）。</li>
+<li>3D 相机控制器：跟随 / 环绕 / 俯视 / 第一人称 / 过场视角序列。</li>
+<li>场景加载器：glTF / OBJ / FBX 解码成声明式场景树，支持热重载与异步加载。</li>
+<li><a class="el" href="ui_8md.html">声明式 UI</a>：构建并挂载保留式控件树，通过稳定 ID 消费点击和更改事件。</li>
+<li><a class="el" href="scene_8md.html">声明式场景树</a>：用节点描述构建 2D/3D 层级，维护 local/world 变换并连接渲染实体。</li>
+</ul>
+<h2>高级能力</h2>
+<ul>
+<li><a class="el" href="math_8md.html">数学</a>：提供向量、矩阵、2D/3D 拾取与重叠几何测试、噪声、随机数、插值和缓动工具。</li>
+<li><a class="el" href="spatial_8md.html">空间索引</a>：四叉树 / 八叉树 / 空间哈希 / 空间二分树，用于地图与场景的快速裁剪与邻近查询。</li>
+<li><a class="el" href="editor_8md.html">编辑器构件</a>：3D 变换 gizmo、地图笔刷、Toolbar/Inspector/Dock/History；用于组装自定义编辑器，而非内置完整编辑器。</li>
+<li><a class="el" href="ik_8md.html">逆运动学</a>：创建 2D/3D 骨架和 FABRIK Solver，设置目标并逐帧求解。</li>
+<li><a class="el" href="gpgpu_8md.html">GPU 计算</a>：创建 storage buffer 和 compute shader，绑定后调度 Vulkan compute。</li>
+<li><a class="el" href="tensor_8md.html">张量</a>：执行 eager 张量运算，或用 Func 构图、编译并重复运行。</li>
+<li><a class="el" href="thread_8md.html">线程与异步</a>：使用线程池执行原生安全任务，通过 Channel/Event 把结果送回主线程。</li>
+<li>风格化渲染：卡通 / 水彩 / 水墨 / 像素后处理与网格着色。</li>
+<li>虚拟几何：GPU 簇裁剪 + LOD 的大场景几何管线。</li>
+<li>统一网格：格子 ↔ 世界坐标换算与拓扑（纯 C++，被 map/building 消费）。</li>
+<li><a class="el" href="plugins_8md.html">原生插件</a>：从动态库加载用 EVEngine SDK 编译的原生模块。</li>
+<li><a class="el" href="demo_8md.html">内置演示</a>：查询或运行随宿主编译的演示能力，用于验证引擎安装。 </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

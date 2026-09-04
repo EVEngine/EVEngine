@@ -1,0 +1,701 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::LocalTransactionBackend类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html">LocalTransactionBackend</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1LocalTransactionBackend-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::LocalTransactionBackend类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Local transaction coordinator backed by an injected edit authority.  
+ <a href="classeve_1_1editor_1_1LocalTransactionBackend.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorTransactionService_8h_source.html">EditorTransactionService.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::editor::LocalTransactionBackend 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1editor_1_1LocalTransactionBackend.png" usemap="#eve::editor::LocalTransactionBackend_map" alt=""/>
+  <map id="eve::editor::LocalTransactionBackend_map" name="eve::editor::LocalTransactionBackend_map">
+<area href="classeve_1_1editor_1_1IEditorTransactionBackend.html" title="Transaction boundary consumed by editor property and other UI models." alt="eve::editor::IEditorTransactionBackend" shape="rect" coords="0,0,228,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4752557dea9fe5a6d48e8c0c163f63d2" id="r_a4752557dea9fe5a6d48e8c0c163f63d2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a4752557dea9fe5a6d48e8c0c163f63d2">LocalTransactionBackend</a> (<a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *authority=nullptr)</td></tr>
+<tr class="memdesc:a4752557dea9fe5a6d48e8c0c163f63d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a non-owning authority that outlives this backend.  <br /></td></tr>
+<tr class="separator:a4752557dea9fe5a6d48e8c0c163f63d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac57ad5d6c0f0a3d7c11c113a385d014c" id="r_ac57ad5d6c0f0a3d7c11c113a385d014c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#ac57ad5d6c0f0a3d7c11c113a385d014c">setAuthority</a> (<a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *authority)</td></tr>
+<tr class="memdesc:ac57ad5d6c0f0a3d7c11c113a385d014c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the non-owning authority when no transaction is active.  <br /></td></tr>
+<tr class="separator:ac57ad5d6c0f0a3d7c11c113a385d014c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0636ffe175c3def62b16815bb32f8ac9" id="r_a0636ffe175c3def62b16815bb32f8ac9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#ab2119234b7c39da7052bfe0ebf99bd9f">TransactionId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a0636ffe175c3def62b16815bb32f8ac9">begin</a> (<a class="el" href="namespaceeve_1_1editor.html#aa291deb653e7c3252981b678f8ac3eef">TransactionSpec</a> specification) override</td></tr>
+<tr class="memdesc:a0636ffe175c3def62b16815bb32f8ac9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a transaction with a stable id and base revision.  <br /></td></tr>
+<tr class="separator:a0636ffe175c3def62b16815bb32f8ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc723ef63118c5909b8156a0f3f65317" id="r_adc723ef63118c5909b8156a0f3f65317"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#adc723ef63118c5909b8156a0f3f65317">append</a> (<a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> operation) override</td></tr>
+<tr class="memdesc:adc723ef63118c5909b8156a0f3f65317"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an operation to the active transaction without applying it.  <br /></td></tr>
+<tr class="separator:adc723ef63118c5909b8156a0f3f65317"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad10ced25216437d34efb32281bb2313e" id="r_ad10ced25216437d34efb32281bb2313e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorDryRunReport.html">EditorDryRunReport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#ad10ced25216437d34efb32281bb2313e">preview</a> () override</td></tr>
+<tr class="memdesc:ad10ced25216437d34efb32281bb2313e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preflight the active operation list without mutating target state.  <br /></td></tr>
+<tr class="separator:ad10ced25216437d34efb32281bb2313e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad305361f40bce7cb502661b78b04e526" id="r_ad305361f40bce7cb502661b78b04e526"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#ad305361f40bce7cb502661b78b04e526">commit</a> () override</td></tr>
+<tr class="memdesc:ad305361f40bce7cb502661b78b04e526"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preflight and commit all active operations through the authority.  <br /></td></tr>
+<tr class="separator:ad305361f40bce7cb502661b78b04e526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a129f6dd97d5de725a92a724dc513ea38" id="r_a129f6dd97d5de725a92a724dc513ea38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a129f6dd97d5de725a92a724dc513ea38">discard</a> () override</td></tr>
+<tr class="memdesc:a129f6dd97d5de725a92a724dc513ea38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard the active, not-yet-committed operation list.  <br /></td></tr>
+<tr class="separator:a129f6dd97d5de725a92a724dc513ea38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cb39978129dbb8511a0414f3c517b8f" id="r_a8cb39978129dbb8511a0414f3c517b8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a8cb39978129dbb8511a0414f3c517b8f">rollback</a> ()</td></tr>
+<tr class="memdesc:a8cb39978129dbb8511a0414f3c517b8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility spelling for discard.  <br /></td></tr>
+<tr class="separator:a8cb39978129dbb8511a0414f3c517b8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97e94f794637dd3de7f2994a533dc07b" id="r_a97e94f794637dd3de7f2994a533dc07b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a97e94f794637dd3de7f2994a533dc07b">retry</a> () override</td></tr>
+<tr class="memdesc:a97e94f794637dd3de7f2994a533dc07b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retry the retained failed commit.  <br /></td></tr>
+<tr class="separator:a97e94f794637dd3de7f2994a533dc07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae23658c436918502a3ead8f29599c258" id="r_ae23658c436918502a3ead8f29599c258"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#ae23658c436918502a3ead8f29599c258">undo</a> () override</td></tr>
+<tr class="memdesc:ae23658c436918502a3ead8f29599c258"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compensate the most recent committed transaction.  <br /></td></tr>
+<tr class="separator:ae23658c436918502a3ead8f29599c258"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82a76d9cd00d70503ba830f9376516b3" id="r_a82a76d9cd00d70503ba830f9376516b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a82a76d9cd00d70503ba830f9376516b3">redo</a> () override</td></tr>
+<tr class="memdesc:a82a76d9cd00d70503ba830f9376516b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reapply the most recently compensated transaction.  <br /></td></tr>
+<tr class="separator:a82a76d9cd00d70503ba830f9376516b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b33c40379677b915497da1f60db4d53" id="r_a4b33c40379677b915497da1f60db4d53"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a4b33c40379677b915497da1f60db4d53">active</a> () const noexcept override</td></tr>
+<tr class="memdesc:a4b33c40379677b915497da1f60db4d53"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while begin/append has an uncommitted transaction.  <br /></td></tr>
+<tr class="separator:a4b33c40379677b915497da1f60db4d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dd6d55178eedcc43704e2a044fb8dd7" id="r_a0dd6d55178eedcc43704e2a044fb8dd7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a0dd6d55178eedcc43704e2a044fb8dd7">canUndo</a> () const noexcept override</td></tr>
+<tr class="memdesc:a0dd6d55178eedcc43704e2a044fb8dd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when one or more committed transactions can be compensated.  <br /></td></tr>
+<tr class="separator:a0dd6d55178eedcc43704e2a044fb8dd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62575ad2a85d85e3db52506d063b4c50" id="r_a62575ad2a85d85e3db52506d063b4c50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1LocalTransactionBackend.html#a62575ad2a85d85e3db52506d063b4c50">canRedo</a> () const noexcept override</td></tr>
+<tr class="memdesc:a62575ad2a85d85e3db52506d063b4c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when one or more compensated transactions can be reapplied.  <br /></td></tr>
+<tr class="separator:a62575ad2a85d85e3db52506d063b4c50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editor_1_1IEditorTransactionBackend"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editor_1_1IEditorTransactionBackend')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html">eve::editor::IEditorTransactionBackend</a></td></tr>
+<tr class="memitem:a78ac9f34607fc326ed8d7fd4b7e52d34 inherit pub_methods_classeve_1_1editor_1_1IEditorTransactionBackend" id="r_a78ac9f34607fc326ed8d7fd4b7e52d34"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a78ac9f34607fc326ed8d7fd4b7e52d34">~IEditorTransactionBackend</a> ()=default</td></tr>
+<tr class="separator:a78ac9f34607fc326ed8d7fd4b7e52d34 inherit pub_methods_classeve_1_1editor_1_1IEditorTransactionBackend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Local transaction coordinator backed by an injected edit authority. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8h_source.html">EditorTransactionService.h</a> 第 <a class="el" href="EditorTransactionService_8h_source.html#l00045">45</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4752557dea9fe5a6d48e8c0c163f63d2" name="a4752557dea9fe5a6d48e8c0c163f63d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4752557dea9fe5a6d48e8c0c163f63d2">&#9670;&#160;</a></span>LocalTransactionBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::LocalTransactionBackend::LocalTransactionBackend </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *&#160;</td>
+          <td class="paramname"><em>authority</em> = <code>nullptr</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind a non-owning authority that outlives this backend. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8h_source.html">EditorTransactionService.h</a> 第 <a class="el" href="EditorTransactionService_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4b33c40379677b915497da1f60db4d53" name="a4b33c40379677b915497da1f60db4d53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b33c40379677b915497da1f60db4d53">&#9670;&#160;</a></span>active()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::LocalTransactionBackend::active </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True while begin/append has an uncommitted transaction. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a8c471519d0f91d118ab3cbca8f500436">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8h_source.html">EditorTransactionService.h</a> 第 <a class="el" href="EditorTransactionService_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc723ef63118c5909b8156a0f3f65317" name="adc723ef63118c5909b8156a0f3f65317"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc723ef63118c5909b8156a0f3f65317">&#9670;&#160;</a></span>append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::LocalTransactionBackend::append </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a>&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append an operation to the active transaction without applying it. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a3941746b48195fd0674fd41fc5aa4796">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00344">eve::editor::EditorTransactionConsumer::append()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00056">eve::editor::EditorTargetCoordinator::Impl::execute()</a> , 以及 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00259">eve::audio_editor::AudioSourceEditor::setProperty()</a>.</p>
+
+</div>
+</div>
+<a id="a0636ffe175c3def62b16815bb32f8ac9" name="a0636ffe175c3def62b16815bb32f8ac9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0636ffe175c3def62b16815bb32f8ac9">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#ab2119234b7c39da7052bfe0ebf99bd9f">TransactionId</a> &gt; eve::editor::LocalTransactionBackend::begin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#aa291deb653e7c3252981b678f8ac3eef">TransactionSpec</a>&#160;</td>
+          <td class="paramname"><em>specification</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Begin a transaction with a stable id and base revision. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a5cd0fa045a0082455c892c65ac128267">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00316">eve::editor::EditorTransactionConsumer::begin()</a>, <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00082">eve::editing::TransactionSpec::id</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00085">eve::editing::TransactionSpec::target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00056">eve::editor::EditorTargetCoordinator::Impl::execute()</a> , 以及 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00259">eve::audio_editor::AudioSourceEditor::setProperty()</a>.</p>
+
+</div>
+</div>
+<a id="a62575ad2a85d85e3db52506d063b4c50" name="a62575ad2a85d85e3db52506d063b4c50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62575ad2a85d85e3db52506d063b4c50">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::LocalTransactionBackend::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when one or more compensated transactions can be reapplied. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#accd9c4493075563ec034abbc3bae791a">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8h_source.html">EditorTransactionService.h</a> 第 <a class="el" href="EditorTransactionService_8h_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineEditor_8h_source.html#l00166">eve::editor::ActionTimelineEditor::canRedo()</a>, <a class="el" href="AnimationClipEditor_8h_source.html#l00085">eve::animation_editor::AnimationClipEditor::canRedo()</a>, <a class="el" href="AudioSourceEditor_8h_source.html#l00121">eve::audio_editor::AudioSourceEditor::canRedo()</a>, <a class="el" href="AvatarDocumentEditor_8h_source.html#l00067">eve::avatar_editor::AvatarDocumentEditor::canRedo()</a> , 以及 <a class="el" href="BiomeRulesEditor_8h_source.html#l00067">eve::biome_editor::BiomeRulesEditor::canRedo()</a>.</p>
+
+</div>
+</div>
+<a id="a0dd6d55178eedcc43704e2a044fb8dd7" name="a0dd6d55178eedcc43704e2a044fb8dd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dd6d55178eedcc43704e2a044fb8dd7">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::LocalTransactionBackend::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when one or more committed transactions can be compensated. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#abc4c67790a2ced90ac3f2fd678c84df0">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8h_source.html">EditorTransactionService.h</a> 第 <a class="el" href="EditorTransactionService_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineEditor_8h_source.html#l00164">eve::editor::ActionTimelineEditor::canUndo()</a>, <a class="el" href="AnimationClipEditor_8h_source.html#l00084">eve::animation_editor::AnimationClipEditor::canUndo()</a>, <a class="el" href="AudioSourceEditor_8h_source.html#l00120">eve::audio_editor::AudioSourceEditor::canUndo()</a>, <a class="el" href="AvatarDocumentEditor_8h_source.html#l00066">eve::avatar_editor::AvatarDocumentEditor::canUndo()</a> , 以及 <a class="el" href="BiomeRulesEditor_8h_source.html#l00066">eve::biome_editor::BiomeRulesEditor::canUndo()</a>.</p>
+
+</div>
+</div>
+<a id="ad305361f40bce7cb502661b78b04e526" name="ad305361f40bce7cb502661b78b04e526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad305361f40bce7cb502661b78b04e526">&#9670;&#160;</a></span>commit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::LocalTransactionBackend::commit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Preflight and commit all active operations through the authority. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a696027b74f7cdcae9d7770a6b6a73b96">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00564">eve::editor::EditorTransactionConsumer::commit()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00056">eve::editor::EditorTargetCoordinator::Impl::execute()</a> , 以及 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00259">eve::audio_editor::AudioSourceEditor::setProperty()</a>.</p>
+
+</div>
+</div>
+<a id="a129f6dd97d5de725a92a724dc513ea38" name="a129f6dd97d5de725a92a724dc513ea38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a129f6dd97d5de725a92a724dc513ea38">&#9670;&#160;</a></span>discard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::LocalTransactionBackend::discard </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Discard the active, not-yet-committed operation list. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#ac9966638ae5b9dcc1330d69febc7a256">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00720">eve::editor::EditorTransactionConsumer::discard()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00056">eve::editor::EditorTargetCoordinator::Impl::execute()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00078">rollback()</a>.</p>
+
+</div>
+</div>
+<a id="ad10ced25216437d34efb32281bb2313e" name="ad10ced25216437d34efb32281bb2313e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad10ced25216437d34efb32281bb2313e">&#9670;&#160;</a></span>preview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1EditorDryRunReport.html">EditorDryRunReport</a> &gt; eve::editor::LocalTransactionBackend::preview </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Preflight the active operation list without mutating target state. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#af041a32d38b7324e689023220337cf10">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00538">eve::editor::EditorTransactionConsumer::dryRun()</a>.</p>
+
+</div>
+</div>
+<a id="a82a76d9cd00d70503ba830f9376516b3" name="a82a76d9cd00d70503ba830f9376516b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82a76d9cd00d70503ba830f9376516b3">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::LocalTransactionBackend::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reapply the most recently compensated transaction. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a953f5df7f33558c8ee3a255ecc83494c">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00812">eve::editor::EditorTransactionConsumer::redo()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00240">eve::animation_editor::AnimationClipEditor::redo()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00299">eve::audio_editor::AudioSourceEditor::redo()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00349">eve::avatar_editor::AvatarDocumentEditor::redo()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00304">eve::biome_editor::BiomeRulesEditor::redo()</a> , 以及 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00215">eve::editor::EditorTargetCoordinator::redo()</a>.</p>
+
+</div>
+</div>
+<a id="a97e94f794637dd3de7f2994a533dc07b" name="a97e94f794637dd3de7f2994a533dc07b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97e94f794637dd3de7f2994a533dc07b">&#9670;&#160;</a></span>retry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::LocalTransactionBackend::retry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retry the retained failed commit. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#ac1755cb6974659d7debdea47d7a50c4e">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00573">eve::editor::EditorTransactionConsumer::retry()</a>.</p>
+
+</div>
+</div>
+<a id="a8cb39978129dbb8511a0414f3c517b8f" name="a8cb39978129dbb8511a0414f3c517b8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cb39978129dbb8511a0414f3c517b8f">&#9670;&#160;</a></span>rollback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::LocalTransactionBackend::rollback </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility spelling for discard. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8cpp_source.html#l00076">discard()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00259">eve::audio_editor::AudioSourceEditor::setProperty()</a>.</p>
+
+</div>
+</div>
+<a id="ac57ad5d6c0f0a3d7c11c113a385d014c" name="ac57ad5d6c0f0a3d7c11c113a385d014c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57ad5d6c0f0a3d7c11c113a385d014c">&#9670;&#160;</a></span>setAuthority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::LocalTransactionBackend::setAuthority </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *&#160;</td>
+          <td class="paramname"><em>authority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Change the non-owning authority when no transaction is active. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00308">eve::editor::EditorTransactionConsumer::setAuthority()</a>.</p>
+
+</div>
+</div>
+<a id="ae23658c436918502a3ead8f29599c258" name="ae23658c436918502a3ead8f29599c258"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae23658c436918502a3ead8f29599c258">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::LocalTransactionBackend::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compensate the most recent committed transaction. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a777dfa15796a1a73b0f52df3bd57904b">eve::editor::IEditorTransactionBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a> 第 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00759">eve::editor::EditorTransactionConsumer::undo()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00231">eve::animation_editor::AnimationClipEditor::undo()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00287">eve::audio_editor::AudioSourceEditor::undo()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00340">eve::avatar_editor::AvatarDocumentEditor::undo()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00295">eve::biome_editor::BiomeRulesEditor::undo()</a> , 以及 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00207">eve::editor::EditorTargetCoordinator::undo()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorTransactionService_8h_source.html">EditorTransactionService.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorTransactionService_8cpp_source.html">EditorTransactionService.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

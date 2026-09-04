@@ -1,0 +1,352 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Module类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Module.html">Module</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1Module-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Module类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Module_8h_source.html">Module.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::Module 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1Module.png" usemap="#eve::Module_map" alt=""/>
+  <map id="eve::Module_map" name="eve::Module_map">
+<area href="classeve_1_1action__editor_1_1ActionEditorModule.html" title="Composition adapter that contributes action-timeline commands, automation targets,..." alt="eve::action_editor::ActionEditorModule" shape="rect" coords="298,56,586,80"/>
+<area href="classeve_1_1animation_1_1Animation.html" title="Animation module — tween factory + 2D sprite-sheet / Spine + 3D skeletal playback (player / state mac..." alt="eve::animation::Animation" shape="rect" coords="298,112,586,136"/>
+<area href="classeve_1_1animation__editor_1_1AnimationEditorModule.html" title="Composition adapter that contributes animation editing commands and automation targets." alt="eve::animation_editor::AnimationEditorModule" shape="rect" coords="298,168,586,192"/>
+<area href="classeve_1_1attributes_1_1Attributes.html" title="Generic named numeric attributes and modifier module." alt="eve::attributes::Attributes" shape="rect" coords="298,224,586,248"/>
+<area href="classeve_1_1audio_1_1Audio.html" title="OpenAL audio module: device management, master listener state, and Source factory...." alt="eve::audio::Audio" shape="rect" coords="298,280,586,304"/>
+<area href="classeve_1_1audio__editor_1_1AudioEditorModule.html" title="Composition adapter that contributes audio editing commands, automation targets, and the script-owned..." alt="eve::audio_editor::AudioEditorModule" shape="rect" coords="298,336,586,360"/>
+<area href="classeve_1_1authority_1_1Authority.html" title="Script module factory for generic authority stores." alt="eve::authority::Authority" shape="rect" coords="298,392,586,416"/>
+<area href="classeve_1_1avatar_1_1Avatar.html" title="Avatar module — layered character rendering for VN / portrait use. Script: avatar &lt;- eve...." alt="eve::avatar::Avatar" shape="rect" coords="298,448,586,472"/>
+<area href="classeve_1_1avatar__editor_1_1AvatarEditorModule.html" title="Composition adapter that contributes avatar editing commands and automation targets." alt="eve::avatar_editor::AvatarEditorModule" shape="rect" coords="298,504,586,528"/>
+<area href="classeve_1_1biome__editor_1_1BiomeEditorModule.html" title="Composition adapter that contributes biome editing commands and automation targets." alt="eve::biome_editor::BiomeEditorModule" shape="rect" coords="298,560,586,584"/>
+<area href="classeve_1_1building_1_1Building.html" title="建筑放置模块（eve.Building）。" alt="eve::building::Building" shape="rect" coords="298,616,586,640"/>
+<area href="classeve_1_1buildingfx_1_1BuildingFx.html" alt="eve::buildingfx::BuildingFx" shape="rect" coords="298,672,586,696"/>
+<area href="classeve_1_1camera_1_1Camera.html" title="摄像机模块命名空间（eve.Camera）。主要职责是把 CameraController 绑定进脚本。" alt="eve::camera::Camera" shape="rect" coords="298,728,586,752"/>
+<area href="classeve_1_1card_1_1Card.html" title="卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。" alt="eve::card::Card" shape="rect" coords="298,784,586,808"/>
+<area href="classeve_1_1climbing_1_1Climbing.html" title="Script-facing factory and owner for independent climbing runtimes." alt="eve::climbing::Climbing" shape="rect" coords="298,840,586,864"/>
+<area href="classeve_1_1cmd_1_1Cmdline.html" title="命令行模块（eve.cmd）：run / build / package / test / zip / dev-server 等子命令入口。" alt="eve::cmd::Cmdline" shape="rect" coords="298,896,586,920"/>
+<area href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。" alt="eve::crowd::Crowd" shape="rect" coords="298,952,586,976"/>
+<area href="classeve_1_1data_1_1DataModule.html" alt="eve::data::DataModule" shape="rect" coords="298,1008,586,1032"/>
+<area href="classeve_1_1database_1_1Database.html" title="Database module (eve.Database): SQLite connection factory. Script: db &lt;- eve.Database(); conn &lt;- db...." alt="eve::database::Database" shape="rect" coords="298,1064,586,1088"/>
+<area href="classeve_1_1daynight_1_1DayNight.html" title="DayNight module — a time-of-day cycle that drives the sun, sky and light." alt="eve::daynight::DayNight" shape="rect" coords="298,1120,586,1144"/>
+<area href="classeve_1_1decal_1_1Decal.html" title="Runtime decal module — project surface effects (blood, dirt, scorch, dents via normal maps,..." alt="eve::decal::Decal" shape="rect" coords="298,1176,586,1200"/>
+<area href="classeve_1_1decision_1_1Decision.html" title="Script factory for independent decision contexts." alt="eve::decision::Decision" shape="rect" coords="298,1232,586,1256"/>
+<area href="classeve_1_1definitions_1_1Definitions.html" title="Script module factory for independent definition registries." alt="eve::definitions::Definitions" shape="rect" coords="298,1288,586,1312"/>
+<area href="classeve_1_1demo_1_1Demo.html" title="Optional demo-only helpers (procedural SFX / planet albedo). Built only when EVENGINE_BUILD_DEMO=ON; ..." alt="eve::demo::Demo" shape="rect" coords="298,1344,586,1368"/>
+<area href="classeve_1_1dialogue_1_1Dialogue.html" title="Visual-novel style dialogue stage. Script: dlg &lt;- eve.Dialogue();" alt="eve::dialogue::Dialogue" shape="rect" coords="298,1400,586,1424"/>
+<area href="classeve_1_1dialogue_1_1DialogueFlow.html" title="Script-facing registry and runner for compiled .dnut conversations." alt="eve::dialogue::DialogueFlow" shape="rect" coords="298,1456,586,1480"/>
+<area href="classeve_1_1dialogue_1_1DialogueUX.html" title="Presentation state shared by default and custom dialogue UIs." alt="eve::dialogue::DialogueUX" shape="rect" coords="298,1512,586,1536"/>
+<area href="classeve_1_1dialogue_1_1DialogueVoice.html" title="Localized voice assets, duration-based advance, and amplitude lip sync." alt="eve::dialogue::DialogueVoice" shape="rect" coords="298,1568,586,1592"/>
+<area href="classeve_1_1economy_1_1Economy.html" title="经济模块（eve.Economy）：资源类型注册 + 玩家账本 + 事件 + 采集流水线。" alt="eve::economy::Economy" shape="rect" coords="298,1624,586,1648"/>
+<area href="classeve_1_1editor_1_1Editor.html" title="Editor building blocks — not a shipped 3D/map editor app. Script: editor &lt;- eve.Editor();" alt="eve::editor::Editor" shape="rect" coords="298,1680,586,1704"/>
+<area href="classeve_1_1effects_1_1Effects.html" title="Script module factory for generic effect containers." alt="eve::effects::Effects" shape="rect" coords="298,1736,586,1760"/>
+<area href="classeve_1_1filesystem_1_1Filesystem.html" alt="eve::filesystem::Filesystem" shape="rect" coords="298,1792,586,1816"/>
+<area href="classeve_1_1filesystem_1_1HotReload.html" title="Path→reload dispatcher for soft hot reload. Driven from load.nut via pollWatch → tryReload; also used..." alt="eve::filesystem::HotReload" shape="rect" coords="298,1848,586,1872"/>
+<area href="classeve_1_1fluids_1_1Fluids.html" title="Fluids module — factory + script binding." alt="eve::fluids::Fluids" shape="rect" coords="298,1904,586,1928"/>
+<area href="classeve_1_1font_1_1Font.html" title="Resource module for decoding TrueType / OpenType fonts via FreeType. Produces FontData (CPU metrics +..." alt="eve::font::Font" shape="rect" coords="298,1960,586,1984"/>
+<area href="classeve_1_1game__event_1_1GameEventModule.html" title="Script module factory for generic GameEventLog objects." alt="eve::game_event::GameEventModule" shape="rect" coords="298,2016,586,2040"/>
+<area href="classeve_1_1gpgpu_1_1Gpgpu.html" title="GPGPU module — compute shaders + storage buffers via the active Graphics backend. Uses the graphics q..." alt="eve::gpgpu::Gpgpu" shape="rect" coords="298,2072,586,2096"/>
+<area href="classeve_1_1graphics_1_1Graphics.html" alt="eve::graphics::Graphics" shape="rect" coords="298,2128,586,2152"/>
+<area href="classeve_1_1graphics__editor_1_1GraphicsEditorModule.html" title="Script composition module for graphics-domain editor helpers." alt="eve::graphics_editor::GraphicsEditorModule" shape="rect" coords="298,2184,586,2208"/>
+<area href="classeve_1_1hd2d_1_1Hd2D.html" title="HD-2D module: tilemap-to-3D extrusion + 2D sprites as 3D billboards." alt="eve::hd2d::Hd2D" shape="rect" coords="298,2240,586,2264"/>
+<area href="classeve_1_1heightmap__target_1_1HeightmapTargetModule.html" title="Script-facing composition module for live heightmap editing targets." alt="eve::heightmap_target::HeightmapTargetModule" shape="rect" coords="298,2296,586,2320"/>
+<area href="classeve_1_1housegen_1_1HouseGen.html" title="程序化房屋生成模块（eve.HouseGen）：组件库 + 布局生成。" alt="eve::housegen::HouseGen" shape="rect" coords="298,2352,586,2376"/>
+<area href="classeve_1_1i18n_1_1I18n.html" title="Game localization (i18n) module." alt="eve::i18n::I18n" shape="rect" coords="298,2408,586,2432"/>
+<area href="classeve_1_1ik_1_1IK.html" title="Inverse Kinematics module — wraps header-only sunxfancy/ik.hpp (FABRIK). Script: ik &lt;- eve...." alt="eve::ik::IK" shape="rect" coords="298,2464,586,2488"/>
+<area href="classeve_1_1image_1_1Image.html" title="This module is responsible for decoding files such as PNG, GIF, JPEG into raw pixel data,..." alt="eve::image::Image" shape="rect" coords="298,2520,586,2544"/>
+<area href="classeve_1_1inventory_1_1Inventory.html" title="背包模块（eve.Inventory）。" alt="eve::inventory::Inventory" shape="rect" coords="298,2576,586,2600"/>
+<area href="classeve_1_1joystick_1_1Joystick.html" title="Joystick / gamepad manager. Tracks connected pads and gamecontroller mappings." alt="eve::joystick::Joystick" shape="rect" coords="298,2632,586,2656"/>
+<area href="classeve_1_1keyboard_1_1Keyboard.html" title="Keyboard input. Key / scancode names follow SDL naming (SDL_GetKeyName / SDL_GetScancodeName),..." alt="eve::keyboard::Keyboard" shape="rect" coords="298,2688,586,2712"/>
+<area href="classeve_1_1level__editor_1_1LevelEditorModule.html" title="Script composition adapter for tile-oriented level authoring." alt="eve::level_editor::LevelEditorModule" shape="rect" coords="298,2744,586,2768"/>
+<area href="classeve_1_1map_1_1Map.html" title="Map module — factory + script binding for 2D tilemaps. Per-frame: TileConfigSystem (hot reload) → uni..." alt="eve::map::Map" shape="rect" coords="298,2800,586,2824"/>
+<area href="classeve_1_1material__editor_1_1MaterialEditorModule.html" title="Composition adapter that contributes material editing commands and automation targets." alt="eve::material_editor::MaterialEditorModule" shape="rect" coords="298,2856,586,2880"/>
+<area href="classeve_1_1math_1_1Math.html" title="Math module — glm-backed vectors/matrices, noise, bezier, random. Script: math &lt;- eve...." alt="eve::math::Math" shape="rect" coords="298,2912,586,2936"/>
+<area href="classeve_1_1model3d_1_1Model3D.html" title="Resource module for decoding 3D models via medialoader (Assimp). Produces ModelData; GPU upload is gr..." alt="eve::model3d::Model3D" shape="rect" coords="298,2968,586,2992"/>
+<area href="classeve_1_1mouse_1_1Mouse.html" title="The Mouse class provides an interface for querying and manipulating the mouse cursor...." alt="eve::mouse::Mouse" shape="rect" coords="298,3024,586,3048"/>
+<area href="classeve_1_1network_1_1Network.html" title="Network module: TCP/UDP/HTTP factories, background worker, and completion event plumbing...." alt="eve::network::Network" shape="rect" coords="298,3080,586,3104"/>
+<area href="classeve_1_1orders_1_1Orders.html" title="Script module factory for generic CommandQueue objects." alt="eve::orders::Orders" shape="rect" coords="298,3136,586,3160"/>
+<area href="classeve_1_1particles_1_1Particles.html" title="Particles module — factory + script binding. Per-frame: scheduler step → config reload → ParticleSimS..." alt="eve::particles::Particles" shape="rect" coords="298,3192,586,3216"/>
+<area href="classeve_1_1physics_1_1Physics.html" title="Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive 2D/3D cloth (Verlet,..." alt="eve::physics::Physics" shape="rect" coords="298,3248,586,3272"/>
+<area href="classeve_1_1pixelworld_1_1PixelWorldModule.html" title="Script-facing owner/factory for deterministic pixel material worlds." alt="eve::pixelworld::PixelWorldModule" shape="rect" coords="298,3304,586,3328"/>
+<area href="classeve_1_1pixelworld__editor_1_1PixelWorldEditorModule.html" title="Script-facing owner for the dedicated PixelWorld Catalog panel." alt="eve::pixelworld_editor::PixelWorldEditorModule" shape="rect" coords="298,3360,586,3384"/>
+<area href="classeve_1_1pixelworld__graphics_1_1PixelWorldGraphics.html" title="Optional rendering satellite for the backend-neutral PixelWorld module." alt="eve::pixelworld_graphics::PixelWorldGraphics" shape="rect" coords="298,3416,586,3440"/>
+<area href="classeve_1_1platform__event_1_1PlatformEvent.html" alt="eve::platform_event::PlatformEvent" shape="rect" coords="298,3472,586,3496"/>
+<area href="classeve_1_1plugins_1_1Plugins.html" title="加载导出 eve_plugin_init 的原生动态库（dll / so / dylib）。" alt="eve::plugins::Plugins" shape="rect" coords="298,3528,586,3552"/>
+<area href="classeve_1_1policyregistry_1_1PolicyRegistryModule.html" title="Script module factory for independent policy registries." alt="eve::policyregistry::PolicyRegistryModule" shape="rect" coords="298,3584,586,3608"/>
+<area href="classeve_1_1procgen_1_1Procgen.html" title="Procedural generation module. Phase A: runtime maps (semantic Grid2D → TileLayer)...." alt="eve::procgen::Procgen" shape="rect" coords="298,3640,586,3664"/>
+<area href="classeve_1_1production_1_1Production.html" title="Script module factory for generic production queues." alt="eve::production::Production" shape="rect" coords="298,3696,586,3720"/>
+<area href="classeve_1_1profiler_1_1Profiler.html" title="Script-facing wrapper around the engine-wide profiler core (eve::prof, see common/Profile...." alt="eve::profiler::Profiler" shape="rect" coords="298,3752,586,3776"/>
+<area href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。" alt="eve::rpg::RPG" shape="rect" coords="298,3808,586,3832"/>
+<area href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems." alt="eve::rts::RTS" shape="rect" coords="298,3864,586,3888"/>
+<area href="classeve_1_1rx_1_1Rx.html" alt="eve::rx::Rx" shape="rect" coords="298,3920,586,3944"/>
+<area href="classeve_1_1scene_1_1Scene.html" title="Declarative scene module (eve.Scene)." alt="eve::scene::Scene" shape="rect" coords="298,3976,586,4000"/>
+<area href="classeve_1_1scene__editor_1_1SceneEditorModule.html" title="Composition adapter that contributes scene editing commands and automation targets." alt="eve::scene_editor::SceneEditorModule" shape="rect" coords="298,4032,586,4056"/>
+<area href="classeve_1_1sceneloader_1_1SceneLoader.html" title="Loads a 3D scene (glTF / OBJ / FBX / GLB ... via Assimp/medialoader) into the ECS scene tree." alt="eve::sceneloader::SceneLoader" shape="rect" coords="298,4088,586,4112"/>
+<area href="classeve_1_1schema_1_1Schema.html" title="Script-facing facade for runtime schema registration and validation." alt="eve::schema::Schema" shape="rect" coords="298,4144,586,4168"/>
+<area href="classeve_1_1sensing_1_1Sensing.html" title="Script factory for independent sensing worlds." alt="eve::sensing::Sensing" shape="rect" coords="298,4200,586,4224"/>
+<area href="classeve_1_1snow_1_1Snow.html" title="Interactive snow module — depth-field snow on a heightmap terrain." alt="eve::snow::Snow" shape="rect" coords="298,4256,586,4280"/>
+<area href="classeve_1_1social_1_1Social.html" title="Script-facing module for generic social graph composition." alt="eve::social::Social" shape="rect" coords="298,4312,586,4336"/>
+<area href="classeve_1_1sound_1_1Sound.html" title="Sound module: decodes compressed audio and produces SoundData buffers. Script: sound &lt;- eve...." alt="eve::sound::Sound" shape="rect" coords="298,4368,586,4392"/>
+<area href="classeve_1_1spatial_1_1Spatial.html" title="Spatial index module — broad-phase / map culling structures. Script: spatial &lt;- eve...." alt="eve::spatial::Spatial" shape="rect" coords="298,4424,586,4448"/>
+<area href="classeve_1_1spritestack_1_1SpriteStack.html" title="SpriteStack module: horizontal slice baking plus pure-2D rendering." alt="eve::spritestack::SpriteStack" shape="rect" coords="298,4480,586,4504"/>
+<area href="classeve_1_1statepatch_1_1StatePatch.html" title="Script module factory for generic state patch stores." alt="eve::statepatch::StatePatch" shape="rect" coords="298,4536,586,4560"/>
+<area href="classeve_1_1steering_1_1Steering.html" title="Stateless, gameplay-neutral 2D steering math." alt="eve::steering::Steering" shape="rect" coords="298,4592,586,4616"/>
+<area href="classeve_1_1stylize_1_1Stylize.html" title="Stylized / NPR rendering module — stable public surface for future expansion." alt="eve::stylize::Stylize" shape="rect" coords="298,4648,586,4672"/>
+<area href="classeve_1_1system_1_1System.html" title="System module — OS / hardware / wall-clock / clipboard / optional GPU info. Frame timing stays on Tim..." alt="eve::system::System" shape="rect" coords="298,4704,586,4728"/>
+<area href="classeve_1_1tactics_1_1Tactics.html" title="Owns tactics short-root entities and coordinates checked battle setup." alt="eve::tactics::Tactics" shape="rect" coords="298,4760,586,4784"/>
+<area href="classeve_1_1tags_1_1Tags.html" title="Script-facing module for generic tags and capabilities." alt="eve::tags::Tags" shape="rect" coords="298,4816,586,4840"/>
+<area href="classeve_1_1tensor_1_1TF.html" title="TF2-like namespace module. Script: tf &lt;- eve.TF(); Default eager; tf.func() traces a graph for compil..." alt="eve::tensor::TF" shape="rect" coords="298,4872,586,4896"/>
+<area href="classeve_1_1thread_1_1Thread.html" title="Thread module: default pool, named channels, pool factory. Script: eve.Thread() → getPool / newThread..." alt="eve::thread::Thread" shape="rect" coords="298,4928,586,4952"/>
+<area href="classeve_1_1tilelayer__target_1_1TileLayerTargetModule.html" title="Script-facing composition module for live tile-layer editing targets." alt="eve::tilelayer_target::TileLayerTargetModule" shape="rect" coords="298,4984,586,5008"/>
+<area href="classeve_1_1timer_1_1Timer.html" title="High-resolution frame/elapsed timer backed by SDL_GetPerformanceCounter(). Script: timer &lt;- eve...." alt="eve::timer::Timer" shape="rect" coords="298,5040,586,5064"/>
+<area href="classeve_1_1touch_1_1Touch.html" alt="eve::touch::Touch" shape="rect" coords="298,5096,586,5120"/>
+<area href="classeve_1_1transaction_1_1Transaction.html" title="Script module factory for generic transaction ledgers." alt="eve::transaction::Transaction" shape="rect" coords="298,5152,586,5176"/>
+<area href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI)." alt="eve::ui::UI" shape="rect" coords="298,5208,586,5232"/>
+<area href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。" alt="eve::vehicle::Vehicle" shape="rect" coords="298,5264,586,5288"/>
+<area href="classeve_1_1virtualgeometry_1_1VirtualGeometry.html" title="Virtual-geometry module — Nanite-style virtualized geometry rendering on top of the active Graphics b..." alt="eve::virtualgeometry::VirtualGeometry" shape="rect" coords="298,5320,586,5344"/>
+<area href="classeve_1_1voxel_1_1Voxel.html" title="High-performance voxel rendering module." alt="eve::voxel::Voxel" shape="rect" coords="298,5376,586,5400"/>
+<area href="classeve_1_1voxelworld__target_1_1VoxelWorldTargetModule.html" title="Script-facing composition module for live voxel-world editing targets." alt="eve::voxelworld_target::VoxelWorldTargetModule" shape="rect" coords="298,5432,586,5456"/>
+<area href="classeve_1_1weapon_1_1Weapon.html" title="武器模块（eve.Weapon）。" alt="eve::weapon::Weapon" shape="rect" coords="298,5488,586,5512"/>
+<area href="classeve_1_1weather_1_1Weather.html" title="Weather module — real-time precipitation / lightning / wind system." alt="eve::weather::Weather" shape="rect" coords="298,5544,586,5568"/>
+<area href="classeve_1_1window_1_1Window.html" title="Platform window interface (SDL implementation on desktop/mobile). Script: win &lt;- eve...." alt="eve::window::Window" shape="rect" coords="298,5600,586,5624"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00045">45</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab848c8cbc6dab360eb5d37945c8b0111" name="ab848c8cbc6dab360eb5d37945c8b0111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab848c8cbc6dab360eb5d37945c8b0111">&#9670;&#160;</a></span>~Module()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::Module::~Module </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Module_8h_source.html">Module.h</a> 第 <a class="el" href="Module_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae00d561f21eef86f21d032b53ca84da0" name="ae00d561f21eef86f21d032b53ca84da0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae00d561f21eef86f21d032b53ca84da0">&#9670;&#160;</a></span>getName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::Module::getName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Module_8h_source.html">Module.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

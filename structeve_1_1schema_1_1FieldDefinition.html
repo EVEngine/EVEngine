@@ -1,0 +1,358 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::schema::FieldDefinition结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1schema.html">schema</a></li><li class="navelem"><a class="el" href="structeve_1_1schema_1_1FieldDefinition.html">FieldDefinition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1schema_1_1FieldDefinition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::schema::FieldDefinition结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Metadata and validation constraints for one object member.  
+ <a href="structeve_1_1schema_1_1FieldDefinition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::schema::FieldDefinition 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="structeve_1_1schema_1_1FieldDefinition.png" usemap="#eve::schema::FieldDefinition_map" alt=""/>
+  <map id="eve::schema::FieldDefinition_map" name="eve::schema::FieldDefinition_map">
+<area href="structeve_1_1schema_1_1SchemaNode.html" title="Recursive node in the deliberately small Eve Schema language." alt="eve::schema::SchemaNode" shape="rect" coords="0,0,169,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a668cf00258fe5442426105ce1ee80211" id="r_a668cf00258fe5442426105ce1ee80211"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1FieldDefinition.html#a668cf00258fe5442426105ce1ee80211">name</a></td></tr>
+<tr class="separator:a668cf00258fe5442426105ce1ee80211"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9198c87f5212651a77dc7d6d6ec976d5" id="r_a9198c87f5212651a77dc7d6d6ec976d5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1FieldDefinition.html#a9198c87f5212651a77dc7d6d6ec976d5">required</a> = false</td></tr>
+<tr class="separator:a9198c87f5212651a77dc7d6d6ec976d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a781488193484956877e123646e6e7b3c" id="r_a781488193484956877e123646e6e7b3c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1FieldDefinition.html#a781488193484956877e123646e6e7b3c">title</a></td></tr>
+<tr class="separator:a781488193484956877e123646e6e7b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2299f490f46b0ed5615430451cb04a35" id="r_a2299f490f46b0ed5615430451cb04a35"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1FieldDefinition.html#a2299f490f46b0ed5615430451cb04a35">description</a></td></tr>
+<tr class="separator:a2299f490f46b0ed5615430451cb04a35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a294e5537aab8d354dfa560ca5f1d81c5" id="r_a294e5537aab8d354dfa560ca5f1d81c5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1FieldDefinition.html#a294e5537aab8d354dfa560ca5f1d81c5">reference</a></td></tr>
+<tr class="memdesc:a294e5537aab8d354dfa560ca5f1d81c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy display/category reference; use <code>ref</code> for schema refs.  <br /></td></tr>
+<tr class="separator:a294e5537aab8d354dfa560ca5f1d81c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b110568643eb60040406000922e6179" id="r_a0b110568643eb60040406000922e6179"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1FieldDefinition.html#a0b110568643eb60040406000922e6179">defaultJson</a></td></tr>
+<tr class="separator:a0b110568643eb60040406000922e6179"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_structeve_1_1schema_1_1SchemaNode"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structeve_1_1schema_1_1SchemaNode')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="structeve_1_1schema_1_1SchemaNode.html">eve::schema::SchemaNode</a></td></tr>
+<tr class="memitem:a836bf9c3923848c9fea8c3ca429bf216 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a836bf9c3923848c9fea8c3ca429bf216"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221">ValueType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a836bf9c3923848c9fea8c3ca429bf216">type</a> = <a class="el" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221aed36a1ef76a59ee3f15180e0441188ad">ValueType::Any</a></td></tr>
+<tr class="memdesc:a836bf9c3923848c9fea8c3ca429bf216 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">The value kind accepted by this node.  <br /></td></tr>
+<tr class="separator:a836bf9c3923848c9fea8c3ca429bf216 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3d406e19a173f256d20bc16a778b144 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_ad3d406e19a173f256d20bc16a778b144"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221">ValueType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#ad3d406e19a173f256d20bc16a778b144">elementType</a> = <a class="el" href="namespaceeve_1_1schema.html#af37fb68dabb8e2356f2e194e8fd6f221aed36a1ef76a59ee3f15180e0441188ad">ValueType::Any</a></td></tr>
+<tr class="memdesc:ad3d406e19a173f256d20bc16a778b144 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy homogeneous array constraint retained for compatibility.  <br /></td></tr>
+<tr class="separator:ad3d406e19a173f256d20bc16a778b144 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a9ee02bbecdfbd0a01af74de5caca0b inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a4a9ee02bbecdfbd0a01af74de5caca0b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a4a9ee02bbecdfbd0a01af74de5caca0b">ref</a></td></tr>
+<tr class="memdesc:a4a9ee02bbecdfbd0a01af74de5caca0b inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whole-schema reference, for example <code>combat:damage</code>.  <br /></td></tr>
+<tr class="separator:a4a9ee02bbecdfbd0a01af74de5caca0b inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9f4794b1d606da0115a25ba2f10427c inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_ab9f4794b1d606da0115a25ba2f10427c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#ab9f4794b1d606da0115a25ba2f10427c">refVersion</a> = 0</td></tr>
+<tr class="memdesc:ab9f4794b1d606da0115a25ba2f10427c inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exact referenced schema version; zero means the highest version.  <br /></td></tr>
+<tr class="separator:ab9f4794b1d606da0115a25ba2f10427c inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf5216b998c0f1e466ed031c176bcec5 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_acf5216b998c0f1e466ed031c176bcec5"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#acf5216b998c0f1e466ed031c176bcec5">objectSchema</a></td></tr>
+<tr class="memdesc:acf5216b998c0f1e466ed031c176bcec5 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inline object shape for an object node.  <br /></td></tr>
+<tr class="separator:acf5216b998c0f1e466ed031c176bcec5 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c8c0f3331a157e74d979ae38769fd83 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a8c8c0f3331a157e74d979ae38769fd83"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structeve_1_1schema_1_1SchemaNode.html">SchemaNode</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a8c8c0f3331a157e74d979ae38769fd83">itemSchema</a></td></tr>
+<tr class="memdesc:a8c8c0f3331a157e74d979ae38769fd83 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recursive schema for every array item.  <br /></td></tr>
+<tr class="separator:a8c8c0f3331a157e74d979ae38769fd83 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b8e9f0374cb0336b24d11f66aac9304 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a6b8e9f0374cb0336b24d11f66aac9304"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1schema_1_1SchemaNode.html">SchemaNode</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a6b8e9f0374cb0336b24d11f66aac9304">variants</a></td></tr>
+<tr class="memdesc:a6b8e9f0374cb0336b24d11f66aac9304 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">Union alternatives; at least one alternative is required.  <br /></td></tr>
+<tr class="separator:a6b8e9f0374cb0336b24d11f66aac9304 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ef6fea7579ba389294f0b6a38e55240 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a4ef6fea7579ba389294f0b6a38e55240"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a4ef6fea7579ba389294f0b6a38e55240">discriminator</a></td></tr>
+<tr class="memdesc:a4ef6fea7579ba389294f0b6a38e55240 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda...">Object</a> member used to select a union alternative.  <br /></td></tr>
+<tr class="separator:a4ef6fea7579ba389294f0b6a38e55240 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47794ea8620270217c0feb27f5a26390 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a47794ea8620270217c0feb27f5a26390"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a47794ea8620270217c0feb27f5a26390">discriminatorMapping</a></td></tr>
+<tr class="memdesc:a47794ea8620270217c0feb27f5a26390 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discriminator value to ref or zero-based variant index.  <br /></td></tr>
+<tr class="separator:a47794ea8620270217c0feb27f5a26390 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ea242d53d8788f026fb43bccbc2e2fd inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a4ea242d53d8788f026fb43bccbc2e2fd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a4ea242d53d8788f026fb43bccbc2e2fd">enumValues</a></td></tr>
+<tr class="memdesc:a4ea242d53d8788f026fb43bccbc2e2fd inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="mdescLeft">&#160;</td><td class="mdescRight">String enum values accepted by this node.  <br /></td></tr>
+<tr class="separator:a4ea242d53d8788f026fb43bccbc2e2fd inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3cc8a80bd8c4fc01b73bc8568f019d0 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_ab3cc8a80bd8c4fc01b73bc8568f019d0"><td class="memItemLeft" align="right" valign="top">std::optional&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#ab3cc8a80bd8c4fc01b73bc8568f019d0">minimum</a></td></tr>
+<tr class="separator:ab3cc8a80bd8c4fc01b73bc8568f019d0 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cbdbb29404fa756b376195679a00c7c inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a6cbdbb29404fa756b376195679a00c7c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a6cbdbb29404fa756b376195679a00c7c">maximum</a></td></tr>
+<tr class="separator:a6cbdbb29404fa756b376195679a00c7c inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd4a60d2ac7b7d383ba96fe5a39b5e90 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_abd4a60d2ac7b7d383ba96fe5a39b5e90"><td class="memItemLeft" align="right" valign="top">std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#abd4a60d2ac7b7d383ba96fe5a39b5e90">minLength</a></td></tr>
+<tr class="separator:abd4a60d2ac7b7d383ba96fe5a39b5e90 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2da84d8beae30a8383ec9f0e2888cc6 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_ab2da84d8beae30a8383ec9f0e2888cc6"><td class="memItemLeft" align="right" valign="top">std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#ab2da84d8beae30a8383ec9f0e2888cc6">maxLength</a></td></tr>
+<tr class="separator:ab2da84d8beae30a8383ec9f0e2888cc6 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b1ffc21547590ce00a6230f1109ba9c inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_a7b1ffc21547590ce00a6230f1109ba9c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#a7b1ffc21547590ce00a6230f1109ba9c">minItems</a></td></tr>
+<tr class="separator:a7b1ffc21547590ce00a6230f1109ba9c inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed0bd5155e3a1d68974c2f1f0609a766 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode" id="r_aed0bd5155e3a1d68974c2f1f0609a766"><td class="memItemLeft" align="right" valign="top">std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1schema_1_1SchemaNode.html#aed0bd5155e3a1d68974c2f1f0609a766">maxItems</a></td></tr>
+<tr class="separator:aed0bd5155e3a1d68974c2f1f0609a766 inherit pub_attribs_structeve_1_1schema_1_1SchemaNode"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Metadata and validation constraints for one object member. </p>
+
+<p class="definition">在文件 <a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a> 第 <a class="el" href="SchemaTypes_8h_source.html#l00077">77</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a0b110568643eb60040406000922e6179" name="a0b110568643eb60040406000922e6179"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b110568643eb60040406000922e6179">&#9670;&#160;</a></span>defaultJson</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::FieldDefinition::defaultJson</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a> 第 <a class="el" href="SchemaTypes_8h_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00196">eve::schema::Schema::registerFromClass()</a>.</p>
+
+</div>
+</div>
+<a id="a2299f490f46b0ed5615430451cb04a35" name="a2299f490f46b0ed5615430451cb04a35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2299f490f46b0ed5615430451cb04a35">&#9670;&#160;</a></span>description</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::FieldDefinition::description</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a> 第 <a class="el" href="SchemaTypes_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a668cf00258fe5442426105ce1ee80211" name="a668cf00258fe5442426105ce1ee80211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a668cf00258fe5442426105ce1ee80211">&#9670;&#160;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::FieldDefinition::name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a> 第 <a class="el" href="SchemaTypes_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00196">eve::schema::Schema::registerFromClass()</a>.</p>
+
+</div>
+</div>
+<a id="a294e5537aab8d354dfa560ca5f1d81c5" name="a294e5537aab8d354dfa560ca5f1d81c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a294e5537aab8d354dfa560ca5f1d81c5">&#9670;&#160;</a></span>reference</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::FieldDefinition::reference</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy display/category reference; use <code>ref</code> for schema refs. </p>
+
+<p class="definition">在文件 <a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a> 第 <a class="el" href="SchemaTypes_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9198c87f5212651a77dc7d6d6ec976d5" name="a9198c87f5212651a77dc7d6d6ec976d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9198c87f5212651a77dc7d6d6ec976d5">&#9670;&#160;</a></span>required</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::schema::FieldDefinition::required = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a> 第 <a class="el" href="SchemaTypes_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a781488193484956877e123646e6e7b3c" name="a781488193484956877e123646e6e7b3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a781488193484956877e123646e6e7b3c">&#9670;&#160;</a></span>title</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::schema::FieldDefinition::title</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a> 第 <a class="el" href="SchemaTypes_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/schema/<a class="el" href="SchemaTypes_8h_source.html">SchemaTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

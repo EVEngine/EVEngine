@@ -1,0 +1,210 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorProtocol.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorProtocol.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorProtocol_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProtocol_8h.html">editing/EditingProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorCommandTypes_8h.html">editor/EditorCommandTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorHostProfile_8h.html">editor/EditorHostProfile.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EditorIds_8h.html">editor/EditorIds.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EditorResult_8h.html">editor/EditorResult.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="EditorValue_8h.html">editor/EditorValue.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">    9</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a>              = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a80716637d780c233fea98cbaeee94a6e">   10</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1ObjectRefValue.html">ObjectRefValue</a>        = <a class="code hl_struct" href="structeve_1_1editing_1_1ObjectRefValue.html">eve::editing::ObjectRefValue</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a63bb085192f3841ce813a4946847dda8">   11</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1ContextSnapshot.html">EditorContextSnapshot</a> = <a class="code hl_struct" href="structeve_1_1editing_1_1ContextSnapshot.html">eve::editing::ContextSnapshot</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">   12</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>       = <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#abdc65cf802462c6ba3a675492d7b74c0">   13</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1CommandRequest.html">CommandRequest</a>        = <a class="code hl_struct" href="structeve_1_1editing_1_1CommandRequest.html">eve::editing::CommandRequest</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#aa335d046ca082216514912599b8e91b2">   14</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1CommandPlan.html">CommandPlan</a>           = <a class="code hl_struct" href="structeve_1_1editing_1_1CommandPlan.html">eve::editing::CommandPlan</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a3d60064dae2c4c679f63fbce400c64a0">   15</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6">TransactionState</a>      = <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6">eve::editing::TransactionState</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a005df46ee6d55ee77f5e15aa4c165243">   16</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2">ActionOrigin</a>          = <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2">eve::editing::ActionOrigin</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#aa291deb653e7c3252981b678f8ac3eef">   17</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1TransactionSpec.html">TransactionSpec</a>       = <a class="code hl_struct" href="structeve_1_1editing_1_1TransactionSpec.html">eve::editing::TransactionSpec</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">   18</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1TransactionReceipt.html">TransactionReceipt</a>    = <a class="code hl_struct" href="structeve_1_1editing_1_1TransactionReceipt.html">eve::editing::TransactionReceipt</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#aff933b6e15c9c34dff043ee4bcc579b0">   19</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1AuthorityPlan.html">AuthorityPlan</a>         = <a class="code hl_struct" href="structeve_1_1editing_1_1AuthorityPlan.html">eve::editing::AuthorityPlan</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditingProtocol_8h_html"><div class="ttname"><a href="EditingProtocol_8h.html">EditingProtocol.h</a></div></div>
+<div class="ttc" id="aEditorCommandTypes_8h_html"><div class="ttname"><a href="EditorCommandTypes_8h.html">EditorCommandTypes.h</a></div></div>
+<div class="ttc" id="aEditorHostProfile_8h_html"><div class="ttname"><a href="EditorHostProfile_8h.html">EditorHostProfile.h</a></div></div>
+<div class="ttc" id="aEditorIds_8h_html"><div class="ttname"><a href="EditorIds_8h.html">EditorIds.h</a></div></div>
+<div class="ttc" id="aEditorResult_8h_html"><div class="ttname"><a href="EditorResult_8h.html">EditorResult.h</a></div></div>
+<div class="ttc" id="aEditorValue_8h_html"><div class="ttname"><a href="EditorValue_8h.html">EditorValue.h</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a3adfa0a215e969f78d28dff1c61f09c2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a3adfa0a215e969f78d28dff1c61f09c2">eve::editing::ActionOrigin</a></div><div class="ttdeci">ActionOrigin</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00080">EditingProtocol.h:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a981141eded4668311d0ac0e70dbb4fe6"><div class="ttname"><a href="namespaceeve_1_1editing.html#a981141eded4668311d0ac0e70dbb4fe6">eve::editing::TransactionState</a></div><div class="ttdeci">TransactionState</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00070">EditingProtocol.h:70</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aee556a1a4c69319bef3bea3c87db4db6"><div class="ttname"><a href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">eve::editor::Revision</a></div><div class="ttdeci">eve::editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="EditorProtocol_8h_source.html#l00009">EditorProtocol.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1AuthorityPlan_html"><div class="ttname"><a href="structeve_1_1editing_1_1AuthorityPlan.html">eve::editing::AuthorityPlan</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00099">EditingProtocol.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1CommandPlan_html"><div class="ttname"><a href="structeve_1_1editing_1_1CommandPlan.html">eve::editing::CommandPlan</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00053">EditingProtocol.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1CommandRequest_html"><div class="ttname"><a href="structeve_1_1editing_1_1CommandRequest.html">eve::editing::CommandRequest</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00045">EditingProtocol.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1ContextSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1ContextSnapshot.html">eve::editing::ContextSnapshot</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00024">EditingProtocol.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1ObjectRefValue_html"><div class="ttname"><a href="structeve_1_1editing_1_1ObjectRefValue.html">eve::editing::ObjectRefValue</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00013">EditingProtocol.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TransactionReceipt_html"><div class="ttname"><a href="structeve_1_1editing_1_1TransactionReceipt.html">eve::editing::TransactionReceipt</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00090">EditingProtocol.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TransactionSpec_html"><div class="ttname"><a href="structeve_1_1editing_1_1TransactionSpec.html">eve::editing::TransactionSpec</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00081">EditingProtocol.h:81</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

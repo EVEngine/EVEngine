@@ -1,0 +1,710 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::GameState类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1rpg_1_1GameState-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::GameState类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>一份游戏状态（开关/变量/独立变量）。  
+ <a href="classeve_1_1rpg_1_1GameState.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GameState_8h_source.html">GameState.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a35a20b04c81f45169d37db86e66ad2c2" id="r_a35a20b04c81f45169d37db86e66ad2c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a35a20b04c81f45169d37db86e66ad2c2">GameState</a> ()=default</td></tr>
+<tr class="separator:a35a20b04c81f45169d37db86e66ad2c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc147ec9efabacfe82d174b8e694bcc1" id="r_acc147ec9efabacfe82d174b8e694bcc1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#acc147ec9efabacfe82d174b8e694bcc1">setSwitch</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool on)</td></tr>
+<tr class="memdesc:acc147ec9efabacfe82d174b8e694bcc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置开关。  <br /></td></tr>
+<tr class="separator:acc147ec9efabacfe82d174b8e694bcc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62351018dc73cc4d978fd507f322189c" id="r_a62351018dc73cc4d978fd507f322189c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a62351018dc73cc4d978fd507f322189c">switchOn</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a62351018dc73cc4d978fd507f322189c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97163f949eca5f5e591a57a9f3eb9a3f" id="r_a97163f949eca5f5e591a57a9f3eb9a3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a97163f949eca5f5e591a57a9f3eb9a3f">switchOff</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a97163f949eca5f5e591a57a9f3eb9a3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefe9dd3cbda80ec245ac9afe157c1108" id="r_aefe9dd3cbda80ec245ac9afe157c1108"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#aefe9dd3cbda80ec245ac9afe157c1108">isSwitchOn</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:aefe9dd3cbda80ec245ac9afe157c1108"><td class="mdescLeft">&#160;</td><td class="mdescRight">开关是否打开。  <br /></td></tr>
+<tr class="separator:aefe9dd3cbda80ec245ac9afe157c1108"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b47e75caf4c6e901468275b25112f9c" id="r_a9b47e75caf4c6e901468275b25112f9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a9b47e75caf4c6e901468275b25112f9c">setVariable</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a9b47e75caf4c6e901468275b25112f9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置/读取/增减变量。  <br /></td></tr>
+<tr class="separator:a9b47e75caf4c6e901468275b25112f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bed2daf93cdceb478a193123e4b7ef8" id="r_a0bed2daf93cdceb478a193123e4b7ef8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a0bed2daf93cdceb478a193123e4b7ef8">getVariable</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a0bed2daf93cdceb478a193123e4b7ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f576a01be205e337a4b4a98d2e140d8" id="r_a0f576a01be205e337a4b4a98d2e140d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a0f576a01be205e337a4b4a98d2e140d8">addVariable</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, double delta)</td></tr>
+<tr class="separator:a0f576a01be205e337a4b4a98d2e140d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea418b1ff7a1896fb9ac1d3c0739204e" id="r_aea418b1ff7a1896fb9ac1d3c0739204e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#aea418b1ff7a1896fb9ac1d3c0739204e">setSelfVariable</a> (const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:aea418b1ff7a1896fb9ac1d3c0739204e"><td class="mdescLeft">&#160;</td><td class="mdescRight">独立变量：scope（如 "map:1:event:3"）下按名字存数字。  <br /></td></tr>
+<tr class="separator:aea418b1ff7a1896fb9ac1d3c0739204e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bdc765f4a8a77bae2d324fdf71520e1" id="r_a7bdc765f4a8a77bae2d324fdf71520e1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a7bdc765f4a8a77bae2d324fdf71520e1">getSelfVariable</a> (const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a7bdc765f4a8a77bae2d324fdf71520e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c48d339aa8715bc5dbd725f83661a1a" id="r_a8c48d339aa8715bc5dbd725f83661a1a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a8c48d339aa8715bc5dbd725f83661a1a">hasSelfVariable</a> (const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a8c48d339aa8715bc5dbd725f83661a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3249b6cace24a595f80c4d80e1fe9b2" id="r_ac3249b6cace24a595f80c4d80e1fe9b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#ac3249b6cace24a595f80c4d80e1fe9b2">clear</a> ()</td></tr>
+<tr class="memdesc:ac3249b6cace24a595f80c4d80e1fe9b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空全部状态。  <br /></td></tr>
+<tr class="separator:ac3249b6cace24a595f80c4d80e1fe9b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d951a4c4b95ed139786880eb7229b38" id="r_a6d951a4c4b95ed139786880eb7229b38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a6d951a4c4b95ed139786880eb7229b38">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a6d951a4c4b95ed139786880eb7229b38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize this state as the canonical versioned <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> game-state JSON document.  <br /></td></tr>
+<tr class="separator:a6d951a4c4b95ed139786880eb7229b38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d8374bea1f01a766d4db8f582866edb" id="r_a3d8374bea1f01a766d4db8f582866edb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a3d8374bea1f01a766d4db8f582866edb">restoreSnapshotJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a3d8374bea1f01a766d4db8f582866edb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically restore a canonical <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> game-state JSON document.  <br /></td></tr>
+<tr class="separator:a3d8374bea1f01a766d4db8f582866edb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a1a6cade8d98188209205c1cf413e5776" id="r_a1a6cade8d98188209205c1cf413e5776"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a1a6cade8d98188209205c1cf413e5776">global</a> ()</td></tr>
+<tr class="memdesc:a1a6cade8d98188209205c1cf413e5776"><td class="mdescLeft">&#160;</td><td class="mdescRight">进程级全局单例（脚本便利入口）。  <br /></td></tr>
+<tr class="separator:a1a6cade8d98188209205c1cf413e5776"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a0b73581db5c1d678ab66b11676d065c2" id="r_a0b73581db5c1d678ab66b11676d065c2"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1GameState.html#a0b73581db5c1d678ab66b11676d065c2">RPGSaveSession</a></td></tr>
+<tr class="separator:a0b73581db5c1d678ab66b11676d065c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>一份游戏状态（开关/变量/独立变量）。 </p>
+
+<p class="definition">在文件 <a class="el" href="GameState_8h_source.html">GameState.h</a> 第 <a class="el" href="GameState_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a35a20b04c81f45169d37db86e66ad2c2" name="a35a20b04c81f45169d37db86e66ad2c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35a20b04c81f45169d37db86e66ad2c2">&#9670;&#160;</a></span>GameState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::GameState::GameState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0f576a01be205e337a4b4a98d2e140d8" name="a0f576a01be205e337a4b4a98d2e140d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f576a01be205e337a4b4a98d2e140d8">&#9670;&#160;</a></span>addVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::GameState::addVariable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameState_8cpp_source.html#l00051">getVariable()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShopTransaction_8cpp_source.html#l00075">eve::rpg::ShopTransaction::buy()</a>, <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a>, <a class="el" href="ShopTransaction_8cpp_source.html#l00093">eve::rpg::ShopTransaction::sell()</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a>.</p>
+
+</div>
+</div>
+<a id="ac3249b6cace24a595f80c4d80e1fe9b2" name="ac3249b6cace24a595f80c4d80e1fe9b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3249b6cace24a595f80c4d80e1fe9b2">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::GameState::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清空全部状态。 </p>
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7bdc765f4a8a77bae2d324fdf71520e1" name="a7bdc765f4a8a77bae2d324fdf71520e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bdc765f4a8a77bae2d324fdf71520e1">&#9670;&#160;</a></span>getSelfVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::GameState::getSelfVariable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StoryEvent_8cpp_source.html#l00217">eve::rpg::StoryEventSession::advance()</a>, <a class="el" href="StoryEvent_8cpp_source.html#l00180">eve::rpg::StoryEventSession::begin()</a> , 以及 <a class="el" href="WorldState_8cpp_source.html#l00029">eve::rpg::WorldState::isObjectConsumed()</a>.</p>
+
+</div>
+</div>
+<a id="a0bed2daf93cdceb478a193123e4b7ef8" name="a0bed2daf93cdceb478a193123e4b7ef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bed2daf93cdceb478a193123e4b7ef8">&#9670;&#160;</a></span>getVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::GameState::getVariable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameState_8cpp_source.html#l00056">addVariable()</a>, <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a> , 以及 <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a>.</p>
+
+</div>
+</div>
+<a id="a1a6cade8d98188209205c1cf413e5776" name="a1a6cade8d98188209205c1cf413e5776"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a6cade8d98188209205c1cf413e5776">&#9670;&#160;</a></span>global()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> &amp; eve::rpg::GameState::global </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>进程级全局单例（脚本便利入口）。 </p>
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPG_8cpp_source.html#l00408">eve::rpg::RPG::globalGameState()</a>.</p>
+
+</div>
+</div>
+<a id="a8c48d339aa8715bc5dbd725f83661a1a" name="a8c48d339aa8715bc5dbd725f83661a1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c48d339aa8715bc5dbd725f83661a1a">&#9670;&#160;</a></span>hasSelfVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::GameState::hasSelfVariable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StoryEvent_8cpp_source.html#l00217">eve::rpg::StoryEventSession::advance()</a>, <a class="el" href="StoryEvent_8cpp_source.html#l00180">eve::rpg::StoryEventSession::begin()</a> , 以及 <a class="el" href="WorldState_8cpp_source.html#l00029">eve::rpg::WorldState::isObjectConsumed()</a>.</p>
+
+</div>
+</div>
+<a id="aefe9dd3cbda80ec245ac9afe157c1108" name="aefe9dd3cbda80ec245ac9afe157c1108"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefe9dd3cbda80ec245ac9afe157c1108">&#9670;&#160;</a></span>isSwitchOn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::GameState::isSwitchOn </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>开关是否打开。 </p>
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a3d8374bea1f01a766d4db8f582866edb" name="a3d8374bea1f01a766d4db8f582866edb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d8374bea1f01a766d4db8f582866edb">&#9670;&#160;</a></span>restoreSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::GameState::restoreSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically restore a canonical <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> game-state JSON document. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>UTF-8 JSON produced by <a class="el" href="classeve_1_1rpg_1_1GameState.html#a6d951a4c4b95ed139786880eb7229b38" title="Serialize this state as the canonical versioned RPG game-state JSON document.">snapshotJson()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success after one commit, or a structured parse/schema/version failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>A failed restore leaves every current value unchanged. Version 1 accepts unknown fields but rejects unknown schema ids and versions. @thread Call on the owning simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00081">eve::Value::asBool()</a>, <a class="el" href="Value_8cpp_source.html#l00069">eve::Value::asInt()</a>, <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00124">eve::Value::find()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00089">eve::Value::isBool()</a>, <a class="el" href="Value_8h_source.html#l00091">eve::Value::isInt64()</a>, <a class="el" href="Value_8h_source.html#l00099">eve::Value::isObject()</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Value_8cpp_source.html#l00138">eve::Value::keys()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a>.</p>
+
+</div>
+</div>
+<a id="aea418b1ff7a1896fb9ac1d3c0739204e" name="aea418b1ff7a1896fb9ac1d3c0739204e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea418b1ff7a1896fb9ac1d3c0739204e">&#9670;&#160;</a></span>setSelfVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::GameState::setSelfVariable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>独立变量：scope（如 "map:1:event:3"）下按名字存数字。 </p>
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StoryEvent_8cpp_source.html#l00217">eve::rpg::StoryEventSession::advance()</a>, <a class="el" href="StoryEvent_8cpp_source.html#l00180">eve::rpg::StoryEventSession::begin()</a>, <a class="el" href="WorldState_8cpp_source.html#l00037">eve::rpg::WorldState::consumeObject()</a> , 以及 <a class="el" href="WorldState_8cpp_source.html#l00046">eve::rpg::WorldState::resetObject()</a>.</p>
+
+</div>
+</div>
+<a id="acc147ec9efabacfe82d174b8e694bcc1" name="acc147ec9efabacfe82d174b8e694bcc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc147ec9efabacfe82d174b8e694bcc1">&#9670;&#160;</a></span>setSwitch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::GameState::setSwitch </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置开关。 </p>
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a9b47e75caf4c6e901468275b25112f9c" name="a9b47e75caf4c6e901468275b25112f9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b47e75caf4c6e901468275b25112f9c">&#9670;&#160;</a></span>setVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::GameState::setVariable </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置/读取/增减变量。 </p>
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a6d951a4c4b95ed139786880eb7229b38" name="a6d951a4c4b95ed139786880eb7229b38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d951a4c4b95ed139786880eb7229b38">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::rpg::GameState::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize this state as the canonical versioned <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> game-state JSON document. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning deterministic JSON, or a structured serialization failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Schema <code>eve.rpg.game-state</code> version 1 preserves switches, numeric variables and scoped variables. Unknown fields are reserved and ignored when restoring the same version. @thread Call on the owning simulation thread; no internal synchronization is performed. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShopTransaction_8cpp_source.html#l00075">eve::rpg::ShopTransaction::buy()</a>, <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>, <a class="el" href="WorldInteraction_8cpp_source.html#l00037">eve::rpg::WorldInteraction::collectLoot()</a>, <a class="el" href="ShopTransaction_8cpp_source.html#l00093">eve::rpg::ShopTransaction::sell()</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00045">eve::rpg::BattleVictory::settle()</a> , 以及 <a class="el" href="RPGSaveSession_8cpp_source.html#l00338">eve::rpg::RPGSaveSession::snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a97163f949eca5f5e591a57a9f3eb9a3f" name="a97163f949eca5f5e591a57a9f3eb9a3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97163f949eca5f5e591a57a9f3eb9a3f">&#9670;&#160;</a></span>switchOff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::GameState::switchOff </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a62351018dc73cc4d978fd507f322189c" name="a62351018dc73cc4d978fd507f322189c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62351018dc73cc4d978fd507f322189c">&#9670;&#160;</a></span>switchOn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::GameState::switchOn </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameState_8cpp_source.html">GameState.cpp</a> 第 <a class="el" href="GameState_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a0b73581db5c1d678ab66b11676d065c2" name="a0b73581db5c1d678ab66b11676d065c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b73581db5c1d678ab66b11676d065c2">&#9670;&#160;</a></span>RPGSaveSession</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html">RPGSaveSession</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameState_8h_source.html">GameState.h</a> 第 <a class="el" href="GameState_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="GameState_8h_source.html">GameState.h</a></li>
+<li>src/modules/rpg/<a class="el" href="GameState_8cpp_source.html">GameState.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

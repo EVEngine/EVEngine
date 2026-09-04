@@ -1,0 +1,892 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Outline类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Outline.html">Outline</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Outline-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Outline类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Screen-space model outline (t3ssel8r-style), computed from the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> hardware depth + world-normal buffers.  
+ <a href="classeve_1_1graphics_1_1Outline.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Outline_8h_source.html">Outline.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a99ebe1a4cd3ff4706fb38dd254bcc860" id="r_a99ebe1a4cd3ff4706fb38dd254bcc860"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a99ebe1a4cd3ff4706fb38dd254bcc860">Outline</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:a99ebe1a4cd3ff4706fb38dd254bcc860"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9ffc310dd74fec6c524d822a1fb0d4d" id="r_ab9ffc310dd74fec6c524d822a1fb0d4d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#ab9ffc310dd74fec6c524d822a1fb0d4d">~Outline</a> ()</td></tr>
+<tr class="separator:ab9ffc310dd74fec6c524d822a1fb0d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabbdd6007e15966acd7610ff5aa51d2e" id="r_aabbdd6007e15966acd7610ff5aa51d2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#aabbdd6007e15966acd7610ff5aa51d2e">Outline</a> (const <a class="el" href="classeve_1_1graphics_1_1Outline.html">Outline</a> &amp;)=delete</td></tr>
+<tr class="separator:aabbdd6007e15966acd7610ff5aa51d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd230fc37119e72e6ea9ed969588cf94" id="r_afd230fc37119e72e6ea9ed969588cf94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Outline.html">Outline</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#afd230fc37119e72e6ea9ed969588cf94">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1Outline.html">Outline</a> &amp;)=delete</td></tr>
+<tr class="separator:afd230fc37119e72e6ea9ed969588cf94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d5ad24aff3e9a38bc440a3c6aa5e56a" id="r_a5d5ad24aff3e9a38bc440a3c6aa5e56a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a5d5ad24aff3e9a38bc440a3c6aa5e56a">setColor</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a5d5ad24aff3e9a38bc440a3c6aa5e56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4ee84e42a9431be88040277c7048bed" id="r_af4ee84e42a9431be88040277c7048bed"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#af4ee84e42a9431be88040277c7048bed">getColorR</a> () const</td></tr>
+<tr class="separator:af4ee84e42a9431be88040277c7048bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a044523f4ddc27103be21c3c4e1266755" id="r_a044523f4ddc27103be21c3c4e1266755"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a044523f4ddc27103be21c3c4e1266755">getColorG</a> () const</td></tr>
+<tr class="separator:a044523f4ddc27103be21c3c4e1266755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6097273ac1038c677050172d1f375890" id="r_a6097273ac1038c677050172d1f375890"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a6097273ac1038c677050172d1f375890">getColorB</a> () const</td></tr>
+<tr class="separator:a6097273ac1038c677050172d1f375890"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a2e8aa8d5788174d683fa2abca9f6da" id="r_a0a2e8aa8d5788174d683fa2abca9f6da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a0a2e8aa8d5788174d683fa2abca9f6da">setWidth</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>)</td></tr>
+<tr class="memdesc:a0a2e8aa8d5788174d683fa2abca9f6da"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Outline.html" title="Screen-space model outline (t3ssel8r-style), computed from the GBuffer hardware depth + world-normal ...">Outline</a> thickness in screen pixels (&gt;= 0.5).  <br /></td></tr>
+<tr class="separator:a0a2e8aa8d5788174d683fa2abca9f6da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45d8bd4393343e1ab781b45eae21adcd" id="r_a45d8bd4393343e1ab781b45eae21adcd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a45d8bd4393343e1ab781b45eae21adcd">getWidth</a> () const</td></tr>
+<tr class="separator:a45d8bd4393343e1ab781b45eae21adcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a381bd2bbff0c2c821846351b5d753755" id="r_a381bd2bbff0c2c821846351b5d753755"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a381bd2bbff0c2c821846351b5d753755">setDepthThreshold</a> (float threshold)</td></tr>
+<tr class="memdesc:a381bd2bbff0c2c821846351b5d753755"><td class="mdescLeft">&#160;</td><td class="mdescRight">View-space depth discontinuity that starts a depth edge.  <br /></td></tr>
+<tr class="separator:a381bd2bbff0c2c821846351b5d753755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a435c44a6ef7262b5266314a6f4778840" id="r_a435c44a6ef7262b5266314a6f4778840"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a435c44a6ef7262b5266314a6f4778840">getDepthThreshold</a> () const</td></tr>
+<tr class="separator:a435c44a6ef7262b5266314a6f4778840"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5f841fabd65478fe2a6d5db3e3c0a4e" id="r_aa5f841fabd65478fe2a6d5db3e3c0a4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#aa5f841fabd65478fe2a6d5db3e3c0a4e">setDepthSensitivity</a> (float sensitivity)</td></tr>
+<tr class="memdesc:aa5f841fabd65478fe2a6d5db3e3c0a4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extra per-unit-distance depth tolerance (keeps outlines distance-consistent).  <br /></td></tr>
+<tr class="separator:aa5f841fabd65478fe2a6d5db3e3c0a4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a353a33d07e4a11879039f938360d8dd0" id="r_a353a33d07e4a11879039f938360d8dd0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a353a33d07e4a11879039f938360d8dd0">getDepthSensitivity</a> () const</td></tr>
+<tr class="separator:a353a33d07e4a11879039f938360d8dd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f2038746ab7349977453d129b896fb5" id="r_a4f2038746ab7349977453d129b896fb5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a4f2038746ab7349977453d129b896fb5">setNormalThreshold</a> (float threshold)</td></tr>
+<tr class="memdesc:a4f2038746ab7349977453d129b896fb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normal discontinuity (1 - dot(n, nN)) that starts a crease edge.  <br /></td></tr>
+<tr class="separator:a4f2038746ab7349977453d129b896fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae08aca6215926640bceb0c4fe4c3b45b" id="r_ae08aca6215926640bceb0c4fe4c3b45b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#ae08aca6215926640bceb0c4fe4c3b45b">getNormalThreshold</a> () const</td></tr>
+<tr class="separator:ae08aca6215926640bceb0c4fe4c3b45b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fbfdfd29b26ce88a3b7aedb855a67c6" id="r_a5fbfdfd29b26ce88a3b7aedb855a67c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a5fbfdfd29b26ce88a3b7aedb855a67c6">setSoftness</a> (float softness)</td></tr>
+<tr class="memdesc:a5fbfdfd29b26ce88a3b7aedb855a67c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoothstep band used to fade edges (0 = hard, 1 = soft).  <br /></td></tr>
+<tr class="separator:a5fbfdfd29b26ce88a3b7aedb855a67c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4619be65d4245c1d93dd0d053d4a7e0f" id="r_a4619be65d4245c1d93dd0d053d4a7e0f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a4619be65d4245c1d93dd0d053d4a7e0f">getSoftness</a> () const</td></tr>
+<tr class="separator:a4619be65d4245c1d93dd0d053d4a7e0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4d6a53b3f9684749e6a9172c1c8758" id="r_aaf4d6a53b3f9684749e6a9172c1c8758"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#aaf4d6a53b3f9684749e6a9172c1c8758">setClip</a> (float nearZ, float farZ)</td></tr>
+<tr class="memdesc:aaf4d6a53b3f9684749e6a9172c1c8758"><td class="mdescLeft">&#160;</td><td class="mdescRight">Near/far used to linearize the hardware depth.  <br /></td></tr>
+<tr class="separator:aaf4d6a53b3f9684749e6a9172c1c8758"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ddf6446521a28fdf0019a5c80b0eca5" id="r_a6ddf6446521a28fdf0019a5c80b0eca5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a6ddf6446521a28fdf0019a5c80b0eca5">hasParam</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a6ddf6446521a28fdf0019a5c80b0eca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a497d048013a44a5b63e9257c5dbdec69" id="r_a497d048013a44a5b63e9257c5dbdec69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#a497d048013a44a5b63e9257c5dbdec69">setFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a497d048013a44a5b63e9257c5dbdec69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab795e21b9e6561674d6c58c013dd72e" id="r_aab795e21b9e6561674d6c58c013dd72e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#aab795e21b9e6561674d6c58c013dd72e">getFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:aab795e21b9e6561674d6c58c013dd72e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab45aa6fe2712cff69159e75e06522ac5" id="r_ab45aa6fe2712cff69159e75e06522ac5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#ab45aa6fe2712cff69159e75e06522ac5">apply</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal)</td></tr>
+<tr class="memdesc:ab45aa6fe2712cff69159e75e06522ac5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the outline over the currently bound canvas / screen. <code>hwDepth</code> is the D32 <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> (Vulkan NDC z), <code>worldNormal</code> the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> world normal (RGBA8, n * 0.5 + 0.5). Automatically uploads texel size and clip uniforms. Returns false if either input is missing.  <br /></td></tr>
+<tr class="separator:ab45aa6fe2712cff69159e75e06522ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb69ade0a6a2518eb3bfdd3673b7e8f5" id="r_afb69ade0a6a2518eb3bfdd3673b7e8f5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#afb69ade0a6a2518eb3bfdd3673b7e8f5">applyTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:afb69ade0a6a2518eb3bfdd3673b7e8f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb4f17e5d76097d5013625c2669019b4" id="r_acb4f17e5d76097d5013625c2669019b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Outline.html#acb4f17e5d76097d5013625c2669019b4">getShader</a> () const</td></tr>
+<tr class="separator:acb4f17e5d76097d5013625c2669019b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Screen-space model outline (t3ssel8r-style), computed from the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> hardware depth + world-normal buffers. </p>
+<p>Technique: for every pixel sample the depth (Vulkan NDC z, binding 0) and world normal (RGB = n * 0.5 + 0.5, binding 1) of an 8-neighbourhood at a configurable width. A pixel becomes an outline when the view-space depth discontinuity (silhouette / occlusion edge) or the normal discontinuity (crease) exceeds a threshold. The pass emits <code>vec4(outlineColor, edgeMask)</code> which is blended (SrcAlpha) over the already-rendered scene, so applying it on top of a 3D frame yields crisp ink outlines without a separate composite target.</p>
+<p>Pipeline: single screen-space draw reading depth + normal. Feed it the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> textures from <a class="el" href="classeve_1_1graphics_1_1RenderControl.html#acfd394a1fd56cadac1bdca70e7fc7b54">RenderControl::getGBuffer()</a> (getHwDepthTexture() / getNormalTexture()) after the 3D geometry pass, with the scene still bound as the current canvas. See <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a975b1e9f2e26b7d8a63d19a11e6d6df0">AmbientOcclusion::applyFromGBuffer</a> for the same binding convention. </p>
+
+<p class="definition">在文件 <a class="el" href="Outline_8h_source.html">Outline.h</a> 第 <a class="el" href="Outline_8h_source.html#l00031">31</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a99ebe1a4cd3ff4706fb38dd254bcc860" name="a99ebe1a4cd3ff4706fb38dd254bcc860"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99ebe1a4cd3ff4706fb38dd254bcc860">&#9670;&#160;</a></span>Outline() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Outline::Outline </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9ffc310dd74fec6c524d822a1fb0d4d" name="ab9ffc310dd74fec6c524d822a1fb0d4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9ffc310dd74fec6c524d822a1fb0d4d">&#9670;&#160;</a></span>~Outline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Outline::~Outline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aabbdd6007e15966acd7610ff5aa51d2e" name="aabbdd6007e15966acd7610ff5aa51d2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabbdd6007e15966acd7610ff5aa51d2e">&#9670;&#160;</a></span>Outline() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Outline::Outline </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Outline.html">Outline</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab45aa6fe2712cff69159e75e06522ac5" name="ab45aa6fe2712cff69159e75e06522ac5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab45aa6fe2712cff69159e75e06522ac5">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Outline::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>worldNormal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw the outline over the currently bound canvas / screen. <code>hwDepth</code> is the D32 <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> (Vulkan NDC z), <code>worldNormal</code> the <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> world normal (RGBA8, n * 0.5 + 0.5). Automatically uploads texel size and clip uniforms. Returns false if either input is missing. </p>
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#afdea8a5360160828274df8778f69fca1">eve::graphics::Graphics::drawTexturedRectShaderDepth()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="Graphics_8h_source.html#l00412">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00411">eve::graphics::Graphics::getWidth()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Outline_8cpp_source.html#l00163">applyTo()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="afb69ade0a6a2518eb3bfdd3673b7e8f5" name="afb69ade0a6a2518eb3bfdd3673b7e8f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb69ade0a6a2518eb3bfdd3673b7e8f5">&#9670;&#160;</a></span>applyTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Outline::applyTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>worldNormal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Outline_8cpp_source.html#l00147">apply()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a6097273ac1038c677050172d1f375890" name="a6097273ac1038c677050172d1f375890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6097273ac1038c677050172d1f375890">&#9670;&#160;</a></span>getColorB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getColorB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a044523f4ddc27103be21c3c4e1266755" name="a044523f4ddc27103be21c3c4e1266755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a044523f4ddc27103be21c3c4e1266755">&#9670;&#160;</a></span>getColorG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getColorG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af4ee84e42a9431be88040277c7048bed" name="af4ee84e42a9431be88040277c7048bed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4ee84e42a9431be88040277c7048bed">&#9670;&#160;</a></span>getColorR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getColorR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a353a33d07e4a11879039f938360d8dd0" name="a353a33d07e4a11879039f938360d8dd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a353a33d07e4a11879039f938360d8dd0">&#9670;&#160;</a></span>getDepthSensitivity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getDepthSensitivity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a435c44a6ef7262b5266314a6f4778840" name="a435c44a6ef7262b5266314a6f4778840"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a435c44a6ef7262b5266314a6f4778840">&#9670;&#160;</a></span>getDepthThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getDepthThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab795e21b9e6561674d6c58c013dd72e" name="aab795e21b9e6561674d6c58c013dd72e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab795e21b9e6561674d6c58c013dd72e">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00071">eve::graphics::Shader::getFromVar()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="ae08aca6215926640bceb0c4fe4c3b45b" name="ae08aca6215926640bceb0c4fe4c3b45b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae08aca6215926640bceb0c4fe4c3b45b">&#9670;&#160;</a></span>getNormalThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getNormalThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb4f17e5d76097d5013625c2669019b4" name="acb4f17e5d76097d5013625c2669019b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb4f17e5d76097d5013625c2669019b4">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::Outline::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8h_source.html">Outline.h</a> 第 <a class="el" href="Outline_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4619be65d4245c1d93dd0d053d4a7e0f" name="a4619be65d4245c1d93dd0d053d4a7e0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4619be65d4245c1d93dd0d053d4a7e0f">&#9670;&#160;</a></span>getSoftness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getSoftness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45d8bd4393343e1ab781b45eae21adcd" name="a45d8bd4393343e1ab781b45eae21adcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45d8bd4393343e1ab781b45eae21adcd">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Outline::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ddf6446521a28fdf0019a5c80b0eca5" name="a6ddf6446521a28fdf0019a5c80b0eca5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ddf6446521a28fdf0019a5c80b0eca5">&#9670;&#160;</a></span>hasParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Outline::hasParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="afd230fc37119e72e6ea9ed969588cf94" name="afd230fc37119e72e6ea9ed969588cf94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd230fc37119e72e6ea9ed969588cf94">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Outline.html">Outline</a> &amp; eve::graphics::Outline::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Outline.html">Outline</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf4d6a53b3f9684749e6a9172c1c8758" name="aaf4d6a53b3f9684749e6a9172c1c8758"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4d6a53b3f9684749e6a9172c1c8758">&#9670;&#160;</a></span>setClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Outline::setClip </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Near/far used to linearize the hardware depth. </p>
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a5d5ad24aff3e9a38bc440a3c6aa5e56a" name="a5d5ad24aff3e9a38bc440a3c6aa5e56a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d5ad24aff3e9a38bc440a3c6aa5e56a">&#9670;&#160;</a></span>setColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Outline::setColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="aa5f841fabd65478fe2a6d5db3e3c0a4e" name="aa5f841fabd65478fe2a6d5db3e3c0a4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5f841fabd65478fe2a6d5db3e3c0a4e">&#9670;&#160;</a></span>setDepthSensitivity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Outline::setDepthSensitivity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sensitivity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extra per-unit-distance depth tolerance (keeps outlines distance-consistent). </p>
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a381bd2bbff0c2c821846351b5d753755" name="a381bd2bbff0c2c821846351b5d753755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a381bd2bbff0c2c821846351b5d753755">&#9670;&#160;</a></span>setDepthThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Outline::setDepthThreshold </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>threshold</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>View-space depth discontinuity that starts a depth edge. </p>
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a497d048013a44a5b63e9257c5dbdec69" name="a497d048013a44a5b63e9257c5dbdec69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a497d048013a44a5b63e9257c5dbdec69">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Outline::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a4f2038746ab7349977453d129b896fb5" name="a4f2038746ab7349977453d129b896fb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f2038746ab7349977453d129b896fb5">&#9670;&#160;</a></span>setNormalThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Outline::setNormalThreshold </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>threshold</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Normal discontinuity (1 - dot(n, nN)) that starts a crease edge. </p>
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a5fbfdfd29b26ce88a3b7aedb855a67c6" name="a5fbfdfd29b26ce88a3b7aedb855a67c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fbfdfd29b26ce88a3b7aedb855a67c6">&#9670;&#160;</a></span>setSoftness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Outline::setSoftness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>softness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smoothstep band used to fade edges (0 = hard, 1 = soft). </p>
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a0a2e8aa8d5788174d683fa2abca9f6da" name="a0a2e8aa8d5788174d683fa2abca9f6da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2e8aa8d5788174d683fa2abca9f6da">&#9670;&#160;</a></span>setWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Outline::setWidth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Outline.html" title="Screen-space model outline (t3ssel8r-style), computed from the GBuffer hardware depth + world-normal ...">Outline</a> thickness in screen pixels (&gt;= 0.5). </p>
+
+<p class="definition">在文件 <a class="el" href="Outline_8cpp_source.html">Outline.cpp</a> 第 <a class="el" href="Outline_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Outline_8h_source.html">Outline.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Outline_8cpp_source.html">Outline.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

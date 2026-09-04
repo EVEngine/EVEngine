@@ -1,0 +1,349 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/GpuParticles.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GpuParticles.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GpuParticles_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BlendMode_8h.html">graphics/BlendMode.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4">   12</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4">GpuParticleFacingMode</a> : std::uint32_t {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a917bc8aaac6b32336d617675ea5fbe0f">ParticleRotation</a> = 0,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a88156d46910a2d733443c339a9231d12">Velocity</a>         = 1,</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a39e6b4ab3e4adecf031d3aa8410bb3ce">Axis</a>             = 2,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>};</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">   19</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a> = std::uint64_t;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a7d9cc90cd54bec0de8a82a40c2c15814">   22</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a> <a class="code hl_variable" href="namespaceeve_1_1graphics.html#a7d9cc90cd54bec0de8a82a40c2c15814">kInvalidGpuParticleHandle</a> = 0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html">   25</a></span><span class="keyword">struct </span><span class="keyword">alignas</span>(16) <a class="code hl_struct" href="structeve_1_1graphics_1_1GpuParticleSpawn.html">GpuParticleSpawn</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#abc09fccff8c801f549b37576f1296977">   26</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#abc09fccff8c801f549b37576f1296977">x</a>          = 0.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a2ce3a2ecd77da1c571d42eaeedbc5a45">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a2ce3a2ecd77da1c571d42eaeedbc5a45">y</a>          = 0.f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a7c9b45ff69b9e0d36698689cdfa4e3c2">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a7c9b45ff69b9e0d36698689cdfa4e3c2">vx</a>         = 0.f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a5344932f1bc58c5d0621a11c548af65c">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a5344932f1bc58c5d0621a11c548af65c">vy</a>         = 0.f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#af37b2e44179dffbec8e8fc0de7ce52d6">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#af37b2e44179dffbec8e8fc0de7ce52d6">life</a>       = 0.f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#ac176eaf7a6dcc8546058d825d410bcb8">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#ac176eaf7a6dcc8546058d825d410bcb8">lifetime</a>   = 1.f;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a200734ccff4bfa6091497b94f5e06fe0">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a200734ccff4bfa6091497b94f5e06fe0">size</a>       = 1.f;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#ab1797cee552a59cf792d81497da8e698">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#ab1797cee552a59cf792d81497da8e698">rotation</a>   = 0.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a452b7b5d0ac5e37db3abc1e5fe8d75f1">   34</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a452b7b5d0ac5e37db3abc1e5fe8d75f1">spin</a>       = 0.f;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#adf43c724b4e57c5310c990107debe90b">   35</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#adf43c724b4e57c5310c990107debe90b">frame</a>      = 0.f;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#adaab61e3411572c216c62484f030b669">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#adaab61e3411572c216c62484f030b669">radial</a>     = 0.f;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a26b305e45c2037adb0123881fdaac6a4">   37</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a26b305e45c2037adb0123881fdaac6a4">tangential</a> = 0.f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a081a0218ae82620177cb7d40734855b4">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a081a0218ae82620177cb7d40734855b4">ax</a>         = 0.f;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a2b5beadb770cca7082cefe9540355c96">   39</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a2b5beadb770cca7082cefe9540355c96">ay</a>         = 0.f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#aa0b4e2caa629b53a1c47175b80f08b43">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#aa0b4e2caa629b53a1c47175b80f08b43">noisePhase</a> = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a76b691545cf39196d9321ab9dc9d1ce5">   41</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a76b691545cf39196d9321ab9dc9d1ce5">reserved</a>   = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">static_assert</span>(<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1graphics_1_1GpuParticleSpawn.html">GpuParticleSpawn</a>) == 64, <span class="stringliteral">&quot;GPU particle layout must match GLSL std430&quot;</span>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html">   47</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuParticleUpdate.html">GpuParticleUpdate</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a6a50a8210b32a98c33ddf965d7b3fec6">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a6a50a8210b32a98c33ddf965d7b3fec6">dt</a>             = 0.f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ad250ef246ce2663a0b151bf6e306cc80">   49</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ad250ef246ce2663a0b151bf6e306cc80">emitterX</a>       = 0.f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a88656df9207823b40b2f8ef76f3f6df1">   50</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a88656df9207823b40b2f8ef76f3f6df1">emitterY</a>       = 0.f;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a82cff111993014fb158dd458ae6ccbf5">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a82cff111993014fb158dd458ae6ccbf5">gravityX</a>       = 0.f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a0bc69264728ac209b627b85c591e0cfd">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a0bc69264728ac209b627b85c591e0cfd">gravityY</a>       = 0.f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ace128b1a362d9052497372388149626a">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ace128b1a362d9052497372388149626a">damping</a>        = 0.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a3b5b59c24965e1acc42638bcc683f2c6">   54</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a3b5b59c24965e1acc42638bcc683f2c6">velocityLimit</a>  = 0.f;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a07718268997e74be38a2347818238757">   55</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a07718268997e74be38a2347818238757">noiseStrength</a>  = 0.f;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ad9910adc371b9740838de16e933e2a74">   56</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ad9910adc371b9740838de16e933e2a74">noiseFrequency</a> = 1.f;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a3d1151e444fd5b66e5d23bc7c487f288">   57</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a3d1151e444fd5b66e5d23bc7c487f288">noiseSpeed</a>     = 0.f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ab165e4132a580c0a6983a9704c7de97e">   58</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ab165e4132a580c0a6983a9704c7de97e">time</a>           = 0.f;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ab58c2f81d799dea26c1f914da0ceb38c">   59</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ab58c2f81d799dea26c1f914da0ceb38c">frameRate</a>      = 0.f;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a47238fb96e67c9c7ee284fccee2dc579">   60</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a47238fb96e67c9c7ee284fccee2dc579">localOffsetX</a>   = 0.f;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a87dd11d37d6c488c0aaebe52b0910ae3">   61</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a87dd11d37d6c488c0aaebe52b0910ae3">localOffsetY</a>   = 0.f;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="};">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html">   65</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuParticleDraw.html">GpuParticleDraw</a> {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a697856bb2a6eada8d1d986f3c613d623">   66</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a>*              <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a697856bb2a6eada8d1d986f3c613d623">texture</a>             = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a33e20aa5d163ad83832297eb8abbf3d3">   67</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a>*              <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a33e20aa5d163ad83832297eb8abbf3d3">sceneDepth</a>          = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a0f06dcabd9d7f0c01f3ea1db5a5ba155">   68</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a>             <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a0f06dcabd9d7f0c01f3ea1db5a5ba155">blend</a>               = <a class="code hl_enumvalue" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a43e2441e07fddff05e50a2fafeaa7de9">   69</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a43e2441e07fddff05e50a2fafeaa7de9">viewportWidth</a>       = 1.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a747cf45c9ba3c6e970914f1abdd7071a">   70</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a747cf45c9ba3c6e970914f1abdd7071a">viewportHeight</a>      = 1.f;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a65537068f18afe2162ac81ed947290df">   71</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a65537068f18afe2162ac81ed947290df">cameraX</a>             = 0.f;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#af7f72adb1a80b13cd17c14e178ed1828">   72</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#af7f72adb1a80b13cd17c14e178ed1828">cameraY</a>             = 0.f;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a1feb0aaf8ba2aeab3a5067974c11bc61">   73</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a1feb0aaf8ba2aeab3a5067974c11bc61">cameraZoom</a>          = 1.f;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a8b12d53841aa5572029798ca41615324">   74</a></span>    <span class="keywordtype">bool</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a8b12d53841aa5572029798ca41615324">cameraEnabled</a>       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a2987b18c561e79c867ee1990bba45365">   75</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a2987b18c561e79c867ee1990bba45365">particleWidth</a>       = 1.f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#afcbf02ae57bfaae7beaa500a3ea46c03">   76</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#afcbf02ae57bfaae7beaa500a3ea46c03">particleHeight</a>      = 1.f;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a8d242dd542cdee49aacc41140e62b8b8">   77</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a8d242dd542cdee49aacc41140e62b8b8">sizeStart</a>           = 1.f;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ab5f0849c2923c1498fdca6138c92544b">   78</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ab5f0849c2923c1498fdca6138c92544b">sizeEnd</a>             = 1.f;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#aa85ce3f66131c1bce6ca8af980e6ed42">   79</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#aa85ce3f66131c1bce6ca8af980e6ed42">stretchFactor</a>       = 1.f;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a54194dbe98563b7fa33ff2f4a1eb0b77">   80</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4">GpuParticleFacingMode</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a54194dbe98563b7fa33ff2f4a1eb0b77">facing</a>              = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a917bc8aaac6b32336d617675ea5fbe0f">GpuParticleFacingMode::ParticleRotation</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#af212cee9c2839f12899000b02d9ffb69">   81</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#af212cee9c2839f12899000b02d9ffb69">axisRotationRadians</a> = 0.f;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a7476c1b61bf6aa6cde0df7bf4e596416">   82</a></span>    <span class="keywordtype">bool</span>                  <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a7476c1b61bf6aa6cde0df7bf4e596416">softParticles</a>       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#aa43043079c52bf5fb5c31eeeec8e3139">   83</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#aa43043079c52bf5fb5c31eeeec8e3139">particleDepth</a>       = 0.5f;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a79300ea1c81c02481475ef208f712380">   84</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a79300ea1c81c02481475ef208f712380">softFadeDistance</a>    = 0.05f;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a3437541e3721b400bcdf5a174c32d2c3">   85</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a3437541e3721b400bcdf5a174c32d2c3">colorStart</a>[4]       = {1.f, 1.f, 1.f, 1.f};</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a172b5663dc51796933b4c28e05896c7f">   86</a></span>    <span class="keywordtype">float</span>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#a172b5663dc51796933b4c28e05896c7f">colorEnd</a>[4]         = {1.f, 1.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ac66de63771d154a42e1cf558395bf1cc">   87</a></span>    <span class="keywordtype">int</span>                   <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ac66de63771d154a42e1cf558395bf1cc">hframes</a>             = 1;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ab78d6e5000d714b49897d18e86a4540e">   88</a></span>    <span class="keywordtype">int</span>                   <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleDraw.html#ab78d6e5000d714b49897d18e86a4540e">vframes</a>             = 1;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>};</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="};">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleStats.html">   92</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GpuParticleStats.html">GpuParticleStats</a> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleStats.html#a994970daa22c8026fb6dbab71932c0d3">   93</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleStats.html#a994970daa22c8026fb6dbab71932c0d3">alive</a> = 0;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleStats.html#a6260b901e10cbe1a98ea00e8606f2696">   95</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleStats.html#a6260b901e10cbe1a98ea00e8606f2696">instances</a>       = 0;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleStats.html#a9e2e17dd479b5efa1fc06a9c0f4862c1">   96</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleStats.html#a9e2e17dd479b5efa1fc06a9c0f4862c1">spawned</a>         = 0;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleStats.html#a84f0a76f43687bb7de21c5bd70061c01">   97</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleStats.html#a84f0a76f43687bb7de21c5bd70061c01">killed</a>          = 0;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleStats.html#a9eae25756944aa4f76a1d926a159fd4b">   98</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleStats.html#a9eae25756944aa4f76a1d926a159fd4b">dropped</a>         = 0;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GpuParticleStats.html#a5f021816a60ddc28d466c30295919ae8">   99</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GpuParticleStats.html#a5f021816a60ddc28d466c30295919ae8">submittedFrames</a> = 0;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>};</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aBlendMode_8h_html"><div class="ttname"><a href="BlendMode_8h.html">BlendMode.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a18c16bf8caa1b5b550e6c974fd0649da"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">eve::graphics::GpuParticleHandle</a></div><div class="ttdeci">std::uint64_t GpuParticleHandle</div><div class="ttdoc">Opaque backend-owned GPU particle emitter handle.</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00019">GpuParticles.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a7d9cc90cd54bec0de8a82a40c2c15814"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a7d9cc90cd54bec0de8a82a40c2c15814">eve::graphics::kInvalidGpuParticleHandle</a></div><div class="ttdeci">constexpr GpuParticleHandle kInvalidGpuParticleHandle</div><div class="ttdoc">Invalid GPU particle handle returned when the backend cannot allocate the resource.</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00022">GpuParticles.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aa3b6380e54efe92aaa0f504df0604fa4"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4">eve::graphics::GpuParticleFacingMode</a></div><div class="ttdeci">GpuParticleFacingMode</div><div class="ttdoc">Sprite orientation supported by the resident GPU particle renderer.</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00012">GpuParticles.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aa3b6380e54efe92aaa0f504df0604fa4a39e6b4ab3e4adecf031d3aa8410bb3ce"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a39e6b4ab3e4adecf031d3aa8410bb3ce">eve::graphics::GpuParticleFacingMode::Axis</a></div><div class="ttdeci">@ Axis</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aa3b6380e54efe92aaa0f504df0604fa4a88156d46910a2d733443c339a9231d12"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a88156d46910a2d733443c339a9231d12">eve::graphics::GpuParticleFacingMode::Velocity</a></div><div class="ttdeci">@ Velocity</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aa3b6380e54efe92aaa0f504df0604fa4a917bc8aaac6b32336d617675ea5fbe0f"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aa3b6380e54efe92aaa0f504df0604fa4a917bc8aaac6b32336d617675ea5fbe0f">eve::graphics::GpuParticleFacingMode::ParticleRotation</a></div><div class="ttdeci">@ ParticleRotation</div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::BlendMode</a></div><div class="ttdeci">BlendMode</div><div class="ttdoc">Render-neutral 2D blend mode shared by graphics-facing modules.</div><div class="ttdef"><b>Definition</b> <a href="RenderTypes_8h_source.html#l00011">RenderTypes.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">eve::BlendMode::Alpha</a></div><div class="ttdeci">@ Alpha</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html">eve::graphics::GpuParticleDraw</a></div><div class="ttdoc">Parameters for rendering a resident GPU particle emitter.</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00065">GpuParticles.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a0f06dcabd9d7f0c01f3ea1db5a5ba155"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a0f06dcabd9d7f0c01f3ea1db5a5ba155">eve::graphics::GpuParticleDraw::blend</a></div><div class="ttdeci">BlendMode blend</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00068">GpuParticles.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a172b5663dc51796933b4c28e05896c7f"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a172b5663dc51796933b4c28e05896c7f">eve::graphics::GpuParticleDraw::colorEnd</a></div><div class="ttdeci">float colorEnd[4]</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00086">GpuParticles.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a1feb0aaf8ba2aeab3a5067974c11bc61"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a1feb0aaf8ba2aeab3a5067974c11bc61">eve::graphics::GpuParticleDraw::cameraZoom</a></div><div class="ttdeci">float cameraZoom</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00073">GpuParticles.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a2987b18c561e79c867ee1990bba45365"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a2987b18c561e79c867ee1990bba45365">eve::graphics::GpuParticleDraw::particleWidth</a></div><div class="ttdeci">float particleWidth</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00075">GpuParticles.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a33e20aa5d163ad83832297eb8abbf3d3"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a33e20aa5d163ad83832297eb8abbf3d3">eve::graphics::GpuParticleDraw::sceneDepth</a></div><div class="ttdeci">Texture * sceneDepth</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00067">GpuParticles.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a3437541e3721b400bcdf5a174c32d2c3"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a3437541e3721b400bcdf5a174c32d2c3">eve::graphics::GpuParticleDraw::colorStart</a></div><div class="ttdeci">float colorStart[4]</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00085">GpuParticles.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a43e2441e07fddff05e50a2fafeaa7de9"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a43e2441e07fddff05e50a2fafeaa7de9">eve::graphics::GpuParticleDraw::viewportWidth</a></div><div class="ttdeci">float viewportWidth</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00069">GpuParticles.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a54194dbe98563b7fa33ff2f4a1eb0b77"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a54194dbe98563b7fa33ff2f4a1eb0b77">eve::graphics::GpuParticleDraw::facing</a></div><div class="ttdeci">GpuParticleFacingMode facing</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00080">GpuParticles.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a65537068f18afe2162ac81ed947290df"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a65537068f18afe2162ac81ed947290df">eve::graphics::GpuParticleDraw::cameraX</a></div><div class="ttdeci">float cameraX</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00071">GpuParticles.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a697856bb2a6eada8d1d986f3c613d623"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a697856bb2a6eada8d1d986f3c613d623">eve::graphics::GpuParticleDraw::texture</a></div><div class="ttdeci">Texture * texture</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00066">GpuParticles.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a7476c1b61bf6aa6cde0df7bf4e596416"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a7476c1b61bf6aa6cde0df7bf4e596416">eve::graphics::GpuParticleDraw::softParticles</a></div><div class="ttdeci">bool softParticles</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00082">GpuParticles.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a747cf45c9ba3c6e970914f1abdd7071a"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a747cf45c9ba3c6e970914f1abdd7071a">eve::graphics::GpuParticleDraw::viewportHeight</a></div><div class="ttdeci">float viewportHeight</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00070">GpuParticles.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a79300ea1c81c02481475ef208f712380"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a79300ea1c81c02481475ef208f712380">eve::graphics::GpuParticleDraw::softFadeDistance</a></div><div class="ttdeci">float softFadeDistance</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00084">GpuParticles.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a8b12d53841aa5572029798ca41615324"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a8b12d53841aa5572029798ca41615324">eve::graphics::GpuParticleDraw::cameraEnabled</a></div><div class="ttdeci">bool cameraEnabled</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00074">GpuParticles.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_a8d242dd542cdee49aacc41140e62b8b8"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#a8d242dd542cdee49aacc41140e62b8b8">eve::graphics::GpuParticleDraw::sizeStart</a></div><div class="ttdeci">float sizeStart</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00077">GpuParticles.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_aa43043079c52bf5fb5c31eeeec8e3139"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#aa43043079c52bf5fb5c31eeeec8e3139">eve::graphics::GpuParticleDraw::particleDepth</a></div><div class="ttdeci">float particleDepth</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00083">GpuParticles.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_aa85ce3f66131c1bce6ca8af980e6ed42"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#aa85ce3f66131c1bce6ca8af980e6ed42">eve::graphics::GpuParticleDraw::stretchFactor</a></div><div class="ttdeci">float stretchFactor</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00079">GpuParticles.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_ab5f0849c2923c1498fdca6138c92544b"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#ab5f0849c2923c1498fdca6138c92544b">eve::graphics::GpuParticleDraw::sizeEnd</a></div><div class="ttdeci">float sizeEnd</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00078">GpuParticles.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_ab78d6e5000d714b49897d18e86a4540e"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#ab78d6e5000d714b49897d18e86a4540e">eve::graphics::GpuParticleDraw::vframes</a></div><div class="ttdeci">int vframes</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00088">GpuParticles.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_ac66de63771d154a42e1cf558395bf1cc"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#ac66de63771d154a42e1cf558395bf1cc">eve::graphics::GpuParticleDraw::hframes</a></div><div class="ttdeci">int hframes</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00087">GpuParticles.h:87</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_af212cee9c2839f12899000b02d9ffb69"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#af212cee9c2839f12899000b02d9ffb69">eve::graphics::GpuParticleDraw::axisRotationRadians</a></div><div class="ttdeci">float axisRotationRadians</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00081">GpuParticles.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_af7f72adb1a80b13cd17c14e178ed1828"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#af7f72adb1a80b13cd17c14e178ed1828">eve::graphics::GpuParticleDraw::cameraY</a></div><div class="ttdeci">float cameraY</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00072">GpuParticles.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleDraw_html_afcbf02ae57bfaae7beaa500a3ea46c03"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleDraw.html#afcbf02ae57bfaae7beaa500a3ea46c03">eve::graphics::GpuParticleDraw::particleHeight</a></div><div class="ttdeci">float particleHeight</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00076">GpuParticles.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html">eve::graphics::GpuParticleSpawn</a></div><div class="ttdoc">GPU particle state uploaded only for newly spawned particles.</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00025">GpuParticles.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a081a0218ae82620177cb7d40734855b4"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a081a0218ae82620177cb7d40734855b4">eve::graphics::GpuParticleSpawn::ax</a></div><div class="ttdeci">float ax</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00038">GpuParticles.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a200734ccff4bfa6091497b94f5e06fe0"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a200734ccff4bfa6091497b94f5e06fe0">eve::graphics::GpuParticleSpawn::size</a></div><div class="ttdeci">float size</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00032">GpuParticles.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a26b305e45c2037adb0123881fdaac6a4"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a26b305e45c2037adb0123881fdaac6a4">eve::graphics::GpuParticleSpawn::tangential</a></div><div class="ttdeci">float tangential</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00037">GpuParticles.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a2b5beadb770cca7082cefe9540355c96"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a2b5beadb770cca7082cefe9540355c96">eve::graphics::GpuParticleSpawn::ay</a></div><div class="ttdeci">float ay</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00039">GpuParticles.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a2ce3a2ecd77da1c571d42eaeedbc5a45"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a2ce3a2ecd77da1c571d42eaeedbc5a45">eve::graphics::GpuParticleSpawn::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00027">GpuParticles.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a452b7b5d0ac5e37db3abc1e5fe8d75f1"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a452b7b5d0ac5e37db3abc1e5fe8d75f1">eve::graphics::GpuParticleSpawn::spin</a></div><div class="ttdeci">float spin</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00034">GpuParticles.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a5344932f1bc58c5d0621a11c548af65c"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a5344932f1bc58c5d0621a11c548af65c">eve::graphics::GpuParticleSpawn::vy</a></div><div class="ttdeci">float vy</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00029">GpuParticles.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a76b691545cf39196d9321ab9dc9d1ce5"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a76b691545cf39196d9321ab9dc9d1ce5">eve::graphics::GpuParticleSpawn::reserved</a></div><div class="ttdeci">float reserved</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00041">GpuParticles.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_a7c9b45ff69b9e0d36698689cdfa4e3c2"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#a7c9b45ff69b9e0d36698689cdfa4e3c2">eve::graphics::GpuParticleSpawn::vx</a></div><div class="ttdeci">float vx</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00028">GpuParticles.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_aa0b4e2caa629b53a1c47175b80f08b43"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#aa0b4e2caa629b53a1c47175b80f08b43">eve::graphics::GpuParticleSpawn::noisePhase</a></div><div class="ttdeci">float noisePhase</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00040">GpuParticles.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_ab1797cee552a59cf792d81497da8e698"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#ab1797cee552a59cf792d81497da8e698">eve::graphics::GpuParticleSpawn::rotation</a></div><div class="ttdeci">float rotation</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00033">GpuParticles.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_abc09fccff8c801f549b37576f1296977"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#abc09fccff8c801f549b37576f1296977">eve::graphics::GpuParticleSpawn::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00026">GpuParticles.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_ac176eaf7a6dcc8546058d825d410bcb8"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#ac176eaf7a6dcc8546058d825d410bcb8">eve::graphics::GpuParticleSpawn::lifetime</a></div><div class="ttdeci">float lifetime</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00031">GpuParticles.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_adaab61e3411572c216c62484f030b669"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#adaab61e3411572c216c62484f030b669">eve::graphics::GpuParticleSpawn::radial</a></div><div class="ttdeci">float radial</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00036">GpuParticles.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_adf43c724b4e57c5310c990107debe90b"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#adf43c724b4e57c5310c990107debe90b">eve::graphics::GpuParticleSpawn::frame</a></div><div class="ttdeci">float frame</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00035">GpuParticles.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleSpawn_html_af37b2e44179dffbec8e8fc0de7ce52d6"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleSpawn.html#af37b2e44179dffbec8e8fc0de7ce52d6">eve::graphics::GpuParticleSpawn::life</a></div><div class="ttdeci">float life</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00030">GpuParticles.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleStats_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleStats.html">eve::graphics::GpuParticleStats</a></div><div class="ttdoc">Delayed non-blocking counters from a resident GPU emitter.</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00092">GpuParticles.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleStats_html_a5f021816a60ddc28d466c30295919ae8"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleStats.html#a5f021816a60ddc28d466c30295919ae8">eve::graphics::GpuParticleStats::submittedFrames</a></div><div class="ttdeci">std::uint64_t submittedFrames</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00099">GpuParticles.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleStats_html_a6260b901e10cbe1a98ea00e8606f2696"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleStats.html#a6260b901e10cbe1a98ea00e8606f2696">eve::graphics::GpuParticleStats::instances</a></div><div class="ttdeci">std::uint32_t instances</div><div class="ttdoc">Instance count written into the most recently completed indirect command.</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00095">GpuParticles.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleStats_html_a84f0a76f43687bb7de21c5bd70061c01"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleStats.html#a84f0a76f43687bb7de21c5bd70061c01">eve::graphics::GpuParticleStats::killed</a></div><div class="ttdeci">std::uint32_t killed</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00097">GpuParticles.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleStats_html_a994970daa22c8026fb6dbab71932c0d3"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleStats.html#a994970daa22c8026fb6dbab71932c0d3">eve::graphics::GpuParticleStats::alive</a></div><div class="ttdeci">std::uint32_t alive</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00093">GpuParticles.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleStats_html_a9e2e17dd479b5efa1fc06a9c0f4862c1"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleStats.html#a9e2e17dd479b5efa1fc06a9c0f4862c1">eve::graphics::GpuParticleStats::spawned</a></div><div class="ttdeci">std::uint32_t spawned</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00096">GpuParticles.h:96</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleStats_html_a9eae25756944aa4f76a1d926a159fd4b"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleStats.html#a9eae25756944aa4f76a1d926a159fd4b">eve::graphics::GpuParticleStats::dropped</a></div><div class="ttdeci">std::uint32_t dropped</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00098">GpuParticles.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html">eve::graphics::GpuParticleUpdate</a></div><div class="ttdoc">Parameters for one resident GPU simulation step.</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00047">GpuParticles.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a07718268997e74be38a2347818238757"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a07718268997e74be38a2347818238757">eve::graphics::GpuParticleUpdate::noiseStrength</a></div><div class="ttdeci">float noiseStrength</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00055">GpuParticles.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a0bc69264728ac209b627b85c591e0cfd"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a0bc69264728ac209b627b85c591e0cfd">eve::graphics::GpuParticleUpdate::gravityY</a></div><div class="ttdeci">float gravityY</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00052">GpuParticles.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a3b5b59c24965e1acc42638bcc683f2c6"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a3b5b59c24965e1acc42638bcc683f2c6">eve::graphics::GpuParticleUpdate::velocityLimit</a></div><div class="ttdeci">float velocityLimit</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00054">GpuParticles.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a3d1151e444fd5b66e5d23bc7c487f288"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a3d1151e444fd5b66e5d23bc7c487f288">eve::graphics::GpuParticleUpdate::noiseSpeed</a></div><div class="ttdeci">float noiseSpeed</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00057">GpuParticles.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a47238fb96e67c9c7ee284fccee2dc579"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a47238fb96e67c9c7ee284fccee2dc579">eve::graphics::GpuParticleUpdate::localOffsetX</a></div><div class="ttdeci">float localOffsetX</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00060">GpuParticles.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a6a50a8210b32a98c33ddf965d7b3fec6"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a6a50a8210b32a98c33ddf965d7b3fec6">eve::graphics::GpuParticleUpdate::dt</a></div><div class="ttdeci">float dt</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00048">GpuParticles.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a82cff111993014fb158dd458ae6ccbf5"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a82cff111993014fb158dd458ae6ccbf5">eve::graphics::GpuParticleUpdate::gravityX</a></div><div class="ttdeci">float gravityX</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00051">GpuParticles.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a87dd11d37d6c488c0aaebe52b0910ae3"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a87dd11d37d6c488c0aaebe52b0910ae3">eve::graphics::GpuParticleUpdate::localOffsetY</a></div><div class="ttdeci">float localOffsetY</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00061">GpuParticles.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_a88656df9207823b40b2f8ef76f3f6df1"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#a88656df9207823b40b2f8ef76f3f6df1">eve::graphics::GpuParticleUpdate::emitterY</a></div><div class="ttdeci">float emitterY</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00050">GpuParticles.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_ab165e4132a580c0a6983a9704c7de97e"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ab165e4132a580c0a6983a9704c7de97e">eve::graphics::GpuParticleUpdate::time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00058">GpuParticles.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_ab58c2f81d799dea26c1f914da0ceb38c"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ab58c2f81d799dea26c1f914da0ceb38c">eve::graphics::GpuParticleUpdate::frameRate</a></div><div class="ttdeci">float frameRate</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00059">GpuParticles.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_ace128b1a362d9052497372388149626a"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ace128b1a362d9052497372388149626a">eve::graphics::GpuParticleUpdate::damping</a></div><div class="ttdeci">float damping</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00053">GpuParticles.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_ad250ef246ce2663a0b151bf6e306cc80"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ad250ef246ce2663a0b151bf6e306cc80">eve::graphics::GpuParticleUpdate::emitterX</a></div><div class="ttdeci">float emitterX</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00049">GpuParticles.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GpuParticleUpdate_html_ad9910adc371b9740838de16e933e2a74"><div class="ttname"><a href="structeve_1_1graphics_1_1GpuParticleUpdate.html#ad9910adc371b9740838de16e933e2a74">eve::graphics::GpuParticleUpdate::noiseFrequency</a></div><div class="ttdeci">float noiseFrequency</div><div class="ttdef"><b>Definition</b> <a href="GpuParticles_8h_source.html#l00056">GpuParticles.h:56</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

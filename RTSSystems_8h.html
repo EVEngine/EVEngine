@@ -1,0 +1,510 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSSystems.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">RTSSystems.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic phase-one RTS systems and their ECS contracts.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="RTSAction_8h_source.html">rts/RTSAction.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ResourceAccount_8h_source.html">common/ResourceAccount.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ProjectileRuntime_8h_source.html">weapon/ProjectileRuntime.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="WeaponTypes_8h_source.html">weapon/WeaponTypes.h</a>&quot;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="RTSSystems_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1FormationSpec.html">eve::rts::FormationSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input to the pure formation planner.  <a href="structeve_1_1rts_1_1FormationSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1SystemContract.html">eve::rts::SystemContract</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static metadata for one ECS system's access and phase contract.  <a href="structeve_1_1rts_1_1SystemContract.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CombatFireEvent.html">eve::rts::CombatFireEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable presentation payload for firing, launch, and miss feedback.  <a href="structeve_1_1rts_1_1CombatFireEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1LifecycleEvent.html">eve::rts::LifecycleEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable payload for one committed <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> lifecycle transition.  <a href="structeve_1_1rts_1_1LifecycleEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1VeterancySystem.html">eve::rts::VeterancySystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies one hostile kill's experience to canonical unit veterancy state.  <a href="classeve_1_1rts_1_1VeterancySystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1FactionRelationSystem.html">eve::rts::FactionRelationSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves same-faction and match-team alliances without duplicating diplomacy state.  <a href="classeve_1_1rts_1_1FactionRelationSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1FactionIntelSystem.html">eve::rts::FactionIntelSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads authoritative faction contact projections for command authorization.  <a href="classeve_1_1rts_1_1FactionIntelSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1FormationPlanner.html">eve::rts::FormationPlanner</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure deterministic formation planner.  <a href="classeve_1_1rts_1_1FormationPlanner.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1BuildInfluenceSystem.html">eve::rts::BuildInfluenceSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composes <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> powered build influence with the canonical building placement authority.  <a href="classeve_1_1rts_1_1BuildInfluenceSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1FanOutReceipt.html">eve::rts::FanOutReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receipt containing all order ids accepted by command fan-out.  <a href="structeve_1_1rts_1_1FanOutReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CommandFanOutSystem.html">eve::rts::CommandFanOutSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates a typed selection and fans one command out in formation order.  <a href="classeve_1_1rts_1_1CommandFanOutSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1MotionSystem.html">eve::rts::MotionSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves units toward their active generic order targets.  <a href="classeve_1_1rts_1_1MotionSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1MovementOrderSystem.html">eve::rts::MovementOrderSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Settles arrived finite movement orders so the canonical queue can advance.  <a href="classeve_1_1rts_1_1MovementOrderSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CommandStateSystem.html">eve::rts::CommandStateSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies immediate Stop and persistent Hold/AttackMove command state.  <a href="classeve_1_1rts_1_1CommandStateSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1NavigationGrid.html">eve::rts::NavigationGrid</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">World/grid conversion used when an <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> composition consumes a canonical map Pathfinder.  <a href="structeve_1_1rts_1_1NavigationGrid.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1NavigationSystem.html">eve::rts::NavigationSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plans unit routes through the canonical map Pathfinder without owning map blockers or costs.  <a href="classeve_1_1rts_1_1NavigationSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1PatrolSystem.html">eve::rts::PatrolSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maintains persistent two-point patrol state without owning pathfinding.  <a href="classeve_1_1rts_1_1PatrolSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1TrafficReservationSystem.html">eve::rts::TrafficReservationSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arbitrates deterministic entry into narrow canonical-map cells.  <a href="classeve_1_1rts_1_1TrafficReservationSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1FogOfWarSystem.html">eve::rts::FogOfWarSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> vision into canonical map FOV and maintains faction last-known contacts.  <a href="classeve_1_1rts_1_1FogOfWarSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1FogOfWarSystem_1_1State.html">eve::rts::FogOfWarSystem::State</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runtime-only revealer bindings; authoritative explored cells remain owned by <a class="el" href="classeve_1_1map_1_1Fov.html" title="Dynamic field-of-view / fog-of-war facade. Phase A: 2D shadowcast + multi-revealer + explored memory....">map::Fov</a>.  <a href="structeve_1_1rts_1_1FogOfWarSystem_1_1State.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1FogOfWarSystem_1_1State_1_1Binding.html">eve::rts::FogOfWarSystem::State::Binding</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdMotionSystem.html">eve::rts::CrowdMotionSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronizes linked <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> units through the canonical Crowd simulation.  <a href="classeve_1_1rts_1_1CrowdMotionSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1WorkerAssignmentSystem.html">eve::rts::WorkerAssignmentSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministically assigns idle auto-workers to compatible resource nodes.  <a href="classeve_1_1rts_1_1WorkerAssignmentSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1MiningSystem.html">eve::rts::MiningSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances Gather/ReturnCargo orders without owning an economy balance.  <a href="classeve_1_1rts_1_1MiningSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1ConstructionSystem.html">eve::rts::ConstructionSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances construction using valid builders that reached their assigned site.  <a href="classeve_1_1rts_1_1ConstructionSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1WorkforceAssignmentSystem.html">eve::rts::WorkforceAssignmentSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns idle faction workers to incomplete or damaged buildings by deterministic distance.  <a href="classeve_1_1rts_1_1WorkforceAssignmentSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RepairSystem.html">eve::rts::RepairSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Repairs friendly completed buildings without owning an economy balance.  <a href="classeve_1_1rts_1_1RepairSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CaptureSystem.html">eve::rts::CaptureSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves deterministic single-faction and contested building capture.  <a href="classeve_1_1rts_1_1CaptureSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1InfrastructureSystem.html">eve::rts::InfrastructureSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates faction power deterministically and settles powered passive income.  <a href="classeve_1_1rts_1_1InfrastructureSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1ContainmentSystem.html">eve::rts::ContainmentSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves transport boarding, building garrisoning, and contained-unit synchronization.  <a href="classeve_1_1rts_1_1ContainmentSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1SupplySystem.html">eve::rts::SupplySystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1SupplyRendezvousSelection.html">eve::rts::SupplyRendezvousSelection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A safe map-reachable rendezvous selected around a predicted moving relay intercept.  <a href="structeve_1_1rts_1_1SupplyRendezvousSelection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1SupplyRendezvousSystem.html">eve::rts::SupplyRendezvousSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects a low-threat supply rendezvous while delegating reachability to the canonical map.  <a href="classeve_1_1rts_1_1SupplyRendezvousSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1SupplyConvoySystem.html">eve::rts::SupplyConvoySystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derives stable multi-vehicle supply convoys and paces their leader.  <a href="classeve_1_1rts_1_1SupplyConvoySystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1MoraleSystem.html">eve::rts::MoraleSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recovers suppression and applies nearby friendly morale auras.  <a href="classeve_1_1rts_1_1MoraleSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1ShieldSystem.html">eve::rts::ShieldSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regenerates unit and building shield projections after their configured damage delay.  <a href="classeve_1_1rts_1_1ShieldSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CommandNetworkSystem.html">eve::rts::CommandNetworkSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds deterministic faction command networks with relay capacity and hostile jamming.  <a href="classeve_1_1rts_1_1CommandNetworkSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AbilitySystem.html">eve::rts::AbilitySystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates, schedules and settles active <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> abilities through canonical damage/effect owners.  <a href="classeve_1_1rts_1_1AbilitySystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1ArtillerySystem.html">eve::rts::ArtillerySystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tracks indirect-fire deployment after movement.  <a href="classeve_1_1rts_1_1ArtillerySystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1ArtilleryRelocationSelection.html">eve::rts::ArtilleryRelocationSelection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic, canonical-map-validated artillery relocation choice.  <a href="structeve_1_1rts_1_1ArtilleryRelocationSelection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1ArtilleryRelocationSystem.html">eve::rts::ArtilleryRelocationSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects reachable shoot-and-scoot positions without taking ownership of map navigation.  <a href="classeve_1_1rts_1_1ArtilleryRelocationSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1FireSupportSystem.html">eve::rts::FireSupportSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns indirect-fire responders and automatic counter-battery ground attacks.  <a href="classeve_1_1rts_1_1FireSupportSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1TacticsSystem.html">eve::rts::TacticsSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates escort guards and deterministic combat-group target commitments.  <a href="classeve_1_1rts_1_1TacticsSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AISystem.html">eve::rts::AISystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs deterministic faction production and attack policy.  <a href="classeve_1_1rts_1_1AISystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CombatHeightProfile.html">eve::rts::CombatHeightProfile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute muzzle and target heights resolved by the authoritative map/game adapter.  <a href="structeve_1_1rts_1_1CombatHeightProfile.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CombatFireSystem.html">eve::rts::CombatFireSystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CombatFireSystem_1_1State.html">eve::rts::CombatFireSystem::State</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapter-owned keys previously mirrored into a shared sensing world.  <a href="structeve_1_1rts_1_1CombatFireSystem_1_1State.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1ProjectileCollision.html">eve::rts::ProjectileCollision</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Earliest canonical collision found along one projectile sweep segment.  <a href="structeve_1_1rts_1_1ProjectileCollision.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html">eve::rts::RTSProjectilePayloadSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> damage payload paired with one shared projectile-pool handle.  <a href="structeve_1_1rts_1_1RTSProjectilePayloadSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSProjectileSystemSnapshot.html">eve::rts::RTSProjectileSystemSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete in-flight <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> projectile state with stable gameplay relationships.  <a href="structeve_1_1rts_1_1RTSProjectileSystemSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSProjectileSystem.html">eve::rts::RTSProjectileSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> impact adapter over the canonical pooled weapon projectile trajectory runtime.  <a href="classeve_1_1rts_1_1RTSProjectileSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1OrderActionSystem.html">eve::rts::OrderActionSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends active generic orders to one shared action executor.  <a href="classeve_1_1rts_1_1OrderActionSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1BuildingProductionSystem.html">eve::rts::BuildingProductionSystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1ReinforcementRequestReceipt.html">eve::rts::ReinforcementRequestReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of resolving a preferred reinforcement through a deterministic substitution chain.  <a href="structeve_1_1rts_1_1ReinforcementRequestReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1ReinforcementProductionPolicySystem.html">eve::rts::ReinforcementProductionPolicySystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1ReinforcementSystem.html">eve::rts::ReinforcementSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatches and unloads production reinforcements assigned to canonical unit containers.  <a href="classeve_1_1rts_1_1ReinforcementSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1EffectSystem.html">eve::rts::EffectSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances lifecycle-only effects on Units and Buildings.  <a href="classeve_1_1rts_1_1EffectSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1rts" id="r_namespaceeve_1_1rts"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html">eve::rts</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1crowd" id="r_namespaceeve_1_1crowd"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html">eve::crowd</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1sensing" id="r_namespaceeve_1_1sensing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html">eve::sensing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1map" id="r_namespaceeve_1_1map"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1map.html">eve::map</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1map"><td class="mdescLeft">&#160;</td><td class="mdescRight">放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。 坐标换算统一走 eve::grid（支持 rectangle / iso / staggered / hex 与 XY/XZ 平面轴）。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:aa961f22ddf379bcbf7c7022f0dddcb03" id="r_aa961f22ddf379bcbf7c7022f0dddcb03"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#aa961f22ddf379bcbf7c7022f0dddcb03">eve::rts::DamageEventSink</a> = std::function&lt; void(const <a class="el" href="structeve_1_1combat_1_1DamageRequest.html">combat::DamageRequest</a> &amp;request, const <a class="el" href="structeve_1_1combat_1_1DamageOutcome.html">combat::DamageOutcome</a> &amp;outcome, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <a class="el" href="namespaceeve_1_1rts.html#a2126ba09892aa7a804c370f890675990">DamageChannel</a> channel)&gt;</td></tr>
+<tr class="memdesc:aa961f22ddf379bcbf7c7022f0dddcb03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only observer invoked after canonical damage has committed.  <br /></td></tr>
+<tr class="separator:aa961f22ddf379bcbf7c7022f0dddcb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a684a3add019559345490c36e8800e157" id="r_a684a3add019559345490c36e8800e157"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a684a3add019559345490c36e8800e157">eve::rts::CombatFireEventSink</a> = std::function&lt; void(const <a class="el" href="structeve_1_1rts_1_1CombatFireEvent.html">CombatFireEvent</a> &amp;, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>)&gt;</td></tr>
+<tr class="memdesc:a684a3add019559345490c36e8800e157"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only observer invoked after a weapon consumes one authoritative shot.  <br /></td></tr>
+<tr class="separator:a684a3add019559345490c36e8800e157"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5596829c184c757a6a9cd9864b9395f4" id="r_a5596829c184c757a6a9cd9864b9395f4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a5596829c184c757a6a9cd9864b9395f4">eve::rts::LifecycleEventSink</a> = std::function&lt; void(const <a class="el" href="structeve_1_1rts_1_1LifecycleEvent.html">LifecycleEvent</a> &amp;, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>)&gt;</td></tr>
+<tr class="memdesc:a5596829c184c757a6a9cd9864b9395f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only observer invoked after a non-combat lifecycle transition commits.  <br /></td></tr>
+<tr class="separator:a5596829c184c757a6a9cd9864b9395f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b0dc22ae26c38650e9b6eea736f3014" id="r_a6b0dc22ae26c38650e9b6eea736f3014"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a6b0dc22ae26c38650e9b6eea736f3014">eve::rts::PlacementValidation</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;(<a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>, <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a>)&gt;</td></tr>
+<tr class="memdesc:a6b0dc22ae26c38650e9b6eea736f3014"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-owned canonical terrain/occupancy validation used after <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> influence checks.  <br /></td></tr>
+<tr class="separator:a6b0dc22ae26c38650e9b6eea736f3014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab877ae41519d2ff9ef10df3cf49b22fd" id="r_ab877ae41519d2ff9ef10df3cf49b22fd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#ab877ae41519d2ff9ef10df3cf49b22fd">eve::rts::NavigationEvent</a> = std::function&lt; void(<a class="el" href="classeve_1_1rts_1_1Unit.html">Unit</a> &amp;, const <a class="el" href="structeve_1_1rts_1_1OrderRecord.html">OrderRecord</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:ab877ae41519d2ff9ef10df3cf49b22fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notification emitted once when a newly planned order has no canonical map route.  <br /></td></tr>
+<tr class="separator:ab877ae41519d2ff9ef10df3cf49b22fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f957c1a326f1428d3c197aeca5edc9c" id="r_a2f957c1a326f1428d3c197aeca5edc9c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a2f957c1a326f1428d3c197aeca5edc9c">eve::rts::FogProvider</a> = std::function&lt; <a class="el" href="classeve_1_1map_1_1Fov.html">map::Fov</a> *(<a class="el" href="classeve_1_1rts_1_1Faction.html">Faction</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a2f957c1a326f1428d3c197aeca5edc9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves the canonical FOV instance used by a faction; allies may deliberately share one instance.  <br /></td></tr>
+<tr class="separator:a2f957c1a326f1428d3c197aeca5edc9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b3523a49837bb6b0da498feb48cce4e" id="r_a5b3523a49837bb6b0da498feb48cce4e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a5b3523a49837bb6b0da498feb48cce4e">eve::rts::ResourceCredit</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">resource::Receipt</a> &gt;(<a class="el" href="classeve_1_1rts_1_1Unit.html">Unit</a> &amp;, const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a5b3523a49837bb6b0da498feb48cce4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback that credits gathered resources to the authoritative account selected by the game.  <br /></td></tr>
+<tr class="separator:a5b3523a49837bb6b0da498feb48cce4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcf527b5f640715fb6cebd1230be5969" id="r_adcf527b5f640715fb6cebd1230be5969"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#adcf527b5f640715fb6cebd1230be5969">eve::rts::RepairDebit</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">resource::Receipt</a> &gt;(<a class="el" href="classeve_1_1rts_1_1Unit.html">Unit</a> &amp;, <a class="el" href="classeve_1_1rts_1_1Building.html">Building</a> &amp;, const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:adcf527b5f640715fb6cebd1230be5969"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback that debits repair costs from the authoritative account selected by the game.  <br /></td></tr>
+<tr class="separator:adcf527b5f640715fb6cebd1230be5969"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a516dcba9bbe7b60c60565fefa5aefb89" id="r_a516dcba9bbe7b60c60565fefa5aefb89"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a516dcba9bbe7b60c60565fefa5aefb89">eve::rts::PassiveIncomeCredit</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">resource::Receipt</a> &gt;(<a class="el" href="classeve_1_1rts_1_1Building.html">Building</a> &amp;, const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a516dcba9bbe7b60c60565fefa5aefb89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Credits passive building income through the game-owned canonical economy boundary.  <br /></td></tr>
+<tr class="separator:a516dcba9bbe7b60c60565fefa5aefb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7b438a40045cb4494a9d4b31002b823" id="r_ae7b438a40045cb4494a9d4b31002b823"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#ae7b438a40045cb4494a9d4b31002b823">eve::rts::AmmoProductionPurchase</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::size_t &gt;(<a class="el" href="classeve_1_1rts_1_1Building.html">Building</a> &amp;, std::string_view, std::int64_t, std::size_t)&gt;</td></tr>
+<tr class="memdesc:ae7b438a40045cb4494a9d4b31002b823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns and transfers tactical ammunition through canonical WeaponEntity resource state.  <br /></td></tr>
+<tr class="separator:ae7b438a40045cb4494a9d4b31002b823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a124b46591ec4cc73cc0536245105e1cd" id="r_a124b46591ec4cc73cc0536245105e1cd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a124b46591ec4cc73cc0536245105e1cd">eve::rts::AbilityResourceDebit</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1resource_1_1Receipt.html">resource::Receipt</a> &gt;(<a class="el" href="classeve_1_1rts_1_1Unit.html">Unit</a> &amp;, const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a124b46591ec4cc73cc0536245105e1cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debits an ability resource cost through the game-owned canonical economy boundary.  <br /></td></tr>
+<tr class="separator:a124b46591ec4cc73cc0536245105e1cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb1f8833cdf7bb2901eff7a6c67d3ad5" id="r_acb1f8833cdf7bb2901eff7a6c67d3ad5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#acb1f8833cdf7bb2901eff7a6c67d3ad5">eve::rts::AIProductionRequest</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;(<a class="el" href="classeve_1_1rts_1_1Faction.html">Faction</a> &amp;, <a class="el" href="classeve_1_1rts_1_1Building.html">Building</a> &amp;, const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:acb1f8833cdf7bb2901eff7a6c67d3ad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative production boundary invoked by AI policy decisions.  <br /></td></tr>
+<tr class="separator:acb1f8833cdf7bb2901eff7a6c67d3ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb4b29a07d17d50a08d632f504dce9bf" id="r_acb4b29a07d17d50a08d632f504dce9bf"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#acb4b29a07d17d50a08d632f504dce9bf">eve::rts::FireLineQuery</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;(<a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> origin, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, ecs::EntityHandle <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, ecs::EntityHandle targetEntity, const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">weapon::WeaponDefinition</a> &amp;weapon)&gt;</td></tr>
+<tr class="memdesc:acb4b29a07d17d50a08d632f504dce9bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses canonical sensing, weapon and damage providers for <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> automatic fire.  <br /></td></tr>
+<tr class="separator:acb4b29a07d17d50a08d632f504dce9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9e71b5e181ba977f76e8fc19b7dd36a" id="r_ad9e71b5e181ba977f76e8fc19b7dd36a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#ad9e71b5e181ba977f76e8fc19b7dd36a">eve::rts::CombatHeightQuery</a> = std::function&lt; <a class="el" href="structeve_1_1rts_1_1CombatHeightProfile.html">CombatHeightProfile</a>(<a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> origin, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, ecs::EntityHandle <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, ecs::EntityHandle targetEntity)&gt;</td></tr>
+<tr class="memdesc:ad9e71b5e181ba977f76e8fc19b7dd36a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve absolute heights for one authorized projectile launch.  <br /></td></tr>
+<tr class="separator:ad9e71b5e181ba977f76e8fc19b7dd36a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4366e989f8741ffec5968ad496269b6" id="r_aa4366e989f8741ffec5968ad496269b6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#aa4366e989f8741ffec5968ad496269b6">eve::rts::ProjectileCollisionQuery</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::optional&lt; <a class="el" href="structeve_1_1rts_1_1ProjectileCollision.html">ProjectileCollision</a> &gt; &gt;(<a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, float fromHeight, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>, float toHeight, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, ecs::EntityHandle intendedTarget)&gt;</td></tr>
+<tr class="memdesc:aa4366e989f8741ffec5968ad496269b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map/physics-owned swept collision query; empty means the segment remained clear.  <br /></td></tr>
+<tr class="separator:aa4366e989f8741ffec5968ad496269b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0a516811d043d0faa2c4f6493810a07" id="r_af0a516811d043d0faa2c4f6493810a07"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#af0a516811d043d0faa2c4f6493810a07">eve::rts::ProjectileSubjectResolver</a> = std::function&lt; ecs::Entity *(<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>)&gt;</td></tr>
+<tr class="memdesc:af0a516811d043d0faa2c4f6493810a07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve one stable <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> subject while restoring projectile relationships.  <br /></td></tr>
+<tr class="separator:af0a516811d043d0faa2c4f6493810a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fff446aafd9438f6086324e0482b314" id="r_a3fff446aafd9438f6086324e0482b314"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a3fff446aafd9438f6086324e0482b314">eve::rts::ProductionSpawn</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1Unit.html">Unit</a> * &gt;(<a class="el" href="classeve_1_1rts_1_1Building.html">Building</a> &amp;, const <a class="el" href="structeve_1_1production_1_1ProductionTask.html">production::ProductionTask</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a3fff446aafd9438f6086324e0482b314"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances <a class="el" href="classeve_1_1rts_1_1Building.html" title="RTS building domain root with placement and production composition.">Building</a> production queues without duplicating task state.  <br /></td></tr>
+<tr class="separator:a3fff446aafd9438f6086324e0482b314"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa14230826346cab771bade3f506d59bb" id="r_aa14230826346cab771bade3f506d59bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#aa14230826346cab771bade3f506d59bb">eve::rts::ProductionSpawnPosition</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::optional&lt; <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> &gt; &gt;(<a class="el" href="classeve_1_1rts_1_1Building.html">Building</a> &amp;, const <a class="el" href="structeve_1_1production_1_1ProductionTask.html">production::ProductionTask</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:aa14230826346cab771bade3f506d59bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Game/map-owned deterministic exit probe; empty means every valid exit is currently occupied.  <br /></td></tr>
+<tr class="separator:aa14230826346cab771bade3f506d59bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeaf1399243d45075206a87ac6a00217" id="r_aeeaf1399243d45075206a87ac6a00217"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#aeeaf1399243d45075206a87ac6a00217">eve::rts::ReinforcementCancel</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;(<a class="el" href="classeve_1_1rts_1_1Building.html">Building</a> &amp;, std::string_view)&gt;</td></tr>
+<tr class="memdesc:aeeaf1399243d45075206a87ac6a00217"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses canonical production tasks when a shared rally combat group reaches reinforcement limits.  <br /></td></tr>
+<tr class="separator:aeeaf1399243d45075206a87ac6a00217"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57ccd97eb313cfb8b7d40cd9b2605b0d" id="r_a57ccd97eb313cfb8b7d40cd9b2605b0d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a57ccd97eb313cfb8b7d40cd9b2605b0d">eve::rts::ReinforcementEnqueue</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;(<a class="el" href="classeve_1_1rts_1_1Building.html">Building</a> &amp;, std::string_view)&gt;</td></tr>
+<tr class="memdesc:a57ccd97eb313cfb8b7d40cd9b2605b0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Game-owned transactional enqueue boundary used while resolving reinforcement fallbacks.  <br /></td></tr>
+<tr class="separator:a57ccd97eb313cfb8b7d40cd9b2605b0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a88f19654188609afdc8941ef8a58126a" id="r_a88f19654188609afdc8941ef8a58126a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a88f19654188609afdc8941ef8a58126a">eve::rts::FormationKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1rts.html#a88f19654188609afdc8941ef8a58126aa4803e6b9e63dabf04de980788d6a13c4">eve::rts::Line</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a88f19654188609afdc8941ef8a58126aa5174d1309f275ba6f275db3af9eb3e18">eve::rts::Grid</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a88f19654188609afdc8941ef8a58126aa0e9bb3a0eff96690b1e9badd73b99219">eve::rts::Wedge</a>
+ }</td></tr>
+<tr class="memdesc:a88f19654188609afdc8941ef8a58126a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic formation layout strategies.  <a href="namespaceeve_1_1rts.html#a88f19654188609afdc8941ef8a58126a">更多...</a><br /></td></tr>
+<tr class="separator:a88f19654188609afdc8941ef8a58126a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2126ba09892aa7a804c370f890675990" id="r_a2126ba09892aa7a804c370f890675990"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a2126ba09892aa7a804c370f890675990">eve::rts::DamageChannel</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1rts.html#a2126ba09892aa7a804c370f890675990a698dcef315bbeccaa57c333577736370">eve::rts::Ability</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a2126ba09892aa7a804c370f890675990aae7968d26b598ce434958b0825b7a4ac">eve::rts::Projectile</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a2126ba09892aa7a804c370f890675990a18c83669920215a818638ad0e5421e4b">eve::rts::Weapon</a>
+ }</td></tr>
+<tr class="memdesc:a2126ba09892aa7a804c370f890675990"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative damage route that produced one transient RTS frame event.  <a href="namespaceeve_1_1rts.html#a2126ba09892aa7a804c370f890675990">更多...</a><br /></td></tr>
+<tr class="separator:a2126ba09892aa7a804c370f890675990"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a899421cff79880bf7aded7f561db4fba" id="r_a899421cff79880bf7aded7f561db4fba"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fba">eve::rts::CombatFireEventKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fbaa1897e9e61a34ff06c5341cfacf77661d">eve::rts::WeaponFired</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fbaaa99413557239b80f16fd24d09846cc39">eve::rts::ProjectileFired</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fbaa9a1d8d5d81dd52d82b24cac97b748a10">eve::rts::ShotMissed</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fbaa7b5c4e3ec798336c5c4c29beb3761955">eve::rts::ReloadStarted</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fbaa44ba99722c26b666837ceda3e65ad17f">eve::rts::ReloadCompleted</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fbaaafd683d2ed94a88573e7dbdc54867dbb">eve::rts::WeaponDry</a>
+, <a class="el" href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fbaa1541c23bf8d4904d6522769286c8b3fe">eve::rts::FireBlocked</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a899421cff79880bf7aded7f561db4fba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transient weapon lifecycle event emitted after an authoritative firing attempt commits.  <a href="namespaceeve_1_1rts.html#a899421cff79880bf7aded7f561db4fba">更多...</a><br /></td></tr>
+<tr class="separator:a899421cff79880bf7aded7f561db4fba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1e851de9cbeeb188968890c6418103a" id="r_aa1e851de9cbeeb188968890c6418103a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103a">eve::rts::LifecycleEventKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa7f4c0117bd7498d4bdaec04835a558a0">eve::rts::SuppressionRecovered</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa82809b60165897ddb038f918c14d45ab">eve::rts::ShieldRecharged</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa8643cf7dc065cdc76593df5863e75f51">eve::rts::ConstructionCompleted</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa49eedfdd66e0316da3fdc1c62002cd00">eve::rts::ProductionSpawnBlocked</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa3d5367e8c9696b5fcf2160cf0d24c05c">eve::rts::ProductionSpawnCleared</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa6ed3de4807469aad9bcb68f3166461c6">eve::rts::UnitProduced</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa0081070b1e14030e53f8f53fb12cfe5f">eve::rts::BuildingCaptured</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aafb70d9705c2930ef40b1173ab1b2094d">eve::rts::AbilityCast</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa95a1876e3e094dfc908a55ff789f8efa">eve::rts::AbilityChannelStarted</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa196ec740f748dabbec9ece7ae097bc38">eve::rts::AbilityChannelTick</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa13da380a089cbe181f01c6a12099ba12">eve::rts::AbilityChannelCompleted</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa304647011929047a773ab5bf4cf1e24c">eve::rts::AbilityInterrupted</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aac6f8fef0916e0cd2bea1cc0206ff335c">eve::rts::AbilityChannelCancelled</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa839cd81ee043bcce3a318d373a38f2d9">eve::rts::StatusApplied</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa2510774511c33cb725033ebc9a398174">eve::rts::StatusExpired</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aac07e9f90f23105a0a23fe15f049c48c8">eve::rts::AmmoProduced</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa23135beee2502a8efdc4834b03bf7f47">eve::rts::SupplyDispatched</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa8cbbeb0f3b108a3143c86ed5720abef0">eve::rts::SupplyRelayDispatched</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa4d104843a63b6d82aa4a3277cf822123">eve::rts::AmmoResupplied</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa980d5a426854fe4b9da3bbca3a98a323">eve::rts::SupplyRelayTransferred</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aaf629aca4b28037b0a26f83346d1ce502">eve::rts::SupplyReturning</a>
+, <a class="el" href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103aa8b9b8049dbba3d9ebfe513eeaa2f3c58">eve::rts::SupplyReturned</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:aa1e851de9cbeeb188968890c6418103a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-combat RTS state transition exposed to presentation without entering authoritative state.  <a href="namespaceeve_1_1rts.html#aa1e851de9cbeeb188968890c6418103a">更多...</a><br /></td></tr>
+<tr class="separator:aa1e851de9cbeeb188968890c6418103a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a312386f7cb822dcd86ff973a4d458d3b" id="r_a312386f7cb822dcd86ff973a4d458d3b"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1rts_1_1SystemContract.html">SystemContract</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1rts.html#a312386f7cb822dcd86ff973a4d458d3b">eve::rts::systemContracts</a> () noexcept</td></tr>
+<tr class="memdesc:a312386f7cb822dcd86ff973a4d458d3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the phase-one <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> ECS contracts for tooling and review.  <br /></td></tr>
+<tr class="separator:a312386f7cb822dcd86ff973a4d458d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic phase-one RTS systems and their ECS contracts. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSSystems_8h_source.html">RTSSystems.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/PrimitivePath.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PrimitivePath.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PrimitivePath_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="PrimitivePath_8h.html">graphics/PrimitivePath.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Assert_8h.html">common/Assert.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/common.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/geometric.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keywordtype">void</span> validatePoint(glm::vec2 <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> finite = std::isfinite(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>.x) &amp;&amp; std::isfinite(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>.y);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(finite, <span class="stringliteral">&quot;path points must be finite&quot;</span>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">float</span> pointLineDistance(glm::vec2 <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, glm::vec2 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, glm::vec2 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">const</span> glm::vec2 <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>          = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     lengthSquared = glm::dot(<a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>, <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (lengthSquared &lt;= 1e-20f) <span class="keywordflow">return</span> glm::length(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = glm::clamp(glm::dot(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>) / lengthSquared, 0.f, 1.f);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">return</span> glm::length(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a> - (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> + <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a> * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">void</span> flattenQuad(glm::vec2 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, glm::vec2 control, glm::vec2 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> tolerance, std::uint32_t <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                 std::uint32_t maxDepth, std::vector&lt;glm::vec2&gt;&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> &gt;= maxDepth || pointLineDistance(control, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) &lt;= tolerance) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>.push_back(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> glm::vec2 ac     = (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> + control) * 0.5f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">const</span> glm::vec2 cb     = (control + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) * 0.5f;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">const</span> glm::vec2 middle = (ac + cb) * 0.5f;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    flattenQuad(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, ac, middle, tolerance, <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> + 1, maxDepth, <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    flattenQuad(middle, cb, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, tolerance, <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> + 1, maxDepth, <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keywordtype">void</span> flattenCubic(glm::vec2 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, glm::vec2 c1, glm::vec2 c2, glm::vec2 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> tolerance, std::uint32_t <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                  std::uint32_t maxDepth, std::vector&lt;glm::vec2&gt;&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> deviation = std::max(pointLineDistance(c1, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>), pointLineDistance(c2, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> &gt;= maxDepth || deviation &lt;= tolerance) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>.push_back(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> glm::vec2 a1           = (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> + c1) * 0.5f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> glm::vec2 c12          = (c1 + c2) * 0.5f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> glm::vec2 c2b          = (c2 + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) * 0.5f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">const</span> glm::vec2 leftControl  = (a1 + c12) * 0.5f;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">const</span> glm::vec2 rightControl = (c12 + c2b) * 0.5f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">const</span> glm::vec2 middle       = (leftControl + rightControl) * 0.5f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    flattenCubic(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, a1, leftControl, middle, tolerance, <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> + 1, maxDepth, <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    flattenCubic(middle, rightControl, c2b, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, tolerance, <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> + 1, maxDepth, <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Path2D.html#a4f07bf362e3c1af45c2a0a84b27216d1">   59</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Path2D.html">Path2D</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1Path2D.html#a4f07bf362e3c1af45c2a0a84b27216d1">Path2D::moveTo</a>(glm::vec2 <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    validatePoint(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    verbs_.push_back(Verb::Move);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    points_.push_back(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    contourOpen_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Path2D.html#a4ba0c72df7ff070954b23c20e11ad4f5">   67</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Path2D.html">Path2D</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1Path2D.html#a4ba0c72df7ff070954b23c20e11ad4f5">Path2D::lineTo</a>(glm::vec2 <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(contourOpen_, <span class="stringliteral">&quot;lineTo requires a preceding moveTo&quot;</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    validatePoint(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    verbs_.push_back(Verb::Line);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    points_.push_back(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Path2D.html#a7f31f82b79d8c127de577083a72f1b2b">   75</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Path2D.html">Path2D</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1Path2D.html#a7f31f82b79d8c127de577083a72f1b2b">Path2D::quadTo</a>(glm::vec2 control, glm::vec2 <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(contourOpen_, <span class="stringliteral">&quot;quadTo requires a preceding moveTo&quot;</span>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    validatePoint(control);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    validatePoint(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    verbs_.push_back(Verb::Quad);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    points_.push_back(control);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    points_.push_back(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Path2D.html#aa52e893f27122896645d9618d1384aa6">   85</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Path2D.html">Path2D</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1Path2D.html#aa52e893f27122896645d9618d1384aa6">Path2D::cubicTo</a>(glm::vec2 control1, glm::vec2 control2, glm::vec2 <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(contourOpen_, <span class="stringliteral">&quot;cubicTo requires a preceding moveTo&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    validatePoint(control1);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    validatePoint(control2);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    validatePoint(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    verbs_.push_back(Verb::Cubic);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    points_.push_back(control1);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    points_.push_back(control2);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    points_.push_back(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Path2D.html#ab3c9ae5ea89e39929fbebc29398e10c4">   97</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Path2D.html">Path2D</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1Path2D.html#ab3c9ae5ea89e39929fbebc29398e10c4">Path2D::close</a>() {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(contourOpen_, <span class="stringliteral">&quot;close requires an open contour&quot;</span>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    verbs_.push_back(Verb::Close);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    contourOpen_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Path2D.html#adb688196615e7399b9d40ceedf5334f2">  104</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Path2D.html#adb688196615e7399b9d40ceedf5334f2">Path2D::clear</a>() noexcept {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    verbs_.clear();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    points_.clear();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    contourOpen_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Path2D.html#abd5ae027d3949b1387bd8f1218ca0c55">  110</a></span>std::vector&lt;FlattenedContour2D&gt; <a class="code hl_function" href="classeve_1_1graphics_1_1Path2D.html#abd5ae027d3949b1387bd8f1218ca0c55">Path2D::flatten</a>(<span class="keywordtype">float</span> tolerance, std::uint32_t maxDepth)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> validTolerance = std::isfinite(tolerance) &amp;&amp; tolerance &gt; 0.f;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(validTolerance, <span class="stringliteral">&quot;path flatten tolerance must be finite and positive&quot;</span>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> validMaxDepth = maxDepth &gt; 0 &amp;&amp; maxDepth &lt;= 24;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <a class="code hl_define" href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a>(validMaxDepth, <span class="stringliteral">&quot;path flatten maxDepth must be in [1, 24]&quot;</span>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::vector&lt;FlattenedContour2D&gt; result;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    std::size_t                     pointIndex = 0;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    glm::vec2                       current{0.f};</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">for</span> (Verb verb : verbs_) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">switch</span> (verb) {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">case</span> Verb::Move:</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                result.push_back({});</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                current = points_[pointIndex++];</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                result.back().points.push_back(current);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            <span class="keywordflow">case</span> Verb::Line:</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                current = points_[pointIndex++];</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                result.back().points.push_back(current);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            <span class="keywordflow">case</span> Verb::Quad: {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                <span class="keyword">const</span> glm::vec2 control = points_[pointIndex++];</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                <span class="keyword">const</span> glm::vec2 <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>     = points_[pointIndex++];</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                flattenQuad(current, control, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, tolerance, 0, maxDepth, result.back().points);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                current = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            <span class="keywordflow">case</span> Verb::Cubic: {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                <span class="keyword">const</span> glm::vec2 control1 = points_[pointIndex++];</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                <span class="keyword">const</span> glm::vec2 control2 = points_[pointIndex++];</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                <span class="keyword">const</span> glm::vec2 <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>      = points_[pointIndex++];</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                flattenCubic(current, control1, control2, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, tolerance, 0, maxDepth, result.back().points);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                current = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            }</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            <span class="keywordflow">case</span> Verb::Close: result.back().closed = <span class="keyword">true</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>}</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aAssert_8h_html"><div class="ttname"><a href="Assert_8h.html">Assert.h</a></div><div class="ttdoc">EVEngine assertion entry point, backed by zeroerr.</div></div>
+<div class="ttc" id="aAssert_8h_html_aea3f8f4629b6e05814f9228e022d10fd"><div class="ttname"><a href="Assert_8h.html#aea3f8f4629b6e05814f9228e022d10fd">EV_PARAM_CHECK</a></div><div class="ttdeci">#define EV_PARAM_CHECK(cond,...)</div><div class="ttdoc">Validate a function parameter / public API precondition.</div><div class="ttdef"><b>Definition</b> <a href="Assert_8h_source.html#l00030">Assert.h:30</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a69da28b7f372dd6b6fffa28d0214e4de"><div class="ttname"><a href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aConversationImporter_8cpp_html_a41ebd28ef1d7c6ade45642cb6acc1039"><div class="ttname"><a href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a></div><div class="ttdeci">int line</div><div class="ttdef"><b>Definition</b> <a href="ConversationImporter_8cpp_source.html#l00014">ConversationImporter.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aPrimitivePath_8h_html"><div class="ttname"><a href="PrimitivePath_8h.html">PrimitivePath.h</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aRTSSystems_8cpp_html_a8daa8a8d84a130186d9cca31c33e8bae"><div class="ttname"><a href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a></div><div class="ttdeci">WorldPosition point</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8cpp_source.html#l00080">RTSSystems.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Path2D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Path2D.html">eve::graphics::Path2D</a></div><div class="ttdoc">Owning backend-neutral 2D vector path.</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8h_source.html#l00025">PrimitivePath.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Path2D_html_a4ba0c72df7ff070954b23c20e11ad4f5"><div class="ttname"><a href="classeve_1_1graphics_1_1Path2D.html#a4ba0c72df7ff070954b23c20e11ad4f5">eve::graphics::Path2D::lineTo</a></div><div class="ttdeci">Path2D &amp; lineTo(glm::vec2 point)</div><div class="ttdoc">Adds a straight segment to point.</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00067">PrimitivePath.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Path2D_html_a4f07bf362e3c1af45c2a0a84b27216d1"><div class="ttname"><a href="classeve_1_1graphics_1_1Path2D.html#a4f07bf362e3c1af45c2a0a84b27216d1">eve::graphics::Path2D::moveTo</a></div><div class="ttdeci">Path2D &amp; moveTo(glm::vec2 point)</div><div class="ttdoc">Starts a new contour at point.</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00059">PrimitivePath.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Path2D_html_a7f31f82b79d8c127de577083a72f1b2b"><div class="ttname"><a href="classeve_1_1graphics_1_1Path2D.html#a7f31f82b79d8c127de577083a72f1b2b">eve::graphics::Path2D::quadTo</a></div><div class="ttdeci">Path2D &amp; quadTo(glm::vec2 control, glm::vec2 point)</div><div class="ttdoc">Adds a quadratic Bezier segment.</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00075">PrimitivePath.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Path2D_html_aa52e893f27122896645d9618d1384aa6"><div class="ttname"><a href="classeve_1_1graphics_1_1Path2D.html#aa52e893f27122896645d9618d1384aa6">eve::graphics::Path2D::cubicTo</a></div><div class="ttdeci">Path2D &amp; cubicTo(glm::vec2 control1, glm::vec2 control2, glm::vec2 point)</div><div class="ttdoc">Adds a cubic Bezier segment.</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00085">PrimitivePath.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Path2D_html_ab3c9ae5ea89e39929fbebc29398e10c4"><div class="ttname"><a href="classeve_1_1graphics_1_1Path2D.html#ab3c9ae5ea89e39929fbebc29398e10c4">eve::graphics::Path2D::close</a></div><div class="ttdeci">Path2D &amp; close()</div><div class="ttdoc">Closes the current contour.</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00097">PrimitivePath.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Path2D_html_abd5ae027d3949b1387bd8f1218ca0c55"><div class="ttname"><a href="classeve_1_1graphics_1_1Path2D.html#abd5ae027d3949b1387bd8f1218ca0c55">eve::graphics::Path2D::flatten</a></div><div class="ttdeci">std::vector&lt; FlattenedContour2D &gt; flatten(float tolerance=0.25f, std::uint32_t maxDepth=12) const</div><div class="ttdoc">Flattens curves into owning line contours.</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00110">PrimitivePath.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Path2D_html_adb688196615e7399b9d40ceedf5334f2"><div class="ttname"><a href="classeve_1_1graphics_1_1Path2D.html#adb688196615e7399b9d40ceedf5334f2">eve::graphics::Path2D::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Removes all verbs and points while retaining capacity.</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00104">PrimitivePath.cpp:104</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

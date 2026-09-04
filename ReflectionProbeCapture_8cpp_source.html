@@ -1,0 +1,725 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/ReflectionProbeCapture.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ReflectionProbeCapture.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ReflectionProbeCapture_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ReflectionProbeCapture_8h.html">graphics/ReflectionProbeCapture.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Canvas_8h.html">graphics/Canvas.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="RenderSystem3D_8h.html">graphics/RenderSystem3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="ReflectionProbeRegistry_8h.html">graphics/ReflectionProbeRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7766222b5cec7e331a720753079cd637">   15</a></span><a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7766222b5cec7e331a720753079cd637">ReflectionProbeCapture::ReflectionProbeCapture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx) : gfx_(gfx) {}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a12d4c4bfa8eac466b0e1965b80afb280">   17</a></span><a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a12d4c4bfa8eac466b0e1965b80afb280">ReflectionProbeCapture::~ReflectionProbeCapture</a>() {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keyword">auto</span> registries = registries_;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">for</span> (<a class="code hl_class" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html">ReflectionProbeRegistry</a> *registry : registries)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">if</span> (registry) registry-&gt;remove(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">void</span> ReflectionProbeCapture::attachRegistry(<a class="code hl_class" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html">ReflectionProbeRegistry</a> *registry) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (!registry || std::find(registries_.begin(), registries_.end(), registry) != registries_.end())</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    registries_.push_back(registry);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keywordtype">void</span> ReflectionProbeCapture::detachRegistry(ReflectionProbeRegistry *registry) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    registries_.erase(std::remove(registries_.begin(), registries_.end(), registry),</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                      registries_.end());</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac435d5018876a48fa1369fe492266dcf">   34</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac435d5018876a48fa1369fe492266dcf">ReflectionProbeCapture::configure</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">int</span> resolution, <span class="keywordtype">float</span> nearZ,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                       <span class="keywordtype">float</span> farZ) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> clampedResolution = std::clamp(resolution, 16, 2048);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> clampedNear = std::max(nearZ, 0.001f);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> clampedFar = std::max(farZ, clampedNear + 0.01f);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> changed = <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> != centerX_ || <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> != centerY_ || <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> != centerZ_ ||</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                         clampedResolution != resolution_ || clampedNear != nearZ_ ||</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                         clampedFar != farZ_;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    centerX_ = <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    centerY_ = <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    centerZ_ = <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    resolution_ = clampedResolution;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    nearZ_ = clampedNear;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    farZ_ = clampedFar;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">if</span> (changed) <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a>();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">   51</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">ReflectionProbeCapture::requestCapture</a>() {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    nextFace_ = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    pending_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    recaptureAfterPublish_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    captureSkyR_ = skyR_;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    captureSkyG_ = skyG_;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    captureSkyB_ = skyB_;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    captureSkyFaceTextures_ = skyFaceTextures_;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    captureSkyFaceTextureScales_ = skyFaceTextureScales_;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    captureSkyIntensity_ = skyIntensity_;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    captureEnvironmentLighting_ = environmentLighting_;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    captureEnvironmentLightingIntensity_ = environmentLightingIntensity_;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    captureLodDistanceScale_ = lodDistanceScale_;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    snapshotCaptureTransparent_ = captureTransparent_;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    snapshotCaptureClusteredLighting_ = captureClusteredLighting_;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (camera_) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#aec48ba24d6b3f09a5adee20d863d21a4">setEnvMap</a>(captureEnvironmentLighting_);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#abbb29e259127259996042f83bbbf9e3d">setEnvIntensity</a>(captureEnvironmentLightingIntensity_);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keywordtype">void</span> ReflectionProbeCapture::requestCaptureAfterPublish() {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (pending_ &amp;&amp; nextFace_ == 0) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a>();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (pending_ || publishedRevision_ != revision_) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        recaptureAfterPublish_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a>();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a95e855b329ccf1c6a6d2f223c38cf480">   84</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a95e855b329ccf1c6a6d2f223c38cf480">ReflectionProbeCapture::queueCapture</a>() { requestCaptureAfterPublish(); }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keywordtype">void</span> ReflectionProbeCapture::ensureResources() {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (!gfx_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (!camera_) {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        camera_ = <a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#aca91aa72f8c28a84f852158d46c2de4b">Camera3D::createCamera</a>();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#adc2dfc26036f7c26678844e0a8c325f4">setActive</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#aa5f33c2499620e7979aa13121e8d6bff">setFov</a>(90.f);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#ad940f8c3c64e96169643d60137ed40da">setAmbient</a>(0.f, 0.f, 0.f);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#aec48ba24d6b3f09a5adee20d863d21a4">setEnvMap</a>(captureEnvironmentLighting_);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#abbb29e259127259996042f83bbbf9e3d">setEnvIntensity</a>(captureEnvironmentLightingIntensity_);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#acb210c662cfa4ca022ddccfa84d622e1">setAutoExposure</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#ab94abd097e9e881787c1f3946e0cfca2">setExposure</a>(0.f);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#a00272bbaa1c4401a8e096dd43fb6d85e">setBloom</a>(0.f, 1.f);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#a915da07e0b459a7ec99de950a83d44d2">clearEnvProbe</a>();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#af0bcda16e70810fa5046fa157ccfe77c">Camera3D::Data::kMaxReflectionProbes</a>; ++i)</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#aa5b20e56ff93d6fc701ea028972d5d06">clearReflectionProbe</a>(i);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">if</span> (!skyQuad_) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[] = {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            -1.f, -1.f, 0.f, 1.f, -1.f, 0.f, 1.f, 1.f, 0.f, -1.f, 1.f, 0.f,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        };</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>[] = {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        };</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> uvs[] = {0.f, 1.f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>[] = {0, 1, 2, 0, 2, 3};</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        skyQuad_ = gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">newMeshFromArrays</a>(<a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>, <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>, uvs, 4, <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, 6);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> (allocatedResolution_ == resolution_ &amp;&amp; faces_[0]) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">for</span> (Canvas *&amp;face : faces_) face = gfx_-&gt;newHDRCanvas(resolution_, resolution_);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    allocatedResolution_ = resolution_;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keywordtype">void</span> ReflectionProbeCapture::captureFace(<span class="keywordtype">int</span> face) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::array&lt;std::array&lt;float, 3&gt;, 6&gt; directions{{</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        {{1.f, 0.f, 0.f}}, {{-1.f, 0.f, 0.f}}, {{0.f, 1.f, 0.f}},</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        {{0.f, -1.f, 0.f}}, {{0.f, 0.f, 1.f}}, {{0.f, 0.f, -1.f}},</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    }};</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::array&lt;std::array&lt;float, 3&gt;, 6&gt; ups{{</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        {{0.f, -1.f, 0.f}}, {{0.f, -1.f, 0.f}}, {{0.f, 0.f, 1.f}},</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        {{0.f, 0.f, -1.f}}, {{0.f, -1.f, 0.f}}, {{0.f, -1.f, 0.f}},</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    }};</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;direction = directions[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)];</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;up = ups[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)];</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#ae5be52991401fb9cf94c566ed08b3a44">setEye</a>(centerX_, centerY_, centerZ_);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#acbd098df21fd74087a9df2f919eb65e0">setTarget</a>(centerX_ + direction[0], centerY_ + direction[1], centerZ_ + direction[2]);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    camera_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#a7aa865ad3399e27ffff7e436749172ae">setUp</a>(up[0], up[1], up[2]);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a> = camera_-&gt;data();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;nearZ = nearZ_;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;farZ = farZ_;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    faces_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)]-&gt;clear(</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>(captureSkyR_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)] * captureSkyIntensity_,</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>              captureSkyG_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)] * captureSkyIntensity_,</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>              captureSkyB_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)] * captureSkyIntensity_, 1.f),</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        std::nullopt, 1.0);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1RenderSystem3D.html#a75a11050ecff086b854fde1b19139eab">RenderSystem3D::renderToCanvas</a>(*gfx_, faces_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)], camera_, captureMask_,</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                                   captureLodDistanceScale_, snapshotCaptureTransparent_,</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                                   snapshotCaptureClusteredLighting_,</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                                   captureSkyFaceTextures_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)], skyQuad_,</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                                   captureSkyFaceTextureScales_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)]);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="foldopen" id="foldopen00147" data-start="{" data-end="}">
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a958a78a35d9934caa1dd886c9ca2f285">  147</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a958a78a35d9934caa1dd886c9ca2f285">ReflectionProbeCapture::update</a>(<span class="keywordtype">int</span> faceBudget) {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    lastCapturedFaceCount_ = 0;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordflow">if</span> (!pending_ || !gfx_) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6b7026c9317ce35ced0027f832b65c30">isCaptureComplete</a>();</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    ensureResources();</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> budget = std::clamp(faceBudget, 1, 6);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordtype">float</span> capturedGpuDurationMs = 0.f;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> captured = 0; captured &lt; budget &amp;&amp; nextFace_ &lt; 6; ++captured) {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        captureFace(nextFace_++);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        capturedGpuDurationMs += gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a85c80aaa3e1508dd650bf6c5cd255f4e">getLastOffscreen3DGpuDurationMs</a>();</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        ++lastCapturedFaceCount_;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        ++totalCapturedFaceCount_;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">reportGpuDurationMs</a>(capturedGpuDurationMs);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">if</span> (nextFace_ &gt;= 6) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        pending_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        ++revision_;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6b7026c9317ce35ced0027f832b65c30">isCaptureComplete</a>();</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>}</div>
+</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="}">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3d8761835849f5c90fb72b8149713650">  167</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3d8761835849f5c90fb72b8149713650">ReflectionProbeCapture::getFaceCanvas</a>(<span class="keywordtype">int</span> face)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">if</span> (face &lt; 0 || face &gt;= 6) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">return</span> faces_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)];</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>}</div>
+</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac536b3e241fd826d51bef122641f266c">  172</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac536b3e241fd826d51bef122641f266c">ReflectionProbeCapture::stageCapturedFaces</a>() {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">if</span> (!gfx_ || !<a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6b7026c9317ce35ced0027f832b65c30">isCaptureComplete</a>()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">if</span> (stagedRevision_ == revision_ &amp;&amp; stagingCubemap_) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">if</span> (!stagingCubemap_ || stagingResolution_ != resolution_) {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        stagingCubemap_ = gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#aff927eb30cac6658d8fd80faeeb48f34">newHDRCubemap</a>(resolution_);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        stagingResolution_ = stagingCubemap_ ? resolution_ : 0;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">if</span> (!stagingCubemap_) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">if</span> (!gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a1080a4572e50140ce068b9b669c1596a">copyHDRCanvasesToCubemap</a>(faces_.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(faces_.size()),</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                                        stagingCubemap_))</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">reportGpuDurationMs</a>(gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a85c80aaa3e1508dd650bf6c5cd255f4e">getLastOffscreen3DGpuDurationMs</a>());</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    stagedRevision_ = revision_;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>}</div>
+</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="foldopen" id="foldopen00188" data-start="{" data-end="}">
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af57d6b748b4a6879272eab7d9c758bd5">  188</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af57d6b748b4a6879272eab7d9c758bd5">ReflectionProbeCapture::filterAndPublish</a>(<span class="keywordtype">int</span> sampleCount) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordflow">if</span> (!gfx_ || !stagingCubemap_ || stagedRevision_ != revision_) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">if</span> (!gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a76329b21274a81d1f588123c6ab35a7c">filterHDRReflectionCubemap</a>(stagingCubemap_, sampleCount)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">reportGpuDurationMs</a>(gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a85c80aaa3e1508dd650bf6c5cd255f4e">getLastOffscreen3DGpuDurationMs</a>());</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    lastFilterSampleCount_ = std::clamp(sampleCount, 8, 512);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *previousActive = activeCubemap_;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> previousResolution = activeResolution_;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    activeCubemap_ = stagingCubemap_;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    activeResolution_ = resolution_;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    publishedRevision_ = stagedRevision_;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    stagingCubemap_ = previousResolution == resolution_ ? previousActive : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    stagingResolution_ = stagingCubemap_ ? resolution_ : 0;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    framesSincePublish_ = 0;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>}</div>
+</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="foldopen" id="foldopen00204" data-start="{" data-end="}">
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9a0b01dd566061e7fbc8ac0612ff294c">  204</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9a0b01dd566061e7fbc8ac0612ff294c">ReflectionProbeCapture::setUpdateMode</a>(<span class="keyword">const</span> std::string &amp;mode) {</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;static&quot;</span>)</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        updateMode_ = UpdateMode::Static;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;realtime&quot;</span>)</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        updateMode_ = UpdateMode::Realtime;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (mode == <span class="stringliteral">&quot;time_sliced&quot;</span> || mode == <span class="stringliteral">&quot;timesliced&quot;</span>)</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        updateMode_ = UpdateMode::TimeSliced;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        updateMode_ = UpdateMode::OnDemand;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>}</div>
+</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="foldopen" id="foldopen00215" data-start="{" data-end="}">
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a287e0a8081b485e56ea66e7f8f40cab9">  215</a></span>std::string <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a287e0a8081b485e56ea66e7f8f40cab9">ReflectionProbeCapture::getUpdateMode</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">switch</span> (updateMode_) {</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keywordflow">case</span> UpdateMode::Static: <span class="keywordflow">return</span> <span class="stringliteral">&quot;static&quot;</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">case</span> UpdateMode::Realtime: <span class="keywordflow">return</span> <span class="stringliteral">&quot;realtime&quot;</span>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keywordflow">case</span> UpdateMode::TimeSliced: <span class="keywordflow">return</span> <span class="stringliteral">&quot;time_sliced&quot;</span>;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keywordflow">case</span> UpdateMode::OnDemand: <span class="keywordflow">return</span> <span class="stringliteral">&quot;on_demand&quot;</span>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    }</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;on_demand&quot;</span>;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>}</div>
+</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="foldopen" id="foldopen00225" data-start="{" data-end="}">
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3dd70e537c6b1a60024396a7ea945785">  225</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3dd70e537c6b1a60024396a7ea945785">ReflectionProbeCapture::setRefreshInterval</a>(<span class="keywordtype">int</span> frames) {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    refreshInterval_ = std::clamp(frames, 1, 36000);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>}</div>
+</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="foldopen" id="foldopen00229" data-start="{" data-end="}">
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa9f511c60c864674ff68daf87f016750">  229</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa9f511c60c864674ff68daf87f016750">ReflectionProbeCapture::setCaptureMask</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>) {</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keyword">const</span> uint32_t nextMask = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>);</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keywordflow">if</span> (nextMask == captureMask_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    captureMask_ = nextMask;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a>();</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>}</div>
+</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="foldopen" id="foldopen00236" data-start="{" data-end="}">
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2ac8246d12b4f8ff26f3b93597c39733">  236</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2ac8246d12b4f8ff26f3b93597c39733">ReflectionProbeCapture::setEnvironmentLighting</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *environment, <span class="keywordtype">float</span> intensity) {</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextIntensity = std::max(intensity, 0.f);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keywordflow">if</span> (environment == environmentLighting_ &amp;&amp; nextIntensity == environmentLightingIntensity_)</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    environmentLighting_ = environment;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    environmentLightingIntensity_ = nextIntensity;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    requestCaptureAfterPublish();</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>}</div>
+</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="foldopen" id="foldopen00245" data-start="{" data-end="}">
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad85e3af550296ce4168764342eac682b">  245</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad85e3af550296ce4168764342eac682b">ReflectionProbeCapture::setSkyColor</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> intensity) {</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextR = std::max(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, 0.f);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextG = std::max(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, 0.f);</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextB = std::max(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, 0.f);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextIntensity = std::max(intensity, 0.f);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordtype">bool</span> changed = nextIntensity != skyIntensity_;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> face = 0; face &lt; 6; ++face) {</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        changed = changed || skyR_[face] != nextR || skyG_[face] != nextG ||</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>                  skyB_[face] != nextB;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        skyR_[face] = nextR;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        skyG_[face] = nextG;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        skyB_[face] = nextB;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    }</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    skyIntensity_ = nextIntensity;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keywordflow">if</span> (changed) requestCaptureAfterPublish();</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>}</div>
+</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="foldopen" id="foldopen00262" data-start="{" data-end="}">
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a97a18284b016974910eb562e16f5c03c">  262</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a97a18284b016974910eb562e16f5c03c">ReflectionProbeCapture::setSkyFaceColor</a>(<span class="keywordtype">int</span> face, <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keywordflow">if</span> (face &lt; 0 || face &gt;= 6) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextR = std::max(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, 0.f);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextG = std::max(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, 0.f);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextB = std::max(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, 0.f);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    <span class="keywordflow">if</span> (skyR_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] == nextR &amp;&amp; skyG_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] == nextG &amp;&amp; skyB_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] == nextB) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    skyR_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] = nextR;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    skyG_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] = nextG;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    skyB_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] = nextB;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    requestCaptureAfterPublish();</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>}</div>
+</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
+<div class="foldopen" id="foldopen00275" data-start="{" data-end="}">
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a87d3d577c0ac3bd2637e54966b1ca2fb">  275</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a87d3d577c0ac3bd2637e54966b1ca2fb">ReflectionProbeCapture::setSkyFaceTexture</a>(<span class="keywordtype">int</span> face, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture) {</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordflow">if</span> (face &lt; 0 || face &gt;= 6) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keywordflow">if</span> (skyFaceTextures_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] == texture) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    skyFaceTextures_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] = texture;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    requestCaptureAfterPublish();</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>}</div>
+</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
+<div class="foldopen" id="foldopen00283" data-start="{" data-end="}">
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab762f923d3dbf29c78f4d9b9a33265f6">  283</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab762f923d3dbf29c78f4d9b9a33265f6">ReflectionProbeCapture::getSkyFaceTexture</a>(<span class="keywordtype">int</span> face)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">if</span> (face &lt; 0 || face &gt;= 6) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    <span class="keywordflow">return</span> skyFaceTextures_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)];</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>}</div>
+</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
+<div class="foldopen" id="foldopen00288" data-start="{" data-end="}">
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6f283e7e59f060d518d60736e8a4823d">  288</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6f283e7e59f060d518d60736e8a4823d">ReflectionProbeCapture::setSkyFaceTextureScale</a>(<span class="keywordtype">int</span> face, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>) {</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    <span class="keywordflow">if</span> (face &lt; 0 || face &gt;= 6) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextScale = std::clamp(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, 0.f, 64.f);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <span class="keywordflow">if</span> (skyFaceTextureScales_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] == nextScale) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    skyFaceTextureScales_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>] = nextScale;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    requestCaptureAfterPublish();</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>}</div>
+</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
+<div class="foldopen" id="foldopen00297" data-start="{" data-end="}">
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a96931d9672c0f483917307e5b5c8648e">  297</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a96931d9672c0f483917307e5b5c8648e">ReflectionProbeCapture::getSkyFaceTextureScale</a>(<span class="keywordtype">int</span> face)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    <span class="keywordflow">if</span> (face &lt; 0 || face &gt;= 6) <span class="keywordflow">return</span> 1.f;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="keywordflow">return</span> skyFaceTextureScales_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face)];</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>}</div>
+</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
+<div class="foldopen" id="foldopen00302" data-start="{" data-end="}">
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af84586ca4c69d1023a8841ae0c49c59c">  302</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af84586ca4c69d1023a8841ae0c49c59c">ReflectionProbeCapture::getSkyFaceColor</a>(<span class="keywordtype">int</span> face, <span class="keywordtype">int</span> component)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <span class="keywordflow">if</span> (face &lt; 0 || face &gt;= 6 || component &lt; 0 || component &gt;= 3) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(face);</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="keywordflow">if</span> (component == 0) <span class="keywordflow">return</span> skyR_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>];</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="keywordflow">if</span> (component == 1) <span class="keywordflow">return</span> skyG_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>];</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="keywordflow">return</span> skyB_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>];</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>}</div>
+</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
+<div class="foldopen" id="foldopen00310" data-start="{" data-end="}">
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac27fbf96562a1cf31f38df69b2628450">  310</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac27fbf96562a1cf31f38df69b2628450">ReflectionProbeCapture::setCaptureLodDistanceScale</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>) {</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nextScale = std::clamp(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, 0.25f, 4.f);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="keywordflow">if</span> (nextScale == lodDistanceScale_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    lodDistanceScale_ = nextScale;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    requestCaptureAfterPublish();</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>}</div>
+</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
+<div class="foldopen" id="foldopen00317" data-start="{" data-end="}">
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#afb980e12d1cb82e38198f4f3c38f481d">  317</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#afb980e12d1cb82e38198f4f3c38f481d">ReflectionProbeCapture::setCaptureTransparent</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a> == captureTransparent_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    captureTransparent_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>;</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    requestCaptureAfterPublish();</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>}</div>
+</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span> </div>
+<div class="foldopen" id="foldopen00323" data-start="{" data-end="}">
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5324411d3e4ee59318fbdcb8de9b707b">  323</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5324411d3e4ee59318fbdcb8de9b707b">ReflectionProbeCapture::setCaptureClusteredLighting</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) {</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a> == captureClusteredLighting_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    captureClusteredLighting_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    requestCaptureAfterPublish();</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>}</div>
+</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
+<div class="foldopen" id="foldopen00329" data-start="{" data-end="}">
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a10d1f4e6159b54ee37170073758a0340">  329</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a10d1f4e6159b54ee37170073758a0340">ReflectionProbeCapture::setGpuBudgetMs</a>(<span class="keywordtype">float</span> milliseconds) {</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    gpuBudgetMs_ = std::clamp(milliseconds, 0.1f, 16.f);</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    underBudgetReports_ = 0;</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>}</div>
+</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
+<div class="foldopen" id="foldopen00334" data-start="{" data-end="}">
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">  334</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">ReflectionProbeCapture::reportGpuDurationMs</a>(<span class="keywordtype">float</span> milliseconds) {</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="keywordflow">if</span> (milliseconds &lt;= 0.f || !std::isfinite(milliseconds)) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    smoothedGpuDurationMs_ = smoothedGpuDurationMs_ &gt; 0.f</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>                                 ? smoothedGpuDurationMs_ * 0.8f + milliseconds * 0.2f</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>                                 : milliseconds;</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span> </div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    <span class="keywordflow">if</span> (smoothedGpuDurationMs_ &gt; gpuBudgetMs_ * 1.1f) {</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        underBudgetReports_ = 0;</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keywordflow">if</span> (adaptiveFaceBudget_ &gt; 1)</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>            --adaptiveFaceBudget_;</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            adaptiveFilterSamples_ = std::max(adaptiveFilterSamples_ / 2, 8);</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    }</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    <span class="keywordflow">if</span> (smoothedGpuDurationMs_ &lt; gpuBudgetMs_ * 0.7f) {</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        <span class="keywordflow">if</span> (++underBudgetReports_ &lt; 4) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>        underBudgetReports_ = 0;</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        <span class="keywordflow">if</span> (adaptiveFilterSamples_ &lt; 64)</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>            adaptiveFilterSamples_ = std::min(adaptiveFilterSamples_ * 2, 64);</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            adaptiveFaceBudget_ = std::min(adaptiveFaceBudget_ + 1, 6);</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>        underBudgetReports_ = 0;</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    }</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>}</div>
+</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span> </div>
+<div class="foldopen" id="foldopen00361" data-start="{" data-end="}">
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a28ef0f3215e476687c6ce9883c826007">  361</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a28ef0f3215e476687c6ce9883c826007">ReflectionProbeCapture::tickAdaptive</a>() {</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>(adaptiveFaceBudget_, adaptiveFilterSamples_);</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>}</div>
+</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span> </div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span><span class="keywordtype">void</span> ReflectionProbeCapture::advanceRefreshPolicy() {</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    ++framesSincePublish_;</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    <span class="keywordflow">if</span> (!pending_) {</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        <span class="keywordflow">if</span> (recaptureAfterPublish_ &amp;&amp; publishedRevision_ == revision_)</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a>();</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (updateMode_ == UpdateMode::Realtime ||</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>            (updateMode_ == UpdateMode::TimeSliced &amp;&amp; framesSincePublish_ &gt;= refreshInterval_))</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>            <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a>();</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (updateMode_ == UpdateMode::Static &amp;&amp; revision_ == 0)</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>            <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a>();</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    }</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>}</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span> </div>
+<div class="foldopen" id="foldopen00378" data-start="{" data-end="}">
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2c70c1115877cb207d969e5a02b7679a">  378</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2c70c1115877cb207d969e5a02b7679a">ReflectionProbeCapture::tick</a>(<span class="keywordtype">int</span> faceBudget, <span class="keywordtype">int</span> filterSamples) {</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="keywordflow">if</span> (gfx_) <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">reportGpuDurationMs</a>(gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a85c80aaa3e1508dd650bf6c5cd255f4e">getLastOffscreen3DGpuDurationMs</a>());</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    advanceRefreshPolicy();</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    <span class="keywordflow">if</span> (pending_ &amp;&amp; !<a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a958a78a35d9934caa1dd886c9ca2f285">update</a>(faceBudget)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    <span class="keywordflow">if</span> (publishedRevision_ == revision_) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac536b3e241fd826d51bef122641f266c">stageCapturedFaces</a>()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af57d6b748b4a6879272eab7d9c758bd5">filterAndPublish</a>(filterSamples);</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>}</div>
+</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span> </div>
+<div class="foldopen" id="foldopen00387" data-start="{" data-end="}">
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a8f9f1eb022f439cc7af714e7cf27ebb2">  387</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a8f9f1eb022f439cc7af714e7cf27ebb2">ReflectionProbeCapture::configureInfluence</a>(<span class="keywordtype">float</span> extentX, <span class="keywordtype">float</span> extentY, <span class="keywordtype">float</span> extentZ,</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>                                                <span class="keywordtype">float</span> intensity, <span class="keywordtype">float</span> blendDistance,</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>                                                <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>) {</div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    influenceExtentX_ = std::max(extentX, 0.001f);</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    influenceExtentY_ = std::max(extentY, 0.001f);</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    influenceExtentZ_ = std::max(extentZ, 0.001f);</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>    influenceIntensity_ = std::max(intensity, 0.f);</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>    influenceBlendDistance_ = std::max(blendDistance, 0.f);</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    influencePriority_ = <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>;</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>}</div>
+</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
+<div class="foldopen" id="foldopen00398" data-start="{" data-end="}">
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a1fc19f950dec03782ee4bb0170193138">  398</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a1fc19f950dec03782ee4bb0170193138">ReflectionProbeCapture::applyConfiguredToCamera</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *camera, <span class="keywordtype">int</span> slot) {</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>    <span class="keywordflow">if</span> (!camera || !activeCubemap_ || publishedRevision_ == 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    camera-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Camera3D.html#a56eb39ed6e0b78cdc12d541e6057ddbe">setReflectionProbe</a>(slot, activeCubemap_, centerX_, centerY_, centerZ_,</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>                               influenceExtentX_, influenceExtentY_, influenceExtentZ_,</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>                               influenceIntensity_, influenceBlendDistance_, influencePriority_);</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>}</div>
+</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span> </div>
+<div class="foldopen" id="foldopen00406" data-start="{" data-end="}">
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa079380711fc825df1e9dd16d95951d0">  406</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa079380711fc825df1e9dd16d95951d0">ReflectionProbeCapture::applyToCamera</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *camera, <span class="keywordtype">int</span> slot, <span class="keywordtype">float</span> extentX,</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>                                           <span class="keywordtype">float</span> extentY, <span class="keywordtype">float</span> extentZ, <span class="keywordtype">float</span> intensity,</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>                                           <span class="keywordtype">float</span> blendDistance, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>) {</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a8f9f1eb022f439cc7af714e7cf27ebb2">configureInfluence</a>(extentX, extentY, extentZ, intensity, blendDistance, <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>);</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a1fc19f950dec03782ee4bb0170193138">applyConfiguredToCamera</a>(camera, slot);</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>}</div>
+</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span> </div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aBuildingFx_8cpp_html_ab77cc972f3ee899689ba053015472ccd"><div class="ttname"><a href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a></div><div class="ttdeci">int mask</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00064">BuildingFx.cpp:64</a></div></div>
+<div class="ttc" id="aCanvas_8h_html"><div class="ttname"><a href="Canvas_8h.html">Canvas.h</a></div></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00031">EvpackGraphicsLoader.cpp:31</a></div></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_a6db4bdf89d5601f8d599c1cd882137ce"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a></div><div class="ttdeci">std::vector&lt; float &gt; normals</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00029">EvpackGraphicsLoader.cpp:29</a></div></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_af3fd42b7427cb742f96e7ec3244fb7cf"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00028">EvpackGraphicsLoader.cpp:28</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a1673907d4d89d763bb7b94ec1eeb7b60"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a></div><div class="ttdeci">uint8_t g</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00035">PrototypeTextures.cpp:35</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aReflectionProbeCapture_8h_html"><div class="ttname"><a href="ReflectionProbeCapture_8h.html">ReflectionProbeCapture.h</a></div></div>
+<div class="ttc" id="aReflectionProbeRegistry_8h_html"><div class="ttname"><a href="ReflectionProbeRegistry_8h.html">ReflectionProbeRegistry.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8h_html"><div class="ttname"><a href="RenderSystem3D_8h.html">RenderSystem3D.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00192">RenderSystem.cpp:192</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html">eve::graphics::Camera3D</a></div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00021">RenderSystem3D.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_a00272bbaa1c4401a8e096dd43fb6d85e"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#a00272bbaa1c4401a8e096dd43fb6d85e">eve::graphics::Camera3D::setBloom</a></div><div class="ttdeci">void setBloom(float intensity, float threshold=1.f)</div><div class="ttdoc">Configure HDR bloom. Zero intensity disables it.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00215">RenderSystem3D.cpp:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_a56eb39ed6e0b78cdc12d541e6057ddbe"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#a56eb39ed6e0b78cdc12d541e6057ddbe">eve::graphics::Camera3D::setReflectionProbe</a></div><div class="ttdeci">void setReflectionProbe(int slot, Texture *cubemap, float centerX, float centerY, float centerZ, float extentX, float extentY, float extentZ, float intensity=1.f, float blendDistance=1.f, int priority=0)</div><div class="ttdoc">Configure one local reflection probe slot.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00243">RenderSystem3D.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_a7aa865ad3399e27ffff7e436749172ae"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#a7aa865ad3399e27ffff7e436749172ae">eve::graphics::Camera3D::setUp</a></div><div class="ttdeci">void setUp(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00166">RenderSystem3D.cpp:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_a915da07e0b459a7ec99de950a83d44d2"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#a915da07e0b459a7ec99de950a83d44d2">eve::graphics::Camera3D::clearEnvProbe</a></div><div class="ttdeci">void clearEnvProbe()</div><div class="ttdoc">Disable box projection and return to an infinite-distance environment.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00230">RenderSystem3D.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_aa5b20e56ff93d6fc701ea028972d5d06"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#aa5b20e56ff93d6fc701ea028972d5d06">eve::graphics::Camera3D::clearReflectionProbe</a></div><div class="ttdeci">void clearReflectionProbe(int slot)</div><div class="ttdoc">Disable one local reflection probe slot.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00258">RenderSystem3D.cpp:258</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_aa5f33c2499620e7979aa13121e8d6bff"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#aa5f33c2499620e7979aa13121e8d6bff">eve::graphics::Camera3D::setFov</a></div><div class="ttdeci">void setFov(float fovYDeg)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00173">RenderSystem3D.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_ab94abd097e9e881787c1f3946e0cfca2"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#ab94abd097e9e881787c1f3946e0cfca2">eve::graphics::Camera3D::setExposure</a></div><div class="ttdeci">void setExposure(float ev)</div><div class="ttdoc">Set exposure compensation in photographic stops. Positive values brighten.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00202">RenderSystem3D.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_abbb29e259127259996042f83bbbf9e3d"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#abbb29e259127259996042f83bbbf9e3d">eve::graphics::Camera3D::setEnvIntensity</a></div><div class="ttdeci">void setEnvIntensity(float intensity)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00198">RenderSystem3D.cpp:198</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_aca91aa72f8c28a84f852158d46c2de4b"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#aca91aa72f8c28a84f852158d46c2de4b">eve::graphics::Camera3D::createCamera</a></div><div class="ttdeci">static Camera3D * createCamera()</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00065">RenderSystem3D.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_acb210c662cfa4ca022ddccfa84d622e1"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#acb210c662cfa4ca022ddccfa84d622e1">eve::graphics::Camera3D::setAutoExposure</a></div><div class="ttdeci">void setAutoExposure(bool enabled, float minEV=-8.f, float maxEV=8.f)</div><div class="ttdoc">Enable log-average automatic exposure and set its EV clamp range.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00206">RenderSystem3D.cpp:206</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_acbd098df21fd74087a9df2f919eb65e0"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#acbd098df21fd74087a9df2f919eb65e0">eve::graphics::Camera3D::setTarget</a></div><div class="ttdeci">void setTarget(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00159">RenderSystem3D.cpp:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_ad940f8c3c64e96169643d60137ed40da"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#ad940f8c3c64e96169643d60137ed40da">eve::graphics::Camera3D::setAmbient</a></div><div class="ttdeci">void setAmbient(float r, float g, float b)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00189">RenderSystem3D.cpp:189</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_adc2dfc26036f7c26678844e0a8c325f4"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#adc2dfc26036f7c26678844e0a8c325f4">eve::graphics::Camera3D::setActive</a></div><div class="ttdeci">void setActive(bool active)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00187">RenderSystem3D.cpp:187</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_ae5be52991401fb9cf94c566ed08b3a44"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#ae5be52991401fb9cf94c566ed08b3a44">eve::graphics::Camera3D::setEye</a></div><div class="ttdeci">void setEye(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00152">RenderSystem3D.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html_aec48ba24d6b3f09a5adee20d863d21a4"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html#aec48ba24d6b3f09a5adee20d863d21a4">eve::graphics::Camera3D::setEnvMap</a></div><div class="ttdeci">void setEnvMap(Texture *cube)</div><div class="ttdoc">Specular IBL cubemap (Graphics::newCubemap). nullptr disables IBL.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00196">RenderSystem3D.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a1080a4572e50140ce068b9b669c1596a"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a1080a4572e50140ce068b9b669c1596a">eve::graphics::Graphics::copyHDRCanvasesToCubemap</a></div><div class="ttdeci">virtual bool copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount, Texture *cubemap)</div><div class="ttdoc">Copy consecutive RGBA16F canvases into cubemap base-level faces.</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00493">Graphics.h:493</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a76329b21274a81d1f588123c6ab35a7c"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a76329b21274a81d1f588123c6ab35a7c">eve::graphics::Graphics::filterHDRReflectionCubemap</a></div><div class="ttdeci">virtual bool filterHDRReflectionCubemap(Texture *cubemap, int sampleCount=64)</div><div class="ttdoc">Generate GGX specular mips and final diffuse irradiance for an HDR cubemap. @compatibility Preserves ...</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00505">Graphics.h:505</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a85c80aaa3e1508dd650bf6c5cd255f4e"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a85c80aaa3e1508dd650bf6c5cd255f4e">eve::graphics::Graphics::getLastOffscreen3DGpuDurationMs</a></div><div class="ttdeci">virtual float getLastOffscreen3DGpuDurationMs() const</div><div class="ttdoc">Return the GPU timestamp duration of the most recently completed offscreen 3D pass,...</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00883">Graphics.h:883</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ad2394ae661385736c667a98446a5b9b4"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays</a></div><div class="ttdeci">virtual Mesh * newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</div><div class="ttdoc">Upload a triangle mesh from packed CPU arrays. Owned by Graphics. posXYZ required (vertexCount*3)....</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_aff927eb30cac6658d8fd80faeeb48f34"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#aff927eb30cac6658d8fd80faeeb48f34">eve::graphics::Graphics::newHDRCubemap</a></div><div class="ttdeci">virtual Texture * newHDRCubemap(int faceSize)</div><div class="ttdoc">Allocate a linear RGBA16F six-layer staging cubemap for runtime capture.</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00465">Graphics.h:465</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a0edc2c31adf0fa13b477c70c8f50067c"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">eve::graphics::ReflectionProbeCapture::requestCapture</a></div><div class="ttdeci">void requestCapture()</div><div class="ttdoc">Mark all six faces dirty and restart capture at +X.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00051">ReflectionProbeCapture.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a10d1f4e6159b54ee37170073758a0340"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a10d1f4e6159b54ee37170073758a0340">eve::graphics::ReflectionProbeCapture::setGpuBudgetMs</a></div><div class="ttdeci">void setGpuBudgetMs(float milliseconds)</div><div class="ttdoc">Set the GPU-time budget used by adaptive capture scheduling, in milliseconds.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00329">ReflectionProbeCapture.cpp:329</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a12d4c4bfa8eac466b0e1965b80afb280"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a12d4c4bfa8eac466b0e1965b80afb280">eve::graphics::ReflectionProbeCapture::~ReflectionProbeCapture</a></div><div class="ttdeci">~ReflectionProbeCapture()</div><div class="ttdoc">Detach this probe from every registry before script-owned destruction.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00017">ReflectionProbeCapture.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a1fc19f950dec03782ee4bb0170193138"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a1fc19f950dec03782ee4bb0170193138">eve::graphics::ReflectionProbeCapture::applyConfiguredToCamera</a></div><div class="ttdeci">bool applyConfiguredToCamera(Camera3D *camera, int slot)</div><div class="ttdoc">Submit the persistent influence and active cubemap to a Camera3D slot. @compatibility Preserves the s...</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00398">ReflectionProbeCapture.cpp:398</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a287e0a8081b485e56ea66e7f8f40cab9"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a287e0a8081b485e56ea66e7f8f40cab9">eve::graphics::ReflectionProbeCapture::getUpdateMode</a></div><div class="ttdeci">std::string getUpdateMode() const</div><div class="ttdoc">Return the current refresh mode.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00215">ReflectionProbeCapture.cpp:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a28ef0f3215e476687c6ce9883c826007"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a28ef0f3215e476687c6ce9883c826007">eve::graphics::ReflectionProbeCapture::tickAdaptive</a></div><div class="ttdeci">bool tickAdaptive()</div><div class="ttdoc">Advance capture and filtering using the GPU-budget controller's workload.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00361">ReflectionProbeCapture.cpp:361</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a2ac8246d12b4f8ff26f3b93597c39733"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2ac8246d12b4f8ff26f3b93597c39733">eve::graphics::ReflectionProbeCapture::setEnvironmentLighting</a></div><div class="ttdeci">void setEnvironmentLighting(Texture *environment, float intensity=1.f)</div><div class="ttdoc">Set non-recursive global environment lighting for captured geometry.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00236">ReflectionProbeCapture.cpp:236</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a2c70c1115877cb207d969e5a02b7679a"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2c70c1115877cb207d969e5a02b7679a">eve::graphics::ReflectionProbeCapture::tick</a></div><div class="ttdeci">bool tick(int faceBudget=1, int filterSamples=64)</div><div class="ttdoc">Advance capture, staging, filtering and publishing under the selected policy.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00378">ReflectionProbeCapture.cpp:378</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a3d8761835849f5c90fb72b8149713650"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3d8761835849f5c90fb72b8149713650">eve::graphics::ReflectionProbeCapture::getFaceCanvas</a></div><div class="ttdeci">Canvas * getFaceCanvas(int face) const</div><div class="ttdoc">Return one captured HDR face Canvas in +X,-X,+Y,-Y,+Z,-Z order. @lifetime Returned canvas is borrowed...</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00167">ReflectionProbeCapture.cpp:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a3dd70e537c6b1a60024396a7ea945785"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3dd70e537c6b1a60024396a7ea945785">eve::graphics::ReflectionProbeCapture::setRefreshInterval</a></div><div class="ttdeci">void setRefreshInterval(int frames)</div><div class="ttdoc">Set automatic refresh interval in frames for time_sliced mode.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00225">ReflectionProbeCapture.cpp:225</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a5324411d3e4ee59318fbdcb8de9b707b"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5324411d3e4ee59318fbdcb8de9b707b">eve::graphics::ReflectionProbeCapture::setCaptureClusteredLighting</a></div><div class="ttdeci">void setCaptureClusteredLighting(bool enabled)</div><div class="ttdoc">Enable clustered lighting for captures that exceed the legacy light pack.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00323">ReflectionProbeCapture.cpp:323</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a6b7026c9317ce35ced0027f832b65c30"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6b7026c9317ce35ced0027f832b65c30">eve::graphics::ReflectionProbeCapture::isCaptureComplete</a></div><div class="ttdeci">bool isCaptureComplete() const</div><div class="ttdoc">True after at least one complete six-face capture.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8h_source.html#l00068">ReflectionProbeCapture.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a6f283e7e59f060d518d60736e8a4823d"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6f283e7e59f060d518d60736e8a4823d">eve::graphics::ReflectionProbeCapture::setSkyFaceTextureScale</a></div><div class="ttdeci">void setSkyFaceTextureScale(int face, float scale)</div><div class="ttdoc">Set the linear HDR radiance multiplier for one sky face texture.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00288">ReflectionProbeCapture.cpp:288</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a7766222b5cec7e331a720753079cd637"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7766222b5cec7e331a720753079cd637">eve::graphics::ReflectionProbeCapture::ReflectionProbeCapture</a></div><div class="ttdeci">ReflectionProbeCapture(Graphics *gfx)</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00015">ReflectionProbeCapture.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a87d3d577c0ac3bd2637e54966b1ca2fb"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a87d3d577c0ac3bd2637e54966b1ca2fb">eve::graphics::ReflectionProbeCapture::setSkyFaceTexture</a></div><div class="ttdeci">void setSkyFaceTexture(int face, Texture *texture)</div><div class="ttdoc">Set a directional per-pixel sky texture for one capture face.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00275">ReflectionProbeCapture.cpp:275</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a8f9f1eb022f439cc7af714e7cf27ebb2"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a8f9f1eb022f439cc7af714e7cf27ebb2">eve::graphics::ReflectionProbeCapture::configureInfluence</a></div><div class="ttdeci">void configureInfluence(float extentX, float extentY, float extentZ, float intensity=1.f, float blendDistance=1.f, int priority=0)</div><div class="ttdoc">Configure the persistent box influence used for lighting and editor display.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00387">ReflectionProbeCapture.cpp:387</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a9074116491a8062ff45ebf57fe12a664"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">eve::graphics::ReflectionProbeCapture::reportGpuDurationMs</a></div><div class="ttdeci">void reportGpuDurationMs(float milliseconds)</div><div class="ttdoc">Report a backend timestamp duration for the most recent probe workload.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00334">ReflectionProbeCapture.cpp:334</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a958a78a35d9934caa1dd886c9ca2f285"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a958a78a35d9934caa1dd886c9ca2f285">eve::graphics::ReflectionProbeCapture::update</a></div><div class="ttdeci">bool update(int faceBudget=1)</div><div class="ttdoc">Capture up to faceBudget dirty faces.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00147">ReflectionProbeCapture.cpp:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a95e855b329ccf1c6a6d2f223c38cf480"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a95e855b329ccf1c6a6d2f223c38cf480">eve::graphics::ReflectionProbeCapture::queueCapture</a></div><div class="ttdeci">void queueCapture()</div><div class="ttdoc">Queue a coherent recapture without restarting a revision already in progress.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00084">ReflectionProbeCapture.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a96931d9672c0f483917307e5b5c8648e"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a96931d9672c0f483917307e5b5c8648e">eve::graphics::ReflectionProbeCapture::getSkyFaceTextureScale</a></div><div class="ttdeci">float getSkyFaceTextureScale(int face) const</div><div class="ttdoc">Return one sky face texture's linear HDR radiance multiplier.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00297">ReflectionProbeCapture.cpp:297</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a97a18284b016974910eb562e16f5c03c"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a97a18284b016974910eb562e16f5c03c">eve::graphics::ReflectionProbeCapture::setSkyFaceColor</a></div><div class="ttdeci">void setSkyFaceColor(int face, float r, float g, float b)</div><div class="ttdoc">Override one directional backup sky face in +X,-X,+Y,-Y,+Z,-Z order.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00262">ReflectionProbeCapture.cpp:262</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_a9a0b01dd566061e7fbc8ac0612ff294c"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9a0b01dd566061e7fbc8ac0612ff294c">eve::graphics::ReflectionProbeCapture::setUpdateMode</a></div><div class="ttdeci">void setUpdateMode(const std::string &amp;mode)</div><div class="ttdoc">Set refresh mode: static, on_demand, time_sliced, or realtime.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00204">ReflectionProbeCapture.cpp:204</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_aa079380711fc825df1e9dd16d95951d0"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa079380711fc825df1e9dd16d95951d0">eve::graphics::ReflectionProbeCapture::applyToCamera</a></div><div class="ttdeci">bool applyToCamera(Camera3D *camera, int slot, float extentX, float extentY, float extentZ, float intensity=1.f, float blendDistance=1.f, int priority=0)</div><div class="ttdoc">Assign the active cubemap to a Camera3D local reflection-probe slot.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00406">ReflectionProbeCapture.cpp:406</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_aa9f511c60c864674ff68daf87f016750"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa9f511c60c864674ff68daf87f016750">eve::graphics::ReflectionProbeCapture::setCaptureMask</a></div><div class="ttdeci">void setCaptureMask(int mask)</div><div class="ttdoc">Set the object-layer mask visible to this reflection capture.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00229">ReflectionProbeCapture.cpp:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_ab762f923d3dbf29c78f4d9b9a33265f6"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab762f923d3dbf29c78f4d9b9a33265f6">eve::graphics::ReflectionProbeCapture::getSkyFaceTexture</a></div><div class="ttdeci">Texture * getSkyFaceTexture(int face) const</div><div class="ttdoc">Return one directional per-pixel sky texture, or nullptr. @lifetime Returned texture is borrowed; its...</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00283">ReflectionProbeCapture.cpp:283</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_ac27fbf96562a1cf31f38df69b2628450"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac27fbf96562a1cf31f38df69b2628450">eve::graphics::ReflectionProbeCapture::setCaptureLodDistanceScale</a></div><div class="ttdeci">void setCaptureLodDistanceScale(float scale)</div><div class="ttdoc">Set capture LOD distance scale; below one retains higher-detail LODs farther away.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00310">ReflectionProbeCapture.cpp:310</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_ac435d5018876a48fa1369fe492266dcf"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac435d5018876a48fa1369fe492266dcf">eve::graphics::ReflectionProbeCapture::configure</a></div><div class="ttdeci">void configure(float x, float y, float z, int resolution=128, float nearZ=0.1f, float farZ=100.f)</div><div class="ttdoc">Configure the probe origin, face resolution and clipping planes.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00034">ReflectionProbeCapture.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_ac536b3e241fd826d51bef122641f266c"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac536b3e241fd826d51bef122641f266c">eve::graphics::ReflectionProbeCapture::stageCapturedFaces</a></div><div class="ttdeci">bool stageCapturedFaces()</div><div class="ttdoc">Copy a complete capture revision into a backend HDR staging cubemap. @compatibility Preserves the scr...</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00172">ReflectionProbeCapture.cpp:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_ad85e3af550296ce4168764342eac682b"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad85e3af550296ce4168764342eac682b">eve::graphics::ReflectionProbeCapture::setSkyColor</a></div><div class="ttdeci">void setSkyColor(float r, float g, float b, float intensity=1.f)</div><div class="ttdoc">Set a linear HDR backup sky color for empty capture pixels.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00245">ReflectionProbeCapture.cpp:245</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_af57d6b748b4a6879272eab7d9c758bd5"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af57d6b748b4a6879272eab7d9c758bd5">eve::graphics::ReflectionProbeCapture::filterAndPublish</a></div><div class="ttdeci">bool filterAndPublish(int sampleCount=64)</div><div class="ttdoc">Filter with 8-512 samples and atomically publish the active cubemap. @compatibility Preserves the scr...</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00188">ReflectionProbeCapture.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_af84586ca4c69d1023a8841ae0c49c59c"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af84586ca4c69d1023a8841ae0c49c59c">eve::graphics::ReflectionProbeCapture::getSkyFaceColor</a></div><div class="ttdeci">float getSkyFaceColor(int face, int component) const</div><div class="ttdoc">Return one directional sky-face color component, or zero for invalid indices.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00302">ReflectionProbeCapture.cpp:302</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html_afb980e12d1cb82e38198f4f3c38f481d"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#afb980e12d1cb82e38198f4f3c38f481d">eve::graphics::ReflectionProbeCapture::setCaptureTransparent</a></div><div class="ttdeci">void setCaptureTransparent(bool enabled)</div><div class="ttdoc">Enable or disable transparent/hair surfaces in probe captures.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8cpp_source.html#l00317">ReflectionProbeCapture.cpp:317</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html">eve::graphics::ReflectionProbeRegistry</a></div><div class="ttdoc">Scene-level stable selection of published reflection probes for a camera.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8h_source.html#l00012">ReflectionProbeRegistry.h:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1RenderSystem3D_html_a75a11050ecff086b854fde1b19139eab"><div class="ttname"><a href="classeve_1_1graphics_1_1RenderSystem3D.html#a75a11050ecff086b854fde1b19139eab">eve::graphics::RenderSystem3D::renderToCanvas</a></div><div class="ttdeci">static void renderToCanvas(Graphics &amp;gfx, Canvas *target, Camera3D *camera, uint32_t reflectionCaptureMask=0xffffffffu, float lodDistanceScale=1.f, bool includeTransparent=true, bool useClusteredLighting=true, Texture *skyFaceTexture=nullptr, Mesh *skyQuad=nullptr, float skyFaceTextureScale=1.f)</div><div class="ttdoc">Forward 3D pass into an offscreen canvas using multipart materials, LOD, masked surfaces and sorted t...</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l01471">RenderSystem3D.cpp:1471</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1Camera3D_1_1Data_html_af0bcda16e70810fa5046fa157ccfe77c"><div class="ttname"><a href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#af0bcda16e70810fa5046fa157ccfe77c">eve::graphics::Camera3D::Data::kMaxReflectionProbes</a></div><div class="ttdeci">static constexpr int kMaxReflectionProbes</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00028">RenderSystem3D.h:28</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

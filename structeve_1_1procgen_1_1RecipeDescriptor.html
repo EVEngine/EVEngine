@@ -1,0 +1,1069 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::RecipeDescriptor结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1RecipeDescriptor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::RecipeDescriptor结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Complete metadata and parameter schema shared by every procgen recipe family.  
+ <a href="structeve_1_1procgen_1_1RecipeDescriptor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6647e7de825221dcf5e00aeabf128936" id="r_a6647e7de825221dcf5e00aeabf128936"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a6647e7de825221dcf5e00aeabf128936">find</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:a6647e7de825221dcf5e00aeabf128936"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find one parameter descriptor by stable key.  <br /></td></tr>
+<tr class="separator:a6647e7de825221dcf5e00aeabf128936"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdb7ab396f52106fb392ae43e2b7040c" id="r_abdb7ab396f52106fb392ae43e2b7040c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#abdb7ab396f52106fb392ae43e2b7040c">applyDefaults</a> (<a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">params</a>) const</td></tr>
+<tr class="memdesc:abdb7ab396f52106fb392ae43e2b7040c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill missing <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> values from this schema.  <br /></td></tr>
+<tr class="separator:abdb7ab396f52106fb392ae43e2b7040c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81cb3a6ffea1f8bf390cea1fabbc43be" id="r_a81cb3a6ffea1f8bf390cea1fabbc43be"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a81cb3a6ffea1f8bf390cea1fabbc43be">getParamCount</a> () const</td></tr>
+<tr class="memdesc:a81cb3a6ffea1f8bf390cea1fabbc43be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of reflected parameters.  <br /></td></tr>
+<tr class="separator:a81cb3a6ffea1f8bf390cea1fabbc43be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa948476bd086423f9414444bfdf05137" id="r_aa948476bd086423f9414444bfdf05137"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa948476bd086423f9414444bfdf05137">getId</a> () const</td></tr>
+<tr class="memdesc:aa948476bd086423f9414444bfdf05137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable recipe id.  <br /></td></tr>
+<tr class="separator:aa948476bd086423f9414444bfdf05137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0dbb0cbab3f1521ba364374439d1812" id="r_aa0dbb0cbab3f1521ba364374439d1812"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa0dbb0cbab3f1521ba364374439d1812">getDisplayName</a> () const</td></tr>
+<tr class="memdesc:aa0dbb0cbab3f1521ba364374439d1812"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the human-readable recipe name.  <br /></td></tr>
+<tr class="separator:aa0dbb0cbab3f1521ba364374439d1812"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace7a1889d7a45ffd6e7d56063c65c4f3" id="r_ace7a1889d7a45ffd6e7d56063c65c4f3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ace7a1889d7a45ffd6e7d56063c65c4f3">getCategory</a> () const</td></tr>
+<tr class="memdesc:ace7a1889d7a45ffd6e7d56063c65c4f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the recipe browser category.  <br /></td></tr>
+<tr class="separator:ace7a1889d7a45ffd6e7d56063c65c4f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8347bbac89342f005fee80b5a53fca38" id="r_a8347bbac89342f005fee80b5a53fca38"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a8347bbac89342f005fee80b5a53fca38">getParamKey</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a8347bbac89342f005fee80b5a53fca38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a parameter key by index.  <br /></td></tr>
+<tr class="separator:a8347bbac89342f005fee80b5a53fca38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ffcc99a7ee2158f8036d67bc41892a" id="r_a72ffcc99a7ee2158f8036d67bc41892a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a72ffcc99a7ee2158f8036d67bc41892a">getParamLabel</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a72ffcc99a7ee2158f8036d67bc41892a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a parameter label by index.  <br /></td></tr>
+<tr class="separator:a72ffcc99a7ee2158f8036d67bc41892a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a811e54f1e9575e58598d00b1858ec49e" id="r_a811e54f1e9575e58598d00b1858ec49e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a811e54f1e9575e58598d00b1858ec49e">getParamDescription</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a811e54f1e9575e58598d00b1858ec49e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return parameter help text by index.  <br /></td></tr>
+<tr class="separator:a811e54f1e9575e58598d00b1858ec49e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c95cee7d306e9d3a10e528239e4792" id="r_aa0c95cee7d306e9d3a10e528239e4792"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa0c95cee7d306e9d3a10e528239e4792">getParamCategory</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aa0c95cee7d306e9d3a10e528239e4792"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a parameter category by index.  <br /></td></tr>
+<tr class="separator:aa0c95cee7d306e9d3a10e528239e4792"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcdd90b54c20bbe56d19e5630330d502" id="r_afcdd90b54c20bbe56d19e5630330d502"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#afcdd90b54c20bbe56d19e5630330d502">getParamKind</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:afcdd90b54c20bbe56d19e5630330d502"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the portable parameter kind.  <br /></td></tr>
+<tr class="separator:afcdd90b54c20bbe56d19e5630330d502"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84c031aba23c89c12fc8c80a4aa71d4b" id="r_a84c031aba23c89c12fc8c80a4aa71d4b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a84c031aba23c89c12fc8c80a4aa71d4b">getParamDefault</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a84c031aba23c89c12fc8c80a4aa71d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the schema default encoded as text.  <br /></td></tr>
+<tr class="separator:a84c031aba23c89c12fc8c80a4aa71d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac80dfd364ac39f16f93f2ad36831c15c" id="r_ac80dfd364ac39f16f93f2ad36831c15c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ac80dfd364ac39f16f93f2ad36831c15c">paramHasMinimum</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ac80dfd364ac39f16f93f2ad36831c15c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether a numeric minimum exists.  <br /></td></tr>
+<tr class="separator:ac80dfd364ac39f16f93f2ad36831c15c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98e03e86599c6f5acf84d090fb1c6ad4" id="r_a98e03e86599c6f5acf84d090fb1c6ad4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a98e03e86599c6f5acf84d090fb1c6ad4">paramHasMaximum</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a98e03e86599c6f5acf84d090fb1c6ad4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether a numeric maximum exists.  <br /></td></tr>
+<tr class="separator:a98e03e86599c6f5acf84d090fb1c6ad4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a923bf71b653cfc132957aea02d7ed128" id="r_a923bf71b653cfc132957aea02d7ed128"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a923bf71b653cfc132957aea02d7ed128">getParamMinimum</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a923bf71b653cfc132957aea02d7ed128"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a numeric minimum.  <br /></td></tr>
+<tr class="separator:a923bf71b653cfc132957aea02d7ed128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a081bbabe4bc9a072f816bda08eee13" id="r_a3a081bbabe4bc9a072f816bda08eee13"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a3a081bbabe4bc9a072f816bda08eee13">getParamMaximum</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a3a081bbabe4bc9a072f816bda08eee13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a numeric maximum.  <br /></td></tr>
+<tr class="separator:a3a081bbabe4bc9a072f816bda08eee13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58489830236d8c21bc070251ab7c4f9d" id="r_a58489830236d8c21bc070251ab7c4f9d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a58489830236d8c21bc070251ab7c4f9d">getParamStep</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a58489830236d8c21bc070251ab7c4f9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the suggested numeric editing step.  <br /></td></tr>
+<tr class="separator:a58489830236d8c21bc070251ab7c4f9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade40b9e89c001781ab1427b01ef080ec" id="r_ade40b9e89c001781ab1427b01ef080ec"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ade40b9e89c001781ab1427b01ef080ec">isParamAdvanced</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ade40b9e89c001781ab1427b01ef080ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether compact inspectors should hide the field.  <br /></td></tr>
+<tr class="separator:ade40b9e89c001781ab1427b01ef080ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f7c6e3b0bad086934914bffc84d8d31" id="r_a2f7c6e3b0bad086934914bffc84d8d31"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a2f7c6e3b0bad086934914bffc84d8d31">getParamChoiceCount</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a2f7c6e3b0bad086934914bffc84d8d31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of choices for one parameter.  <br /></td></tr>
+<tr class="separator:a2f7c6e3b0bad086934914bffc84d8d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4784ea1a7fb629a4add7e1bc414c248" id="r_af4784ea1a7fb629a4add7e1bc414c248"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#af4784ea1a7fb629a4add7e1bc414c248">getParamChoice</a> (int paramIndex, int choiceIndex) const</td></tr>
+<tr class="memdesc:af4784ea1a7fb629a4add7e1bc414c248"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one choice.  <br /></td></tr>
+<tr class="separator:af4784ea1a7fb629a4add7e1bc414c248"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a33ad46a0ab773a432fce7b777cae54d9" id="r_a33ad46a0ab773a432fce7b777cae54d9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a33ad46a0ab773a432fce7b777cae54d9">grid</a> (std::string <a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a967beded2146229440430a44c744a1ba">id</a>, std::string <a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a394d3142623324414da90bb29f5475d6">displayName</a>, std::string <a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ad355fa9373a2cad872537e86ccd80f36">category</a>, int minimumWidth, int minimumHeight, int maximumWidth=4096, int maximumHeight=4096)</td></tr>
+<tr class="memdesc:a33ad46a0ab773a432fce7b777cae54d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a schema with common seed, width and height parameters.  <br /></td></tr>
+<tr class="separator:a33ad46a0ab773a432fce7b777cae54d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a967beded2146229440430a44c744a1ba" id="r_a967beded2146229440430a44c744a1ba"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a967beded2146229440430a44c744a1ba">id</a></td></tr>
+<tr class="separator:a967beded2146229440430a44c744a1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a394d3142623324414da90bb29f5475d6" id="r_a394d3142623324414da90bb29f5475d6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#a394d3142623324414da90bb29f5475d6">displayName</a></td></tr>
+<tr class="separator:a394d3142623324414da90bb29f5475d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad355fa9373a2cad872537e86ccd80f36" id="r_ad355fa9373a2cad872537e86ccd80f36"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#ad355fa9373a2cad872537e86ccd80f36">category</a></td></tr>
+<tr class="separator:ad355fa9373a2cad872537e86ccd80f36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa218539902f2b84c0b47f622ee2c3245" id="r_aa218539902f2b84c0b47f622ee2c3245"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html#aa218539902f2b84c0b47f622ee2c3245">params</a></td></tr>
+<tr class="separator:aa218539902f2b84c0b47f622ee2c3245"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Complete metadata and parameter schema shared by every procgen recipe family. </p>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00052">52</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="abdb7ab396f52106fb392ae43e2b7040c" name="abdb7ab396f52106fb392ae43e2b7040c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdb7ab396f52106fb392ae43e2b7040c">&#9670;&#160;</a></span>applyDefaults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RecipeDescriptor::applyDefaults </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill missing <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> values from this schema. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>Values to update. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27226c864bac7454a8504f8edb15d95b">eve::procgen::Boolean</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a458b9dcc0921f46b1192427426d59c10">eve::procgen::Choice</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a22ae0e2b89e5e3d477f988cc36d3272b">eve::procgen::Float</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73aa0faef0851b4294c06f2b94bb1cb2044">eve::procgen::Integer</a>, <a class="el" href="ParamSchema_8h_source.html#l00056">params</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27118326006d3829667a400ad23d5d98">eve::procgen::String</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MarchingCubes_8cpp_source.html#l00483">eve::procgen::MeshRecipeRegistry::applyDefaults()</a>, <a class="el" href="GeneratorRegistry_8cpp_source.html#l00042">eve::procgen::GeneratorRegistry::applyDefaults()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00061">eve::procgen::PbrRecipeRegistry::applyDefaults()</a> , 以及 <a class="el" href="TextureRecipe_8cpp_source.html#l00048">eve::procgen::TextureRecipeRegistry::applyDefaults()</a>.</p>
+
+</div>
+</div>
+<a id="a6647e7de825221dcf5e00aeabf128936" name="a6647e7de825221dcf5e00aeabf128936"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6647e7de825221dcf5e00aeabf128936">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a> * eve::procgen::RecipeDescriptor::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find one parameter descriptor by stable key. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Parameter key. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Schema-owned descriptor or nullptr. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00056">params</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MarchingCubes_8cpp_source.html#l00478">eve::procgen::MeshRecipeRegistry::descriptor()</a>.</p>
+
+</div>
+</div>
+<a id="ace7a1889d7a45ffd6e7d56063c65c4f3" name="ace7a1889d7a45ffd6e7d56063c65c4f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace7a1889d7a45ffd6e7d56063c65c4f3">&#9670;&#160;</a></span>getCategory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getCategory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the recipe browser category. </p>
+<dl class="section return"><dt>返回</dt><dd>Category name. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00055">category</a>.</p>
+
+</div>
+</div>
+<a id="aa0dbb0cbab3f1521ba364374439d1812" name="aa0dbb0cbab3f1521ba364374439d1812"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0dbb0cbab3f1521ba364374439d1812">&#9670;&#160;</a></span>getDisplayName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getDisplayName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the human-readable recipe name. </p>
+<dl class="section return"><dt>返回</dt><dd>Display name. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00054">displayName</a>.</p>
+
+</div>
+</div>
+<a id="aa948476bd086423f9414444bfdf05137" name="aa948476bd086423f9414444bfdf05137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa948476bd086423f9414444bfdf05137">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable recipe id. </p>
+<dl class="section return"><dt>返回</dt><dd>Recipe id. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00053">id</a>.</p>
+
+</div>
+</div>
+<a id="aa0c95cee7d306e9d3a10e528239e4792" name="aa0c95cee7d306e9d3a10e528239e4792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c95cee7d306e9d3a10e528239e4792">&#9670;&#160;</a></span>getParamCategory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getParamCategory </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a parameter category by index. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Category or empty text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00018">eve::procgen::ParamDescriptor::category</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="af4784ea1a7fb629a4add7e1bc414c248" name="af4784ea1a7fb629a4add7e1bc414c248"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4784ea1a7fb629a4add7e1bc414c248">&#9670;&#160;</a></span>getParamChoice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getParamChoice </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>paramIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>choiceIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one choice. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">paramIndex</td><td>Parameter index.</td></tr>
+    <tr><td class="paramname">choiceIndex</td><td>Choice index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Choice or empty text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00026">eve::procgen::ParamDescriptor::choices</a>.</p>
+
+</div>
+</div>
+<a id="a2f7c6e3b0bad086934914bffc84d8d31" name="a2f7c6e3b0bad086934914bffc84d8d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f7c6e3b0bad086934914bffc84d8d31">&#9670;&#160;</a></span>getParamChoiceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RecipeDescriptor::getParamChoiceCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of choices for one parameter. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Choice count. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00026">eve::procgen::ParamDescriptor::choices</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a81cb3a6ffea1f8bf390cea1fabbc43be" name="a81cb3a6ffea1f8bf390cea1fabbc43be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81cb3a6ffea1f8bf390cea1fabbc43be">&#9670;&#160;</a></span>getParamCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RecipeDescriptor::getParamCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of reflected parameters. </p>
+<dl class="section return"><dt>返回</dt><dd>Parameter count. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00056">params</a>.</p>
+
+</div>
+</div>
+<a id="a84c031aba23c89c12fc8c80a4aa71d4b" name="a84c031aba23c89c12fc8c80a4aa71d4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84c031aba23c89c12fc8c80a4aa71d4b">&#9670;&#160;</a></span>getParamDefault()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getParamDefault </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the schema default encoded as text. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Encoded default or empty text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00020">eve::procgen::ParamDescriptor::defaultValue</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a811e54f1e9575e58598d00b1858ec49e" name="a811e54f1e9575e58598d00b1858ec49e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a811e54f1e9575e58598d00b1858ec49e">&#9670;&#160;</a></span>getParamDescription()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getParamDescription </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return parameter help text by index. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Help text or empty text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00017">eve::procgen::ParamDescriptor::description</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a8347bbac89342f005fee80b5a53fca38" name="a8347bbac89342f005fee80b5a53fca38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8347bbac89342f005fee80b5a53fca38">&#9670;&#160;</a></span>getParamKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getParamKey </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a parameter key by index. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Key or empty text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="ParamSchema_8h_source.html#l00015">eve::procgen::ParamDescriptor::key</a>.</p>
+
+</div>
+</div>
+<a id="afcdd90b54c20bbe56d19e5630330d502" name="afcdd90b54c20bbe56d19e5630330d502"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcdd90b54c20bbe56d19e5630330d502">&#9670;&#160;</a></span>getParamKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getParamKind </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the portable parameter kind. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>int, float, bool, string, choice, or empty text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27226c864bac7454a8504f8edb15d95b">eve::procgen::Boolean</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a458b9dcc0921f46b1192427426d59c10">eve::procgen::Choice</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a22ae0e2b89e5e3d477f988cc36d3272b">eve::procgen::Float</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73aa0faef0851b4294c06f2b94bb1cb2044">eve::procgen::Integer</a>, <a class="el" href="ParamSchema_8h_source.html#l00019">eve::procgen::ParamDescriptor::kind</a> , 以及 <a class="el" href="namespaceeve_1_1procgen.html#ab639f8be33d9ffdd8a4640a7d3a60c73a27118326006d3829667a400ad23d5d98">eve::procgen::String</a>.</p>
+
+</div>
+</div>
+<a id="a72ffcc99a7ee2158f8036d67bc41892a" name="a72ffcc99a7ee2158f8036d67bc41892a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72ffcc99a7ee2158f8036d67bc41892a">&#9670;&#160;</a></span>getParamLabel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::getParamLabel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a parameter label by index. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Label or empty text. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00016">eve::procgen::ParamDescriptor::displayName</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a3a081bbabe4bc9a072f816bda08eee13" name="a3a081bbabe4bc9a072f816bda08eee13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a081bbabe4bc9a072f816bda08eee13">&#9670;&#160;</a></span>getParamMaximum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RecipeDescriptor::getParamMaximum </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a numeric maximum. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Maximum or zero. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="ParamSchema_8h_source.html#l00024">eve::procgen::ParamDescriptor::maximum</a>.</p>
+
+</div>
+</div>
+<a id="a923bf71b653cfc132957aea02d7ed128" name="a923bf71b653cfc132957aea02d7ed128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a923bf71b653cfc132957aea02d7ed128">&#9670;&#160;</a></span>getParamMinimum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RecipeDescriptor::getParamMinimum </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a numeric minimum. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Minimum or zero. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="ParamSchema_8h_source.html#l00023">eve::procgen::ParamDescriptor::minimum</a>.</p>
+
+</div>
+</div>
+<a id="a58489830236d8c21bc070251ab7c4f9d" name="a58489830236d8c21bc070251ab7c4f9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58489830236d8c21bc070251ab7c4f9d">&#9670;&#160;</a></span>getParamStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RecipeDescriptor::getParamStep </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the suggested numeric editing step. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Step or zero. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="ParamSchema_8h_source.html#l00025">eve::procgen::ParamDescriptor::step</a>.</p>
+
+</div>
+</div>
+<a id="a33ad46a0ab773a432fce7b777cae54d9" name="a33ad46a0ab773a432fce7b777cae54d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33ad46a0ab773a432fce7b777cae54d9">&#9670;&#160;</a></span>grid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1RecipeDescriptor.html">RecipeDescriptor</a> eve::procgen::RecipeDescriptor::grid </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>displayName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>category</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>minimumWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>minimumHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maximumWidth</em> = <code>4096</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maximumHeight</em> = <code>4096</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a schema with common seed, width and height parameters. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable recipe id.</td></tr>
+    <tr><td class="paramname">displayName</td><td>Display name.</td></tr>
+    <tr><td class="paramname">category</td><td>Browser category.</td></tr>
+    <tr><td class="paramname">minimumWidth</td><td>Minimum width.</td></tr>
+    <tr><td class="paramname">minimumHeight</td><td>Minimum height.</td></tr>
+    <tr><td class="paramname">maximumWidth</td><td>Maximum width.</td></tr>
+    <tr><td class="paramname">maximumHeight</td><td>Maximum height. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Recipe metadata. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00055">category</a>, <a class="el" href="ParamSchema_8h_source.html#l00054">displayName</a>, <a class="el" href="ParamSchema_8h_source.html#l00053">id</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00019">eve::procgen::ParamDescriptor::integer()</a> , 以及 <a class="el" href="ParamSchema_8h_source.html#l00056">params</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TextureRecipe_8cpp_source.html#l00088">eve::procgen::makeTextureRecipeDescriptor()</a>, <a class="el" href="BuiltinAlgorithms_8cpp_source.html#l00203">eve::procgen::GeneratorRegistry::registerBuiltins()</a>, <a class="el" href="BuiltinTextures_8cpp_source.html#l00486">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>, <a class="el" href="BuiltinHeightmap_8cpp_source.html#l00034">eve::procgen::registerTerrainHeightmapAlgorithm()</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00289">eve::procgen::registerWfcSimple()</a>.</p>
+
+</div>
+</div>
+<a id="ade40b9e89c001781ab1427b01ef080ec" name="ade40b9e89c001781ab1427b01ef080ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade40b9e89c001781ab1427b01ef080ec">&#9670;&#160;</a></span>isParamAdvanced()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RecipeDescriptor::isParamAdvanced </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether compact inspectors should hide the field. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Advanced flag. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00027">eve::procgen::ParamDescriptor::advanced</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a98e03e86599c6f5acf84d090fb1c6ad4" name="a98e03e86599c6f5acf84d090fb1c6ad4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98e03e86599c6f5acf84d090fb1c6ad4">&#9670;&#160;</a></span>paramHasMaximum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RecipeDescriptor::paramHasMaximum </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether a numeric maximum exists. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when bounded above. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00022">eve::procgen::ParamDescriptor::hasMaximum</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac80dfd364ac39f16f93f2ad36831c15c" name="ac80dfd364ac39f16f93f2ad36831c15c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac80dfd364ac39f16f93f2ad36831c15c">&#9670;&#160;</a></span>paramHasMinimum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RecipeDescriptor::paramHasMinimum </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether a numeric minimum exists. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Parameter index. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when bounded below. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a> 第 <a class="el" href="ParamSchema_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParamSchema_8h_source.html#l00021">eve::procgen::ParamDescriptor::hasMinimum</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ad355fa9373a2cad872537e86ccd80f36" name="ad355fa9373a2cad872537e86ccd80f36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad355fa9373a2cad872537e86ccd80f36">&#9670;&#160;</a></span>category</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::category</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01672">eve::procgen::Procgen::getAlgorithmCategory()</a>, <a class="el" href="ParamSchema_8h_source.html#l00077">getCategory()</a> , 以及 <a class="el" href="ParamSchema_8cpp_source.html#l00073">grid()</a>.</p>
+
+</div>
+</div>
+<a id="a394d3142623324414da90bb29f5475d6" name="a394d3142623324414da90bb29f5475d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a394d3142623324414da90bb29f5475d6">&#9670;&#160;</a></span>displayName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::displayName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l01667">eve::procgen::Procgen::getAlgorithmDisplayName()</a>, <a class="el" href="ParamSchema_8h_source.html#l00075">getDisplayName()</a> , 以及 <a class="el" href="ParamSchema_8cpp_source.html#l00073">grid()</a>.</p>
+
+</div>
+</div>
+<a id="a967beded2146229440430a44c744a1ba" name="a967beded2146229440430a44c744a1ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a967beded2146229440430a44c744a1ba">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RecipeDescriptor::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParamSchema_8h_source.html#l00073">getId()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00073">grid()</a>, <a class="el" href="GeneratorRegistry_8cpp_source.html#l00011">eve::procgen::GeneratorRegistry::registerAlgorithm()</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00030">eve::procgen::PbrRecipeRegistry::registerPbrRecipe()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00452">eve::procgen::MeshRecipeRegistry::registerRecipe()</a> , 以及 <a class="el" href="TextureRecipe_8cpp_source.html#l00017">eve::procgen::TextureRecipeRegistry::registerRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="aa218539902f2b84c0b47f622ee2c3245" name="aa218539902f2b84c0b47f622ee2c3245"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa218539902f2b84c0b47f622ee2c3245">&#9670;&#160;</a></span>params</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1ParamDescriptor.html">ParamDescriptor</a>&gt; eve::procgen::RecipeDescriptor::params</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a> 第 <a class="el" href="ParamSchema_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParamSchema_8cpp_source.html#l00091">applyDefaults()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00085">find()</a>, <a class="el" href="ParamSchema_8h_source.html#l00071">getParamCount()</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00073">grid()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00498">eve::procgen::MeshRecipeRegistry::registerBuiltins()</a>, <a class="el" href="BuiltinTextures_8cpp_source.html#l00486">eve::procgen::TextureRecipeRegistry::registerBuiltins()</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00212">eve::procgen::registerCastleMeshRecipe()</a>, <a class="el" href="CaveMeshRecipe_8cpp_source.html#l00010">eve::procgen::registerCaveMeshRecipe()</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00283">eve::procgen::registerLinearStructureRecipes()</a> , 以及 <a class="el" href="LSystemMesh_8cpp_source.html#l00185">eve::procgen::registerLSystemRecipes()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="ParamSchema_8h_source.html">ParamSchema.h</a></li>
+<li>src/modules/procgen/<a class="el" href="ParamSchema_8cpp_source.html">ParamSchema.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

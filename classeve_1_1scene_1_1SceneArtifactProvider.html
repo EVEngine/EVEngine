@@ -1,0 +1,563 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene::SceneArtifactProvider类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene.html">scene</a></li><li class="navelem"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html">SceneArtifactProvider</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1scene_1_1SceneArtifactProvider-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene::SceneArtifactProvider类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Real scene-module provider for generated artifact publication.  
+ <a href="classeve_1_1scene_1_1SceneArtifactProvider.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="scene_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::scene::SceneArtifactProvider 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1scene_1_1SceneArtifactProvider.png" usemap="#eve::scene::SceneArtifactProvider_map" alt=""/>
+  <map id="eve::scene::SceneArtifactProvider_map" name="eve::scene::SceneArtifactProvider_map">
+<area href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html" title="Scene graph publication capability, implemented by the scene module." alt="eve::artifact::ISceneArtifactAdapter" shape="rect" coords="0,56,209,80"/>
+<area href="classeve_1_1artifact_1_1ProviderContract.html" title="Base contract for a consumer-owned artifact provider." alt="eve::artifact::ProviderContract" shape="rect" coords="0,0,209,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0d2e8910db6d0300a03a613ecc027530" id="r_a0d2e8910db6d0300a03a613ecc027530"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a0d2e8910db6d0300a03a613ecc027530">prepare</a> (const <a class="el" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a> &amp;publication) override</td></tr>
+<tr class="memdesc:a0d2e8910db6d0300a03a613ecc027530"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stage one artifact and copy all data needed after prepare.  <br /></td></tr>
+<tr class="separator:a0d2e8910db6d0300a03a613ecc027530"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad88599103dd73fd55fa5e0edc278f6da" id="r_ad88599103dd73fd55fa5e0edc278f6da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#ad88599103dd73fd55fa5e0edc278f6da">snapshotState</a> () const override</td></tr>
+<tr class="memdesc:ad88599103dd73fd55fa5e0edc278f6da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export scene identity, build keys, handles and part bounds.  <br /></td></tr>
+<tr class="separator:ad88599103dd73fd55fa5e0edc278f6da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f794357b44c3d9523ebd8e5e50dbec8" id="r_a8f794357b44c3d9523ebd8e5e50dbec8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a8f794357b44c3d9523ebd8e5e50dbec8">restoreState</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;state) override</td></tr>
+<tr class="memdesc:a8f794357b44c3d9523ebd8e5e50dbec8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the registry from validated backend-neutral state.  <br /></td></tr>
+<tr class="separator:a8f794357b44c3d9523ebd8e5e50dbec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96cf764315a5c9d2d81c90b0e787b285" id="r_a96cf764315a5c9d2d81c90b0e787b285"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a96cf764315a5c9d2d81c90b0e787b285">emptyState</a> () const noexcept override</td></tr>
+<tr class="memdesc:a96cf764315a5c9d2d81c90b0e787b285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the scene registry has no committed records.  <br /></td></tr>
+<tr class="separator:a96cf764315a5c9d2d81c90b0e787b285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6eef3a5be30c7f3d76ab2df55940f19f" id="r_a6eef3a5be30c7f3d76ab2df55940f19f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a6eef3a5be30c7f3d76ab2df55940f19f">clearState</a> () noexcept override</td></tr>
+<tr class="memdesc:a6eef3a5be30c7f3d76ab2df55940f19f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear provider state through the common restore-cleanup hook.  <br /></td></tr>
+<tr class="separator:a6eef3a5be30c7f3d76ab2df55940f19f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8217d2ad41af3e596869ccdb19bd1cee" id="r_a8217d2ad41af3e596869ccdb19bd1cee"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1scene_1_1SceneArtifactRecord.html">SceneArtifactRecord</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a8217d2ad41af3e596869ccdb19bd1cee">find</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const noexcept</td></tr>
+<tr class="memdesc:a8217d2ad41af3e596869ccdb19bd1cee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find a committed scene artifact by persistent identity.  <br /></td></tr>
+<tr class="separator:a8217d2ad41af3e596869ccdb19bd1cee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a291c54379aa3aa0a1dfa2817cde8e26b" id="r_a291c54379aa3aa0a1dfa2817cde8e26b"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a291c54379aa3aa0a1dfa2817cde8e26b">size</a> () const noexcept</td></tr>
+<tr class="memdesc:a291c54379aa3aa0a1dfa2817cde8e26b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of committed scene artifact records.  <br /></td></tr>
+<tr class="separator:a291c54379aa3aa0a1dfa2817cde8e26b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0c3cdb145159a6e617172a07578b382" id="r_ad0c3cdb145159a6e617172a07578b382"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#ad0c3cdb145159a6e617172a07578b382">clear</a> () noexcept</td></tr>
+<tr class="memdesc:ad0c3cdb145159a6e617172a07578b382"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all records and reset the local handle allocator.  <br /></td></tr>
+<tr class="separator:ad0c3cdb145159a6e617172a07578b382"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd1fa2573cb0cae62d2b1591595e303" id="r_acfd1fa2573cb0cae62d2b1591595e303"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#acfd1fa2573cb0cae62d2b1591595e303">setPrepareFailure</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) noexcept</td></tr>
+<tr class="memdesc:acfd1fa2573cb0cae62d2b1591595e303"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inject a prepare failure for composition tests.  <br /></td></tr>
+<tr class="separator:acfd1fa2573cb0cae62d2b1591595e303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1artifact_1_1ISceneArtifactAdapter"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1artifact_1_1ISceneArtifactAdapter')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">eve::artifact::ISceneArtifactAdapter</a></td></tr>
+<tr class="memitem:a14f89dd697167b9a5a86989781469b51 inherit pub_methods_classeve_1_1artifact_1_1ISceneArtifactAdapter" id="r_a14f89dd697167b9a5a86989781469b51"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html#a14f89dd697167b9a5a86989781469b51">~ISceneArtifactAdapter</a> () override=default</td></tr>
+<tr class="separator:a14f89dd697167b9a5a86989781469b51 inherit pub_methods_classeve_1_1artifact_1_1ISceneArtifactAdapter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1artifact_1_1ProviderContract"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1artifact_1_1ProviderContract')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html">eve::artifact::ProviderContract</a></td></tr>
+<tr class="memitem:ad7e1191c0debb589a0619566c58bf8b0 inherit pub_methods_classeve_1_1artifact_1_1ProviderContract" id="r_ad7e1191c0debb589a0619566c58bf8b0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#ad7e1191c0debb589a0619566c58bf8b0">~ProviderContract</a> ()=default</td></tr>
+<tr class="separator:ad7e1191c0debb589a0619566c58bf8b0 inherit pub_methods_classeve_1_1artifact_1_1ProviderContract"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a9a6f2fc922e42baf80716b21b749c649" id="r_a9a6f2fc922e42baf80716b21b749c649"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a9a6f2fc922e42baf80716b21b749c649">SceneArtifactStage</a></td></tr>
+<tr class="separator:a9a6f2fc922e42baf80716b21b749c649"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1artifact_1_1ISceneArtifactAdapter"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1artifact_1_1ISceneArtifactAdapter')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">eve::artifact::ISceneArtifactAdapter</a></td></tr>
+<tr class="memitem:a5fd1f1bbb57185e650698481fed058a2 inherit pub_static_attribs_classeve_1_1artifact_1_1ISceneArtifactAdapter" id="r_a5fd1f1bbb57185e650698481fed058a2"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html#a5fd1f1bbb57185e650698481fed058a2">capabilityName</a> = &quot;eve.procgen.ISceneArtifactAdapter&quot;</td></tr>
+<tr class="separator:a5fd1f1bbb57185e650698481fed058a2 inherit pub_static_attribs_classeve_1_1artifact_1_1ISceneArtifactAdapter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Real scene-module provider for generated artifact publication. </p>
+<p>The first backend is deliberately CPU/registry based. It is the stable scene ownership boundary: a renderer or ECS <a class="el" href="classeve_1_1scene_1_1SceneHost.html" title="ECS mount point for one scene graph (full scene or nested subtree root). Isomorphic to eve::ui::UIHos...">SceneHost</a> may later consume the record without changing procgen or the capability contract. </p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ad0c3cdb145159a6e617172a07578b382" name="ad0c3cdb145159a6e617172a07578b382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0c3cdb145159a6e617172a07578b382">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scene::SceneArtifactProvider::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove all records and reset the local handle allocator. </p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00056">clearState()</a>.</p>
+
+</div>
+</div>
+<a id="a6eef3a5be30c7f3d76ab2df55940f19f" name="a6eef3a5be30c7f3d76ab2df55940f19f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6eef3a5be30c7f3d76ab2df55940f19f">&#9670;&#160;</a></span>clearState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scene::SceneArtifactProvider::clearState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear provider state through the common restore-cleanup hook. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a26319b92cb27e20b49b2d3e74045ec29">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00162">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a96cf764315a5c9d2d81c90b0e787b285" name="a96cf764315a5c9d2d81c90b0e787b285"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96cf764315a5c9d2d81c90b0e787b285">&#9670;&#160;</a></span>emptyState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::scene::SceneArtifactProvider::emptyState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the scene registry has no committed records. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a6fd1f4add3a3bb104fc98f73287dc7f2">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8217d2ad41af3e596869ccdb19bd1cee" name="a8217d2ad41af3e596869ccdb19bd1cee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8217d2ad41af3e596869ccdb19bd1cee">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1scene_1_1SceneArtifactRecord.html">SceneArtifactRecord</a> * eve::scene::SceneArtifactProvider::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find a committed scene artifact by persistent identity. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable record owned by this provider. @ownership <a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html" title="Real scene-module provider for generated artifact publication.">SceneArtifactProvider</a> owns committed records; callers must not delete or mutate the result. @lifetime Valid until <a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#ad0c3cdb145159a6e617172a07578b382" title="Remove all records and reset the local handle allocator.">clear()</a>, <a class="el" href="classeve_1_1scene_1_1SceneArtifactProvider.html#a8f794357b44c3d9523ebd8e5e50dbec8" title="Replace the registry from validated backend-neutral state.">restoreState()</a>, or provider destruction; retain SceneArtifactHandle across frames. @thread Call on the scene provider's owning thread. @reentrancy The lookup invokes no callbacks and is invalid across re-entrant provider mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00115">prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a0d2e8910db6d0300a03a613ecc027530" name="a0d2e8910db6d0300a03a613ecc027530"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d2e8910db6d0300a03a613ecc027530">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a> &gt; &gt; eve::scene::SceneArtifactProvider::prepare </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a> &amp;&#160;</td>
+          <td class="paramname"><em>publication</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stage one artifact and copy all data needed after prepare. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a405c5379a25dab67e34ae0095a96c5ea">eve::artifact::ProviderContract</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArtifactPublication_8h_source.html#l00086">eve::artifact::PublicationView::buildKey</a>, <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00032">eve::scene::SceneArtifactRecord::buildKey</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00156">find()</a>, <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00033">eve::scene::SceneArtifactRecord::handle</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00084">eve::artifact::PublicationView::id</a>, <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00031">eve::scene::SceneArtifactRecord::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00045">eve::RuntimeHandle&lt; SceneArtifactHandleTag &gt;::invalidIndex</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00034">eve::scene::SceneArtifactRecord::nodes</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00088">eve::artifact::PublicationView::parts</a> , 以及 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00027">eve::scene::validBounds()</a>.</p>
+
+</div>
+</div>
+<a id="a8f794357b44c3d9523ebd8e5e50dbec8" name="a8f794357b44c3d9523ebd8e5e50dbec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f794357b44c3d9523ebd8e5e50dbec8">&#9670;&#160;</a></span>restoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::scene::SceneArtifactProvider::restoreState </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace the registry from validated backend-neutral state. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#aa25788a7ca133370d53baa8c29b4abe0">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00048">bounds</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00115">eve::RuntimeHandle&lt; SceneArtifactHandleTag &gt;::fromPacked()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00053">eve::scene::hasSupportedVersion()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00045">eve::RuntimeHandle&lt; SceneArtifactHandleTag &gt;::invalidIndex</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00033">eve::scene::member()</a>, <a class="el" href="NodeDesc_8cpp_source.html#l00216">eve::scene::node()</a>, <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00034">eve::scene::SceneArtifactRecord::nodes</a>, <a class="el" href="Identity_8h_source.html#l00080">eve::detail::Id128&lt; Tag &gt;::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00074">eve::scene::readBounds()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00038">eve::scene::readString()</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00046">eve::scene::readUint64String()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="acfd1fa2573cb0cae62d2b1591595e303" name="acfd1fa2573cb0cae62d2b1591595e303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfd1fa2573cb0cae62d2b1591595e303">&#9670;&#160;</a></span>setPrepareFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scene::SceneArtifactProvider::setPrepareFailure </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inject a prepare failure for composition tests. </p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a291c54379aa3aa0a1dfa2817cde8e26b" name="a291c54379aa3aa0a1dfa2817cde8e26b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a291c54379aa3aa0a1dfa2817cde8e26b">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::scene::SceneArtifactProvider::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of committed scene artifact records. </p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad88599103dd73fd55fa5e0edc278f6da" name="ad88599103dd73fd55fa5e0edc278f6da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad88599103dd73fd55fa5e0edc278f6da">&#9670;&#160;</a></span>snapshotState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::scene::SceneArtifactProvider::snapshotState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Export scene identity, build keys, handles and part bounds. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a0e1f6eb72132331e3b684ebd8c9382ad">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00083">eve::scene::boundsValue()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="scene_2ArtifactProvider_8cpp_source.html#l00022">eve::scene::failureValue()</a>, <a class="el" href="NodeDesc_8cpp_source.html#l00216">eve::scene::node()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a9a6f2fc922e42baf80716b21b749c649" name="a9a6f2fc922e42baf80716b21b749c649"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a6f2fc922e42baf80716b21b749c649">&#9670;&#160;</a></span>SceneArtifactStage</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1scene_1_1SceneArtifactStage.html">SceneArtifactStage</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="scene_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="scene_2ArtifactProvider_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/scene/<a class="el" href="scene_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a></li>
+<li>src/modules/scene/<a class="el" href="scene_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

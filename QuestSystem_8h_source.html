@@ -1,0 +1,228 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/QuestSystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">QuestSystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="QuestSystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="QuestTypes_8h.html">rpg/QuestTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>Tracker;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">struct </span>QuestDefinition;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1QuestSystem.html">   21</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1QuestSystem.html">QuestSystem</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a19fd1731b658c803fb0367e50aa6eeb0">syncAuto</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a59afb0e28d980e993b50ddc68f534b0f">hasMetRequirements</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> &amp;def);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a3d46d7b61f8afc071adafff1c23af9a2">stateForUnlocked</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> &amp;def);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a8e184947cd63578f4d5272363c196050">activate</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, std::string *reason = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a04a3de69be90ccdcafb5bda86cd46a83">canActivate</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, std::string *reason = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a3912241f048ec1ca302aad1bba9dece4">canActivateReason</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#abf9103c2a776c79f8cf0ddafcc645825">notify</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> std::string &amp;topic, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keywordtype">int</span> amount);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a168c0990c4ef2fa0675091b91a444654">claim</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, std::string *reason = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a0ad0ea8d30b6517e8a3dfeed1d76b8ad">reset</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#af793ccb1360b598a0a2ce2d670b24f5a">abandon</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a6a3748eb1c23e5fb5591df1e2302fc79">fail</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keyword">const</span> std::string &amp;reason);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1QuestSystem.html#a921541e5bd79dd0c38a2a5b830c861d1">pollEvents</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, std::vector&lt;QuestEvent&gt; &amp;out);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aQuestTypes_8h_html"><div class="ttname"><a href="QuestTypes_8h.html">QuestTypes.h</a></div><div class="ttdoc">RPG 目标追踪器（任务/成就/教程）的纯数据类型。</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html">eve::rpg::QuestSystem</a></div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8h_source.html#l00021">QuestSystem.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a04a3de69be90ccdcafb5bda86cd46a83"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a04a3de69be90ccdcafb5bda86cd46a83">eve::rpg::QuestSystem::canActivate</a></div><div class="ttdeci">static bool canActivate(Tracker *t, const std::string &amp;id, std::string *reason=nullptr)</div><div class="ttdoc">是否可激活（谓词查询，可返回 reason）。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00116">QuestSystem.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a0ad0ea8d30b6517e8a3dfeed1d76b8ad"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a0ad0ea8d30b6517e8a3dfeed1d76b8ad">eve::rpg::QuestSystem::reset</a></div><div class="ttdeci">static bool reset(Tracker *t, const std::string &amp;id)</div><div class="ttdoc">进度清零并按当前 requires 回落 locked/inactive/active；不级联（compatibility facade (脚本兼容门面)）。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00196">QuestSystem.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a168c0990c4ef2fa0675091b91a444654"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a168c0990c4ef2fa0675091b91a444654">eve::rpg::QuestSystem::claim</a></div><div class="ttdeci">static bool claim(Tracker *t, const std::string &amp;id, std::string *reason=nullptr)</div><div class="ttdoc">仅 state==ready 时成功 → completed 并触发解锁；否则 reject（compatibility facade (脚本兼容门面)）。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00174">QuestSystem.cpp:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a19fd1731b658c803fb0367e50aa6eeb0"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a19fd1731b658c803fb0367e50aa6eeb0">eve::rpg::QuestSystem::syncAuto</a></div><div class="ttdeci">static void syncAuto(Tracker *t)</div><div class="ttdoc">补建 Registry 里尚不在 Tracker 上的条目，并解开前置已齐的 locked 条目。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00061">QuestSystem.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a3912241f048ec1ca302aad1bba9dece4"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a3912241f048ec1ca302aad1bba9dece4">eve::rpg::QuestSystem::canActivateReason</a></div><div class="ttdeci">static std::string canActivateReason(Tracker *t, const std::string &amp;id)</div><div class="ttdoc">不可激活的原因（&quot;&quot; 可激活，否则 unknown/locked/alreadyActive/alreadyCompleted/failed/ready）。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00100">QuestSystem.cpp:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a3d46d7b61f8afc071adafff1c23af9a2"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a3d46d7b61f8afc071adafff1c23af9a2">eve::rpg::QuestSystem::stateForUnlocked</a></div><div class="ttdeci">static std::string stateForUnlocked(const QuestDefinition &amp;def)</div><div class="ttdoc">解锁后的落点：startPolicy==auto → &quot;active&quot;，否则 &quot;inactive&quot;。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00057">QuestSystem.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a59afb0e28d980e993b50ddc68f534b0f"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a59afb0e28d980e993b50ddc68f534b0f">eve::rpg::QuestSystem::hasMetRequirements</a></div><div class="ttdeci">static bool hasMetRequirements(const Tracker &amp;t, const QuestDefinition &amp;def)</div><div class="ttdoc">def 的全部 requires 在本 Tracker 上均已 completed（谓词查询）。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00048">QuestSystem.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a6a3748eb1c23e5fb5591df1e2302fc79"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a6a3748eb1c23e5fb5591df1e2302fc79">eve::rpg::QuestSystem::fail</a></div><div class="ttdeci">static bool fail(Tracker *t, const std::string &amp;id, const std::string &amp;reason)</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00240">QuestSystem.cpp:240</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a8e184947cd63578f4d5272363c196050"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a8e184947cd63578f4d5272363c196050">eve::rpg::QuestSystem::activate</a></div><div class="ttdeci">static bool activate(Tracker *t, const std::string &amp;id, std::string *reason=nullptr)</div><div class="ttdoc">激活：仅 inactive 且前置已齐时成功；否则 push reject 并返回 false（compatibility facade (脚本兼容门面)）。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00122">QuestSystem.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_a921541e5bd79dd0c38a2a5b830c861d1"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#a921541e5bd79dd0c38a2a5b830c861d1">eve::rpg::QuestSystem::pollEvents</a></div><div class="ttdeci">static void pollEvents(Tracker *t, std::vector&lt; QuestEvent &gt; &amp;out)</div><div class="ttdoc">把 Tracker 的 pending 移动并清空到 out。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00244">QuestSystem.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_abf9103c2a776c79f8cf0ddafcc645825"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#abf9103c2a776c79f8cf0ddafcc645825">eve::rpg::QuestSystem::notify</a></div><div class="ttdeci">static void notify(Tracker *t, const std::string &amp;topic, const std::string &amp;target, int amount)</div><div class="ttdoc">报告事实 (topic, target, amount)；只推进 state==active 的条目。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00145">QuestSystem.cpp:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1QuestSystem_html_af793ccb1360b598a0a2ce2d670b24f5a"><div class="ttname"><a href="classeve_1_1rpg_1_1QuestSystem.html#af793ccb1360b598a0a2ce2d670b24f5a">eve::rpg::QuestSystem::abandon</a></div><div class="ttdeci">static bool abandon(Tracker *t, const std::string &amp;id)</div><div class="ttdoc">abandon/fail → failed；对 completed/failed/locked/未知 id 为 reject（compatibility facade (脚本兼容门面)）。</div><div class="ttdef"><b>Definition</b> <a href="QuestSystem_8cpp_source.html#l00238">QuestSystem.cpp:238</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Tracker_html"><div class="ttname"><a href="classeve_1_1rpg_1_1Tracker.html">eve::rpg::Tracker</a></div><div class="ttdoc">一份任务进度 + 本实例事件队列。</div><div class="ttdef"><b>Definition</b> <a href="Tracker_8h_source.html#l00024">Tracker.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1QuestDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1QuestDefinition.html">eve::rpg::QuestDefinition</a></div><div class="ttdoc">数据驱动的任务模板。</div><div class="ttdef"><b>Definition</b> <a href="Quest_8h_source.html#l00022">Quest.h:22</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

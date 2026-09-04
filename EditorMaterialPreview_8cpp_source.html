@@ -1,0 +1,325 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/material_editor/EditorMaterialPreview.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_1cbb5e2404b3c8cd1923250cab99a687.html">material_editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorMaterialPreview.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorMaterialPreview_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EditorMaterialPreview_8h.html">material_editor/EditorMaterialPreview.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;iterator&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>EditorResult&lt;T&gt; previewError(<a class="code hl_typedef" href="namespaceeve_1_1editor.html#ae8532d855d61b248701557b893f90949">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>std::vector&lt;EditorDiagnostic&gt; validateSettings(<span class="keyword">const</span> MaterialPreviewSettings&amp; settings) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    std::vector&lt;EditorDiagnostic&gt; diagnostics;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = [&amp;](<span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        diagnostics.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(rule), DiagnosticSeverity::Error,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            std::move(message)));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    };</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::set&lt;std::string&gt; geometries{<span class="stringliteral">&quot;sphere&quot;</span>, <span class="stringliteral">&quot;cube&quot;</span>, <span class="stringliteral">&quot;plane&quot;</span>, <span class="stringliteral">&quot;custom&quot;</span>};</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (!geometries.contains(settings.geometry))</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<span class="stringliteral">&quot;editor.material.preview-geometry&quot;</span>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>              <span class="stringliteral">&quot;Material preview geometry is unsupported: &quot;</span> + settings.geometry);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (settings.geometry == <span class="stringliteral">&quot;custom&quot;</span> &amp;&amp; settings.customMeshAsset.empty())</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<span class="stringliteral">&quot;editor.material.preview-mesh-required&quot;</span>, <span class="stringliteral">&quot;Custom material preview requires a mesh asset&quot;</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (settings.width &lt; 16 || settings.height &lt; 16 || settings.width &gt; 4096 || settings.height &gt; 4096)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<span class="stringliteral">&quot;editor.material.preview-resolution&quot;</span>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>              <span class="stringliteral">&quot;Material preview resolution must be between 16 and 4096&quot;</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (settings.distance &lt;= 0.0)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<span class="stringliteral">&quot;editor.material.preview-distance&quot;</span>, <span class="stringliteral">&quot;Material preview camera distance must be positive&quot;</span>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> diagnostics;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1MaterialPreviewService.html#aa9e073a1f78c48e96dc47a91010e7d6b">   38</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;TaskId&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1MaterialPreviewService.html#aa9e073a1f78c48e96dc47a91010e7d6b">MaterialPreviewService::render</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                                    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html">MaterialDocumentTarget</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                                    <a class="code hl_struct" href="structeve_1_1editor_1_1MaterialPreviewSettings.html">MaterialPreviewSettings</a> settings,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                                    <a class="code hl_class" href="classeve_1_1editor_1_1IMaterialPreviewRenderer.html">IMaterialPreviewRenderer</a>&amp; renderer) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (document.<a class="code hl_function" href="classeve_1_1UuidIdAdapter.html#a82d79968b13fa397d4d5b950b4bc8db9">empty</a>())</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">return</span> previewError&lt;TaskId&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.material.preview-document&quot;</span>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                    <span class="stringliteral">&quot;Material preview document id is required&quot;</span>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">auto</span> diagnostics = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>.validate();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">auto</span> settingsDiagnostics = validateSettings(settings);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    diagnostics.insert(diagnostics.end(), std::make_move_iterator(settingsDiagnostics.begin()),</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                       std::make_move_iterator(settingsDiagnostics.end()));</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Diagnostic.html">EditorDiagnostic</a>&amp; diagnostic : diagnostics)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">if</span> (diagnostic.severity() == DiagnosticSeverity::Error)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;TaskId&gt;::failure</a>(</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <a class="code hl_class" href="classeve_1_1Status.html">Status</a>(EditorStatus::Rejected, std::move(diagnostics)));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TaskId</a> task(<span class="stringliteral">&quot;material-preview-&quot;</span> + std::to_string(++sequence_));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html">MaterialPreviewRenderRequest</a> request;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    request.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#ab70ed4b6515a7bcd8af896b9c91973c1">sceneId</a> = <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a>(task.<a class="code hl_function" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a>() + <span class="stringliteral">&quot;:isolated-scene&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    request.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#a1792fb7902cf9b398e338a07c6938602">document</a> = document;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    request.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#a599e6c373b4ea4416c6761d1e6c2fa71">documentRevision</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>.revision();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    request.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#ac3ef66a8f69227900c455f8e87729dcf">material</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>.snapshotValue();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    request.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#a0828716cddc38a43f286e2c46e37c10d">settings</a> = std::move(settings);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html">MaterialPreviewRenderResult</a> rendered = renderer.<a class="code hl_function" href="classeve_1_1editor_1_1IMaterialPreviewRenderer.html#a3ce8b8fbbe3b99f6a40640cbfb9d30b0">render</a>(request);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    rendered.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#ac8f89ce998f631061cf01a833809da0f">diagnostics</a>.insert(rendered.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#ac8f89ce998f631061cf01a833809da0f">diagnostics</a>.begin(), diagnostics.begin(), diagnostics.end());</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (rendered.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#a4a2355b13ebaa67838d87f9b1c5463ed">status</a> == EditorStatus::Applied &amp;&amp; rendered.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#a529be039d39b11589b5fa7d59102e081">artifact</a>.empty()) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        rendered.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#a4a2355b13ebaa67838d87f9b1c5463ed">status</a> = EditorStatus::Failed;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        rendered.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#ac8f89ce998f631061cf01a833809da0f">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.material.preview-artifact-required&quot;</span>),</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            DiagnosticSeverity::Error, <span class="stringliteral">&quot;Preview renderer succeeded without an artifact&quot;</span>));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    tasks_.emplace(task, Task{document, request.<a class="code hl_variable" href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#a599e6c373b4ea4416c6761d1e6c2fa71">documentRevision</a>, std::move(rendered)});</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;TaskId&gt;(task);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1MaterialPreviewService.html#aacf15aeb25de309828d1191ae70bf77a">   72</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;MaterialPreviewRenderResult&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1MaterialPreviewService.html#aacf15aeb25de309828d1191ae70bf77a">MaterialPreviewService::result</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TaskId</a>&amp; task)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = tasks_.find(task);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">if</span> (found == tasks_.end())</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">return</span> previewError&lt;MaterialPreviewRenderResult&gt;(EditorStatus::NotFound,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                                         <span class="stringliteral">&quot;editor.material.preview-task-not-found&quot;</span>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                                         <span class="stringliteral">&quot;Material preview task was not found&quot;</span>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;MaterialPreviewRenderResult&gt;(found-&gt;second.result);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1MaterialPreviewService.html#aaadeaffc0e20b9de204f87f6a90f3f03">   81</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1MaterialPreviewService.html#aaadeaffc0e20b9de204f87f6a90f3f03">MaterialPreviewService::publish</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> currentRevision,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                                                   <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TaskId</a>&amp; task) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = tasks_.find(task);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (found == tasks_.end())</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">return</span> previewError&lt;void&gt;(EditorStatus::NotFound, <span class="stringliteral">&quot;editor.material.preview-task-not-found&quot;</span>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                  <span class="stringliteral">&quot;Material preview task was not found&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (found-&gt;second.document != document)</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">return</span> previewError&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.material.preview-document-mismatch&quot;</span>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                  <span class="stringliteral">&quot;Material preview belongs to another document&quot;</span>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (found-&gt;second.revision != currentRevision)</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">return</span> previewError&lt;void&gt;(EditorStatus::Conflict, <span class="stringliteral">&quot;editor.material.preview-stale&quot;</span>,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                                  <span class="stringliteral">&quot;Material changed after the preview was rendered&quot;</span>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (found-&gt;second.result.status != EditorStatus::Applied || found-&gt;second.result.artifact.empty()) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a> = found-&gt;second.result.status == EditorStatus::Applied</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                                        ? EditorStatus::Failed</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                                        : found-&gt;second.result.status;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_class" href="classeve_1_1Status.html">Status</a>(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, found-&gt;second.result.diagnostics));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    published_[document] = found-&gt;second.result.artifact;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1MaterialPreviewService.html#a4462a4a371c7b7bbcff5b05fabcc4027">  103</a></span>std::string <a class="code hl_function" href="classeve_1_1editor_1_1MaterialPreviewService.html#a4462a4a371c7b7bbcff5b05fabcc4027">MaterialPreviewService::publishedArtifact</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">const</span> <span class="keyword">auto</span> found = published_.find(document);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">return</span> found == published_.end() ? std::string{} : found-&gt;second;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditorMaterialPreview_8h_html"><div class="ttname"><a href="EditorMaterialPreview_8h.html">EditorMaterialPreview.h</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ae5f89cb6e6c69abb9c0b93094fd97a1a"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a></div><div class="ttdeci">Material * material</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00732">RenderSystem3D.cpp:732</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html_a454c688b892e6145fcad80d0a26a9018"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">eve::UuidIdAdapter::value</a></div><div class="ttdeci">const std::string &amp; value() const noexcept</div><div class="ttdoc">Returns the exact legacy or canonical compatibility spelling.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00326">Identity.h:326</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html_a82d79968b13fa397d4d5b950b4bc8db9"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html#a82d79968b13fa397d4d5b950b4bc8db9">eve::UuidIdAdapter::empty</a></div><div class="ttdeci">bool empty() const noexcept</div><div class="ttdoc">True when no compatibility spelling has been assigned.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00338">Identity.h:338</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IMaterialPreviewRenderer_html"><div class="ttname"><a href="classeve_1_1editor_1_1IMaterialPreviewRenderer.html">eve::editor::IMaterialPreviewRenderer</a></div><div class="ttdoc">Host boundary that owns creation and teardown of an isolated preview scene.</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00040">EditorMaterialPreview.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IMaterialPreviewRenderer_html_a3ce8b8fbbe3b99f6a40640cbfb9d30b0"><div class="ttname"><a href="classeve_1_1editor_1_1IMaterialPreviewRenderer.html#a3ce8b8fbbe3b99f6a40640cbfb9d30b0">eve::editor::IMaterialPreviewRenderer::render</a></div><div class="ttdeci">virtual MaterialPreviewRenderResult render(const MaterialPreviewRenderRequest &amp;request)=0</div><div class="ttdoc">Render one immutable request without reading or mutating the live game scene.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MaterialPreviewService_html_a4462a4a371c7b7bbcff5b05fabcc4027"><div class="ttname"><a href="classeve_1_1editor_1_1MaterialPreviewService.html#a4462a4a371c7b7bbcff5b05fabcc4027">eve::editor::MaterialPreviewService::publishedArtifact</a></div><div class="ttdeci">std::string publishedArtifact(const DocumentId &amp;document) const</div><div class="ttdoc">Return the most recently published artifact for a document.</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8cpp_source.html#l00103">EditorMaterialPreview.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MaterialPreviewService_html_aa9e073a1f78c48e96dc47a91010e7d6b"><div class="ttname"><a href="classeve_1_1editor_1_1MaterialPreviewService.html#aa9e073a1f78c48e96dc47a91010e7d6b">eve::editor::MaterialPreviewService::render</a></div><div class="ttdeci">EditorResult&lt; TaskId &gt; render(const DocumentId &amp;document, const MaterialDocumentTarget &amp;material, MaterialPreviewSettings settings, IMaterialPreviewRenderer &amp;renderer)</div><div class="ttdoc">Validate and render a material snapshot in a unique isolated scene.</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8cpp_source.html#l00038">EditorMaterialPreview.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MaterialPreviewService_html_aaadeaffc0e20b9de204f87f6a90f3f03"><div class="ttname"><a href="classeve_1_1editor_1_1MaterialPreviewService.html#aaadeaffc0e20b9de204f87f6a90f3f03">eve::editor::MaterialPreviewService::publish</a></div><div class="ttdeci">EditorResult&lt; void &gt; publish(const DocumentId &amp;document, Revision currentRevision, const TaskId &amp;task)</div><div class="ttdoc">Publish only a successful result matching the current document revision.</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8cpp_source.html#l00081">EditorMaterialPreview.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MaterialPreviewService_html_aacf15aeb25de309828d1191ae70bf77a"><div class="ttname"><a href="classeve_1_1editor_1_1MaterialPreviewService.html#aacf15aeb25de309828d1191ae70bf77a">eve::editor::MaterialPreviewService::result</a></div><div class="ttdeci">EditorResult&lt; MaterialPreviewRenderResult &gt; result(const TaskId &amp;task) const</div><div class="ttdoc">Return one immutable render result.</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8cpp_source.html#l00072">EditorMaterialPreview.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1material__editing_1_1MaterialDocumentTarget_html"><div class="ttname"><a href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html">eve::material_editing::MaterialDocumentTarget</a></div><div class="ttdoc">UI-neutral, serializable material authoring target.</div><div class="ttdef"><b>Definition</b> <a href="MaterialTarget_8h_source.html#l00025">MaterialTarget.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a0377b6158f0e722179dde541f17ebf93"><div class="ttname"><a href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">eve::editor::StableId</a></div><div class="ttdeci">eve::editing::StableId StableId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00036">EditorIds.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ae8532d855d61b248701557b893f90949"><div class="ttname"><a href="namespaceeve_1_1editor.html#ae8532d855d61b248701557b893f90949">eve::editor::EditorStatus</a></div><div class="ttdeci">eve::StatusCode EditorStatus</div><div class="ttdef"><b>Definition</b> <a href="EditorResult_8h_source.html#l00008">EditorResult.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aee556a1a4c69319bef3bea3c87db4db6"><div class="ttname"><a href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">eve::editor::Revision</a></div><div class="ttdeci">eve::editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="EditorProtocol_8h_source.html#l00009">EditorProtocol.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderRequest_html"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html">eve::editor::MaterialPreviewRenderRequest</a></div><div class="ttdoc">Immutable request passed to a renderer-owned isolated preview scene.</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00024">EditorMaterialPreview.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderRequest_html_a0828716cddc38a43f286e2c46e37c10d"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#a0828716cddc38a43f286e2c46e37c10d">eve::editor::MaterialPreviewRenderRequest::settings</a></div><div class="ttdeci">MaterialPreviewSettings settings</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00029">EditorMaterialPreview.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderRequest_html_a1792fb7902cf9b398e338a07c6938602"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#a1792fb7902cf9b398e338a07c6938602">eve::editor::MaterialPreviewRenderRequest::document</a></div><div class="ttdeci">DocumentId document</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00026">EditorMaterialPreview.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderRequest_html_a599e6c373b4ea4416c6761d1e6c2fa71"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#a599e6c373b4ea4416c6761d1e6c2fa71">eve::editor::MaterialPreviewRenderRequest::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00027">EditorMaterialPreview.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderRequest_html_ab70ed4b6515a7bcd8af896b9c91973c1"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#ab70ed4b6515a7bcd8af896b9c91973c1">eve::editor::MaterialPreviewRenderRequest::sceneId</a></div><div class="ttdeci">StableId sceneId</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00025">EditorMaterialPreview.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderRequest_html_ac3ef66a8f69227900c455f8e87729dcf"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderRequest.html#ac3ef66a8f69227900c455f8e87729dcf">eve::editor::MaterialPreviewRenderRequest::material</a></div><div class="ttdeci">EditorValue material</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00028">EditorMaterialPreview.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderResult_html"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html">eve::editor::MaterialPreviewRenderResult</a></div><div class="ttdoc">Renderer output referenced by a stable artifact rather than GPU pointers.</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00033">EditorMaterialPreview.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderResult_html_a4a2355b13ebaa67838d87f9b1c5463ed"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#a4a2355b13ebaa67838d87f9b1c5463ed">eve::editor::MaterialPreviewRenderResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00034">EditorMaterialPreview.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderResult_html_a529be039d39b11589b5fa7d59102e081"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#a529be039d39b11589b5fa7d59102e081">eve::editor::MaterialPreviewRenderResult::artifact</a></div><div class="ttdeci">std::string artifact</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00035">EditorMaterialPreview.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewRenderResult_html_ac8f89ce998f631061cf01a833809da0f"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewRenderResult.html#ac8f89ce998f631061cf01a833809da0f">eve::editor::MaterialPreviewRenderResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00036">EditorMaterialPreview.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1MaterialPreviewSettings_html"><div class="ttname"><a href="structeve_1_1editor_1_1MaterialPreviewSettings.html">eve::editor::MaterialPreviewSettings</a></div><div class="ttdoc">Camera, mesh and environment settings for an isolated material preview.</div><div class="ttdef"><b>Definition</b> <a href="EditorMaterialPreview_8h_source.html#l00012">EditorMaterialPreview.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

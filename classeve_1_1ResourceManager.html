@@ -1,0 +1,1183 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ResourceManager类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1ResourceManager.html">ResourceManager</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="classeve_1_1ResourceManager-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ResourceManager类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> is a singleton that manages all resources in the game. It provides a way to load, reload, and unload resources.  
+ <a href="classeve_1_1ResourceManager.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Resource_8h_source.html">Resource.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::ResourceManager 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1ResourceManager.png" usemap="#eve::ResourceManager_map" alt=""/>
+  <map id="eve::ResourceManager_map" name="eve::ResourceManager_map">
+<area href="classeve_1_1caps_1_1IAssetReloader.html" alt="eve::caps::IAssetReloader" shape="rect" coords="0,0,157,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ResourceManager_1_1AsyncLoad.html">AsyncLoad</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3a179cad1e3622dc8d33c680eda161a5" id="r_a3a179cad1e3622dc8d33c680eda161a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Resource.html">Resource</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a3a179cad1e3622dc8d33c680eda161a5">get</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="memdesc:a3a179cad1e3622dc8d33c680eda161a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the cached resource for <code>key</code>; on a miss, load it through the registered IAssetReloader providers and cache the result.  <br /></td></tr>
+<tr class="separator:a3a179cad1e3622dc8d33c680eda161a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a368b6aaf0c632d48de8c46944da7a7a1" id="r_a368b6aaf0c632d48de8c46944da7a7a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a368b6aaf0c632d48de8c46944da7a7a1">request</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="memdesc:a368b6aaf0c632d48de8c46944da7a7a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue a cache miss load without blocking for decode to finish.  <br /></td></tr>
+<tr class="separator:a368b6aaf0c632d48de8c46944da7a7a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a441ae01569d9e2516f1da8563dd70eb5" id="r_a441ae01569d9e2516f1da8563dd70eb5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a441ae01569d9e2516f1da8563dd70eb5">requestAll</a> (std::span&lt; const std::string &gt; keys)</td></tr>
+<tr class="memdesc:a441ae01569d9e2516f1da8563dd70eb5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classeve_1_1ResourceManager.html#a368b6aaf0c632d48de8c46944da7a7a1" title="Queue a cache miss load without blocking for decode to finish.">request()</a></code> every key; stops at the first hard failure.  <br /></td></tr>
+<tr class="separator:a441ae01569d9e2516f1da8563dd70eb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad366dcb366a50d80c7fa0d651334f6e8" id="r_ad366dcb366a50d80c7fa0d651334f6e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">OptionalRef</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#ad366dcb366a50d80c7fa0d651334f6e8">peek</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="memdesc:ad366dcb366a50d80c7fa0d651334f6e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache lookup that never starts a load.  <br /></td></tr>
+<tr class="separator:ad366dcb366a50d80c7fa0d651334f6e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33fc484fc880acbf954a247d7e2a767e" id="r_a33fc484fc880acbf954a247d7e2a767e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">ResultRef</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a33fc484fc880acbf954a247d7e2a767e">waitFor</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="memdesc:a33fc484fc880acbf954a247d7e2a767e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block until <code>key</code> is cached, failed, or unclaimed.  <br /></td></tr>
+<tr class="separator:a33fc484fc880acbf954a247d7e2a767e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f00f4675d2d14a64b3499c1c7f55402" id="r_a9f00f4675d2d14a64b3499c1c7f55402"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a9f00f4675d2d14a64b3499c1c7f55402">pendingCount</a> () const</td></tr>
+<tr class="memdesc:a9f00f4675d2d14a64b3499c1c7f55402"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of in-flight <code><a class="el" href="classeve_1_1ResourceManager.html#a368b6aaf0c632d48de8c46944da7a7a1" title="Queue a cache miss load without blocking for decode to finish.">request()</a></code> jobs (including failed-not-yet-consumed).  <br /></td></tr>
+<tr class="separator:a9f00f4675d2d14a64b3499c1c7f55402"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a284ddc7e48b83999086264f8fd30ab96" id="r_a284ddc7e48b83999086264f8fd30ab96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a284ddc7e48b83999086264f8fd30ab96">unload</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="memdesc:a284ddc7e48b83999086264f8fd30ab96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop the exact cache entry <code>key</code> (parameters included). The resource stays alive while other holders still reference it.  <br /></td></tr>
+<tr class="separator:a284ddc7e48b83999086264f8fd30ab96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c87cde22cd9d56857673f2f561839cb" id="r_a0c87cde22cd9d56857673f2f561839cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a0c87cde22cd9d56857673f2f561839cb">unloadPath</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a0c87cde22cd9d56857673f2f561839cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop every cache entry whose path matches, whatever its parameters.  <br /></td></tr>
+<tr class="separator:a0c87cde22cd9d56857673f2f561839cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae48a5d90450cc7d19ff7f4674e1103d2" id="r_ae48a5d90450cc7d19ff7f4674e1103d2"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#ae48a5d90450cc7d19ff7f4674e1103d2">count</a> () const</td></tr>
+<tr class="memdesc:ae48a5d90450cc7d19ff7f4674e1103d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cached entries.  <br /></td></tr>
+<tr class="separator:ae48a5d90450cc7d19ff7f4674e1103d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6571f460e340701c6aaa2560dff2d66" id="r_ac6571f460e340701c6aaa2560dff2d66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#ac6571f460e340701c6aaa2560dff2d66">clear</a> ()</td></tr>
+<tr class="memdesc:ac6571f460e340701c6aaa2560dff2d66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop every entry and re-arm lazy registration (tests / teardown).  <br /></td></tr>
+<tr class="separator:ac6571f460e340701c6aaa2560dff2d66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a5039bb636a105248c8a57e50dc0473" id="r_a9a5039bb636a105248c8a57e50dc0473"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a9a5039bb636a105248c8a57e50dc0473">reloadKind</a> () const override</td></tr>
+<tr class="memdesc:a9a5039bb636a105248c8a57e50dc0473"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability name for the cache reloader.  <br /></td></tr>
+<tr class="separator:a9a5039bb636a105248c8a57e50dc0473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d8348b389006f0ee6232be27f40fd10" id="r_a0d8348b389006f0ee6232be27f40fd10"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a0d8348b389006f0ee6232be27f40fd10">handlesPath</a> (const std::string &amp;normPath) const override</td></tr>
+<tr class="separator:a0d8348b389006f0ee6232be27f40fd10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdd9c4aca89ec0e4d819845184bd0845" id="r_abdd9c4aca89ec0e4d819845184bd0845"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#abdd9c4aca89ec0e4d819845184bd0845">reload</a> (const std::string &amp;normPath) override</td></tr>
+<tr class="memdesc:abdd9c4aca89ec0e4d819845184bd0845"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reload everything referencing <code>normPath</code>.  <br /></td></tr>
+<tr class="separator:abdd9c4aca89ec0e4d819845184bd0845"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1211a8c5d6d950d78eed16bbfb0af07b" id="r_a1211a8c5d6d950d78eed16bbfb0af07b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Resource.html">Resource</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a1211a8c5d6d950d78eed16bbfb0af07b">load</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) override</td></tr>
+<tr class="memdesc:a1211a8c5d6d950d78eed16bbfb0af07b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cache provider entry point; this implementation does not claim keys.  <br /></td></tr>
+<tr class="separator:a1211a8c5d6d950d78eed16bbfb0af07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1caps_1_1IAssetReloader"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1caps_1_1IAssetReloader')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html">eve::caps::IAssetReloader</a></td></tr>
+<tr class="memitem:a65472c2ac99d8d26291f3a4e05fda606 inherit pub_methods_classeve_1_1caps_1_1IAssetReloader" id="r_a65472c2ac99d8d26291f3a4e05fda606"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a65472c2ac99d8d26291f3a4e05fda606">~IAssetReloader</a> ()=default</td></tr>
+<tr class="separator:a65472c2ac99d8d26291f3a4e05fda606 inherit pub_methods_classeve_1_1caps_1_1IAssetReloader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:afb017ed75003ade76187b1344dc45e44" id="r_afb017ed75003ade76187b1344dc45e44"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1ResourceManager.html">ResourceManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#afb017ed75003ade76187b1344dc45e44">getInstance</a> ()</td></tr>
+<tr class="separator:afb017ed75003ade76187b1344dc45e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8de4ca95940165d0a5d0a0bf6d485ec3" id="r_a8de4ca95940165d0a5d0a0bf6d485ec3"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a8de4ca95940165d0a5d0a0bf6d485ec3">normalizePath</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a8de4ca95940165d0a5d0a0bf6d485ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize a VFS path: backslashes to '/', strip leading "./" and trailing '/'.  <br /></td></tr>
+<tr class="separator:a8de4ca95940165d0a5d0a0bf6d485ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6697138c08c8712dada9395a642755e" id="r_ac6697138c08c8712dada9395a642755e"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#ac6697138c08c8712dada9395a642755e">makeKey</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const std::string &amp;query=&quot;&quot;)</td></tr>
+<tr class="memdesc:ac6697138c08c8712dada9395a642755e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a cache key from a path and optional <code>?query</code> parameters.  <br /></td></tr>
+<tr class="separator:ac6697138c08c8712dada9395a642755e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a559e0e69188167f1a951e40fbba644f9" id="r_a559e0e69188167f1a951e40fbba644f9"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a559e0e69188167f1a951e40fbba644f9">pathOfKey</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="memdesc:a559e0e69188167f1a951e40fbba644f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The path part of a cache key (everything before the first '?').  <br /></td></tr>
+<tr class="separator:a559e0e69188167f1a951e40fbba644f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:a005f85475d9cf2194b9b4a747739cdbe" id="r_a005f85475d9cf2194b9b4a747739cdbe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a005f85475d9cf2194b9b4a747739cdbe">ResourceManager</a> ()=default</td></tr>
+<tr class="separator:a005f85475d9cf2194b9b4a747739cdbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77a4d5810cc76edb0fa1add37d92359c" id="r_a77a4d5810cc76edb0fa1add37d92359c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a77a4d5810cc76edb0fa1add37d92359c">ensureRegistered</a> ()</td></tr>
+<tr class="separator:a77a4d5810cc76edb0fa1add37d92359c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13b557410b7220b3d071865ebe65be21" id="r_a13b557410b7220b3d071865ebe65be21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Resource.html">Resource</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a13b557410b7220b3d071865ebe65be21">loadReplacement</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="separator:a13b557410b7220b3d071865ebe65be21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b0d23881eab514729fe731aae4c3d96" id="r_a0b0d23881eab514729fe731aae4c3d96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Resource.html">Resource</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a0b0d23881eab514729fe731aae4c3d96">loadUncached</a> (const std::string &amp;norm)</td></tr>
+<tr class="separator:a0b0d23881eab514729fe731aae4c3d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7d09048a8207aa22ef34bc0ec17ca0e" id="r_aa7d09048a8207aa22ef34bc0ec17ca0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#aa7d09048a8207aa22ef34bc0ec17ca0e">runLoadJob</a> (std::string norm, uint64_t epoch)</td></tr>
+<tr class="separator:aa7d09048a8207aa22ef34bc0ec17ca0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:a3d6be7b11a6d95d09a594c4420b0089e" id="r_a3d6be7b11a6d95d09a594c4420b0089e"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classeve_1_1ref.html">ref</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a3d6be7b11a6d95d09a594c4420b0089e">resources</a></td></tr>
+<tr class="separator:a3d6be7b11a6d95d09a594c4420b0089e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad5b24804504f7fe9899136a21a25b5c" id="r_aad5b24804504f7fe9899136a21a25b5c"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::shared_ptr&lt; <a class="el" href="structeve_1_1ResourceManager_1_1AsyncLoad.html">AsyncLoad</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#aad5b24804504f7fe9899136a21a25b5c">pending_</a></td></tr>
+<tr class="separator:aad5b24804504f7fe9899136a21a25b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6bfc93d40dccf1ac6f249c32b65af2a" id="r_ad6bfc93d40dccf1ac6f249c32b65af2a"><td class="memItemLeft" align="right" valign="top">std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#ad6bfc93d40dccf1ac6f249c32b65af2a">mu_</a></td></tr>
+<tr class="separator:ad6bfc93d40dccf1ac6f249c32b65af2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae228750b95f18e71d8e39de56fffd324" id="r_ae228750b95f18e71d8e39de56fffd324"><td class="memItemLeft" align="right" valign="top">std::condition_variable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#ae228750b95f18e71d8e39de56fffd324">cv_</a></td></tr>
+<tr class="separator:ae228750b95f18e71d8e39de56fffd324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a709d385ca8f681f9dd4f6c8a5a2008a0" id="r_a709d385ca8f681f9dd4f6c8a5a2008a0"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#a709d385ca8f681f9dd4f6c8a5a2008a0">epoch_</a> = 1</td></tr>
+<tr class="separator:a709d385ca8f681f9dd4f6c8a5a2008a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0106f97a39ee4d579e3b3060462a153" id="r_ab0106f97a39ee4d579e3b3060462a153"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ResourceManager.html#ab0106f97a39ee4d579e3b3060462a153">registered_</a> = false</td></tr>
+<tr class="separator:ab0106f97a39ee4d579e3b3060462a153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_types_classeve_1_1caps_1_1IAssetReloader"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classeve_1_1caps_1_1IAssetReloader')"><img src="closed.png" alt="-"/>&#160;Public 类型 继承自 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html">eve::caps::IAssetReloader</a></td></tr>
+<tr class="memitem:a743d36e232122d5998dcb4ce1ec55d84 inherit pub_types_classeve_1_1caps_1_1IAssetReloader" id="r_a743d36e232122d5998dcb4ce1ec55d84"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a743d36e232122d5998dcb4ce1ec55d84">Priority</a> { <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a743d36e232122d5998dcb4ce1ec55d84aa24da65d562d593445e3ac5ae044a5f6">kCache</a> = 0
+, <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a743d36e232122d5998dcb4ce1ec55d84a097adc2279b60772696a4360d3842e1e">kTexture</a> = 10
+, <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a743d36e232122d5998dcb4ce1ec55d84a7a66685f12ac0a3e538a07dfc325ff6d">kConsumer</a> = 20
+ }</td></tr>
+<tr class="separator:a743d36e232122d5998dcb4ce1ec55d84 inherit pub_types_classeve_1_1caps_1_1IAssetReloader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1caps_1_1IAssetReloader"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1caps_1_1IAssetReloader')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html">eve::caps::IAssetReloader</a></td></tr>
+<tr class="memitem:af1b4d11ffdf6149c7966c1874c6a2992 inherit pub_static_attribs_classeve_1_1caps_1_1IAssetReloader" id="r_af1b4d11ffdf6149c7966c1874c6a2992"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#af1b4d11ffdf6149c7966c1874c6a2992">capabilityName</a> = &quot;IAssetReloader&quot;</td></tr>
+<tr class="separator:af1b4d11ffdf6149c7966c1874c6a2992 inherit pub_static_attribs_classeve_1_1caps_1_1IAssetReloader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> is a singleton that manages all resources in the game. It provides a way to load, reload, and unload resources. </p>
+<p>The manager is a unified cache for CPU-side assets (ImageData, FontData, ModelData, SoundData, ...). Keys are normalized VFS paths, optionally with <code>?param=value</code> entries ("fonts/a.ttf?size=16"). On a miss it asks the registered <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html">eve::caps::IAssetReloader</a> providers which one claims the key and can <code><a class="el" href="classeve_1_1ResourceManager.html#a1211a8c5d6d950d78eed16bbfb0af07b" title="Cache provider entry point; this implementation does not claim keys.">load()</a></code> it; the first hit is cached and returned. On a file change the manager itself participates in hot reload as the first IAssetReloader listener (kCache priority): every cached entry for that path is re-loaded and refreshed in place through <a class="el" href="classeve_1_1Resource.html#a04d654ee5794c46aa5a17142d4c54f0e" title="Replace this instance&#39;s contents with replacement&#39;s. The ResourceManager keeps instance identity stab...">Resource::adopt</a>, so holders keep a valid pointer. Entries that list the refreshed resource as a dependency are refreshed too (transitively, cycle-safe).</p>
+<p>The cache itself is thread-safe: map access is mutex-guarded and the heavy provider <a class="el" href="classeve_1_1ResourceManager.html#a1211a8c5d6d950d78eed16bbfb0af07b" title="Cache provider entry point; this implementation does not claim keys.">load()</a> runs outside the lock, so sceneloader's background decode threads can insert entries while the main thread reads them. Reloads (adopt) are expected on the main thread during hot-reload dispatch.</p>
+<p><code><a class="el" href="classeve_1_1ResourceManager.html#a368b6aaf0c632d48de8c46944da7a7a1" title="Queue a cache miss load without blocking for decode to finish.">request()</a></code> / <code><a class="el" href="classeve_1_1ResourceManager.html#a33fc484fc880acbf954a247d7e2a767e" title="Block until key is cached, failed, or unclaimed.">waitFor()</a></code> are the asynchronous programming interface: request queues CPU decode on <code><a class="el" href="classeve_1_1caps_1_1IAsyncWorkExecutor.html" title="Fire-and-forget CPU job submission used by the resource cache.">caps::IAsyncWorkExecutor</a></code> (the thread module) and waitFor joins that job. <code><a class="el" href="classeve_1_1ResourceManager.html#a3a179cad1e3622dc8d33c680eda161a5" title="Get the cached resource for key; on a miss, load it through the registered IAssetReloader providers a...">get()</a></code> waits for an in-flight request of the same key so a prefetch cannot race a later synchronous load into a double decode. </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00100">100</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a005f85475d9cf2194b9b4a747739cdbe" name="a005f85475d9cf2194b9b4a747739cdbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a005f85475d9cf2194b9b4a747739cdbe">&#9670;&#160;</a></span>ResourceManager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ResourceManager::ResourceManager </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00015">getInstance()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac6571f460e340701c6aaa2560dff2d66" name="ac6571f460e340701c6aaa2560dff2d66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6571f460e340701c6aaa2560dff2d66">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ResourceManager::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drop every entry and re-arm lazy registration (tests / teardown). </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00242">cv_</a>, <a class="el" href="Resource_8h_source.html#l00243">epoch_</a>, <a class="el" href="Resource_8h_source.html#l00241">mu_</a>, <a class="el" href="Resource_8h_source.html#l00240">pending_</a>, <a class="el" href="Resource_8h_source.html#l00244">registered_</a> , 以及 <a class="el" href="Resource_8h_source.html#l00239">resources</a>.</p>
+
+</div>
+</div>
+<a id="ae48a5d90450cc7d19ff7f4674e1103d2" name="ae48a5d90450cc7d19ff7f4674e1103d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae48a5d90450cc7d19ff7f4674e1103d2">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::ResourceManager::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of cached entries. </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00241">mu_</a> , 以及 <a class="el" href="Resource_8h_source.html#l00239">resources</a>.</p>
+
+</div>
+</div>
+<a id="a77a4d5810cc76edb0fa1add37d92359c" name="a77a4d5810cc76edb0fa1add37d92359c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77a4d5810cc76edb0fa1add37d92359c">&#9670;&#160;</a></span>ensureRegistered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ResourceManager::ensureRegistered </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetReloader_8h_source.html#l00035">eve::caps::IAssetReloader::kCache</a>, <a class="el" href="Resource_8h_source.html#l00241">mu_</a> , 以及 <a class="el" href="Resource_8h_source.html#l00244">registered_</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00015">getInstance()</a>, <a class="el" href="Resource_8cpp_source.html#l00126">request()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00201">waitFor()</a>.</p>
+
+</div>
+</div>
+<a id="a3a179cad1e3622dc8d33c680eda161a5" name="a3a179cad1e3622dc8d33c680eda161a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a179cad1e3622dc8d33c680eda161a5">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Resource.html">Resource</a> * eve::ResourceManager::get </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the cached resource for <code>key</code>; on a miss, load it through the registered IAssetReloader providers and cache the result. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>A normalized VFS path, optionally with <code>?params</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The shared resource, or nullptr when no provider claims the key. Loader errors propagate to the caller. The returned pointer is owned by the cache (kept alive while the entry exists); callers must not delete it, and it stays valid until <a class="el" href="classeve_1_1ResourceManager.html#a284ddc7e48b83999086264f8fd30ab96" title="Drop the exact cache entry key (parameters included). The resource stays alive while other holders st...">unload()</a> or process exit. @ownership Borrowed from the cache; <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> is the owning authority. @nullable Yes when no registered provider claims <code>key</code>. @lifetime Valid while the cache entry remains loaded and until manager teardown; callers must not retain it across unload or reload replacement. @thread Lookup may be called by concurrent readers; cache mutation and reload commit are serialized by <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a>. @reentrancy The returned resource must not be used to re-enter cache mutation while a <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> operation is holding its internal lock. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00111">detail</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00201">waitFor()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="font_2Font_8cpp_source.html#l00039">eve::font::Font::newFontDataFromFile()</a>, <a class="el" href="Image_8cpp_source.html#l00061">eve::image::Image::newImageDataFromFile()</a>, <a class="el" href="Model3D_8cpp_source.html#l00137">eve::model3d::Model3D::newModelDataFromFile()</a> , 以及 <a class="el" href="Sound_8cpp_source.html#l00210">eve::sound::Sound::newSoundDataFromFile()</a>.</p>
+
+</div>
+</div>
+<a id="afb017ed75003ade76187b1344dc45e44" name="afb017ed75003ade76187b1344dc45e44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb017ed75003ade76187b1344dc45e44">&#9670;&#160;</a></span>getInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ResourceManager.html">ResourceManager</a> &amp; eve::ResourceManager::getInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8cpp_source.html#l00051">ensureRegistered()</a> , 以及 <a class="el" href="classeve_1_1ResourceManager.html#a005f85475d9cf2194b9b4a747739cdbe">ResourceManager()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l01032">eve::sceneloader::SceneLoader::diff()</a>, <a class="el" href="Graphics_8cpp_source.html#l01687">eve::graphics::Graphics::ensureFileTexturesReady()</a>, <a class="el" href="font_2Font_8cpp_source.html#l00039">eve::font::Font::newFontDataFromFile()</a>, <a class="el" href="Image_8cpp_source.html#l00061">eve::image::Image::newImageDataFromFile()</a>, <a class="el" href="Model3D_8cpp_source.html#l00137">eve::model3d::Model3D::newModelDataFromFile()</a>, <a class="el" href="Sound_8cpp_source.html#l00210">eve::sound::Sound::newSoundDataFromFile()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00857">eve::graphics::vulkan::Graphics::newTextureFromFile()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02237">eve::graphics::webgpu::Graphics::newTextureFromFile()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l01657">eve::graphics::Graphics::requestFileImageDecode()</a>.</p>
+
+</div>
+</div>
+<a id="a0d8348b389006f0ee6232be27f40fd10" name="a0d8348b389006f0ee6232be27f40fd10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d8348b389006f0ee6232be27f40fd10">&#9670;&#160;</a></span>handlesPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ResourceManager::handlesPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>normPath</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Whether this reloader claims <code>normPath</code> during automatic dispatch. For providers of cached CPU resources the key may carry parameters ("fonts/a.ttf?size=16"); use <a class="el" href="classeve_1_1ResourceManager.html#a559e0e69188167f1a951e40fbba644f9" title="The path part of a cache key (everything before the first &#39;?&#39;).">ResourceManager::pathOfKey()</a> to strip them. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a34a5b5943c77f14a4a20a1d2363d2541">eve::caps::IAssetReloader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00241">mu_</a>, <a class="el" href="Resource_8cpp_source.html#l00028">normalizePath()</a>, <a class="el" href="Resource_8cpp_source.html#l00046">pathOfKey()</a> , 以及 <a class="el" href="Resource_8h_source.html#l00239">resources</a>.</p>
+
+</div>
+</div>
+<a id="a1211a8c5d6d950d78eed16bbfb0af07b" name="a1211a8c5d6d950d78eed16bbfb0af07b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1211a8c5d6d950d78eed16bbfb0af07b">&#9670;&#160;</a></span>load()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Resource.html">Resource</a> * eve::ResourceManager::load </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cache provider entry point; this implementation does not claim keys. </p>
+<dl class="section return"><dt>返回</dt><dd>Always nullptr for the cache provider. @ownership Borrowed/null; no resource is created by this override. @nullable Yes. @lifetime No returned object; the call is main-thread affine during reload dispatch. @thread Main/reload dispatch thread. @reentrancy Does not invoke external callbacks. </dd></dl>
+
+<p>重载 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#adb0f4c7032280377a6dfa6fcd21022e1">eve::caps::IAssetReloader</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00219">219</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13b557410b7220b3d071865ebe65be21" name="a13b557410b7220b3d071865ebe65be21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13b557410b7220b3d071865ebe65be21">&#9670;&#160;</a></span>loadReplacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Resource.html">Resource</a> * eve::ResourceManager::loadReplacement </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00063">loadUncached()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00310">reload()</a>.</p>
+
+</div>
+</div>
+<a id="a0b0d23881eab514729fe731aae4c3d96" name="a0b0d23881eab514729fe731aae4c3d96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b0d23881eab514729fe731aae4c3d96">&#9670;&#160;</a></span>loadUncached()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Resource.html">Resource</a> * eve::ResourceManager::loadUncached </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>norm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="Resource_8h_source.html#l00066">eve::Resource::setUri()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00404">loadReplacement()</a>, <a class="el" href="Resource_8cpp_source.html#l00075">runLoadJob()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00201">waitFor()</a>.</p>
+
+</div>
+</div>
+<a id="ac6697138c08c8712dada9395a642755e" name="ac6697138c08c8712dada9395a642755e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6697138c08c8712dada9395a642755e">&#9670;&#160;</a></span>makeKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ResourceManager::makeKey </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>query</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a cache key from a path and optional <code>?query</code> parameters. </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Resource_8cpp_source.html#l00028">normalizePath()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ModelLoader_8cpp_source.html#l00148">eve::model3d::modelCacheKey()</a>, <a class="el" href="font_2Font_8cpp_source.html#l00039">eve::font::Font::newFontDataFromFile()</a>, <a class="el" href="Resource_8cpp_source.html#l00193">peek()</a>, <a class="el" href="Resource_8cpp_source.html#l00126">request()</a>, <a class="el" href="Resource_8cpp_source.html#l00265">unload()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00201">waitFor()</a>.</p>
+
+</div>
+</div>
+<a id="a8de4ca95940165d0a5d0a0bf6d485ec3" name="a8de4ca95940165d0a5d0a0bf6d485ec3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8de4ca95940165d0a5d0a0bf6d485ec3">&#9670;&#160;</a></span>normalizePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ResourceManager::normalizePath </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Normalize a VFS path: backslashes to '/', strip leading "./" and trailing '/'. </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00300">handlesPath()</a>, <a class="el" href="Resource_8cpp_source.html#l00037">makeKey()</a>, <a class="el" href="Resource_8cpp_source.html#l00046">pathOfKey()</a>, <a class="el" href="Resource_8cpp_source.html#l00310">reload()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00270">unloadPath()</a>.</p>
+
+</div>
+</div>
+<a id="a559e0e69188167f1a951e40fbba644f9" name="a559e0e69188167f1a951e40fbba644f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a559e0e69188167f1a951e40fbba644f9">&#9670;&#160;</a></span>pathOfKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ResourceManager::pathOfKey </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The path part of a cache key (everything before the first '?'). </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00028">normalizePath()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00300">handlesPath()</a>, <a class="el" href="Resource_8cpp_source.html#l00310">reload()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00270">unloadPath()</a>.</p>
+
+</div>
+</div>
+<a id="ad366dcb366a50d80c7fa0d651334f6e8" name="ad366dcb366a50d80c7fa0d651334f6e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad366dcb366a50d80c7fa0d651334f6e8">&#9670;&#160;</a></span>peek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">OptionalRef</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt; eve::ResourceManager::peek </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cache lookup that never starts a load. </p>
+<dl class="section return"><dt>返回</dt><dd>Empty when missing or still decoding; borrowed cache entry otherwise. @ownership Borrowed from the cache. @nullable Yes — empty optional means not ready. @lifetime Valid until unload/clear of that entry; do not retain across reload. @thread Concurrent readers are serialized with the cache mutex. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Resource_8cpp_source.html#l00037">makeKey()</a>, <a class="el" href="Resource_8h_source.html#l00241">mu_</a> , 以及 <a class="el" href="Resource_8h_source.html#l00239">resources</a>.</p>
+
+</div>
+</div>
+<a id="a9f00f4675d2d14a64b3499c1c7f55402" name="a9f00f4675d2d14a64b3499c1c7f55402"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f00f4675d2d14a64b3499c1c7f55402">&#9670;&#160;</a></span>pendingCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::ResourceManager::pendingCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of in-flight <code><a class="el" href="classeve_1_1ResourceManager.html#a368b6aaf0c632d48de8c46944da7a7a1" title="Queue a cache miss load without blocking for decode to finish.">request()</a></code> jobs (including failed-not-yet-consumed). </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00241">mu_</a> , 以及 <a class="el" href="Resource_8h_source.html#l00240">pending_</a>.</p>
+
+</div>
+</div>
+<a id="abdd9c4aca89ec0e4d819845184bd0845" name="abdd9c4aca89ec0e4d819845184bd0845"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdd9c4aca89ec0e4d819845184bd0845">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::ResourceManager::reload </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>normPath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reload everything referencing <code>normPath</code>. </p>
+<dl class="section return"><dt>返回</dt><dd>A checked result whose value is true when at least one object changed. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Failure is reported through the structured status; a successful false value means the provider handled the path but nothing changed. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#af6b3cfacda61032c27b3345deb64680d">eve::caps::IAssetReloader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Resource_8cpp_source.html#l00404">loadReplacement()</a>, <a class="el" href="Resource_8h_source.html#l00241">mu_</a>, <a class="el" href="Resource_8cpp_source.html#l00028">normalizePath()</a>, <a class="el" href="Resource_8cpp_source.html#l00046">pathOfKey()</a>, <a class="el" href="Resource_8h_source.html#l00239">resources</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneLoader_8cpp_source.html#l01032">eve::sceneloader::SceneLoader::diff()</a>.</p>
+
+</div>
+</div>
+<a id="a9a5039bb636a105248c8a57e50dc0473" name="a9a5039bb636a105248c8a57e50dc0473"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a5039bb636a105248c8a57e50dc0473">&#9670;&#160;</a></span>reloadKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::ResourceManager::reloadKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable capability name for the cache reloader. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed, non-null, null-terminated static text. @ownership Borrowed; not allocated and not caller-owned. @nullable No. @lifetime Static for the process lifetime. @thread Thread-safe and side-effect free. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1caps_1_1IAssetReloader.html#a1027feee70f22f1ff25ea5e070061c47">eve::caps::IAssetReloader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00206">206</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a368b6aaf0c632d48de8c46944da7a7a1" name="a368b6aaf0c632d48de8c46944da7a7a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a368b6aaf0c632d48de8c46944da7a7a1">&#9670;&#160;</a></span>request()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::ResourceManager::request </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queue a cache miss load without blocking for decode to finish. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Normalized VFS path, optionally with <code>?params</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd><code>NoOp</code> if already cached, <code>Pending</code> if a load is already in flight, <code>Applied</code> if this call queued or completed a load, <code>NotFound</code> if no provider claims the key, or <code>Failed</code> when inline load throws. @ownership Does not transfer a resource; the cache remains the owner. @lifetime The pending job keeps the key alive until waitFor/get/clear. @thread Safe to call from the game thread. Decode runs on a worker when <code>IAsyncWorkExecutor</code> is registered, otherwise inline. @reentrancy Must not be called from <code>IAssetReloader::load()</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Resource_8h_source.html#l00242">cv_</a>, <a class="el" href="Resource_8cpp_source.html#l00051">ensureRegistered()</a>, <a class="el" href="Resource_8h_source.html#l00243">epoch_</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Resource_8cpp_source.html#l00037">makeKey()</a>, <a class="el" href="Resource_8h_source.html#l00241">mu_</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::Pending</a>, <a class="el" href="Resource_8h_source.html#l00240">pending_</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="Resource_8h_source.html#l00239">resources</a>, <a class="el" href="Resource_8cpp_source.html#l00075">runLoadJob()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00184">requestAll()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l01657">eve::graphics::Graphics::requestFileImageDecode()</a>.</p>
+
+</div>
+</div>
+<a id="a441ae01569d9e2516f1da8563dd70eb5" name="a441ae01569d9e2516f1da8563dd70eb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a441ae01569d9e2516f1da8563dd70eb5">&#9670;&#160;</a></span>requestAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::ResourceManager::requestAll </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::string &gt;&#160;</td>
+          <td class="paramname"><em>keys</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><code><a class="el" href="classeve_1_1ResourceManager.html#a368b6aaf0c632d48de8c46944da7a7a1" title="Queue a cache miss load without blocking for decode to finish.">request()</a></code> every key; stops at the first hard failure. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">keys</td><td>Borrowed list of cache keys; duplicates share one in-flight job. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Resource_8cpp_source.html#l00126">request()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aa7d09048a8207aa22ef34bc0ec17ca0e" name="aa7d09048a8207aa22ef34bc0ec17ca0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7d09048a8207aa22ef34bc0ec17ca0e">&#9670;&#160;</a></span>runLoadJob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ResourceManager::runLoadJob </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>norm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>epoch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00242">cv_</a>, <a class="el" href="Resource_8h_source.html#l00243">epoch_</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Resource_8cpp_source.html#l00063">loadUncached()</a>, <a class="el" href="Resource_8h_source.html#l00241">mu_</a>, <a class="el" href="Resource_8h_source.html#l00240">pending_</a> , 以及 <a class="el" href="Resource_8h_source.html#l00239">resources</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00126">request()</a>.</p>
+
+</div>
+</div>
+<a id="a284ddc7e48b83999086264f8fd30ab96" name="a284ddc7e48b83999086264f8fd30ab96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a284ddc7e48b83999086264f8fd30ab96">&#9670;&#160;</a></span>unload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ResourceManager::unload </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drop the exact cache entry <code>key</code> (parameters included). The resource stays alive while other holders still reference it. </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Resource_8cpp_source.html#l00037">makeKey()</a>, <a class="el" href="Resource_8h_source.html#l00241">mu_</a> , 以及 <a class="el" href="Resource_8h_source.html#l00239">resources</a>.</p>
+
+</div>
+</div>
+<a id="a0c87cde22cd9d56857673f2f561839cb" name="a0c87cde22cd9d56857673f2f561839cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c87cde22cd9d56857673f2f561839cb">&#9670;&#160;</a></span>unloadPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ResourceManager::unloadPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drop every cache entry whose path matches, whatever its parameters. </p>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00241">mu_</a>, <a class="el" href="Resource_8cpp_source.html#l00028">normalizePath()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="Resource_8cpp_source.html#l00046">pathOfKey()</a> , 以及 <a class="el" href="Resource_8h_source.html#l00239">resources</a>.</p>
+
+</div>
+</div>
+<a id="a33fc484fc880acbf954a247d7e2a767e" name="a33fc484fc880acbf954a247d7e2a767e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33fc484fc880acbf954a247d7e2a767e">&#9670;&#160;</a></span>waitFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">ResultRef</a>&lt; <a class="el" href="classeve_1_1Resource.html">Resource</a> &gt; eve::ResourceManager::waitFor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Block until <code>key</code> is cached, failed, or unclaimed. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Cache key; starts a load if neither cached nor in flight. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Borrowed resource on success; <code>NotFound</code> / <code>Failed</code> otherwise. @ownership Borrowed from the cache on success. @lifetime Same as <a class="el" href="classeve_1_1ResourceManager.html#a3a179cad1e3622dc8d33c680eda161a5" title="Get the cached resource for key; on a miss, load it through the registered IAssetReloader providers a...">get()</a>. @thread Game thread; waits for a worker if <a class="el" href="classeve_1_1ResourceManager.html#a368b6aaf0c632d48de8c46944da7a7a1" title="Queue a cache miss load without blocking for decode to finish.">request()</a> is in flight. @reentrancy Must not be called from a worker that this wait would join on the same pool (deadlock). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Resource_8cpp_source.html">Resource.cpp</a> 第 <a class="el" href="Resource_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8h_source.html#l00242">cv_</a>, <a class="el" href="Resource_8cpp_source.html#l00051">ensureRegistered()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Resource_8cpp_source.html#l00063">loadUncached()</a>, <a class="el" href="Resource_8cpp_source.html#l00037">makeKey()</a>, <a class="el" href="Resource_8h_source.html#l00241">mu_</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Resource_8h_source.html#l00240">pending_</a>, <a class="el" href="Resource_8h_source.html#l00239">resources</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00118">get()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00857">eve::graphics::vulkan::Graphics::newTextureFromFile()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02237">eve::graphics::webgpu::Graphics::newTextureFromFile()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ae228750b95f18e71d8e39de56fffd324" name="ae228750b95f18e71d8e39de56fffd324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae228750b95f18e71d8e39de56fffd324">&#9670;&#160;</a></span>cv_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::condition_variable eve::ResourceManager::cv_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00242">242</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00281">clear()</a>, <a class="el" href="Resource_8cpp_source.html#l00126">request()</a>, <a class="el" href="Resource_8cpp_source.html#l00075">runLoadJob()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00201">waitFor()</a>.</p>
+
+</div>
+</div>
+<a id="a709d385ca8f681f9dd4f6c8a5a2008a0" name="a709d385ca8f681f9dd4f6c8a5a2008a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a709d385ca8f681f9dd4f6c8a5a2008a0">&#9670;&#160;</a></span>epoch_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ResourceManager::epoch_ = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00281">clear()</a>, <a class="el" href="Resource_8cpp_source.html#l00126">request()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00075">runLoadJob()</a>.</p>
+
+</div>
+</div>
+<a id="ad6bfc93d40dccf1ac6f249c32b65af2a" name="ad6bfc93d40dccf1ac6f249c32b65af2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6bfc93d40dccf1ac6f249c32b65af2a">&#9670;&#160;</a></span>mu_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mutex eve::ResourceManager::mu_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00281">clear()</a>, <a class="el" href="Resource_8cpp_source.html#l00058">count()</a>, <a class="el" href="Resource_8cpp_source.html#l00051">ensureRegistered()</a>, <a class="el" href="Resource_8cpp_source.html#l00300">handlesPath()</a>, <a class="el" href="Resource_8cpp_source.html#l00193">peek()</a>, <a class="el" href="Resource_8cpp_source.html#l00260">pendingCount()</a>, <a class="el" href="Resource_8cpp_source.html#l00310">reload()</a>, <a class="el" href="Resource_8cpp_source.html#l00126">request()</a>, <a class="el" href="Resource_8cpp_source.html#l00075">runLoadJob()</a>, <a class="el" href="Resource_8cpp_source.html#l00265">unload()</a>, <a class="el" href="Resource_8cpp_source.html#l00270">unloadPath()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00201">waitFor()</a>.</p>
+
+</div>
+</div>
+<a id="aad5b24804504f7fe9899136a21a25b5c" name="aad5b24804504f7fe9899136a21a25b5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad5b24804504f7fe9899136a21a25b5c">&#9670;&#160;</a></span>pending_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, std::shared_ptr&lt;<a class="el" href="structeve_1_1ResourceManager_1_1AsyncLoad.html">AsyncLoad</a>&gt; &gt; eve::ResourceManager::pending_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00281">clear()</a>, <a class="el" href="Resource_8cpp_source.html#l00260">pendingCount()</a>, <a class="el" href="Resource_8cpp_source.html#l00126">request()</a>, <a class="el" href="Resource_8cpp_source.html#l00075">runLoadJob()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00201">waitFor()</a>.</p>
+
+</div>
+</div>
+<a id="ab0106f97a39ee4d579e3b3060462a153" name="ab0106f97a39ee4d579e3b3060462a153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0106f97a39ee4d579e3b3060462a153">&#9670;&#160;</a></span>registered_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ResourceManager::registered_ = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00244">244</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00281">clear()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00051">ensureRegistered()</a>.</p>
+
+</div>
+</div>
+<a id="a3d6be7b11a6d95d09a594c4420b0089e" name="a3d6be7b11a6d95d09a594c4420b0089e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d6be7b11a6d95d09a594c4420b0089e">&#9670;&#160;</a></span>resources</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, <a class="el" href="classeve_1_1ref.html">ref</a>&lt;<a class="el" href="classeve_1_1Resource.html">Resource</a>&gt; &gt; eve::ResourceManager::resources</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Resource_8h_source.html">Resource.h</a> 第 <a class="el" href="Resource_8h_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Resource_8cpp_source.html#l00281">clear()</a>, <a class="el" href="Resource_8cpp_source.html#l00058">count()</a>, <a class="el" href="Resource_8cpp_source.html#l00300">handlesPath()</a>, <a class="el" href="Resource_8cpp_source.html#l00193">peek()</a>, <a class="el" href="Resource_8cpp_source.html#l00310">reload()</a>, <a class="el" href="Resource_8cpp_source.html#l00126">request()</a>, <a class="el" href="Resource_8cpp_source.html#l00075">runLoadJob()</a>, <a class="el" href="Resource_8cpp_source.html#l00265">unload()</a>, <a class="el" href="Resource_8cpp_source.html#l00270">unloadPath()</a> , 以及 <a class="el" href="Resource_8cpp_source.html#l00201">waitFor()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Resource_8h_source.html">Resource.h</a></li>
+<li>src/engine/common/<a class="el" href="Resource_8cpp_source.html">Resource.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

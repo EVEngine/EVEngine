@@ -1,0 +1,515 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::Building::Rally结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1Building.html">Building</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html">Rally</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1Building_1_1Rally-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::Building::Rally结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html" title="Rally order copied to newly produced units.">Rally</a> order copied to newly produced units.  
+ <a href="structeve_1_1rts_1_1Building_1_1Rally.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a1333b3f566419a9567fd3230f96308d8" id="r_a1333b3f566419a9567fd3230f96308d8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a1333b3f566419a9567fd3230f96308d8">enabled</a> = false</td></tr>
+<tr class="separator:a1333b3f566419a9567fd3230f96308d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb2cf991df9d99652030c106e471cb6d" id="r_adb2cf991df9d99652030c106e471cb6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html">CommandSpec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#adb2cf991df9d99652030c106e471cb6d">command</a></td></tr>
+<tr class="separator:adb2cf991df9d99652030c106e471cb6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a053e5720ae11d80e7fe49df2a680d873" id="r_a053e5720ae11d80e7fe49df2a680d873"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a053e5720ae11d80e7fe49df2a680d873">combatGroup</a> = 0</td></tr>
+<tr class="separator:a053e5720ae11d80e7fe49df2a680d873"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36c179dcefc256472af0be3c8d86259e" id="r_a36c179dcefc256472af0be3c8d86259e"><td class="memItemLeft" align="right" valign="top">ecs::EntityHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a36c179dcefc256472af0be3c8d86259e">transport</a> {}</td></tr>
+<tr class="separator:a36c179dcefc256472af0be3c8d86259e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca7c18a96d2b4fb1dfdf2af4fdb35af4" id="r_aca7c18a96d2b4fb1dfdf2af4fdb35af4"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#aca7c18a96d2b4fb1dfdf2af4fdb35af4">minimumTransportLoad</a> = 1</td></tr>
+<tr class="separator:aca7c18a96d2b4fb1dfdf2af4fdb35af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a203b2e9afc4e3447a63e04838731ec56" id="r_a203b2e9afc4e3447a63e04838731ec56"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a203b2e9afc4e3447a63e04838731ec56">transportActive</a> = false</td></tr>
+<tr class="separator:a203b2e9afc4e3447a63e04838731ec56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6669a87d93e119bab1e8a9ea5e5550c4" id="r_a6669a87d93e119bab1e8a9ea5e5550c4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a6669a87d93e119bab1e8a9ea5e5550c4">productionSpawnBlocked</a> = false</td></tr>
+<tr class="separator:a6669a87d93e119bab1e8a9ea5e5550c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3100f6744fd4a510201f8f5a48438914" id="r_a3100f6744fd4a510201f8f5a48438914"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a3100f6744fd4a510201f8f5a48438914">blockedProductionTask</a></td></tr>
+<tr class="separator:a3100f6744fd4a510201f8f5a48438914"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd79c36980dba4e1f82a5c516fe3ed97" id="r_afd79c36980dba4e1f82a5c516fe3ed97"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#afd79c36980dba4e1f82a5c516fe3ed97">settledProductionTasks</a></td></tr>
+<tr class="separator:afd79c36980dba4e1f82a5c516fe3ed97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38fd468986c40f4c536b5cc54cf09875" id="r_a38fd468986c40f4c536b5cc54cf09875"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ecs::EntityHandle &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a38fd468986c40f4c536b5cc54cf09875">reinforcements</a></td></tr>
+<tr class="separator:a38fd468986c40f4c536b5cc54cf09875"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba19427722de3b1eaeb656cb4f46c613" id="r_aba19427722de3b1eaeb656cb4f46c613"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#aba19427722de3b1eaeb656cb4f46c613">reinforcementLimit</a> = 0</td></tr>
+<tr class="separator:aba19427722de3b1eaeb656cb4f46c613"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22a960fb62d876ce1c106ef7d0a15ecc" id="r_a22a960fb62d876ce1c106ef7d0a15ecc"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a22a960fb62d876ce1c106ef7d0a15ecc">reinforcementTypeLimits</a></td></tr>
+<tr class="separator:a22a960fb62d876ce1c106ef7d0a15ecc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f00290c2b38243c957b0106ce399f64" id="r_a9f00290c2b38243c957b0106ce399f64"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a9f00290c2b38243c957b0106ce399f64">reinforcementTypePriorities</a></td></tr>
+<tr class="separator:a9f00290c2b38243c957b0106ce399f64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a795e5ece9f198d1e4e479ec109bfbf97" id="r_a795e5ece9f198d1e4e479ec109bfbf97"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a795e5ece9f198d1e4e479ec109bfbf97">reinforcementFallbacks</a></td></tr>
+<tr class="separator:a795e5ece9f198d1e4e479ec109bfbf97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeafb8d47da819c37d2b140204d2b48fe" id="r_aeafb8d47da819c37d2b140204d2b48fe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#aeafb8d47da819c37d2b140204d2b48fe">reinforcementCapped</a> = false</td></tr>
+<tr class="separator:aeafb8d47da819c37d2b140204d2b48fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ccf3d3a367277a106e4a3daac8ebf4d" id="r_a0ccf3d3a367277a106e4a3daac8ebf4d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a0ccf3d3a367277a106e4a3daac8ebf4d">reinforcementPolicyPausedTask</a></td></tr>
+<tr class="separator:a0ccf3d3a367277a106e4a3daac8ebf4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a198727826177e049e94c0449a14bd171" id="r_a198727826177e049e94c0449a14bd171"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a198727826177e049e94c0449a14bd171">reinforcementAutoCancelDelay</a> = 0.0f</td></tr>
+<tr class="separator:a198727826177e049e94c0449a14bd171"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d5c902ff2ea5944db214e870ba9af30" id="r_a2d5c902ff2ea5944db214e870ba9af30"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html#a2d5c902ff2ea5944db214e870ba9af30">reinforcementCappedSeconds</a> = 0.0f</td></tr>
+<tr class="separator:a2d5c902ff2ea5944db214e870ba9af30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html" title="Rally order copied to newly produced units.">Rally</a> order copied to newly produced units. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00883">883</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a3100f6744fd4a510201f8f5a48438914" name="a3100f6744fd4a510201f8f5a48438914"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3100f6744fd4a510201f8f5a48438914">&#9670;&#160;</a></span>blockedProductionTask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::Building::Rally::blockedProductionTask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00891">891</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a053e5720ae11d80e7fe49df2a680d873" name="a053e5720ae11d80e7fe49df2a680d873"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a053e5720ae11d80e7fe49df2a680d873">&#9670;&#160;</a></span>combatGroup</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::rts::Building::Rally::combatGroup = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00886">886</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adb2cf991df9d99652030c106e471cb6d" name="adb2cf991df9d99652030c106e471cb6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb2cf991df9d99652030c106e471cb6d">&#9670;&#160;</a></span>command</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html">CommandSpec</a> eve::rts::Building::Rally::command</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00885">885</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1333b3f566419a9567fd3230f96308d8" name="a1333b3f566419a9567fd3230f96308d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1333b3f566419a9567fd3230f96308d8">&#9670;&#160;</a></span>enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Building::Rally::enabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00884">884</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca7c18a96d2b4fb1dfdf2af4fdb35af4" name="aca7c18a96d2b4fb1dfdf2af4fdb35af4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca7c18a96d2b4fb1dfdf2af4fdb35af4">&#9670;&#160;</a></span>minimumTransportLoad</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::rts::Building::Rally::minimumTransportLoad = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00888">888</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6669a87d93e119bab1e8a9ea5e5550c4" name="a6669a87d93e119bab1e8a9ea5e5550c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6669a87d93e119bab1e8a9ea5e5550c4">&#9670;&#160;</a></span>productionSpawnBlocked</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Building::Rally::productionSpawnBlocked = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00890">890</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a198727826177e049e94c0449a14bd171" name="a198727826177e049e94c0449a14bd171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a198727826177e049e94c0449a14bd171">&#9670;&#160;</a></span>reinforcementAutoCancelDelay</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Building::Rally::reinforcementAutoCancelDelay = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00900">900</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeafb8d47da819c37d2b140204d2b48fe" name="aeafb8d47da819c37d2b140204d2b48fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeafb8d47da819c37d2b140204d2b48fe">&#9670;&#160;</a></span>reinforcementCapped</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Building::Rally::reinforcementCapped = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00898">898</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d5c902ff2ea5944db214e870ba9af30" name="a2d5c902ff2ea5944db214e870ba9af30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d5c902ff2ea5944db214e870ba9af30">&#9670;&#160;</a></span>reinforcementCappedSeconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::Building::Rally::reinforcementCappedSeconds = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00901">901</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a795e5ece9f198d1e4e479ec109bfbf97" name="a795e5ece9f198d1e4e479ec109bfbf97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a795e5ece9f198d1e4e479ec109bfbf97">&#9670;&#160;</a></span>reinforcementFallbacks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, std::string&gt; eve::rts::Building::Rally::reinforcementFallbacks</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00897">897</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba19427722de3b1eaeb656cb4f46c613" name="aba19427722de3b1eaeb656cb4f46c613"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba19427722de3b1eaeb656cb4f46c613">&#9670;&#160;</a></span>reinforcementLimit</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::rts::Building::Rally::reinforcementLimit = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00894">894</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ccf3d3a367277a106e4a3daac8ebf4d" name="a0ccf3d3a367277a106e4a3daac8ebf4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ccf3d3a367277a106e4a3daac8ebf4d">&#9670;&#160;</a></span>reinforcementPolicyPausedTask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::Building::Rally::reinforcementPolicyPausedTask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00899">899</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38fd468986c40f4c536b5cc54cf09875" name="a38fd468986c40f4c536b5cc54cf09875"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38fd468986c40f4c536b5cc54cf09875">&#9670;&#160;</a></span>reinforcements</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;ecs::EntityHandle&gt; eve::rts::Building::Rally::reinforcements</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00893">893</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a22a960fb62d876ce1c106ef7d0a15ecc" name="a22a960fb62d876ce1c106ef7d0a15ecc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22a960fb62d876ce1c106ef7d0a15ecc">&#9670;&#160;</a></span>reinforcementTypeLimits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, std::size_t&gt; eve::rts::Building::Rally::reinforcementTypeLimits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00895">895</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9f00290c2b38243c957b0106ce399f64" name="a9f00290c2b38243c957b0106ce399f64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f00290c2b38243c957b0106ce399f64">&#9670;&#160;</a></span>reinforcementTypePriorities</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, int&gt; eve::rts::Building::Rally::reinforcementTypePriorities</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00896">896</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd79c36980dba4e1f82a5c516fe3ed97" name="afd79c36980dba4e1f82a5c516fe3ed97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd79c36980dba4e1f82a5c516fe3ed97">&#9670;&#160;</a></span>settledProductionTasks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::rts::Building::Rally::settledProductionTasks</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00892">892</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a36c179dcefc256472af0be3c8d86259e" name="a36c179dcefc256472af0be3c8d86259e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36c179dcefc256472af0be3c8d86259e">&#9670;&#160;</a></span>transport</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::EntityHandle eve::rts::Building::Rally::transport {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00887">887</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a203b2e9afc4e3447a63e04838731ec56" name="a203b2e9afc4e3447a63e04838731ec56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a203b2e9afc4e3447a63e04838731ec56">&#9670;&#160;</a></span>transportActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::Building::Rally::transportActive = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00889">889</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

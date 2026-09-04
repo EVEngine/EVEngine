@@ -1,0 +1,961 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>GLSL compute kernels for the GPU surface-flow solver.  
+<a href="namespaceeve_1_1fluids.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1AirborneDroplet.html">AirborneDroplet</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persistent world-space droplet after it has detached from a surface.  <a href="structeve_1_1fluids_1_1AirborneDroplet.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1DetachedDroplet.html">DetachedDroplet</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Droplet converted from a surface-bound state to a free world-space state.  <a href="structeve_1_1fluids_1_1DetachedDroplet.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidParams.html">FluidParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tuning knobs of one fluid simulation.  <a href="structeve_1_1fluids_1_1FluidParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidParticle.html">FluidParticle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One simulated particle (CPU reference layout).  <a href="structeve_1_1fluids_1_1FluidParticle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1Fluids.html">Fluids</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1fluids_1_1Fluids.html" title="Fluids module — factory + script binding.">Fluids</a> module — factory + script binding.  <a href="classeve_1_1fluids_1_1Fluids.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSimulation.html">FluidSimulation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU reference surface-flow solver.  <a href="classeve_1_1fluids_1_1FluidSimulation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSimulationAdapter.html">FluidSimulationAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapter exposing the existing CPU <a class="el" href="classeve_1_1fluids_1_1FluidSimulation.html" title="CPU reference surface-flow solver.">FluidSimulation</a> through the contract.  <a href="classeve_1_1fluids_1_1FluidSimulationAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU-backed surface fluid simulator (falls back to the CPU solver).  <a href="classeve_1_1fluids_1_1FluidSimulator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html">FluidSurfaceBinding</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dynamic triangle surface used to bind films and droplets to deforming meshes.  <a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html">FluidSurfaceConstraintAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapter exposing existing <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html" title="Dynamic triangle surface used to bind films and droplets to deforming meshes.">FluidSurfaceBinding</a> operations as checked results.  <a href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidSurfaceParams.html">FluidSurfaceParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Camera + reconstruction tuning for the SSF pipeline.  <a href="structeve_1_1fluids_1_1FluidSurfaceParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buffer-level screen-space fluid renderer.  <a href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1IScreenSpaceSurfaceReconstruction.html">IScreenSpaceSurfaceReconstruction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Presentation contract for screen-space surface reconstruction.  <a href="classeve_1_1fluids_1_1IScreenSpaceSurfaceReconstruction.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html">ISurfaceConstraint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral contract for mesh-surface binding and traversal.  <a href="classeve_1_1fluids_1_1ISurfaceConstraint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceFluidSimulation.html">ISurfaceFluidSimulation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral contract for advancing a surface-fluid solver.  <a href="classeve_1_1fluids_1_1ISurfaceFluidSimulation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1MeshSdf.html">MeshSdf</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uniform signed-distance voxel field over a box.  <a href="classeve_1_1fluids_1_1MeshSdf.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ScreenSpaceSurfaceReconstructionAdapter.html">ScreenSpaceSurfaceReconstructionAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal SSF adapter over the existing CPU/GPU <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html" title="Buffer-level screen-space fluid renderer.">FluidSurfaceRenderer</a>.  <a href="classeve_1_1fluids_1_1ScreenSpaceSurfaceReconstructionAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SimGrid.html">SimGrid</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uniform grid used for neighbor queries.  <a href="structeve_1_1fluids_1_1SimGrid.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDroplet.html">SurfaceDroplet</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One droplet addressed in material space on a dynamic triangle surface.  <a href="structeve_1_1fluids_1_1SurfaceDroplet.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletParams.html">SurfaceDropletParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Material and integration parameters for surface-bound droplets.  <a href="structeve_1_1fluids_1_1SurfaceDropletParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceDropletRenderInstance.html">SurfaceDropletRenderInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space oriented cap instance consumed by droplet instancing shaders.  <a href="structeve_1_1fluids_1_1SurfaceDropletRenderInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1SurfaceDropletSimulation.html">SurfaceDropletSimulation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU reference solver for droplets moving over static, rigid or deforming surfaces.  <a href="classeve_1_1fluids_1_1SurfaceDropletSimulation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1SurfaceFluidRenderData.html">SurfaceFluidRenderData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds renderer-independent droplet instances and wet PBR parameters.  <a href="classeve_1_1fluids_1_1SurfaceFluidRenderData.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceFluidRenderParams.html">SurfaceFluidRenderParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tuning for converting simulated droplets into render instances.  <a href="structeve_1_1fluids_1_1SurfaceFluidRenderParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1SurfaceFluidSceneRenderer.html">SurfaceFluidSceneRenderer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws surface-droplet cap instances through the engine 3D backend.  <a href="classeve_1_1fluids_1_1SurfaceFluidSceneRenderer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable material-space address of a point on a triangle surface.  <a href="structeve_1_1fluids_1_1SurfaceLocation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceSample.html">SurfaceSample</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluated world-space frame and motion at a surface location.  <a href="structeve_1_1fluids_1_1SurfaceSample.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceWalkResult.html">SurfaceWalkResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of walking a material point across triangle adjacency.  <a href="structeve_1_1fluids_1_1SurfaceWalkResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1SurfaceWetnessField.html">SurfaceWetnessField</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lightweight material-space wet-film field stored at mesh vertices.  <a href="classeve_1_1fluids_1_1SurfaceWetnessField.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html">SurfaceWetnessParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters controlling persistent wet-film traces on a triangle surface.  <a href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1WetSurfaceMaterialParams.html">WetSurfaceMaterialParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Material mapping from simulated wetness to a PBR surface response.  <a href="structeve_1_1fluids_1_1WetSurfaceMaterialParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1WetSurfaceMaterialSample.html">WetSurfaceMaterialSample</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluated material values suitable for a wet-surface shader.  <a href="structeve_1_1fluids_1_1WetSurfaceMaterialSample.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a13b979ebc973d92fc350e66414d5896a" id="r_a13b979ebc973d92fc350e66414d5896a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a13b979ebc973d92fc350e66414d5896a">fluidPoly6</a> (float r2, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:a13b979ebc973d92fc350e66414d5896a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Poly6 kernel value W(r2, h).  <br /></td></tr>
+<tr class="separator:a13b979ebc973d92fc350e66414d5896a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc544e82d05ce44fdcbe4ba699a5e5fb" id="r_afc544e82d05ce44fdcbe4ba699a5e5fb"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#afc544e82d05ce44fdcbe4ba699a5e5fb">fluidSpikyGrad</a> (const glm::vec3 &amp;dx, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:afc544e82d05ce44fdcbe4ba699a5e5fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spiky gradient of the kernel w.r.t. particle i position.  <br /></td></tr>
+<tr class="separator:afc544e82d05ce44fdcbe4ba699a5e5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6083606f5d1f53740150feaea40be782" id="r_a6083606f5d1f53740150feaea40be782"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a6083606f5d1f53740150feaea40be782">fluidViscLaplacian</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:a6083606f5d1f53740150feaea40be782"><td class="mdescLeft">&#160;</td><td class="mdescRight">Viscosity Laplacian kernel value.  <br /></td></tr>
+<tr class="separator:a6083606f5d1f53740150feaea40be782"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa47f9238dab60e5aa84a44b6a68f17fd" id="r_aa47f9238dab60e5aa84a44b6a68f17fd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#aa47f9238dab60e5aa84a44b6a68f17fd">fluidCohesionKernel</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:aa47f9238dab60e5aa84a44b6a68f17fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Akinci-style cohesion kernel C(r) for droplet surface tension.  <br /></td></tr>
+<tr class="separator:aa47f9238dab60e5aa84a44b6a68f17fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0a39bf85336db4fe25daeeb0e4a4302" id="r_af0a39bf85336db4fe25daeeb0e4a4302"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#af0a39bf85336db4fe25daeeb0e4a4302">fluidClampSpeed</a> (const glm::vec3 &amp;<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float maxSpeed)</td></tr>
+<tr class="memdesc:af0a39bf85336db4fe25daeeb0e4a4302"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clamp a vector's magnitude to maxSpeed.  <br /></td></tr>
+<tr class="separator:af0a39bf85336db4fe25daeeb0e4a4302"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2500a06a1f8180372e543acc85e42c96" id="r_a2500a06a1f8180372e543acc85e42c96"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a2500a06a1f8180372e543acc85e42c96">Module_IMPL</a> (<a class="el" href="classeve_1_1fluids_1_1Fluids.html">Fluids</a>, new <a class="el" href="classeve_1_1fluids_1_1Fluids.html">Fluids</a>())</td></tr>
+<tr class="separator:a2500a06a1f8180372e543acc85e42c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a050813904511b961753e22f3dd8eac2b" id="r_a050813904511b961753e22f3dd8eac2b"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a050813904511b961753e22f3dd8eac2b">kFluidClearGrid</a></td></tr>
+<tr class="memdesc:a050813904511b961753e22f3dd8eac2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zero the linked-list cell heads.  <br /></td></tr>
+<tr class="separator:a050813904511b961753e22f3dd8eac2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5faa1b44e5dd10081f16d63a03c7723b" id="r_a5faa1b44e5dd10081f16d63a03c7723b"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a5faa1b44e5dd10081f16d63a03c7723b">kFluidBuildGrid</a></td></tr>
+<tr class="memdesc:a5faa1b44e5dd10081f16d63a03c7723b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert every particle into its grid cell (linked list via atomicExchange).  <br /></td></tr>
+<tr class="separator:a5faa1b44e5dd10081f16d63a03c7723b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38bf876faa2e0c2738c7b06366775620" id="r_a38bf876faa2e0c2738c7b06366775620"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a38bf876faa2e0c2738c7b06366775620">kFluidDensityLambda</a></td></tr>
+<tr class="memdesc:a38bf876faa2e0c2738c7b06366775620"><td class="mdescLeft">&#160;</td><td class="mdescRight">Density, gradient sum and PBF lambda in one pass (mirror computeDensitiesAndGrads + computeLambdas).  <br /></td></tr>
+<tr class="separator:a38bf876faa2e0c2738c7b06366775620"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b786a6f470733ae7f73d27ca58b8a97" id="r_a2b786a6f470733ae7f73d27ca58b8a97"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a2b786a6f470733ae7f73d27ca58b8a97">kFluidComputeDelta</a></td></tr>
+<tr class="memdesc:a2b786a6f470733ae7f73d27ca58b8a97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulate PBF position deltas into the (reused) grad buffer.  <br /></td></tr>
+<tr class="separator:a2b786a6f470733ae7f73d27ca58b8a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35541b74e27c5292d633b2dbf5cad5d2" id="r_a35541b74e27c5292d633b2dbf5cad5d2"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a35541b74e27c5292d633b2dbf5cad5d2">kFluidApplyDelta</a></td></tr>
+<tr class="memdesc:a35541b74e27c5292d633b2dbf5cad5d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply PBF deltas and re-project onto the SDF surface.  <br /></td></tr>
+<tr class="separator:a35541b74e27c5292d633b2dbf5cad5d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cefa473443df210342c522c880da980" id="r_a4cefa473443df210342c522c880da980"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a4cefa473443df210342c522c880da980">kFluidIntegrate</a></td></tr>
+<tr class="memdesc:a4cefa473443df210342c522c880da980"><td class="mdescLeft">&#160;</td><td class="mdescRight">Viscosity + cohesion + adhesion + gravity + integration + SDF projection.  <br /></td></tr>
+<tr class="separator:a4cefa473443df210342c522c880da980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47eddeaee042c61da0a36a4fea943784" id="r_a47eddeaee042c61da0a36a4fea943784"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a47eddeaee042c61da0a36a4fea943784">kSsfClear</a></td></tr>
+<tr class="memdesc:a47eddeaee042c61da0a36a4fea943784"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset depth (0xFFFFFFFF), thickness, normal and color buffers.  <br /></td></tr>
+<tr class="separator:a47eddeaee042c61da0a36a4fea943784"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57179a4b5b2aeed126ab4ec3dc53f51c" id="r_a57179a4b5b2aeed126ab4ec3dc53f51c"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a57179a4b5b2aeed126ab4ec3dc53f51c">kSsfSplat</a></td></tr>
+<tr class="memdesc:a57179a4b5b2aeed126ab4ec3dc53f51c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splat particles into depth + thickness (atomic min / add).  <br /></td></tr>
+<tr class="separator:a57179a4b5b2aeed126ab4ec3dc53f51c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33930af2384466b3e2353ca33b0dc02a" id="r_a33930af2384466b3e2353ca33b0dc02a"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a33930af2384466b3e2353ca33b0dc02a">kSsfSmooth</a></td></tr>
+<tr class="memdesc:a33930af2384466b3e2353ca33b0dc02a"><td class="mdescLeft">&#160;</td><td class="mdescRight">One bilateral smoothing pass (read depthA, write depthB).  <br /></td></tr>
+<tr class="separator:a33930af2384466b3e2353ca33b0dc02a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89d013841095fd8670c36fa19d75c3c1" id="r_a89d013841095fd8670c36fa19d75c3c1"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a89d013841095fd8670c36fa19d75c3c1">kSsfNormal</a></td></tr>
+<tr class="memdesc:a89d013841095fd8670c36fa19d75c3c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstruct view-space normals from the smoothed depth.  <br /></td></tr>
+<tr class="separator:a89d013841095fd8670c36fa19d75c3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3688ee695c672ee76581b51f024bf9ac" id="r_a3688ee695c672ee76581b51f024bf9ac"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a3688ee695c672ee76581b51f024bf9ac">kSsfShade</a></td></tr>
+<tr class="memdesc:a3688ee695c672ee76581b51f024bf9ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Water/mud shading from depth + normal + thickness.  <br /></td></tr>
+<tr class="separator:a3688ee695c672ee76581b51f024bf9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>GLSL compute kernels for the GPU surface-flow solver. </p>
+<p>GLSL compute kernels for screen-space fluid surface reconstruction.</p>
+<p>CPU reference fluid solver for surface flows.</p>
+<p>Voxelized signed distance field (SDF) of a solid surface.</p>
+<p>Core math shared by the CPU reference solver and the GLSL kernels.</p>
+<p>The kernels mirror <a class="el" href="FluidSimulation_8cpp.html">FluidSimulation.cpp</a> 1:1. Push-constant layout (float[32]):</p>
+<p>[0] count [1] dt [2] particleRadius [3] supportRadius h [4] restDensity [5] gravityX [6] gravityY [7] gravityZ [8] viscosity [9] yieldStress (Phase 3) [10] cohesion [11] adhesion [12] damping [13] maxVelocity [14] gridResX [15] gridResY [16] gridResZ [17] gridOriginX [18] gridOriginY [19] gridOriginZ [20] gridCellSize [21] sdfResX [22] sdfResY [23] sdfResZ [24] sdfOriginX [25] sdfOriginY [26] sdfOriginZ [27] sdfCellSize [28] iterations [29] mode (0 water, 1 mud) [30] time [31] pbfIterations</p>
+<p>Buffer bindings: 0 <a class="el" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos(vec4)</a> 1 vel(vec4) 2 cellHead(int) 3 cellNext(int) 4 densities(float) 5 sdf(float) 6 lambdas(float) 7 gradSums/deltas(vec4)</p>
+<p>FluidMath holds the SPH kernel functions (poly6 / spiky gradient / viscosity Laplacian), the tuning parameters and the particle layout used by both the reference implementation in <a class="el" href="classeve_1_1fluids_1_1FluidSimulation.html" title="CPU reference surface-flow solver.">FluidSimulation</a> and the GPU kernels in FluidGpuKernels. Keep the two in step: every formula here is mirrored 1:1 in GLSL, and the push-constant layout is documented in <a class="el" href="FluidGpuKernels_8h.html">FluidGpuKernels.h</a>.</p>
+<p>The mesh is baked into a uniform 3D grid once at setup; particles then query distance + gradient per frame in the GPU kernels (trilinear interpolation, central differences) to stay glued to the surface while gravity pushes them tangentially along it. Positive distance = outside the solid.</p>
+<p>This is the executable spec for the GPU kernels in FluidGpuKernels: uniform grid neighbor search, SPH density, PBF density constraints, XSPH viscosity, Akinci-style cohesion/adhesion, gravity, surface projection through the mesh SDF and velocity decomposition. Tests exercise it numerically; the GLSL kernels mirror it 1:1.</p>
+<p>Pipeline (mirrors <a class="el" href="FluidSurfaceRenderer_8cpp.html">FluidSurfaceRenderer.cpp</a>): clear -&gt; splat (particles to depth+thickness) -&gt; smooth (bilateral, ping-pong) -&gt; normals (depth gradients) -&gt; shade (water or mud).</p>
+<p>Push-constant layout (float[32]): [0..15] viewProj (column-major, glm) [16] particleCount [17] pad [18] pad [19] nearZ [20] farZ [21] tanHalfFov [22] aspect [23] screenW [24] screenH [25] particleRadius [26] mode (0 water, 1 mud) [27] thicknessScale [28] depthFalloff (bilateral depth edge falloff) [29..31] pad</p>
+<p>Buffer bindings: 0 particles(vec4 xyz+radius) 1 depthA(uint) 2 depthB(uint) 3 <a class="el" href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness(uint)</a> 4 <a class="el" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal(vec4)</a> 5 <a class="el" href="SpriteStack_8cpp.html#aefa993834f8df4a73caaf0185139b880">color(vec4)</a> </p>
+</div><h2 class="groupheader">函数说明</h2>
+<a id="af0a39bf85336db4fe25daeeb0e4a4302" name="af0a39bf85336db4fe25daeeb0e4a4302"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0a39bf85336db4fe25daeeb0e4a4302">&#9670;&#160;</a></span>fluidClampSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::fluids::fluidClampSpeed </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxSpeed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clamp a vector's magnitude to maxSpeed. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidMath_8h_source.html">FluidMath.h</a> 第 <a class="el" href="FluidMath_8h_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aa47f9238dab60e5aa84a44b6a68f17fd" name="aa47f9238dab60e5aa84a44b6a68f17fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa47f9238dab60e5aa84a44b6a68f17fd">&#9670;&#160;</a></span>fluidCohesionKernel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::fluidCohesionKernel </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Akinci-style cohesion kernel C(r) for droplet surface tension. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>distance between two particles. </td></tr>
+    <tr><td class="paramname">h</td><td>support radius. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>kernel value, 0 outside the support. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FluidMath_8h_source.html">FluidMath.h</a> 第 <a class="el" href="FluidMath_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a13b979ebc973d92fc350e66414d5896a" name="a13b979ebc973d92fc350e66414d5896a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13b979ebc973d92fc350e66414d5896a">&#9670;&#160;</a></span>fluidPoly6()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::fluidPoly6 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Poly6 kernel value W(r2, h). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r2</td><td>squared distance between two particles. </td></tr>
+    <tr><td class="paramname">h</td><td>support radius. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>kernel value, 0 outside the support. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FluidMath_8h_source.html">FluidMath.h</a> 第 <a class="el" href="FluidMath_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>.</p>
+
+</div>
+</div>
+<a id="afc544e82d05ce44fdcbe4ba699a5e5fb" name="afc544e82d05ce44fdcbe4ba699a5e5fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc544e82d05ce44fdcbe4ba699a5e5fb">&#9670;&#160;</a></span>fluidSpikyGrad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::fluids::fluidSpikyGrad </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Spiky gradient of the kernel w.r.t. particle i position. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dx</td><td>vector from neighbor j to particle i (p_i - p_j). </td></tr>
+    <tr><td class="paramname">h</td><td>support radius. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>gradient vector, zero outside the support. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FluidMath_8h_source.html">FluidMath.h</a> 第 <a class="el" href="FluidMath_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a6083606f5d1f53740150feaea40be782" name="a6083606f5d1f53740150feaea40be782"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6083606f5d1f53740150feaea40be782">&#9670;&#160;</a></span>fluidViscLaplacian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::fluidViscLaplacian </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Viscosity Laplacian kernel value. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>distance between two particles. </td></tr>
+    <tr><td class="paramname">h</td><td>support radius. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>laplacian value, 0 outside the support. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FluidMath_8h_source.html">FluidMath.h</a> 第 <a class="el" href="FluidMath_8h_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a2500a06a1f8180372e543acc85e42c96" name="a2500a06a1f8180372e543acc85e42c96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2500a06a1f8180372e543acc85e42c96">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1fluids_1_1Fluids.html">Fluids</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Fluids</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a35541b74e27c5292d633b2dbf5cad5d2" name="a35541b74e27c5292d633b2dbf5cad5d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35541b74e27c5292d633b2dbf5cad5d2">&#9670;&#160;</a></span>kFluidApplyDelta</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kFluidApplyDelta</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply PBF deltas and re-project onto the SDF surface. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidGpuKernels_8h_source.html">FluidGpuKernels.h</a> 第 <a class="el" href="FluidGpuKernels_8h_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5faa1b44e5dd10081f16d63a03c7723b" name="a5faa1b44e5dd10081f16d63a03c7723b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5faa1b44e5dd10081f16d63a03c7723b">&#9670;&#160;</a></span>kFluidBuildGrid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kFluidBuildGrid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><span class="stringliteral">#version 450</span></div>
+<div class="line"><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 0) buffer Pos { vec4 p[]; } pos;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 3) buffer CellNext { int nx[]; } next;</span></div>
+<div class="line"><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><span class="stringliteral">void main() {</span></div>
+<div class="line"><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><span class="stringliteral">    uint n = uint(pc.d[0]);</span></div>
+<div class="line"><span class="stringliteral">    if (i &gt;= n) return;</span></div>
+<div class="line"><span class="stringliteral">    vec3 origin = vec3(pc.d[17], pc.d[18], pc.d[19]);</span></div>
+<div class="line"><span class="stringliteral">    float cs = pc.d[20];</span></div>
+<div class="line"><span class="stringliteral">    ivec3 dim = ivec3(int(pc.d[14]), int(pc.d[15]), int(pc.d[16]));</span></div>
+<div class="line"><span class="stringliteral">    ivec3 c = ivec3(floor((pos.p[i].xyz - origin) / cs));</span></div>
+<div class="line"><span class="stringliteral">    c = clamp(c, ivec3(0), dim - ivec3(1));</span></div>
+<div class="line"><span class="stringliteral">    int cell = c.x + dim.x * (c.y + dim.y * c.z);</span></div>
+<div class="line"><span class="stringliteral">    int prev = atomicExchange(head.h[cell], int(i));</span></div>
+<div class="line"><span class="stringliteral">    next.nx[i] = prev;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)GLSL&quot;</span></div>
+</div><!-- fragment -->
+<p>Insert every particle into its grid cell (linked list via atomicExchange). </p>
+
+<p class="definition">在文件 <a class="el" href="FluidGpuKernels_8h_source.html">FluidGpuKernels.h</a> 第 <a class="el" href="FluidGpuKernels_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a050813904511b961753e22f3dd8eac2b" name="a050813904511b961753e22f3dd8eac2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a050813904511b961753e22f3dd8eac2b">&#9670;&#160;</a></span>kFluidClearGrid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kFluidClearGrid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><span class="stringliteral">#version 450</span></div>
+<div class="line"><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;</span></div>
+<div class="line"><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><span class="stringliteral">void main() {</span></div>
+<div class="line"><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><span class="stringliteral">    uint resX = uint(pc.d[14]);</span></div>
+<div class="line"><span class="stringliteral">    uint resY = uint(pc.d[15]);</span></div>
+<div class="line"><span class="stringliteral">    uint resZ = uint(pc.d[16]);</span></div>
+<div class="line"><span class="stringliteral">    if (i &lt; resX * resY * resZ) head.h[i] = -1;</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)GLSL&quot;</span></div>
+</div><!-- fragment -->
+<p>Zero the linked-list cell heads. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidGpuKernels_8h_source.html">FluidGpuKernels.h</a> 第 <a class="el" href="FluidGpuKernels_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b786a6f470733ae7f73d27ca58b8a97" name="a2b786a6f470733ae7f73d27ca58b8a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b786a6f470733ae7f73d27ca58b8a97">&#9670;&#160;</a></span>kFluidComputeDelta</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kFluidComputeDelta</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accumulate PBF position deltas into the (reused) grad buffer. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidGpuKernels_8h_source.html">FluidGpuKernels.h</a> 第 <a class="el" href="FluidGpuKernels_8h_source.html#l00144">144</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38bf876faa2e0c2738c7b06366775620" name="a38bf876faa2e0c2738c7b06366775620"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38bf876faa2e0c2738c7b06366775620">&#9670;&#160;</a></span>kFluidDensityLambda</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kFluidDensityLambda</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Density, gradient sum and PBF lambda in one pass (mirror computeDensitiesAndGrads + computeLambdas). </p>
+
+<p class="definition">在文件 <a class="el" href="FluidGpuKernels_8h_source.html">FluidGpuKernels.h</a> 第 <a class="el" href="FluidGpuKernels_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4cefa473443df210342c522c880da980" name="a4cefa473443df210342c522c880da980"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cefa473443df210342c522c880da980">&#9670;&#160;</a></span>kFluidIntegrate</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kFluidIntegrate</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Viscosity + cohesion + adhesion + gravity + integration + SDF projection. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidGpuKernels_8h_source.html">FluidGpuKernels.h</a> 第 <a class="el" href="FluidGpuKernels_8h_source.html#l00269">269</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47eddeaee042c61da0a36a4fea943784" name="a47eddeaee042c61da0a36a4fea943784"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47eddeaee042c61da0a36a4fea943784">&#9670;&#160;</a></span>kSsfClear</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kSsfClear</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">= R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><span class="stringliteral">#version 450</span></div>
+<div class="line"><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 2) buffer DepthB { uint d[]; } depthB;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 4) buffer Normal { vec4 n[]; } normal;</span></div>
+<div class="line"><span class="stringliteral">layout(set = 0, binding = 5) buffer Color { vec4 c[]; } color;</span></div>
+<div class="line"><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><span class="stringliteral">void main() {</span></div>
+<div class="line"><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><span class="stringliteral">    uint total = uint(pc.d[23]) * uint(pc.d[24]);</span></div>
+<div class="line"><span class="stringliteral">    if (i &gt;= total) return;</span></div>
+<div class="line"><span class="stringliteral">    depthA.d[i] = 0xFFFFFFFFu;</span></div>
+<div class="line"><span class="stringliteral">    depthB.d[i] = 0xFFFFFFFFu;</span></div>
+<div class="line"><span class="stringliteral">    thick.t[i] = 0u;</span></div>
+<div class="line"><span class="stringliteral">    normal.n[i] = vec4(0.0);</span></div>
+<div class="line"><span class="stringliteral">    color.c[i] = vec4(0.0);</span></div>
+<div class="line"><span class="stringliteral">}</span></div>
+<div class="line"><span class="stringliteral">)GLSL&quot;</span></div>
+</div><!-- fragment -->
+<p>Reset depth (0xFFFFFFFF), thickness, normal and color buffers. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSsfKernels_8h_source.html">FluidSsfKernels.h</a> 第 <a class="el" href="FluidSsfKernels_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a89d013841095fd8670c36fa19d75c3c1" name="a89d013841095fd8670c36fa19d75c3c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89d013841095fd8670c36fa19d75c3c1">&#9670;&#160;</a></span>kSsfNormal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kSsfNormal</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reconstruct view-space normals from the smoothed depth. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSsfKernels_8h_source.html">FluidSsfKernels.h</a> 第 <a class="el" href="FluidSsfKernels_8h_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3688ee695c672ee76581b51f024bf9ac" name="a3688ee695c672ee76581b51f024bf9ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3688ee695c672ee76581b51f024bf9ac">&#9670;&#160;</a></span>kSsfShade</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kSsfShade</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Water/mud shading from depth + normal + thickness. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSsfKernels_8h_source.html">FluidSsfKernels.h</a> 第 <a class="el" href="FluidSsfKernels_8h_source.html#l00228">228</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33930af2384466b3e2353ca33b0dc02a" name="a33930af2384466b3e2353ca33b0dc02a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33930af2384466b3e2353ca33b0dc02a">&#9670;&#160;</a></span>kSsfSmooth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kSsfSmooth</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>One bilateral smoothing pass (read depthA, write depthB). </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSsfKernels_8h_source.html">FluidSsfKernels.h</a> 第 <a class="el" href="FluidSsfKernels_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a57179a4b5b2aeed126ab4ec3dc53f51c" name="a57179a4b5b2aeed126ab4ec3dc53f51c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57179a4b5b2aeed126ab4ec3dc53f51c">&#9670;&#160;</a></span>kSsfSplat</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* eve::fluids::kSsfSplat</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Splat particles into depth + thickness (atomic min / add). </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSsfKernels_8h_source.html">FluidSsfKernels.h</a> 第 <a class="el" href="FluidSsfKernels_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

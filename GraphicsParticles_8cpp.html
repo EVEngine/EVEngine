@@ -1,0 +1,559 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/vulkan/GraphicsParticles.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_093844fdbeabcf6df70ce24c00b21dbf.html">vulkan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a>  </div>
+  <div class="headertitle"><div class="title">GraphicsParticles.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="vulkan_2Graphics_8h_source.html">graphics/vulkan/Graphics.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="GraphicsInternal_8h_source.html">graphics/vulkan/GraphicsInternal.h</a>&quot;</code><br />
+<code>#include &quot;graphics/shaders/particle_resident_comp_spv.inc&quot;</code><br />
+<code>#include &quot;graphics/shaders/particle_resident_frag_spv.inc&quot;</code><br />
+<code>#include &quot;graphics/shaders/particle_resident_vert_spv.inc&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;array&gt;</code><br />
+<code>#include &lt;bit&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+</div>
+<p><a href="GraphicsParticles_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GpuParticleResource.html">eve::graphics::vulkan::Graphics::GpuParticleResource</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1GpuParticleResource_1_1Slot.html">eve::graphics::vulkan::Graphics::GpuParticleResource::Slot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics" id="r_namespaceeve_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html">eve::graphics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1graphics"><td class="mdescLeft">&#160;</td><td class="mdescRight">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局参数。 数据模型与渲染/交互逻辑见 CardTypes.h。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics_1_1vulkan" id="r_namespaceeve_1_1graphics_1_1vulkan"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a177491c3907983217815f101b76618fd" name="a177491c3907983217815f101b76618fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a177491c3907983217815f101b76618fd">&#9670;&#160;</a></span>alive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t alive = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneRuntime_8cpp_source.html#l00099">eve::scene_editing::SceneHostEditorTarget::componentLinks()</a>, <a class="el" href="RTS_8cpp_source.html#l01214">eve::rts::RTS::escortUnits()</a>, <a class="el" href="RTS_8cpp_source.html#l01563">eve::rts::RTS::heal()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04260">eve::rts::RTSProjectileSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03326">eve::rts::ShieldSystem::step()</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l04428">eve::rts::CombatFireSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="a0aa067d65fcf3d387afa797f6817914d" name="a0aa067d65fcf3d387afa797f6817914d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0aa067d65fcf3d387afa797f6817914d">&#9670;&#160;</a></span>cameraParticle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float cameraParticle[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac6929dd676d28e30e74a1624a9324cc7" name="ac6929dd676d28e30e74a1624a9324cc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6929dd676d28e30e74a1624a9324cc7">&#9670;&#160;</a></span>capacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t capacity = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTS_8cpp_source.html#l01088">eve::rts::RTS::addUnitReserveAmmo()</a>, <a class="el" href="AnimTrail_8cpp_source.html#l00017">eve::animation::AnimTrail::AnimTrail()</a>, <a class="el" href="RTSArchetype_8cpp_source.html#l00101">eve::rts::RTSArchetypeMaterializer::apply()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01440">eve::pixelworld::PixelWorld::applyChunkBatch()</a>, <a class="el" href="Graphics_8h_source.html#l00234">eve::graphics::Graphics::createGpuParticleEmitter()</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00147">eve::graphics::vulkan::Graphics::createGpuParticleEmitter()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00179">eve::procgen::TerrainPipeline::erodeHydraulic()</a>, <a class="el" href="Procgen_8cpp_source.html#l02281">eve::procgen::Procgen::erodeTerrainHydraulic()</a>, <a class="el" href="Physics_8cpp_source.html#l00068">eve::physics::Physics::newFluid2D()</a>, <a class="el" href="Rx_8cpp_source.html#l00314">eve::rx::Rx::newReplaySubject()</a>, <a class="el" href="Animation_8cpp_source.html#l00395">eve::animation::Animation::newTrail()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00260">eve::pixelworld::PixelWorld::Impl::normalizeCell()</a>, <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>, <a class="el" href="World3D_8cpp_source.html#l01007">eve::physics::World3D::queryBodyContacts()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01563">eve::pixelworld::PixelWorld::restoreSnapshot()</a>, <a class="el" href="AnimTrail_8cpp_source.html#l00021">eve::animation::AnimTrail::setCapacity()</a>, <a class="el" href="EditorEventTimeline_8cpp_source.html#l00042">eve::editor::EditorEventTimeline::setCapacity()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02559">eve::rts::ContainmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02783">eve::rts::SupplySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03326">eve::rts::ShieldSystem::step()</a> , 以及 <a class="el" href="PointCompute_8cpp_source.html#l00151">eve::procgen::PointCompute::transformChain()</a>.</p>
+
+</div>
+</div>
+<a id="af74b06992d7d0f8a7e91ebeef8c052bc" name="af74b06992d7d0f8a7e91ebeef8c052bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af74b06992d7d0f8a7e91ebeef8c052bc">&#9670;&#160;</a></span>colorEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float colorEnd[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e4a225c2b648982fe686791a226763c" name="a9e4a225c2b648982fe686791a226763c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e4a225c2b648982fe686791a226763c">&#9670;&#160;</a></span>colorStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float colorStart[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa59c255861ac897fc1fff8a46854930f" name="aa59c255861ac897fc1fff8a46854930f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa59c255861ac897fc1fff8a46854930f">&#9670;&#160;</a></span>dropped</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t dropped = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingControl_8cpp_source.html#l00158">eve::climbing::ClimbingControl::submitGameplay()</a> , 以及 <a class="el" href="CardTypes_8cpp_source.html#l00397">eve::card::Hand::update()</a>.</p>
+
+</div>
+</div>
+<a id="a80fba0e7301c5b3645ab8e01fb9c9f28" name="a80fba0e7301c5b3645ab8e01fb9c9f28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80fba0e7301c5b3645ab8e01fb9c9f28">&#9670;&#160;</a></span>firstInstance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t firstInstance = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l01383">eve::graphics::vulkan::Graphics::gpuDrivenCullBegin()</a>.</p>
+
+</div>
+</div>
+<a id="a045f1a4a0e96607483a57a248082aea3" name="a045f1a4a0e96607483a57a248082aea3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a045f1a4a0e96607483a57a248082aea3">&#9670;&#160;</a></span>firstVertex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t firstVertex = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00381">eve::graphics::resolvePrimitiveStrokes2D()</a> , 以及 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00472">eve::graphics::resolvePrimitiveStrokes3D()</a>.</p>
+
+</div>
+</div>
+<a id="a6e368b8e2d7415000c23c6ccefdc3e74" name="a6e368b8e2d7415000c23c6ccefdc3e74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e368b8e2d7415000c23c6ccefdc3e74">&#9670;&#160;</a></span>flipbook</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t flipbook[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30afd8cf422cc1c2d0ec6025b5a31593" name="a30afd8cf422cc1c2d0ec6025b5a31593"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30afd8cf422cc1c2d0ec6025b5a31593">&#9670;&#160;</a></span>forces0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float forces0[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47e3e91823753312447e44da18403e33" name="a47e3e91823753312447e44da18403e33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47e3e91823753312447e44da18403e33">&#9670;&#160;</a></span>forces1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float forces1[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96888c566c534d7f33a97e50697df5dc" name="a96888c566c534d7f33a97e50697df5dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96888c566c534d7f33a97e50697df5dc">&#9670;&#160;</a></span>instanceCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t instanceCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l02011">eve::graphics::vulkan::Graphics::debugGpuDrivenCulledDrawCount()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00837">eve::graphics::webgpu::Graphics::debugGpuDrivenGpuVisibleCount()</a>, <a class="el" href="Graphics_8h_source.html#l00306">eve::graphics::Graphics::gpuDrivenCullBegin()</a>, <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l01383">eve::graphics::vulkan::Graphics::gpuDrivenCullBegin()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00700">eve::graphics::webgpu::Graphics::gpuDrivenCullBegin()</a>, <a class="el" href="Graphics_8h_source.html#l00277">eve::graphics::Graphics::gpuDrivenSubmitOpaque()</a>, <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l01009">eve::graphics::vulkan::Graphics::gpuDrivenSubmitOpaque()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00311">eve::graphics::webgpu::Graphics::gpuDrivenSubmitOpaque()</a>.</p>
+
+</div>
+</div>
+<a id="a13bd23c9e38a6fb649c65d5c3cd19c46" name="a13bd23c9e38a6fb649c65d5c3cd19c46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13bd23c9e38a6fb649c65d5c3cd19c46">&#9670;&#160;</a></span>killed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t killed = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70fd7048b85c7efe75c53150b2c40323" name="a70fd7048b85c7efe75c53150b2c40323"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70fd7048b85c7efe75c53150b2c40323">&#9670;&#160;</a></span>localOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float localOffset[2] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ade95328b490676f16fd8ddf07320851a" name="ade95328b490676f16fd8ddf07320851a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade95328b490676f16fd8ddf07320851a">&#9670;&#160;</a></span>sizeMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float sizeMode[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f63e3232eec872d005d98b65ce18c3f" name="a8f63e3232eec872d005d98b65ce18c3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f63e3232eec872d005d98b65ce18c3f">&#9670;&#160;</a></span>soft</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float soft[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleConfig_8cpp_source.html#l00178">eve::particles::applyConfigDocument()</a>.</p>
+
+</div>
+</div>
+<a id="a77c6414fbb3fc9d877807fb880eb2f1b" name="a77c6414fbb3fc9d877807fb880eb2f1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77c6414fbb3fc9d877807fb880eb2f1b">&#9670;&#160;</a></span>spawnCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t spawnCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8h_source.html#l00247">eve::graphics::Graphics::updateGpuParticleEmitter()</a> , 以及 <a class="el" href="GraphicsParticles_8cpp_source.html#l00181">eve::graphics::vulkan::Graphics::updateGpuParticleEmitter()</a>.</p>
+
+</div>
+</div>
+<a id="ab4efe1a5837ffdaed7a2f8069f594a05" name="ab4efe1a5837ffdaed7a2f8069f594a05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4efe1a5837ffdaed7a2f8069f594a05">&#9670;&#160;</a></span>spawned</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t spawned = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanUtil_8cpp_source.html#l00163">eve::gpgpu::compileComputeGlsl()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04196">eve::rts::RTSProjectileSystem::launch()</a> , 以及 <a class="el" href="ParticleEmitter_8cpp_source.html#l00414">eve::particles::stepEmitterSim()</a>.</p>
+
+</div>
+</div>
+<a id="ac642672735e0cfb0ae012a2810e21352" name="ac642672735e0cfb0ae012a2810e21352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac642672735e0cfb0ae012a2810e21352">&#9670;&#160;</a></span>stepEmitterX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float stepEmitterX[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b19ff7daa03f593e552608463f5c9ca" name="a7b19ff7daa03f593e552608463f5c9ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b19ff7daa03f593e552608463f5c9ca">&#9670;&#160;</a></span>vertexCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t vertexCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca877d3ad678f00bef83ba7192ff50b9" name="aca877d3ad678f00bef83ba7192ff50b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca877d3ad678f00bef83ba7192ff50b9">&#9670;&#160;</a></span>viewportCamera</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float viewportCamera[4] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsParticles_8cpp_source.html">GraphicsParticles.cpp</a> 第 <a class="el" href="GraphicsParticles_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

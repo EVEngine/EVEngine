@@ -1,0 +1,935 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditorCurveDocument类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html">EditorCurveDocument</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1EditorCurveDocument-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditorCurveDocument类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-neutral reversible curve and gradient timeline document.  
+ <a href="classeve_1_1editor_1_1EditorCurveDocument.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorCurveDocument_8h_source.html">EditorCurveDocument.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::editor::EditorCurveDocument 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1editor_1_1EditorCurveDocument.png" usemap="#eve::editor::EditorCurveDocument_map" alt=""/>
+  <map id="eve::editor::EditorCurveDocument_map" name="eve::editor::EditorCurveDocument_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,261,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="271,56,532,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="542,56,803,80"/>
+<area href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html" title="Stable key/gradient editing capability shared by effects and animation presenters." alt="eve::editor::ICurveDocumentEditTarget" shape="rect" coords="813,56,1074,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="271,0,532,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac01eaa4110ee28259e0edce1fd4d772f" id="r_ac01eaa4110ee28259e0edce1fd4d772f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#ac01eaa4110ee28259e0edce1fd4d772f">EditorCurveDocument</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:ac01eaa4110ee28259e0edce1fd4d772f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbef0f6bfc405a57c046135fc35c8916" id="r_abbef0f6bfc405a57c046135fc35c8916"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#abbef0f6bfc405a57c046135fc35c8916">targetId</a> () const override</td></tr>
+<tr class="separator:abbef0f6bfc405a57c046135fc35c8916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c3c659f1b451ccf6b0f702cfefe333c" id="r_a2c3c659f1b451ccf6b0f702cfefe333c"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a2c3c659f1b451ccf6b0f702cfefe333c">revision</a> () const override</td></tr>
+<tr class="separator:a2c3c659f1b451ccf6b0f702cfefe333c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a231723ea3fdbba8c50e41bc9511d3397" id="r_a231723ea3fdbba8c50e41bc9511d3397"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a29f93f1a0ac0951a5915dc65cd17c76e">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a231723ea3fdbba8c50e41bc9511d3397">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:a231723ea3fdbba8c50e41bc9511d3397"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3442103e44737260742afbb0847d8d9a" id="r_a3442103e44737260742afbb0847d8d9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a3442103e44737260742afbb0847d8d9a">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:a3442103e44737260742afbb0847d8d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95ad099b725eddd06f247d113b376a48" id="r_a95ad099b725eddd06f247d113b376a48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a1d7639804ede2e98a069e5d7a6c8ad64">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a95ad099b725eddd06f247d113b376a48">describe</a> () const override</td></tr>
+<tr class="memdesc:a95ad099b725eddd06f247d113b376a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:a95ad099b725eddd06f247d113b376a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae31c76e7af9dfec3e73e0a19734ec2ea" id="r_ae31c76e7af9dfec3e73e0a19734ec2ea"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#ae31c76e7af9dfec3e73e0a19734ec2ea">queryCapability</a> (const <a class="el" href="namespaceeve_1_1editor.html#a833aebc8223a13bb0cd9d0b384c907db">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="memdesc:ae31c76e7af9dfec3e73e0a19734ec2ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional target capability.  <br /></td></tr>
+<tr class="separator:ae31c76e7af9dfec3e73e0a19734ec2ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15ef57cfaa23cc7707d383289afc9339" id="r_a15ef57cfaa23cc7707d383289afc9339"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a15ef57cfaa23cc7707d383289afc9339">applyDomainOperation</a> (const <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &amp;operation) override</td></tr>
+<tr class="memdesc:a15ef57cfaa23cc7707d383289afc9339"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a15ef57cfaa23cc7707d383289afc9339"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d6d48ed7256b909a07e6ed28bf7be30" id="r_a5d6d48ed7256b909a07e6ed28bf7be30"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1editor.html#a8036094c001270dda15b24cf94e004e7">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a5d6d48ed7256b909a07e6ed28bf7be30">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:a5d6d48ed7256b909a07e6ed28bf7be30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:a5d6d48ed7256b909a07e6ed28bf7be30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb483b41d52386fad0090a80724742d4" id="r_aeb483b41d52386fad0090a80724742d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#aeb483b41d52386fad0090a80724742d4">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1editor.html#a8036094c001270dda15b24cf94e004e7">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:aeb483b41d52386fad0090a80724742d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:aeb483b41d52386fad0090a80724742d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a257e41ed733b2b110a0c23cae4276366" id="r_a257e41ed733b2b110a0c23cae4276366"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a257e41ed733b2b110a0c23cae4276366">makeSetKey</a> (const <a class="el" href="structeve_1_1editor_1_1EditorCurveKey.html">EditorCurveKey</a> &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const override</td></tr>
+<tr class="memdesc:a257e41ed733b2b110a0c23cae4276366"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan creation or replacement of a scalar key.  <br /></td></tr>
+<tr class="separator:a257e41ed733b2b110a0c23cae4276366"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03e410da5b372ac2463059b80750cf16" id="r_a03e410da5b372ac2463059b80750cf16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a03e410da5b372ac2463059b80750cf16">makeDeleteKey</a> (const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const override</td></tr>
+<tr class="memdesc:a03e410da5b372ac2463059b80750cf16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan deletion of a scalar key.  <br /></td></tr>
+<tr class="separator:a03e410da5b372ac2463059b80750cf16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59b525c8ee5949c16d97e3c63a57e927" id="r_a59b525c8ee5949c16d97e3c63a57e927"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a59b525c8ee5949c16d97e3c63a57e927">makeSetStop</a> (const <a class="el" href="structeve_1_1editor_1_1EditorGradientStop.html">EditorGradientStop</a> &amp;stop) const override</td></tr>
+<tr class="memdesc:a59b525c8ee5949c16d97e3c63a57e927"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan creation or replacement of a gradient stop.  <br /></td></tr>
+<tr class="separator:a59b525c8ee5949c16d97e3c63a57e927"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8408659616ef670283629d2b01ddfbaf" id="r_a8408659616ef670283629d2b01ddfbaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a8408659616ef670283629d2b01ddfbaf">makeDeleteStop</a> (const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;stop) const override</td></tr>
+<tr class="memdesc:a8408659616ef670283629d2b01ddfbaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan deletion of a gradient stop.  <br /></td></tr>
+<tr class="separator:a8408659616ef670283629d2b01ddfbaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84873909a25aecb53e8b9d7c151ce89e" id="r_a84873909a25aecb53e8b9d7c151ce89e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1EditorCurveKey.html">EditorCurveKey</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a84873909a25aecb53e8b9d7c151ce89e">keys</a> () const</td></tr>
+<tr class="memdesc:a84873909a25aecb53e8b9d7c151ce89e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return scalar keys in stable timeline order.  <br /></td></tr>
+<tr class="separator:a84873909a25aecb53e8b9d7c151ce89e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad698908562b25beb2d14c17a263660b1" id="r_ad698908562b25beb2d14c17a263660b1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1EditorGradientStop.html">EditorGradientStop</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#ad698908562b25beb2d14c17a263660b1">stops</a> () const</td></tr>
+<tr class="memdesc:ad698908562b25beb2d14c17a263660b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return gradient stops in stable timeline order.  <br /></td></tr>
+<tr class="separator:ad698908562b25beb2d14c17a263660b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad581bf437afc3d705ca3569cd5c43ea" id="r_aad581bf437afc3d705ca3569cd5c43ea"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#aad581bf437afc3d705ca3569cd5c43ea">sampleCurve</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>) const</td></tr>
+<tr class="memdesc:aad581bf437afc3d705ca3569cd5c43ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample scalar curve at normalized time.  <br /></td></tr>
+<tr class="separator:aad581bf437afc3d705ca3569cd5c43ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1fc26af01c71faa7e3b9fb9a9b851a3" id="r_ae1fc26af01c71faa7e3b9fb9a9b851a3"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#ae1fc26af01c71faa7e3b9fb9a9b851a3">sampleGradient</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>) const</td></tr>
+<tr class="memdesc:ae1fc26af01c71faa7e3b9fb9a9b851a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample gradient at normalized time.  <br /></td></tr>
+<tr class="separator:ae1fc26af01c71faa7e3b9fb9a9b851a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f413f5e1e9eff5aea551ba4cdbc02be" id="r_a6f413f5e1e9eff5aea551ba4cdbc02be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editor_1_1EditorCurvePreview.html">EditorCurvePreview</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a6f413f5e1e9eff5aea551ba4cdbc02be">preview</a> (int sampleCount, int maximumSamples=4096) const</td></tr>
+<tr class="memdesc:a6f413f5e1e9eff5aea551ba4cdbc02be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a bounded lookup preview for viewport/material upload.  <br /></td></tr>
+<tr class="separator:a6f413f5e1e9eff5aea551ba4cdbc02be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab05463e01fe167e245e516cb7cd14f5e" id="r_ab05463e01fe167e245e516cb7cd14f5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#ab05463e01fe167e245e516cb7cd14f5e">snapshotValue</a> () const</td></tr>
+<tr class="memdesc:ab05463e01fe167e245e516cb7cd14f5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture deterministic schema-version-one timeline data.  <br /></td></tr>
+<tr class="separator:ab05463e01fe167e245e516cb7cd14f5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6ac3dfa4f84323987d4444e1efd5a86" id="r_ab6ac3dfa4f84323987d4444e1efd5a86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#ab6ac3dfa4f84323987d4444e1efd5a86">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:ab6ac3dfa4f84323987d4444e1efd5a86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically load a validated timeline snapshot.  <br /></td></tr>
+<tr class="separator:ab6ac3dfa4f84323987d4444e1efd5a86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editor_1_1ICurveDocumentEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editor_1_1ICurveDocumentEditTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html">eve::editor::ICurveDocumentEditTarget</a></td></tr>
+<tr class="memitem:a0b0fc8c8c631e36203daf8dbc7fc6787 inherit pub_methods_classeve_1_1editor_1_1ICurveDocumentEditTarget" id="r_a0b0fc8c8c631e36203daf8dbc7fc6787"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a0b0fc8c8c631e36203daf8dbc7fc6787">~ICurveDocumentEditTarget</a> ()=default</td></tr>
+<tr class="separator:a0b0fc8c8c631e36203daf8dbc7fc6787 inherit pub_methods_classeve_1_1editor_1_1ICurveDocumentEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editor_1_1ICurveDocumentEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editor_1_1ICurveDocumentEditTarget')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html">eve::editor::ICurveDocumentEditTarget</a></td></tr>
+<tr class="memitem:a650366b85b6fc209004f69a08c04e982 inherit pub_static_methods_classeve_1_1editor_1_1ICurveDocumentEditTarget" id="r_a650366b85b6fc209004f69a08c04e982"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editor.html#a833aebc8223a13bb0cd9d0b384c907db">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a650366b85b6fc209004f69a08c04e982">editorCapabilityId</a> ()</td></tr>
+<tr class="separator:a650366b85b6fc209004f69a08c04e982 inherit pub_static_methods_classeve_1_1editor_1_1ICurveDocumentEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-neutral reversible curve and gradient timeline document. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8h_source.html">EditorCurveDocument.h</a> 第 <a class="el" href="EditorCurveDocument_8h_source.html#l00056">56</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac01eaa4110ee28259e0edce1fd4d772f" name="ac01eaa4110ee28259e0edce1fd4d772f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac01eaa4110ee28259e0edce1fd4d772f">&#9670;&#160;</a></span>EditorCurveDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorCurveDocument::EditorCurveDocument </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a15ef57cfaa23cc7707d383289afc9339" name="a15ef57cfaa23cc7707d383289afc9339"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15ef57cfaa23cc7707d383289afc9339">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditorCurveDocument::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>.</p>
+
+</div>
+</div>
+<a id="a3442103e44737260742afbb0847d8d9a" name="a3442103e44737260742afbb0847d8d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3442103e44737260742afbb0847d8d9a">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorCurveDocument::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8h_source.html">EditorCurveDocument.h</a> 第 <a class="el" href="EditorCurveDocument_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a5d6d48ed7256b909a07e6ed28bf7be30" name="a5d6d48ed7256b909a07e6ed28bf7be30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d6d48ed7256b909a07e6ed28bf7be30">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1editor.html#a8036094c001270dda15b24cf94e004e7">IDomainOperationTarget</a> &gt; eve::editor::EditorCurveDocument::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb483b41d52386fad0090a80724742d4" name="aeb483b41d52386fad0090a80724742d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb483b41d52386fad0090a80724742d4">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditorCurveDocument::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1editor.html#a8036094c001270dda15b24cf94e004e7">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a95ad099b725eddd06f247d113b376a48" name="a95ad099b725eddd06f247d113b376a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95ad099b725eddd06f247d113b376a48">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a1d7639804ede2e98a069e5d7a6c8ad64">TargetDescriptor</a> eve::editor::EditorCurveDocument::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorCurveDocument_8h_source.html#l00044">eve::editor::ICurveDocumentEditTarget::editorCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a231723ea3fdbba8c50e41bc9511d3397" name="a231723ea3fdbba8c50e41bc9511d3397"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a231723ea3fdbba8c50e41bc9511d3397">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a29f93f1a0ac0951a5915dc65cd17c76e">EditRegion</a> eve::editor::EditorCurveDocument::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8h_source.html">EditorCurveDocument.h</a> 第 <a class="el" href="EditorCurveDocument_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a84873909a25aecb53e8b9d7c151ce89e" name="a84873909a25aecb53e8b9d7c151ce89e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84873909a25aecb53e8b9d7c151ce89e">&#9670;&#160;</a></span>keys()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1EditorCurveKey.html">EditorCurveKey</a> &gt; eve::editor::EditorCurveDocument::keys </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return scalar keys in stable timeline order. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00193">loadSnapshot()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00148">sampleCurve()</a> , 以及 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00187">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="ab6ac3dfa4f84323987d4444e1efd5a86" name="ab6ac3dfa4f84323987d4444e1efd5a86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6ac3dfa4f84323987d4444e1efd5a86">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditorCurveDocument::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically load a validated timeline snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00145">keys()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00146">stops()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a03e410da5b372ac2463059b80750cf16" name="a03e410da5b372ac2463059b80750cf16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03e410da5b372ac2463059b80750cf16">&#9670;&#160;</a></span>makeDeleteKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &gt; eve::editor::EditorCurveDocument::makeDeleteKey </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan deletion of a scalar key. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#af0c90f2a7bc39c344c2c97b9b2fe8d7d">eve::editor::ICurveDocumentEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a8408659616ef670283629d2b01ddfbaf" name="a8408659616ef670283629d2b01ddfbaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8408659616ef670283629d2b01ddfbaf">&#9670;&#160;</a></span>makeDeleteStop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &gt; eve::editor::EditorCurveDocument::makeDeleteStop </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>stop</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan deletion of a gradient stop. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a9a603029fce837d637499a97754220a2">eve::editor::ICurveDocumentEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a257e41ed733b2b110a0c23cae4276366" name="a257e41ed733b2b110a0c23cae4276366"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a257e41ed733b2b110a0c23cae4276366">&#9670;&#160;</a></span>makeSetKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &gt; eve::editor::EditorCurveDocument::makeSetKey </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1EditorCurveKey.html">EditorCurveKey</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan creation or replacement of a scalar key. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#acca7cf366a6e6579bf5572adf7ae628f">eve::editor::ICurveDocumentEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a59b525c8ee5949c16d97e3c63a57e927" name="a59b525c8ee5949c16d97e3c63a57e927"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b525c8ee5949c16d97e3c63a57e927">&#9670;&#160;</a></span>makeSetStop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa7967b6d88eb4a8202eeb8ebf49ecf51">DomainOperation</a> &gt; eve::editor::EditorCurveDocument::makeSetStop </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1EditorGradientStop.html">EditorGradientStop</a> &amp;&#160;</td>
+          <td class="paramname"><em>stop</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan creation or replacement of a gradient stop. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a0b5ae7e195bf28736c13d361e0ba63dd">eve::editor::ICurveDocumentEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorCurveDocument_8h_source.html#l00026">eve::editor::EditorGradientStop::id</a>.</p>
+
+</div>
+</div>
+<a id="a6f413f5e1e9eff5aea551ba4cdbc02be" name="a6f413f5e1e9eff5aea551ba4cdbc02be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f413f5e1e9eff5aea551ba4cdbc02be">&#9670;&#160;</a></span>preview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editor_1_1EditorCurvePreview.html">EditorCurvePreview</a> eve::editor::EditorCurveDocument::preview </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sampleCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maximumSamples</em> = <code>4096</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a bounded lookup preview for viewport/material upload. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorCurveDocument_8h_source.html#l00035">eve::editor::EditorCurvePreview::curveSamples</a>, <a class="el" href="EditorCurveDocument_8h_source.html#l00037">eve::editor::EditorCurvePreview::diagnostics</a>, <a class="el" href="EditorCurveDocument_8h_source.html#l00034">eve::editor::EditorCurvePreview::documentRevision</a>, <a class="el" href="EditorCurveDocument_8h_source.html#l00036">eve::editor::EditorCurvePreview::gradientSamples</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00148">sampleCurve()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00163">sampleGradient()</a>, <a class="el" href="EditorCurveDocument_8h_source.html#l00033">eve::editor::EditorCurvePreview::status</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="ae31c76e7af9dfec3e73e0a19734ec2ea" name="ae31c76e7af9dfec3e73e0a19734ec2ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae31c76e7af9dfec3e73e0a19734ec2ea">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::editor::EditorCurveDocument::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a833aebc8223a13bb0cd9d0b384c907db">CapabilityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an optional target capability. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. </dd></dl>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00068">eve::editing::IEditableTarget::capability()</a> , 以及 <a class="el" href="EditorCurveDocument_8h_source.html#l00044">eve::editor::ICurveDocumentEditTarget::editorCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a2c3c659f1b451ccf6b0f702cfefe333c" name="a2c3c659f1b451ccf6b0f702cfefe333c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c3c659f1b451ccf6b0f702cfefe333c">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::editor::EditorCurveDocument::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8h_source.html">EditorCurveDocument.h</a> 第 <a class="el" href="EditorCurveDocument_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad581bf437afc3d705ca3569cd5c43ea" name="aad581bf437afc3d705ca3569cd5c43ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad581bf437afc3d705ca3569cd5c43ea">&#9670;&#160;</a></span>sampleCurve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::editor::EditorCurveDocument::sampleCurve </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample scalar curve at normalized time. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00145">keys()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00173">preview()</a>.</p>
+
+</div>
+</div>
+<a id="ae1fc26af01c71faa7e3b9fb9a9b851a3" name="ae1fc26af01c71faa7e3b9fb9a9b851a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1fc26af01c71faa7e3b9fb9a9b851a3">&#9670;&#160;</a></span>sampleGradient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; double, 4 &gt; eve::editor::EditorCurveDocument::sampleGradient </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample gradient at normalized time. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00146">stops()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00173">preview()</a>.</p>
+
+</div>
+</div>
+<a id="ab05463e01fe167e245e516cb7cd14f5e" name="ab05463e01fe167e245e516cb7cd14f5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab05463e01fe167e245e516cb7cd14f5e">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> eve::editor::EditorCurveDocument::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture deterministic schema-version-one timeline data. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00145">keys()</a> , 以及 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00146">stops()</a>.</p>
+
+</div>
+</div>
+<a id="ad698908562b25beb2d14c17a263660b1" name="ad698908562b25beb2d14c17a263660b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad698908562b25beb2d14c17a263660b1">&#9670;&#160;</a></span>stops()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1EditorGradientStop.html">EditorGradientStop</a> &gt; eve::editor::EditorCurveDocument::stops </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return gradient stops in stable timeline order. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a> 第 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00193">loadSnapshot()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00163">sampleGradient()</a> , 以及 <a class="el" href="EditorCurveDocument_8cpp_source.html#l00187">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="abbef0f6bfc405a57c046135fc35c8916" name="abbef0f6bfc405a57c046135fc35c8916"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbef0f6bfc405a57c046135fc35c8916">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> eve::editor::EditorCurveDocument::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorCurveDocument_8h_source.html">EditorCurveDocument.h</a> 第 <a class="el" href="EditorCurveDocument_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorCurveDocument_8h_source.html">EditorCurveDocument.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorCurveDocument_8cpp_source.html">EditorCurveDocument.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditConstraint.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditConstraint.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditConstraint_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EditConstraint_8h.html">editor/EditConstraint.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1ConstraintResult.html#ae98a6731c955b5eb1d1c00da3995e5ed">   10</a></span><a class="code hl_struct" href="structeve_1_1editor_1_1ConstraintResult.html">ConstraintResult</a> <a class="code hl_function" href="structeve_1_1editor_1_1ConstraintResult.html#ae98a6731c955b5eb1d1c00da3995e5ed">ConstraintResult::warning</a>(std::string message) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">return</span> {<a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#add05a98335fb51c3515932e4e84f7853a0eaadb4fcb48a0a0ed7bc9868be9fbaa">ConstraintDisposition::Warning</a>, std::move(<a class="code hl_variable" href="structeve_1_1editor_1_1ConstraintResult.html#a913edfb4452a9318c3b25e5dc8fad43e">message</a>)};</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1ConstraintResult.html#afca7e9244cf4216bde74748c07cfa654">   13</a></span><a class="code hl_struct" href="structeve_1_1editor_1_1ConstraintResult.html">ConstraintResult</a> <a class="code hl_function" href="structeve_1_1editor_1_1ConstraintResult.html#afca7e9244cf4216bde74748c07cfa654">ConstraintResult::reject</a>(std::string message) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> {<a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#add05a98335fb51c3515932e4e84f7853ad98ac12774fca5c3cbaffe276840c55f">ConstraintDisposition::Reject</a>, std::move(<a class="code hl_variable" href="structeve_1_1editor_1_1ConstraintResult.html#a913edfb4452a9318c3b25e5dc8fad43e">message</a>)};</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditConstraintPipeline.html#a49fdee8cec79ee7cbe007c44d52743f4">   16</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditConstraintPipeline.html#a49fdee8cec79ee7cbe007c44d52743f4">EditConstraintPipeline::add</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IEditConstraint.html">IEditConstraint</a> *constraint) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (!constraint || std::find(constraints_.begin(), constraints_.end(), constraint) != constraints_.end()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    constraints_.push_back(constraint);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="}">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditConstraintPipeline.html#af07729c8fbebc22ffa42380ff1c8844e">   21</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditConstraintPipeline.html#af07729c8fbebc22ffa42380ff1c8844e">EditConstraintPipeline::remove</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IEditConstraint.html">IEditConstraint</a> *constraint) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">auto</span> it = std::find(constraints_.begin(), constraints_.end(), constraint);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (it == constraints_.end()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    constraints_.erase(it);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ac2f8141f3ceabdcc4c51b0844c01d843">   27</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ac2f8141f3ceabdcc4c51b0844c01d843">EditConstraintPipeline::clear</a>() {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    constraints_.clear();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    diagnostics_.clear();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    structuredDiagnostics_.clear();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    rejected_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditConstraintPipeline.html#a6f78146c1b30aeef4d090bc50b31110c">   33</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditConstraintPipeline.html#a6f78146c1b30aeef4d090bc50b31110c">EditConstraintPipeline::evaluate</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context, <a class="code hl_class" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &amp;command) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ad71f0c270fb3a2716a5c98878d3b830e">evaluateChecked</a>(context, command).ok();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ad71f0c270fb3a2716a5c98878d3b830e">   36</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ad71f0c270fb3a2716a5c98878d3b830e">EditConstraintPipeline::evaluateChecked</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context, <a class="code hl_class" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &amp;command) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    diagnostics_.clear();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    structuredDiagnostics_.clear();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    rejected_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">auto</span> record = [&amp;](<a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a> severity, <span class="keyword">const</span> <span class="keywordtype">char</span> *rule, std::string message) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (message.empty() &amp;&amp; severity != DiagnosticSeverity::Error) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> (message.empty()) message = <span class="stringliteral">&quot;Editor command was rejected by a constraint&quot;</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        structuredDiagnostics_.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            severity == DiagnosticSeverity::Error ? <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                                  : <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">eve::DiagnosticCode::None</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(rule), severity, message));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        diagnostics_.push_back(std::move(message));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    };</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> *constraint : constraints_) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_struct" href="structeve_1_1editor_1_1ConstraintResult.html">ConstraintResult</a> result = constraint-&gt;evaluate(context, command);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (result.<a class="code hl_variable" href="structeve_1_1editor_1_1ConstraintResult.html#aeeef8c02d46c109ac1782b98785876ff">disposition</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#add05a98335fb51c3515932e4e84f7853ad98ac12774fca5c3cbaffe276840c55f">ConstraintDisposition::Reject</a>) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            rejected_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            record(DiagnosticSeverity::Error, <span class="stringliteral">&quot;editor.command.constraint-rejected&quot;</span>, std::move(result.<a class="code hl_variable" href="structeve_1_1editor_1_1ConstraintResult.html#a913edfb4452a9318c3b25e5dc8fad43e">message</a>));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>(EditorStatus::Rejected, structuredDiagnostics_));</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">if</span> (result.<a class="code hl_variable" href="structeve_1_1editor_1_1ConstraintResult.html#aeeef8c02d46c109ac1782b98785876ff">disposition</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#add05a98335fb51c3515932e4e84f7853a0eaadb4fcb48a0a0ed7bc9868be9fbaa">ConstraintDisposition::Warning</a>)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            record(DiagnosticSeverity::Warning, <span class="stringliteral">&quot;editor.command.constraint-warning&quot;</span>, std::move(result.<a class="code hl_variable" href="structeve_1_1editor_1_1ConstraintResult.html#a913edfb4452a9318c3b25e5dc8fad43e">message</a>));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!result.<a class="code hl_variable" href="structeve_1_1editor_1_1ConstraintResult.html#a913edfb4452a9318c3b25e5dc8fad43e">message</a>.empty())</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            record(DiagnosticSeverity::Info, <span class="stringliteral">&quot;editor.command.constraint-info&quot;</span>, std::move(result.<a class="code hl_variable" href="structeve_1_1editor_1_1ConstraintResult.html#a913edfb4452a9318c3b25e5dc8fad43e">message</a>));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;(structuredDiagnostics_);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ac2d5bfa2eaa0dfdd230cf26436964969">   63</a></span><span class="keyword">const</span> std::string &amp;<a class="code hl_function" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ac2d5bfa2eaa0dfdd230cf26436964969">EditConstraintPipeline::diagnostic</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <a class="code hl_function" href="classeve_1_1editor_1_1EditConstraintPipeline.html#a34b58b617cc0982e022055bfee4f0500">diagnosticCount</a>()) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;EditConstraintPipeline::diagnostic: bad index&quot;</span>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">return</span> diagnostics_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)];</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditConstraint_8h_html"><div class="ttname"><a href="EditConstraint_8h.html">EditConstraint.h</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditConstraintPipeline_html_a34b58b617cc0982e022055bfee4f0500"><div class="ttname"><a href="classeve_1_1editor_1_1EditConstraintPipeline.html#a34b58b617cc0982e022055bfee4f0500">eve::editor::EditConstraintPipeline::diagnosticCount</a></div><div class="ttdeci">int diagnosticCount() const</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8h_source.html#l00045">EditConstraint.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditConstraintPipeline_html_a49fdee8cec79ee7cbe007c44d52743f4"><div class="ttname"><a href="classeve_1_1editor_1_1EditConstraintPipeline.html#a49fdee8cec79ee7cbe007c44d52743f4">eve::editor::EditConstraintPipeline::add</a></div><div class="ttdeci">bool add(IEditConstraint *constraint)</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8cpp_source.html#l00016">EditConstraint.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditConstraintPipeline_html_a6f78146c1b30aeef4d090bc50b31110c"><div class="ttname"><a href="classeve_1_1editor_1_1EditConstraintPipeline.html#a6f78146c1b30aeef4d090bc50b31110c">eve::editor::EditConstraintPipeline::evaluate</a></div><div class="ttdeci">bool evaluate(EditorContext &amp;context, IEditCommand &amp;command)</div><div class="ttdoc">Compatibility-only boolean facade over evaluateChecked().</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8cpp_source.html#l00033">EditConstraint.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditConstraintPipeline_html_ac2d5bfa2eaa0dfdd230cf26436964969"><div class="ttname"><a href="classeve_1_1editor_1_1EditConstraintPipeline.html#ac2d5bfa2eaa0dfdd230cf26436964969">eve::editor::EditConstraintPipeline::diagnostic</a></div><div class="ttdeci">const std::string &amp; diagnostic(int index) const</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8cpp_source.html#l00063">EditConstraint.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditConstraintPipeline_html_ac2f8141f3ceabdcc4c51b0844c01d843"><div class="ttname"><a href="classeve_1_1editor_1_1EditConstraintPipeline.html#ac2f8141f3ceabdcc4c51b0844c01d843">eve::editor::EditConstraintPipeline::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8cpp_source.html#l00027">EditConstraint.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditConstraintPipeline_html_ad71f0c270fb3a2716a5c98878d3b830e"><div class="ttname"><a href="classeve_1_1editor_1_1EditConstraintPipeline.html#ad71f0c270fb3a2716a5c98878d3b830e">eve::editor::EditConstraintPipeline::evaluateChecked</a></div><div class="ttdeci">EditorResult&lt; void &gt; evaluateChecked(EditorContext &amp;context, IEditCommand &amp;command)</div><div class="ttdoc">Evaluate the chain and return structured allow/warning/reject diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8cpp_source.html#l00036">EditConstraint.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditConstraintPipeline_html_af07729c8fbebc22ffa42380ff1c8844e"><div class="ttname"><a href="classeve_1_1editor_1_1EditConstraintPipeline.html#af07729c8fbebc22ffa42380ff1c8844e">eve::editor::EditConstraintPipeline::remove</a></div><div class="ttdeci">bool remove(IEditConstraint *constraint)</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8cpp_source.html#l00021">EditConstraint.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorContext_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorContext.html">eve::editor::EditorContext</a></div><div class="ttdoc">Context supplied by EditorSession to tools.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00064">EditorTool.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditCommand_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditCommand.html">eve::editor::IEditCommand</a></div><div class="ttdoc">Reversible unit accepted by the editor transaction manager.</div><div class="ttdef"><b>Definition</b> <a href="EditCommand_8h_source.html#l00012">EditCommand.h:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditConstraint_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditConstraint.html">eve::editor::IEditConstraint</a></div><div class="ttdoc">Protocol for game and art-style rules applied before command commit. Implementations may inspect or n...</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8h_source.html#l00029">EditConstraint.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_add05a98335fb51c3515932e4e84f7853a0eaadb4fcb48a0a0ed7bc9868be9fbaa"><div class="ttname"><a href="namespaceeve_1_1editor.html#add05a98335fb51c3515932e4e84f7853a0eaadb4fcb48a0a0ed7bc9868be9fbaa">eve::editor::ConstraintDisposition::Warning</a></div><div class="ttdeci">@ Warning</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_add05a98335fb51c3515932e4e84f7853ad98ac12774fca5c3cbaffe276840c55f"><div class="ttname"><a href="namespaceeve_1_1editor.html#add05a98335fb51c3515932e4e84f7853ad98ac12774fca5c3cbaffe276840c55f">eve::editor::ConstraintDisposition::Reject</a></div><div class="ttdeci">@ Reject</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">eve::DiagnosticCode::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Stable severity of a diagnostic, independent of its display text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00020">Diagnostic.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ConstraintResult_html"><div class="ttname"><a href="structeve_1_1editor_1_1ConstraintResult.html">eve::editor::ConstraintResult</a></div><div class="ttdoc">Result of evaluating one replaceable edit constraint.</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8h_source.html#l00016">EditConstraint.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ConstraintResult_html_a913edfb4452a9318c3b25e5dc8fad43e"><div class="ttname"><a href="structeve_1_1editor_1_1ConstraintResult.html#a913edfb4452a9318c3b25e5dc8fad43e">eve::editor::ConstraintResult::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8h_source.html#l00018">EditConstraint.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ConstraintResult_html_ae98a6731c955b5eb1d1c00da3995e5ed"><div class="ttname"><a href="structeve_1_1editor_1_1ConstraintResult.html#ae98a6731c955b5eb1d1c00da3995e5ed">eve::editor::ConstraintResult::warning</a></div><div class="ttdeci">static ConstraintResult warning(std::string message)</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8cpp_source.html#l00010">EditConstraint.cpp:10</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ConstraintResult_html_aeeef8c02d46c109ac1782b98785876ff"><div class="ttname"><a href="structeve_1_1editor_1_1ConstraintResult.html#aeeef8c02d46c109ac1782b98785876ff">eve::editor::ConstraintResult::disposition</a></div><div class="ttdeci">ConstraintDisposition disposition</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8h_source.html#l00017">EditConstraint.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ConstraintResult_html_afca7e9244cf4216bde74748c07cfa654"><div class="ttname"><a href="structeve_1_1editor_1_1ConstraintResult.html#afca7e9244cf4216bde74748c07cfa654">eve::editor::ConstraintResult::reject</a></div><div class="ttdeci">static ConstraintResult reject(std::string message)</div><div class="ttdef"><b>Definition</b> <a href="EditConstraint_8cpp_source.html#l00013">EditConstraint.cpp:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_fac9b528c4199c5e632b26a252c78934.html">dtl_compat</a></li><li class="navelem"><a class="el" href="dir_2c94a29d931c0b0bb668d1f67c6a8eff.html">DTL</a></li><li class="navelem"><a class="el" href="dir_29c3ae20b0698170686ce2a37aef880a.html">Utility</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DrawJagged.hpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DrawJagged_8hpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">    Copyright (c) 2017-2019 Kasugaccho</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">    Copyright (c) 2018-2019 As Project</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">    https://github.com/Kasugaccho/DungeonTemplateLibrary</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">    wanotaitei@gmail.com</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment"></span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">    Distributed under the Boost Software License, Version 1.0. (See accompanying</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#ifndef INCLUDED_DUNGEON_TEMPLATE_LIBRARY_DTL_UTILITY_DRAW_JAGGED_HPP</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#define INCLUDED_DUNGEON_TEMPLATE_LIBRARY_DTL_UTILITY_DRAW_JAGGED_HPP</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;DTL/Macros/constexpr.hpp&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;DTL/Type/Forward.hpp&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;DTL/Type/SizeT.hpp&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;DTL/Utility/MatrixWrapper.hpp&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">    [概要] &quot;dtl名前空間&quot;とは&quot;DungeonTemplateLibrary&quot;の全ての機能が含まれる名前空間である。</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">    [Summary] The &quot;dtl&quot; is a namespace that contains all the functions of &quot;DungeonTemplateLibrary&quot;.</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">#######################################################################################*/</span></div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespacedtl.html">   24</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedtl.html">dtl</a> {</div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="}">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespacedtl_1_1utility.html">   25</a></span>    <span class="keyword">inline</span> <span class="keyword">namespace </span>utility { <span class="comment">//&quot;dtl::utility&quot;名前空間に属する</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Derived, <span class="keyword">typename</span> Matrix_Var_, <span class="keyword">typename</span> Return_Var_ = <span class="keywordtype">bool</span>&gt;</div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html">   28</a></span>        <span class="keyword">class </span><a class="code hl_class" href="classdtl_1_1utility_1_1DrawJagged.html">DrawJagged</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keyword">using </span>Index_Size = ::dtl::type::size;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment">    [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="comment">    [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a995baafaea31d271b77fb22e35d5c7dc">   47</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a995baafaea31d271b77fb22e35d5c7dc">draw</a>(Matrix_&amp; matrix_, Args&amp;&amp; ... args) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...));</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            }</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment">    [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment">    [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="}">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#af7edd1d9fe13c318e949beae239e3f52">   58</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#af7edd1d9fe13c318e949beae239e3f52">redraw</a>(<span class="keyword">const</span> Matrix_Var_&amp; init_value_, Matrix_ &amp; matrix_, Args&amp;&amp; ... args) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;redrawNormal(init_value_, ::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            }</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment">    [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment">    [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a8208d992fa0b0977404ca5783d602b8d">   69</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a8208d992fa0b0977404ca5783d602b8d">drawAdd</a>(Matrix_&amp; matrix_, Args&amp;&amp; ... args) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...), 0, 0, 0, 0);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            }</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="comment">                [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="comment">                [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="comment">                [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="comment">                [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment">            #######################################################################################*/</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> Matrix2_, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a23131a3ffb5fd1a1ed395852b9911b1d">   80</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a23131a3ffb5fd1a1ed395852b9911b1d">drawOther</a>(Matrix_&amp; matrix_, Matrix2_&amp; matrix2_, Args&amp;&amp; ... args) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...), ::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix2_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                    , Matrix_Var_{}, 0, 0, 0, 0); <span class="comment">//10*4 Copy</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            }</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="comment">                [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="comment">                [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="comment">                [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="comment">                [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="comment">            #######################################################################################*/</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_Var2_, <span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> Matrix2_, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a07be22a8149a889eeec368114da77262">   92</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a07be22a8149a889eeec368114da77262">drawOther</a>(Matrix_&amp; matrix_, Matrix2_&amp; matrix2_, Args&amp;&amp; ... args) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...), ::dtl::utility::makeWrapper&lt;Matrix_Var2_&gt;(matrix2_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...)</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                    , Matrix_Var2_{}, 0, 0, 0, 0); <span class="comment">//10*4 Copy</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            }</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="comment">    [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="comment">    [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> Function_, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#afbf3b829256008af9af7b8b652c4a083">  104</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#afbf3b829256008af9af7b8b652c4a083">drawOperator</a>(Matrix_ &amp; matrix_, Function_ &amp;&amp; function_, Args&amp;&amp; ... args) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...), function_);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            }</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <span class="comment">// Upstream DTL calls drawOperatorArray from createOperatorArray but never defines it.</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="comment">// Apple Clang diagnoses the missing member while parsing CRTP bases; provide the</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="comment">// array-bounds overload to match drawArray / Binarization-style APIs.</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> Function_&gt;</div>
+<div class="foldopen" id="foldopen00112" data-start="{" data-end="}">
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a024877006b590dc54fbc583994a010d0">  112</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a024877006b590dc54fbc583994a010d0">drawOperatorArray</a>(Matrix_&amp; matrix_, <span class="keyword">const</span> Index_Size max_x_,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                <span class="keyword">const</span> Index_Size max_y_, Function_&amp;&amp; function_) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                    ::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, max_x_, max_y_), function_);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            }</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="comment">                [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="comment">                [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="comment">                [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="comment">                [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="comment">            #######################################################################################*/</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> Function_, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00125" data-start="{" data-end="}">
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a750fe2fd7cebaab53c873791a51cce9b">  125</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a750fe2fd7cebaab53c873791a51cce9b">drawFunction</a>(Matrix_&amp; matrix_, Function_&amp;&amp; function_, Args&amp;&amp; ... args) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...), function_, 0, 0, 0, 0);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            }</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="comment">                [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="comment">                [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="comment">                [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="comment">                [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="comment">            #######################################################################################*/</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> Function_, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00136" data-start="{" data-end="}">
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#ae2ce0ca8501476972a9ec8a946a7ba33">  136</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#ae2ce0ca8501476972a9ec8a946a7ba33">drawAddOperator</a>(Matrix_&amp; matrix_, Function_&amp;&amp; function_, Args&amp;&amp; ... args) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, DTL_TYPE_FORWARD&lt;Args&gt;(args)...), function_, 0, 0, 0);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>            }</div>
+</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="comment">    [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="comment">    [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_&gt;</div>
+<div class="foldopen" id="foldopen00147" data-start="{" data-end="}">
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a319a0463f308638314d51e2f1834c638">  147</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a319a0463f308638314d51e2f1834c638">drawArray</a>(Matrix_ &amp; matrix_, <span class="keyword">const</span> Index_Size max_x_, <span class="keyword">const</span> Index_Size max_y_) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Derived*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;drawNormal(::dtl::utility::makeWrapper&lt;Matrix_Var_&gt;(matrix_, max_x_, max_y_));</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            }</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="comment">    [戻り値] 戻り値の型は bool である。[ true : 描画に成功したことを示す / false : 描画に失敗したことを示す ]</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="comment">    [Return value] The return type is bool. [ true: Drawing was successful. / false: Drawing failed. ]</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> ...Args_&gt;</div>
+<div class="foldopen" id="foldopen00160" data-start="{" data-end="}">
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a4c1737343110f1b81e41b1ecff2b4f22">  160</a></span>            <span class="keyword">constexpr</span> Return_Var_ <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a4c1737343110f1b81e41b1ecff2b4f22">operator()</a>(Matrix_&amp; matrix_, Args_&amp;&amp; ... args_) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a>(matrix_, DTL_TYPE_FORWARD&lt;Args_&gt;(args_)...);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            }</div>
+</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="comment">    [戻り値] 戻り値の型は 引数として渡されたMatrixの型(Matrix_型) である。</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="comment">    [Return value] The return type is Matrix type of argument.</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> ...Args_&gt;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            DTL_VERSIONING_CPP14_CONSTEXPR</div>
+<div class="foldopen" id="foldopen00175" data-start="{" data-end="}">
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a29f8e660b83ce1534a2ee9df63d6cbe7">  175</a></span>                Matrix_&amp;&amp; <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a29f8e660b83ce1534a2ee9df63d6cbe7">create</a>(Matrix_ &amp;&amp; matrix_, Args_ &amp;&amp; ... args_) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                this-&gt;<a class="code hl_variable" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a>(matrix_, DTL_TYPE_FORWARD&lt;Args_&gt;(args_)...);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>                <span class="keywordflow">return</span> DTL_TYPE_FORWARD&lt;Matrix_&gt;(matrix_);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            }</div>
+</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span><span class="comment">    [戻り値] 戻り値の型は 引数として渡されたMatrixの型(Matrix_型) である。</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="comment">    [Return value] The return type is Matrix type of argument.</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> ...Args_&gt;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            DTL_VERSIONING_CPP14_CONSTEXPR</div>
+<div class="foldopen" id="foldopen00188" data-start="{" data-end="}">
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#aea34e3e8e7fce6a40a13803c6987b4dc">  188</a></span>                Matrix_&amp;&amp; <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#aea34e3e8e7fce6a40a13803c6987b4dc">createArray</a>(Matrix_ &amp;&amp; matrix_, Args_ &amp;&amp; ... args_) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                this-&gt;<a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a319a0463f308638314d51e2f1834c638">drawArray</a>(matrix_, DTL_TYPE_FORWARD&lt;Args_&gt;(args_)...);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                <span class="keywordflow">return</span> DTL_TYPE_FORWARD&lt;Matrix_&gt;(matrix_);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            }</div>
+</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span><span class="comment">    [戻り値] 戻り値の型は 引数として渡されたMatrixの型(Matrix_型) である。</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="comment">    [Return value] The return type is Matrix type of argument.</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> ...Args_&gt;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            DTL_VERSIONING_CPP14_CONSTEXPR</div>
+<div class="foldopen" id="foldopen00201" data-start="{" data-end="}">
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#a8478f55b715521eff429749150ed139e">  201</a></span>                Matrix_&amp;&amp; <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a8478f55b715521eff429749150ed139e">createOperator</a>(Matrix_ &amp;&amp; matrix_, Args_ &amp;&amp; ... args_) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                this-&gt;<a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#afbf3b829256008af9af7b8b652c4a083">drawOperator</a>(matrix_, DTL_TYPE_FORWARD&lt;Args_&gt;(args_)...);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                <span class="keywordflow">return</span> DTL_TYPE_FORWARD&lt;Matrix_&gt;(matrix_);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            }</div>
+</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="comment">/*#######################################################################################</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="comment">    [概要] Matrixに描画する。</span></div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="comment">    [戻り値] 戻り値の型は 引数として渡されたMatrixの型(Matrix_型) である。</span></div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="comment">    [Summary] Draw on Matrix.</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="comment">    [Return value] The return type is Matrix type of argument.</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="comment">#######################################################################################*/</span></div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Matrix_, <span class="keyword">typename</span> ...Args_&gt;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            DTL_VERSIONING_CPP14_CONSTEXPR</div>
+<div class="foldopen" id="foldopen00214" data-start="{" data-end="}">
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="classdtl_1_1utility_1_1DrawJagged.html#ab10a7493ea0f68efec40a348492efd07">  214</a></span>                Matrix_&amp;&amp; <a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#ab10a7493ea0f68efec40a348492efd07">createOperatorArray</a>(Matrix_ &amp;&amp; matrix_, Args_ &amp;&amp; ... args_) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                this-&gt;<a class="code hl_function" href="classdtl_1_1utility_1_1DrawJagged.html#a024877006b590dc54fbc583994a010d0">drawOperatorArray</a>(matrix_, DTL_TYPE_FORWARD&lt;Args_&gt;(args_)...);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                <span class="keywordflow">return</span> DTL_TYPE_FORWARD&lt;Matrix_&gt;(matrix_);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            }</div>
+</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        };</div>
+</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    }</div>
+</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>}</div>
+</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="preprocessor">#endif </span><span class="comment">//Included Dungeon Template Library</span></div>
+<div class="ttc" id="aMeshVfxRenderBatch_8cpp_html_a90ba9e50cca44205ade0c723c61f20ad"><div class="ttname"><a href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a></div><div class="ttdeci">MeshVfxBatchedDraw draw</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8cpp_source.html#l00013">MeshVfxRenderBatch.cpp:13</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html">dtl::DrawJagged</a></div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00028">DrawJagged.hpp:28</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a024877006b590dc54fbc583994a010d0"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a024877006b590dc54fbc583994a010d0">dtl::utility::DrawJagged::drawOperatorArray</a></div><div class="ttdeci">constexpr Return_Var_ drawOperatorArray(Matrix_ &amp;matrix_, const Index_Size max_x_, const Index_Size max_y_, Function_ &amp;&amp;function_) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00112">DrawJagged.hpp:112</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a07be22a8149a889eeec368114da77262"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a07be22a8149a889eeec368114da77262">dtl::utility::DrawJagged::drawOther</a></div><div class="ttdeci">constexpr Return_Var_ drawOther(Matrix_ &amp;matrix_, Matrix2_ &amp;matrix2_, Args &amp;&amp;... args) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00092">DrawJagged.hpp:92</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a23131a3ffb5fd1a1ed395852b9911b1d"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a23131a3ffb5fd1a1ed395852b9911b1d">dtl::utility::DrawJagged::drawOther</a></div><div class="ttdeci">constexpr Return_Var_ drawOther(Matrix_ &amp;matrix_, Matrix2_ &amp;matrix2_, Args &amp;&amp;... args) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00080">DrawJagged.hpp:80</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a29f8e660b83ce1534a2ee9df63d6cbe7"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a29f8e660b83ce1534a2ee9df63d6cbe7">dtl::utility::DrawJagged::create</a></div><div class="ttdeci">DTL_VERSIONING_CPP14_CONSTEXPR Matrix_ &amp;&amp; create(Matrix_ &amp;&amp;matrix_, Args_ &amp;&amp;... args_) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00175">DrawJagged.hpp:175</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a319a0463f308638314d51e2f1834c638"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a319a0463f308638314d51e2f1834c638">dtl::utility::DrawJagged::drawArray</a></div><div class="ttdeci">constexpr Return_Var_ drawArray(Matrix_ &amp;matrix_, const Index_Size max_x_, const Index_Size max_y_) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00147">DrawJagged.hpp:147</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a4c1737343110f1b81e41b1ecff2b4f22"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a4c1737343110f1b81e41b1ecff2b4f22">dtl::utility::DrawJagged::operator()</a></div><div class="ttdeci">constexpr Return_Var_ operator()(Matrix_ &amp;matrix_, Args_ &amp;&amp;... args_) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00160">DrawJagged.hpp:160</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a750fe2fd7cebaab53c873791a51cce9b"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a750fe2fd7cebaab53c873791a51cce9b">dtl::utility::DrawJagged::drawFunction</a></div><div class="ttdeci">constexpr Return_Var_ drawFunction(Matrix_ &amp;matrix_, Function_ &amp;&amp;function_, Args &amp;&amp;... args) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00125">DrawJagged.hpp:125</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a8208d992fa0b0977404ca5783d602b8d"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a8208d992fa0b0977404ca5783d602b8d">dtl::utility::DrawJagged::drawAdd</a></div><div class="ttdeci">constexpr Return_Var_ drawAdd(Matrix_ &amp;matrix_, Args &amp;&amp;... args) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00069">DrawJagged.hpp:69</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a8478f55b715521eff429749150ed139e"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a8478f55b715521eff429749150ed139e">dtl::utility::DrawJagged::createOperator</a></div><div class="ttdeci">DTL_VERSIONING_CPP14_CONSTEXPR Matrix_ &amp;&amp; createOperator(Matrix_ &amp;&amp;matrix_, Args_ &amp;&amp;... args_) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00201">DrawJagged.hpp:201</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_a995baafaea31d271b77fb22e35d5c7dc"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#a995baafaea31d271b77fb22e35d5c7dc">dtl::utility::DrawJagged::draw</a></div><div class="ttdeci">constexpr Return_Var_ draw(Matrix_ &amp;matrix_, Args &amp;&amp;... args) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00047">DrawJagged.hpp:47</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_ab10a7493ea0f68efec40a348492efd07"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#ab10a7493ea0f68efec40a348492efd07">dtl::utility::DrawJagged::createOperatorArray</a></div><div class="ttdeci">DTL_VERSIONING_CPP14_CONSTEXPR Matrix_ &amp;&amp; createOperatorArray(Matrix_ &amp;&amp;matrix_, Args_ &amp;&amp;... args_) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00214">DrawJagged.hpp:214</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_ae2ce0ca8501476972a9ec8a946a7ba33"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#ae2ce0ca8501476972a9ec8a946a7ba33">dtl::utility::DrawJagged::drawAddOperator</a></div><div class="ttdeci">constexpr Return_Var_ drawAddOperator(Matrix_ &amp;matrix_, Function_ &amp;&amp;function_, Args &amp;&amp;... args) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00136">DrawJagged.hpp:136</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_aea34e3e8e7fce6a40a13803c6987b4dc"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#aea34e3e8e7fce6a40a13803c6987b4dc">dtl::utility::DrawJagged::createArray</a></div><div class="ttdeci">DTL_VERSIONING_CPP14_CONSTEXPR Matrix_ &amp;&amp; createArray(Matrix_ &amp;&amp;matrix_, Args_ &amp;&amp;... args_) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00188">DrawJagged.hpp:188</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_af7edd1d9fe13c318e949beae239e3f52"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#af7edd1d9fe13c318e949beae239e3f52">dtl::utility::DrawJagged::redraw</a></div><div class="ttdeci">constexpr Return_Var_ redraw(const Matrix_Var_ &amp;init_value_, Matrix_ &amp;matrix_, Args &amp;&amp;... args) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00058">DrawJagged.hpp:58</a></div></div>
+<div class="ttc" id="aclassdtl_1_1utility_1_1DrawJagged_html_afbf3b829256008af9af7b8b652c4a083"><div class="ttname"><a href="classdtl_1_1utility_1_1DrawJagged.html#afbf3b829256008af9af7b8b652c4a083">dtl::utility::DrawJagged::drawOperator</a></div><div class="ttdeci">constexpr Return_Var_ drawOperator(Matrix_ &amp;matrix_, Function_ &amp;&amp;function_, Args &amp;&amp;... args) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00104">DrawJagged.hpp:104</a></div></div>
+<div class="ttc" id="anamespacedtl_html"><div class="ttname"><a href="namespacedtl.html">dtl</a></div><div class="ttdef"><b>Definition</b> <a href="DrawJagged_8hpp_source.html#l00024">DrawJagged.hpp:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/MeshVfxBatchSubmission.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MeshVfxBatchSubmission.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MeshVfxBatchSubmission_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="MeshVfxRenderBatch_8h.html">MeshVfxRenderBatch.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">   10</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">MeshVfxSubmitStatus</a> : std::uint8_t {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31a382ab522931673c11e398ead1b7b1678">Accepted</a>,</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31ad9c8f187972e6320a34e9c40b4cba605">Skipped</a>,</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31a758b1a8856a2f8715b9c898ae0a57c14">DeviceUnavailable</a>,</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>};</div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2b">   18</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2b">MeshVfxQueueSubmitStatus</a> : std::uint8_t {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2baae94f80b3ce82062a5dd7815daa04f9d">Complete</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2ba44ffd38a6dea695cbe2b34efdcc6cf27">Partial</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31a758b1a8856a2f8715b9c898ae0a57c14">DeviceUnavailable</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html">MeshVfxSubmissionReport</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a561bc849f49164804069125b3575abde">   27</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2b">MeshVfxQueueSubmitStatus</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a561bc849f49164804069125b3575abde">status</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2baae94f80b3ce82062a5dd7815daa04f9d">MeshVfxQueueSubmitStatus::Complete</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a89a26d9ca20c97d10fa8269bd9912048">   28</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a89a26d9ca20c97d10fa8269bd9912048">acceptedBatches</a> = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a8d1e9dfee2b3f2e724db1faacbc4b273">   29</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a8d1e9dfee2b3f2e724db1faacbc4b273">skippedBatches</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a2ac2a759f87907f21f2e933842d9abe7">   30</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a2ac2a759f87907f21f2e933842d9abe7">acceptedDraws</a> = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a115210fa3874cedbc455bb3b42db77ec">   31</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a115210fa3874cedbc455bb3b42db77ec">skippedDraws</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a0a83129a944ef1c28a9329c94b85f426">   32</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a0a83129a944ef1c28a9329c94b85f426">failedDraws</a> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html">   42</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html">IMeshVfxBatchSink</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#ade64eebaf8c8715207bf7f2cf46b95c3">   44</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#ade64eebaf8c8715207bf7f2cf46b95c3">~IMeshVfxBatchSink</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#aeb94155174808140e85b35545ad7635d">   51</a></span>    <span class="keyword">virtual</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">MeshVfxSubmitStatus</a> <a class="code hl_function" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#aeb94155174808140e85b35545ad7635d">beginBatch</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxBatchKey.html">MeshVfxBatchKey</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#aac86d8f49073b2ab246d94f9270b83ba">   58</a></span>    <span class="keyword">virtual</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">MeshVfxSubmitStatus</a> <a class="code hl_function" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#aac86d8f49073b2ab246d94f9270b83ba">submitDraw</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxBatchedDraw.html">MeshVfxBatchedDraw</a>&amp; <a class="code hl_variable" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a>) = 0;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#a9caf8ecf91fb4556320c2390453c9c3f">   64</a></span>    <span class="keyword">virtual</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">MeshVfxSubmitStatus</a> <a class="code hl_function" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#a9caf8ecf91fb4556320c2390453c9c3f">endBatch</a>() = 0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="};">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshVfxBatchExecutor.html">   68</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1MeshVfxBatchExecutor.html">MeshVfxBatchExecutor</a> {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html">MeshVfxSubmissionReport</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshVfxBatchExecutor.html#ad526b2693e50d3ac2cc0879a3018a3ff">submit</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxRenderQueue.html">MeshVfxRenderQueue</a>&amp; queue, <a class="code hl_class" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html">IMeshVfxBatchSink</a>&amp; sink) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>};</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>} <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aMeshVfxRenderBatch_8cpp_html_a90ba9e50cca44205ade0c723c61f20ad"><div class="ttname"><a href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a></div><div class="ttdeci">MeshVfxBatchedDraw draw</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8cpp_source.html#l00013">MeshVfxRenderBatch.cpp:13</a></div></div>
+<div class="ttc" id="aMeshVfxRenderBatch_8h_html"><div class="ttname"><a href="MeshVfxRenderBatch_8h.html">MeshVfxRenderBatch.h</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IMeshVfxBatchSink_html"><div class="ttname"><a href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html">eve::stylize::IMeshVfxBatchSink</a></div><div class="ttdoc">Immediate graphics-backend contract for a mesh VFX render queue.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00042">MeshVfxBatchSubmission.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IMeshVfxBatchSink_html_a9caf8ecf91fb4556320c2390453c9c3f"><div class="ttname"><a href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#a9caf8ecf91fb4556320c2390453c9c3f">eve::stylize::IMeshVfxBatchSink::endBatch</a></div><div class="ttdeci">virtual MeshVfxSubmitStatus endBatch()=0</div><div class="ttdoc">Ends the active batch and flushes backend-local state if needed.</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IMeshVfxBatchSink_html_aac86d8f49073b2ab246d94f9270b83ba"><div class="ttname"><a href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#aac86d8f49073b2ab246d94f9270b83ba">eve::stylize::IMeshVfxBatchSink::submitDraw</a></div><div class="ttdeci">virtual MeshVfxSubmitStatus submitDraw(const MeshVfxBatchedDraw &amp;draw)=0</div><div class="ttdoc">Submits one ordered instance in the active batch.</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IMeshVfxBatchSink_html_ade64eebaf8c8715207bf7f2cf46b95c3"><div class="ttname"><a href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#ade64eebaf8c8715207bf7f2cf46b95c3">eve::stylize::IMeshVfxBatchSink::~IMeshVfxBatchSink</a></div><div class="ttdeci">virtual ~IMeshVfxBatchSink()=default</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IMeshVfxBatchSink_html_aeb94155174808140e85b35545ad7635d"><div class="ttname"><a href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html#aeb94155174808140e85b35545ad7635d">eve::stylize::IMeshVfxBatchSink::beginBatch</a></div><div class="ttdeci">virtual MeshVfxSubmitStatus beginBatch(const MeshVfxBatchKey &amp;key)=0</div><div class="ttdoc">Begins a consecutive group sharing immutable GPU state.</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshVfxBatchExecutor_html"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshVfxBatchExecutor.html">eve::stylize::MeshVfxBatchExecutor</a></div><div class="ttdoc">Executes a planned render queue against one immediate backend sink.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00068">MeshVfxBatchSubmission.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshVfxBatchExecutor_html_ad526b2693e50d3ac2cc0879a3018a3ff"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshVfxBatchExecutor.html#ad526b2693e50d3ac2cc0879a3018a3ff">eve::stylize::MeshVfxBatchExecutor::submit</a></div><div class="ttdeci">MeshVfxSubmissionReport submit(const MeshVfxRenderQueue &amp;queue, IMeshVfxBatchSink &amp;sink) const</div><div class="ttdoc">Submits all batches in order until completion or device loss.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8cpp_source.html#l00014">MeshVfxBatchSubmission.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a13324d64a47c081b41e83ff8eff3db31"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">eve::stylize::MeshVfxSubmitStatus</a></div><div class="ttdeci">MeshVfxSubmitStatus</div><div class="ttdoc">Result of one synchronous backend submission operation.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00010">MeshVfxBatchSubmission.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a13324d64a47c081b41e83ff8eff3db31a382ab522931673c11e398ead1b7b1678"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31a382ab522931673c11e398ead1b7b1678">eve::stylize::MeshVfxSubmitStatus::Accepted</a></div><div class="ttdeci">@ Accepted</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a13324d64a47c081b41e83ff8eff3db31a758b1a8856a2f8715b9c898ae0a57c14"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31a758b1a8856a2f8715b9c898ae0a57c14">eve::stylize::MeshVfxSubmitStatus::DeviceUnavailable</a></div><div class="ttdeci">@ DeviceUnavailable</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a13324d64a47c081b41e83ff8eff3db31ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::stylize::MeshVfxSubmitStatus::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a13324d64a47c081b41e83ff8eff3db31ad9c8f187972e6320a34e9c40b4cba605"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31ad9c8f187972e6320a34e9c40b4cba605">eve::stylize::MeshVfxSubmitStatus::Skipped</a></div><div class="ttdeci">@ Skipped</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ae4189cc1f6a9bf7982769ec012f2af2b"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2b">eve::stylize::MeshVfxQueueSubmitStatus</a></div><div class="ttdeci">MeshVfxQueueSubmitStatus</div><div class="ttdoc">Aggregate completion state for one render queue submission.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00018">MeshVfxBatchSubmission.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ae4189cc1f6a9bf7982769ec012f2af2ba44ffd38a6dea695cbe2b34efdcc6cf27"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2ba44ffd38a6dea695cbe2b34efdcc6cf27">eve::stylize::MeshVfxQueueSubmitStatus::Partial</a></div><div class="ttdeci">@ Partial</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ae4189cc1f6a9bf7982769ec012f2af2baae94f80b3ce82062a5dd7815daa04f9d"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ae4189cc1f6a9bf7982769ec012f2af2baae94f80b3ce82062a5dd7815daa04f9d">eve::stylize::MeshVfxQueueSubmitStatus::Complete</a></div><div class="ttdeci">@ Complete</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxBatchKey_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxBatchKey.html">eve::stylize::MeshVfxBatchKey</a></div><div class="ttdoc">Immutable GPU-state identity used to combine compatible draw items.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8h_source.html#l00018">MeshVfxRenderBatch.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxBatchedDraw_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxBatchedDraw.html">eve::stylize::MeshVfxBatchedDraw</a></div><div class="ttdoc">One ordered draw reference inside a render batch.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8h_source.html#l00042">MeshVfxRenderBatch.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRenderQueue_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRenderQueue.html">eve::stylize::MeshVfxRenderQueue</a></div><div class="ttdoc">Complete deterministic queue consumed by a graphics backend.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8h_source.html#l00065">MeshVfxRenderBatch.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxSubmissionReport_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html">eve::stylize::MeshVfxSubmissionReport</a></div><div class="ttdoc">Counters and terminal state produced by queue execution.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00026">MeshVfxBatchSubmission.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxSubmissionReport_html_a0a83129a944ef1c28a9329c94b85f426"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a0a83129a944ef1c28a9329c94b85f426">eve::stylize::MeshVfxSubmissionReport::failedDraws</a></div><div class="ttdeci">std::uint32_t failedDraws</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00032">MeshVfxBatchSubmission.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxSubmissionReport_html_a115210fa3874cedbc455bb3b42db77ec"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a115210fa3874cedbc455bb3b42db77ec">eve::stylize::MeshVfxSubmissionReport::skippedDraws</a></div><div class="ttdeci">std::uint32_t skippedDraws</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00031">MeshVfxBatchSubmission.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxSubmissionReport_html_a2ac2a759f87907f21f2e933842d9abe7"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a2ac2a759f87907f21f2e933842d9abe7">eve::stylize::MeshVfxSubmissionReport::acceptedDraws</a></div><div class="ttdeci">std::uint32_t acceptedDraws</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00030">MeshVfxBatchSubmission.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxSubmissionReport_html_a561bc849f49164804069125b3575abde"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a561bc849f49164804069125b3575abde">eve::stylize::MeshVfxSubmissionReport::status</a></div><div class="ttdeci">MeshVfxQueueSubmitStatus status</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00027">MeshVfxBatchSubmission.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxSubmissionReport_html_a89a26d9ca20c97d10fa8269bd9912048"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a89a26d9ca20c97d10fa8269bd9912048">eve::stylize::MeshVfxSubmissionReport::acceptedBatches</a></div><div class="ttdeci">std::uint32_t acceptedBatches</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00028">MeshVfxBatchSubmission.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxSubmissionReport_html_a8d1e9dfee2b3f2e724db1faacbc4b273"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxSubmissionReport.html#a8d1e9dfee2b3f2e724db1faacbc4b273">eve::stylize::MeshVfxSubmissionReport::skippedBatches</a></div><div class="ttdeci">std::uint32_t skippedBatches</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00029">MeshVfxBatchSubmission.h:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

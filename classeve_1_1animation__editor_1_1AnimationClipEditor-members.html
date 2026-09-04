@@ -1,0 +1,231 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation__editor.html">animation_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">AnimationClipEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::animation_editor::AnimationClipEditor 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a730f3d4d47b63b35533c2876d97acb93">AnimationClipEditor</a>(std::string targetId)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9d51984657c33e8ec54aaf803e3dadf4">AnimationClipEditor</a>(const AnimationClipEditor &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ad8d84f290ed907e50efd3594fadb8c95">canRedo</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ac2229ce0e2b9c07b3734fd28bd72da5b">canUndo</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab310e2e3616d3f9895850004b6047b10">configureWorkspace</a>(editor::EditorWorkspace &amp;workspace) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2cd5231629ed88b3b9283c2815be58c2">duration</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab65d72eac7a933818ecb15aa8ff5d5c4">eventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a5ab21fdc6835867bee586ea3513a3122">eventName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a8d88514eedbbfc3eb56354896d41348a">eventX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a4de753b660e91ea0309651e58dbe32c3">isKeySelected</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a64f1ff92991892c2c4cda8bf6883fb16">isLooping</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#afb8b05dbf4ae7a8d302933e4a2db1089">isPlaying</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a3f1fb5b557e95e3e0e4b4f6bc06510db">isTrackSelected</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2c9000bc908ad517677813e86c607348">keyCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ae5c52f77cf6da46f95cf6a12be77b9ef">keyX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a27173eca916d5f03189adc083351181e">keyY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a93e684049d8b7a1398087b7a3e7f0ba7">layoutHeight</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa9eab9c9ab371c0c57028c57008d1458">layoutWidth</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a75ae7d712aeacecef8a41992059bd632">moveSelectedKey</a>(double time)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aa66a311842537c1117015272baba0f85">operator=</a>(const AnimationClipEditor &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aca83abaa8ebe50032992b8f2750c6433">pause</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a1d29e19e617e85ef88dfba30fdf8b16a">play</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6ceed144a1923acdd0160c9dfa10bd1d">playhead</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9d17a4393100094f40f9f73103ce2717">playheadX</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a21aab6873c95392081b90feee721ff24">pointerDown</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a37284ccf7721374af9d2b98188de62d3">preview</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ac88e0ea27729e5426c6c6e0b19ac09b0">primitiveB</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a62c8ee0ee793fc3172d7416b219a9d08">primitiveCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a80e5261a1776790f6b30960e669d8c6a">primitiveDirX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#adc05b2e4cf33f28384c31d70a28c3989">primitiveDirY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2918aa165bcef902962bbf07a76f5e65">primitiveG</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a601e64d86ffc5c0ebe439448683736b9">primitiveKind</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a8d9afdd23b7b16ad4876f0deedc577df">primitiveLength</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aea8db0a1c42727d346bfdd6b32d8a95e">primitiveR</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a96e9363148b9511cff6cc7978a74ecc8">primitiveRadius</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a1b17795a5892fd3c83deee6ea0678979">primitiveX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a4c3db519011f6b61c9f09fae92cbfb71">primitiveY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a5785dfbe19a02e01d9b7b06688b2a44f">redo</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7771f16625519fb9d803c6df25cd061a">revision</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a7ea284e53797d3d86cf9d25fcc853803">sampleRate</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a5db099a0745cdc635d94216cb594ae7e">seekSeconds</a>(double seconds)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a046b2ddecb3c03727132b3a716f6b6f1">seekX</a>(float x)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a0b7379acb39ebabbc46411ca94e75e0e">selectBone</a>(std::string bone)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a6ba13387bab1d5de60546d13f7b9321d">selectedBone</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9028a8911bc449c5c52cfa71a84fafba">selectedMaskWeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a66c88354490867afdb2f2af097d92ff9">setDuration</a>(double duration)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af9a483356d3b62de008f2c60723aa5b8">setLoop</a>(bool loop)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a9ad91288aad1715a0f58aa0874d0b870">setMaskWeight</a>(double weight)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ad3e047e5e89318f5fca3c9c90026a32c">setSampleRate</a>(double sampleRate)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#adf9438e2edb05b4b871045904e278403">setViewport</a>(float width, float rowHeight, float labelWidth)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#aecee25237a535897d5ecb91f0344342f">stop</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#af84fbeb3c02eca9e4b30b26e0aa8ccce">target</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ab20f2084c989cc14fcf5d1c4ebfee20f">trackBone</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ae3b51c1f9a7835212e2223f1c82cac12">trackCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a0f38fc40ae447cf1bc524100fb46f034">trackId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a3fc81ce796ffd39ccc2c4df6acdcff58">undo</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a176d8eea05a47aef8760205f86b5ca69">update</a>(double deltaSeconds)</td><td class="entry"><a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html">eve::animation_editor::AnimationClipEditor</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

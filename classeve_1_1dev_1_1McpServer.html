@@ -1,0 +1,687 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::McpServer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1dev_1_1McpServer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::McpServer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Embedded <a class="el" href="classeve_1_1Model.html" title="Script-backed model: wraps a Squirrel object (table/class instance).">Model</a> Context Protocol (MCP) server for AI-assisted game development.  
+ <a href="classeve_1_1dev_1_1McpServer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a81d04e2b60c83d7fadab926b27a87975" id="r_a81d04e2b60c83d7fadab926b27a87975"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975">Transport</a> { <a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975a6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975a30b7fdeebc36988717d0e274cc2e7520">Tcp</a>
+, <a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975af9f805b30fdb6c23233caaae223ccfaa">Stdio</a>
+ }</td></tr>
+<tr class="separator:a81d04e2b60c83d7fadab926b27a87975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a127b36099a43ed926d40708966250a75" id="r_a127b36099a43ed926d40708966250a75"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a127b36099a43ed926d40708966250a75">McpServer</a> (const <a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp;)=delete</td></tr>
+<tr class="separator:a127b36099a43ed926d40708966250a75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb84807cf2ed9ab5ad13336f3306d870" id="r_aeb84807cf2ed9ab5ad13336f3306d870"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#aeb84807cf2ed9ab5ad13336f3306d870">operator=</a> (const <a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp;)=delete</td></tr>
+<tr class="separator:aeb84807cf2ed9ab5ad13336f3306d870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eea074c1bc9784854d196e5ec7bab97" id="r_a7eea074c1bc9784854d196e5ec7bab97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a7eea074c1bc9784854d196e5ec7bab97">listen</a> (uint16_t <a class="el" href="classeve_1_1dev_1_1McpServer.html#ad3b38d82c2982dae520b72cec8d256e2">port</a>)</td></tr>
+<tr class="memdesc:a7eea074c1bc9784854d196e5ec7bab97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind TCP listen port (0 = ephemeral). Returns bound port or 0 on failure.  <br /></td></tr>
+<tr class="separator:a7eea074c1bc9784854d196e5ec7bab97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85c56757d3d408c2ee2b6d473c9e40b0" id="r_a85c56757d3d408c2ee2b6d473c9e40b0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a85c56757d3d408c2ee2b6d473c9e40b0">listenStdio</a> (std::istream &amp;in=std::cin, std::ostream &amp;out=std::cout)</td></tr>
+<tr class="memdesc:a85c56757d3d408c2ee2b6d473c9e40b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Switch to stdio transport (MCP stdio server). A reader thread pulls newline-delimited JSON from <code>in</code> into a queue that <a class="el" href="classeve_1_1dev_1_1McpServer.html#a2cfd0c7e518772b8c3a9bb31cead8337" title="Accept clients + process one request batch (non-blocking).">poll()</a> drains on the caller thread, so tool execution stays on the main / render thread. Responses are written to <code>out</code> (stdout by default — keep it MCP-only). Returns true when the transport starts.  <br /></td></tr>
+<tr class="separator:a85c56757d3d408c2ee2b6d473c9e40b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a245f3053a6d5a07ddf99b6bf53f4c613" id="r_a245f3053a6d5a07ddf99b6bf53f4c613"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a245f3053a6d5a07ddf99b6bf53f4c613">stop</a> ()</td></tr>
+<tr class="separator:a245f3053a6d5a07ddf99b6bf53f4c613"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6d543828115b86d2165f1f918121acb" id="r_ad6d543828115b86d2165f1f918121acb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#ad6d543828115b86d2165f1f918121acb">isListening</a> () const</td></tr>
+<tr class="separator:ad6d543828115b86d2165f1f918121acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3b38d82c2982dae520b72cec8d256e2" id="r_ad3b38d82c2982dae520b72cec8d256e2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#ad3b38d82c2982dae520b72cec8d256e2">port</a> () const</td></tr>
+<tr class="separator:ad3b38d82c2982dae520b72cec8d256e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96b3e637d57feb2256f09ec17fa66805" id="r_a96b3e637d57feb2256f09ec17fa66805"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a96b3e637d57feb2256f09ec17fa66805">hasClient</a> () const</td></tr>
+<tr class="separator:a96b3e637d57feb2256f09ec17fa66805"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad78c6126968e8dafac638d9bd74be5f2" id="r_ad78c6126968e8dafac638d9bd74be5f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975">Transport</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#ad78c6126968e8dafac638d9bd74be5f2">transport</a> () const</td></tr>
+<tr class="separator:ad78c6126968e8dafac638d9bd74be5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e1d8bee62f5f74330f8778af25e1a59" id="r_a2e1d8bee62f5f74330f8778af25e1a59"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a2e1d8bee62f5f74330f8778af25e1a59">stdinClosed</a> () const</td></tr>
+<tr class="memdesc:a2e1d8bee62f5f74330f8778af25e1a59"><td class="mdescLeft">&#160;</td><td class="mdescRight">True once the stdio input reached EOF (host should exit).  <br /></td></tr>
+<tr class="separator:a2e1d8bee62f5f74330f8778af25e1a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cfd0c7e518772b8c3a9bb31cead8337" id="r_a2cfd0c7e518772b8c3a9bb31cead8337"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a2cfd0c7e518772b8c3a9bb31cead8337">poll</a> ()</td></tr>
+<tr class="memdesc:a2cfd0c7e518772b8c3a9bb31cead8337"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept clients + process one request batch (non-blocking).  <br /></td></tr>
+<tr class="separator:a2cfd0c7e518772b8c3a9bb31cead8337"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54d333a69285e6c8ba4f7b83b7a4c32d" id="r_a54d333a69285e6c8ba4f7b83b7a4c32d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a54d333a69285e6c8ba4f7b83b7a4c32d">setGameRoot</a> (std::string <a class="el" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>)</td></tr>
+<tr class="memdesc:a54d333a69285e6c8ba4f7b83b7a4c32d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Game / project directory hint for agents.  <br /></td></tr>
+<tr class="separator:a54d333a69285e6c8ba4f7b83b7a4c32d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fbf93b2d8290d95e1b0b070a41fc723" id="r_a6fbf93b2d8290d95e1b0b070a41fc723"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a6fbf93b2d8290d95e1b0b070a41fc723">gameRoot</a> () const</td></tr>
+<tr class="separator:a6fbf93b2d8290d95e1b0b070a41fc723"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ae845bb4e0929dc85b4063046ff4fb2cf" id="r_ae845bb4e0929dc85b4063046ff4fb2cf"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#ae845bb4e0929dc85b4063046ff4fb2cf">instance</a> ()</td></tr>
+<tr class="separator:ae845bb4e0929dc85b4063046ff4fb2cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a92fdba2769d69e2b01328eaf13fe7c1c" id="r_a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
+<tr class="memitem:a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memTemplItemLeft" align="right" valign="top">struct&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a92fdba2769d69e2b01328eaf13fe7c1c">Immortal</a></td></tr>
+<tr class="separator:a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Embedded <a class="el" href="classeve_1_1Model.html" title="Script-backed model: wraps a Squirrel object (table/class instance).">Model</a> Context Protocol (MCP) server for AI-assisted game development. </p>
+<p>Speaks JSON-RPC 2.0 over TCP with newline-delimited messages (same wire shape as MCP stdio; no embedded newlines in payloads). Start with listen(port) after <a class="el" href="classeve_1_1dev_1_1DevTool.html#a41d438c61ca5e6f7ec3db7beb54927bc" title="Attach script tracer to VM and enable render tracing.">DevTool::attach</a>; call <a class="el" href="classeve_1_1dev_1_1McpServer.html#a2cfd0c7e518772b8c3a9bb31cead8337" title="Accept clients + process one request batch (non-blocking).">poll()</a> from the game loop / pause pump.</p>
+<p>Capabilities: tools, resources, prompts for AI test workflows. Cursor / Claude Desktop can attach via tools/eve-mcp (stdio ↔ TCP bridge).</p>
+<p>Desktop-only (part of EVDevTools); not shipped on Android/iOS trimmed runtimes. </p>
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00035">35</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a81d04e2b60c83d7fadab926b27a87975" name="a81d04e2b60c83d7fadab926b27a87975"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81d04e2b60c83d7fadab926b27a87975">&#9670;&#160;</a></span>Transport</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975">eve::dev::McpServer::Transport</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a81d04e2b60c83d7fadab926b27a87975a6adf97f83acf6453d4a6a4b1070f3754" name="a81d04e2b60c83d7fadab926b27a87975a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a81d04e2b60c83d7fadab926b27a87975a30b7fdeebc36988717d0e274cc2e7520" name="a81d04e2b60c83d7fadab926b27a87975a30b7fdeebc36988717d0e274cc2e7520"></a>Tcp&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a81d04e2b60c83d7fadab926b27a87975af9f805b30fdb6c23233caaae223ccfaa" name="a81d04e2b60c83d7fadab926b27a87975af9f805b30fdb6c23233caaae223ccfaa"></a>Stdio&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a127b36099a43ed926d40708966250a75" name="a127b36099a43ed926d40708966250a75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a127b36099a43ed926d40708966250a75">&#9670;&#160;</a></span>McpServer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::McpServer::McpServer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6fbf93b2d8290d95e1b0b070a41fc723" name="a6fbf93b2d8290d95e1b0b070a41fc723"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fbf93b2d8290d95e1b0b070a41fc723">&#9670;&#160;</a></span>gameRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dev::McpServer::gameRoot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96b3e637d57feb2256f09ec17fa66805" name="a96b3e637d57feb2256f09ec17fa66805"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96b3e637d57feb2256f09ec17fa66805">&#9670;&#160;</a></span>hasClient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::McpServer::hasClient </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae845bb4e0929dc85b4063046ff4fb2cf" name="ae845bb4e0929dc85b4063046ff4fb2cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae845bb4e0929dc85b4063046ff4fb2cf">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp; eve::dev::McpServer::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="McpServer_8cpp_source.html">McpServer.cpp</a> 第 <a class="el" href="McpServer_8cpp_source.html#l02146">2146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Immortal_8hpp_source.html#l00021">eve::dev::Immortal&lt; T &gt;::get()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00221">eve::dev::DevTool::mcp()</a>, <a class="el" href="DevTool_8cpp_source.html#l00227">eve::dev::DevTool::poll()</a>, <a class="el" href="DevTool_8cpp_source.html#l00217">eve::dev::DevTool::startMcp()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00219">eve::dev::DevTool::stopMcp()</a>.</p>
+
+</div>
+</div>
+<a id="ad6d543828115b86d2165f1f918121acb" name="ad6d543828115b86d2165f1f918121acb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6d543828115b86d2165f1f918121acb">&#9670;&#160;</a></span>isListening()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::McpServer::isListening </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7eea074c1bc9784854d196e5ec7bab97" name="a7eea074c1bc9784854d196e5ec7bab97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eea074c1bc9784854d196e5ec7bab97">&#9670;&#160;</a></span>listen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dev::McpServer::listen </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>port</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind TCP listen port (0 = ephemeral). Returns bound port or 0 on failure. </p>
+
+<p class="definition">在文件 <a class="el" href="McpServer_8cpp_source.html">McpServer.cpp</a> 第 <a class="el" href="McpServer_8cpp_source.html#l02188">2188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AiPanel_8cpp_source.html#l00084">eve::dev::AiPanel::addLog()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00015">eve::dev::AiPanel::instance()</a>, <a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975a6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="el" href="McpServer_8hpp_source.html#l00056">port()</a>, <a class="el" href="McpServer_8cpp_source.html#l02180">setGameRoot()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00059">eve::dev::AiPanel::setMcpConnected()</a>, <a class="el" href="AiPanel_8cpp_source.html#l00049">eve::dev::AiPanel::setMcpPort()</a>, <a class="el" href="McpServer_8cpp_source.html#l02258">stop()</a> , 以及 <a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975a30b7fdeebc36988717d0e274cc2e7520">Tcp</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00217">eve::dev::DevTool::startMcp()</a>.</p>
+
+</div>
+</div>
+<a id="a85c56757d3d408c2ee2b6d473c9e40b0" name="a85c56757d3d408c2ee2b6d473c9e40b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85c56757d3d408c2ee2b6d473c9e40b0">&#9670;&#160;</a></span>listenStdio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::McpServer::listenStdio </td>
+          <td>(</td>
+          <td class="paramtype">std::istream &amp;&#160;</td>
+          <td class="paramname"><em>in</em> = <code>std::cin</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>out</em> = <code>std::cout</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Switch to stdio transport (MCP stdio server). A reader thread pulls newline-delimited JSON from <code>in</code> into a queue that <a class="el" href="classeve_1_1dev_1_1McpServer.html#a2cfd0c7e518772b8c3a9bb31cead8337" title="Accept clients + process one request batch (non-blocking).">poll()</a> drains on the caller thread, so tool execution stays on the main / render thread. Responses are written to <code>out</code> (stdout by default — keep it MCP-only). Returns true when the transport starts. </p>
+
+<p class="definition">在文件 <a class="el" href="McpServer_8cpp_source.html">McpServer.cpp</a> 第 <a class="el" href="McpServer_8cpp_source.html#l02217">2217</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975af9f805b30fdb6c23233caaae223ccfaa">Stdio</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l02258">stop()</a>.</p>
+
+</div>
+</div>
+<a id="aeb84807cf2ed9ab5ad13336f3306d870" name="aeb84807cf2ed9ab5ad13336f3306d870"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb84807cf2ed9ab5ad13336f3306d870">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp; eve::dev::McpServer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1McpServer.html">McpServer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2cfd0c7e518772b8c3a9bb31cead8337" name="a2cfd0c7e518772b8c3a9bb31cead8337"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cfd0c7e518772b8c3a9bb31cead8337">&#9670;&#160;</a></span>poll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::McpServer::poll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Accept clients + process one request batch (non-blocking). </p>
+
+<p class="definition">在文件 <a class="el" href="McpServer_8cpp_source.html">McpServer.cpp</a> 第 <a class="el" href="McpServer_8cpp_source.html#l02295">2295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00026">pending</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00227">eve::dev::DevTool::poll()</a>.</p>
+
+</div>
+</div>
+<a id="ad3b38d82c2982dae520b72cec8d256e2" name="ad3b38d82c2982dae520b72cec8d256e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3b38d82c2982dae520b72cec8d256e2">&#9670;&#160;</a></span>port()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::dev::McpServer::port </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="McpServer_8cpp_source.html#l02188">listen()</a>.</p>
+
+</div>
+</div>
+<a id="a54d333a69285e6c8ba4f7b83b7a4c32d" name="a54d333a69285e6c8ba4f7b83b7a4c32d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54d333a69285e6c8ba4f7b83b7a4c32d">&#9670;&#160;</a></span>setGameRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::McpServer::setGameRoot </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>root</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Game / project directory hint for agents. </p>
+
+<p class="definition">在文件 <a class="el" href="McpServer_8cpp_source.html">McpServer.cpp</a> 第 <a class="el" href="McpServer_8cpp_source.html#l02180">2180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="McpServer_8cpp_source.html#l02188">listen()</a>.</p>
+
+</div>
+</div>
+<a id="a2e1d8bee62f5f74330f8778af25e1a59" name="a2e1d8bee62f5f74330f8778af25e1a59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e1d8bee62f5f74330f8778af25e1a59">&#9670;&#160;</a></span>stdinClosed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::McpServer::stdinClosed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True once the stdio input reached EOF (host should exit). </p>
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a245f3053a6d5a07ddf99b6bf53f4c613" name="a245f3053a6d5a07ddf99b6bf53f4c613"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a245f3053a6d5a07ddf99b6bf53f4c613">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::McpServer::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="McpServer_8cpp_source.html">McpServer.cpp</a> 第 <a class="el" href="McpServer_8cpp_source.html#l02258">2258</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="McpServer_8cpp_source.html#l02188">listen()</a>, <a class="el" href="McpServer_8cpp_source.html#l02217">listenStdio()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00219">eve::dev::DevTool::stopMcp()</a>.</p>
+
+</div>
+</div>
+<a id="ad78c6126968e8dafac638d9bd74be5f2" name="ad78c6126968e8dafac638d9bd74be5f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad78c6126968e8dafac638d9bd74be5f2">&#9670;&#160;</a></span>transport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a81d04e2b60c83d7fadab926b27a87975">Transport</a> eve::dev::McpServer::transport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a92fdba2769d69e2b01328eaf13fe7c1c" name="a92fdba2769d69e2b01328eaf13fe7c1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92fdba2769d69e2b01328eaf13fe7c1c">&#9670;&#160;</a></span>Immortal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend struct <a class="el" href="structeve_1_1dev_1_1Immortal.html">Immortal</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a> 第 <a class="el" href="McpServer_8hpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="McpServer_8hpp_source.html">McpServer.hpp</a></li>
+<li>src/engine/devtools/<a class="el" href="McpServer_8cpp_source.html">McpServer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

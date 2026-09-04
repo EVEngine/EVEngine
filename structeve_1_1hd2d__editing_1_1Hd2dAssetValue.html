@@ -1,0 +1,509 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hd2d_editing::Hd2dAssetValue结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hd2d__editing.html">hd2d_editing</a></li><li class="navelem"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html">Hd2dAssetValue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hd2d_editing::Hd2dAssetValue结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authored HD-2D sprite-sheet and tile-extrusion preset.  
+ <a href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a5cd9daef9f6069bf8081f2038a95dda8" id="r_a5cd9daef9f6069bf8081f2038a95dda8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a5cd9daef9f6069bf8081f2038a95dda8">kind</a> = &quot;sprite&quot;</td></tr>
+<tr class="separator:a5cd9daef9f6069bf8081f2038a95dda8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a941979eee06e5e3be019de1c2e35a57c" id="r_a941979eee06e5e3be019de1c2e35a57c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a941979eee06e5e3be019de1c2e35a57c">sourceAsset</a></td></tr>
+<tr class="separator:a941979eee06e5e3be019de1c2e35a57c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00286514cbb77edf74d6785bda220b7f" id="r_a00286514cbb77edf74d6785bda220b7f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a00286514cbb77edf74d6785bda220b7f">columns</a> = 1</td></tr>
+<tr class="separator:a00286514cbb77edf74d6785bda220b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a1aa7785050b0c73d7662ba437ecad6" id="r_a8a1aa7785050b0c73d7662ba437ecad6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a8a1aa7785050b0c73d7662ba437ecad6">rows</a> = 1</td></tr>
+<tr class="separator:a8a1aa7785050b0c73d7662ba437ecad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4926cad66c4295d6d891bd03f609aa31" id="r_a4926cad66c4295d6d891bd03f609aa31"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a4926cad66c4295d6d891bd03f609aa31">frame</a> = 0</td></tr>
+<tr class="separator:a4926cad66c4295d6d891bd03f609aa31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a425ea1a011ae8ad85b8ee3f1c8104c7f" id="r_a425ea1a011ae8ad85b8ee3f1c8104c7f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a425ea1a011ae8ad85b8ee3f1c8104c7f">animStart</a> = 0</td></tr>
+<tr class="separator:a425ea1a011ae8ad85b8ee3f1c8104c7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8d6fd86ef8fc5d30cf841df9678656e" id="r_ab8d6fd86ef8fc5d30cf841df9678656e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#ab8d6fd86ef8fc5d30cf841df9678656e">animEnd</a> = 0</td></tr>
+<tr class="separator:ab8d6fd86ef8fc5d30cf841df9678656e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cdecd25d57d9999e798c9785f3a134b" id="r_a5cdecd25d57d9999e798c9785f3a134b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a5cdecd25d57d9999e798c9785f3a134b">fps</a> = 12</td></tr>
+<tr class="separator:a5cdecd25d57d9999e798c9785f3a134b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf55fb1a590b9ae80d669e4c509a80da" id="r_aaf55fb1a590b9ae80d669e4c509a80da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#aaf55fb1a590b9ae80d669e4c509a80da">flipX</a> = false</td></tr>
+<tr class="separator:aaf55fb1a590b9ae80d669e4c509a80da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af20c2cbae612687bc1de8e4b40b2fa3e" id="r_af20c2cbae612687bc1de8e4b40b2fa3e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#af20c2cbae612687bc1de8e4b40b2fa3e">flipY</a> = false</td></tr>
+<tr class="separator:af20c2cbae612687bc1de8e4b40b2fa3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5852b4967d3968427f5fae69a19cd6a3" id="r_a5852b4967d3968427f5fae69a19cd6a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a5852b4967d3968427f5fae69a19cd6a3">visible</a> = true</td></tr>
+<tr class="separator:a5852b4967d3968427f5fae69a19cd6a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada7d10dc44727b1ba90a38b165688f2d" id="r_ada7d10dc44727b1ba90a38b165688f2d"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#ada7d10dc44727b1ba90a38b165688f2d">size</a> {1, 1}</td></tr>
+<tr class="separator:ada7d10dc44727b1ba90a38b165688f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a557389293ba2e4c3680522ac978dada7" id="r_a557389293ba2e4c3680522ac978dada7"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a557389293ba2e4c3680522ac978dada7">tint</a> {1, 1, 1, 1}</td></tr>
+<tr class="separator:a557389293ba2e4c3680522ac978dada7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00fa3d2cc54f9ae709b7383c6cd6257e" id="r_a00fa3d2cc54f9ae709b7383c6cd6257e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a00fa3d2cc54f9ae709b7383c6cd6257e">sideDepth</a> = 6</td></tr>
+<tr class="separator:a00fa3d2cc54f9ae709b7383c6cd6257e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21e40ebf6cf14fc7892dc909a58e078d" id="r_a21e40ebf6cf14fc7892dc909a58e078d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a21e40ebf6cf14fc7892dc909a58e078d">heightScale</a> = 1</td></tr>
+<tr class="separator:a21e40ebf6cf14fc7892dc909a58e078d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35bcb5162e2228759242f76bee74e373" id="r_a35bcb5162e2228759242f76bee74e373"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hd2d__editing_1_1Hd2dAssetValue.html#a35bcb5162e2228759242f76bee74e373">wallUv</a> {0, 0, .05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, .05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a35bcb5162e2228759242f76bee74e373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authored HD-2D sprite-sheet and tile-extrusion preset. </p>
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00047">47</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ab8d6fd86ef8fc5d30cf841df9678656e" name="ab8d6fd86ef8fc5d30cf841df9678656e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8d6fd86ef8fc5d30cf841df9678656e">&#9670;&#160;</a></span>animEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d_editing::Hd2dAssetValue::animEnd = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a425ea1a011ae8ad85b8ee3f1c8104c7f" name="a425ea1a011ae8ad85b8ee3f1c8104c7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a425ea1a011ae8ad85b8ee3f1c8104c7f">&#9670;&#160;</a></span>animStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d_editing::Hd2dAssetValue::animStart = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a00286514cbb77edf74d6785bda220b7f" name="a00286514cbb77edf74d6785bda220b7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00286514cbb77edf74d6785bda220b7f">&#9670;&#160;</a></span>columns</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d_editing::Hd2dAssetValue::columns = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="aaf55fb1a590b9ae80d669e4c509a80da" name="aaf55fb1a590b9ae80d669e4c509a80da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf55fb1a590b9ae80d669e4c509a80da">&#9670;&#160;</a></span>flipX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hd2d_editing::Hd2dAssetValue::flipX = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="af20c2cbae612687bc1de8e4b40b2fa3e" name="af20c2cbae612687bc1de8e4b40b2fa3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af20c2cbae612687bc1de8e4b40b2fa3e">&#9670;&#160;</a></span>flipY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hd2d_editing::Hd2dAssetValue::flipY = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a> , 以及 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a5cdecd25d57d9999e798c9785f3a134b" name="a5cdecd25d57d9999e798c9785f3a134b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cdecd25d57d9999e798c9785f3a134b">&#9670;&#160;</a></span>fps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d_editing::Hd2dAssetValue::fps = 12</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a4926cad66c4295d6d891bd03f609aa31" name="a4926cad66c4295d6d891bd03f609aa31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4926cad66c4295d6d891bd03f609aa31">&#9670;&#160;</a></span>frame</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d_editing::Hd2dAssetValue::frame = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a21e40ebf6cf14fc7892dc909a58e078d" name="a21e40ebf6cf14fc7892dc909a58e078d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21e40ebf6cf14fc7892dc909a58e078d">&#9670;&#160;</a></span>heightScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d_editing::Hd2dAssetValue::heightScale = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a5cd9daef9f6069bf8081f2038a95dda8" name="a5cd9daef9f6069bf8081f2038a95dda8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cd9daef9f6069bf8081f2038a95dda8">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::hd2d_editing::Hd2dAssetValue::kind = &quot;sprite&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dRuntime_8cpp_source.html#l00014">eve::hd2d_editing::Hd2dDocumentRuntime::publishSprite()</a>, <a class="el" href="Hd2dRuntime_8cpp_source.html#l00052">eve::hd2d_editing::Hd2dDocumentRuntime::publishTileMap()</a> , 以及 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a8a1aa7785050b0c73d7662ba437ecad6" name="a8a1aa7785050b0c73d7662ba437ecad6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a1aa7785050b0c73d7662ba437ecad6">&#9670;&#160;</a></span>rows</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::hd2d_editing::Hd2dAssetValue::rows = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00201">eve::hd2d_editing::Hd2dDocumentTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a00fa3d2cc54f9ae709b7383c6cd6257e" name="a00fa3d2cc54f9ae709b7383c6cd6257e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00fa3d2cc54f9ae709b7383c6cd6257e">&#9670;&#160;</a></span>sideDepth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hd2d_editing::Hd2dAssetValue::sideDepth = 6</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a> , 以及 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="ada7d10dc44727b1ba90a38b165688f2d" name="ada7d10dc44727b1ba90a38b165688f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada7d10dc44727b1ba90a38b165688f2d">&#9670;&#160;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 2&gt; eve::hd2d_editing::Hd2dAssetValue::size {1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a941979eee06e5e3be019de1c2e35a57c" name="a941979eee06e5e3be019de1c2e35a57c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a941979eee06e5e3be019de1c2e35a57c">&#9670;&#160;</a></span>sourceAsset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::hd2d_editing::Hd2dAssetValue::sourceAsset</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a>, <a class="el" href="Hd2dRuntime_8cpp_source.html#l00014">eve::hd2d_editing::Hd2dDocumentRuntime::publishSprite()</a> , 以及 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a557389293ba2e4c3680522ac978dada7" name="a557389293ba2e4c3680522ac978dada7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a557389293ba2e4c3680522ac978dada7">&#9670;&#160;</a></span>tint</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 4&gt; eve::hd2d_editing::Hd2dAssetValue::tint {1, 1, 1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a5852b4967d3968427f5fae69a19cd6a3" name="a5852b4967d3968427f5fae69a19cd6a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5852b4967d3968427f5fae69a19cd6a3">&#9670;&#160;</a></span>visible</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hd2d_editing::Hd2dAssetValue::visible = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a> , 以及 <a class="el" href="Hd2dTarget_8cpp_source.html#l00105">eve::hd2d_editing::Hd2dDocumentTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a35bcb5162e2228759242f76bee74e373" name="a35bcb5162e2228759242f76bee74e373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35bcb5162e2228759242f76bee74e373">&#9670;&#160;</a></span>wallUv</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;float, 4&gt; eve::hd2d_editing::Hd2dAssetValue::wallUv {0, 0, .05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, .05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a> 第 <a class="el" href="Hd2dTarget_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/hd2d_editing/<a class="el" href="Hd2dTarget_8h_source.html">Hd2dTarget.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

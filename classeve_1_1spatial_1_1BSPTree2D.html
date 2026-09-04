@@ -1,0 +1,908 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::spatial::BSPTree2D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1spatial.html">spatial</a></li><li class="navelem"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html">BSPTree2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1spatial_1_1BSPTree2D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::spatial::BSPTree2D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Binary space partition tree (kd-style AABB splits) for 2D culling. Alternating X/Y splits at node midplanes; spanning items stay on the node.  
+ <a href="classeve_1_1spatial_1_1BSPTree2D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a551c79dce141a4d3668b451a929e45a2" id="r_a551c79dce141a4d3668b451a929e45a2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a551c79dce141a4d3668b451a929e45a2">BSPTree2D</a> (float minX, float minY, float maxX, float maxY, int maxDepth=12, int maxPerNode=8)</td></tr>
+<tr class="separator:a551c79dce141a4d3668b451a929e45a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53ca4e37647ca37f5ae54b8a0cf86573" id="r_a53ca4e37647ca37f5ae54b8a0cf86573"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a53ca4e37647ca37f5ae54b8a0cf86573">~BSPTree2D</a> ()=default</td></tr>
+<tr class="separator:a53ca4e37647ca37f5ae54b8a0cf86573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add01eb8080610990d150082ce11bbaf2" id="r_add01eb8080610990d150082ce11bbaf2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#add01eb8080610990d150082ce11bbaf2">BSPTree2D</a> (const <a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html">BSPTree2D</a> &amp;)=delete</td></tr>
+<tr class="separator:add01eb8080610990d150082ce11bbaf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b83657359df5b5bc4627df1e764d2eb" id="r_a9b83657359df5b5bc4627df1e764d2eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html">BSPTree2D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a9b83657359df5b5bc4627df1e764d2eb">operator=</a> (const <a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html">BSPTree2D</a> &amp;)=delete</td></tr>
+<tr class="separator:a9b83657359df5b5bc4627df1e764d2eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20e1a29b79fc580cca882f9064aa27ed" id="r_a20e1a29b79fc580cca882f9064aa27ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a20e1a29b79fc580cca882f9064aa27ed">clear</a> ()</td></tr>
+<tr class="separator:a20e1a29b79fc580cca882f9064aa27ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2632212d70cceb811f3e88f71eab225" id="r_ad2632212d70cceb811f3e88f71eab225"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#ad2632212d70cceb811f3e88f71eab225">insert</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float minX, float minY, float maxX, float maxY)</td></tr>
+<tr class="separator:ad2632212d70cceb811f3e88f71eab225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2b10717675f8f8e7597394b43e16c89" id="r_ac2b10717675f8f8e7597394b43e16c89"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#ac2b10717675f8f8e7597394b43e16c89">remove</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:ac2b10717675f8f8e7597394b43e16c89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ba21ea38cbec9aa31318333f3747587" id="r_a3ba21ea38cbec9aa31318333f3747587"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a3ba21ea38cbec9aa31318333f3747587">update</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float minX, float minY, float maxX, float maxY)</td></tr>
+<tr class="separator:a3ba21ea38cbec9aa31318333f3747587"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ce988a0fba858b247570435ac22db09" id="r_a7ce988a0fba858b247570435ac22db09"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a7ce988a0fba858b247570435ac22db09">contains</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a7ce988a0fba858b247570435ac22db09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a986a9621fe641ac968703e172d5569d8" id="r_a986a9621fe641ac968703e172d5569d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a986a9621fe641ac968703e172d5569d8">getCount</a> () const</td></tr>
+<tr class="separator:a986a9621fe641ac968703e172d5569d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a923ac450bab258e2d6d6af22c5532f" id="r_a6a923ac450bab258e2d6d6af22c5532f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a6a923ac450bab258e2d6d6af22c5532f">queryPoint</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a6a923ac450bab258e2d6d6af22c5532f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93b49e90edf3dcdf38d4ae2f5b13707c" id="r_a93b49e90edf3dcdf38d4ae2f5b13707c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a93b49e90edf3dcdf38d4ae2f5b13707c">queryRect</a> (float minX, float minY, float maxX, float maxY)</td></tr>
+<tr class="separator:a93b49e90edf3dcdf38d4ae2f5b13707c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93fce9b622fb2f0d57734d2524ec13f9" id="r_a93fce9b622fb2f0d57734d2524ec13f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a93fce9b622fb2f0d57734d2524ec13f9">queryCircle</a> (float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a93fce9b622fb2f0d57734d2524ec13f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad846895f1362d320610fec1220d3c34d" id="r_ad846895f1362d320610fec1220d3c34d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#ad846895f1362d320610fec1220d3c34d">getResultCount</a> () const</td></tr>
+<tr class="separator:ad846895f1362d320610fec1220d3c34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71dc55df2c178f5e9edb1a59dc5d6f24" id="r_a71dc55df2c178f5e9edb1a59dc5d6f24"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a71dc55df2c178f5e9edb1a59dc5d6f24">getResultId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a71dc55df2c178f5e9edb1a59dc5d6f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a589a4cb09a8c38ce03be969d2560da84" id="r_a589a4cb09a8c38ce03be969d2560da84"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a589a4cb09a8c38ce03be969d2560da84">getMinX</a> () const</td></tr>
+<tr class="separator:a589a4cb09a8c38ce03be969d2560da84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add06e6e8fa2f77bd324073bc8852dd68" id="r_add06e6e8fa2f77bd324073bc8852dd68"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#add06e6e8fa2f77bd324073bc8852dd68">getMinY</a> () const</td></tr>
+<tr class="separator:add06e6e8fa2f77bd324073bc8852dd68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4ece238654e18b5c82878698eed92db" id="r_ad4ece238654e18b5c82878698eed92db"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#ad4ece238654e18b5c82878698eed92db">getMaxX</a> () const</td></tr>
+<tr class="separator:ad4ece238654e18b5c82878698eed92db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a2799a7fd285efa6c9b5087f1385647" id="r_a9a2799a7fd285efa6c9b5087f1385647"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#a9a2799a7fd285efa6c9b5087f1385647">getMaxY</a> () const</td></tr>
+<tr class="separator:a9a2799a7fd285efa6c9b5087f1385647"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1574fdd89dadd8bbeb0330b5cfa4e75" id="r_ac1574fdd89dadd8bbeb0330b5cfa4e75"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#ac1574fdd89dadd8bbeb0330b5cfa4e75">getMaxDepth</a> () const</td></tr>
+<tr class="separator:ac1574fdd89dadd8bbeb0330b5cfa4e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5e56dbb3d9c3aa77433580950cd2f96" id="r_ad5e56dbb3d9c3aa77433580950cd2f96"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html#ad5e56dbb3d9c3aa77433580950cd2f96">getMaxPerNode</a> () const</td></tr>
+<tr class="separator:ad5e56dbb3d9c3aa77433580950cd2f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Binary space partition tree (kd-style AABB splits) for 2D culling. Alternating X/Y splits at node midplanes; spanning items stay on the node. </p>
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a551c79dce141a4d3668b451a929e45a2" name="a551c79dce141a4d3668b451a929e45a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a551c79dce141a4d3668b451a929e45a2">&#9670;&#160;</a></span>BSPTree2D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::BSPTree2D::BSPTree2D </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxDepth</em> = <code>12</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxPerNode</em> = <code>8</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00016">eve::spatial::AABB2::height()</a>, <a class="el" href="Bounds_8h_source.html#l00020">eve::spatial::AABB2::valid()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00015">eve::spatial::AABB2::width()</a>.</p>
+
+</div>
+</div>
+<a id="a53ca4e37647ca37f5ae54b8a0cf86573" name="a53ca4e37647ca37f5ae54b8a0cf86573"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53ca4e37647ca37f5ae54b8a0cf86573">&#9670;&#160;</a></span>~BSPTree2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::BSPTree2D::~BSPTree2D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="add01eb8080610990d150082ce11bbaf2" name="add01eb8080610990d150082ce11bbaf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add01eb8080610990d150082ce11bbaf2">&#9670;&#160;</a></span>BSPTree2D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::BSPTree2D::BSPTree2D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html">BSPTree2D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a20e1a29b79fc580cca882f9064aa27ed" name="a20e1a29b79fc580cca882f9064aa27ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20e1a29b79fc580cca882f9064aa27ed">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spatial::BSPTree2D::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a7ce988a0fba858b247570435ac22db09" name="a7ce988a0fba858b247570435ac22db09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ce988a0fba858b247570435ac22db09">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::BSPTree2D::contains </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BSPTree2D_8cpp_source.html#l00036">insert()</a>, <a class="el" href="BSPTree2D_8cpp_source.html#l00047">remove()</a> , 以及 <a class="el" href="BSPTree2D_8cpp_source.html#l00054">update()</a>.</p>
+
+</div>
+</div>
+<a id="a986a9621fe641ac968703e172d5569d8" name="a986a9621fe641ac968703e172d5569d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a986a9621fe641ac968703e172d5569d8">&#9670;&#160;</a></span>getCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::BSPTree2D::getCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac1574fdd89dadd8bbeb0330b5cfa4e75" name="ac1574fdd89dadd8bbeb0330b5cfa4e75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1574fdd89dadd8bbeb0330b5cfa4e75">&#9670;&#160;</a></span>getMaxDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::BSPTree2D::getMaxDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5e56dbb3d9c3aa77433580950cd2f96" name="ad5e56dbb3d9c3aa77433580950cd2f96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5e56dbb3d9c3aa77433580950cd2f96">&#9670;&#160;</a></span>getMaxPerNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::BSPTree2D::getMaxPerNode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4ece238654e18b5c82878698eed92db" name="ad4ece238654e18b5c82878698eed92db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4ece238654e18b5c82878698eed92db">&#9670;&#160;</a></span>getMaxX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::BSPTree2D::getMaxX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00012">eve::spatial::AABB2::maxX</a>.</p>
+
+</div>
+</div>
+<a id="a9a2799a7fd285efa6c9b5087f1385647" name="a9a2799a7fd285efa6c9b5087f1385647"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a2799a7fd285efa6c9b5087f1385647">&#9670;&#160;</a></span>getMaxY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::BSPTree2D::getMaxY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00013">eve::spatial::AABB2::maxY</a>.</p>
+
+</div>
+</div>
+<a id="a589a4cb09a8c38ce03be969d2560da84" name="a589a4cb09a8c38ce03be969d2560da84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a589a4cb09a8c38ce03be969d2560da84">&#9670;&#160;</a></span>getMinX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::BSPTree2D::getMinX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00010">eve::spatial::AABB2::minX</a>.</p>
+
+</div>
+</div>
+<a id="add06e6e8fa2f77bd324073bc8852dd68" name="add06e6e8fa2f77bd324073bc8852dd68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add06e6e8fa2f77bd324073bc8852dd68">&#9670;&#160;</a></span>getMinY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::BSPTree2D::getMinY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00011">eve::spatial::AABB2::minY</a>.</p>
+
+</div>
+</div>
+<a id="ad846895f1362d320610fec1220d3c34d" name="ad846895f1362d320610fec1220d3c34d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad846895f1362d320610fec1220d3c34d">&#9670;&#160;</a></span>getResultCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::BSPTree2D::getResultCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a>.</p>
+
+</div>
+</div>
+<a id="a71dc55df2c178f5e9edb1a59dc5d6f24" name="a71dc55df2c178f5e9edb1a59dc5d6f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71dc55df2c178f5e9edb1a59dc5d6f24">&#9670;&#160;</a></span>getResultId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::BSPTree2D::getResultId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a> 第 <a class="el" href="BSPTree2D_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00026">eve::spatial::QueryIds::getId()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ad2632212d70cceb811f3e88f71eab225" name="ad2632212d70cceb811f3e88f71eab225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2632212d70cceb811f3e88f71eab225">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::BSPTree2D::insert </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="BSPTree2D_8cpp_source.html#l00034">contains()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Bounds_8h_source.html#l00085">eve::spatial::makeAABB2()</a> , 以及 <a class="el" href="BSPTree2D_8cpp_source.html#l00047">remove()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BSPTree2D_8cpp_source.html#l00054">update()</a>.</p>
+
+</div>
+</div>
+<a id="a9b83657359df5b5bc4627df1e764d2eb" name="a9b83657359df5b5bc4627df1e764d2eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b83657359df5b5bc4627df1e764d2eb">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html">BSPTree2D</a> &amp; eve::spatial::BSPTree2D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1spatial_1_1BSPTree2D.html">BSPTree2D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a93fce9b622fb2f0d57734d2524ec13f9" name="a93fce9b622fb2f0d57734d2524ec13f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93fce9b622fb2f0d57734d2524ec13f9">&#9670;&#160;</a></span>queryCircle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::BSPTree2D::queryCircle </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="a6a923ac450bab258e2d6d6af22c5532f" name="a6a923ac450bab258e2d6d6af22c5532f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a923ac450bab258e2d6d6af22c5532f">&#9670;&#160;</a></span>queryPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::BSPTree2D::queryPoint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>, <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a93b49e90edf3dcdf38d4ae2f5b13707c" name="a93b49e90edf3dcdf38d4ae2f5b13707c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93b49e90edf3dcdf38d4ae2f5b13707c">&#9670;&#160;</a></span>queryRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::BSPTree2D::queryRect </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>, <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00085">eve::spatial::makeAABB2()</a>.</p>
+
+</div>
+</div>
+<a id="ac2b10717675f8f8e7597394b43e16c89" name="ac2b10717675f8f8e7597394b43e16c89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2b10717675f8f8e7597394b43e16c89">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::BSPTree2D::remove </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BSPTree2D_8cpp_source.html#l00034">contains()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BSPTree2D_8cpp_source.html#l00036">insert()</a>.</p>
+
+</div>
+</div>
+<a id="a3ba21ea38cbec9aa31318333f3747587" name="a3ba21ea38cbec9aa31318333f3747587"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ba21ea38cbec9aa31318333f3747587">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::BSPTree2D::update </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a> 第 <a class="el" href="BSPTree2D_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BSPTree2D_8cpp_source.html#l00034">contains()</a> , 以及 <a class="el" href="BSPTree2D_8cpp_source.html#l00036">insert()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/spatial/<a class="el" href="BSPTree2D_8h_source.html">BSPTree2D.h</a></li>
+<li>src/modules/spatial/<a class="el" href="BSPTree2D_8cpp_source.html">BSPTree2D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

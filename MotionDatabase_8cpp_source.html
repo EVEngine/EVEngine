@@ -1,0 +1,482 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/MotionDatabase.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MotionDatabase.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MotionDatabase_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="MotionDatabase_8h.html">animation/MotionDatabase.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="AnimClip_8h.html">animation/AnimClip.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimSkeleton_8h.html">animation/AnimSkeleton.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#aeb0ecc320576e69eaa1f23232703d439">   11</a></span><a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#aeb0ecc320576e69eaa1f23232703d439">MotionDatabase::MotionDatabase</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a>* skeleton) : skeleton_(skeleton) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (!skeleton_) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase: skeleton is null&quot;</span>);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">resize</a>(skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>());</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="comment">// Default: use every non-root bone if none specified before bake.</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#a6bf4a6aba74de54b7118fdad0c68ade6">   17</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a6bf4a6aba74de54b7118fdad0c68ade6">MotionDatabase::addFeatureBone</a>(<span class="keywordtype">int</span> boneIndex) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || boneIndex &gt;= skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>()) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.addFeatureBone: invalid bone %d&quot;</span>, boneIndex);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> : featureBones_) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> == boneIndex) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    featureBones_.push_back(boneIndex);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    baked_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#aadbec4520c558175161489b7220cd909">   28</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#aadbec4520c558175161489b7220cd909">MotionDatabase::addFeatureBoneByName</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <span class="keywordtype">id</span> = skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#af18ed708e13e9f78c16631f3bfacbde0">findBone</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (<span class="keywordtype">id</span> &lt; 0) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.addFeatureBoneByName: unknown &#39;%s&#39;&quot;</span>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.c_str());</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a6bf4a6aba74de54b7118fdad0c68ade6">addFeatureBone</a>(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#ad7c79ad639da9fd2aed13fba31f1343b">   34</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#ad7c79ad639da9fd2aed13fba31f1343b">MotionDatabase::setRootBone</a>(<span class="keywordtype">int</span> boneIndex) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (boneIndex &lt; 0 || boneIndex &gt;= skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>()) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.setRootBone: invalid bone %d&quot;</span>, boneIndex);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    rootBone_ = boneIndex;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    baked_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#a062a12025e27d153037d1969fb91f8bd">   42</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a062a12025e27d153037d1969fb91f8bd">MotionDatabase::setRootBoneByName</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <span class="keywordtype">id</span> = skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#af18ed708e13e9f78c16631f3bfacbde0">findBone</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (<span class="keywordtype">id</span> &lt; 0) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.setRootBoneByName: unknown &#39;%s&#39;&quot;</span>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.c_str());</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#ad7c79ad639da9fd2aed13fba31f1343b">setRootBone</a>(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#ad8718e56659410d175a9c3141341f4ca">   48</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#ad8718e56659410d175a9c3141341f4ca">MotionDatabase::addClip</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a>* <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.addClip: clip is null&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    clips_.push_back(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    baked_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#a8a48b6237a196d92665917555314946a">   54</a></span><a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a>* <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a8a48b6237a196d92665917555314946a">MotionDatabase::getClip</a>(<span class="keywordtype">int</span> clipIndex)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (clipIndex &lt; 0 || clipIndex &gt;= <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">getClipCount</a>()) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.getClip: invalid index %d&quot;</span>, clipIndex);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> clips_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(clipIndex)];</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keywordtype">void</span> MotionDatabase::computeFeatureSize() {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="comment">// vel(2) + trajPos*3(6) + trajFacing(2) + bones*3</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    featureSize_ = 2 + 6 + 2 + <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(featureBones_.size()) * 3;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keywordtype">float</span> MotionDatabase::yawFromQuat(<span class="keywordtype">float</span> <span class="comment">/*x*/</span>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <span class="comment">/*z*/</span>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="comment">// Yaw from quaternion (Y-up), assuming mostly planar rotation.</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> std::atan2(2.f * (<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> * <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>), 1.f - 2.f * (<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> * <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#acb2a07b4482d8fbd8c024358f1cbf3b6">   71</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#acb2a07b4482d8fbd8c024358f1cbf3b6">MotionDatabase::getFeatureBone</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a744f7b218206ab26bb27e06510b9987f">getFeatureBoneCount</a>()) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.getFeatureBone: invalid index %d&quot;</span>, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">return</span> featureBones_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)];</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keywordtype">void</span> MotionDatabase::extractFeature(<a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a>* <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>, <span class="keywordtype">float</span> dtSample, std::vector&lt;float&gt;&amp; out, <span class="keywordtype">float</span>&amp; rootX,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                    <span class="keywordtype">float</span>&amp; rootZ, <span class="keywordtype">float</span>&amp; rootYaw, <span class="keywordtype">float</span>&amp; velX, <span class="keywordtype">float</span>&amp; velZ)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    out.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(featureSize_), 0.f);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;sample(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>, &amp;scratchPose_, skeleton_);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#ae67161166c1e3fd7311093102b2c9601">computeWorld</a>(skeleton_);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a> = rootBone_;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    rootX          = scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a542e445816dfc4eb9d852651bea7b0a9">getWorldPositionX</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    rootZ          = scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a0ee732d6ecbea4ee5dbecc5801ce9ea6">getWorldPositionZ</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    rootYaw        = yawFromQuat(scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a0d9a6fd8c163faa194abce4199bbad60">getWorldRotationX</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>), scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aad41bf001a5fc8a693c6643753f90ca3">getWorldRotationY</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>),</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                 scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#aac7f05c31247368b7078e156b56e3d36">getWorldRotationZ</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>), scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a9a299fcdccd2197446ef956df9aee495">getWorldRotationW</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>));</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// Velocity from nearby sample.</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> t1 = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a> + std::max(dtSample, 1e-3f);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>    next;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;sample(t1, &amp;next, skeleton_);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    next.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#ae67161166c1e3fd7311093102b2c9601">computeWorld</a>(skeleton_);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nX  = next.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a542e445816dfc4eb9d852651bea7b0a9">getWorldPositionX</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nZ  = next.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a0ee732d6ecbea4ee5dbecc5801ce9ea6">getWorldPositionZ</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> dtt = std::max(dtSample, 1e-3f);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    velX            = (nX - rootX) / dtt;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    velZ            = (nZ - rootZ) / dtt;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">float</span> cs = std::cos(rootYaw);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">float</span> sn = std::sin(rootYaw);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="comment">// Character-space: rotate world xz by -yaw</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">auto</span> toLocal = [&amp;](<span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>, <span class="keywordtype">float</span>&amp; lx, <span class="keywordtype">float</span>&amp; lz) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dx = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a> - rootX;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dz = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a> - rootZ;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        lx             = dx * cs + dz * sn;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        lz             = -dx * sn + dz * cs;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    };</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    out[0] = velX * cs + velZ * sn;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    out[1] = -velX * sn + velZ * cs;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> horizons[3] = {0.33f, 0.66f, 1.0f};</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = 0; <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt; 3; ++<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        AnimPose fut;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;sample(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a> + horizons[<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>], &amp;fut, skeleton_);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        fut.computeWorld(skeleton_);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordtype">float</span> lx, lz;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        toLocal(fut.getWorldPositionX(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>), fut.getWorldPositionZ(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>), lx, lz);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        out[2 + <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> * 2]     = lx;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        out[2 + <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> * 2 + 1] = lz;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        AnimPose fut;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;sample(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a> + 1.0f, &amp;fut, skeleton_);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        fut.computeWorld(skeleton_);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> fyaw = yawFromQuat(fut.getWorldRotationX(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>), fut.getWorldRotationY(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>),</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                                       fut.getWorldRotationZ(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>), fut.getWorldRotationW(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>));</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordtype">float</span>       fx, fz;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <a class="code hl_function" href="namespaceeve_1_1animation.html#a65583bf1428722a0a4746f78a30a80cb">yawToForward</a>(fyaw - rootYaw, fx, fz);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        out[8] = fx;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        out[9] = fz;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">int</span> base = 10;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a> : featureBones_) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordtype">float</span>       lx, lz;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a> = scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a85f2779410fc3daa87508dfd71444c9f">getWorldPositionY</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        toLocal(scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a542e445816dfc4eb9d852651bea7b0a9">getWorldPositionX</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>), scratchPose_.<a class="code hl_function" href="classeve_1_1animation_1_1AnimPose.html#a0ee732d6ecbea4ee5dbecc5801ce9ea6">getWorldPositionZ</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>), lx, lz);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        out[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(base)]     = lx;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        out[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(base + 1)] = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        out[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(base + 2)] = lz;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        base += 3;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>}</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="foldopen" id="foldopen00149" data-start="{" data-end="}">
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#ac65330fd021464b5205a871f5bf60056">  149</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#ac65330fd021464b5205a871f5bf60056">MotionDatabase::bake</a>() {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> (clips_.empty()) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.bake: no clips&quot;</span>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">if</span> (featureBones_.empty()) {</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="comment">// Default: all bones except root.</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt; skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>(); ++i) <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a6bf4a6aba74de54b7118fdad0c68ade6">addFeatureBone</a>(i);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">if</span> (featureBones_.empty() &amp;&amp; skeleton_-&gt;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>() &gt; 0) <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a6bf4a6aba74de54b7118fdad0c68ade6">addFeatureBone</a>(0);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    computeFeatureSize();</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    frames_.clear();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ci = 0; ci &lt; <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">getClipCount</a>(); ++ci) {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <a class="code hl_class" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a>*   <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a> = clips_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(ci)];</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a> = <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;getSampleRate() &gt; 0.f ? <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;getSampleRate() : 30.f;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dt   = 1.f / <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a>;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dur  = <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>-&gt;getDuration();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">if</span> (dur &lt;= 0.f) {</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            <a class="code hl_struct" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">Frame</a> <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.<a class="code hl_variable" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html#a14bd032c38dbcc6563a7db4a6622faa7">clipIndex</a> = ci;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.time      = 0.f;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            extractFeature(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, 0.f, dt, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.feature, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.rootX, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.rootZ, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.rootYaw, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.velX, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.velZ);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            frames_.push_back(std::move(<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>));</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        }</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">for</span> (<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = 0.f; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> &lt; dur - 1e-5f; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> += dt) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <a class="code hl_struct" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">Frame</a> <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.<a class="code hl_variable" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html#a14bd032c38dbcc6563a7db4a6622faa7">clipIndex</a> = ci;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.time      = <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            extractFeature(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, dt, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.feature, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.rootX, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.rootZ, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.rootYaw, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.velX, <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.velZ);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            frames_.push_back(std::move(<a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>));</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    featureMean_.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(featureSize_), 0.f);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    featureInvStd_.assign(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(featureSize_), 0.f);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">Frame</a>&amp; frame : frames_)</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; featureSize_; ++i)</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            featureMean_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] += frame.feature[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> invCount = 1.f / <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(frames_.size());</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">for</span> (<span class="keywordtype">float</span>&amp; mean : featureMean_) mean *= invCount;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">Frame</a>&amp; frame : frames_)</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; featureSize_; ++i) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = frame.feature[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] - featureMean_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            featureInvStd_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] += <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> * <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">for</span> (<span class="keywordtype">float</span>&amp; invStd : featureInvStd_) invStd = 1.f / std::sqrt(invStd * invCount + 1e-6f);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">for</span> (<a class="code hl_struct" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">Frame</a>&amp; frame : frames_) <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a51e8acdf802ca3722f1bbef334e412cf">normalizeFeature</a>(frame.feature);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    baked_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>}</div>
+</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="foldopen" id="foldopen00197" data-start="{" data-end="}">
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#a51e8acdf802ca3722f1bbef334e412cf">  197</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a51e8acdf802ca3722f1bbef334e412cf">MotionDatabase::normalizeFeature</a>(std::vector&lt;float&gt;&amp; feature)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordflow">if</span> (<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(feature.size()) != featureSize_ || <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(featureMean_.size()) != featureSize_)</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; featureSize_; ++i)</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        feature[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] = (feature[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)] - featureMean_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]) *</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                                          featureInvStd_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>}</div>
+</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><span class="keywordtype">void</span> MotionDatabase::requireBaked()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">if</span> (!baked_) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase: not baked; call bake() first&quot;</span>);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>}</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="foldopen" id="foldopen00209" data-start="{" data-end="}">
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">  209</a></span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">MotionDatabase::Frame</a>&amp; <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">MotionDatabase::frameAt</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    requireBaked();</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#ad4b7b1edd6147867fa84bcb63befa312">getFrameCount</a>()) {</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase: invalid frame %d&quot;</span>, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    }</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordflow">return</span> frames_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)];</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>}</div>
+</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#a6da4289df7ab57f5951fe21f891f0548">  217</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a6da4289df7ab57f5951fe21f891f0548">MotionDatabase::getFrameTime</a>(<span class="keywordtype">int</span> frameIndex)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">frameAt</a>(frameIndex).<a class="code hl_variable" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html#a622ebb3fb05949b737784937f428527a">time</a>; }</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#afe878640aede16a19dd4109e53c8afab">  219</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#afe878640aede16a19dd4109e53c8afab">MotionDatabase::getFrameClipIndex</a>(<span class="keywordtype">int</span> frameIndex)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">frameAt</a>(frameIndex).<a class="code hl_variable" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html#a14bd032c38dbcc6563a7db4a6622faa7">clipIndex</a>; }</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="foldopen" id="foldopen00221" data-start="{" data-end="}">
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionDatabase.html#a57b0ceac193af44a1abb719ad90c7197">  221</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a57b0ceac193af44a1abb719ad90c7197">MotionDatabase::getFeature</a>(<span class="keywordtype">int</span> frameIndex, <span class="keywordtype">float</span>* out, <span class="keywordtype">int</span> outCount)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">Frame</a>&amp; <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a> = <a class="code hl_function" href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">frameAt</a>(frameIndex);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordflow">if</span> (!out || outCount &lt; featureSize_) {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a>(<span class="stringliteral">&quot;MotionDatabase.getFeature: buffer too small&quot;</span>);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; featureSize_; ++i) out[i] = <a class="code hl_variable" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>.feature[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)];</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>}</div>
+</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8h_html"><div class="ttname"><a href="AnimClip_8h.html">AnimClip.h</a></div></div>
+<div class="ttc" id="aAnimSkeleton_8h_html"><div class="ttname"><a href="AnimSkeleton_8h.html">AnimSkeleton.h</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_aee43da4e9117b04a03d47cfb325445d4"><div class="ttname"><a href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a></div><div class="ttdeci">Value root</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00039">GltfImporter.cpp:39</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a30a948bc4ba3defbec563e070a66fbc6"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a></div><div class="ttdeci">glm::vec4 clip</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00045">GraphicsVirtualGeometry.cpp:45</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a0b872fb569a8d6ca3c6e55e3d7182e57"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a></div><div class="ttdeci">float rate</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00033">LegacyAnimationImporter.cpp:33</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a8b8dfe2335a5bf90695960dc6a1c5d3b"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_aa998c8d51ac188304eb2c6ae8549c6d2"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a></div><div class="ttdeci">std::uint32_t bone</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00024">LegacyAnimationImporter.cpp:24</a></div></div>
+<div class="ttc" id="aMotionDatabase_8h_html"><div class="ttname"><a href="MotionDatabase_8h.html">MotionDatabase.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_af900396d7b72ff2a7002e8befe8cf8f1"><div class="ttname"><a href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></div><div class="ttdeci">float f</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00335">Pathfinder.cpp:335</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a3cc50c2a8b1ca44e2cd5c4ed748c610a"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a></div><div class="ttdeci">float wz</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00175">WorldSnapshot.cpp:175</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a40083d5d71ff675499a8d392ff75f401"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a></div><div class="ttdeci">float wx</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00175">WorldSnapshot.cpp:175</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_ae05e525eb10e278f769ff1bc049eec10"><div class="ttname"><a href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a></div><div class="ttdeci">float wy</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00175">WorldSnapshot.cpp:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimClip_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></div><div class="ttdoc">Keyframed skeletal animation clip (local TRS tracks per bone). Script type: AnimClip.</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8h_source.html#l00079">AnimClip.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_a0d9a6fd8c163faa194abce4199bbad60"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#a0d9a6fd8c163faa194abce4199bbad60">eve::animation::AnimPose::getWorldRotationX</a></div><div class="ttdeci">float getWorldRotationX(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00303">AnimPose.cpp:303</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_a0ee732d6ecbea4ee5dbecc5801ce9ea6"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#a0ee732d6ecbea4ee5dbecc5801ce9ea6">eve::animation::AnimPose::getWorldPositionZ</a></div><div class="ttdeci">float getWorldPositionZ(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00299">AnimPose.cpp:299</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_a542e445816dfc4eb9d852651bea7b0a9"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#a542e445816dfc4eb9d852651bea7b0a9">eve::animation::AnimPose::getWorldPositionX</a></div><div class="ttdeci">float getWorldPositionX(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00291">AnimPose.cpp:291</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_a85f2779410fc3daa87508dfd71444c9f"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#a85f2779410fc3daa87508dfd71444c9f">eve::animation::AnimPose::getWorldPositionY</a></div><div class="ttdeci">float getWorldPositionY(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00295">AnimPose.cpp:295</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_a9a299fcdccd2197446ef956df9aee495"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#a9a299fcdccd2197446ef956df9aee495">eve::animation::AnimPose::getWorldRotationW</a></div><div class="ttdeci">float getWorldRotationW(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00315">AnimPose.cpp:315</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_aac7f05c31247368b7078e156b56e3d36"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#aac7f05c31247368b7078e156b56e3d36">eve::animation::AnimPose::getWorldRotationZ</a></div><div class="ttdeci">float getWorldRotationZ(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00311">AnimPose.cpp:311</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_aad41bf001a5fc8a693c6643753f90ca3"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#aad41bf001a5fc8a693c6643753f90ca3">eve::animation::AnimPose::getWorldRotationY</a></div><div class="ttdeci">float getWorldRotationY(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00307">AnimPose.cpp:307</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_ae67161166c1e3fd7311093102b2c9601"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#ae67161166c1e3fd7311093102b2c9601">eve::animation::AnimPose::computeWorld</a></div><div class="ttdeci">void computeWorld(const AnimSkeleton *skeleton)</div><div class="ttdoc">Compute world transforms from local pose + skeleton hierarchy. World values readable via getWorld* af...</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00230">AnimPose.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html_aeea32fec7441e303ac3c6216448d4e33"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html#aeea32fec7441e303ac3c6216448d4e33">eve::animation::AnimPose::resize</a></div><div class="ttdeci">void resize(int boneCount)</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8cpp_source.html#l00105">AnimPose.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a44d26194685931ff9c09672982daddba"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">eve::animation::AnimSkeleton::getBoneCount</a></div><div class="ttdeci">int getBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00028">AnimSkeleton.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_af18ed708e13e9f78c16631f3bfacbde0"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#af18ed708e13e9f78c16631f3bfacbde0">eve::animation::AnimSkeleton::findBone</a></div><div class="ttdeci">int findBone(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00037">AnimSkeleton.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a062a12025e27d153037d1969fb91f8bd"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a062a12025e27d153037d1969fb91f8bd">eve::animation::MotionDatabase::setRootBoneByName</a></div><div class="ttdeci">void setRootBoneByName(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00042">MotionDatabase.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a51e8acdf802ca3722f1bbef334e412cf"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a51e8acdf802ca3722f1bbef334e412cf">eve::animation::MotionDatabase::normalizeFeature</a></div><div class="ttdeci">void normalizeFeature(std::vector&lt; float &gt; &amp;feature) const</div><div class="ttdoc">Normalize a query with statistics computed by bake().</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00197">MotionDatabase.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a57b0ceac193af44a1abb719ad90c7197"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a57b0ceac193af44a1abb719ad90c7197">eve::animation::MotionDatabase::getFeature</a></div><div class="ttdeci">void getFeature(int frameIndex, float *out, int outCount) const</div><div class="ttdoc">Copy feature vector into out[0..featureSize).</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00221">MotionDatabase.cpp:221</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a6bf4a6aba74de54b7118fdad0c68ade6"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a6bf4a6aba74de54b7118fdad0c68ade6">eve::animation::MotionDatabase::addFeatureBone</a></div><div class="ttdeci">void addFeatureBone(int boneIndex)</div><div class="ttdoc">Include bone world position in pose features (by index).</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00017">MotionDatabase.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a6da4289df7ab57f5951fe21f891f0548"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a6da4289df7ab57f5951fe21f891f0548">eve::animation::MotionDatabase::getFrameTime</a></div><div class="ttdeci">float getFrameTime(int frameIndex) const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00217">MotionDatabase.cpp:217</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a744f7b218206ab26bb27e06510b9987f"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a744f7b218206ab26bb27e06510b9987f">eve::animation::MotionDatabase::getFeatureBoneCount</a></div><div class="ttdeci">int getFeatureBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00058">MotionDatabase.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a8a48b6237a196d92665917555314946a"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a8a48b6237a196d92665917555314946a">eve::animation::MotionDatabase::getClip</a></div><div class="ttdeci">AnimClip * getClip(int clipIndex) const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00054">MotionDatabase.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_a9d577c76c8379326265e6e8bc3bc9b88"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">eve::animation::MotionDatabase::frameAt</a></div><div class="ttdeci">const Frame &amp; frameAt(int index) const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00209">MotionDatabase.cpp:209</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_aadbec4520c558175161489b7220cd909"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#aadbec4520c558175161489b7220cd909">eve::animation::MotionDatabase::addFeatureBoneByName</a></div><div class="ttdeci">void addFeatureBoneByName(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00028">MotionDatabase.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_ac65330fd021464b5205a871f5bf60056"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#ac65330fd021464b5205a871f5bf60056">eve::animation::MotionDatabase::bake</a></div><div class="ttdeci">void bake()</div><div class="ttdoc">Bake all clips into searchable frames. Call after addClip / feature bones.</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00149">MotionDatabase.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_acb2a07b4482d8fbd8c024358f1cbf3b6"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#acb2a07b4482d8fbd8c024358f1cbf3b6">eve::animation::MotionDatabase::getFeatureBone</a></div><div class="ttdeci">int getFeatureBone(int index) const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00071">MotionDatabase.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_ad4b7b1edd6147867fa84bcb63befa312"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#ad4b7b1edd6147867fa84bcb63befa312">eve::animation::MotionDatabase::getFrameCount</a></div><div class="ttdeci">int getFrameCount() const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00051">MotionDatabase.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_ad7c79ad639da9fd2aed13fba31f1343b"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#ad7c79ad639da9fd2aed13fba31f1343b">eve::animation::MotionDatabase::setRootBone</a></div><div class="ttdeci">void setRootBone(int boneIndex)</div><div class="ttdoc">Bone used for trajectory / velocity features (default 0). Mixamo clips typically want hips (mixamorig...</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00034">MotionDatabase.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_ad8718e56659410d175a9c3141341f4ca"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#ad8718e56659410d175a9c3141341f4ca">eve::animation::MotionDatabase::addClip</a></div><div class="ttdeci">void addClip(AnimClip *clip)</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00048">MotionDatabase.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_aeb0ecc320576e69eaa1f23232703d439"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#aeb0ecc320576e69eaa1f23232703d439">eve::animation::MotionDatabase::MotionDatabase</a></div><div class="ttdeci">MotionDatabase(AnimSkeleton *skeleton)</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00011">MotionDatabase.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_afe878640aede16a19dd4109e53c8afab"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#afe878640aede16a19dd4109e53c8afab">eve::animation::MotionDatabase::getFrameClipIndex</a></div><div class="ttdeci">int getFrameClipIndex(int frameIndex) const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8cpp_source.html#l00219">MotionDatabase.cpp:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html_aff47233d6ab752bd14a1ebfff13840f9"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">eve::animation::MotionDatabase::getClipCount</a></div><div class="ttdeci">int getClipCount() const</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00045">MotionDatabase.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00051">Animation.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a65583bf1428722a0a4746f78a30a80cb"><div class="ttname"><a href="namespaceeve_1_1animation.html#a65583bf1428722a0a4746f78a30a80cb">eve::animation::yawToForward</a></div><div class="ttdeci">void yawToForward(float yaw, float &amp;fx, float &amp;fz)</div><div class="ttdoc">Rotate unit +Z by yaw (radians) around Y — used for planar facing.</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00086">AnimMath.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionDatabase_1_1Frame_html"><div class="ttname"><a href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">eve::animation::MotionDatabase::Frame</a></div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00066">MotionDatabase.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionDatabase_1_1Frame_html_a14bd032c38dbcc6563a7db4a6622faa7"><div class="ttname"><a href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html#a14bd032c38dbcc6563a7db4a6622faa7">eve::animation::MotionDatabase::Frame::clipIndex</a></div><div class="ttdeci">int clipIndex</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00067">MotionDatabase.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionDatabase_1_1Frame_html_a622ebb3fb05949b737784937f428527a"><div class="ttname"><a href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html#a622ebb3fb05949b737784937f428527a">eve::animation::MotionDatabase::Frame::time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00068">MotionDatabase.h:68</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

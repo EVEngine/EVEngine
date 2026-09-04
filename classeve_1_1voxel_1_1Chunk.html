@@ -1,0 +1,1050 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::voxel::Chunk类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1voxel.html">voxel</a></li><li class="navelem"><a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1voxel_1_1Chunk-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::voxel::Chunk类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One 32³ voxel chunk with six direction-sorted packed-rect instance buffers. Coordinates: chunk (cx,cy,cz) → world origin (cx*32, cy*32, cz*32).  
+ <a href="classeve_1_1voxel_1_1Chunk.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Chunk_8h_source.html">Chunk.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae9d861b9ade374a5e621087f5ea98867" id="r_ae9d861b9ade374a5e621087f5ea98867"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#ae9d861b9ade374a5e621087f5ea98867">Chunk</a> (int <a class="el" href="classeve_1_1voxel_1_1Chunk.html#abaa0ed5e7bb7845a02c16e15273e6f68">cx</a>=0, int <a class="el" href="classeve_1_1voxel_1_1Chunk.html#a0e16dae3f2de61cb4960327d781f9824">cy</a>=0, int <a class="el" href="classeve_1_1voxel_1_1Chunk.html#ab05d1c46ff24633c83e8f2dc29d9c437">cz</a>=0)</td></tr>
+<tr class="separator:ae9d861b9ade374a5e621087f5ea98867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaa0ed5e7bb7845a02c16e15273e6f68" id="r_abaa0ed5e7bb7845a02c16e15273e6f68"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#abaa0ed5e7bb7845a02c16e15273e6f68">cx</a> () const</td></tr>
+<tr class="separator:abaa0ed5e7bb7845a02c16e15273e6f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e16dae3f2de61cb4960327d781f9824" id="r_a0e16dae3f2de61cb4960327d781f9824"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a0e16dae3f2de61cb4960327d781f9824">cy</a> () const</td></tr>
+<tr class="separator:a0e16dae3f2de61cb4960327d781f9824"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab05d1c46ff24633c83e8f2dc29d9c437" id="r_ab05d1c46ff24633c83e8f2dc29d9c437"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#ab05d1c46ff24633c83e8f2dc29d9c437">cz</a> () const</td></tr>
+<tr class="separator:ab05d1c46ff24633c83e8f2dc29d9c437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37205905f5e0dfe3d55e78b561242c0c" id="r_a37205905f5e0dfe3d55e78b561242c0c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a37205905f5e0dfe3d55e78b561242c0c">originX</a> () const</td></tr>
+<tr class="separator:a37205905f5e0dfe3d55e78b561242c0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68910802e3fbbf7ce74407a30fa1d3a0" id="r_a68910802e3fbbf7ce74407a30fa1d3a0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a68910802e3fbbf7ce74407a30fa1d3a0">originY</a> () const</td></tr>
+<tr class="separator:a68910802e3fbbf7ce74407a30fa1d3a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10e43a93115ee83a251710bb53d45e23" id="r_a10e43a93115ee83a251710bb53d45e23"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a10e43a93115ee83a251710bb53d45e23">originZ</a> () const</td></tr>
+<tr class="separator:a10e43a93115ee83a251710bb53d45e23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cc529a4bc20446911c45056bfa02493" id="r_a1cc529a4bc20446911c45056bfa02493"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a1cc529a4bc20446911c45056bfa02493">worldAABB</a> (float &amp;minX, float &amp;minY, float &amp;minZ, float &amp;maxX, float &amp;maxY, float &amp;maxZ) const</td></tr>
+<tr class="separator:a1cc529a4bc20446911c45056bfa02493"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd1de75aa70dbef569278cd680b152a1" id="r_abd1de75aa70dbef569278cd680b152a1"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#abd1de75aa70dbef569278cd680b152a1">get</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="separator:abd1de75aa70dbef569278cd680b152a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb19daea0dd8abd944e0d59b5f2f654e" id="r_adb19daea0dd8abd944e0d59b5f2f654e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#adb19daea0dd8abd944e0d59b5f2f654e">set</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, uint8_t texId)</td></tr>
+<tr class="separator:adb19daea0dd8abd944e0d59b5f2f654e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bd3d97825b2275623cd5cf83ec0d607" id="r_a1bd3d97825b2275623cd5cf83ec0d607"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a1bd3d97825b2275623cd5cf83ec0d607">fill</a> (uint8_t texId)</td></tr>
+<tr class="separator:a1bd3d97825b2275623cd5cf83ec0d607"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a446a20841c2cddf1e0470f07a2be76" id="r_a4a446a20841c2cddf1e0470f07a2be76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a4a446a20841c2cddf1e0470f07a2be76">clear</a> ()</td></tr>
+<tr class="separator:a4a446a20841c2cddf1e0470f07a2be76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1346fbce0d8a315de199bf12b8448e0c" id="r_a1346fbce0d8a315de199bf12b8448e0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a1346fbce0d8a315de199bf12b8448e0c">setVoxelData</a> (const uint8_t *src)</td></tr>
+<tr class="separator:a1346fbce0d8a315de199bf12b8448e0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c56d5b060e1a58068b82f879242c9f1" id="r_a4c56d5b060e1a58068b82f879242c9f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a4c56d5b060e1a58068b82f879242c9f1">isDirty</a> () const</td></tr>
+<tr class="separator:a4c56d5b060e1a58068b82f879242c9f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7547866800ea890c7e9605ebe876b08e" id="r_a7547866800ea890c7e9605ebe876b08e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a7547866800ea890c7e9605ebe876b08e">markDirty</a> ()</td></tr>
+<tr class="separator:a7547866800ea890c7e9605ebe876b08e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac06dc8a9e66929e6aa2a691f93f9fdb0" id="r_ac06dc8a9e66929e6aa2a691f93f9fdb0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#ac06dc8a9e66929e6aa2a691f93f9fdb0">remesh</a> (const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;types=<a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>(), <a class="el" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a> sampler=nullptr, void *samplerUserData=nullptr)</td></tr>
+<tr class="memdesc:ac06dc8a9e66929e6aa2a691f93f9fdb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild six face instance buffers via greedy meshing.  <br /></td></tr>
+<tr class="separator:ac06dc8a9e66929e6aa2a691f93f9fdb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a181e76a67268d73fc4beb626df8e18d9" id="r_a181e76a67268d73fc4beb626df8e18d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a181e76a67268d73fc4beb626df8e18d9">ensureMeshed</a> (const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;types=<a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>(), <a class="el" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a> sampler=nullptr, void *samplerUserData=nullptr)</td></tr>
+<tr class="memdesc:a181e76a67268d73fc4beb626df8e18d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure mesh is up to date; remesh if dirty.  <br /></td></tr>
+<tr class="separator:a181e76a67268d73fc4beb626df8e18d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a314f2ab4a245587d55cdba5c3b6c153e" id="r_a314f2ab4a245587d55cdba5c3b6c153e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1voxel_1_1PackedRect.html">PackedRect</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a314f2ab4a245587d55cdba5c3b6c153e">faceRects</a> (<a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) const</td></tr>
+<tr class="separator:a314f2ab4a245587d55cdba5c3b6c153e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6297b0e5d156e48e369f48f0a9163fbf" id="r_a6297b0e5d156e48e369f48f0a9163fbf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a6297b0e5d156e48e369f48f0a9163fbf">faceRectCount</a> (<a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) const</td></tr>
+<tr class="separator:a6297b0e5d156e48e369f48f0a9163fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34b7aee0d6541977846d9ae82242c82d" id="r_a34b7aee0d6541977846d9ae82242c82d"><td class="memItemLeft" align="right" valign="top">const uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a34b7aee0d6541977846d9ae82242c82d">facePackedData</a> (<a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) const</td></tr>
+<tr class="separator:a34b7aee0d6541977846d9ae82242c82d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a014359085aac79431507bf34f742aa07" id="r_a014359085aac79431507bf34f742aa07"><td class="memItemLeft" align="right" valign="top">const uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a014359085aac79431507bf34f742aa07">faceAOPackedData</a> (<a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a> <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>) const</td></tr>
+<tr class="separator:a014359085aac79431507bf34f742aa07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95f5a6836a532b62afd63cf0900d4cd2" id="r_a95f5a6836a532b62afd63cf0900d4cd2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#a95f5a6836a532b62afd63cf0900d4cd2">totalRectCount</a> () const</td></tr>
+<tr class="separator:a95f5a6836a532b62afd63cf0900d4cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add354dba348a9bfe0143b7442161a69c" id="r_add354dba348a9bfe0143b7442161a69c"><td class="memItemLeft" align="right" valign="top">const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1Chunk.html#add354dba348a9bfe0143b7442161a69c">rawVoxels</a> () const</td></tr>
+<tr class="separator:add354dba348a9bfe0143b7442161a69c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One 32³ voxel chunk with six direction-sorted packed-rect instance buffers. Coordinates: chunk (cx,cy,cz) → world origin (cx*32, cy*32, cz*32). </p>
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00018">18</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae9d861b9ade374a5e621087f5ea98867" name="ae9d861b9ade374a5e621087f5ea98867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9d861b9ade374a5e621087f5ea98867">&#9670;&#160;</a></span>Chunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::voxel::Chunk::Chunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cz</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4a446a20841c2cddf1e0470f07a2be76" name="a4a446a20841c2cddf1e0470f07a2be76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a446a20841c2cddf1e0470f07a2be76">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::Chunk::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Chunk_8h_source.html#l00054">fill()</a>.</p>
+
+</div>
+</div>
+<a id="abaa0ed5e7bb7845a02c16e15273e6f68" name="abaa0ed5e7bb7845a02c16e15273e6f68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaa0ed5e7bb7845a02c16e15273e6f68">&#9670;&#160;</a></span>cx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::Chunk::cx </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e16dae3f2de61cb4960327d781f9824" name="a0e16dae3f2de61cb4960327d781f9824"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e16dae3f2de61cb4960327d781f9824">&#9670;&#160;</a></span>cy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::Chunk::cy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab05d1c46ff24633c83e8f2dc29d9c437" name="ab05d1c46ff24633c83e8f2dc29d9c437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab05d1c46ff24633c83e8f2dc29d9c437">&#9670;&#160;</a></span>cz()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::Chunk::cz </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a181e76a67268d73fc4beb626df8e18d9" name="a181e76a67268d73fc4beb626df8e18d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a181e76a67268d73fc4beb626df8e18d9">&#9670;&#160;</a></span>ensureMeshed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::Chunk::ensureMeshed </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>types</em> = <code><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a>&#160;</td>
+          <td class="paramname"><em>sampler</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>samplerUserData</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ensure mesh is up to date; remesh if dirty. </p>
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Chunk_8h_source.html#l00073">remesh()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00431">eve::voxel::VoxelWorld::selectVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a014359085aac79431507bf34f742aa07" name="a014359085aac79431507bf34f742aa07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a014359085aac79431507bf34f742aa07">&#9670;&#160;</a></span>faceAOPackedData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t * eve::voxel::Chunk::faceAOPackedData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a>&#160;</td>
+          <td class="paramname"><em>dir</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Per-rect ambient-occlusion words (2 bits per corner, 0..3, shader corner order). Parallel to faceRects(dir). </p>
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00431">eve::voxel::VoxelWorld::selectVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a34b7aee0d6541977846d9ae82242c82d" name="a34b7aee0d6541977846d9ae82242c82d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34b7aee0d6541977846d9ae82242c82d">&#9670;&#160;</a></span>facePackedData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint32_t * eve::voxel::Chunk::facePackedData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a>&#160;</td>
+          <td class="paramname"><em>dir</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00431">eve::voxel::VoxelWorld::selectVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a6297b0e5d156e48e369f48f0a9163fbf" name="a6297b0e5d156e48e369f48f0a9163fbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6297b0e5d156e48e369f48f0a9163fbf">&#9670;&#160;</a></span>faceRectCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::Chunk::faceRectCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a>&#160;</td>
+          <td class="paramname"><em>dir</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00431">eve::voxel::VoxelWorld::selectVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a314f2ab4a245587d55cdba5c3b6c153e" name="a314f2ab4a245587d55cdba5c3b6c153e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a314f2ab4a245587d55cdba5c3b6c153e">&#9670;&#160;</a></span>faceRects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1voxel_1_1PackedRect.html">PackedRect</a> &gt; &amp; eve::voxel::Chunk::faceRects </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877">FaceDir</a>&#160;</td>
+          <td class="paramname"><em>dir</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>.</p>
+
+</div>
+</div>
+<a id="a1bd3d97825b2275623cd5cf83ec0d607" name="a1bd3d97825b2275623cd5cf83ec0d607"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bd3d97825b2275623cd5cf83ec0d607">&#9670;&#160;</a></span>fill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::Chunk::fill </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>texId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Chunk_8h_source.html#l00059">clear()</a>.</p>
+
+</div>
+</div>
+<a id="abd1de75aa70dbef569278cd680b152a1" name="abd1de75aa70dbef569278cd680b152a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd1de75aa70dbef569278cd680b152a1">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::voxel::Chunk::get </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00108">eve::voxel::VoxelWorld::getOrCreateChunk()</a> , 以及 <a class="el" href="VoxelWorld_8cpp_source.html#l00431">eve::voxel::VoxelWorld::selectVisible()</a>.</p>
+
+</div>
+</div>
+<a id="a4c56d5b060e1a58068b82f879242c9f1" name="a4c56d5b060e1a58068b82f879242c9f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c56d5b060e1a58068b82f879242c9f1">&#9670;&#160;</a></span>isDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::Chunk::isDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7547866800ea890c7e9605ebe876b08e" name="a7547866800ea890c7e9605ebe876b08e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7547866800ea890c7e9605ebe876b08e">&#9670;&#160;</a></span>markDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::Chunk::markDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Explicitly invalidate the mesh (e.g. neighbor edit on a shared border). </p>
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a37205905f5e0dfe3d55e78b561242c0c" name="a37205905f5e0dfe3d55e78b561242c0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37205905f5e0dfe3d55e78b561242c0c">&#9670;&#160;</a></span>originX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel::Chunk::originX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Chunk_8h_source.html#l00032">worldAABB()</a>.</p>
+
+</div>
+</div>
+<a id="a68910802e3fbbf7ce74407a30fa1d3a0" name="a68910802e3fbbf7ce74407a30fa1d3a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68910802e3fbbf7ce74407a30fa1d3a0">&#9670;&#160;</a></span>originY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel::Chunk::originY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Chunk_8h_source.html#l00032">worldAABB()</a>.</p>
+
+</div>
+</div>
+<a id="a10e43a93115ee83a251710bb53d45e23" name="a10e43a93115ee83a251710bb53d45e23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10e43a93115ee83a251710bb53d45e23">&#9670;&#160;</a></span>originZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::voxel::Chunk::originZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Chunk_8h_source.html#l00032">worldAABB()</a>.</p>
+
+</div>
+</div>
+<a id="add354dba348a9bfe0143b7442161a69c" name="add354dba348a9bfe0143b7442161a69c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add354dba348a9bfe0143b7442161a69c">&#9670;&#160;</a></span>rawVoxels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t * eve::voxel::Chunk::rawVoxels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac06dc8a9e66929e6aa2a691f93f9fdb0" name="ac06dc8a9e66929e6aa2a691f93f9fdb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac06dc8a9e66929e6aa2a691f93f9fdb0">&#9670;&#160;</a></span>remesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::Chunk::remesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>types</em> = <code><a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html#a7ed5f3ff5e2da3ed985577ee70a1aff6">CubeTypeRegistry::empty</a>()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1voxel.html#a43c825590b8dff5389f66623339eabd6">ChunkSampler</a>&#160;</td>
+          <td class="paramname"><em>sampler</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>samplerUserData</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Rebuild six face instance buffers via greedy meshing. </p>
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GreedyMesher_8cpp_source.html#l00262">eve::voxel::GreedyMesher::meshChunk()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Chunk_8h_source.html#l00082">ensureMeshed()</a>.</p>
+
+</div>
+</div>
+<a id="adb19daea0dd8abd944e0d59b5f2f654e" name="adb19daea0dd8abd944e0d59b5f2f654e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb19daea0dd8abd944e0d59b5f2f654e">&#9670;&#160;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::Chunk::set </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>texId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a1346fbce0d8a315de199bf12b8448e0c" name="a1346fbce0d8a315de199bf12b8448e0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1346fbce0d8a315de199bf12b8448e0c">&#9670;&#160;</a></span>setVoxelData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::Chunk::setVoxelData </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>src</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Replace the whole 32³ voxel storage (e.g. deserialization). </p>
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a95f5a6836a532b62afd63cf0900d4cd2" name="a95f5a6836a532b62afd63cf0900d4cd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95f5a6836a532b62afd63cf0900d4cd2">&#9670;&#160;</a></span>totalRectCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::Chunk::totalRectCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FaceDir_8h_source.html#l00027">eve::voxel::faceDirCount()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="a1cc529a4bc20446911c45056bfa02493" name="a1cc529a4bc20446911c45056bfa02493"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cc529a4bc20446911c45056bfa02493">&#9670;&#160;</a></span>worldAABB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::Chunk::worldAABB </td>
+          <td>(</td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Chunk_8h_source.html">Chunk.h</a> 第 <a class="el" href="Chunk_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>, <a class="el" href="Chunk_8h_source.html#l00028">originX()</a>, <a class="el" href="Chunk_8h_source.html#l00029">originY()</a> , 以及 <a class="el" href="Chunk_8h_source.html#l00030">originZ()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00431">eve::voxel::VoxelWorld::selectVisible()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/voxel/<a class="el" href="Chunk_8h_source.html">Chunk.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,829 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::math::Vec3类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1math.html">math</a></li><li class="navelem"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1math_1_1Vec3-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::math::Vec3类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>3D float vector (script-facing math module value).  
+ <a href="classeve_1_1math_1_1Vec3.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Vec3_8h_source.html">Vec3.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a028fbccc4424e7404faa0a05bf4026dc" id="r_a028fbccc4424e7404faa0a05bf4026dc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3</a> ()=default</td></tr>
+<tr class="separator:a028fbccc4424e7404faa0a05bf4026dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e645da6b510375476ef7f6d74cb3b8" id="r_a11e645da6b510375476ef7f6d74cb3b8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a11e645da6b510375476ef7f6d74cb3b8">Vec3</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a11e645da6b510375476ef7f6d74cb3b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a vector from components.  <br /></td></tr>
+<tr class="separator:a11e645da6b510375476ef7f6d74cb3b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac61c2b0f7e3eee227ad4d96db0899622" id="r_ac61c2b0f7e3eee227ad4d96db0899622"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#ac61c2b0f7e3eee227ad4d96db0899622">getX</a> () const</td></tr>
+<tr class="memdesc:ac61c2b0f7e3eee227ad4d96db0899622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Component accessors.  <br /></td></tr>
+<tr class="separator:ac61c2b0f7e3eee227ad4d96db0899622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a127389545d88d7484c7324aa70d13ffa" id="r_a127389545d88d7484c7324aa70d13ffa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a127389545d88d7484c7324aa70d13ffa">getY</a> () const</td></tr>
+<tr class="separator:a127389545d88d7484c7324aa70d13ffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36e7636a31e35c305561d03852e0996b" id="r_a36e7636a31e35c305561d03852e0996b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a36e7636a31e35c305561d03852e0996b">getZ</a> () const</td></tr>
+<tr class="separator:a36e7636a31e35c305561d03852e0996b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37a50bd4bb1500f72ec1af49ce2ab763" id="r_a37a50bd4bb1500f72ec1af49ce2ab763"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a37a50bd4bb1500f72ec1af49ce2ab763">setX</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="separator:a37a50bd4bb1500f72ec1af49ce2ab763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a542c084c85aec3bb67b66f31dcecb977" id="r_a542c084c85aec3bb67b66f31dcecb977"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a542c084c85aec3bb67b66f31dcecb977">setY</a> (float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a542c084c85aec3bb67b66f31dcecb977"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9cf223ede600dc1faf62c9363495ca7" id="r_ab9cf223ede600dc1faf62c9363495ca7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#ab9cf223ede600dc1faf62c9363495ca7">setZ</a> (float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:ab9cf223ede600dc1faf62c9363495ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad83fbc5e0dd1d78c3cf1a2a0203dfdc4" id="r_ad83fbc5e0dd1d78c3cf1a2a0203dfdc4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#ad83fbc5e0dd1d78c3cf1a2a0203dfdc4">set</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:ad83fbc5e0dd1d78c3cf1a2a0203dfdc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all three components.  <br /></td></tr>
+<tr class="separator:ad83fbc5e0dd1d78c3cf1a2a0203dfdc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b24affb6a36343fe01271be302fbe91" id="r_a4b24affb6a36343fe01271be302fbe91"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a4b24affb6a36343fe01271be302fbe91">length</a> () const</td></tr>
+<tr class="memdesc:a4b24affb6a36343fe01271be302fbe91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Magnitude (and squared magnitude).  <br /></td></tr>
+<tr class="separator:a4b24affb6a36343fe01271be302fbe91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96b3542ec1282b87605b79d7bd535935" id="r_a96b3542ec1282b87605b79d7bd535935"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a96b3542ec1282b87605b79d7bd535935">lengthSquared</a> () const</td></tr>
+<tr class="separator:a96b3542ec1282b87605b79d7bd535935"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a981f4ed88b5769f73db8b62f379dd923" id="r_a981f4ed88b5769f73db8b62f379dd923"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a981f4ed88b5769f73db8b62f379dd923">normalize</a> ()</td></tr>
+<tr class="memdesc:a981f4ed88b5769f73db8b62f379dd923"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes in place / returns a normalized copy.  <br /></td></tr>
+<tr class="separator:a981f4ed88b5769f73db8b62f379dd923"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04d131918168aafc3946267aca2fc949" id="r_a04d131918168aafc3946267aca2fc949"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a04d131918168aafc3946267aca2fc949">normalized</a> () const</td></tr>
+<tr class="separator:a04d131918168aafc3946267aca2fc949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b2db9fadbf6a840189c56b23f4ecc33" id="r_a6b2db9fadbf6a840189c56b23f4ecc33"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a6b2db9fadbf6a840189c56b23f4ecc33">dot</a> (const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other) const</td></tr>
+<tr class="memdesc:a6b2db9fadbf6a840189c56b23f4ecc33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dot/cross product and distance.  <br /></td></tr>
+<tr class="separator:a6b2db9fadbf6a840189c56b23f4ecc33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c3dea03c204c276c2c31fa0283f7c27" id="r_a2c3dea03c204c276c2c31fa0283f7c27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a2c3dea03c204c276c2c31fa0283f7c27">cross</a> (const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other) const</td></tr>
+<tr class="separator:a2c3dea03c204c276c2c31fa0283f7c27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77427246fb3592b5cb4e50cb54e46d7b" id="r_a77427246fb3592b5cb4e50cb54e46d7b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a77427246fb3592b5cb4e50cb54e46d7b">distanceTo</a> (const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other) const</td></tr>
+<tr class="separator:a77427246fb3592b5cb4e50cb54e46d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d46d2065e169613b2b23fc0f13ebfe" id="r_a51d46d2065e169613b2b23fc0f13ebfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a51d46d2065e169613b2b23fc0f13ebfe">add</a> (const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other) const</td></tr>
+<tr class="memdesc:a51d46d2065e169613b2b23fc0f13ebfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arithmetic helpers returning new (caller-owned) vectors.  <br /></td></tr>
+<tr class="separator:a51d46d2065e169613b2b23fc0f13ebfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35c9b902b340302f9ed7f3719e394dc6" id="r_a35c9b902b340302f9ed7f3719e394dc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a35c9b902b340302f9ed7f3719e394dc6">sub</a> (const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other) const</td></tr>
+<tr class="separator:a35c9b902b340302f9ed7f3719e394dc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b8d0763ee1ded28740d70b821970068" id="r_a4b8d0763ee1ded28740d70b821970068"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a4b8d0763ee1ded28740d70b821970068">scale</a> (float <a class="el" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>) const</td></tr>
+<tr class="separator:a4b8d0763ee1ded28740d70b821970068"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49d7371801ef2e0b868da76b0d9356c1" id="r_a49d7371801ef2e0b868da76b0d9356c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a49d7371801ef2e0b868da76b0d9356c1">lerpTo</a> (const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *other, float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) const</td></tr>
+<tr class="memdesc:a49d7371801ef2e0b868da76b0d9356c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear interpolation to <code>other</code> at t in [0,1].  <br /></td></tr>
+<tr class="separator:a49d7371801ef2e0b868da76b0d9356c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d6fe8c2ca596cadd937a51f90a4ff28" id="r_a2d6fe8c2ca596cadd937a51f90a4ff28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1math_1_1Vec3.html#a2d6fe8c2ca596cadd937a51f90a4ff28">clone</a> () const</td></tr>
+<tr class="memdesc:a2d6fe8c2ca596cadd937a51f90a4ff28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies this vector.  <br /></td></tr>
+<tr class="separator:a2d6fe8c2ca596cadd937a51f90a4ff28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>3D float vector (script-facing math module value). </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00008">8</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a028fbccc4424e7404faa0a05bf4026dc" name="a028fbccc4424e7404faa0a05bf4026dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a028fbccc4424e7404faa0a05bf4026dc">&#9670;&#160;</a></span>Vec3() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::math::Vec3::Vec3 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="Vec3_8cpp_source.html#l00043">add()</a>, <a class="el" href="Vec3_8cpp_source.html#l00061">clone()</a>, <a class="el" href="Vec3_8cpp_source.html#l00029">cross()</a>, <a class="el" href="Vec3_8cpp_source.html#l00055">lerpTo()</a>, <a class="el" href="Vec3_8cpp_source.html#l00018">normalized()</a>, <a class="el" href="Vec3_8cpp_source.html#l00053">scale()</a> , 以及 <a class="el" href="Vec3_8cpp_source.html#l00048">sub()</a>.</p>
+
+</div>
+</div>
+<a id="a11e645da6b510375476ef7f6d74cb3b8" name="a11e645da6b510375476ef7f6d74cb3b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11e645da6b510375476ef7f6d74cb3b8">&#9670;&#160;</a></span>Vec3() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::math::Vec3::Vec3 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a vector from components. </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a51d46d2065e169613b2b23fc0f13ebfe" name="a51d46d2065e169613b2b23fc0f13ebfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d46d2065e169613b2b23fc0f13ebfe">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> * eve::math::Vec3::add </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Arithmetic helpers returning new (caller-owned) vectors. </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3()</a>.</p>
+
+</div>
+</div>
+<a id="a2d6fe8c2ca596cadd937a51f90a4ff28" name="a2d6fe8c2ca596cadd937a51f90a4ff28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d6fe8c2ca596cadd937a51f90a4ff28">&#9670;&#160;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> * eve::math::Vec3::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies this vector. </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3()</a>.</p>
+
+</div>
+</div>
+<a id="a2c3dea03c204c276c2c31fa0283f7c27" name="a2c3dea03c204c276c2c31fa0283f7c27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c3dea03c204c276c2c31fa0283f7c27">&#9670;&#160;</a></span>cross()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> * eve::math::Vec3::cross </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3()</a>.</p>
+
+</div>
+</div>
+<a id="a77427246fb3592b5cb4e50cb54e46d7b" name="a77427246fb3592b5cb4e50cb54e46d7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77427246fb3592b5cb4e50cb54e46d7b">&#9670;&#160;</a></span>distanceTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::math::Vec3::distanceTo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b2db9fadbf6a840189c56b23f4ecc33" name="a6b2db9fadbf6a840189c56b23f4ecc33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b2db9fadbf6a840189c56b23f4ecc33">&#9670;&#160;</a></span>dot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::math::Vec3::dot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dot/cross product and distance. </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac61c2b0f7e3eee227ad4d96db0899622" name="ac61c2b0f7e3eee227ad4d96db0899622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac61c2b0f7e3eee227ad4d96db0899622">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::math::Vec3::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Component accessors. </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a127389545d88d7484c7324aa70d13ffa" name="a127389545d88d7484c7324aa70d13ffa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a127389545d88d7484c7324aa70d13ffa">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::math::Vec3::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a36e7636a31e35c305561d03852e0996b" name="a36e7636a31e35c305561d03852e0996b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36e7636a31e35c305561d03852e0996b">&#9670;&#160;</a></span>getZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::math::Vec3::getZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b24affb6a36343fe01271be302fbe91" name="a4b24affb6a36343fe01271be302fbe91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b24affb6a36343fe01271be302fbe91">&#9670;&#160;</a></span>length()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::math::Vec3::length </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Magnitude (and squared magnitude). </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Vec3_8cpp_source.html#l00009">normalize()</a>.</p>
+
+</div>
+</div>
+<a id="a96b3542ec1282b87605b79d7bd535935" name="a96b3542ec1282b87605b79d7bd535935"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96b3542ec1282b87605b79d7bd535935">&#9670;&#160;</a></span>lengthSquared()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::math::Vec3::lengthSquared </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a49d7371801ef2e0b868da76b0d9356c1" name="a49d7371801ef2e0b868da76b0d9356c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49d7371801ef2e0b868da76b0d9356c1">&#9670;&#160;</a></span>lerpTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> * eve::math::Vec3::lerpTo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td>
+          <td class="paramname"><em>other</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Linear interpolation to <code>other</code> at t in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3()</a>.</p>
+
+</div>
+</div>
+<a id="a981f4ed88b5769f73db8b62f379dd923" name="a981f4ed88b5769f73db8b62f379dd923"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a981f4ed88b5769f73db8b62f379dd923">&#9670;&#160;</a></span>normalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Vec3::normalize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Normalizes in place / returns a normalized copy. </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Vec3_8h_source.html#l00029">length()</a>.</p>
+
+</div>
+</div>
+<a id="a04d131918168aafc3946267aca2fc949" name="a04d131918168aafc3946267aca2fc949"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04d131918168aafc3946267aca2fc949">&#9670;&#160;</a></span>normalized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> * eve::math::Vec3::normalized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3()</a>.</p>
+
+</div>
+</div>
+<a id="a4b8d0763ee1ded28740d70b821970068" name="a4b8d0763ee1ded28740d70b821970068"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b8d0763ee1ded28740d70b821970068">&#9670;&#160;</a></span>scale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> * eve::math::Vec3::scale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3()</a>.</p>
+
+</div>
+</div>
+<a id="ad83fbc5e0dd1d78c3cf1a2a0203dfdc4" name="ad83fbc5e0dd1d78c3cf1a2a0203dfdc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad83fbc5e0dd1d78c3cf1a2a0203dfdc4">&#9670;&#160;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Vec3::set </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets all three components. </p>
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a37a50bd4bb1500f72ec1af49ce2ab763" name="a37a50bd4bb1500f72ec1af49ce2ab763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37a50bd4bb1500f72ec1af49ce2ab763">&#9670;&#160;</a></span>setX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Vec3::setX </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a542c084c85aec3bb67b66f31dcecb977" name="a542c084c85aec3bb67b66f31dcecb977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a542c084c85aec3bb67b66f31dcecb977">&#9670;&#160;</a></span>setY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Vec3::setY </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="ab9cf223ede600dc1faf62c9363495ca7" name="ab9cf223ede600dc1faf62c9363495ca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9cf223ede600dc1faf62c9363495ca7">&#9670;&#160;</a></span>setZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::math::Vec3::setZ </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8h_source.html">Vec3.h</a> 第 <a class="el" href="Vec3_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a35c9b902b340302f9ed7f3719e394dc6" name="a35c9b902b340302f9ed7f3719e394dc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35c9b902b340302f9ed7f3719e394dc6">&#9670;&#160;</a></span>sub()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> * eve::math::Vec3::sub </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1math_1_1Vec3.html">Vec3</a> *&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a> 第 <a class="el" href="Vec3_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1math_1_1Vec3.html#a028fbccc4424e7404faa0a05bf4026dc">Vec3()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/math/<a class="el" href="Vec3_8h_source.html">Vec3.h</a></li>
+<li>src/modules/math/<a class="el" href="Vec3_8cpp_source.html">Vec3.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

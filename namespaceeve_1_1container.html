@@ -1,0 +1,581 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::container 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1container.html">container</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::container 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1Box3D.html">Box3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis-aligned 3D box for <a class="el" href="structeve_1_1container_1_1World3DSpace.html">World3DSpace</a> zones.  <a href="structeve_1_1container_1_1Box3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1Capacity.html">Capacity</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-negative capacity measured in membership slots.  <a href="classeve_1_1container_1_1Capacity.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1Circle.html">Circle</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1ContainerDescriptor.html">ContainerDescriptor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static metadata and acceptance policy of a container.  <a href="structeve_1_1container_1_1ContainerDescriptor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1ContainerId.html">ContainerId</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong identity of one runtime or persistent container.  <a href="classeve_1_1container_1_1ContainerId.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1ContainerObject.html">ContainerObject</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic object facts used by filters and transfer diagnostics.  <a href="structeve_1_1container_1_1ContainerObject.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1ContainerObjectPayload.html">ContainerObjectPayload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque, owning payload supplied by a domain adapter during transfer.  <a href="structeve_1_1container_1_1ContainerObjectPayload.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1ContainerSnapshot.html">ContainerSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lossless snapshot of one container at one revision.  <a href="structeve_1_1container_1_1ContainerSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1Coordinate.html">Coordinate</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1Coordinate_3_01World3DSpace_01_4.html">Coordinate&lt; World3DSpace &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Three-dimensional coordinate; z is intentionally mandatory.  <a href="structeve_1_1container_1_1Coordinate_3_01World3DSpace_01_4.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1Filter.html">Filter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extensible filter result used by container and zone acceptance rules.  <a href="classeve_1_1container_1_1Filter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1GridSpace.html">GridSpace</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1IContainer.html">IContainer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed container implementation owned by a domain adapter.  <a href="classeve_1_1container_1_1IContainer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1Membership.html">Membership</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One object-to-slot relationship, including the observed generation.  <a href="structeve_1_1container_1_1Membership.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1MembershipEntry.html">MembershipEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete adapter-owned state used to build a candidate replacement.  <a href="structeve_1_1container_1_1MembershipEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1MembershipId.html">MembershipId</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong identity of an object which can have one container membership.  <a href="classeve_1_1container_1_1MembershipId.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1Rectangle.html">Rectangle</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1ScreenSpace.html">ScreenSpace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinate-space tags; distinct types prevent accidental mixing.  <a href="structeve_1_1container_1_1ScreenSpace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1SlotIndex.html">SlotIndex</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit slot number; it never implicitly converts to an integer.  <a href="classeve_1_1container_1_1SlotIndex.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1Sphere3D.html">Sphere3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spherical 3D shape for <a class="el" href="structeve_1_1container_1_1World3DSpace.html">World3DSpace</a> zones.  <a href="structeve_1_1container_1_1Sphere3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1TransferEvent.html">TransferEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong event payload emitted only after a transfer is fully committed.  <a href="structeve_1_1container_1_1TransferEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1TransferReceipt.html">TransferReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable receipt for one committed or explicit no-op transfer.  <a href="structeve_1_1container_1_1TransferReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1TransferRequest.html">TransferRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requested optimistic-concurrency transfer. All pointers are borrowed.  <a href="structeve_1_1container_1_1TransferRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1TransferService.html">TransferService</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomic preflight/prepare/commit coordinator for one or two adapters.  <a href="classeve_1_1container_1_1TransferService.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1World2DSpace.html">World2DSpace</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1World3DSpace.html">World3DSpace</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1Zone.html">Zone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape-bounded, capacity-limited zone in one compile-time coordinate space.  <a href="classeve_1_1container_1_1Zone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1ZoneShapeTraits.html">ZoneShapeTraits</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1container_1_1ZoneShapeTraits_3_01World3DSpace_01_4.html">ZoneShapeTraits&lt; World3DSpace &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a97c20b2d603d16692b6611bd4eb14ad7" id="r_a97c20b2d603d16692b6611bd4eb14ad7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#a97c20b2d603d16692b6611bd4eb14ad7">GameEventSink</a> = std::function&lt; void(const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">game_event::GameEvent</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a97c20b2d603d16692b6611bd4eb14ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback receiving a canonical <a class="el" href="namespaceeve_1_1game__event.html">game_event</a> envelope.  <br /></td></tr>
+<tr class="separator:a97c20b2d603d16692b6611bd4eb14ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e6d1f3f061887eb9370a7f49735414d" id="r_a1e6d1f3f061887eb9370a7f49735414d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#a1e6d1f3f061887eb9370a7f49735414d">TransferEventSink</a> = std::function&lt; void(const <a class="el" href="structeve_1_1container_1_1TransferEvent.html">TransferEvent</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a1e6d1f3f061887eb9370a7f49735414d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronous callback receiving a committed transfer payload.  <br /></td></tr>
+<tr class="separator:a1e6d1f3f061887eb9370a7f49735414d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06ef3feda73411868b880cfdbd91ef94" id="r_a06ef3feda73411868b880cfdbd91ef94"><td class="memTemplParams" colspan="2">template&lt;class Space &gt; </td></tr>
+<tr class="memitem:a06ef3feda73411868b880cfdbd91ef94"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#a06ef3feda73411868b880cfdbd91ef94">ZoneShape</a> = typename <a class="el" href="structeve_1_1container_1_1ZoneShapeTraits.html">ZoneShapeTraits</a>&lt; Space &gt;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">::type</a></td></tr>
+<tr class="separator:a06ef3feda73411868b880cfdbd91ef94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38774bd1a822ce1c4a11720b86d0f8eb" id="r_a38774bd1a822ce1c4a11720b86d0f8eb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#a38774bd1a822ce1c4a11720b86d0f8eb">AcceptedCondition</a> = <a class="el" href="classeve_1_1container_1_1Filter.html">Filter</a></td></tr>
+<tr class="memdesc:a38774bd1a822ce1c4a11720b86d0f8eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepted-condition callback for a zone, shared with container filters.  <br /></td></tr>
+<tr class="separator:a38774bd1a822ce1c4a11720b86d0f8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a8e3c97dda6af04569ca19d87ae5fbf89" id="r_a8e3c97dda6af04569ca19d87ae5fbf89"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#a8e3c97dda6af04569ca19d87ae5fbf89">Ordering</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1container.html#a8e3c97dda6af04569ca19d87ae5fbf89a288d468c5e0969f26a310773eda65603">Unordered</a>
+, <a class="el" href="namespaceeve_1_1container.html#a8e3c97dda6af04569ca19d87ae5fbf89a3e8592679127932ad5203da071625c5d">Insertion</a>
+, <a class="el" href="namespaceeve_1_1container.html#a8e3c97dda6af04569ca19d87ae5fbf89a2187e1021a911b3807cc1bea2eb1a9ca">Stack</a>
+, <a class="el" href="namespaceeve_1_1container.html#a8e3c97dda6af04569ca19d87ae5fbf89a722ad2d05ecf4868b00c5484b82fd808">Queue</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1container.html#a8e3c97dda6af04569ca19d87ae5fbf89ae6edec5031a82762b7067442621607ab">ExplicitSlots</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a8e3c97dda6af04569ca19d87ae5fbf89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable order semantics owned by a container adapter.  <a href="namespaceeve_1_1container.html#a8e3c97dda6af04569ca19d87ae5fbf89">更多...</a><br /></td></tr>
+<tr class="separator:a8e3c97dda6af04569ca19d87ae5fbf89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eb2e27638cbb6f9a7043f80dafe2dcc" id="r_a4eb2e27638cbb6f9a7043f80dafe2dcc"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcc">ContainerEventKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccaf1851d5600eae616ee802a31ac74701b">Enter</a>
+, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccafef46e5063ce3dc78b8ae64fa474241d">Exit</a>
+, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcca382ab522931673c11e398ead1b7b1678">Accepted</a>
+, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccad37b1f6c0512e2118cee17fea015b699">Rejected</a>
+ }</td></tr>
+<tr class="memdesc:a4eb2e27638cbb6f9a7043f80dafe2dcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lifecycle outcome represented by every container-domain event.  <a href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcc">更多...</a><br /></td></tr>
+<tr class="separator:a4eb2e27638cbb6f9a7043f80dafe2dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a7f92c871807261cd33014c6021dd9ec4" id="r_a7f92c871807261cd33014c6021dd9ec4"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#a7f92c871807261cd33014c6021dd9ec4">containerEventTypeName</a> (<a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcc">ContainerEventKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:a7f92c871807261cd33014c6021dd9ec4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable event type spelling shared by all container adapters.  <br /></td></tr>
+<tr class="separator:a7f92c871807261cd33014c6021dd9ec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6b7495a5e8ac1e09c96bb36181dbd2c" id="r_ab6b7495a5e8ac1e09c96bb36181dbd2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#ae05510c8567fac1aa84c26f032b6afdc">EventId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#ab6b7495a5e8ac1e09c96bb36181dbd2c">deterministicContainerEventId</a> (const <a class="el" href="classeve_1_1container_1_1ContainerId.html">ContainerId</a> &amp;container, const <a class="el" href="classeve_1_1container_1_1MembershipId.html">MembershipId</a> &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcc">ContainerEventKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, std::uint64_t <a class="el" href="UISystem_8cpp.html#a30305f07f280a176d5b34814b8c67efc">serial</a>) noexcept</td></tr>
+<tr class="memdesc:ab6b7495a5e8ac1e09c96bb36181dbd2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derives a deterministic event identity for an adapter lifecycle event.  <br /></td></tr>
+<tr class="separator:ab6b7495a5e8ac1e09c96bb36181dbd2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a1050ca5144a68addd12dbe92ad079817" id="r_a1050ca5144a68addd12dbe92ad079817"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1container.html#a1050ca5144a68addd12dbe92ad079817">containerEventSchemaName</a> = &quot;container:event&quot;</td></tr>
+<tr class="memdesc:a1050ca5144a68addd12dbe92ad079817"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical schema name for container lifecycle envelopes.  <br /></td></tr>
+<tr class="separator:a1050ca5144a68addd12dbe92ad079817"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a38774bd1a822ce1c4a11720b86d0f8eb" name="a38774bd1a822ce1c4a11720b86d0f8eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38774bd1a822ce1c4a11720b86d0f8eb">&#9670;&#160;</a></span>AcceptedCondition</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1container.html#a38774bd1a822ce1c4a11720b86d0f8eb">eve::container::AcceptedCondition</a> = typedef <a class="el" href="classeve_1_1container_1_1Filter.html">Filter</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Accepted-condition callback for a zone, shared with container filters. </p>
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00434">434</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a97c20b2d603d16692b6611bd4eb14ad7" name="a97c20b2d603d16692b6611bd4eb14ad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97c20b2d603d16692b6611bd4eb14ad7">&#9670;&#160;</a></span>GameEventSink</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1container.html#a97c20b2d603d16692b6611bd4eb14ad7">eve::container::GameEventSink</a> = typedef std::function&lt;void(const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">game_event::GameEvent</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Callback receiving a canonical <a class="el" href="namespaceeve_1_1game__event.html">game_event</a> envelope. </p>
+<p>The forward declaration keeps the common layer independent of the <a class="el" href="namespaceeve_1_1game__event.html">game_event</a> implementation. Adapters that emit events include <code><a class="el" href="GameEvent_8h.html">game_event/GameEvent.h</a></code> in their implementation file and must provide a fully populated <code><a class="el" href="structeve_1_1game__event_1_1GameEvent.html" title="Envelope metadata shared by event domains.">game_event::GameEvent</a></code>.</p>
+<dl class="section remark"><dt>备注</dt><dd>Callbacks are observational, synchronous and non-owning. They must not retain the envelope reference, throw, or re-enter the emitting adapter. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00225">225</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e6d1f3f061887eb9370a7f49735414d" name="a1e6d1f3f061887eb9370a7f49735414d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e6d1f3f061887eb9370a7f49735414d">&#9670;&#160;</a></span>TransferEventSink</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1container.html#a1e6d1f3f061887eb9370a7f49735414d">eve::container::TransferEventSink</a> = typedef std::function&lt;void(const <a class="el" href="structeve_1_1container_1_1TransferEvent.html">TransferEvent</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Synchronous callback receiving a committed transfer payload. </p>
+<dl class="section remark"><dt>备注</dt><dd>This is an observational callback: it must not throw, re-enter <a class="el" href="classeve_1_1container_1_1TransferService.html" title="Atomic preflight/prepare/commit coordinator for one or two adapters.">TransferService</a>, or mutate either participating container. A throwing callback is caught and reported as a warning after the transfer has already committed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a06ef3feda73411868b880cfdbd91ef94" name="a06ef3feda73411868b880cfdbd91ef94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06ef3feda73411868b880cfdbd91ef94">&#9670;&#160;</a></span>ZoneShape</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Space &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1container.html#a06ef3feda73411868b880cfdbd91ef94">eve::container::ZoneShape</a> = typedef typename <a class="el" href="structeve_1_1container_1_1ZoneShapeTraits.html">ZoneShapeTraits</a>&lt;Space&gt;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">::type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00431">431</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a4eb2e27638cbb6f9a7043f80dafe2dcc" name="a4eb2e27638cbb6f9a7043f80dafe2dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eb2e27638cbb6f9a7043f80dafe2dcc">&#9670;&#160;</a></span>ContainerEventKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcc">eve::container::ContainerEventKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Lifecycle outcome represented by every container-domain event. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a4eb2e27638cbb6f9a7043f80dafe2dccaf1851d5600eae616ee802a31ac74701b" name="a4eb2e27638cbb6f9a7043f80dafe2dccaf1851d5600eae616ee802a31ac74701b"></a>Enter&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4eb2e27638cbb6f9a7043f80dafe2dccafef46e5063ce3dc78b8ae64fa474241d" name="a4eb2e27638cbb6f9a7043f80dafe2dccafef46e5063ce3dc78b8ae64fa474241d"></a>Exit&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4eb2e27638cbb6f9a7043f80dafe2dcca382ab522931673c11e398ead1b7b1678" name="a4eb2e27638cbb6f9a7043f80dafe2dcca382ab522931673c11e398ead1b7b1678"></a>Accepted&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4eb2e27638cbb6f9a7043f80dafe2dccad37b1f6c0512e2118cee17fea015b699" name="a4eb2e27638cbb6f9a7043f80dafe2dccad37b1f6c0512e2118cee17fea015b699"></a>Rejected&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e3c97dda6af04569ca19d87ae5fbf89" name="a8e3c97dda6af04569ca19d87ae5fbf89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e3c97dda6af04569ca19d87ae5fbf89">&#9670;&#160;</a></span>Ordering</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1container.html#a8e3c97dda6af04569ca19d87ae5fbf89">eve::container::Ordering</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable order semantics owned by a container adapter. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8e3c97dda6af04569ca19d87ae5fbf89a288d468c5e0969f26a310773eda65603" name="a8e3c97dda6af04569ca19d87ae5fbf89a288d468c5e0969f26a310773eda65603"></a>Unordered&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8e3c97dda6af04569ca19d87ae5fbf89a3e8592679127932ad5203da071625c5d" name="a8e3c97dda6af04569ca19d87ae5fbf89a3e8592679127932ad5203da071625c5d"></a>Insertion&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8e3c97dda6af04569ca19d87ae5fbf89a2187e1021a911b3807cc1bea2eb1a9ca" name="a8e3c97dda6af04569ca19d87ae5fbf89a2187e1021a911b3807cc1bea2eb1a9ca"></a>Stack&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8e3c97dda6af04569ca19d87ae5fbf89a722ad2d05ecf4868b00c5484b82fd808" name="a8e3c97dda6af04569ca19d87ae5fbf89a722ad2d05ecf4868b00c5484b82fd808"></a>Queue&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8e3c97dda6af04569ca19d87ae5fbf89ae6edec5031a82762b7067442621607ab" name="a8e3c97dda6af04569ca19d87ae5fbf89ae6edec5031a82762b7067442621607ab"></a>ExplicitSlots&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a7f92c871807261cd33014c6021dd9ec4" name="a7f92c871807261cd33014c6021dd9ec4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f92c871807261cd33014c6021dd9ec4">&#9670;&#160;</a></span>containerEventTypeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::container::containerEventTypeName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcc">ContainerEventKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable event type spelling shared by all container adapters. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed, non-null, null-terminated static text for <code>kind</code>. @ownership Borrowed; the returned string is not allocated and must not be freed. @nullable No; unknown enum values return the static unknown spelling. @lifetime Static for the process lifetime. @thread Thread-safe and side-effect free. @reentrancy Does not invoke callbacks or mutate container state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcca382ab522931673c11e398ead1b7b1678">Accepted</a>, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccaf1851d5600eae616ee802a31ac74701b">Enter</a>, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccafef46e5063ce3dc78b8ae64fa474241d">Exit</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccad37b1f6c0512e2118cee17fea015b699">Rejected</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Container_8h_source.html#l00237">deterministicContainerEventId()</a>.</p>
+
+</div>
+</div>
+<a id="ab6b7495a5e8ac1e09c96bb36181dbd2c" name="ab6b7495a5e8ac1e09c96bb36181dbd2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6b7495a5e8ac1e09c96bb36181dbd2c">&#9670;&#160;</a></span>deterministicContainerEventId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#ae05510c8567fac1aa84c26f032b6afdc">EventId</a> eve::container::deterministicContainerEventId </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1container_1_1ContainerId.html">ContainerId</a> &amp;&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1container_1_1MembershipId.html">MembershipId</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcc">ContainerEventKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>serial</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Derives a deterministic event identity for an adapter lifecycle event. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">container</td><td>Stable container identity. </td></tr>
+    <tr><td class="paramname">object</td><td>Stable member identity, possibly empty for malformed input. </td></tr>
+    <tr><td class="paramname">kind</td><td>Lifecycle event kind. </td></tr>
+    <tr><td class="paramname">serial</td><td>Adapter-local monotonically increasing attempt serial. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A non-nil domain-separated EventId. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This is identity derivation, not gameplay randomness. The serial is owned by the adapter and is not persisted as membership state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Container_8h_source.html#l00201">containerEventTypeName()</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="UISystem_8cpp_source.html#l00038">serial</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a1050ca5144a68addd12dbe92ad079817" name="a1050ca5144a68addd12dbe92ad079817"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1050ca5144a68addd12dbe92ad079817">&#9670;&#160;</a></span>containerEventSchemaName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::container::containerEventSchemaName = &quot;container:event&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Canonical schema name for container lifecycle envelopes. </p>
+
+<p class="definition">在文件 <a class="el" href="Container_8h_source.html">Container.h</a> 第 <a class="el" href="Container_8h_source.html#l00212">212</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

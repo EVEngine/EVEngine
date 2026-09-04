@@ -1,0 +1,349 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/VolumeBrushTool.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VolumeBrushTool.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VolumeBrushTool_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="VolumeBrushTool_8h.html">editor/VolumeBrushTool.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BrushKernel_8h.html">editor/BrushKernel.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorPresentation_8h.html">editor/EditorPresentation.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EditorSession_8h.html">editor/EditorSession.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EditorVolumeTarget_8h.html">editor/EditorVolumeTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keywordtype">float</span> falloffWeight(<span class="keyword">const</span> IBrushFalloff* falloff, <span class="keywordtype">float</span> normalizedDistance) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> falloff ? falloff-&gt;evaluate(normalizedDistance) : (normalizedDistance &lt;= 1.f ? 1.f : 0.f);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="}">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1SphereVolumeBrushKernel.html#a23b1e69d1208af4d9ff86506e99d162a">   21</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1SphereVolumeBrushKernel.html#a23b1e69d1208af4d9ff86506e99d162a">SphereVolumeBrushKernel::sample</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                                     std::vector&lt;VolumeBrushPoint&gt;&amp; out)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    out.clear();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> = std::max(0.5f, <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> minX = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> maxX = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> minY = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> maxY = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> minZ = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> maxZ = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iz = minZ; iz &lt;= maxZ; ++iz)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iy = minY; iy &lt;= maxY; ++iy)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ix = minX; ix &lt;= maxX; ++ix) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> dx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(ix) - <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> dy = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(iy) - <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> dz = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(iz) - <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> distance = std::sqrt(dx * dx + dy * dy + dz * dz);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                <span class="keywordflow">if</span> (distance &lt;= <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) out.push_back({ix, iy, iz, falloffWeight(falloff_, distance / <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)});</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BoxVolumeBrushKernel.html#ae8fd06c8b4249379ea8edf75c8d00b8f">   42</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BoxVolumeBrushKernel.html#ae8fd06c8b4249379ea8edf75c8d00b8f">BoxVolumeBrushKernel::sample</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                  std::vector&lt;VolumeBrushPoint&gt;&amp; out)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    out.clear();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> = std::max(0.5f, <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> minX = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> maxX = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> minY = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> maxY = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> minZ = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> maxZ = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::floor(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iz = minZ; iz &lt;= maxZ; ++iz)</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iy = minY; iy &lt;= maxY; ++iy)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> ix = minX; ix &lt;= maxX; ++ix) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> distance = std::max({std::fabs(<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(ix) - <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>),</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                                                 std::fabs(<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(iy) - <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>),</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                                                 std::fabs(<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(iz) - <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)});</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                out.push_back({ix, iy, iz, falloffWeight(falloff_, distance / <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)});</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#ade1b4fc9b8936cc8540898ba849d95ee">   62</a></span><a class="code hl_function" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#ade1b4fc9b8936cc8540898ba849d95ee">PaintIntVolumeOperation::PaintIntVolumeOperation</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#a849c3bd44d078d90b5456d95891e5d42">setValue</a>(<a class="code hl_function" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#aa0af840954bad499742edea8c4438546">value</a>); }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#a849c3bd44d078d90b5456d95891e5d42">   64</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#a849c3bd44d078d90b5456d95891e5d42">PaintIntVolumeOperation::setValue</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { value_ = std::clamp(<a class="code hl_function" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#aa0af840954bad499742edea8c4438546">value</a>, 0, 255); }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="}">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#ae3b970950f5a3e6eaf8e163acd209e3e">   66</a></span>std::unique_ptr&lt;IEditCommand&gt; <a class="code hl_function" href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#ae3b970950f5a3e6eaf8e163acd209e3e">PaintIntVolumeOperation::createCommand</a>(</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>* <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::vector&lt;VolumeBrushPoint&gt;&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> || !<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;query&lt;<a class="code hl_class" href="classeve_1_1editing_1_1IIntVolumeTarget.html">IIntVolumeTarget</a>&gt;()) <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">auto</span> command = std::make_unique&lt;IntVolumeEditCommand&gt;(<span class="stringliteral">&quot;paint integer volume&quot;</span>, <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a> : <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>.weight &gt; 0.f) command-&gt;record(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>.x, <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>.y, <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>.z, value_);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> command;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1VolumeBrushTool.html#a54f01ffbad442864bc6702762ca13234">   76</a></span><a class="code hl_function" href="classeve_1_1editor_1_1VolumeBrushTool.html#a54f01ffbad442864bc6702762ca13234">VolumeBrushTool::VolumeBrushTool</a>(std::string <span class="keywordtype">id</span>, std::string label)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    : descriptor_{<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>), <a class="code hl_namespace" href="namespacestd.html">std</a>::move(label), {}} {}</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1VolumeBrushTool.html#aeede33bd0f30b2bafb0d3903effc8179">   79</a></span><span class="keywordtype">void</span> VolumeBrushTool::setRadius(<span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) { radius_ = std::max(0.5f, <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>); }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keywordtype">bool</span> VolumeBrushTool::stamp(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (!kernel_ || !operation_ || !context.<a class="code hl_function" href="classeve_1_1editor_1_1EditorContext.html#a3ffbf84bd708ac7fef37e66c447a4b2f">target</a>()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    kernel_-&gt;sample(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, radius_, points_);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">auto</span> command = operation_-&gt;createCommand(context.<a class="code hl_function" href="classeve_1_1editor_1_1EditorContext.html#a3ffbf84bd708ac7fef37e66c447a4b2f">target</a>(), points_);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span> command &amp;&amp; context.<a class="code hl_function" href="classeve_1_1editor_1_1EditorContext.html#a02122d7c13d4da9790abbcc79b54dbc0">execute</a>(std::move(command));</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1VolumeBrushTool.html#ae2b0b47930b0a497a87ae33dbec4fb25">   88</a></span><a class="code hl_struct" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> VolumeBrushTool::pointerEvent(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a>&amp; event) {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a48dd5c607a1d2e22130b80a94503f15b">phase</a> == EditorPointerEvent::Phase::Down) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">if</span> (!kernel_ || !operation_ || !context.<a class="code hl_function" href="classeve_1_1editor_1_1EditorContext.html#a3ffbf84bd708ac7fef37e66c447a4b2f">target</a>() ||</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            !context.<a class="code hl_function" href="classeve_1_1editor_1_1EditorContext.html#a2e0ee2a9dc4f2aab6d835561e9a05aef">transactions</a>().<a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactions.html#aea7a23436c443a11942c87ca4fba62d5">begin</a>(descriptor_.label)) <span class="keywordflow">return</span> ToolResponse::ignored();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        stroking_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        stamp(context, event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a8eba0bc88247b7be4de2c6dee395c693">x</a>, event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#ab24bcb334d8dd61958908b79e95ffb42">y</a>, event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a891d4352a90dfa6214be27e0bf149d0e">z</a>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> ToolResponse::capture();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (!stroking_) <span class="keywordflow">return</span> ToolResponse::ignored();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a48dd5c607a1d2e22130b80a94503f15b">phase</a> == EditorPointerEvent::Phase::Move) {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        stamp(context, event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a8eba0bc88247b7be4de2c6dee395c693">x</a>, event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#ab24bcb334d8dd61958908b79e95ffb42">y</a>, event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a891d4352a90dfa6214be27e0bf149d0e">z</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> ToolResponse::consumed();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">if</span> (event.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorPointerEvent.html#a48dd5c607a1d2e22130b80a94503f15b">phase</a> == EditorPointerEvent::Phase::Up) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        context.<a class="code hl_function" href="classeve_1_1editor_1_1EditorContext.html#a2e0ee2a9dc4f2aab6d835561e9a05aef">transactions</a>().<a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactions.html#a926b53603f0910082a2f4cd9d42cfd65">commit</a>();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        stroking_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">return</span> ToolResponse::release();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    cancel(context);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> ToolResponse::release();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1VolumeBrushTool.html#aded10c988ed27ae8bbe5366f18401445">  110</a></span><span class="keywordtype">void</span> VolumeBrushTool::cancel(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (stroking_) context.<a class="code hl_function" href="classeve_1_1editor_1_1EditorContext.html#a2e0ee2a9dc4f2aab6d835561e9a05aef">transactions</a>().<a class="code hl_function" href="classeve_1_1editor_1_1EditorTransactions.html#a94f6ef7a65a6ed49b53d2e61ec3c742f">rollback</a>();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    stroking_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="foldopen" id="foldopen00115" data-start="{" data-end="}">
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1VolumeBrushTool.html#ad2b7ae4f74ae942d1ea56c27988c323b">  115</a></span><span class="keywordtype">void</span> VolumeBrushTool::inspect(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp;, <a class="code hl_class" href="classeve_1_1editor_1_1IEditorInspector.html">IEditorInspector</a>&amp; inspector) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    inspector.<a class="code hl_function" href="classeve_1_1editor_1_1IEditorInspector.html#aa870b363249bfba5bb37342335040fde">beginGroup</a>(descriptor_.id, descriptor_.label);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    inspector.<a class="code hl_function" href="classeve_1_1editor_1_1IEditorInspector.html#ae366e5a3a2914eb20da8e33790896f4b">scalar</a>(<span class="stringliteral">&quot;radius&quot;</span>, <span class="stringliteral">&quot;Radius&quot;</span>, radius_, 0.5f, 256.f);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    inspector.<a class="code hl_function" href="classeve_1_1editor_1_1IEditorInspector.html#a875b2189fc7eb6360595a7710577faf2">endGroup</a>();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    setRadius(radius_);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}</div>
+</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aBrushKernel_8h_html"><div class="ttname"><a href="BrushKernel_8h.html">BrushKernel.h</a></div></div>
+<div class="ttc" id="aEditorPresentation_8h_html"><div class="ttname"><a href="EditorPresentation_8h.html">EditorPresentation.h</a></div></div>
+<div class="ttc" id="aEditorSession_8h_html"><div class="ttname"><a href="EditorSession_8h.html">EditorSession.h</a></div></div>
+<div class="ttc" id="aEditorVolumeTarget_8h_html"><div class="ttname"><a href="EditorVolumeTarget_8h.html">EditorVolumeTarget.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPrimitiveDrawList_8cpp_html_a294aae2204c93b7ba3628b25f45967cd"><div class="ttname"><a href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a></div><div class="ttdeci">std::shared_ptr&lt; const std::vector&lt; glm::vec2 &gt; &gt; points</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveDrawList_8cpp_source.html#l00076">PrimitiveDrawList.cpp:76</a></div></div>
+<div class="ttc" id="aRTSSystems_8cpp_html_a8daa8a8d84a130186d9cca31c33e8bae"><div class="ttname"><a href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a></div><div class="ttdeci">WorldPosition point</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8cpp_source.html#l00080">RTSSystems.cpp:80</a></div></div>
+<div class="ttc" id="aVolumeBrushTool_8h_html"><div class="ttname"><a href="VolumeBrushTool_8h.html">VolumeBrushTool.h</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a7441ef0865bcb3db9b8064dd7375c1ea"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a></div><div class="ttdeci">int id</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00162">WorldSnapshot.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IIntVolumeTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IIntVolumeTarget.html">eve::editing::IIntVolumeTarget</a></div><div class="ttdoc">Stable capability for sparse integer volumes.</div><div class="ttdef"><b>Definition</b> <a href="EditingVolume_8h_source.html#l00019">EditingVolume.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BoxVolumeBrushKernel_html_ae8fd06c8b4249379ea8edf75c8d00b8f"><div class="ttname"><a href="classeve_1_1editor_1_1BoxVolumeBrushKernel.html#ae8fd06c8b4249379ea8edf75c8d00b8f">eve::editor::BoxVolumeBrushKernel::sample</a></div><div class="ttdeci">void sample(float x, float y, float z, float radius, std::vector&lt; VolumeBrushPoint &gt; &amp;out) const override</div><div class="ttdoc">Emit weighted integer cells around one center.</div><div class="ttdef"><b>Definition</b> <a href="VolumeBrushTool_8cpp_source.html#l00042">VolumeBrushTool.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorContext_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorContext.html">eve::editor::EditorContext</a></div><div class="ttdoc">Context supplied by EditorSession to tools.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00064">EditorTool.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorContext_html_a02122d7c13d4da9790abbcc79b54dbc0"><div class="ttname"><a href="classeve_1_1editor_1_1EditorContext.html#a02122d7c13d4da9790abbcc79b54dbc0">eve::editor::EditorContext::execute</a></div><div class="ttdeci">bool execute(std::unique_ptr&lt; IEditCommand &gt; command) const</div><div class="ttdoc">Send a command through constraints into the active transaction.</div><div class="ttdef"><b>Definition</b> <a href="EditorSession_8cpp_source.html#l00019">EditorSession.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorContext_html_a2e0ee2a9dc4f2aab6d835561e9a05aef"><div class="ttname"><a href="classeve_1_1editor_1_1EditorContext.html#a2e0ee2a9dc4f2aab6d835561e9a05aef">eve::editor::EditorContext::transactions</a></div><div class="ttdeci">EditorTransactions &amp; transactions() const</div><div class="ttdef"><b>Definition</b> <a href="EditorSession_8cpp_source.html#l00017">EditorSession.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorContext_html_a3ffbf84bd708ac7fef37e66c447a4b2f"><div class="ttname"><a href="classeve_1_1editor_1_1EditorContext.html#a3ffbf84bd708ac7fef37e66c447a4b2f">eve::editor::EditorContext::target</a></div><div class="ttdeci">IEditableTarget * target() const</div><div class="ttdoc">Target currently bound to the session.</div><div class="ttdef"><b>Definition</b> <a href="EditorSession_8cpp_source.html#l00015">EditorSession.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactions_html_a926b53603f0910082a2f4cd9d42cfd65"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactions.html#a926b53603f0910082a2f4cd9d42cfd65">eve::editor::EditorTransactions::commit</a></div><div class="ttdeci">bool commit()</div><div class="ttdoc">Compatibility-only boolean projection of commitTransaction().</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactions_8cpp_source.html#l00033">EditorTransactions.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactions_html_a94f6ef7a65a6ed49b53d2e61ec3c742f"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactions.html#a94f6ef7a65a6ed49b53d2e61ec3c742f">eve::editor::EditorTransactions::rollback</a></div><div class="ttdeci">bool rollback()</div><div class="ttdoc">Compatibility-only boolean projection of rollbackTransaction().</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactions_8cpp_source.html#l00037">EditorTransactions.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorTransactions_html_aea7a23436c443a11942c87ca4fba62d5"><div class="ttname"><a href="classeve_1_1editor_1_1EditorTransactions.html#aea7a23436c443a11942c87ca4fba62d5">eve::editor::EditorTransactions::begin</a></div><div class="ttdeci">bool begin(const std::string &amp;name)</div><div class="ttdoc">Compatibility-only boolean facade over beginTransaction(label).</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactions_8cpp_source.html#l00025">EditorTransactions.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorInspector_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorInspector.html">eve::editor::IEditorInspector</a></div><div class="ttdoc">UI-independent property editor used by tools to expose settings.</div><div class="ttdef"><b>Definition</b> <a href="EditorPresentation_8h_source.html#l00046">EditorPresentation.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorInspector_html_a875b2189fc7eb6360595a7710577faf2"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorInspector.html#a875b2189fc7eb6360595a7710577faf2">eve::editor::IEditorInspector::endGroup</a></div><div class="ttdeci">virtual void endGroup()=0</div><div class="ttdoc">End the current logical group.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorInspector_html_aa870b363249bfba5bb37342335040fde"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorInspector.html#aa870b363249bfba5bb37342335040fde">eve::editor::IEditorInspector::beginGroup</a></div><div class="ttdeci">virtual void beginGroup(const std::string &amp;id, const std::string &amp;label)=0</div><div class="ttdoc">Begin a logical group of properties.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorInspector_html_ae366e5a3a2914eb20da8e33790896f4b"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorInspector.html#ae366e5a3a2914eb20da8e33790896f4b">eve::editor::IEditorInspector::scalar</a></div><div class="ttdeci">virtual bool scalar(const std::string &amp;id, const std::string &amp;label, float &amp;value, float minimum, float maximum)=0</div><div class="ttdoc">Present an editable scalar property.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntVolumeOperation_html_a849c3bd44d078d90b5456d95891e5d42"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#a849c3bd44d078d90b5456d95891e5d42">eve::editor::PaintIntVolumeOperation::setValue</a></div><div class="ttdeci">void setValue(int value)</div><div class="ttdoc">Set the value written by subsequent stamps.</div><div class="ttdef"><b>Definition</b> <a href="VolumeBrushTool_8cpp_source.html#l00064">VolumeBrushTool.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntVolumeOperation_html_aa0af840954bad499742edea8c4438546"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#aa0af840954bad499742edea8c4438546">eve::editor::PaintIntVolumeOperation::value</a></div><div class="ttdeci">int value() const</div><div class="ttdoc">Return the value written by this operation.</div><div class="ttdef"><b>Definition</b> <a href="VolumeBrushTool_8h_source.html#l00065">VolumeBrushTool.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntVolumeOperation_html_ade1b4fc9b8936cc8540898ba849d95ee"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#ade1b4fc9b8936cc8540898ba849d95ee">eve::editor::PaintIntVolumeOperation::PaintIntVolumeOperation</a></div><div class="ttdeci">PaintIntVolumeOperation(int value=1)</div><div class="ttdoc">Create an operation that paints the supplied integer value.</div><div class="ttdef"><b>Definition</b> <a href="VolumeBrushTool_8cpp_source.html#l00062">VolumeBrushTool.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1PaintIntVolumeOperation_html_ae3b970950f5a3e6eaf8e163acd209e3e"><div class="ttname"><a href="classeve_1_1editor_1_1PaintIntVolumeOperation.html#ae3b970950f5a3e6eaf8e163acd209e3e">eve::editor::PaintIntVolumeOperation::createCommand</a></div><div class="ttdeci">std::unique_ptr&lt; IEditCommand &gt; createCommand(IEditableTarget *target, const std::vector&lt; VolumeBrushPoint &gt; &amp;points) const</div><div class="ttdoc">Build a reversible command for weighted cells.</div><div class="ttdef"><b>Definition</b> <a href="VolumeBrushTool_8cpp_source.html#l00066">VolumeBrushTool.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SphereVolumeBrushKernel_html_a23b1e69d1208af4d9ff86506e99d162a"><div class="ttname"><a href="classeve_1_1editor_1_1SphereVolumeBrushKernel.html#a23b1e69d1208af4d9ff86506e99d162a">eve::editor::SphereVolumeBrushKernel::sample</a></div><div class="ttdeci">void sample(float x, float y, float z, float radius, std::vector&lt; VolumeBrushPoint &gt; &amp;out) const override</div><div class="ttdoc">Emit weighted integer cells around one center.</div><div class="ttdef"><b>Definition</b> <a href="VolumeBrushTool_8cpp_source.html#l00021">VolumeBrushTool.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1VolumeBrushTool_html_a54f01ffbad442864bc6702762ca13234"><div class="ttname"><a href="classeve_1_1editor_1_1VolumeBrushTool.html#a54f01ffbad442864bc6702762ca13234">eve::editor::VolumeBrushTool::VolumeBrushTool</a></div><div class="ttdeci">VolumeBrushTool(std::string id, std::string label)</div><div class="ttdoc">Create a reusable volume brush identified by a stable tool id.</div><div class="ttdef"><b>Definition</b> <a href="VolumeBrushTool_8cpp_source.html#l00076">VolumeBrushTool.cpp:76</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html">eve::editor::EditorPointerEvent</a></div><div class="ttdoc">Pointer input normalized by an editor viewport adapter.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00018">EditorTool.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html_a48dd5c607a1d2e22130b80a94503f15b"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html#a48dd5c607a1d2e22130b80a94503f15b">eve::editor::EditorPointerEvent::phase</a></div><div class="ttdeci">Phase phase</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00021">EditorTool.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html_a891d4352a90dfa6214be27e0bf149d0e"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html#a891d4352a90dfa6214be27e0bf149d0e">eve::editor::EditorPointerEvent::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00026">EditorTool.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html_a8eba0bc88247b7be4de2c6dee395c693"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html#a8eba0bc88247b7be4de2c6dee395c693">eve::editor::EditorPointerEvent::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00024">EditorTool.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html_ab24bcb334d8dd61958908b79e95ffb42"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html#ab24bcb334d8dd61958908b79e95ffb42">eve::editor::EditorPointerEvent::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00025">EditorTool.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolResponse_html"><div class="ttname"><a href="structeve_1_1editor_1_1ToolResponse.html">eve::editor::ToolResponse</a></div><div class="ttdoc">Result returned by a tool after processing input.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00047">EditorTool.h:47</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

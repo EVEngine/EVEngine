@@ -1,0 +1,217 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1pixelworld.html">pixelworld</a></li><li class="navelem"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">PixelWorld</a></li><li class="navelem"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::pixelworld::PixelWorld::Impl 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a905d166dcbe6261be57156084f718731">addActivity</a>(Chunk &amp;chunk, const PixelCell &amp;cell) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ad21348ae65244ea13a17ac2297645cff">canDisplace</a>(MaterialId source, MaterialId target) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a66e4daa48b4cab66f6ddaa31b54b966e">canDisplaceTable</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a70790d2201c5930b7ad9349b918f2729">catalog</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ab80c4306a2de3eca3cd2c119ed040ed5">chunks</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a0edcb075b2ff2cac331371eda0ab8bee">ensureChunk</a>(int x, int y)</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#af949db1b9ac8d26e8fbadfed059deb80">epoch</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a4c71eab22d6806a0e54b85bc9b484fae">findChunk</a>(int x, int y) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a44347e925d302458d65cab07602f9e6a">findChunk</a>(int x, int y) noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ad23991053883eeef5b93277a5e9d2d8f">get</a>(int x, int y) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a21386836b400aeadc52600b61ad74b95">heatCapacities</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a700215c5cb8031d525738d2a42c0ef25">heatCapacity</a>(MaterialId material) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ab07295f9c535317dd1abd0b8193b81c1">Impl</a>(MaterialCatalog ownedCatalog=MaterialCatalog::builtIn())</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a3097f220ff980f60702b9f480f9ba0af">isMobile</a>(MaterialId material) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#af1bdfab7f1ce735cfca7c89d0c1f5208">lastEditSequence</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#aa58857f2459be70effaa54bc79e9b45b">materialRuntimeCount</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a03b3b68350370384a61fb473803d2014">materialState</a>(MaterialId material) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#abe755f65a84f1d66066be6c25d438382">materialStates</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ac669b4b77fd4b25a443baeaf8b1266f6">moveOrSwap</a>(int x, int y, int tx, int ty, std::uint64_t currentTick)</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#af0a752f115445c66b45a0aab5dade61b">moveOrSwapKnownSource</a>(int x, int y, PixelCell source, int tx, int ty, std::uint64_t currentTick)</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ae42438d2e00d851616945cba030dddfa">moveOrSwapWithinChunk</a>(ChunkCoord coord, Chunk &amp;chunk, int sourceX, int sourceY, PixelCell source, int targetX, int targetY, std::uint64_t currentTick)</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a7d78a7a3506660df51551f600efdd456">nextFragmentId</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#acc5303e4e363662d63af90a2459d712e">normalizeCell</a>(PixelCell cell) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ae4d1c080b3b5b6aced7517a7503bc4c7">paused</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a1ef45975c9fa27c23615667b292d34bb">pseudoBit</a>(int x, int y, std::uint64_t currentTick) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a64bedce86a69caaccfe62e45e2d78f97">put</a>(int x, int y, PixelCell cell, std::uint64_t updatedTick, bool markUpdated=true)</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ac27d710f63c64f008bf42c4228db7a6d">putNormalizedWithinChunk</a>(Chunk &amp;chunk, std::size_t index, const PixelCell &amp;cell, std::uint64_t updatedTick, bool markUpdated=true)</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a2ad31169856a515fb60caf2f61701d93">putWithinChunk</a>(Chunk &amp;chunk, std::size_t index, PixelCell cell, std::uint64_t updatedTick, bool markUpdated=true)</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a8cbbdece2d1b1255bc984760d4a45471">reactionRules</a>(MaterialId source, MaterialId target) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a4b130b4f1acb1c5560c9ca0698a2fcb5">reactionRulesByPair</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#adcf05291081dd5609a33f0c1cb967c35">rebuildActivity</a>(Chunk &amp;chunk) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a7d4b909de14b144b82d5e8094142128f">rebuildMaterialRuntimeTables</a>()</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a392467c8f5f019a18502313fd20e687f">refreshTemperatureBounds</a>(Chunk &amp;chunk) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#afe38f91ba3d416ed0c3c1c93b3c188e0">removeActivity</a>(Chunk &amp;chunk, const PixelCell &amp;cell) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a9503a0ac688229e2a5728d81f930972c">removedChunks</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a310a946c4d14010956a0f4380b197761">revision</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a4de92234dbdb0b1e49c3d142407fb774">seed</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a759d3a5d1978868d8c911b899502c4bd">thermalConductivities</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a3767fb5d65ed13d0df8b0997ca95dd80">thermalConductivity</a>(MaterialId material) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ae52ce98ff5ca92b84445d92478717be1">tick</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#ab4463ff4e2fd387819df7175a736799b">updatedAt</a>(int x, int y) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a334d786df21de9ef433b650919b76565">wakeAround</a>(int x, int y)</td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html#a78c4a800aefc142e12f1387f58000986">worldId</a></td><td class="entry"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

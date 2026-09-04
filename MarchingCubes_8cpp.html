@@ -1,0 +1,326 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/MarchingCubes.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">MarchingCubes.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="MarchingCubes_8h_source.html">procgen/algorithms/MarchingCubes.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CaveMesh_8h_source.html">procgen/algorithms/CaveMesh.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="HexTerrain_8h_source.html">procgen/algorithms/HexTerrain.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PrototypeKit_8h_source.html">procgen/algorithms/PrototypeKit.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="RockMesh_8h_source.html">procgen/algorithms/RockMesh.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SkyscraperMesh_8h_source.html">procgen/algorithms/SkyscraperMesh.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="TreeMesh_8h_source.html">procgen/algorithms/TreeMesh.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="BushMesh_8h_source.html">procgen/algorithms/BushMesh.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="LinearStructure_8h_source.html">procgen/algorithms/LinearStructure.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="LSystemMesh_8h_source.html">procgen/algorithms/LSystemMesh.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="UrbanOutput_8h_source.html">procgen/urban/UrbanOutput.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CastleMesh_8h_source.html">procgen/algorithms/CastleMesh.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &quot;procgen/algorithms/MarchingCubesTables.inc&quot;</code><br />
+</div>
+<p><a href="MarchingCubes_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a28f6cb029e6125a4a3144d26abf23c0f" id="r_a28f6cb029e6125a4a3144d26abf23c0f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a28f6cb029e6125a4a3144d26abf23c0f">eve::procgen::generateHexPlanetMesh</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:a28f6cb029e6125a4a3144d26abf23c0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the dual of a subdivided icosahedron. The result is a closed planet made of hexagonal cells plus the twelve pentagons required by spherical topology. <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a>: radius (1), subdivisions (2), tileInset (0.06, in [0, 0.5)).  <br /></td></tr>
+<tr class="separator:a28f6cb029e6125a4a3144d26abf23c0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a462d6d8d26a6d8436068fbe47668e77b" id="r_a462d6d8d26a6d8436068fbe47668e77b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a462d6d8d26a6d8436068fbe47668e77b">eve::procgen::marchingCubes</a> (const float *density, int <a class="el" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, int <a class="el" href="CaveWetness_8cpp.html#a9c79b33ae8c9c2a5388a32077d5eed37">ny</a>, int <a class="el" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>, float isolevel, <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a462d6d8d26a6d8436068fbe47668e77b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classic Marching Cubes (Lorensen &amp; Cline) over a regular scalar volume. Density &gt;= isolevel is treated as solid; normals point toward empty space.  <br /></td></tr>
+<tr class="separator:a462d6d8d26a6d8436068fbe47668e77b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0740c03b99d692e99df4927a4f1e1dce" id="r_a0740c03b99d692e99df4927a4f1e1dce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a0740c03b99d692e99df4927a4f1e1dce">eve::procgen::fillDensityField</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, std::vector&lt; float &gt; &amp;density, int &amp;<a class="el" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, int &amp;<a class="el" href="CaveWetness_8cpp.html#a9c79b33ae8c9c2a5388a32077d5eed37">ny</a>, int &amp;<a class="el" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:a0740c03b99d692e99df4927a4f1e1dce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill a density volume from a named field recipe (sphere / noise / terrain / torus).  <br /></td></tr>
+<tr class="separator:a0740c03b99d692e99df4927a4f1e1dce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac353fc2e27d38bd2053a48f306bf0887" id="r_ac353fc2e27d38bd2053a48f306bf0887"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac353fc2e27d38bd2053a48f306bf0887">eve::procgen::generateMarchingCubesMesh</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:ac353fc2e27d38bd2053a48f306bf0887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build mesh from <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> (field + resolution + isolevel).  <br /></td></tr>
+<tr class="separator:ac353fc2e27d38bd2053a48f306bf0887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a0a0390ed59a97feb6783f87db4086a7c" name="a0a0390ed59a97feb6783f87db4086a7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a0390ed59a97feb6783f87db4086a7c">&#9670;&#160;</a></span>a</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t a</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MarchingCubes_8cpp_source.html">MarchingCubes.cpp</a> 第 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="a2826644ea978cb49c4ee809b55e128d7" name="a2826644ea978cb49c4ee809b55e128d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2826644ea978cb49c4ee809b55e128d7">&#9670;&#160;</a></span>b</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t b</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MarchingCubes_8cpp_source.html">MarchingCubes.cpp</a> 第 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="aaf5d342e977c5857e99310eea0e72e4b" name="aaf5d342e977c5857e99310eea0e72e4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf5d342e977c5857e99310eea0e72e4b">&#9670;&#160;</a></span>c</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t c</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MarchingCubes_8cpp_source.html">MarchingCubes.cpp</a> 第 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimStateMachine_8cpp_source.html#l00154">eve::animation::AnimStateMachine::addBoolCondition()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00336">eve::card::Hand::addCard()</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00071">eve::animation::DynamicBoneSolver::addChain()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00141">eve::animation::AnimStateMachine::addFloatCondition()</a>, <a class="el" href="Batcher_8cpp_source.html#l00014">eve::graphics::Batcher::addTriangle()</a>, <a class="el" href="Batcher_8cpp_source.html#l00018">eve::graphics::Batcher::addTriangle()</a>, <a class="el" href="AnimStateMachine_8cpp_source.html#l00165">eve::animation::AnimStateMachine::addTriggerCondition()</a>, <a class="el" href="PrototypeKitPrimitives_8cpp_source.html#l00077">eve::procgen::prototype_detail::addWedge()</a>, <a class="el" href="DevTool_8cpp_source.html#l00618">eve::dev::DevTool::analyzeError()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00117">eve::procgen::MeshBuild::appendTransformed()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ParticleConfig_8cpp_source.html#l00178">eve::particles::applyConfigDocument()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00424">eve::avatar_editing::AvatarDocumentTarget::applyDomainOperation()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00345">eve::biome_editing::BiomeDocumentTarget::applyDomainOperation()</a>, <a class="el" href="Hd2dTarget_8cpp_source.html#l00229">eve::hd2d_editing::Hd2dDocumentTarget::applyDomainOperation()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00247">eve::input_editing::InputMapTarget::applyDomainOperation()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00151">eve::sceneloader_editing::SceneImportTarget::applyDomainOperation()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00237">eve::voxel_editing::VoxelPaletteTarget::applyDomainOperation()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00701">eve::sceneloader::SceneLoader::applyTreeDiff()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00277">eve::procgen::urban::approximatePolygon()</a>, <a class="el" href="Steering_8cpp_source.html#l00076">eve::steering::Steering::arriveJson()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00302">eve::tensor::kernels::avgpool2d()</a>, <a class="el" href="Steering_8cpp_source.html#l00082">eve::steering::Steering::avoidJson()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l01495">eve::building_editing::BuildingEdgeCurveDragSession::beginDrag()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00022">eve::network::UdpSocket::bind()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00914">eve::dialogue::Dialogue::bindAvatar()</a>, <a class="el" href="Sensing_8cpp_source.html#l00115">eve::sensing::SensingWorld::box()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00236">eve::ui::DatabasePanel::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="Builder_8cpp_source.html#l00337">eve::virtualgeometry::VirtualGeometryBuilder::build()</a>, <a class="el" href="Build_8cpp_source.html#l00098">eve::cmd::Cmdline::Build()</a>, <a class="el" href="ProceduralBoneOverlay_8cpp_source.html#l00010">eve::animation_editing::ProceduralBoneOverlayBuilder::build()</a>, <a class="el" href="Grass_8cpp_source.html#l00591">eve::graphics::grass::buildBillboards()</a>, <a class="el" href="CubemapPrefilter_8h_source.html#l00140">eve::graphics::buildGgxCubemapMipChain()</a>, <a class="el" href="SceneInspect_8cpp_source.html#l00115">eve::dev::SceneInspect::capture()</a>, <a class="el" href="Mesh_8cpp_source.html#l00016">eve::graphics::Mesh::captureImportedAttributes()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01204">eve::dialogue::Dialogue::captureState()</a>, <a class="el" href="FluidSimulation_8cpp_source.html#l00027">eve::fluids::SimGrid::cellOf()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00054">eve::procgen::urban::centroid()</a>, <a class="el" href="NodeDesc_8h_source.html#l00115">eve::scene::NodeDesc::child()</a>, <a class="el" href="Widget_8h_source.html#l00312">eve::ui::WidgetDesc::child()</a>, <a class="el" href="Cloth_8cpp_source.html#l00023">eve::physics::Cloth::Cloth()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l00223">eve::physics::Cloth3D::Cloth3D()</a>, <a class="el" href="ClothGPU_8cpp_source.html#l00250">eve::physics::ClothGPU::ClothGPU()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00474">eve::avatar_editing::AvatarDocumentTarget::commitDomainState()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00377">eve::biome_editing::BiomeDocumentTarget::commitDomainState()</a>, <a class="el" href="Hd2dTarget_8cpp_source.html#l00281">eve::hd2d_editing::Hd2dDocumentTarget::commitDomainState()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00291">eve::input_editing::InputMapTarget::commitDomainState()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00196">eve::procgen_editing::TextureRecipeTarget::commitDomainState()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00187">eve::sceneloader_editing::SceneImportTarget::commitDomainState()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00263">eve::voxel_editing::VoxelPaletteTarget::commitDomainState()</a>, <a class="el" href="CompressedData_8cpp_source.html#l00024">eve::data::CompressedData::CompressedData()</a>, <a class="el" href="Mesh_8cpp_source.html#l00071">eve::graphics::Mesh::computeBounds()</a>, <a class="el" href="Fov_8cpp_source.html#l00694">eve::map::Fov::Impl::computePermissive()</a>, <a class="el" href="TF_8cpp_source.html#l00638">eve::tensor::TF::concat3()</a>, <a class="el" href="TF_8cpp_source.html#l00643">eve::tensor::TF::concat4()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00056">eve::network::TcpSocket::connect()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00047">eve::network::UdpSocket::connect()</a>, <a class="el" href="UISystem_8cpp_source.html#l01555">eve::ui::UISystem::consumeChange()</a>, <a class="el" href="UISystem_8cpp_source.html#l01537">eve::ui::UISystem::consumeClick()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00230">eve::tensor::kernels::conv1d()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00252">eve::tensor::kernels::conv2d()</a>, <a class="el" href="SceneBounds_8h_source.html#l00068">eve::scene::cornerInsideClip()</a>, <a class="el" href="CrowdField_8cpp_source.html#l00199">eve::crowd::CrowdField::costAtWorld()</a>, <a class="el" href="CloudField_8cpp_source.html#l00086">eve::procgen::CloudField::coverageAt()</a>, <a class="el" href="RenderSystem_8h_source.html#l00037">eve::graphics::Camera2D::createCamera()</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00065">eve::graphics::Camera3D::createCamera()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00102">eve::card::CardData::createCard()</a>, <a class="el" href="Waterfall_8cpp_source.html#l00075">eve::graphics::Waterfall::createCurvedSheet()</a>, <a class="el" href="Water_8cpp_source.html#l00076">eve::graphics::Water::createPlane()</a>, <a class="el" href="PipelineBuilder_8h_source.html#l00039">eve::graphics::webgpu::PipelineBuilder::cull()</a>, <a class="el" href="SceneInspect_8cpp_source.html#l00107">eve::dev::SceneInspect::defaultCacheDir()</a>, <a class="el" href="graphics_2Font_8cpp_source.html#l00058">eve::graphics::Font::defaultCharset()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00349">eve::voxel::VoxelWorld::deserializeWorld()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01032">eve::sceneloader::SceneLoader::diff()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00667">eve::sceneloader::SceneLoader::diffTree()</a>, <a class="el" href="UISystem_8cpp_source.html#l01463">eve::ui::UISystem::dispatchEvents()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l01103">eve::physics::Cloth3D::draw()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00250">eve::decal::DecalManager::drawAll()</a>, <a class="el" href="Card_8cpp_source.html#l00454">eve::card::Card::drawCard()</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00347">eve::graphics::RenderSystem::drawItems()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00588">eve::graphics::PrimitiveSceneCanvas3D::drawQuad()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00691">eve::graphics::PrimitiveSceneCanvas3D::drawSphere()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00573">eve::graphics::PrimitiveSceneCanvas3D::drawTriangle()</a>, <a class="el" href="ParticlePlayback_8cpp_source.html#l00168">eve::particles::ParticleEmitter::emit()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01379">eve::particles::ParticleEmitter::emitFromSkin()</a>, <a class="el" href="Graph_8cpp_source.html#l00193">eve::tensor::Func::emitTernary()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00371">eve::map::TileLayer::eraseTerrainRect()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00223">eve::procgen::TerrainPipeline::erodeFluvialDetailed()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00451">eve::dialogue::Dialogue::evalConditionData()</a>, <a class="el" href="network_2Channel_8cpp_source.html#l00065">eve::network::Channel::feed()</a>, <a class="el" href="FileData_8cpp_source.html#l00028">eve::filesystem::FileData::FileData()</a>, <a class="el" href="sdk__tools_8cpp_source.html#l00270">eve::cmd::sdk::fileSha256()</a>, <a class="el" href="physfs_2Filesystem_8cpp_source.html#l00076">eve::filesystem::physfs::Filesystem::Filesystem()</a>, <a class="el" href="SnowField_8cpp_source.html#l00039">eve::snow::SnowField::fill()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00078">eve::map::TileLayer::fillRect()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00372">eve::card::Hand::find()</a>, <a class="el" href="Steering_8cpp_source.html#l00075">eve::steering::Steering::fleeJson()</a>, <a class="el" href="Layout_8cpp_source.html#l00025">eve::ui::flexArrange()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00177">eve::network::TcpSocket::flushSend()</a>, <a class="el" href="Crowd_8cpp_source.html#l00141">eve::crowd::Crowd::Impl::forEachNeighbor()</a>, <a class="el" href="GridProjection_8cpp_source.html#l00121">eve::grid::foreachRotatedFootprint()</a>, <a class="el" href="DevTool_8cpp_source.html#l00650">eve::dev::DevTool::formatError()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00231">eve::dev::RenderFlow::formatErrorReport()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="Frustum_8h_source.html#l00015">eve::voxel::Frustum::fromViewProjColumnMajor()</a>, <a class="el" href="BushMesh_8cpp_source.html#l00145">eve::procgen::generateBushMesh()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00375">eve::procgen::generateHexTerrainMesh()</a>, <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00165">eve::procgen::generateRockMesh()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">eve::procgen::urban::generateSplitCandidates()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00160">eve::procgen::urban::generateUrbanGrid()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00934">eve::dialogue::Dialogue::getAvatar()</a>, <a class="el" href="SpineSkeleton_8cpp_source.html#l00160">eve::animation::SpineSkeleton::getBoneWorldMatrix()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00358">eve::scene::SceneHost::getChildCount()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00543">eve::scene::Scene::getChildIdAt()</a>, <a class="el" href="SceneNodeRef_8cpp_source.html#l00225">eve::scene::SceneNodeRef::getChildIdAt()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00371">eve::scene::SceneHost::getChildIndexAt()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00392">eve::scene::SceneHost::getChildIndices()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00403">eve::scene::SceneHost::getChildren()</a>, <a class="el" href="Compressor_8cpp_source.html#l00342">eve::data::Compressor::getCompressor()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00909">eve::dialogue::Dialogue::getDisplayName()</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00248">eve::virtualgeometry::VirtualGeometryRenderer::getMaxLodLevel()</a>, <a class="el" href="ImageData_8cpp_source.html#l00543">eve::image::ImageData::getPixel()</a>, <a class="el" href="ImageData_8cpp_source.html#l00532">eve::image::ImageData::getPixel()</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">eve::daynight::DayNight::getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">eve::daynight::DayNight::getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">eve::daynight::DayNight::getSkyR()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00968">eve::dialogue::Dialogue::getSlot()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00270">eve::map::TileLayer::getTerrain()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00072">eve::map::TileLayer::getTile()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00523">eve::voxel::VoxelWorld::getVoxel()</a>, <a class="el" href="SceneNodeRef_8cpp_source.html#l00182">eve::scene::SceneNodeRef::getWorldMatrix()</a>, <a class="el" href="HouseGenRuntime_8cpp_source.html#l00041">eve::housegen_editing::HouseGenPreviewRuntime::gizmo()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00955">eve::dialogue::Dialogue::hide()</a>, <a class="el" href="Network_8cpp_source.html#l00089">eve::network::Network::httpRequest()</a>, <a class="el" href="ImageData_8cpp_source.html#l00046">eve::image::ImageData::ImageData()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00087">eve::fluids::MeshSdf::inBounds()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00266">eve::procgen::urban::includedAngleDeg()</a>, <a class="el" href="HouseLayout_8cpp_source.html#l00232">eve::housegen::HouseLayout::instantiate()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00728">eve::map::FlowField::isReachable()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00963">eve::dialogue::Dialogue::isShown()</a>, <a class="el" href="GameplayTag_8cpp_source.html#l00034">eve::tags::isValidGameplayTagName()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00187">eve::tensor::kernels::layernorm()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00643">eve::scene::SceneHost::linkCamera3D()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00134">eve::scene::Scene::linkCamera3DAt()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00106">eve::network::TcpSocket::listen()</a>, <a class="el" href="AnimImporter_8cpp_source.html#l00086">eve::animation::AnimImporter::loadClip()</a>, <a class="el" href="SpineAtlas_8cpp_source.html#l00102">eve::animation::SpineAtlas::loadFromText()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00301">eve::input_editing::InputMapTarget::loadSnapshot()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00208">eve::procgen_editing::TextureRecipeTarget::loadSnapshot()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00197">eve::sceneloader_editing::SceneImportTarget::loadSnapshot()</a>, <a class="el" href="SocialDocument_8cpp_source.html#l00217">eve::social_editing::SocialDocumentTarget::loadSnapshot()</a>, <a class="el" href="LodSelection_8cpp_source.html#l00031">eve::virtualgeometry::lodHistogram()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00191">eve::voxel_editing::VoxelPaletteTarget::makeCreate()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00183">eve::input_editing::InputMapTarget::makeCreateAction()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00272">eve::biome_editing::BiomeDocumentTarget::makeCreateAsset()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00201">eve::input_editing::InputMapTarget::makeCreateBinding()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00415">eve::housegen_editing::HouseGenDocumentTarget::makeCreateComponent()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00357">eve::avatar_editing::AvatarDocumentTarget::makeCreateExpression()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00309">eve::avatar_editing::AvatarDocumentTarget::makeCreateLayer()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00254">eve::biome_editing::BiomeDocumentTarget::makeCreateLayer()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00332">eve::avatar_editing::AvatarDocumentTarget::makeCreateParameter()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00204">eve::voxel_editing::VoxelPaletteTarget::makeDelete()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00190">eve::input_editing::InputMapTarget::makeDeleteAction()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00288">eve::biome_editing::BiomeDocumentTarget::makeDeleteAsset()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00208">eve::input_editing::InputMapTarget::makeDeleteBinding()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00430">eve::housegen_editing::HouseGenDocumentTarget::makeDeleteComponent()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00369">eve::avatar_editing::AvatarDocumentTarget::makeDeleteExpression()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00320">eve::avatar_editing::AvatarDocumentTarget::makeDeleteLayer()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00265">eve::biome_editing::BiomeDocumentTarget::makeDeleteLayer()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00343">eve::avatar_editing::AvatarDocumentTarget::makeDeleteParameter()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00160">eve::fluids::MeshSdf::makeFromTriangles()</a>, <a class="el" href="AnimControlMath_8h_source.html#l00027">eve::animation::makeSecondOrderCoeffs()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00211">eve::biome_editing::BiomeDocumentTarget::makeSet()</a>, <a class="el" href="Hd2dTarget_8cpp_source.html#l00151">eve::hd2d_editing::Hd2dDocumentTarget::makeSet()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00142">eve::input_editing::InputMapTarget::makeSet()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00149">eve::voxel_editing::VoxelPaletteTarget::makeSet()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00370">eve::housegen_editing::HouseGenDocumentTarget::makeSet()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00508">eve::scene_editing::ScenePropertyProvider::makeSet()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00300">eve::biome_editing::BiomeDocumentTarget::makeSetExclusions()</a>, <a class="el" href="ModelData_8cpp_source.html#l00177">eve::model3d::ModelData::mapSurfacePointToUv()</a>, <a class="el" href="Tensor_8cpp_source.html#l00475">eve::tensor::Tensor::matmul()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00282">eve::tensor::kernels::maxpool2d()</a>, <a class="el" href="Layout_8cpp_source.html#l00209">eve::ui::measureNode()</a>, <a class="el" href="Module_8cpp_source.html#l00347">eve::ModuleRegister::ModuleRegister()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l00580">eve::graphics::vulkan::Graphics::newCanvas()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05405">eve::graphics::webgpu::Graphics::newCanvas()</a>, <a class="el" href="Card_8cpp_source.html#l00356">eve::card::Card::newCard()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l00593">eve::graphics::vulkan::Graphics::newHDRCanvas()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05411">eve::graphics::webgpu::Graphics::newHDRCanvas()</a>, <a class="el" href="Graphics_8cpp_source.html#l01519">eve::graphics::Graphics::newMeshCube()</a>, <a class="el" href="Demo_8cpp_source.html#l00169">eve::demo::Demo::newPlanetTexture()</a>, <a class="el" href="AnimClipRegistry_8cpp_source.html#l00072">eve::animation::AnimClipRegistry::normalizePath()</a>, <a class="el" href="Resource_8cpp_source.html#l00028">eve::ResourceManager::normalizePath()</a>, <a class="el" href="HotReload_8cpp_source.html#l00116">eve::filesystem::HotReload::normalizePath()</a>, <a class="el" href="Debugger_8cpp_source.html#l00392">eve::dev::Debugger::normalizeSource()</a>, <a class="el" href="Optimizer_8cpp_source.html#l00175">eve::tensor::optimizeGraph()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00128">eve::procgen::paintHeightToImage()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00342">eve::map::TileLayer::paintTerrain()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00351">eve::map::TileLayer::paintTerrainRect()</a>, <a class="el" href="ImageData_8cpp_source.html#l01069">eve::image::ImageData::paste()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00335">eve::editor::TransformGizmo::pick()</a>, <a class="el" href="Cloth_8cpp_source.html#l00180">eve::physics::Cloth::pinTopRow()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l00441">eve::physics::Cloth3D::pinTopRow()</a>, <a class="el" href="ClothGPU_8cpp_source.html#l00473">eve::physics::ClothGPU::pinTopRow()</a>, <a class="el" href="DtlHelpers_8h_source.html#l00049">eve::procgen::dtlutil::placeSpawnAndStairs()</a>, <a class="el" href="NetWorker_8cpp_source.html#l00028">eve::network::NetWorker::post()</a>, <a class="el" href="MeshEffectRenderer_8cpp_source.html#l00062">eve::stylize::prepareTrailUpload()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05002">eve::graphics::webgpu::Graphics::present()</a>, <a class="el" href="Network_8cpp_source.html#l00428">eve::network::Network::pump()</a>, <a class="el" href="CardTypes_8h_source.html#l00201">eve::card::Deck::push()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00146">eve::avatar_editing::AvatarDocumentTarget::queryCapability()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00107">eve::biome_editing::BiomeDocumentTarget::queryCapability()</a>, <a class="el" href="Hd2dTarget_8cpp_source.html#l00053">eve::hd2d_editing::Hd2dDocumentTarget::queryCapability()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00049">eve::input_editing::InputMapTarget::queryCapability()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00079">eve::procgen_editing::TextureRecipeTarget::queryCapability()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00035">eve::sceneloader_editing::SceneImportTarget::queryCapability()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00079">eve::voxel_editing::VoxelPaletteTarget::queryCapability()</a>, <a class="el" href="DecalTarget_8cpp_source.html#l00028">eve::decal_editing::DecalDocumentTarget::queryCapability()</a>, <a class="el" href="SurfaceFluidTarget_8cpp_source.html#l00171">eve::fluids_editing::SurfaceFluidTarget::queryCapability()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00288">eve::housegen_editing::HouseGenDocumentTarget::queryCapability()</a>, <a class="el" href="SpriteStackTarget_8cpp_source.html#l00046">eve::spritestack_editing::SpriteStackDocumentTarget::queryCapability()</a>, <a class="el" href="StylizeTarget_8cpp_source.html#l00076">eve::stylize_editing::StylizeRecipeTarget::queryCapability()</a>, <a class="el" href="VirtualGeometryTarget_8cpp_source.html#l00044">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget::queryCapability()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00146">eve::network::TcpSocket::queueSend()</a>, <a class="el" href="Math_8cpp_source.html#l00341">eve::math::Math::raycastCircle2()</a>, <a class="el" href="Math_8cpp_source.html#l00437">eve::math::Math::raycastSphere()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00321">eve::housegen_editing::HouseGenDocumentTarget::read()</a>, <a class="el" href="Crowd_8cpp_source.html#l00090">eve::crowd::Crowd::Impl::rebuildGrid()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00137">eve::editor::TransformGizmo::rebuildParts()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00127">eve::map::TileLayer::rebuildSpatialIndex()</a>, <a class="el" href="Module_8cpp_source.html#l00207">eve::ModuleManager::register_module()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00894">eve::dialogue::Dialogue::registerCharacter()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00383">eve::voxel::VoxelWorld::remeshDirty()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00348">eve::card::Hand::removeCard()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00498">eve::card::Hand::render()</a>, <a class="el" href="Card_8cpp_source.html#l00578">eve::card::Card::renderDeck()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01186">eve::dialogue::Dialogue::reset()</a>, <a class="el" href="Cloth_8cpp_source.html#l00047">eve::physics::Cloth::reset()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l00250">eve::physics::Cloth3D::reset()</a>, <a class="el" href="ClothGPU_8cpp_source.html#l00512">eve::physics::ClothGPU::reset()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00046">eve::map::TileLayer::resize()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00488">eve::tensor::kernels::resize2d()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01252">eve::dialogue::Dialogue::restoreState()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00211">eve::tensor::kernels::rmsnorm()</a>, <a class="el" href="ImageData_8cpp_source.html#l00956">eve::image::ImageData::rotate()</a>, <a class="el" href="Math_8cpp_source.html#l00275">eve::math::Math::rotate2X()</a>, <a class="el" href="Math_8cpp_source.html#l00279">eve::math::Math::rotate2Y()</a>, <a class="el" href="BrushKernel_8cpp_source.html#l00054">eve::editor::BoxBrushKernel::sample()</a>, <a class="el" href="StaticMeshSurface_8cpp_source.html#l00192">eve::building::StaticMeshSurface::sample()</a>, <a class="el" href="CaveDifferentialErosion_8cpp_source.html#l00026">eve::procgen::sampleCaveDifferentialVeinErosion()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00163">eve::procgen::TerrainStreamingCache::sampleHeight()</a>, <a class="el" href="MotionMatcher_8cpp_source.html#l00150">eve::animation::MotionMatcher::search()</a>, <a class="el" href="Steering_8cpp_source.html#l00074">eve::steering::Steering::seekJson()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00127">eve::procgen::urban::segmentsIntersect()</a>, <a class="el" href="LodSelection_8cpp_source.html#l00008">eve::virtualgeometry::selectClusters()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00101">eve::network::UdpSocket::send()</a>, <a class="el" href="network_2Channel_8cpp_source.html#l00038">eve::network::Channel::sendMsg()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00070">eve::network::UdpSocket::sendTo()</a>, <a class="el" href="Steering_8cpp_source.html#l00079">eve::steering::Steering::separationJson()</a>, <a class="el" href="Graphics_8h_source.html#l01175">eve::graphics::Graphics::setBackgroundColor()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00940">eve::particles::ParticleEmitter::setCollision()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00951">eve::particles::ParticleEmitter::setCollisionBounds()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00786">eve::particles::ParticleEmitter::setEmissionArea()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00987">eve::dialogue::Dialogue::setExpression()</a>, <a class="el" href="ParticlePlayback_8cpp_source.html#l00081">eve::particles::ParticleEmitter::setFixedTimeStep()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01080">eve::particles::ParticleEmitter::setFlipbook()</a>, <a class="el" href="McpServer_8cpp_source.html#l02180">eve::dev::McpServer::setGameRoot()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00844">eve::particles::ParticleEmitter::setGravity()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00092">eve::building::PlacementWorld::setGridFromLayer()</a>, <a class="el" href="GlobalIllumination_8cpp_source.html#l00142">eve::graphics::GlobalIllumination::setInvViewProj()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00076">eve::graphics::ScreenSpaceReflection::setInvViewProj()</a>, <a class="el" href="LSystem_8cpp_source.html#l00060">eve::procgen::LSystem::setLeafSymbols()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01037">eve::particles::ParticleEmitter::setLights()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00766">eve::particles::ParticleEmitter::setLinearAcceleration()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00994">eve::dialogue::Dialogue::setMotion()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00873">eve::particles::ParticleEmitter::setNoise()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00740">eve::particles::ParticleEmitter::setParticleLifetime()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00800">eve::particles::ParticleEmitter::setParticleSize()</a>, <a class="el" href="ImageData_8cpp_source.html#l00483">eve::image::ImageData::setPixel()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00495">eve::vehicle::Vehicle::setPlayerControls()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00774">eve::particles::ParticleEmitter::setRadialAcceleration()</a>, <a class="el" href="ParticlePlayback_8cpp_source.html#l00090">eve::particles::ParticleEmitter::setRandomSeed()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00963">eve::particles::ParticleEmitter::setRenderMode()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00972">eve::particles::ParticleEmitter::setRibbon()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l01186">eve::particles::ParticleEmitter::setSoftParticles()</a>, <a class="el" href="DebugAdapter_8cpp_source.html#l00082">eve::dev::DebugAdapter::setSourceRoot()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00760">eve::particles::ParticleEmitter::setSpeed()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00819">eve::particles::ParticleEmitter::setSpin()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00825">eve::particles::ParticleEmitter::setStartRotation()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00780">eve::particles::ParticleEmitter::setTangentialAcceleration()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00056">eve::map::TileLayer::setTile()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00040">eve::map::TileLayer::setTileSize()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00532">eve::voxel::VoxelWorld::setVoxel()</a>, <a class="el" href="CloudShadow_8cpp_source.html#l00034">eve::procgen::CloudShadow::shadowFactorAt()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00314">eve::procgen::urban::shapeIrregularity()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00946">eve::dialogue::Dialogue::show()</a>, <a class="el" href="RenderFlow_8cpp_source.html#l00175">eve::dev::RenderFlow::sliceBackward()</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00335">eve::spritestack::sliceModelToLayers()</a>, <a class="el" href="ParticlePlayback_8cpp_source.html#l00104">eve::particles::ParticleEmitter::start()</a>, <a class="el" href="Crowd_8cpp_source.html#l00165">eve::crowd::Crowd::Impl::stepAgents()</a>, <a class="el" href="AnimControlMath_8h_source.html#l00044">eve::animation::stepSecondOrder()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00229">eve::voxel::VoxelWorld::streamAround()</a>, <a class="el" href="HttpRequest_8cpp_source.html#l00048">eve::network::HttpRequest::submit()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00300">eve::ui::DatabasePanel::sync()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01001">eve::dialogue::Dialogue::syncStage()</a>, <a class="el" href="TextureCellBomb_8h_source.html#l00036">eve::graphics::texCellBombSampleUV()</a>, <a class="el" href="SnowField_8cpp_source.html#l00164">eve::snow::SnowField::toAlbedoRGBA()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00462">eve::procgen::urban::triangulatePolygon()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01113">eve::sceneloader::SceneLoader::unload()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00488">eve::editor::TransformGizmo::updateDrag()</a>, <a class="el" href="AnimSkin_8cpp_source.html#l00351">eve::animation::AnimSkin::updateSkinnedNormals()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00446">eve::housegen_editing::HouseGenDocumentTarget::validate()</a>, <a class="el" href="HouseLayout_8cpp_source.html#l00182">eve::housegen::HouseLayout::validate()</a>, <a class="el" href="NodeDesc_8cpp_source.html#l00205">eve::scene::validateUniqueIds()</a>, <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00099">eve::virtualgeometry::vgUpload()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00519">eve::scene::SceneHost::walkChildren()</a>, <a class="el" href="SceneBounds_8h_source.html#l00026">eve::scene::worldBoundsOf()</a> , 以及 <a class="el" href="sdl_2Mouse_8cpp_source.html#l00033">eve::mouse::sdl::Mouse::~Mouse()</a>.</p>
+
+</div>
+</div>
+<a id="ad0da36b2558901e21e7a30f6c227a45e" name="ad0da36b2558901e21e7a30f6c227a45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0da36b2558901e21e7a30f6c227a45e">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MarchingCubes_8cpp_source.html">MarchingCubes.cpp</a> 第 <a class="el" href="MarchingCubes_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MarchingCubes_8cpp_source.html#l00337">eve::procgen::fillDensityField()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="aa4f0d3eebc3c443f9be81bf48561a217" name="aa4f0d3eebc3c443f9be81bf48561a217"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4f0d3eebc3c443f9be81bf48561a217">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MarchingCubes_8cpp_source.html">MarchingCubes.cpp</a> 第 <a class="el" href="MarchingCubes_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MarchingCubes_8cpp_source.html#l00337">eve::procgen::fillDensityField()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="af73583b1e980b0aa03f9884812e9fd4d" name="af73583b1e980b0aa03f9884812e9fd4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af73583b1e980b0aa03f9884812e9fd4d">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float z = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MarchingCubes_8cpp_source.html">MarchingCubes.cpp</a> 第 <a class="el" href="MarchingCubes_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MarchingCubes_8cpp_source.html#l00337">eve::procgen::fillDensityField()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

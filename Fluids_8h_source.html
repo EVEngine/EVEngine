@@ -1,0 +1,426 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/Fluids.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Fluids.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Fluids_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="FluidMath_8h.html">fluids/FluidMath.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="FluidSdf_8h.html">fluids/FluidSdf.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="FluidSimulation_8h.html">fluids/FluidSimulation.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="FluidSurfaceBinding_8h.html">fluids/FluidSurfaceBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="FluidSurfaceRenderer_8h.html">fluids/FluidSurfaceRenderer.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="SurfaceDropletSimulation_8h.html">fluids/SurfaceDropletSimulation.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="SurfaceFluidContracts_8h.html">fluids/SurfaceFluidContracts.h</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="SurfaceFluidRenderData_8h.html">fluids/SurfaceFluidRenderData.h</a>&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="SurfaceFluidSceneRenderer_8h.html">fluids/SurfaceFluidSceneRenderer.h</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="SurfaceWetnessField_8h.html">fluids/SurfaceWetnessField.h</a>&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;<a class="code" href="SimulationBackend_8h.html">physics/SimulationBackend.h</a>&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1gpgpu.html">   31</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpgpu.html">eve::gpgpu</a> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1gpgpu_1_1Sequence.html">Sequence</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}  <span class="comment">// namespace eve::gpgpu</span></div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a>(<span class="keywordtype">int</span> maxParticles, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1FluidParams.html">FluidParams</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a2ff40aa2c476963d1a7174147331cfe3">params</a>, <span class="keywordtype">bool</span> preferGpu);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#aa57b4a42ef451febc80c71903d475ac8">~FluidSimulator</a>();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a3ff72e6a2316c8ee165c42a2647eb2fa">   51</a></span>    <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a3ff72e6a2316c8ee165c42a2647eb2fa">FluidSimulator</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a849288da096d769d878306ff96ecbb66">   52</a></span>    <a class="code hl_class" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a849288da096d769d878306ff96ecbb66">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a382665a0a8fc36a440ccfaf8b5d62ad2">setSdf</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1MeshSdf.html">MeshSdf</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a61ee66df4c3e8a7b767d9ba635ff7f73">sdf</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a61ee66df4c3e8a7b767d9ba635ff7f73">   58</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1MeshSdf.html">MeshSdf</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a61ee66df4c3e8a7b767d9ba635ff7f73">sdf</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sim_.<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulation.html#aeee4797f9e65c0b6734d9bc5db98f9ff">sdf</a>(); }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a8a1d86a2bc5b58d5cd69becf50c2054c">spawnDrop</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    [[nodiscard(<span class="stringliteral">&quot;check the fluid step outcome&quot;</span>)]]</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationSettings.html">eve::physics::SimulationSettings</a>&amp; settings) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a43a5f616a5a0ea2b947efe098bc52a4d">   76</a></span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">eve::physics::SimulationObservation</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a43a5f616a5a0ea2b947efe098bc52a4d">observation</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> observation_; }</div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a601c7a5db97851bfc4c2d48ae0b83e6c">   78</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">eve::physics::SimulationBackendKind</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a601c7a5db97851bfc4c2d48ae0b83e6c">kind</a>() const noexcept<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">return</span> gpuOk_ ? <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38">eve::physics::SimulationBackendKind::Gpu</a> : <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">eve::physics::SimulationBackendKind::Cpu</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a687cf27498399faa0cfcd51d842a2b7d">   82</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">eve::physics::SimulationDeterminism</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a687cf27498399faa0cfcd51d842a2b7d">determinism</a>() const noexcept<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">eve::physics::SimulationDeterminism::ToleranceBounded</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    [[nodiscard(<span class="stringliteral">&quot;check fluid observation restore&quot;</span>)]]</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a056047cb3fd29e36473d5019c3c88b47">restoreObservation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">eve::physics::SimulationObservation</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a43a5f616a5a0ea2b947efe098bc52a4d">observation</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a29f1b779a3b663527abf744ae0ca6d7e">   90</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a29f1b779a3b663527abf744ae0ca6d7e">usedBackendFallback</a>() const noexcept { <span class="keywordflow">return</span> backendFallback_; }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    [[nodiscard(<span class="stringliteral">&quot;inspect fluid backend selection diagnostics&quot;</span>)]]</div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#aea9155c9c2f56bf56b748a8f74b66141">   93</a></span>    <a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#aea9155c9c2f56bf56b748a8f74b66141">backendSelectionStatus</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> backendSelectionStatus_;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a9f89c67d2fb27ec86a58870d92c516a8">   98</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a9f89c67d2fb27ec86a58870d92c516a8">getParticleCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sim_.<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulation.html#ac38dc297031fd5b1e789ec0dcbba1e20">particleCount</a>(); }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#abd11955e77e9a1f9794f06bf53a210b9">  101</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#abd11955e77e9a1f9794f06bf53a210b9">getMaxParticles</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sim_.<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulation.html#a1f2326f7af38d86c073dadf321fa8cf4">maxParticles</a>(); }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a5e23cfe29323f10fd8aecb7532164900">  104</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a5e23cfe29323f10fd8aecb7532164900">usingGpu</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> gpuOk_; }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a43100797b85b917c0aa80346fce033aa">readPositions</a>(std::vector&lt;glm::vec3&gt;&amp; out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#aa7599f93e7a78c0d9c5563ebb38bdf7c">readDensities</a>(std::vector&lt;float&gt;&amp; out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#a2ff40aa2c476963d1a7174147331cfe3">  113</a></span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1FluidParams.html">FluidParams</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a2ff40aa2c476963d1a7174147331cfe3">params</a>() { <span class="keywordflow">return</span> sim_.<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulation.html#a6d0552a9ec7c0daf17f503be99d1475f">params</a>(); }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1FluidSimulator.html#aa42165ee360f65867388195471696049">  116</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1FluidParams.html">FluidParams</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#aa42165ee360f65867388195471696049">params</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sim_.<a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulation.html#a6d0552a9ec7c0daf17f503be99d1475f">params</a>(); }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#aae4f527ee660ddcc753966de8c219d38">setGravity</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a33d25a8ad89526c928309b1d59e1b74b">setViscosity</a>(<span class="keywordtype">float</span> viscosity);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#af1010e27b6eb75a6838dbb61cc09829e">setCohesion</a>(<span class="keywordtype">float</span> cohesion);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a94ad195d4aa5397661f6ad338709a25a">setAdhesion</a>(<span class="keywordtype">float</span> adhesion);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a4e4e078414d6f4ac1dab49c58490c2d2">setPbfIterations</a>(<span class="keywordtype">int</span> passes);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a90211eb8082665518d87417a1215d0a6">setDamping</a>(<span class="keywordtype">float</span> damping);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a10ac335e0b080aa4f021597f9ff69b05">setParticleRadius</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a94d3d9e050861a6a12bcf26b049a8085">setSupportRadius</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1FluidSimulator.html#a639bf2a12fca061ea8bdc3d56e114834">setSdfSphere</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">float</span> cz, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">int</span> res);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">bool</span> ensureGpu();</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">void</span> stepSolver(<span class="keywordtype">float</span> dt, <span class="keywordtype">int</span> substeps);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">void</span> uploadSdf();</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">void</span> uploadParticles();</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordtype">void</span> downloadParticles();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordtype">void</span> setCommonConstants(<a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">gpgpu::ComputeShader</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <a class="code hl_class" href="classeve_1_1fluids_1_1FluidSimulation.html">FluidSimulation</a> sim_;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordtype">bool</span>            preferGpu_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordtype">bool</span>            gpuOk_     = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">bool</span>                                backendFallback_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">bool</span>            sdfDirty_  = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">eve::physics::SimulationObservation</a> observation_;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>                         backendSelectionStatus_ = <a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a>();</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1Gpgpu.html">eve::gpgpu::Gpgpu</a>*         gpgpu_           = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shClear_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shBuild_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shDensityLambda_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shDelta_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shApply_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shIntegrate_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufPos_          = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufVel_          = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufHead_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufNext_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufDens_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufLambda_       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufGrad_         = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufSdf_          = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     stagePos_        = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     stageVel_        = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     stageDens_       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1Sequence.html">eve::gpgpu::Sequence</a>*      seq_             = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1SimGrid.html">SimGrid</a>                    grid_;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>};</div>
+</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="foldopen" id="foldopen00191" data-start="{" data-end="};">
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1Fluids.html">  191</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1Fluids.html">Fluids</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1Fluids.html#ae74e5bcfea2d842f4e80883c5e0ebbb8">  193</a></span>    <a class="code hl_function" href="classeve_1_1fluids_1_1Fluids.html#ae74e5bcfea2d842f4e80883c5e0ebbb8">Module_REG</a>(<a class="code hl_class" href="classeve_1_1fluids_1_1Fluids.html">Fluids</a>);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1Fluids.html#a76266b01a23cacccae7b8135bd1385dc">  194</a></span>    <a class="code hl_function" href="classeve_1_1fluids_1_1Fluids.html#a76266b01a23cacccae7b8135bd1385dc">Fluids</a>();</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1Fluids.html#a806d510e9583f47ea5e525045db33af4">  195</a></span>    <a class="code hl_function" href="classeve_1_1fluids_1_1Fluids.html#a806d510e9583f47ea5e525045db33af4">~Fluids</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <a class="code hl_class" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a>* <a class="code hl_function" href="classeve_1_1fluids_1_1Fluids.html#ae779171b55c0bca3b407c81864dd6816">newSimulator</a>(<span class="keywordtype">int</span> maxParticles = 8192);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <a class="code hl_class" href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">FluidSurfaceRenderer</a>* <a class="code hl_function" href="classeve_1_1fluids_1_1Fluids.html#a8fc77132445849a4198f0874fac5dc38">newSurfaceRenderer</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> = 160, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> = 160);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1Fluids.html#a85031a56fb0883375306ef6dc1342cc6">getSimulatorCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1Fluids.html#a88229dfca17b130a2cfd109022c78735">getRendererCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    std::vector&lt;std::unique_ptr&lt;FluidSimulator&gt;&gt;       simulators_;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    std::vector&lt;std::unique_ptr&lt;FluidSurfaceRenderer&gt;&gt; renderers_;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>};</div>
+</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00034">CardTypes.cpp:34</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_ae8299b6e2cd3285a9280125dae748b26"><div class="ttname"><a href="CaveMesh_8cpp.html#ae8299b6e2cd3285a9280125dae748b26">center</a></div><div class="ttdeci">Vec3 center</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00055">CaveMesh.cpp:55</a></div></div>
+<div class="ttc" id="aFluidMath_8h_html"><div class="ttname"><a href="FluidMath_8h.html">FluidMath.h</a></div></div>
+<div class="ttc" id="aFluidSdf_8h_html"><div class="ttname"><a href="FluidSdf_8h.html">FluidSdf.h</a></div></div>
+<div class="ttc" id="aFluidSimulation_8h_html"><div class="ttname"><a href="FluidSimulation_8h.html">FluidSimulation.h</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8h_html"><div class="ttname"><a href="FluidSurfaceBinding_8h.html">FluidSurfaceBinding.h</a></div></div>
+<div class="ttc" id="aFluidSurfaceRenderer_8h_html"><div class="ttname"><a href="FluidSurfaceRenderer_8h.html">FluidSurfaceRenderer.h</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aSimulationBackend_8h_html"><div class="ttname"><a href="SimulationBackend_8h.html">SimulationBackend.h</a></div><div class="ttdoc">Backend-neutral, observable fixed-step contract for physics domains.</div></div>
+<div class="ttc" id="aSurfaceDropletSimulation_8h_html"><div class="ttname"><a href="SurfaceDropletSimulation_8h.html">SurfaceDropletSimulation.h</a></div></div>
+<div class="ttc" id="aSurfaceFluidContracts_8h_html"><div class="ttname"><a href="SurfaceFluidContracts_8h.html">SurfaceFluidContracts.h</a></div><div class="ttdoc">Domain contracts separating surface simulation, constraints, and SSF presentation.</div></div>
+<div class="ttc" id="aSurfaceFluidRenderData_8h_html"><div class="ttname"><a href="SurfaceFluidRenderData_8h.html">SurfaceFluidRenderData.h</a></div></div>
+<div class="ttc" id="aSurfaceFluidSceneRenderer_8h_html"><div class="ttname"><a href="SurfaceFluidSceneRenderer_8h.html">SurfaceFluidSceneRenderer.h</a></div></div>
+<div class="ttc" id="aSurfaceWetnessField_8h_html"><div class="ttname"><a href="SurfaceWetnessField_8h.html">SurfaceWetnessField.h</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00045">Module.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulation_html"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulation.html">eve::fluids::FluidSimulation</a></div><div class="ttdoc">CPU reference surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidSimulation_8h_source.html#l00048">FluidSimulation.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulation_html_a1f2326f7af38d86c073dadf321fa8cf4"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulation.html#a1f2326f7af38d86c073dadf321fa8cf4">eve::fluids::FluidSimulation::maxParticles</a></div><div class="ttdeci">int maxParticles() const</div><div class="ttdef"><b>Definition</b> <a href="FluidSimulation_8h_source.html#l00087">FluidSimulation.h:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulation_html_a6d0552a9ec7c0daf17f503be99d1475f"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulation.html#a6d0552a9ec7c0daf17f503be99d1475f">eve::fluids::FluidSimulation::params</a></div><div class="ttdeci">FluidParams &amp; params()</div><div class="ttdef"><b>Definition</b> <a href="FluidSimulation_8h_source.html#l00102">FluidSimulation.h:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulation_html_ac38dc297031fd5b1e789ec0dcbba1e20"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulation.html#ac38dc297031fd5b1e789ec0dcbba1e20">eve::fluids::FluidSimulation::particleCount</a></div><div class="ttdeci">int particleCount() const</div><div class="ttdef"><b>Definition</b> <a href="FluidSimulation_8h_source.html#l00084">FluidSimulation.h:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulation_html_aeee4797f9e65c0b6734d9bc5db98f9ff"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulation.html#aeee4797f9e65c0b6734d9bc5db98f9ff">eve::fluids::FluidSimulation::sdf</a></div><div class="ttdeci">const MeshSdf &amp; sdf() const</div><div class="ttdef"><b>Definition</b> <a href="FluidSimulation_8h_source.html#l00060">FluidSimulation.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></div><div class="ttdoc">GPU-backed surface fluid simulator (falls back to the CPU solver).</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00041">Fluids.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a056047cb3fd29e36473d5019c3c88b47"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a056047cb3fd29e36473d5019c3c88b47">eve::fluids::FluidSimulator::restoreObservation</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreObservation(const eve::physics::SimulationObservation &amp;observation) override</div><div class="ttdoc">Restores tick/progress metadata after an owner-level restore.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00211">Fluids.cpp:211</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a10ac335e0b080aa4f021597f9ff69b05"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a10ac335e0b080aa4f021597f9ff69b05">eve::fluids::FluidSimulator::setParticleRadius</a></div><div class="ttdeci">void setParticleRadius(float radius)</div><div class="ttdoc">Set particle radius (support radius is unchanged).</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00238">Fluids.cpp:238</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a29f1b779a3b663527abf744ae0ca6d7e"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a29f1b779a3b663527abf744ae0ca6d7e">eve::fluids::FluidSimulator::usedBackendFallback</a></div><div class="ttdeci">bool usedBackendFallback() const noexcept</div><div class="ttdoc">Whether optional accelerator selection fell back to CPU.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00090">Fluids.h:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a2ff40aa2c476963d1a7174147331cfe3"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a2ff40aa2c476963d1a7174147331cfe3">eve::fluids::FluidSimulator::params</a></div><div class="ttdeci">FluidParams &amp; params()</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00113">Fluids.h:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a33d25a8ad89526c928309b1d59e1b74b"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a33d25a8ad89526c928309b1d59e1b74b">eve::fluids::FluidSimulator::setViscosity</a></div><div class="ttdeci">void setViscosity(float viscosity)</div><div class="ttdoc">Set XSPH viscosity strength.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00233">Fluids.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a382665a0a8fc36a440ccfaf8b5d62ad2"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a382665a0a8fc36a440ccfaf8b5d62ad2">eve::fluids::FluidSimulator::setSdf</a></div><div class="ttdeci">void setSdf(const MeshSdf &amp;sdf)</div><div class="ttdoc">Replace the collision surface (re-uploads the SDF on the GPU path).</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00080">Fluids.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a3ff72e6a2316c8ee165c42a2647eb2fa"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a3ff72e6a2316c8ee165c42a2647eb2fa">eve::fluids::FluidSimulator::FluidSimulator</a></div><div class="ttdeci">FluidSimulator(const FluidSimulator &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a43100797b85b917c0aa80346fce033aa"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a43100797b85b917c0aa80346fce033aa">eve::fluids::FluidSimulator::readPositions</a></div><div class="ttdeci">void readPositions(std::vector&lt; glm::vec3 &gt; &amp;out) const</div><div class="ttdoc">Copy live particle positions out (CPU mirror; GPU path downloads).</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00219">Fluids.cpp:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a43a5f616a5a0ea2b947efe098bc52a4d"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a43a5f616a5a0ea2b947efe098bc52a4d">eve::fluids::FluidSimulator::observation</a></div><div class="ttdeci">eve::physics::SimulationObservation observation() const noexcept override</div><div class="ttdoc">Returns completed tick/time observables.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00076">Fluids.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a4e4e078414d6f4ac1dab49c58490c2d2"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a4e4e078414d6f4ac1dab49c58490c2d2">eve::fluids::FluidSimulator::setPbfIterations</a></div><div class="ttdeci">void setPbfIterations(int passes)</div><div class="ttdoc">Set PBF density-constraint passes per substep.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00236">Fluids.cpp:236</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a5e23cfe29323f10fd8aecb7532164900"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a5e23cfe29323f10fd8aecb7532164900">eve::fluids::FluidSimulator::usingGpu</a></div><div class="ttdeci">bool usingGpu() const</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00104">Fluids.h:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a601c7a5db97851bfc4c2d48ae0b83e6c"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a601c7a5db97851bfc4c2d48ae0b83e6c">eve::fluids::FluidSimulator::kind</a></div><div class="ttdeci">eve::physics::SimulationBackendKind kind() const noexcept override</div><div class="ttdoc">Reports the actual CPU or production GPU path selected.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00078">Fluids.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a61ee66df4c3e8a7b767d9ba635ff7f73"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a61ee66df4c3e8a7b767d9ba635ff7f73">eve::fluids::FluidSimulator::sdf</a></div><div class="ttdeci">const MeshSdf &amp; sdf() const</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00058">Fluids.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a639bf2a12fca061ea8bdc3d56e114834"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a639bf2a12fca061ea8bdc3d56e114834">eve::fluids::FluidSimulator::setSdfSphere</a></div><div class="ttdeci">void setSdfSphere(float cx, float cy, float cz, float radius, int res)</div><div class="ttdoc">Convenience: bake a sphere SDF around the origin.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00244">Fluids.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a687cf27498399faa0cfcd51d842a2b7d"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a687cf27498399faa0cfcd51d842a2b7d">eve::fluids::FluidSimulator::determinism</a></div><div class="ttdeci">eve::physics::SimulationDeterminism determinism() const noexcept override</div><div class="ttdoc">CPU/GPGPU particle results are equivalent within a numeric tolerance.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00082">Fluids.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a849288da096d769d878306ff96ecbb66"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a849288da096d769d878306ff96ecbb66">eve::fluids::FluidSimulator::operator=</a></div><div class="ttdeci">FluidSimulator &amp; operator=(const FluidSimulator &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a8a1d86a2bc5b58d5cd69becf50c2054c"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a8a1d86a2bc5b58d5cd69becf50c2054c">eve::fluids::FluidSimulator::spawnDrop</a></div><div class="ttdeci">int spawnDrop(const glm::vec3 &amp;center, float radius, int count)</div><div class="ttdoc">Spawn a drop of particles near the surface.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00113">Fluids.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a90211eb8082665518d87417a1215d0a6"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a90211eb8082665518d87417a1215d0a6">eve::fluids::FluidSimulator::setDamping</a></div><div class="ttdeci">void setDamping(float damping)</div><div class="ttdoc">Set linear air damping.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00237">Fluids.cpp:237</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a94ad195d4aa5397661f6ad338709a25a"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a94ad195d4aa5397661f6ad338709a25a">eve::fluids::FluidSimulator::setAdhesion</a></div><div class="ttdeci">void setAdhesion(float adhesion)</div><div class="ttdoc">Set fluid-surface adhesion strength.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00235">Fluids.cpp:235</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a94d3d9e050861a6a12bcf26b049a8085"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a94d3d9e050861a6a12bcf26b049a8085">eve::fluids::FluidSimulator::setSupportRadius</a></div><div class="ttdeci">void setSupportRadius(float h)</div><div class="ttdoc">Set SPH support radius.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00239">Fluids.cpp:239</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_a9f89c67d2fb27ec86a58870d92c516a8"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#a9f89c67d2fb27ec86a58870d92c516a8">eve::fluids::FluidSimulator::getParticleCount</a></div><div class="ttdeci">int getParticleCount() const</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00098">Fluids.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_aa42165ee360f65867388195471696049"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#aa42165ee360f65867388195471696049">eve::fluids::FluidSimulator::params</a></div><div class="ttdeci">const FluidParams &amp; params() const</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00116">Fluids.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_aa57b4a42ef451febc80c71903d475ac8"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#aa57b4a42ef451febc80c71903d475ac8">eve::fluids::FluidSimulator::~FluidSimulator</a></div><div class="ttdeci">~FluidSimulator()</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00059">Fluids.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_aa7599f93e7a78c0d9c5563ebb38bdf7c"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#aa7599f93e7a78c0d9c5563ebb38bdf7c">eve::fluids::FluidSimulator::readDensities</a></div><div class="ttdeci">void readDensities(std::vector&lt; float &gt; &amp;out) const</div><div class="ttdoc">Copy per-particle densities out (CPU mirror).</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00225">Fluids.cpp:225</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_aae4f527ee660ddcc753966de8c219d38"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#aae4f527ee660ddcc753966de8c219d38">eve::fluids::FluidSimulator::setGravity</a></div><div class="ttdeci">void setGravity(float x, float y, float z)</div><div class="ttdoc">Set the gravity vector.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00231">Fluids.cpp:231</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_abd11955e77e9a1f9794f06bf53a210b9"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#abd11955e77e9a1f9794f06bf53a210b9">eve::fluids::FluidSimulator::getMaxParticles</a></div><div class="ttdeci">int getMaxParticles() const</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00101">Fluids.h:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_aea9155c9c2f56bf56b748a8f74b66141"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#aea9155c9c2f56bf56b748a8f74b66141">eve::fluids::FluidSimulator::backendSelectionStatus</a></div><div class="ttdeci">eve::Status backendSelectionStatus() const</div><div class="ttdoc">Selection status, including observable provider/degraded-path diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00093">Fluids.h:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSimulator_html_af1010e27b6eb75a6838dbb61cc09829e"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSimulator.html#af1010e27b6eb75a6838dbb61cc09829e">eve::fluids::FluidSimulator::setCohesion</a></div><div class="ttdeci">void setCohesion(float cohesion)</div><div class="ttdoc">Set Akinci-style fluid-fluid cohesion strength.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00234">Fluids.cpp:234</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceRenderer_html"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceRenderer.html">eve::fluids::FluidSurfaceRenderer</a></div><div class="ttdoc">Buffer-level screen-space fluid renderer.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceRenderer_8h_source.html#l00050">FluidSurfaceRenderer.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1Fluids_html"><div class="ttname"><a href="classeve_1_1fluids_1_1Fluids.html">eve::fluids::Fluids</a></div><div class="ttdoc">Fluids module — factory + script binding.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00191">Fluids.h:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1Fluids_html_a76266b01a23cacccae7b8135bd1385dc"><div class="ttname"><a href="classeve_1_1fluids_1_1Fluids.html#a76266b01a23cacccae7b8135bd1385dc">eve::fluids::Fluids::Fluids</a></div><div class="ttdeci">Fluids()</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1Fluids_html_a806d510e9583f47ea5e525045db33af4"><div class="ttname"><a href="classeve_1_1fluids_1_1Fluids.html#a806d510e9583f47ea5e525045db33af4">eve::fluids::Fluids::~Fluids</a></div><div class="ttdeci">~Fluids() override</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1Fluids_html_a85031a56fb0883375306ef6dc1342cc6"><div class="ttname"><a href="classeve_1_1fluids_1_1Fluids.html#a85031a56fb0883375306ef6dc1342cc6">eve::fluids::Fluids::getSimulatorCount</a></div><div class="ttdeci">int getSimulatorCount() const</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00392">Fluids.cpp:392</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1Fluids_html_a88229dfca17b130a2cfd109022c78735"><div class="ttname"><a href="classeve_1_1fluids_1_1Fluids.html#a88229dfca17b130a2cfd109022c78735">eve::fluids::Fluids::getRendererCount</a></div><div class="ttdeci">int getRendererCount() const</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00404">Fluids.cpp:404</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1Fluids_html_a8fc77132445849a4198f0874fac5dc38"><div class="ttname"><a href="classeve_1_1fluids_1_1Fluids.html#a8fc77132445849a4198f0874fac5dc38">eve::fluids::Fluids::newSurfaceRenderer</a></div><div class="ttdeci">FluidSurfaceRenderer * newSurfaceRenderer(int width=160, int height=160)</div><div class="ttdoc">Create a screen-space fluid renderer.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00394">Fluids.cpp:394</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1Fluids_html_ae74e5bcfea2d842f4e80883c5e0ebbb8"><div class="ttname"><a href="classeve_1_1fluids_1_1Fluids.html#ae74e5bcfea2d842f4e80883c5e0ebbb8">eve::fluids::Fluids::Module_REG</a></div><div class="ttdeci">Module_REG(Fluids)</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1Fluids_html_ae779171b55c0bca3b407c81864dd6816"><div class="ttname"><a href="classeve_1_1fluids_1_1Fluids.html#ae779171b55c0bca3b407c81864dd6816">eve::fluids::Fluids::newSimulator</a></div><div class="ttdeci">FluidSimulator * newSimulator(int maxParticles=8192)</div><div class="ttdoc">Create a surface fluid simulator.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8cpp_source.html#l00385">Fluids.cpp:385</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1MeshSdf_html"><div class="ttname"><a href="classeve_1_1fluids_1_1MeshSdf.html">eve::fluids::MeshSdf</a></div><div class="ttdoc">Uniform signed-distance voxel field over a box.</div><div class="ttdef"><b>Definition</b> <a href="FluidSdf_8h_source.html#l00020">FluidSdf.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1ComputeShader_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></div><div class="ttdoc">Backend-agnostic compute program. Bind storage buffers then dispatch via Gpgpu::dispatch....</div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8h_source.html#l00015">ComputeShader.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1Gpgpu_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1Gpgpu.html">eve::gpgpu::Gpgpu</a></div><div class="ttdoc">GPGPU module — compute shaders + storage buffers via the active Graphics backend. Uses the graphics q...</div><div class="ttdef"><b>Definition</b> <a href="Gpgpu_8h_source.html#l00020">Gpgpu.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1GpuBuffer_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a></div><div class="ttdoc">Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived c...</div><div class="ttdef"><b>Definition</b> <a href="GpuBuffer_8h_source.html#l00018">GpuBuffer.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1Sequence_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1Sequence.html">eve::gpgpu::Sequence</a></div><div class="ttdef"><b>Definition</b> <a href="Sequence_8h_source.html#l00038">Sequence.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></div><div class="ttdoc">Minimal observable contract for physics simulation providers.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00139">SimulationBackend.h:139</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidGpuKernels_8h_source.html#l00036">FluidGpuKernels.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html">eve::gpgpu</a></div><div class="ttdoc">Fluids module — interactive surface fluid simulation.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00031">Fluids.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fb"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">eve::physics::SimulationBackendKind</a></div><div class="ttdeci">SimulationBackendKind</div><div class="ttdoc">Kind of implementation that owns a simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00031">SimulationBackend.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38">eve::physics::SimulationBackendKind::Gpu</a></div><div class="ttdeci">@ Gpu</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">eve::physics::SimulationBackendKind::Cpu</a></div><div class="ttdeci">@ Cpu</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_aa67e2557397fd06af07a4a5fd74f8d14"><div class="ttname"><a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">eve::physics::SimulationDeterminism</a></div><div class="ttdeci">SimulationDeterminism</div><div class="ttdoc">Determinism guarantee made by a simulation backend.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00047">SimulationBackend.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059"><div class="ttname"><a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">eve::physics::SimulationDeterminism::ToleranceBounded</a></div><div class="ttdeci">@ ToleranceBounded</div><div class="ttdoc">Results are equivalent within a documented numeric tolerance.</div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html">eve::fluids::FluidParams</a></div><div class="ttdoc">Tuning knobs of one fluid simulation.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00026">FluidMath.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SimGrid_html"><div class="ttname"><a href="structeve_1_1fluids_1_1SimGrid.html">eve::fluids::SimGrid</a></div><div class="ttdoc">Uniform grid used for neighbor queries.</div><div class="ttdef"><b>Definition</b> <a href="FluidSimulation_8h_source.html#l00023">FluidSimulation.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationObservation_html"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationObservation.html">eve::physics::SimulationObservation</a></div><div class="ttdoc">Observable backend progress shared by CPU and accelerator providers.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00117">SimulationBackend.h:117</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationSettings_html"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationSettings.html">eve::physics::SimulationSettings</a></div><div class="ttdoc">Validated solver policy for one simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00101">SimulationBackend.h:101</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

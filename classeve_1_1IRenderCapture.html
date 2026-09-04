@@ -1,0 +1,882 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::IRenderCapture类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1IRenderCapture.html">IRenderCapture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1IRenderCapture-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::IRenderCapture类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Frame capture + camera + visible-entity inspection (graphics).  
+ <a href="classeve_1_1IRenderCapture.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RenderCapture_8h_source.html">RenderCapture.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7efb5727a5f1adae8354e2cf365455d8" id="r_a7efb5727a5f1adae8354e2cf365455d8"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#a7efb5727a5f1adae8354e2cf365455d8">~IRenderCapture</a> ()=default</td></tr>
+<tr class="separator:a7efb5727a5f1adae8354e2cf365455d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb7089c08f916d905e0c0bf91d02cfa0" id="r_adb7089c08f916d905e0c0bf91d02cfa0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1RenderStatusInfo.html">RenderStatusInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#adb7089c08f916d905e0c0bf91d02cfa0">status</a> () const =0</td></tr>
+<tr class="separator:adb7089c08f916d905e0c0bf91d02cfa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac697e820d953ff99c403b628b49118bd" id="r_ac697e820d953ff99c403b628b49118bd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#ac697e820d953ff99c403b628b49118bd">setReadbackEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)=0</td></tr>
+<tr class="memdesc:ac697e820d953ff99c403b628b49118bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable full-frame readback for subsequent presents.  <br /></td></tr>
+<tr class="separator:ac697e820d953ff99c403b628b49118bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ddef2334f181ff3bb600a2c0aa263f0" id="r_a7ddef2334f181ff3bb600a2c0aa263f0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#a7ddef2334f181ff3bb600a2c0aa263f0">savePng</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, int *outWidth, int *outHeight, std::string *err)=0</td></tr>
+<tr class="memdesc:a7ddef2334f181ff3bb600a2c0aa263f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture the last presented frame and write a PNG.  <br /></td></tr>
+<tr class="separator:a7ddef2334f181ff3bb600a2c0aa263f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae78bae27f4c678628734b0c36a788fa" id="r_aae78bae27f4c678628734b0c36a788fa"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#aae78bae27f4c678628734b0c36a788fa">capturePngDataUrl</a> ()=0</td></tr>
+<tr class="memdesc:aae78bae27f4c678628734b0c36a788fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture the last presented frame as a base64 PNG data URL.  <br /></td></tr>
+<tr class="separator:aae78bae27f4c678628734b0c36a788fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c9a99d3a73ad610522538b8fa7cfd62" id="r_a6c9a99d3a73ad610522538b8fa7cfd62"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#a6c9a99d3a73ad610522538b8fa7cfd62">ensureCamera</a> ()=0</td></tr>
+<tr class="memdesc:a6c9a99d3a73ad610522538b8fa7cfd62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the active Camera3D (create one lazily); true when usable.  <br /></td></tr>
+<tr class="separator:a6c9a99d3a73ad610522538b8fa7cfd62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eb22f1ceca79a6770e0fd2c85cef59e" id="r_a1eb22f1ceca79a6770e0fd2c85cef59e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#a1eb22f1ceca79a6770e0fd2c85cef59e">setCameraPose</a> (float ex, float ey, float ez, float tx, float ty, float tz, float fovYDeg)=0</td></tr>
+<tr class="memdesc:a1eb22f1ceca79a6770e0fd2c85cef59e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set camera eye/target/fov (fov &lt;= 0 keeps current).  <br /></td></tr>
+<tr class="separator:a1eb22f1ceca79a6770e0fd2c85cef59e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace190fbd9c1c47dc09fce9cc7363906f" id="r_ace190fbd9c1c47dc09fce9cc7363906f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#ace190fbd9c1c47dc09fce9cc7363906f">setCameraPoseYawPitch</a> (float ex, float ey, float ez, float yawDeg, float pitchDeg, float fovYDeg)=0</td></tr>
+<tr class="memdesc:ace190fbd9c1c47dc09fce9cc7363906f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set camera eye + yaw/pitch (degrees) + fov.  <br /></td></tr>
+<tr class="separator:ace190fbd9c1c47dc09fce9cc7363906f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c2e9229b1466fd7657b7467b5832c56" id="r_a1c2e9229b1466fd7657b7467b5832c56"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#a1c2e9229b1466fd7657b7467b5832c56">cameraPoseJson</a> ()=0</td></tr>
+<tr class="memdesc:a1c2e9229b1466fd7657b7467b5832c56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current camera pose as JSON (eye/target/fov/viewport).  <br /></td></tr>
+<tr class="separator:a1c2e9229b1466fd7657b7467b5832c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2261c7856ee115e4bcd28499fb06355" id="r_aa2261c7856ee115e4bcd28499fb06355"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1Renderable3DInfo.html">Renderable3DInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#aa2261c7856ee115e4bcd28499fb06355">inspectRenderable3D</a> (std::uint32_t entityId, std::uint32_t generation)=0</td></tr>
+<tr class="memdesc:aa2261c7856ee115e4bcd28499fb06355"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspect one live Renderable3D using its complete ECS identity.  <br /></td></tr>
+<tr class="separator:aa2261c7856ee115e4bcd28499fb06355"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1fbca5cd088b760d2e735214ad442e9" id="r_aa1fbca5cd088b760d2e735214ad442e9"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#aa1fbca5cd088b760d2e735214ad442e9">visibleEntitiesJson</a> (float fovYDeg, bool *<a class="el" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>)=0</td></tr>
+<tr class="memdesc:aa1fbca5cd088b760d2e735214ad442e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visible-entity 3D snapshot JSON for the current camera.  <br /></td></tr>
+<tr class="separator:aa1fbca5cd088b760d2e735214ad442e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a946fecad074d43fb1e2936861a2b4d15" id="r_a946fecad074d43fb1e2936861a2b4d15"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#a946fecad074d43fb1e2936861a2b4d15">visibleEntitiesJsonAt</a> (float ex, float ey, float ez, float tx, float ty, float tz, float fovYDeg, bool *<a class="el" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>)=0</td></tr>
+<tr class="memdesc:a946fecad074d43fb1e2936861a2b4d15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visible-entity 3D snapshot JSON at an explicit camera pose.  <br /></td></tr>
+<tr class="separator:a946fecad074d43fb1e2936861a2b4d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5dcd8bfc65346d6727bce193f56d2cf" id="r_aa5dcd8bfc65346d6727bce193f56d2cf"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#aa5dcd8bfc65346d6727bce193f56d2cf">entityIdMaskJson</a> (int *outWidth, int *outHeight, bool *<a class="el" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>)=0</td></tr>
+<tr class="memdesc:aa5dcd8bfc65346d6727bce193f56d2cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-pixel entity-ID mask JSON (id -&gt; node map).  <br /></td></tr>
+<tr class="separator:aa5dcd8bfc65346d6727bce193f56d2cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95477e42b6574088ba12ffe930dd3a0e" id="r_a95477e42b6574088ba12ffe930dd3a0e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#a95477e42b6574088ba12ffe930dd3a0e">entityIdMaskPng</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *err)=0</td></tr>
+<tr class="memdesc:a95477e42b6574088ba12ffe930dd3a0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render the entity-ID mask and write it as a PNG.  <br /></td></tr>
+<tr class="separator:a95477e42b6574088ba12ffe930dd3a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7cfac9f12a16955566052568f109aeb" id="r_aa7cfac9f12a16955566052568f109aeb"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#aa7cfac9f12a16955566052568f109aeb">gbufferPng</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *err)=0</td></tr>
+<tr class="memdesc:aa7cfac9f12a16955566052568f109aeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save a G-buffer attachment ("depth"|"normal") as PNG.  <br /></td></tr>
+<tr class="separator:aa7cfac9f12a16955566052568f109aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a5f92d55ce72972abd9d37b518a295503" id="r_a5f92d55ce72972abd9d37b518a295503"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IRenderCapture.html#a5f92d55ce72972abd9d37b518a295503">capabilityName</a> = &quot;IRenderCapture&quot;</td></tr>
+<tr class="separator:a5f92d55ce72972abd9d37b518a295503"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Frame capture + camera + visible-entity inspection (graphics). </p>
+
+<p class="definition">在文件 <a class="el" href="RenderCapture_8h_source.html">RenderCapture.h</a> 第 <a class="el" href="RenderCapture_8h_source.html#l00035">35</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7efb5727a5f1adae8354e2cf365455d8" name="a7efb5727a5f1adae8354e2cf365455d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7efb5727a5f1adae8354e2cf365455d8">&#9670;&#160;</a></span>~IRenderCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::IRenderCapture::~IRenderCapture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1c2e9229b1466fd7657b7467b5832c56" name="a1c2e9229b1466fd7657b7467b5832c56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c2e9229b1466fd7657b7467b5832c56">&#9670;&#160;</a></span>cameraPoseJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IRenderCapture::cameraPoseJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current camera pose as JSON (eye/target/fov/viewport). </p>
+
+</div>
+</div>
+<a id="aae78bae27f4c678628734b0c36a788fa" name="aae78bae27f4c678628734b0c36a788fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae78bae27f4c678628734b0c36a788fa">&#9670;&#160;</a></span>capturePngDataUrl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IRenderCapture::capturePngDataUrl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capture the last presented frame as a base64 PNG data URL. </p>
+
+</div>
+</div>
+<a id="a6c9a99d3a73ad610522538b8fa7cfd62" name="a6c9a99d3a73ad610522538b8fa7cfd62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c9a99d3a73ad610522538b8fa7cfd62">&#9670;&#160;</a></span>ensureCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::IRenderCapture::ensureCamera </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find the active Camera3D (create one lazily); true when usable. </p>
+
+</div>
+</div>
+<a id="aa5dcd8bfc65346d6727bce193f56d2cf" name="aa5dcd8bfc65346d6727bce193f56d2cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5dcd8bfc65346d6727bce193f56d2cf">&#9670;&#160;</a></span>entityIdMaskJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IRenderCapture::entityIdMaskJson </td>
+          <td>(</td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>outWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>outHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>ok</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Per-pixel entity-ID mask JSON (id -&gt; node map). </p>
+
+</div>
+</div>
+<a id="a95477e42b6574088ba12ffe930dd3a0e" name="a95477e42b6574088ba12ffe930dd3a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95477e42b6574088ba12ffe930dd3a0e">&#9670;&#160;</a></span>entityIdMaskPng()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::IRenderCapture::entityIdMaskPng </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Render the entity-ID mask and write it as a PNG. </p>
+
+</div>
+</div>
+<a id="aa7cfac9f12a16955566052568f109aeb" name="aa7cfac9f12a16955566052568f109aeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7cfac9f12a16955566052568f109aeb">&#9670;&#160;</a></span>gbufferPng()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::IRenderCapture::gbufferPng </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Save a G-buffer attachment ("depth"|"normal") as PNG. </p>
+
+</div>
+</div>
+<a id="aa2261c7856ee115e4bcd28499fb06355" name="aa2261c7856ee115e4bcd28499fb06355"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2261c7856ee115e4bcd28499fb06355">&#9670;&#160;</a></span>inspectRenderable3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1Renderable3DInfo.html">Renderable3DInfo</a> &gt; eve::IRenderCapture::inspectRenderable3D </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>entityId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>generation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inspect one live Renderable3D using its complete ECS identity. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning value snapshot, or a structured stale-handle failure. @thread Engine-main-thread only. @reentrancy Does not invoke scripts or callbacks. </dd></dl>
+
+</div>
+</div>
+<a id="a7ddef2334f181ff3bb600a2c0aa263f0" name="a7ddef2334f181ff3bb600a2c0aa263f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ddef2334f181ff3bb600a2c0aa263f0">&#9670;&#160;</a></span>savePng()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::IRenderCapture::savePng </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>outWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>outHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>err</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capture the last presented frame and write a PNG. </p>
+
+</div>
+</div>
+<a id="a1eb22f1ceca79a6770e0fd2c85cef59e" name="a1eb22f1ceca79a6770e0fd2c85cef59e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eb22f1ceca79a6770e0fd2c85cef59e">&#9670;&#160;</a></span>setCameraPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::IRenderCapture::setCameraPose </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ez</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set camera eye/target/fov (fov &lt;= 0 keeps current). </p>
+
+</div>
+</div>
+<a id="ace190fbd9c1c47dc09fce9cc7363906f" name="ace190fbd9c1c47dc09fce9cc7363906f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace190fbd9c1c47dc09fce9cc7363906f">&#9670;&#160;</a></span>setCameraPoseYawPitch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::IRenderCapture::setCameraPoseYawPitch </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ez</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yawDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pitchDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set camera eye + yaw/pitch (degrees) + fov. </p>
+
+</div>
+</div>
+<a id="ac697e820d953ff99c403b628b49118bd" name="ac697e820d953ff99c403b628b49118bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac697e820d953ff99c403b628b49118bd">&#9670;&#160;</a></span>setReadbackEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::IRenderCapture::setReadbackEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enable/disable full-frame readback for subsequent presents. </p>
+
+</div>
+</div>
+<a id="adb7089c08f916d905e0c0bf91d02cfa0" name="adb7089c08f916d905e0c0bf91d02cfa0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb7089c08f916d905e0c0bf91d02cfa0">&#9670;&#160;</a></span>status()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structeve_1_1RenderStatusInfo.html">RenderStatusInfo</a> eve::IRenderCapture::status </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa1fbca5cd088b760d2e735214ad442e9" name="aa1fbca5cd088b760d2e735214ad442e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1fbca5cd088b760d2e735214ad442e9">&#9670;&#160;</a></span>visibleEntitiesJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IRenderCapture::visibleEntitiesJson </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>ok</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Visible-entity 3D snapshot JSON for the current camera. </p>
+
+</div>
+</div>
+<a id="a946fecad074d43fb1e2936861a2b4d15" name="a946fecad074d43fb1e2936861a2b4d15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a946fecad074d43fb1e2936861a2b4d15">&#9670;&#160;</a></span>visibleEntitiesJsonAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::IRenderCapture::visibleEntitiesJsonAt </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ez</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>ok</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Visible-entity 3D snapshot JSON at an explicit camera pose. </p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a5f92d55ce72972abd9d37b518a295503" name="a5f92d55ce72972abd9d37b518a295503"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f92d55ce72972abd9d37b518a295503">&#9670;&#160;</a></span>capabilityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::IRenderCapture::capabilityName = &quot;IRenderCapture&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderCapture_8h_source.html">RenderCapture.h</a> 第 <a class="el" href="RenderCapture_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="RenderCapture_8h_source.html">RenderCapture.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

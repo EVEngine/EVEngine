@@ -1,0 +1,2325 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::filesystem::Filesystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1filesystem.html">filesystem</a></li><li class="navelem"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html">Filesystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1filesystem_1_1Filesystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::filesystem::Filesystem类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Filesystem_8h_source.html">Filesystem.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::filesystem::Filesystem 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1filesystem_1_1Filesystem.png" usemap="#eve::filesystem::Filesystem_map" alt=""/>
+  <map id="eve::filesystem::Filesystem_map" name="eve::filesystem::Filesystem_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,202,24"/>
+<area href="classeve_1_1service_1_1IFileSystem.html" title="Minimal file read / write / existence surface. Providers: eve::filesystem::Filesystem...." alt="eve::service::IFileSystem" shape="rect" coords="212,0,414,24"/>
+<area href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html" title="PhysFS 文件系统后端实现（挂载/解挂、读写、热重载）。" alt="eve::filesystem::physfs::Filesystem" shape="rect" coords="106,112,308,136"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1filesystem_1_1Filesystem_1_1Info.html">Info</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acd310afa9e7deb0006511129a9d870f1" id="r_acd310afa9e7deb0006511129a9d870f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#acd310afa9e7deb0006511129a9d870f1">Module_REG</a> (<a class="el" href="classeve_1_1filesystem_1_1Filesystem.html">Filesystem</a>)</td></tr>
+<tr class="separator:acd310afa9e7deb0006511129a9d870f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a821151c56fb8bb504337240a089b8ad0" id="r_a821151c56fb8bb504337240a089b8ad0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a821151c56fb8bb504337240a089b8ad0">Filesystem</a> ()</td></tr>
+<tr class="separator:a821151c56fb8bb504337240a089b8ad0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc918190e64c63de66958ba0d0cffd34" id="r_afc918190e64c63de66958ba0d0cffd34"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#afc918190e64c63de66958ba0d0cffd34">~Filesystem</a> ()</td></tr>
+<tr class="separator:afc918190e64c63de66958ba0d0cffd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f4e5fc70de82bb26ed421c78579285f" id="r_a9f4e5fc70de82bb26ed421c78579285f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a9f4e5fc70de82bb26ed421c78579285f">readFile</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::vector&lt; uint8_t &gt; &amp;out) override</td></tr>
+<tr class="memdesc:a9f4e5fc70de82bb26ed421c78579285f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads an entire file.  <br /></td></tr>
+<tr class="separator:a9f4e5fc70de82bb26ed421c78579285f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae603c1c1647b7bf565b8bdf649931f18" id="r_ae603c1c1647b7bf565b8bdf649931f18"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ae603c1c1647b7bf565b8bdf649931f18">writeFile</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const void *data, size_t size) override</td></tr>
+<tr class="memdesc:ae603c1c1647b7bf565b8bdf649931f18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes bytes to a file.  <br /></td></tr>
+<tr class="separator:ae603c1c1647b7bf565b8bdf649931f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa34cfddadf3a595b47460bf6d38e1078" id="r_aa34cfddadf3a595b47460bf6d38e1078"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aa34cfddadf3a595b47460bf6d38e1078">fileExists</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) override</td></tr>
+<tr class="memdesc:aa34cfddadf3a595b47460bf6d38e1078"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the path exists (file or directory).  <br /></td></tr>
+<tr class="separator:aa34cfddadf3a595b47460bf6d38e1078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a261a8b436c9c53ceab1a485af0d5bea5" id="r_a261a8b436c9c53ceab1a485af0d5bea5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a261a8b436c9c53ceab1a485af0d5bea5">init</a> (const char *arg0)=0</td></tr>
+<tr class="separator:a261a8b436c9c53ceab1a485af0d5bea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a913bcbd13ac1f80842ce517b5f8c7978" id="r_a913bcbd13ac1f80842ce517b5f8c7978"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a913bcbd13ac1f80842ce517b5f8c7978">setFused</a> (bool fused)=0</td></tr>
+<tr class="separator:a913bcbd13ac1f80842ce517b5f8c7978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5c4a4ba1fce20b24ac74d3bce62c8a7" id="r_aa5c4a4ba1fce20b24ac74d3bce62c8a7"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aa5c4a4ba1fce20b24ac74d3bce62c8a7">isFused</a> () const =0</td></tr>
+<tr class="separator:aa5c4a4ba1fce20b24ac74d3bce62c8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7a23ad518d2e4d14a9fdf0463b3ca84" id="r_ae7a23ad518d2e4d14a9fdf0463b3ca84"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ae7a23ad518d2e4d14a9fdf0463b3ca84">setupWriteDirectory</a> ()=0</td></tr>
+<tr class="memdesc:ae7a23ad518d2e4d14a9fdf0463b3ca84"><td class="mdescLeft">&#160;</td><td class="mdescRight">This sets up the save directory. If the it is already set up, nothing happens.  <br /></td></tr>
+<tr class="separator:ae7a23ad518d2e4d14a9fdf0463b3ca84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa8aa7457b76f21a3c14db0885ccff59" id="r_afa8aa7457b76f21a3c14db0885ccff59"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#afa8aa7457b76f21a3c14db0885ccff59">setAndroidSaveExternal</a> (bool external=false)</td></tr>
+<tr class="memdesc:afa8aa7457b76f21a3c14db0885ccff59"><td class="mdescLeft">&#160;</td><td class="mdescRight">This sets the save location on Android. False for internal, true for external  <br /></td></tr>
+<tr class="separator:afa8aa7457b76f21a3c14db0885ccff59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a345fef033dc2f2f31bc866756943b184" id="r_a345fef033dc2f2f31bc866756943b184"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a345fef033dc2f2f31bc866756943b184">isAndroidSaveExternal</a> () const</td></tr>
+<tr class="memdesc:a345fef033dc2f2f31bc866756943b184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the Android save is external. Returns a bool.  <br /></td></tr>
+<tr class="separator:a345fef033dc2f2f31bc866756943b184"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65f68180068e9d3003113924a9452aee" id="r_a65f68180068e9d3003113924a9452aee"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a65f68180068e9d3003113924a9452aee">setIdentity</a> (std::string ident, bool appendToPath=false)=0</td></tr>
+<tr class="memdesc:a65f68180068e9d3003113924a9452aee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the name of the save folder.  <br /></td></tr>
+<tr class="separator:a65f68180068e9d3003113924a9452aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add21da5e8b60a8bd9308a2cb587d746b" id="r_add21da5e8b60a8bd9308a2cb587d746b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#add21da5e8b60a8bd9308a2cb587d746b">getIdentity</a> () const =0</td></tr>
+<tr class="separator:add21da5e8b60a8bd9308a2cb587d746b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a560ab2f2dbe17f7cb9987a705d754af1" id="r_a560ab2f2dbe17f7cb9987a705d754af1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a560ab2f2dbe17f7cb9987a705d754af1">setSource</a> (std::string <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)=0</td></tr>
+<tr class="memdesc:a560ab2f2dbe17f7cb9987a705d754af1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the path to the game source. This can only be set once.  <br /></td></tr>
+<tr class="separator:a560ab2f2dbe17f7cb9987a705d754af1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8b0de4449c21cb6f291c561c148864f" id="r_ab8b0de4449c21cb6f291c561c148864f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ab8b0de4449c21cb6f291c561c148864f">setSourceFromMemory</a> (const void *data, size_t size)=0</td></tr>
+<tr class="memdesc:ab8b0de4449c21cb6f291c561c148864f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads the game source from a packaged archive (.eve / zip) held entirely in memory and mounts it at "/" (no extraction to disk). The bytes are copied and kept alive for the lifetime of the mounted archive. This can only be set once.  <br /></td></tr>
+<tr class="separator:ab8b0de4449c21cb6f291c561c148864f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7444f76584254df2edac3601b1fda92" id="r_af7444f76584254df2edac3601b1fda92"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#af7444f76584254df2edac3601b1fda92">getSource</a> () const =0</td></tr>
+<tr class="memdesc:af7444f76584254df2edac3601b1fda92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the path to the game source. Returns a 0-length string if the source has not been set.  <br /></td></tr>
+<tr class="separator:af7444f76584254df2edac3601b1fda92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3681ddff1cf29b66a5fc568b0f5bad9" id="r_ac3681ddff1cf29b66a5fc568b0f5bad9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ac3681ddff1cf29b66a5fc568b0f5bad9">mount</a> (std::string archive, std::string mountpoint, bool appendToPath=false)=0</td></tr>
+<tr class="memdesc:ac3681ddff1cf29b66a5fc568b0f5bad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mounts an archive (path or in-memory <a class="el" href="classeve_1_1Data.html">Data</a>) at a virtual mountpoint.  <br /></td></tr>
+<tr class="separator:ac3681ddff1cf29b66a5fc568b0f5bad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a494abba1d06dc605510ce9a0478f665b" id="r_a494abba1d06dc605510ce9a0478f665b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a494abba1d06dc605510ce9a0478f665b">mount</a> (<a class="el" href="classeve_1_1Data.html">Data</a> *data, std::string archivename, std::string mountpoint, bool appendToPath=false)=0</td></tr>
+<tr class="separator:a494abba1d06dc605510ce9a0478f665b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dc2f5e70c721323b4e2cd3887ebc697" id="r_a6dc2f5e70c721323b4e2cd3887ebc697"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a6dc2f5e70c721323b4e2cd3887ebc697">mountRealDirectory</a> (std::string realDir, std::string mountpoint, bool appendToPath=false)=0</td></tr>
+<tr class="separator:a6dc2f5e70c721323b4e2cd3887ebc697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae15d76d77adc97342b0945bacde9e1b0" id="r_ae15d76d77adc97342b0945bacde9e1b0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ae15d76d77adc97342b0945bacde9e1b0">unmountRealDirectory</a> (std::string realDir)=0</td></tr>
+<tr class="separator:ae15d76d77adc97342b0945bacde9e1b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b2f690254f4e23f44b65ec3f04a3651" id="r_a0b2f690254f4e23f44b65ec3f04a3651"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a0b2f690254f4e23f44b65ec3f04a3651">unmount</a> (std::string archive)=0</td></tr>
+<tr class="memdesc:a0b2f690254f4e23f44b65ec3f04a3651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unmounts a previously mounted archive.  <br /></td></tr>
+<tr class="separator:a0b2f690254f4e23f44b65ec3f04a3651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d1fd64d59031597fbde70028a9cf07c" id="r_a2d1fd64d59031597fbde70028a9cf07c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a2d1fd64d59031597fbde70028a9cf07c">unmount</a> (<a class="el" href="classeve_1_1Data.html">Data</a> *data)=0</td></tr>
+<tr class="memdesc:a2d1fd64d59031597fbde70028a9cf07c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unmounts a previously mounted in-memory archive.  <br /></td></tr>
+<tr class="separator:a2d1fd64d59031597fbde70028a9cf07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8de4471fb81f6a47b10b8d4256f1dc4c" id="r_a8de4471fb81f6a47b10b8d4256f1dc4c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1filesystem_1_1File.html">File</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a8de4471fb81f6a47b10b8d4256f1dc4c">newFile</a> (std::string filename) const =0</td></tr>
+<tr class="memdesc:a8de4471fb81f6a47b10b8d4256f1dc4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new file.  <br /></td></tr>
+<tr class="separator:a8de4471fb81f6a47b10b8d4256f1dc4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e2198b207d73ed4498e1ad7077960f0" id="r_a7e2198b207d73ed4498e1ad7077960f0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a7e2198b207d73ed4498e1ad7077960f0">newFileData</a> (const void *data, std::string filename, size_t size) const</td></tr>
+<tr class="memdesc:a7e2198b207d73ed4498e1ad7077960f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new <a class="el" href="classeve_1_1filesystem_1_1FileData.html" title="Data buffer paired with a filename (used for type identification).">FileData</a> object. <a class="el" href="classeve_1_1Data.html">Data</a> will be copied.  <br /></td></tr>
+<tr class="separator:a7e2198b207d73ed4498e1ad7077960f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90244c6b72d30529cadd0814b018b8d8" id="r_a90244c6b72d30529cadd0814b018b8d8"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a90244c6b72d30529cadd0814b018b8d8">getWorkingDirectory</a> ()=0</td></tr>
+<tr class="memdesc:a90244c6b72d30529cadd0814b018b8d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current working directory.  <br /></td></tr>
+<tr class="separator:a90244c6b72d30529cadd0814b018b8d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a560a263a5991e53da393b8130489bb" id="r_a3a560a263a5991e53da393b8130489bb"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a3a560a263a5991e53da393b8130489bb">getUserDirectory</a> ()=0</td></tr>
+<tr class="memdesc:a3a560a263a5991e53da393b8130489bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the user home directory.  <br /></td></tr>
+<tr class="separator:a3a560a263a5991e53da393b8130489bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab32001108bca1403690461c0193d6c5a" id="r_ab32001108bca1403690461c0193d6c5a"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ab32001108bca1403690461c0193d6c5a">getAppdataDirectory</a> ()=0</td></tr>
+<tr class="memdesc:ab32001108bca1403690461c0193d6c5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the APPDATA directory. On Windows, this is the folder in the APPDATA% enviroment variable. On Linux, this is the user home folder.  <br /></td></tr>
+<tr class="separator:ab32001108bca1403690461c0193d6c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab63149065690c8b707ccd261c6d79067" id="r_ab63149065690c8b707ccd261c6d79067"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ab63149065690c8b707ccd261c6d79067">getSaveDirectory</a> ()=0</td></tr>
+<tr class="memdesc:ab63149065690c8b707ccd261c6d79067"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the full path of the save folder.  <br /></td></tr>
+<tr class="separator:ab63149065690c8b707ccd261c6d79067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d1f68a27601345cc76a30f4707cff2b" id="r_a0d1f68a27601345cc76a30f4707cff2b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a0d1f68a27601345cc76a30f4707cff2b">getSourceBaseDirectory</a> () const =0</td></tr>
+<tr class="memdesc:a0d1f68a27601345cc76a30f4707cff2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the full path to the directory containing the game source. For example if the game source is C:\Games\mygame.love, this will return C:\Games.  <br /></td></tr>
+<tr class="separator:a0d1f68a27601345cc76a30f4707cff2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3ddf8e4e5f85f84a3d4216bf13adada" id="r_aa3ddf8e4e5f85f84a3d4216bf13adada"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aa3ddf8e4e5f85f84a3d4216bf13adada">getRealDirectory</a> (std::string filename) const =0</td></tr>
+<tr class="memdesc:aa3ddf8e4e5f85f84a3d4216bf13adada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the real directory path containing the file.  <br /></td></tr>
+<tr class="separator:aa3ddf8e4e5f85f84a3d4216bf13adada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c0843032c82ba75fb9a7a32f7771bc" id="r_a47c0843032c82ba75fb9a7a32f7771bc"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a47c0843032c82ba75fb9a7a32f7771bc">getInfo</a> (std::string filepath, <a class="el" href="structeve_1_1filesystem_1_1Filesystem_1_1Info.html">Info</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>) const =0</td></tr>
+<tr class="memdesc:a47c0843032c82ba75fb9a7a32f7771bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets information about the item at the specified filepath. Returns false if nothing exists at the path.  <br /></td></tr>
+<tr class="separator:a47c0843032c82ba75fb9a7a32f7771bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add13703736d928a4fb19c2d810c7374c" id="r_add13703736d928a4fb19c2d810c7374c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#add13703736d928a4fb19c2d810c7374c">createDirectory</a> (std::string <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)=0</td></tr>
+<tr class="memdesc:add13703736d928a4fb19c2d810c7374c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a directory. Write dir must be set.  <br /></td></tr>
+<tr class="separator:add13703736d928a4fb19c2d810c7374c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abffb3efa743e4e8b98ff375c4e562650" id="r_abffb3efa743e4e8b98ff375c4e562650"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#abffb3efa743e4e8b98ff375c4e562650">remove</a> (std::string <a class="el" href="EveFileSystem_8cpp.html#a034078985d3cd1ed322585d4cc1dd314">file</a>)=0</td></tr>
+<tr class="memdesc:abffb3efa743e4e8b98ff375c4e562650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a file (or directory).  <br /></td></tr>
+<tr class="separator:abffb3efa743e4e8b98ff375c4e562650"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea137da607d7ec5e64ce6f01ee488bbb" id="r_aea137da607d7ec5e64ce6f01ee488bbb"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aea137da607d7ec5e64ce6f01ee488bbb">read</a> (std::string filename, int64_t size=<a class="el" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">File::ALL</a>) const =0</td></tr>
+<tr class="memdesc:aea137da607d7ec5e64ce6f01ee488bbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads data from a file.  <br /></td></tr>
+<tr class="separator:aea137da607d7ec5e64ce6f01ee488bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae58c9d05a36a8bd3b7b77ee00d0486da" id="r_ae58c9d05a36a8bd3b7b77ee00d0486da"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ae58c9d05a36a8bd3b7b77ee00d0486da">write</a> (std::string filename, const void *data, int64_t size) const =0</td></tr>
+<tr class="memdesc:ae58c9d05a36a8bd3b7b77ee00d0486da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write data to a file.  <br /></td></tr>
+<tr class="separator:ae58c9d05a36a8bd3b7b77ee00d0486da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed941e3a11289d6176698691ecf42ff2" id="r_aed941e3a11289d6176698691ecf42ff2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aed941e3a11289d6176698691ecf42ff2">append</a> (std::string filename, const void *data, int64_t size) const =0</td></tr>
+<tr class="memdesc:aed941e3a11289d6176698691ecf42ff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append data to a file, creating it if it doesn't exist.  <br /></td></tr>
+<tr class="separator:aed941e3a11289d6176698691ecf42ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4865f7593b53c8b11e082359890ab6c1" id="r_a4865f7593b53c8b11e082359890ab6c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a4865f7593b53c8b11e082359890ab6c1">writeText</a> (const std::string &amp;filename, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>) const</td></tr>
+<tr class="memdesc:a4865f7593b53c8b11e082359890ab6c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a UTF-8 string to a file in the configured save directory.  <br /></td></tr>
+<tr class="separator:a4865f7593b53c8b11e082359890ab6c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcea4eaba88ca381a2de4ea996c5d272" id="r_afcea4eaba88ca381a2de4ea996c5d272"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#afcea4eaba88ca381a2de4ea996c5d272">writeTextAtomic</a> (std::string_view filename, std::string_view <a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="memdesc:afcea4eaba88ca381a2de4ea996c5d272"><td class="mdescLeft">&#160;</td><td class="mdescRight">Durably replace a UTF-8 text file in the configured save directory.  <br /></td></tr>
+<tr class="separator:afcea4eaba88ca381a2de4ea996c5d272"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dbf4e79639d75368482573619928677" id="r_a7dbf4e79639d75368482573619928677"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a7dbf4e79639d75368482573619928677">readText</a> (const std::string &amp;filename) const</td></tr>
+<tr class="memdesc:a7dbf4e79639d75368482573619928677"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a UTF-8 string from the virtual filesystem.  <br /></td></tr>
+<tr class="separator:a7dbf4e79639d75368482573619928677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99661a7b96ac201f67dae2f376e47e93" id="r_a99661a7b96ac201f67dae2f376e47e93"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a99661a7b96ac201f67dae2f376e47e93">getDirectoryItems</a> (std::string <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>)=0</td></tr>
+<tr class="memdesc:a99661a7b96ac201f67dae2f376e47e93"><td class="mdescLeft">&#160;</td><td class="mdescRight">This "native" method returns a table of all files in a given directory.  <br /></td></tr>
+<tr class="separator:a99661a7b96ac201f67dae2f376e47e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af302900c0baacd0d6cc223681c801ce3" id="r_af302900c0baacd0d6cc223681c801ce3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#af302900c0baacd0d6cc223681c801ce3">setSymlinksEnabled</a> (bool enable)=0</td></tr>
+<tr class="memdesc:af302900c0baacd0d6cc223681c801ce3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable symbolic link support in love.filesystem.  <br /></td></tr>
+<tr class="separator:af302900c0baacd0d6cc223681c801ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5807466e478a27b77fb507645ad995c" id="r_ae5807466e478a27b77fb507645ad995c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ae5807466e478a27b77fb507645ad995c">areSymlinksEnabled</a> () const =0</td></tr>
+<tr class="memdesc:ae5807466e478a27b77fb507645ad995c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether symbolic link support is enabled.  <br /></td></tr>
+<tr class="separator:ae5807466e478a27b77fb507645ad995c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e92afb2b1af06f4033e93f0e71225b4" id="r_a6e92afb2b1af06f4033e93f0e71225b4"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a6e92afb2b1af06f4033e93f0e71225b4">getRequirePath</a> ()=0</td></tr>
+<tr class="separator:a6e92afb2b1af06f4033e93f0e71225b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7d4b7d8a35ef9d6d2d51615ce31476" id="r_afc7d4b7d8a35ef9d6d2d51615ce31476"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#afc7d4b7d8a35ef9d6d2d51615ce31476">getCRequirePath</a> ()=0</td></tr>
+<tr class="separator:afc7d4b7d8a35ef9d6d2d51615ce31476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f921171bd1c2a1ef04b890e823f6948" id="r_a1f921171bd1c2a1ef04b890e823f6948"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a1f921171bd1c2a1ef04b890e823f6948">allowMountingForPath</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)=0</td></tr>
+<tr class="memdesc:a1f921171bd1c2a1ef04b890e823f6948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows a full (OS-dependent) path to be used with <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ac3681ddff1cf29b66a5fc568b0f5bad9" title="Mounts an archive (path or in-memory Data) at a virtual mountpoint.">Filesystem::mount</a>.  <br /></td></tr>
+<tr class="separator:a1f921171bd1c2a1ef04b890e823f6948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad556b834753c6b42da62e022ff10e593" id="r_ad556b834753c6b42da62e022ff10e593"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ad556b834753c6b42da62e022ff10e593">mountExternalReadOnly</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const std::string &amp;mountpoint)</td></tr>
+<tr class="memdesc:ad556b834753c6b42da62e022ff10e593"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mount an external OS directory for read-only asset access.  <br /></td></tr>
+<tr class="separator:ad556b834753c6b42da62e022ff10e593"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7c99345da7c3b26d0905768a2121f24" id="r_ab7c99345da7c3b26d0905768a2121f24"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ab7c99345da7c3b26d0905768a2121f24">isRealDirectory</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const</td></tr>
+<tr class="memdesc:ab7c99345da7c3b26d0905768a2121f24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the given full (OS-dependent) path is a directory.  <br /></td></tr>
+<tr class="separator:ab7c99345da7c3b26d0905768a2121f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a7903bef1aed05e7ab79984add0109b" id="r_a5a7903bef1aed05e7ab79984add0109b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a5a7903bef1aed05e7ab79984add0109b">getExecutablePath</a> () const</td></tr>
+<tr class="memdesc:a5a7903bef1aed05e7ab79984add0109b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the full platform-dependent path to the executable.  <br /></td></tr>
+<tr class="separator:a5a7903bef1aed05e7ab79984add0109b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe5a8efd674a11efd61f38b39ae1eb5c" id="r_afe5a8efd674a11efd61f38b39ae1eb5c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#afe5a8efd674a11efd61f38b39ae1eb5c">watch</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)=0</td></tr>
+<tr class="memdesc:afe5a8efd674a11efd61f38b39ae1eb5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Watch a virtual or absolute OS path (file or directory). <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a> watches monitor the parent directory and filter by basename. Returns false if the path cannot be resolved to a real directory.  <br /></td></tr>
+<tr class="separator:afe5a8efd674a11efd61f38b39ae1eb5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa205e477a5520b9e2270c06266b2a8b7" id="r_aa205e477a5520b9e2270c06266b2a8b7"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aa205e477a5520b9e2270c06266b2a8b7">unwatch</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)=0</td></tr>
+<tr class="memdesc:aa205e477a5520b9e2270c06266b2a8b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop watching a path previously passed to <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#afe5a8efd674a11efd61f38b39ae1eb5c" title="Watch a virtual or absolute OS path (file or directory). File watches monitor the parent directory an...">watch()</a>.  <br /></td></tr>
+<tr class="separator:aa205e477a5520b9e2270c06266b2a8b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1131acb44045af525d6c42c7902a6db" id="r_aa1131acb44045af525d6c42c7902a6db"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aa1131acb44045af525d6c42c7902a6db">unwatchAll</a> ()=0</td></tr>
+<tr class="separator:aa1131acb44045af525d6c42c7902a6db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81403da532a11b8547bd5bb77cf84101" id="r_a81403da532a11b8547bd5bb77cf84101"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a81403da532a11b8547bd5bb77cf84101">getWatchCount</a> () const =0</td></tr>
+<tr class="separator:a81403da532a11b8547bd5bb77cf84101"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f888b15c14aa5980aef9f3a43388a86" id="r_a9f888b15c14aa5980aef9f3a43388a86"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a9f888b15c14aa5980aef9f3a43388a86">pollWatch</a> ()=0</td></tr>
+<tr class="memdesc:a9f888b15c14aa5980aef9f3a43388a86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pop next watch event kind: "added"|"removed"|"modified"|"movedFrom"|"movedTo". Empty string if queue empty. Path available via <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#abfe140d3ce9fd3454286724a406dd56f">getLastWatchPath()</a>.  <br /></td></tr>
+<tr class="separator:a9f888b15c14aa5980aef9f3a43388a86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfe140d3ce9fd3454286724a406dd56f" id="r_abfe140d3ce9fd3454286724a406dd56f"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#abfe140d3ce9fd3454286724a406dd56f">getLastWatchPath</a> () const =0</td></tr>
+<tr class="separator:abfe140d3ce9fd3454286724a406dd56f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ee05d5bd9bc615fc4964adbd5226d04" id="r_a6ee05d5bd9bc615fc4964adbd5226d04"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a6ee05d5bd9bc615fc4964adbd5226d04">getLastWatchRealPath</a> () const =0</td></tr>
+<tr class="separator:a6ee05d5bd9bc615fc4964adbd5226d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1service_1_1IFileSystem"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1service_1_1IFileSystem')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1service_1_1IFileSystem.html">eve::service::IFileSystem</a></td></tr>
+<tr class="memitem:a0698f03e220a732a340626d24b25226f inherit pub_methods_classeve_1_1service_1_1IFileSystem" id="r_a0698f03e220a732a340626d24b25226f"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1service_1_1IFileSystem.html#a0698f03e220a732a340626d24b25226f">~IFileSystem</a> ()=default</td></tr>
+<tr class="separator:a0698f03e220a732a340626d24b25226f inherit pub_methods_classeve_1_1service_1_1IFileSystem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1service_1_1IFileSystem"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1service_1_1IFileSystem')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1service_1_1IFileSystem.html">eve::service::IFileSystem</a></td></tr>
+<tr class="memitem:afbc20fd0d292baf748c592bc7df3fd6c inherit pub_static_attribs_classeve_1_1service_1_1IFileSystem" id="r_afbc20fd0d292baf748c592bc7df3fd6c"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1service_1_1IFileSystem.html#afbc20fd0d292baf748c592bc7df3fd6c">capabilityName</a> = &quot;IFileSystem&quot;</td></tr>
+<tr class="separator:afbc20fd0d292baf748c592bc7df3fd6c inherit pub_static_attribs_classeve_1_1service_1_1IFileSystem"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Filesystem_8h_source.html">Filesystem.h</a> 第 <a class="el" href="Filesystem_8h_source.html#l00038">38</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a821151c56fb8bb504337240a089b8ad0" name="a821151c56fb8bb504337240a089b8ad0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a821151c56fb8bb504337240a089b8ad0">&#9670;&#160;</a></span>Filesystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::filesystem::Filesystem::Filesystem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8h_source.html">Filesystem.h</a> 第 <a class="el" href="Filesystem_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc918190e64c63de66958ba0d0cffd34" name="afc918190e64c63de66958ba0d0cffd34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc918190e64c63de66958ba0d0cffd34">&#9670;&#160;</a></span>~Filesystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::filesystem::Filesystem::~Filesystem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>被 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a3438f9f6592e7cd4d0320eff54924f54">eve::filesystem::physfs::Filesystem</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8h_source.html">Filesystem.h</a> 第 <a class="el" href="Filesystem_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1f921171bd1c2a1ef04b890e823f6948" name="a1f921171bd1c2a1ef04b890e823f6948"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f921171bd1c2a1ef04b890e823f6948">&#9670;&#160;</a></span>allowMountingForPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::filesystem::Filesystem::allowMountingForPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Allows a full (OS-dependent) path to be used with <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ac3681ddff1cf29b66a5fc568b0f5bad9" title="Mounts an archive (path or in-memory Data) at a virtual mountpoint.">Filesystem::mount</a>. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ace8d76d575fdfa883dc33c16141ceedd">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Filesystem_8cpp_source.html#l00260">mountExternalReadOnly()</a>.</p>
+
+</div>
+</div>
+<a id="aed941e3a11289d6176698691ecf42ff2" name="aed941e3a11289d6176698691ecf42ff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed941e3a11289d6176698691ecf42ff2">&#9670;&#160;</a></span>append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::filesystem::Filesystem::append </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append data to a file, creating it if it doesn't exist. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The name of the file to write to. </td></tr>
+    <tr><td class="paramname">data</td><td>The data to append. </td></tr>
+    <tr><td class="paramname">size</td><td>The size in bytes of the data to append. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a0942132f5cb7d691ac591fea9347c51b">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae5807466e478a27b77fb507645ad995c" name="ae5807466e478a27b77fb507645ad995c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5807466e478a27b77fb507645ad995c">&#9670;&#160;</a></span>areSymlinksEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::areSymlinksEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether symbolic link support is enabled. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ae34e334edf7af7330f7a60748ee827b6">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="add13703736d928a4fb19c2d810c7374c" name="add13703736d928a4fb19c2d810c7374c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add13703736d928a4fb19c2d810c7374c">&#9670;&#160;</a></span>createDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::createDirectory </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>dir</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a directory. Write dir must be set. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dir</td><td>The directory to create. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a60317d0fe95655403674256a14d1c7d2">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aa34cfddadf3a595b47460bf6d38e1078" name="aa34cfddadf3a595b47460bf6d38e1078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa34cfddadf3a595b47460bf6d38e1078">&#9670;&#160;</a></span>fileExists()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::Filesystem::fileExists </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the path exists (file or directory). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1service_1_1IFileSystem.html#a95524a5cdfcc26564b63d9fd11ce9f79">eve::service::IFileSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8h_source.html">Filesystem.h</a> 第 <a class="el" href="Filesystem_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a47c0843032c82ba75fb9a7a32f7771bc">getInfo()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00075">info</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="ab32001108bca1403690461c0193d6c5a" name="ab32001108bca1403690461c0193d6c5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab32001108bca1403690461c0193d6c5a">&#9670;&#160;</a></span>getAppdataDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getAppdataDirectory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the APPDATA directory. On Windows, this is the folder in the APPDATA% enviroment variable. On Linux, this is the user home folder. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af70311594f8720b4286c804c83aabf54">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afc7d4b7d8a35ef9d6d2d51615ce31476" name="afc7d4b7d8a35ef9d6d2d51615ce31476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7d4b7d8a35ef9d6d2d51615ce31476">&#9670;&#160;</a></span>getCRequirePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt; std::string &gt; &amp; eve::filesystem::Filesystem::getCRequirePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#abc682e491bacb45815c65499fa4c97e1">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a99661a7b96ac201f67dae2f376e47e93" name="a99661a7b96ac201f67dae2f376e47e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99661a7b96ac201f67dae2f376e47e93">&#9670;&#160;</a></span>getDirectoryItems()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt; std::string &gt; eve::filesystem::Filesystem::getDirectoryItems </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>dir</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>This "native" method returns a table of all files in a given directory. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a6410545a621df530798471cee38d3cbd">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a5a7903bef1aed05e7ab79984add0109b" name="a5a7903bef1aed05e7ab79984add0109b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a7903bef1aed05e7ab79984add0109b">&#9670;&#160;</a></span>getExecutablePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::filesystem::Filesystem::getExecutablePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the full platform-dependent path to the executable. </p>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8cpp_source.html">Filesystem.cpp</a> 第 <a class="el" href="Filesystem_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a>.</p>
+
+</div>
+</div>
+<a id="add21da5e8b60a8bd9308a2cb587d746b" name="add21da5e8b60a8bd9308a2cb587d746b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add21da5e8b60a8bd9308a2cb587d746b">&#9670;&#160;</a></span>getIdentity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getIdentity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#aad9a4c041dcc3651862d51c88114cf14">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a47c0843032c82ba75fb9a7a32f7771bc" name="a47c0843032c82ba75fb9a7a32f7771bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47c0843032c82ba75fb9a7a32f7771bc">&#9670;&#160;</a></span>getInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::getInfo </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filepath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1filesystem_1_1Filesystem_1_1Info.html">Info</a> &amp;&#160;</td>
+          <td class="paramname"><em>info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets information about the item at the specified filepath. Returns false if nothing exists at the path. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad75de3c0aed9eb1b559a3acbae2e8265">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EveFileSystem_8cpp_source.html#l00112">eve::model3d::EveFileSystem::exists()</a> , 以及 <a class="el" href="Filesystem_8h_source.html#l00074">fileExists()</a>.</p>
+
+</div>
+</div>
+<a id="abfe140d3ce9fd3454286724a406dd56f" name="abfe140d3ce9fd3454286724a406dd56f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfe140d3ce9fd3454286724a406dd56f">&#9670;&#160;</a></span>getLastWatchPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getLastWatchPath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af78b2bfd1029dfe832d9d0213a24ebe6">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mcp_8cpp_source.html#l00083">eve::cmd::Cmdline::McpHost()</a>.</p>
+
+</div>
+</div>
+<a id="a6ee05d5bd9bc615fc4964adbd5226d04" name="a6ee05d5bd9bc615fc4964adbd5226d04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ee05d5bd9bc615fc4964adbd5226d04">&#9670;&#160;</a></span>getLastWatchRealPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getLastWatchRealPath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a89cf15e7afb466c504e83c6bc074d98a">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aa3ddf8e4e5f85f84a3d4216bf13adada" name="aa3ddf8e4e5f85f84a3d4216bf13adada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3ddf8e4e5f85f84a3d4216bf13adada">&#9670;&#160;</a></span>getRealDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getRealDirectory </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the real directory path containing the file. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a259339e45647788e6aba2cf40bf920a9">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a6e92afb2b1af06f4033e93f0e71225b4" name="a6e92afb2b1af06f4033e93f0e71225b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e92afb2b1af06f4033e93f0e71225b4">&#9670;&#160;</a></span>getRequirePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt; std::string &gt; &amp; eve::filesystem::Filesystem::getRequirePath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ae9174ee51340f261ff22d6a72657d8e3">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab63149065690c8b707ccd261c6d79067" name="ab63149065690c8b707ccd261c6d79067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab63149065690c8b707ccd261c6d79067">&#9670;&#160;</a></span>getSaveDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getSaveDirectory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the full path of the save folder. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a0867ea14d92bd5dd9f9fb55f6b09858d">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Filesystem_8cpp_source.html#l00087">writeTextAtomic()</a>.</p>
+
+</div>
+</div>
+<a id="af7444f76584254df2edac3601b1fda92" name="af7444f76584254df2edac3601b1fda92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7444f76584254df2edac3601b1fda92">&#9670;&#160;</a></span>getSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getSource </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the path to the game source. Returns a 0-length string if the source has not been set. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a53d9f2f58838dfef13846f839333a43d">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0d1f68a27601345cc76a30f4707cff2b" name="a0d1f68a27601345cc76a30f4707cff2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d1f68a27601345cc76a30f4707cff2b">&#9670;&#160;</a></span>getSourceBaseDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getSourceBaseDirectory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the full path to the directory containing the game source. For example if the game source is C:\Games\mygame.love, this will return C:\Games. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#af347113e7f4f1d9d144f61102124c3e7">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a3a560a263a5991e53da393b8130489bb" name="a3a560a263a5991e53da393b8130489bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a560a263a5991e53da393b8130489bb">&#9670;&#160;</a></span>getUserDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getUserDirectory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the user home directory. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a583d77f00275659eee42f1b0a9826940">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a81403da532a11b8547bd5bb77cf84101" name="a81403da532a11b8547bd5bb77cf84101"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81403da532a11b8547bd5bb77cf84101">&#9670;&#160;</a></span>getWatchCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::filesystem::Filesystem::getWatchCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1b595a2e8aeca97843fe1c6b7602bd9a">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a90244c6b72d30529cadd0814b018b8d8" name="a90244c6b72d30529cadd0814b018b8d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90244c6b72d30529cadd0814b018b8d8">&#9670;&#160;</a></span>getWorkingDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::getWorkingDirectory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current working directory. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac01fd8b79ccf29d33ad0a8e96ae9b8ae">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a261a8b436c9c53ceab1a485af0d5bea5" name="a261a8b436c9c53ceab1a485af0d5bea5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a261a8b436c9c53ceab1a485af0d5bea5">&#9670;&#160;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::filesystem::Filesystem::init </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>arg0</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#aae917aeb6cc097037a5184cd1d341e97">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a345fef033dc2f2f31bc866756943b184" name="a345fef033dc2f2f31bc866756943b184"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a345fef033dc2f2f31bc866756943b184">&#9670;&#160;</a></span>isAndroidSaveExternal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::isAndroidSaveExternal </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether the Android save is external. Returns a bool. </p>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8h_source.html">Filesystem.h</a> 第 <a class="el" href="Filesystem_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="physfs_2Filesystem_8cpp_source.html#l00123">eve::filesystem::physfs::Filesystem::setIdentity()</a>.</p>
+
+</div>
+</div>
+<a id="aa5c4a4ba1fce20b24ac74d3bce62c8a7" name="aa5c4a4ba1fce20b24ac74d3bce62c8a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5c4a4ba1fce20b24ac74d3bce62c8a7">&#9670;&#160;</a></span>isFused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::isFused </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a64e7c291e8a537ba0305331bc5f477f1">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab7c99345da7c3b26d0905768a2121f24" name="ab7c99345da7c3b26d0905768a2121f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7c99345da7c3b26d0905768a2121f24">&#9670;&#160;</a></span>isRealDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::Filesystem::isRealDirectory </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether the given full (OS-dependent) path is a directory. </p>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8cpp_source.html">Filesystem.cpp</a> 第 <a class="el" href="Filesystem_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="physfs_2Filesystem_8cpp_source.html#l00365">eve::filesystem::physfs::Filesystem::mountRealDirectory()</a>.</p>
+
+</div>
+</div>
+<a id="acd310afa9e7deb0006511129a9d870f1" name="acd310afa9e7deb0006511129a9d870f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd310afa9e7deb0006511129a9d870f1">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::filesystem::Filesystem::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1filesystem_1_1Filesystem.html">Filesystem</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a494abba1d06dc605510ce9a0478f665b" name="a494abba1d06dc605510ce9a0478f665b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a494abba1d06dc605510ce9a0478f665b">&#9670;&#160;</a></span>mount() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::mount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Data.html">Data</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>archivename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>mountpoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>appendToPath</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#aca83f8e7c9c9d31677aeb64f82c256c0">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ac3681ddff1cf29b66a5fc568b0f5bad9" name="ac3681ddff1cf29b66a5fc568b0f5bad9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3681ddff1cf29b66a5fc568b0f5bad9">&#9670;&#160;</a></span>mount() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::mount </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>archive</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>mountpoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>appendToPath</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mounts an archive (path or in-memory <a class="el" href="classeve_1_1Data.html">Data</a>) at a virtual mountpoint. </p>
+<dl class="section return"><dt>返回</dt><dd>True on success; false when the archive is missing or invalid (no exception is thrown for these — check the return value). </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a9da4b5a5b7f76ee29a1efdf383cc6dd1">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Filesystem_8cpp_source.html#l00260">mountExternalReadOnly()</a>.</p>
+
+</div>
+</div>
+<a id="ad556b834753c6b42da62e022ff10e593" name="ad556b834753c6b42da62e022ff10e593"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad556b834753c6b42da62e022ff10e593">&#9670;&#160;</a></span>mountExternalReadOnly()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::Filesystem::mountExternalReadOnly </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mountpoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mount an external OS directory for read-only asset access. </p>
+<p>This convenience method authorizes the path and mounts it without changing the filesystem write directory. Files remain outside packaged game data. </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>Absolute OS directory to mount. </td></tr>
+    <tr><td class="paramname">mountpoint</td><td>Virtual directory visible to game code. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when the mount succeeds. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8cpp_source.html">Filesystem.cpp</a> 第 <a class="el" href="Filesystem_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a1f921171bd1c2a1ef04b890e823f6948">allowMountingForPath()</a>, <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ac3681ddff1cf29b66a5fc568b0f5bad9">mount()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="a6dc2f5e70c721323b4e2cd3887ebc697" name="a6dc2f5e70c721323b4e2cd3887ebc697"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dc2f5e70c721323b4e2cd3887ebc697">&#9670;&#160;</a></span>mountRealDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::mountRealDirectory </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>realDir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>mountpoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>appendToPath</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Mounts a real (OS-level) directory at a virtual mountpoint, bypassing the safety checks in <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ac3681ddff1cf29b66a5fc568b0f5bad9" title="Mounts an archive (path or in-memory Data) at a virtual mountpoint.">mount()</a>. Used by hot reload to overlay a writable sync directory in front of a read-only bundled/packaged game source. </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">realDir</td><td>Absolute OS path to an existing directory. </td></tr>
+    <tr><td class="paramname">mountpoint</td><td>Virtual path to mount at ("" = "/"). </td></tr>
+    <tr><td class="paramname">appendToPath</td><td>False = highest priority (searched first). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a91a507616b8957387156247b01668ee0">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a8de4471fb81f6a47b10b8d4256f1dc4c" name="a8de4471fb81f6a47b10b8d4256f1dc4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8de4471fb81f6a47b10b8d4256f1dc4c">&#9670;&#160;</a></span>newFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1filesystem_1_1File.html">File</a> * eve::filesystem::Filesystem::newFile </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a new file. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a5556da3b91bf0377a02e210fc991f5d7">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EveFileSystem_8cpp_source.html#l00021">eve::model3d::EveFileSystem::open()</a>.</p>
+
+</div>
+</div>
+<a id="a7e2198b207d73ed4498e1ad7077960f0" name="a7e2198b207d73ed4498e1ad7077960f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e2198b207d73ed4498e1ad7077960f0">&#9670;&#160;</a></span>newFileData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> * eve::filesystem::Filesystem::newFileData </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a new <a class="el" href="classeve_1_1filesystem_1_1FileData.html" title="Data buffer paired with a filename (used for type identification).">FileData</a> object. <a class="el" href="classeve_1_1Data.html">Data</a> will be copied. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Pointer to the data. </td></tr>
+    <tr><td class="paramname">size</td><td>The size of the data. </td></tr>
+    <tr><td class="paramname">filename</td><td>The full filename used to file type identification. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8cpp_source.html">Filesystem.cpp</a> 第 <a class="el" href="Filesystem_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="FileData_8h_source.html#l00023">eve::filesystem::FileData::getData()</a>.</p>
+
+</div>
+</div>
+<a id="a9f888b15c14aa5980aef9f3a43388a86" name="a9f888b15c14aa5980aef9f3a43388a86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f888b15c14aa5980aef9f3a43388a86">&#9670;&#160;</a></span>pollWatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::filesystem::Filesystem::pollWatch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pop next watch event kind: "added"|"removed"|"modified"|"movedFrom"|"movedTo". Empty string if queue empty. Path available via <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#abfe140d3ce9fd3454286724a406dd56f">getLastWatchPath()</a>. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a6df2e10d4c213c443ddaf12e2ec46dc7">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mcp_8cpp_source.html#l00083">eve::cmd::Cmdline::McpHost()</a>.</p>
+
+</div>
+</div>
+<a id="aea137da607d7ec5e64ce6f01ee488bbb" name="aea137da607d7ec5e64ce6f01ee488bbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea137da607d7ec5e64ce6f01ee488bbb">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> * eve::filesystem::Filesystem::read </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>size</em> = <code><a class="el" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">File::ALL</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads data from a file. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The name of the file to read from. </td></tr>
+    <tr><td class="paramname">size</td><td>The size in bytes of the data to read. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac30340ce187a65790eba0355fe70ac8b">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Model3D_8cpp_source.html#l00159">eve::model3d::Model3D::bakeModel()</a>, <a class="el" href="TileConfig_8cpp_source.html#l01291">eve::map::loadTilesetManifestFile()</a>, <a class="el" href="Filesystem_8h_source.html#l00052">readFile()</a> , 以及 <a class="el" href="Filesystem_8cpp_source.html#l00186">readText()</a>.</p>
+
+</div>
+</div>
+<a id="a9f4e5fc70de82bb26ed421c78579285f" name="a9f4e5fc70de82bb26ed421c78579285f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f4e5fc70de82bb26ed421c78579285f">&#9670;&#160;</a></span>readFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::Filesystem::readFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads an entire file. </p>
+<dl class="section return"><dt>返回</dt><dd>false when missing or unreadable. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1service_1_1IFileSystem.html#a5321ceb1c4e6d4cd8389c4584e80575e">eve::service::IFileSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8h_source.html">Filesystem.h</a> 第 <a class="el" href="Filesystem_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="FileData_8h_source.html#l00023">eve::filesystem::FileData::getData()</a>, <a class="el" href="FileData_8h_source.html#l00024">eve::filesystem::FileData::getSize()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aea137da607d7ec5e64ce6f01ee488bbb">read()</a>.</p>
+
+</div>
+</div>
+<a id="a7dbf4e79639d75368482573619928677" name="a7dbf4e79639d75368482573619928677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dbf4e79639d75368482573619928677">&#9670;&#160;</a></span>readText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::filesystem::Filesystem::readText </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a UTF-8 string from the virtual filesystem. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Relative virtual path. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd><a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a> contents, or an empty string when the file cannot be read. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8cpp_source.html">Filesystem.cpp</a> 第 <a class="el" href="Filesystem_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#aea137da607d7ec5e64ce6f01ee488bbb">read()</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="abffb3efa743e4e8b98ff375c4e562650" name="abffb3efa743e4e8b98ff375c4e562650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abffb3efa743e4e8b98ff375c4e562650">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::remove </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes a file (or directory). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file</td><td>The file or directory to remove. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a62b0eea83be76c5fa5a8aac860c1c13a">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afa8aa7457b76f21a3c14db0885ccff59" name="afa8aa7457b76f21a3c14db0885ccff59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa8aa7457b76f21a3c14db0885ccff59">&#9670;&#160;</a></span>setAndroidSaveExternal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::filesystem::Filesystem::setAndroidSaveExternal </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>external</em> = <code>false</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>This sets the save location on Android. False for internal, true for external </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">external</td><td>Bool for whether Android should use external file storage. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8h_source.html">Filesystem.h</a> 第 <a class="el" href="Filesystem_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a913bcbd13ac1f80842ce517b5f8c7978" name="a913bcbd13ac1f80842ce517b5f8c7978"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a913bcbd13ac1f80842ce517b5f8c7978">&#9670;&#160;</a></span>setFused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::filesystem::Filesystem::setFused </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fused</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a281cd6882b484894205b127d91751318">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a65f68180068e9d3003113924a9452aee" name="a65f68180068e9d3003113924a9452aee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65f68180068e9d3003113924a9452aee">&#9670;&#160;</a></span>setIdentity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::setIdentity </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>ident</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>appendToPath</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the name of the save folder. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ident</td><td>The name of the game. Will be used to to create the folder in the LOVE data folder. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1c132b4ac2ae5daad6053e103527917a">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a560ab2f2dbe17f7cb9987a705d754af1" name="a560ab2f2dbe17f7cb9987a705d754af1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a560ab2f2dbe17f7cb9987a705d754af1">&#9670;&#160;</a></span>setSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::setSource </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the path to the game source. This can only be set once. </p>
+<dl class="section return"><dt>返回</dt><dd>True on success; false when the source was already set or the path does not exist (no exception is thrown for these). </dd></dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Path to a directory or a .love-file. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a15bf1af9d828e6611e1be10ef080aed3">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Mcp_8cpp_source.html#l00083">eve::cmd::Cmdline::McpHost()</a>.</p>
+
+</div>
+</div>
+<a id="ab8b0de4449c21cb6f291c561c148864f" name="ab8b0de4449c21cb6f291c561c148864f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8b0de4449c21cb6f291c561c148864f">&#9670;&#160;</a></span>setSourceFromMemory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::setSourceFromMemory </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Loads the game source from a packaged archive (.eve / zip) held entirely in memory and mounts it at "/" (no extraction to disk). The bytes are copied and kept alive for the lifetime of the mounted archive. This can only be set once. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Pointer to the archive bytes. </td></tr>
+    <tr><td class="paramname">size</td><td>Number of bytes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a2a5bc75afb3a52656d4ec80f791c5771">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="af302900c0baacd0d6cc223681c801ce3" name="af302900c0baacd0d6cc223681c801ce3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af302900c0baacd0d6cc223681c801ce3">&#9670;&#160;</a></span>setSymlinksEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::filesystem::Filesystem::setSymlinksEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enable or disable symbolic link support in love.filesystem. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad055f8e388a3acfcbc20da18ab44d8ef">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae7a23ad518d2e4d14a9fdf0463b3ca84" name="ae7a23ad518d2e4d14a9fdf0463b3ca84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7a23ad518d2e4d14a9fdf0463b3ca84">&#9670;&#160;</a></span>setupWriteDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::setupWriteDirectory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>This sets up the save directory. If the it is already set up, nothing happens. </p>
+<dl class="section return"><dt>返回</dt><dd>True on success, false otherwise. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ab356f79d8510ddcb4d71f81ae14aeded">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a2d1fd64d59031597fbde70028a9cf07c" name="a2d1fd64d59031597fbde70028a9cf07c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d1fd64d59031597fbde70028a9cf07c">&#9670;&#160;</a></span>unmount() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::unmount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Data.html">Data</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unmounts a previously mounted in-memory archive. </p>
+<dl class="section return"><dt>返回</dt><dd>True when unmounted. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a731b7ea2098513df69b226dc7c0c244a">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0b2f690254f4e23f44b65ec3f04a3651" name="a0b2f690254f4e23f44b65ec3f04a3651"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b2f690254f4e23f44b65ec3f04a3651">&#9670;&#160;</a></span>unmount() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::unmount </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>archive</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unmounts a previously mounted archive. </p>
+<dl class="section return"><dt>返回</dt><dd>True when unmounted. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a657fb57110c7ff7e946af7cc0f7c7e50">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ae15d76d77adc97342b0945bacde9e1b0" name="ae15d76d77adc97342b0945bacde9e1b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae15d76d77adc97342b0945bacde9e1b0">&#9670;&#160;</a></span>unmountRealDirectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::unmountRealDirectory </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>realDir</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Unmounts a directory previously added via <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#a6dc2f5e70c721323b4e2cd3887ebc697">mountRealDirectory()</a>. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ac7b9cf6cd5fc8f566b4a1e4f06b4f7c0">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aa205e477a5520b9e2270c06266b2a8b7" name="aa205e477a5520b9e2270c06266b2a8b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa205e477a5520b9e2270c06266b2a8b7">&#9670;&#160;</a></span>unwatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::unwatch </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stop watching a path previously passed to <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#afe5a8efd674a11efd61f38b39ae1eb5c" title="Watch a virtual or absolute OS path (file or directory). File watches monitor the parent directory an...">watch()</a>. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a9bfd6663ea7d285d705dc6e263894daf">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aa1131acb44045af525d6c42c7902a6db" name="aa1131acb44045af525d6c42c7902a6db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1131acb44045af525d6c42c7902a6db">&#9670;&#160;</a></span>unwatchAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::filesystem::Filesystem::unwatchAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a1ce4b590eef363607eb73cea3386e23c">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afe5a8efd674a11efd61f38b39ae1eb5c" name="afe5a8efd674a11efd61f38b39ae1eb5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe5a8efd674a11efd61f38b39ae1eb5c">&#9670;&#160;</a></span>watch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::filesystem::Filesystem::watch </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Watch a virtual or absolute OS path (file or directory). <a class="el" href="classeve_1_1filesystem_1_1File.html" title="A File interface, providing generic means of reading from and writing to files.">File</a> watches monitor the parent directory and filter by basename. Returns false if the path cannot be resolved to a real directory. </p>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#a4d284af7b984a251e8f475ac4ff2757b">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileConfig_8cpp_source.html#l01221">eve::map::loadConfigFile()</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l01291">eve::map::loadTilesetManifestFile()</a>.</p>
+
+</div>
+</div>
+<a id="ae58c9d05a36a8bd3b7b77ee00d0486da" name="ae58c9d05a36a8bd3b7b77ee00d0486da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae58c9d05a36a8bd3b7b77ee00d0486da">&#9670;&#160;</a></span>write()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::filesystem::Filesystem::write </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write data to a file. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The name of the file to write to. </td></tr>
+    <tr><td class="paramname">data</td><td>The data to write. </td></tr>
+    <tr><td class="paramname">size</td><td>The size in bytes of the data to write. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>在 <a class="el" href="classeve_1_1filesystem_1_1physfs_1_1Filesystem.html#ad00522eec0ad244ed7a5749166821305">eve::filesystem::physfs::Filesystem</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Model3D_8cpp_source.html#l00159">eve::model3d::Model3D::bakeModel()</a>, <a class="el" href="Filesystem_8h_source.html#l00065">writeFile()</a>, <a class="el" href="Filesystem_8cpp_source.html#l00078">writeText()</a> , 以及 <a class="el" href="Filesystem_8cpp_source.html#l00087">writeTextAtomic()</a>.</p>
+
+</div>
+</div>
+<a id="ae603c1c1647b7bf565b8bdf649931f18" name="ae603c1c1647b7bf565b8bdf649931f18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae603c1c1647b7bf565b8bdf649931f18">&#9670;&#160;</a></span>writeFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::Filesystem::writeFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes bytes to a file. </p>
+<dl class="section return"><dt>返回</dt><dd>false when the write fails. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1service_1_1IFileSystem.html#a9a5c5870b8c0d85601dede9bd6e68972">eve::service::IFileSystem</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8h_source.html">Filesystem.h</a> 第 <a class="el" href="Filesystem_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ae58c9d05a36a8bd3b7b77ee00d0486da">write()</a>.</p>
+
+</div>
+</div>
+<a id="a4865f7593b53c8b11e082359890ab6c1" name="a4865f7593b53c8b11e082359890ab6c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4865f7593b53c8b11e082359890ab6c1">&#9670;&#160;</a></span>writeText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::filesystem::Filesystem::writeText </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write a UTF-8 string to a file in the configured save directory. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Relative save path. </td></tr>
+    <tr><td class="paramname">text</td><td>UTF-8 text to write. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when the write succeeds. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8cpp_source.html">Filesystem.cpp</a> 第 <a class="el" href="Filesystem_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ae58c9d05a36a8bd3b7b77ee00d0486da">write()</a>.</p>
+
+</div>
+</div>
+<a id="afcea4eaba88ca381a2de4ea996c5d272" name="afcea4eaba88ca381a2de4ea996c5d272"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcea4eaba88ca381a2de4ea996c5d272">&#9670;&#160;</a></span>writeTextAtomic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::filesystem::Filesystem::writeTextAtomic </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>text</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Durably replace a UTF-8 text file in the configured save directory. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Non-empty relative save path without parent traversal. </td></tr>
+    <tr><td class="paramname">text</td><td>UTF-8 bytes to write; the method does not retain this view. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied after the temporary file and replacement are flushed, or a structured failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The previous target remains intact when writing or flushing the temporary file fails. Native desktop/mobile implementations write a sibling temporary file and atomically replace the target. WebGPU returns Unsupported because that guarantee is unavailable. @thread Call on the filesystem owning thread; concurrent writes to the same target are unsupported. @reentrancy Does not invoke callbacks or script code. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Filesystem_8cpp_source.html">Filesystem.cpp</a> 第 <a class="el" href="Filesystem_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="EveFileSystem_8cpp_source.html#l00014">file</a>, <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ab63149065690c8b707ccd261c6d79067">getSaveDirectory()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="classeve_1_1filesystem_1_1Filesystem.html#ae58c9d05a36a8bd3b7b77ee00d0486da">write()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/filesystem/<a class="el" href="Filesystem_8h_source.html">Filesystem.h</a></li>
+<li>src/modules/filesystem/<a class="el" href="Filesystem_8cpp_source.html">Filesystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::action::ActionTimeline结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1action.html">action</a></li><li class="navelem"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html">ActionTimeline</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1action_1_1ActionTimeline-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::action::ActionTimeline结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Canonical action timeline asset shared by runtime and editor.  
+ <a href="structeve_1_1action_1_1ActionTimeline.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a538586303a3c77aa9422b8449e228fd0" id="r_a538586303a3c77aa9422b8449e228fd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#a538586303a3c77aa9422b8449e228fd0">validate</a> () const</td></tr>
+<tr class="memdesc:a538586303a3c77aa9422b8449e228fd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate ids, ranges, uniqueness and deterministic ordering.  <br /></td></tr>
+<tr class="separator:a538586303a3c77aa9422b8449e228fd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a417106eb5482c08537dacb57744cf3db" id="r_a417106eb5482c08537dacb57744cf3db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1action_1_1ActionTimelineEvent.html">ActionTimelineEvent</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#a417106eb5482c08537dacb57744cf3db">sample</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a> current, bool includePrevious=false) const</td></tr>
+<tr class="memdesc:a417106eb5482c08537dacb57744cf3db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample all boundaries in <code>(previous,current]</code> in stable order.  <br /></td></tr>
+<tr class="separator:a417106eb5482c08537dacb57744cf3db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a225b11f30c96a41c4712bbc7c5bdc707" id="r_a225b11f30c96a41c4712bbc7c5bdc707"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#a225b11f30c96a41c4712bbc7c5bdc707">toValue</a> () const</td></tr>
+<tr class="memdesc:a225b11f30c96a41c4712bbc7c5bdc707"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the canonical schema as an owning deterministic <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>.  <br /></td></tr>
+<tr class="separator:a225b11f30c96a41c4712bbc7c5bdc707"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a32d7a7316364a2f04de20b25ef8d1b7a" id="r_a32d7a7316364a2f04de20b25ef8d1b7a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionTimeline.html">ActionTimeline</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#a32d7a7316364a2f04de20b25ef8d1b7a">fromValue</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a32d7a7316364a2f04de20b25ef8d1b7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode and validate one canonical schema value transactionally.  <br /></td></tr>
+<tr class="separator:a32d7a7316364a2f04de20b25ef8d1b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aaae8a310f62ddd01e1490120fbdf713c" id="r_aaae8a310f62ddd01e1490120fbdf713c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">SchemaVersion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#aaae8a310f62ddd01e1490120fbdf713c">schemaVersion</a> {<a class="el" href="namespaceeve_1_1action.html#a4a2f84011760be84c26bc5a6b674f5e2">kActionTimelineSchemaVersion</a>}</td></tr>
+<tr class="separator:aaae8a310f62ddd01e1490120fbdf713c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad709a50ce95eec3b29d4da2ddcf43d2a" id="r_ad709a50ce95eec3b29d4da2ddcf43d2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#ad709a50ce95eec3b29d4da2ddcf43d2a">actionId</a></td></tr>
+<tr class="separator:ad709a50ce95eec3b29d4da2ddcf43d2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85f58756e841a8a054565d21a8238d10" id="r_a85f58756e841a8a054565d21a8238d10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#a85f58756e841a8a054565d21a8238d10">duration</a> = <a class="el" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>()</td></tr>
+<tr class="separator:a85f58756e841a8a054565d21a8238d10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada90e560f9565fb3d328ad9ec6ccecd7" id="r_ada90e560f9565fb3d328ad9ec6ccecd7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#ada90e560f9565fb3d328ad9ec6ccecd7">animationUri</a></td></tr>
+<tr class="separator:ada90e560f9565fb3d328ad9ec6ccecd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae90714fd295db299a86e03fece138699" id="r_ae90714fd295db299a86e03fece138699"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1action_1_1ActionTrack.html">ActionTrack</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#ae90714fd295db299a86e03fece138699">tracks</a></td></tr>
+<tr class="separator:ae90714fd295db299a86e03fece138699"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97a155f05bdeeac8e896b51dd21cf387" id="r_a97a155f05bdeeac8e896b51dd21cf387"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html#a97a155f05bdeeac8e896b51dd21cf387">metadata</a></td></tr>
+<tr class="separator:a97a155f05bdeeac8e896b51dd21cf387"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Canonical action timeline asset shared by runtime and editor. </p>
+<p>The action module is the sole schema owner. Animation, audio, VFX and camera resources are referenced by URI/type payloads and resolved by downstream adapters; this L1 module never depends on those presentation modules. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00103">103</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a32d7a7316364a2f04de20b25ef8d1b7a" name="a32d7a7316364a2f04de20b25ef8d1b7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32d7a7316364a2f04de20b25ef8d1b7a">&#9670;&#160;</a></span>fromValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionTimeline.html">ActionTimeline</a> &gt; eve::action::ActionTimeline::fromValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode and validate one canonical schema value transactionally. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8cpp_source.html">ActionTimeline.cpp</a> 第 <a class="el" href="ActionTimeline_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimeline_8h_source.html#l00105">actionId</a>, <a class="el" href="ActionTimeline_8h_source.html#l00107">animationUri</a>, <a class="el" href="ActionTimeline_8h_source.html#l00106">duration</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00065">eve::action::ActionTrack::id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Value_8h_source.html#l00097">eve::Value::isArray()</a>, <a class="el" href="Value_8h_source.html#l00099">eve::Value::isObject()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00021">eve::action::kActionTimelineSchemaId</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="ActionTimeline_8h_source.html#l00067">eve::action::ActionTrack::kind</a>, <a class="el" href="ActionTimeline_8h_source.html#l00066">eve::action::ActionTrack::label</a>, <a class="el" href="ActionTimeline_8h_source.html#l00069">eve::action::ActionTrack::locked</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00026">locked</a>, <a class="el" href="ActionTimeline_8h_source.html#l00109">metadata</a>, <a class="el" href="ActionTimeline_8h_source.html#l00068">eve::action::ActionTrack::muted</a>, <a class="el" href="ActionTimeline_8h_source.html#l00070">eve::action::ActionTrack::notifies</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00128">eve::action::parseActionTrackKind()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="ActionTimeline_8h_source.html#l00104">schemaVersion</a>, <a class="el" href="ActionTimeline_8h_source.html#l00071">eve::action::ActionTrack::states</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00108">tracks</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00136">validate()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00108">eve::editor::ActionTimelineTarget::applyDomainOperation()</a>, <a class="el" href="ActionTimelineScriptBindings_8cpp_source.html#l00105">eve::editor::exposeActionTimelineScriptBindings()</a> , 以及 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00281">eve::editor::ActionTimelineTarget::loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a417106eb5482c08537dacb57744cf3db" name="a417106eb5482c08537dacb57744cf3db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a417106eb5482c08537dacb57744cf3db">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1action_1_1ActionTimelineEvent.html">ActionTimelineEvent</a> &gt; &gt; eve::action::ActionTimeline::sample </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>previous</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>current</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>includePrevious</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample all boundaries in <code>(previous,current]</code> in stable order. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">includePrevious</td><td>Include events exactly at previous; use once when playback starts. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning event list, or a validation/range diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8cpp_source.html">ActionTimeline.cpp</a> 第 <a class="el" href="ActionTimeline_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimeline_8h_source.html#l00106">duration</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7">eve::action::Notify</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">eve::action::StateEnter</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aa73b5bf268d7c4f3760e1bea353f7dd36">eve::action::StateExit</a>, <a class="el" href="ActionTimeline_8h_source.html#l00108">tracks</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00136">validate()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a225b11f30c96a41c4712bbc7c5bdc707" name="a225b11f30c96a41c4712bbc7c5bdc707"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a225b11f30c96a41c4712bbc7c5bdc707">&#9670;&#160;</a></span>toValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::action::ActionTimeline::toValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode the canonical schema as an owning deterministic <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8cpp_source.html">ActionTimeline.cpp</a> 第 <a class="el" href="ActionTimeline_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimeline_8cpp_source.html#l00114">eve::action::actionTrackKindName()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00021">eve::action::kActionTimelineSchemaId</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00275">eve::editor::ActionTimelineTarget::snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="a538586303a3c77aa9422b8449e228fd0" name="a538586303a3c77aa9422b8449e228fd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a538586303a3c77aa9422b8449e228fd0">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::action::ActionTimeline::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate ids, ranges, uniqueness and deterministic ordering. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8cpp_source.html">ActionTimeline.cpp</a> 第 <a class="el" href="ActionTimeline_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimeline_8h_source.html#l00105">actionId</a>, <a class="el" href="ActionTimeline_8h_source.html#l00106">duration</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Identity_8h_source.html#l00435">eve::LogicalId::isValid()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00023">eve::action::kActionTimelineSchemaVersion</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="ActionTimeline_8h_source.html#l00104">schemaVersion</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00108">tracks</a>, <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00237">fromValue()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00225">eve::editor::ActionTimelineTarget::makeSet()</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00174">sample()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ad709a50ce95eec3b29d4da2ddcf43d2a" name="ad709a50ce95eec3b29d4da2ddcf43d2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad709a50ce95eec3b29d4da2ddcf43d2a">&#9670;&#160;</a></span>actionId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> eve::action::ActionTimeline::actionId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00237">fromValue()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00225">eve::editor::ActionTimelineTarget::makeSet()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00216">eve::editor::ActionTimelineTarget::read()</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00136">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ada90e560f9565fb3d328ad9ec6ccecd7" name="ada90e560f9565fb3d328ad9ec6ccecd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada90e560f9565fb3d328ad9ec6ccecd7">&#9670;&#160;</a></span>animationUri</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::action::ActionTimeline::animationUri</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00237">fromValue()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00225">eve::editor::ActionTimelineTarget::makeSet()</a> , 以及 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00216">eve::editor::ActionTimelineTarget::read()</a>.</p>
+
+</div>
+</div>
+<a id="a85f58756e841a8a054565d21a8238d10" name="a85f58756e841a8a054565d21a8238d10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85f58756e841a8a054565d21a8238d10">&#9670;&#160;</a></span>duration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::action::ActionTimeline::duration = <a class="el" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00372">eve::editor::ActionTimelineWidget::addStateAtCursor()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00543">eve::editor::ActionTimelineEditor::boxSelect()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00479">eve::editor::ActionTimelineEditor::editItem()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00237">fromValue()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00226">eve::editor::ActionTimelineWidget::inspectSelection()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00225">eve::editor::ActionTimelineTarget::makeSet()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00216">eve::editor::ActionTimelineTarget::read()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00440">eve::editor::ActionTimelineEditor::resizeState()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00174">sample()</a>, <a class="el" href="ActionPreviewController_8cpp_source.html#l00083">eve::editor::ActionPreviewController::seek()</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00136">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a97a155f05bdeeac8e896b51dd21cf387" name="a97a155f05bdeeac8e896b51dd21cf387"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97a155f05bdeeac8e896b51dd21cf387">&#9670;&#160;</a></span>metadata</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> eve::action::ActionTimeline::metadata</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00237">fromValue()</a>.</p>
+
+</div>
+</div>
+<a id="aaae8a310f62ddd01e1490120fbdf713c" name="aaae8a310f62ddd01e1490120fbdf713c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaae8a310f62ddd01e1490120fbdf713c">&#9670;&#160;</a></span>schemaVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">SchemaVersion</a> eve::action::ActionTimeline::schemaVersion {<a class="el" href="namespaceeve_1_1action.html#a4a2f84011760be84c26bc5a6b674f5e2">kActionTimelineSchemaVersion</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimeline_8cpp_source.html#l00237">fromValue()</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00136">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ae90714fd295db299a86e03fece138699" name="ae90714fd295db299a86e03fece138699"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae90714fd295db299a86e03fece138699">&#9670;&#160;</a></span>tracks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1action_1_1ActionTrack.html">ActionTrack</a>&gt; eve::action::ActionTimeline::tracks</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a> 第 <a class="el" href="ActionTimeline_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00387">eve::editor::ActionTimelineEditor::addTrack()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00543">eve::editor::ActionTimelineEditor::boxSelect()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00582">eve::editor::ActionTimelineEditor::copySelection()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00651">eve::editor::ActionTimelineEditor::deleteSelection()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00479">eve::editor::ActionTimelineEditor::editItem()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00237">fromValue()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00082">eve::editor::ActionTimelineWidget::layout()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00413">eve::editor::ActionTimelineEditor::moveItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00511">eve::editor::ActionTimelineEditor::removeItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00440">eve::editor::ActionTimelineEditor::resizeState()</a>, <a class="el" href="ActionTimeline_8cpp_source.html#l00174">sample()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00558">eve::editor::ActionTimelineEditor::selectItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00457">eve::editor::ActionTimelineEditor::updateItem()</a> , 以及 <a class="el" href="ActionTimeline_8cpp_source.html#l00136">validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/action/<a class="el" href="ActionTimeline_8h_source.html">ActionTimeline.h</a></li>
+<li>src/modules/action/<a class="el" href="ActionTimeline_8cpp_source.html">ActionTimeline.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

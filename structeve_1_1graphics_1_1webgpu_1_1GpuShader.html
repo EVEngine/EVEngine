@@ -1,0 +1,535 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::webgpu::GpuShader结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html">webgpu</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html">GpuShader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1webgpu_1_1GpuShader-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::webgpu::GpuShader结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A compiled shader: one WebGPU pipeline + layout. Also holds the WGSL sources so custom shaders can be re-pipelined for offscreen targets.  
+ <a href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a75dd1ef572215d7338d945e1e3e7a9f8" id="r_a75dd1ef572215d7338d945e1e3e7a9f8"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a75dd1ef572215d7338d945e1e3e7a9f8">swapchainPipeline</a></td></tr>
+<tr class="separator:a75dd1ef572215d7338d945e1e3e7a9f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb3396bb13a32ed70ede47065a64642f" id="r_abb3396bb13a32ed70ede47065a64642f"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#abb3396bb13a32ed70ede47065a64642f">offscreenPipeline</a></td></tr>
+<tr class="separator:abb3396bb13a32ed70ede47065a64642f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a99c5a9ee75be7d1b3feacbd5b0909f" id="r_a5a99c5a9ee75be7d1b3feacbd5b0909f"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a5a99c5a9ee75be7d1b3feacbd5b0909f">swapchainOpaquePipeline</a></td></tr>
+<tr class="separator:a5a99c5a9ee75be7d1b3feacbd5b0909f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54142d0274c66e48c9fc4e292c5d4c58" id="r_a54142d0274c66e48c9fc4e292c5d4c58"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a54142d0274c66e48c9fc4e292c5d4c58">offscreenOpaquePipeline</a></td></tr>
+<tr class="separator:a54142d0274c66e48c9fc4e292c5d4c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd00ca94aa090429aa914928e3697a28" id="r_afd00ca94aa090429aa914928e3697a28"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#afd00ca94aa090429aa914928e3697a28">hdrOffscreenPipeline</a></td></tr>
+<tr class="separator:afd00ca94aa090429aa914928e3697a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8a5e904e45d6da7064823a0309a427d" id="r_af8a5e904e45d6da7064823a0309a427d"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#af8a5e904e45d6da7064823a0309a427d">hdrOffscreenOpaquePipeline</a></td></tr>
+<tr class="separator:af8a5e904e45d6da7064823a0309a427d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bed3cb14c88dd208cc745a5fa3b45d5" id="r_a2bed3cb14c88dd208cc745a5fa3b45d5"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a2bed3cb14c88dd208cc745a5fa3b45d5">mesh3dPipeline</a></td></tr>
+<tr class="separator:a2bed3cb14c88dd208cc745a5fa3b45d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c61d3ac702e191e216d73984487dee1" id="r_a9c61d3ac702e191e216d73984487dee1"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a9c61d3ac702e191e216d73984487dee1">mesh3dXrayPipeline</a></td></tr>
+<tr class="separator:a9c61d3ac702e191e216d73984487dee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1b302f930a93f422cf537857aebe884" id="r_ae1b302f930a93f422cf537857aebe884"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#ae1b302f930a93f422cf537857aebe884">shadowPipeline</a></td></tr>
+<tr class="separator:ae1b302f930a93f422cf537857aebe884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad10beb646eb126b482aabdaeb9790b2d" id="r_ad10beb646eb126b482aabdaeb9790b2d"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#ad10beb646eb126b482aabdaeb9790b2d">gbufferPipeline</a></td></tr>
+<tr class="separator:ad10beb646eb126b482aabdaeb9790b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ab387e9552228f97a4514b62fef229f" id="r_a7ab387e9552228f97a4514b62fef229f"><td class="memItemLeft" align="right" valign="top">wgpu::PipelineLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a7ab387e9552228f97a4514b62fef229f">pipelineLayout</a></td></tr>
+<tr class="separator:a7ab387e9552228f97a4514b62fef229f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79b3121713751b2a84eb090d5fb123bb" id="r_a79b3121713751b2a84eb090d5fb123bb"><td class="memItemLeft" align="right" valign="top">wgpu::BindGroupLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a79b3121713751b2a84eb090d5fb123bb">setLayout</a></td></tr>
+<tr class="separator:a79b3121713751b2a84eb090d5fb123bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fd3127b1237d54f320b0315d8967aad" id="r_a1fd3127b1237d54f320b0315d8967aad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a1fd3127b1237d54f320b0315d8967aad">isMesh3D</a> = false</td></tr>
+<tr class="separator:a1fd3127b1237d54f320b0315d8967aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa06ad9ebf1e6bc33b7fa830f1a57893e" id="r_aa06ad9ebf1e6bc33b7fa830f1a57893e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#aa06ad9ebf1e6bc33b7fa830f1a57893e">isHair3D</a> = false</td></tr>
+<tr class="separator:aa06ad9ebf1e6bc33b7fa830f1a57893e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0822e25bab846a36601a296b387ed39" id="r_ae0822e25bab846a36601a296b387ed39"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#ae0822e25bab846a36601a296b387ed39">isShadow</a> = false</td></tr>
+<tr class="separator:ae0822e25bab846a36601a296b387ed39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7cf6116c1e934b8e5311ee8755e7889" id="r_ac7cf6116c1e934b8e5311ee8755e7889"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#ac7cf6116c1e934b8e5311ee8755e7889">isGbuffer</a> = false</td></tr>
+<tr class="separator:ac7cf6116c1e934b8e5311ee8755e7889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1760daafdd030462eb28e7bd3dfed1ec" id="r_a1760daafdd030462eb28e7bd3dfed1ec"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a1760daafdd030462eb28e7bd3dfed1ec">wgslVert</a></td></tr>
+<tr class="separator:a1760daafdd030462eb28e7bd3dfed1ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67261c1768143e6856d67a1378360e76" id="r_a67261c1768143e6856d67a1378360e76"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1GpuShader.html#a67261c1768143e6856d67a1378360e76">wgslFrag</a></td></tr>
+<tr class="separator:a67261c1768143e6856d67a1378360e76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A compiled shader: one WebGPU pipeline + layout. Also holds the WGSL sources so custom shaders can be re-pipelined for offscreen targets. </p>
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00156">156</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ad10beb646eb126b482aabdaeb9790b2d" name="ad10beb646eb126b482aabdaeb9790b2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad10beb646eb126b482aabdaeb9790b2d">&#9670;&#160;</a></span>gbufferPipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::gbufferPipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00166">166</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af8a5e904e45d6da7064823a0309a427d" name="af8a5e904e45d6da7064823a0309a427d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8a5e904e45d6da7064823a0309a427d">&#9670;&#160;</a></span>hdrOffscreenOpaquePipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::hdrOffscreenOpaquePipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd00ca94aa090429aa914928e3697a28" name="afd00ca94aa090429aa914928e3697a28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd00ca94aa090429aa914928e3697a28">&#9670;&#160;</a></span>hdrOffscreenPipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::hdrOffscreenPipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00161">161</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac7cf6116c1e934b8e5311ee8755e7889" name="ac7cf6116c1e934b8e5311ee8755e7889"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7cf6116c1e934b8e5311ee8755e7889">&#9670;&#160;</a></span>isGbuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::webgpu::GpuShader::isGbuffer = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00172">172</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa06ad9ebf1e6bc33b7fa830f1a57893e" name="aa06ad9ebf1e6bc33b7fa830f1a57893e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa06ad9ebf1e6bc33b7fa830f1a57893e">&#9670;&#160;</a></span>isHair3D</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::webgpu::GpuShader::isHair3D = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a1fd3127b1237d54f320b0315d8967aad" name="a1fd3127b1237d54f320b0315d8967aad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fd3127b1237d54f320b0315d8967aad">&#9670;&#160;</a></span>isMesh3D</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::webgpu::GpuShader::isMesh3D = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="ae0822e25bab846a36601a296b387ed39" name="ae0822e25bab846a36601a296b387ed39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0822e25bab846a36601a296b387ed39">&#9670;&#160;</a></span>isShadow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::webgpu::GpuShader::isShadow = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2bed3cb14c88dd208cc745a5fa3b45d5" name="a2bed3cb14c88dd208cc745a5fa3b45d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bed3cb14c88dd208cc745a5fa3b45d5">&#9670;&#160;</a></span>mesh3dPipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::mesh3dPipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a9c61d3ac702e191e216d73984487dee1" name="a9c61d3ac702e191e216d73984487dee1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c61d3ac702e191e216d73984487dee1">&#9670;&#160;</a></span>mesh3dXrayPipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::mesh3dXrayPipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a54142d0274c66e48c9fc4e292c5d4c58" name="a54142d0274c66e48c9fc4e292c5d4c58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54142d0274c66e48c9fc4e292c5d4c58">&#9670;&#160;</a></span>offscreenOpaquePipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::offscreenOpaquePipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00160">160</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb3396bb13a32ed70ede47065a64642f" name="abb3396bb13a32ed70ede47065a64642f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb3396bb13a32ed70ede47065a64642f">&#9670;&#160;</a></span>offscreenPipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::offscreenPipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a7ab387e9552228f97a4514b62fef229f" name="a7ab387e9552228f97a4514b62fef229f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ab387e9552228f97a4514b62fef229f">&#9670;&#160;</a></span>pipelineLayout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::PipelineLayout eve::graphics::webgpu::GpuShader::pipelineLayout</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a79b3121713751b2a84eb090d5fb123bb" name="a79b3121713751b2a84eb090d5fb123bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79b3121713751b2a84eb090d5fb123bb">&#9670;&#160;</a></span>setLayout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::BindGroupLayout eve::graphics::webgpu::GpuShader::setLayout</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="ae1b302f930a93f422cf537857aebe884" name="ae1b302f930a93f422cf537857aebe884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1b302f930a93f422cf537857aebe884">&#9670;&#160;</a></span>shadowPipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::shadowPipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a99c5a9ee75be7d1b3feacbd5b0909f" name="a5a99c5a9ee75be7d1b3feacbd5b0909f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a99c5a9ee75be7d1b3feacbd5b0909f">&#9670;&#160;</a></span>swapchainOpaquePipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::swapchainOpaquePipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00159">159</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a75dd1ef572215d7338d945e1e3e7a9f8" name="a75dd1ef572215d7338d945e1e3e7a9f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75dd1ef572215d7338d945e1e3e7a9f8">&#9670;&#160;</a></span>swapchainPipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::GpuShader::swapchainPipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a67261c1768143e6856d67a1378360e76" name="a67261c1768143e6856d67a1378360e76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67261c1768143e6856d67a1378360e76">&#9670;&#160;</a></span>wgslFrag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::webgpu::GpuShader::wgslFrag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<a id="a1760daafdd030462eb28e7bd3dfed1ec" name="a1760daafdd030462eb28e7bd3dfed1ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1760daafdd030462eb28e7bd3dfed1ec">&#9670;&#160;</a></span>wgslVert</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::webgpu::GpuShader::wgslVert</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="webgpu_2GraphicsShaderReload_8cpp_source.html#l00027">eve::graphics::webgpu::Graphics::replaceShaderFromWgsl()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/webgpu/<a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

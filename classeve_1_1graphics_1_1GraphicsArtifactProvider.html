@@ -1,0 +1,732 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::GraphicsArtifactProvider类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html">GraphicsArtifactProvider</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1graphics_1_1GraphicsArtifactProvider-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::GraphicsArtifactProvider类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Real graphics-module provider for generated mesh publication.  
+ <a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="graphics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::GraphicsArtifactProvider 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1GraphicsArtifactProvider.png" usemap="#eve::graphics::GraphicsArtifactProvider_map" alt=""/>
+  <map id="eve::graphics::GraphicsArtifactProvider_map" name="eve::graphics::GraphicsArtifactProvider_map">
+<area href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html" title="Graphics resource publication capability, implemented by graphics." alt="eve::artifact::IGraphicsArtifactAdapter" shape="rect" coords="0,56,235,80"/>
+<area href="classeve_1_1artifact_1_1ProviderContract.html" title="Base contract for a consumer-owned artifact provider." alt="eve::artifact::ProviderContract" shape="rect" coords="0,0,235,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9b5a53c2eb17eb62ebf312f743fb099e" id="r_a9b5a53c2eb17eb62ebf312f743fb099e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a9b5a53c2eb17eb62ebf312f743fb099e">prepare</a> (const <a class="el" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a> &amp;publication) override</td></tr>
+<tr class="memdesc:a9b5a53c2eb17eb62ebf312f743fb099e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stage and copy the mesh leaf from a generated publication.  <br /></td></tr>
+<tr class="separator:a9b5a53c2eb17eb62ebf312f743fb099e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d557273ea8e0ee4ac6d1eda460fe895" id="r_a3d557273ea8e0ee4ac6d1eda460fe895"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a3d557273ea8e0ee4ac6d1eda460fe895">snapshotState</a> () const override</td></tr>
+<tr class="memdesc:a3d557273ea8e0ee4ac6d1eda460fe895"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export resource identity, build keys, handles and CPU descriptors.  <br /></td></tr>
+<tr class="separator:a3d557273ea8e0ee4ac6d1eda460fe895"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a76aa309a4b229edfc511166d6b8c05" id="r_a2a76aa309a4b229edfc511166d6b8c05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a2a76aa309a4b229edfc511166d6b8c05">restoreState</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;state) override</td></tr>
+<tr class="memdesc:a2a76aa309a4b229edfc511166d6b8c05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace resources from validated backend-neutral CPU descriptors.  <br /></td></tr>
+<tr class="separator:a2a76aa309a4b229edfc511166d6b8c05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a783cacce51851062d1b6a454f813a561" id="r_a783cacce51851062d1b6a454f813a561"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a783cacce51851062d1b6a454f813a561">emptyState</a> () const noexcept override</td></tr>
+<tr class="memdesc:a783cacce51851062d1b6a454f813a561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the graphics registry has no committed resources.  <br /></td></tr>
+<tr class="separator:a783cacce51851062d1b6a454f813a561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87b435406b41d1313647d7a896922e6a" id="r_a87b435406b41d1313647d7a896922e6a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a87b435406b41d1313647d7a896922e6a">clearState</a> () noexcept override</td></tr>
+<tr class="memdesc:a87b435406b41d1313647d7a896922e6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear provider state through the common restore-cleanup hook.  <br /></td></tr>
+<tr class="separator:a87b435406b41d1313647d7a896922e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f483f94c7482b65dcd1197aa64adb00" id="r_a7f483f94c7482b65dcd1197aa64adb00"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html">GraphicsArtifactResource</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a7f483f94c7482b65dcd1197aa64adb00">find</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const noexcept</td></tr>
+<tr class="memdesc:a7f483f94c7482b65dcd1197aa64adb00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find a committed resource; the pointer is borrowed. @ownership Borrowed from this provider; callers must not delete or retain it. @nullable Null when no committed resource has the requested identity. @lifetime Until provider clear/restore/destruction or any later commit that reallocates the provider's record vector; callers must not cache it. @thread Graphics-provider owner thread; external synchronization is required. @reentrancy No callbacks are made.  <br /></td></tr>
+<tr class="separator:a7f483f94c7482b65dcd1197aa64adb00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e544174e0508d08d3998c5258378366" id="r_a3e544174e0508d08d3998c5258378366"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a3e544174e0508d08d3998c5258378366">size</a> () const noexcept</td></tr>
+<tr class="memdesc:a3e544174e0508d08d3998c5258378366"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of committed graphics resources.  <br /></td></tr>
+<tr class="separator:a3e544174e0508d08d3998c5258378366"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba07c61ae7f65fe078dadcc0f88cc03b" id="r_aba07c61ae7f65fe078dadcc0f88cc03b"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#aba07c61ae7f65fe078dadcc0f88cc03b">checksum</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const noexcept</td></tr>
+<tr class="memdesc:aba07c61ae7f65fe078dadcc0f88cc03b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a deterministic checksum of one resource's CPU descriptor.  <br /></td></tr>
+<tr class="separator:aba07c61ae7f65fe078dadcc0f88cc03b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84ed744e1bb1d66482bd1b3fc6dfa708" id="r_a84ed744e1bb1d66482bd1b3fc6dfa708"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html">GraphicsArtifactDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a84ed744e1bb1d66482bd1b3fc6dfa708">descriptor</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a84ed744e1bb1d66482bd1b3fc6dfa708"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the backend-neutral descriptor for one resource.  <br /></td></tr>
+<tr class="separator:a84ed744e1bb1d66482bd1b3fc6dfa708"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa38f7e76d5de5bd5c051d0d4e75b57e1" id="r_aa38f7e76d5de5bd5c051d0d4e75b57e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#aa38f7e76d5de5bd5c051d0d4e75b57e1">isGpuResident</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const noexcept</td></tr>
+<tr class="memdesc:aa38f7e76d5de5bd5c051d0d4e75b57e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a resource was backed by the live <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> upload boundary.  <br /></td></tr>
+<tr class="separator:aa38f7e76d5de5bd5c051d0d4e75b57e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a826e519041920fdeb49599c6e30e3dca" id="r_a826e519041920fdeb49599c6e30e3dca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a826e519041920fdeb49599c6e30e3dca">clear</a> () noexcept</td></tr>
+<tr class="memdesc:a826e519041920fdeb49599c6e30e3dca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all resources and reset the local handle allocator.  <br /></td></tr>
+<tr class="separator:a826e519041920fdeb49599c6e30e3dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a205219047dc568bb0a0d0d14c1a3a75c" id="r_a205219047dc568bb0a0d0d14c1a3a75c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a205219047dc568bb0a0d0d14c1a3a75c">setPrepareFailure</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) noexcept</td></tr>
+<tr class="memdesc:a205219047dc568bb0a0d0d14c1a3a75c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inject a prepare failure for composition tests.  <br /></td></tr>
+<tr class="separator:a205219047dc568bb0a0d0d14c1a3a75c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a560e89a559a67cf3f7c2ea4223fea313" id="r_a560e89a559a67cf3f7c2ea4223fea313"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a560e89a559a67cf3f7c2ea4223fea313">bindGraphics</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *graphics) noexcept</td></tr>
+<tr class="memdesc:a560e89a559a67cf3f7c2ea4223fea313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a live <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> resource factory without transferring ownership.  <br /></td></tr>
+<tr class="separator:a560e89a559a67cf3f7c2ea4223fea313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace3a8d5c2ef76ffa073dc5e853b93b1b" id="r_ace3a8d5c2ef76ffa073dc5e853b93b1b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#ace3a8d5c2ef76ffa073dc5e853b93b1b">detachGraphics</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *graphics) noexcept</td></tr>
+<tr class="memdesc:ace3a8d5c2ef76ffa073dc5e853b93b1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detach the expected backend and release its provider-owned meshes.  <br /></td></tr>
+<tr class="separator:ace3a8d5c2ef76ffa073dc5e853b93b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1artifact_1_1IGraphicsArtifactAdapter"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1artifact_1_1IGraphicsArtifactAdapter')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">eve::artifact::IGraphicsArtifactAdapter</a></td></tr>
+<tr class="memitem:a393c079479353bcf907b84e6fbd341ec inherit pub_methods_classeve_1_1artifact_1_1IGraphicsArtifactAdapter" id="r_a393c079479353bcf907b84e6fbd341ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html#a393c079479353bcf907b84e6fbd341ec">~IGraphicsArtifactAdapter</a> () override=default</td></tr>
+<tr class="separator:a393c079479353bcf907b84e6fbd341ec inherit pub_methods_classeve_1_1artifact_1_1IGraphicsArtifactAdapter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1artifact_1_1ProviderContract"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1artifact_1_1ProviderContract')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html">eve::artifact::ProviderContract</a></td></tr>
+<tr class="memitem:ad7e1191c0debb589a0619566c58bf8b0 inherit pub_methods_classeve_1_1artifact_1_1ProviderContract" id="r_ad7e1191c0debb589a0619566c58bf8b0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#ad7e1191c0debb589a0619566c58bf8b0">~ProviderContract</a> ()=default</td></tr>
+<tr class="separator:ad7e1191c0debb589a0619566c58bf8b0 inherit pub_methods_classeve_1_1artifact_1_1ProviderContract"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:ae48153a42e8b0e31d7e238266c3d52e6" id="r_ae48153a42e8b0e31d7e238266c3d52e6"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#ae48153a42e8b0e31d7e238266c3d52e6">GraphicsArtifactStage</a></td></tr>
+<tr class="separator:ae48153a42e8b0e31d7e238266c3d52e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1artifact_1_1IGraphicsArtifactAdapter"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1artifact_1_1IGraphicsArtifactAdapter')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">eve::artifact::IGraphicsArtifactAdapter</a></td></tr>
+<tr class="memitem:a218048eefa70bff8de19e5c66ebe31ff inherit pub_static_attribs_classeve_1_1artifact_1_1IGraphicsArtifactAdapter" id="r_a218048eefa70bff8de19e5c66ebe31ff"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html#a218048eefa70bff8de19e5c66ebe31ff">capabilityName</a> = &quot;eve.procgen.IGraphicsArtifactAdapter&quot;</td></tr>
+<tr class="separator:a218048eefa70bff8de19e5c66ebe31ff inherit pub_static_attribs_classeve_1_1artifact_1_1IGraphicsArtifactAdapter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Real graphics-module provider for generated mesh publication. </p>
+<p>The provider always owns the backend-neutral descriptor. When a live <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> backend is bound, prepare also calls its normal newMeshFromArrays upload boundary; an unavailable/uninitialized backend is an explicit observable CPU capability-degraded path rather than a hidden mock. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00086">86</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a560e89a559a67cf3f7c2ea4223fea313" name="a560e89a559a67cf3f7c2ea4223fea313"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a560e89a559a67cf3f7c2ea4223fea313">&#9670;&#160;</a></span>bindGraphics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GraphicsArtifactProvider::bindGraphics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind a live <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> resource factory without transferring ownership. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Procgen_8cpp_source.html#l00074">release</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00482">eve::graphics::registerGraphicsArtifactProvider()</a>.</p>
+
+</div>
+</div>
+<a id="aba07c61ae7f65fe078dadcc0f88cc03b" name="aba07c61ae7f65fe078dadcc0f88cc03b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba07c61ae7f65fe078dadcc0f88cc03b">&#9670;&#160;</a></span>checksum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::graphics::GraphicsArtifactProvider::checksum </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a deterministic checksum of one resource's CPU descriptor. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a826e519041920fdeb49599c6e30e3dca" name="a826e519041920fdeb49599c6e30e3dca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a826e519041920fdeb49599c6e30e3dca">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GraphicsArtifactProvider::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove all resources and reset the local handle allocator. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Procgen_8cpp_source.html#l00074">release</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00098">clearState()</a>.</p>
+
+</div>
+</div>
+<a id="a87b435406b41d1313647d7a896922e6a" name="a87b435406b41d1313647d7a896922e6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87b435406b41d1313647d7a896922e6a">&#9670;&#160;</a></span>clearState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GraphicsArtifactProvider::clearState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear provider state through the common restore-cleanup hook. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a26319b92cb27e20b49b2d3e74045ec29">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00334">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a84ed744e1bb1d66482bd1b3fc6dfa708" name="a84ed744e1bb1d66482bd1b3fc6dfa708"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84ed744e1bb1d66482bd1b3fc6dfa708">&#9670;&#160;</a></span>descriptor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html">GraphicsArtifactDescriptor</a> &gt; eve::graphics::GraphicsArtifactProvider::descriptor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the backend-neutral descriptor for one resource. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00030">eve::graphics::GraphicsArtifactDescriptor::buildKey</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00305">find()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+</div>
+</div>
+<a id="ace3a8d5c2ef76ffa073dc5e853b93b1b" name="ace3a8d5c2ef76ffa073dc5e853b93b1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace3a8d5c2ef76ffa073dc5e853b93b1b">&#9670;&#160;</a></span>detachGraphics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GraphicsArtifactProvider::detachGraphics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Detach the expected backend and release its provider-owned meshes. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00349">349</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Procgen_8cpp_source.html#l00074">release</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00487">eve::graphics::detachGraphicsArtifactProvider()</a>.</p>
+
+</div>
+</div>
+<a id="a783cacce51851062d1b6a454f813a561" name="a783cacce51851062d1b6a454f813a561"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a783cacce51851062d1b6a454f813a561">&#9670;&#160;</a></span>emptyState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::GraphicsArtifactProvider::emptyState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the graphics registry has no committed resources. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a6fd1f4add3a3bb104fc98f73287dc7f2">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7f483f94c7482b65dcd1197aa64adb00" name="a7f483f94c7482b65dcd1197aa64adb00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f483f94c7482b65dcd1197aa64adb00">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html">GraphicsArtifactResource</a> * eve::graphics::GraphicsArtifactProvider::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find a committed resource; the pointer is borrowed. @ownership Borrowed from this provider; callers must not delete or retain it. @nullable Null when no committed resource has the requested identity. @lifetime Until provider clear/restore/destruction or any later commit that reallocates the provider's record vector; callers must not cache it. @thread Graphics-provider owner thread; external synchronization is required. @reentrancy No callbacks are made. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00316">descriptor()</a> , 以及 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00233">prepare()</a>.</p>
+
+</div>
+</div>
+<a id="aa38f7e76d5de5bd5c051d0d4e75b57e1" name="aa38f7e76d5de5bd5c051d0d4e75b57e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa38f7e76d5de5bd5c051d0d4e75b57e1">&#9670;&#160;</a></span>isGpuResident()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::GraphicsArtifactProvider::isGpuResident </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether a resource was backed by the live <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> upload boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b5a53c2eb17eb62ebf312f743fb099e" name="a9b5a53c2eb17eb62ebf312f743fb099e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b5a53c2eb17eb62ebf312f743fb099e">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a> &gt; &gt; eve::graphics::GraphicsArtifactProvider::prepare </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a> &amp;&#160;</td>
+          <td class="paramname"><em>publication</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stage and copy the mesh leaf from a generated publication. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a405c5379a25dab67e34ae0095a96c5ea">eve::artifact::ProviderContract</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArtifactPublication_8h_source.html#l00086">eve::artifact::PublicationView::buildKey</a>, <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00046">eve::graphics::GraphicsArtifactResource::buildKey</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00305">find()</a>, <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00047">eve::graphics::GraphicsArtifactResource::handle</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00084">eve::artifact::PublicationView::id</a>, <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00045">eve::graphics::GraphicsArtifactResource::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00045">eve::RuntimeHandle&lt; GraphicsArtifactHandleTag &gt;::invalidIndex</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Graphics_8h_source.html#l00781">eve::graphics::Graphics::releaseMesh()</a> , 以及 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00048">eve::graphics::GraphicsArtifactResource::role</a>.</p>
+
+</div>
+</div>
+<a id="a2a76aa309a4b229edfc511166d6b8c05" name="a2a76aa309a4b229edfc511166d6b8c05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a76aa309a4b229edfc511166d6b8c05">&#9670;&#160;</a></span>restoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::GraphicsArtifactProvider::restoreState </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace resources from validated backend-neutral CPU descriptors. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#aa25788a7ca133370d53baa8c29b4abe0">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00115">eve::RuntimeHandle&lt; GraphicsArtifactHandleTag &gt;::fromPacked()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Identity_8h_source.html#l00080">eve::detail::Id128&lt; Tag &gt;::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="Procgen_8cpp_source.html#l00074">release</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+</div>
+</div>
+<a id="a205219047dc568bb0a0d0d14c1a3a75c" name="a205219047dc568bb0a0d0d14c1a3a75c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a205219047dc568bb0a0d0d14c1a3a75c">&#9670;&#160;</a></span>setPrepareFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::GraphicsArtifactProvider::setPrepareFailure </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inject a prepare failure for composition tests. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a3e544174e0508d08d3998c5258378366" name="a3e544174e0508d08d3998c5258378366"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e544174e0508d08d3998c5258378366">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::graphics::GraphicsArtifactProvider::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of committed graphics resources. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d557273ea8e0ee4ac6d1eda460fe895" name="a3d557273ea8e0ee4ac6d1eda460fe895"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d557273ea8e0ee4ac6d1eda460fe895">&#9670;&#160;</a></span>snapshotState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::graphics::GraphicsArtifactProvider::snapshotState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Export resource identity, build keys, handles and CPU descriptors. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a0e1f6eb72132331e3b684ebd8c9382ad">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="graphics_2ArtifactProvider_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="ae48153a42e8b0e31d7e238266c3d52e6" name="ae48153a42e8b0e31d7e238266c3d52e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae48153a42e8b0e31d7e238266c3d52e6">&#9670;&#160;</a></span>GraphicsArtifactStage</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1graphics_1_1GraphicsArtifactStage.html">GraphicsArtifactStage</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="graphics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="graphics_2ArtifactProvider_8h_source.html#l00129">129</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="graphics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a></li>
+<li>src/modules/graphics/<a class="el" href="graphics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

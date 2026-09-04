@@ -1,0 +1,684 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::Heightmap类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1Heightmap-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::Heightmap类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from a <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html" title="Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).">TerrainSampler</a> or filled by hand.  
+ <a href="classeve_1_1procgen_1_1Heightmap.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Heightmap_8h_source.html">Heightmap.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a52d1005cd49f90a6aa1fa98293195048" id="r_a52d1005cd49f90a6aa1fa98293195048"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#a52d1005cd49f90a6aa1fa98293195048">Heightmap</a> ()=default</td></tr>
+<tr class="separator:a52d1005cd49f90a6aa1fa98293195048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04c6c719ad82b3a57ebcf173ed9b4779" id="r_a04c6c719ad82b3a57ebcf173ed9b4779"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#a04c6c719ad82b3a57ebcf173ed9b4779">Heightmap</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="classeve_1_1procgen_1_1Heightmap.html#abfce3ff058b6f39658192520a332f312">height</a>)</td></tr>
+<tr class="separator:a04c6c719ad82b3a57ebcf173ed9b4779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbe5941c7c587ef3d369b27d9495c4ad" id="r_abbe5941c7c587ef3d369b27d9495c4ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#abbe5941c7c587ef3d369b27d9495c4ad">resize</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="classeve_1_1procgen_1_1Heightmap.html#abfce3ff058b6f39658192520a332f312">height</a>)</td></tr>
+<tr class="separator:abbe5941c7c587ef3d369b27d9495c4ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefd7ef06b9f8ebf2c63b8548741dfe27" id="r_aefd7ef06b9f8ebf2c63b8548741dfe27"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#aefd7ef06b9f8ebf2c63b8548741dfe27">getWidth</a> () const</td></tr>
+<tr class="separator:aefd7ef06b9f8ebf2c63b8548741dfe27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14a4d05fb5bc0e9f5791ec98449c7856" id="r_a14a4d05fb5bc0e9f5791ec98449c7856"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#a14a4d05fb5bc0e9f5791ec98449c7856">getHeight</a> () const</td></tr>
+<tr class="separator:a14a4d05fb5bc0e9f5791ec98449c7856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affafe9d572eb8308936f1df0731f9c32" id="r_affafe9d572eb8308936f1df0731f9c32"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#affafe9d572eb8308936f1df0731f9c32">inBounds</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="separator:affafe9d572eb8308936f1df0731f9c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb4f985f26c630fb90ccb32acd18b7f9" id="r_adb4f985f26c630fb90ccb32acd18b7f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#adb4f985f26c630fb90ccb32acd18b7f9">setHeight</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:adb4f985f26c630fb90ccb32acd18b7f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfce3ff058b6f39658192520a332f312" id="r_abfce3ff058b6f39658192520a332f312"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#abfce3ff058b6f39658192520a332f312">height</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="separator:abfce3ff058b6f39658192520a332f312"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a365a1516135c2c8f193481e4f76ba114" id="r_a365a1516135c2c8f193481e4f76ba114"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#a365a1516135c2c8f193481e4f76ba114">sampleBilinear</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="memdesc:a365a1516135c2c8f193481e4f76ba114"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear height at continuous coordinate within [0, w) x [0, h).  <br /></td></tr>
+<tr class="separator:a365a1516135c2c8f193481e4f76ba114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad463583cb1ab56b2453f6eebd6e4d3ad" id="r_ad463583cb1ab56b2453f6eebd6e4d3ad"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#ad463583cb1ab56b2453f6eebd6e4d3ad">sampleBilinearSeamless</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="memdesc:ad463583cb1ab56b2453f6eebd6e4d3ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear height with wrap-around (seamless tiling).  <br /></td></tr>
+<tr class="separator:ad463583cb1ab56b2453f6eebd6e4d3ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a471826694bbbe6ff5975f5d0a03efc79" id="r_a471826694bbbe6ff5975f5d0a03efc79"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#a471826694bbbe6ff5975f5d0a03efc79">data</a> () const</td></tr>
+<tr class="separator:a471826694bbbe6ff5975f5d0a03efc79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0b517e3082ebb500da9de9ddca568ff" id="r_aa0b517e3082ebb500da9de9ddca568ff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#aa0b517e3082ebb500da9de9ddca568ff">data</a> ()</td></tr>
+<tr class="memdesc:aa0b517e3082ebb500da9de9ddca568ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable row-major samples for terrain processing and asset import.  <br /></td></tr>
+<tr class="separator:aa0b517e3082ebb500da9de9ddca568ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6aedd5f12b0c3a31f0355077a7dd529" id="r_aa6aedd5f12b0c3a31f0355077a7dd529"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#aa6aedd5f12b0c3a31f0355077a7dd529">toGrid</a> (<a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;out, const <a class="el" href="structeve_1_1procgen_1_1TerrainBands.html">TerrainBands</a> &amp;bands) const</td></tr>
+<tr class="memdesc:aa6aedd5f12b0c3a31f0355077a7dd529"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classify heights into a semantic <a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> (source for tilemap generation).  <br /></td></tr>
+<tr class="separator:aa6aedd5f12b0c3a31f0355077a7dd529"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ae00b354d19ab238377b0515a680c910d" id="r_ae00b354d19ab238377b0515a680c910d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#ae00b354d19ab238377b0515a680c910d">generate</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a> &amp;sampler, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="classeve_1_1procgen_1_1Heightmap.html#abfce3ff058b6f39658192520a332f312">height</a>)</td></tr>
+<tr class="memdesc:ae00b354d19ab238377b0515a680c910d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Materialize a <a class="el" href="classeve_1_1procgen_1_1Heightmap.html" title="In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...">Heightmap</a> by sampling <code>sampler</code> at every pixel center.  <br /></td></tr>
+<tr class="separator:ae00b354d19ab238377b0515a680c910d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from a <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html" title="Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).">TerrainSampler</a> or filled by hand. </p>
+<p>Use <code><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#ae00b354d19ab238377b0515a680c910d" title="Materialize a Heightmap by sampling sampler at every pixel center.">generate()</a></code> to sample a <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html" title="Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).">TerrainSampler</a> per-pixel, <code><a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height(x, y)</a></code> / <code>sampleBilinear(x, y)</code> to read values back, and <code><a class="el" href="classeve_1_1procgen_1_1Heightmap.html#aa6aedd5f12b0c3a31f0355077a7dd529" title="Classify heights into a semantic Grid2D (source for tilemap generation).">toGrid()</a></code> to classify the heights into a semantic <a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> ready for tilemap generation. </p>
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8h_source.html">Heightmap.h</a> 第 <a class="el" href="Heightmap_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a52d1005cd49f90a6aa1fa98293195048" name="a52d1005cd49f90a6aa1fa98293195048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52d1005cd49f90a6aa1fa98293195048">&#9670;&#160;</a></span>Heightmap() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::Heightmap::Heightmap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a04c6c719ad82b3a57ebcf173ed9b4779" name="a04c6c719ad82b3a57ebcf173ed9b4779"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04c6c719ad82b3a57ebcf173ed9b4779">&#9670;&#160;</a></span>Heightmap() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::Heightmap::Heightmap </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Heightmap_8cpp_source.html#l00010">resize()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa0b517e3082ebb500da9de9ddca568ff" name="aa0b517e3082ebb500da9de9ddca568ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0b517e3082ebb500da9de9ddca568ff">&#9670;&#160;</a></span>data() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; &amp; eve::procgen::Heightmap::data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mutable row-major samples for terrain processing and asset import. </p>
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8h_source.html">Heightmap.h</a> 第 <a class="el" href="Heightmap_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a471826694bbbe6ff5975f5d0a03efc79" name="a471826694bbbe6ff5975f5d0a03efc79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a471826694bbbe6ff5975f5d0a03efc79">&#9670;&#160;</a></span>data() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::procgen::Heightmap::data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8h_source.html">Heightmap.h</a> 第 <a class="el" href="Heightmap_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainAsset_8cpp_source.html#l00085">eve::procgen::TerrainAsset::bake()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00962">eve::procgen::TerrainPipeline::buildClimate()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00671">eve::procgen::TerrainPipeline::buildHydrology()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00223">eve::procgen::TerrainPipeline::erodeFluvialDetailed()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00179">eve::procgen::TerrainPipeline::erodeHydraulic()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00146">eve::procgen::TerrainPipeline::erodeThermal()</a>, <a class="el" href="TerrainAsset_8cpp_source.html#l00222">eve::procgen::TerrainAsset::loadChunk()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">eve::procgen::TerrainStreamingCache::sampleCell()</a>.</p>
+
+</div>
+</div>
+<a id="ae00b354d19ab238377b0515a680c910d" name="ae00b354d19ab238377b0515a680c910d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae00b354d19ab238377b0515a680c910d">&#9670;&#160;</a></span>generate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> eve::procgen::Heightmap::generate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a> &amp;&#160;</td>
+          <td class="paramname"><em>sampler</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Materialize a <a class="el" href="classeve_1_1procgen_1_1Heightmap.html" title="In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...">Heightmap</a> by sampling <code>sampler</code> at every pixel center. </p>
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="Heightmap_8cpp_source.html#l00023">setHeight()</a>, <a class="el" href="TerrainSampler_8cpp_source.html#l00038">eve::procgen::TerrainSampler::setWorldSize()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02242">eve::procgen::Procgen::generateHeightmapHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a14a4d05fb5bc0e9f5791ec98449c7856" name="a14a4d05fb5bc0e9f5791ec98449c7856"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14a4d05fb5bc0e9f5791ec98449c7856">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Heightmap::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02345">eve::procgen::Procgen::analyzeTerrainScaled()</a>, <a class="el" href="HeightmapTarget_8cpp_source.html#l00036">eve::procgen_editing::applyHeightmapBrush()</a>, <a class="el" href="TerrainAsset_8cpp_source.html#l00085">eve::procgen::TerrainAsset::bake()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00478">eve::procgen::TerrainLakeMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00962">eve::procgen::TerrainPipeline::buildClimate()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00671">eve::procgen::TerrainPipeline::buildHydrology()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00223">eve::procgen::TerrainPipeline::erodeFluvialDetailed()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00179">eve::procgen::TerrainPipeline::erodeHydraulic()</a>, <a class="el" href="Procgen_8cpp_source.html#l02320">eve::procgen::Procgen::erodeTerrainFluvialDetailed()</a>, <a class="el" href="Procgen_8cpp_source.html#l02304">eve::procgen::Procgen::erodeTerrainFluvialScaled()</a>, <a class="el" href="Procgen_8cpp_source.html#l02281">eve::procgen::Procgen::erodeTerrainHydraulic()</a>, <a class="el" href="Procgen_8cpp_source.html#l02271">eve::procgen::Procgen::erodeTerrainThermal()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00146">eve::procgen::TerrainPipeline::erodeThermal()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00174">eve::procgen::TerrainMeshBuilder::estimateGeometricError()</a>, <a class="el" href="HeightmapTarget_8cpp_source.html#l00014">eve::procgen_editing::HeightmapTarget::height()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00198">eve::procgen::SpatialData::heightfield()</a>, <a class="el" href="PointSetHeightmapAdapter_8cpp_source.html#l00008">eve::procgen::projectPointsToHeightmap()</a> , 以及 <a class="el" href="TerrainMesh_8cpp_source.html#l00202">eve::procgen::TerrainLodSelector::select()</a>.</p>
+
+</div>
+</div>
+<a id="aefd7ef06b9f8ebf2c63b8548741dfe27" name="aefd7ef06b9f8ebf2c63b8548741dfe27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefd7ef06b9f8ebf2c63b8548741dfe27">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::Heightmap::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02345">eve::procgen::Procgen::analyzeTerrainScaled()</a>, <a class="el" href="HeightmapTarget_8cpp_source.html#l00036">eve::procgen_editing::applyHeightmapBrush()</a>, <a class="el" href="TerrainAsset_8cpp_source.html#l00085">eve::procgen::TerrainAsset::bake()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00478">eve::procgen::TerrainLakeMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00962">eve::procgen::TerrainPipeline::buildClimate()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00671">eve::procgen::TerrainPipeline::buildHydrology()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00223">eve::procgen::TerrainPipeline::erodeFluvialDetailed()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00179">eve::procgen::TerrainPipeline::erodeHydraulic()</a>, <a class="el" href="Procgen_8cpp_source.html#l02320">eve::procgen::Procgen::erodeTerrainFluvialDetailed()</a>, <a class="el" href="Procgen_8cpp_source.html#l02304">eve::procgen::Procgen::erodeTerrainFluvialScaled()</a>, <a class="el" href="Procgen_8cpp_source.html#l02281">eve::procgen::Procgen::erodeTerrainHydraulic()</a>, <a class="el" href="Procgen_8cpp_source.html#l02271">eve::procgen::Procgen::erodeTerrainThermal()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00146">eve::procgen::TerrainPipeline::erodeThermal()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00174">eve::procgen::TerrainMeshBuilder::estimateGeometricError()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00198">eve::procgen::SpatialData::heightfield()</a>, <a class="el" href="PointSetHeightmapAdapter_8cpp_source.html#l00008">eve::procgen::projectPointsToHeightmap()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00202">eve::procgen::TerrainLodSelector::select()</a> , 以及 <a class="el" href="HeightmapTarget_8cpp_source.html#l00013">eve::procgen_editing::HeightmapTarget::width()</a>.</p>
+
+</div>
+</div>
+<a id="abfce3ff058b6f39658192520a332f312" name="abfce3ff058b6f39658192520a332f312"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfce3ff058b6f39658192520a332f312">&#9670;&#160;</a></span>height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Heightmap::height </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Heightmap_8cpp_source.html#l00019">inBounds()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HeightmapTarget_8cpp_source.html#l00036">eve::procgen_editing::applyHeightmapBrush()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00478">eve::procgen::TerrainLakeMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00174">eve::procgen::TerrainMeshBuilder::estimateGeometricError()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00198">eve::procgen::SpatialData::heightfield()</a>, <a class="el" href="HeightmapTarget_8cpp_source.html#l00016">eve::procgen_editing::HeightmapTarget::readScalar()</a> , 以及 <a class="el" href="HeightmapTarget_8cpp_source.html#l00019">eve::procgen_editing::HeightmapTarget::writeScalar()</a>.</p>
+
+</div>
+</div>
+<a id="affafe9d572eb8308936f1df0731f9c32" name="affafe9d572eb8308936f1df0731f9c32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affafe9d572eb8308936f1df0731f9c32">&#9670;&#160;</a></span>inBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Heightmap::inBounds </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HeightmapTarget_8cpp_source.html#l00015">eve::procgen_editing::HeightmapTarget::containsCell()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00028">height()</a> , 以及 <a class="el" href="Heightmap_8cpp_source.html#l00023">setHeight()</a>.</p>
+
+</div>
+</div>
+<a id="abbe5941c7c587ef3d369b27d9495c4ad" name="abbe5941c7c587ef3d369b27d9495c4ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbe5941c7c587ef3d369b27d9495c4ad">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Heightmap::resize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Snow_8cpp_source.html#l00018">eve::snow::applySnowToHeightmap()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00008">Heightmap()</a> , 以及 <a class="el" href="TerrainAsset_8cpp_source.html#l00222">eve::procgen::TerrainAsset::loadChunk()</a>.</p>
+
+</div>
+</div>
+<a id="a365a1516135c2c8f193481e4f76ba114" name="a365a1516135c2c8f193481e4f76ba114"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a365a1516135c2c8f193481e4f76ba114">&#9670;&#160;</a></span>sampleBilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Heightmap::sampleBilinear </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bilinear height at continuous coordinate within [0, w) x [0, h). </p>
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSetHeightmapAdapter_8cpp_source.html#l00008">eve::procgen::projectPointsToHeightmap()</a> , 以及 <a class="el" href="HeightmapTarget_8cpp_source.html#l00027">eve::procgen_editing::HeightmapTarget::sampleScalar()</a>.</p>
+
+</div>
+</div>
+<a id="ad463583cb1ab56b2453f6eebd6e4d3ad" name="ad463583cb1ab56b2453f6eebd6e4d3ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad463583cb1ab56b2453f6eebd6e4d3ad">&#9670;&#160;</a></span>sampleBilinearSeamless()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::Heightmap::sampleBilinearSeamless </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bilinear height with wrap-around (seamless tiling). </p>
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00686">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="adb4f985f26c630fb90ccb32acd18b7f9" name="adb4f985f26c630fb90ccb32acd18b7f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb4f985f26c630fb90ccb32acd18b7f9">&#9670;&#160;</a></span>setHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::Heightmap::setHeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="Heightmap_8cpp_source.html#l00019">inBounds()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HeightmapTarget_8cpp_source.html#l00036">eve::procgen_editing::applyHeightmapBrush()</a>, <a class="el" href="Snow_8cpp_source.html#l00018">eve::snow::applySnowToHeightmap()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00126">eve::procgen::TerrainStreamingCache::buildWindow()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00069">generate()</a>, <a class="el" href="EvpackTerrainLoader_8cpp_source.html#l00042">eve::asset_procgen::EvpackTerrainLoader::load()</a> , 以及 <a class="el" href="HeightmapTarget_8cpp_source.html#l00019">eve::procgen_editing::HeightmapTarget::writeScalar()</a>.</p>
+
+</div>
+</div>
+<a id="aa6aedd5f12b0c3a31f0355077a7dd529" name="aa6aedd5f12b0c3a31f0355077a7dd529"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6aedd5f12b0c3a31f0355077a7dd529">&#9670;&#160;</a></span>toGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::Heightmap::toGrid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainBands.html">TerrainBands</a> &amp;&#160;</td>
+          <td class="paramname"><em>bands</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Classify heights into a semantic <a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> (source for tilemap generation). </p>
+
+<p class="definition">在文件 <a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a> 第 <a class="el" href="Heightmap_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grid2D_8cpp_source.html#l00013">eve::procgen::Grid2D::resize()</a>, <a class="el" href="TerrainSampler_8cpp_source.html#l00159">eve::procgen::TerrainBands::semanticAt()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00023">eve::procgen::Grid2D::setCell()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="Heightmap_8h_source.html">Heightmap.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="Heightmap_8cpp_source.html">Heightmap.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

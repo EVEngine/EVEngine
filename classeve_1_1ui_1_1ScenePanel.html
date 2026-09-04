@@ -1,0 +1,558 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::ScenePanel类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html">ScenePanel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1ScenePanel-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::ScenePanel类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Scene hierarchy panel (DevTools, MVVM).  
+ <a href="classeve_1_1ui_1_1ScenePanel.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScenePanel_8h_source.html">ScenePanel.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa65c75a35cf53469ff6162c97427cc68" id="r_aa65c75a35cf53469ff6162c97427cc68"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#aa65c75a35cf53469ff6162c97427cc68">ScenePanel</a> ()=default</td></tr>
+<tr class="separator:aa65c75a35cf53469ff6162c97427cc68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39848fc6d9ee8b1165b65627bef62f27" id="r_a39848fc6d9ee8b1165b65627bef62f27"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#a39848fc6d9ee8b1165b65627bef62f27">~ScenePanel</a> ()</td></tr>
+<tr class="separator:a39848fc6d9ee8b1165b65627bef62f27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef74221774d66cd98f28c3f3e4d6c8b8" id="r_aef74221774d66cd98f28c3f3e4d6c8b8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#aef74221774d66cd98f28c3f3e4d6c8b8">ScenePanel</a> (const <a class="el" href="classeve_1_1ui_1_1ScenePanel.html">ScenePanel</a> &amp;)=delete</td></tr>
+<tr class="separator:aef74221774d66cd98f28c3f3e4d6c8b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a698544d4a084715b4bfa62225e0be428" id="r_a698544d4a084715b4bfa62225e0be428"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html">ScenePanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#a698544d4a084715b4bfa62225e0be428">operator=</a> (const <a class="el" href="classeve_1_1ui_1_1ScenePanel.html">ScenePanel</a> &amp;)=delete</td></tr>
+<tr class="separator:a698544d4a084715b4bfa62225e0be428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72d7580f8cb512fd7913fd35a4a445ae" id="r_a72d7580f8cb512fd7913fd35a4a445ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#a72d7580f8cb512fd7913fd35a4a445ae">open</a> ()</td></tr>
+<tr class="memdesc:a72d7580f8cb512fd7913fd35a4a445ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mounts (or updates) the scene host on the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> ECS world.  <br /></td></tr>
+<tr class="separator:a72d7580f8cb512fd7913fd35a4a445ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa982dbbf26286e3f5dcf15b6fb7b0965" id="r_aa982dbbf26286e3f5dcf15b6fb7b0965"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#aa982dbbf26286e3f5dcf15b6fb7b0965">close</a> ()</td></tr>
+<tr class="memdesc:aa982dbbf26286e3f5dcf15b6fb7b0965"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hides the scene host.  <br /></td></tr>
+<tr class="separator:aa982dbbf26286e3f5dcf15b6fb7b0965"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac81146e4f5b31d00c76fda8bb3fb461f" id="r_ac81146e4f5b31d00c76fda8bb3fb461f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#ac81146e4f5b31d00c76fda8bb3fb461f">isOpen</a> () const</td></tr>
+<tr class="memdesc:ac81146e4f5b31d00c76fda8bb3fb461f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while the scene host is mounted and visible.  <br /></td></tr>
+<tr class="separator:ac81146e4f5b31d00c76fda8bb3fb461f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f6cd5576783c66debbbbfd6d0e3020f" id="r_a4f6cd5576783c66debbbbfd6d0e3020f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#a4f6cd5576783c66debbbbfd6d0e3020f">host</a> () const noexcept</td></tr>
+<tr class="memdesc:a4f6cd5576783c66debbbbfd6d0e3020f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mounted scene host handle, or an empty handle until <a class="el" href="classeve_1_1ui_1_1ScenePanel.html#a72d7580f8cb512fd7913fd35a4a445ae" title="Mounts (or updates) the scene host on the UI ECS world.">open()</a>.  <br /></td></tr>
+<tr class="separator:a4f6cd5576783c66debbbbfd6d0e3020f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0d6bc8524f5aa985a79d72735a87cb8" id="r_aa0d6bc8524f5aa985a79d72735a87cb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#aa0d6bc8524f5aa985a79d72735a87cb8">refresh</a> ()</td></tr>
+<tr class="memdesc:aa0d6bc8524f5aa985a79d72735a87cb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-queries the scene graph and rebuilds the tree.  <br /></td></tr>
+<tr class="separator:aa0d6bc8524f5aa985a79d72735a87cb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12886c7a569c4cf397a64307db7f330" id="r_af12886c7a569c4cf397a64307db7f330"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#af12886c7a569c4cf397a64307db7f330">selectNode</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:af12886c7a569c4cf397a64307db7f330"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects a node by id; false when unknown or no scene module.  <br /></td></tr>
+<tr class="separator:af12886c7a569c4cf397a64307db7f330"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf0ac526954d253730a84004546a052d" id="r_aaf0ac526954d253730a84004546a052d"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#aaf0ac526954d253730a84004546a052d">selectedNode</a> () const</td></tr>
+<tr class="memdesc:aaf0ac526954d253730a84004546a052d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Id of the selected node ("" when none).  <br /></td></tr>
+<tr class="separator:aaf0ac526954d253730a84004546a052d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1864184ff73888da64eaff7c82dd4d8" id="r_af1864184ff73888da64eaff7c82dd4d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#af1864184ff73888da64eaff7c82dd4d8">setPickHandler</a> (std::function&lt; void(const std::string &amp;)&gt; handler)</td></tr>
+<tr class="memdesc:af1864184ff73888da64eaff7c82dd4d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the pick handler for the Pick button.  <br /></td></tr>
+<tr class="separator:af1864184ff73888da64eaff7c82dd4d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d6a4e7440817ebd988649f8ee4779df" id="r_a5d6a4e7440817ebd988649f8ee4779df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html#a5d6a4e7440817ebd988649f8ee4779df">build</a> ()</td></tr>
+<tr class="memdesc:a5d6a4e7440817ebd988649f8ee4779df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative tree of the current scene state.  <br /></td></tr>
+<tr class="separator:a5d6a4e7440817ebd988649f8ee4779df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Scene hierarchy panel (DevTools, MVVM). </p>
+<p>Queries the optional scene module through the <a class="el" href="classeve_1_1ISceneQuery.html" title="Scene graph query/mutation surface (provided by the scene module).">ISceneQuery</a> capability (no direct scene dependency): renders a collapsible node tree, lets the user select a node and edit its transform / visibility, and offers a Pick button that hands the selected node id to a script-side handler (which maps it to a live script instance for the <a class="el" href="classeve_1_1ui_1_1Inspector.html" title="Reflection-driven property inspector (DevTools phase C, MVVM).">Inspector</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8h_source.html">ScenePanel.h</a> 第 <a class="el" href="ScenePanel_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa65c75a35cf53469ff6162c97427cc68" name="aa65c75a35cf53469ff6162c97427cc68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa65c75a35cf53469ff6162c97427cc68">&#9670;&#160;</a></span>ScenePanel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::ScenePanel::ScenePanel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a39848fc6d9ee8b1165b65627bef62f27" name="a39848fc6d9ee8b1165b65627bef62f27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39848fc6d9ee8b1165b65627bef62f27">&#9670;&#160;</a></span>~ScenePanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::ScenePanel::~ScenePanel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a> 第 <a class="el" href="ScenePanel_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenePanel_8h_source.html#l00041">host()</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00266">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="aef74221774d66cd98f28c3f3e4d6c8b8" name="aef74221774d66cd98f28c3f3e4d6c8b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef74221774d66cd98f28c3f3e4d6c8b8">&#9670;&#160;</a></span>ScenePanel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::ScenePanel::ScenePanel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1ScenePanel.html">ScenePanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a5d6a4e7440817ebd988649f8ee4779df" name="a5d6a4e7440817ebd988649f8ee4779df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d6a4e7440817ebd988649f8ee4779df">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">WidgetDesc</a> eve::ui::ScenePanel::build </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Declarative tree of the current scene state. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a> 第 <a class="el" href="ScenePanel_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Widget_8cpp_source.html#l00285">eve::ui::button()</a>, <a class="el" href="Widget_8cpp_source.html#l00327">eve::ui::checkbox()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00177">children</a>, <a class="el" href="SceneQuery_8h_source.html#l00018">eve::SceneNodeInfo::id</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00075">info</a>, <a class="el" href="Widget_8cpp_source.html#l00411">eve::ui::inputText()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00042">refresh()</a>, <a class="el" href="Widget_8cpp_source.html#l00637">eve::ui::row()</a>, <a class="el" href="Graphics_8cpp_source.html#l00078">scene</a>, <a class="el" href="Widget_8cpp_source.html#l00319">eve::ui::separator()</a>, <a class="el" href="Widget_8cpp_source.html#l00645">eve::ui::spacer()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00266">eve::ui::window()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePanel_8cpp_source.html#l00042">refresh()</a>.</p>
+
+</div>
+</div>
+<a id="aa982dbbf26286e3f5dcf15b6fb7b0965" name="aa982dbbf26286e3f5dcf15b6fb7b0965"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa982dbbf26286e3f5dcf15b6fb7b0965">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ScenePanel::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hides the scene host. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a> 第 <a class="el" href="ScenePanel_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenePanel_8h_source.html#l00041">host()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="a4f6cd5576783c66debbbbfd6d0e3020f" name="a4f6cd5576783c66debbbbfd6d0e3020f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f6cd5576783c66debbbbfd6d0e3020f">&#9670;&#160;</a></span>host()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> eve::ui::ScenePanel::host </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the mounted scene host handle, or an empty handle until <a class="el" href="classeve_1_1ui_1_1ScenePanel.html#a72d7580f8cb512fd7913fd35a4a445ae" title="Mounts (or updates) the scene host on the UI ECS world.">open()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8h_source.html">ScenePanel.h</a> 第 <a class="el" href="ScenePanel_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePanel_8cpp_source.html#l00033">close()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00037">isOpen()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00021">open()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00042">refresh()</a> , 以及 <a class="el" href="ScenePanel_8cpp_source.html#l00017">~ScenePanel()</a>.</p>
+
+</div>
+</div>
+<a id="ac81146e4f5b31d00c76fda8bb3fb461f" name="ac81146e4f5b31d00c76fda8bb3fb461f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac81146e4f5b31d00c76fda8bb3fb461f">&#9670;&#160;</a></span>isOpen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::ScenePanel::isOpen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True while the scene host is mounted and visible. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a> 第 <a class="el" href="ScenePanel_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenePanel_8h_source.html#l00041">host()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="a72d7580f8cb512fd7913fd35a4a445ae" name="a72d7580f8cb512fd7913fd35a4a445ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72d7580f8cb512fd7913fd35a4a445ae">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ScenePanel::open </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mounts (or updates) the scene host on the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> ECS world. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a> 第 <a class="el" href="ScenePanel_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UIHost_8cpp_source.html#l00047">eve::ui::UIHost::createHost()</a>, <a class="el" href="ScenePanel_8h_source.html#l00041">host()</a>, <a class="el" href="ScenePanel_8cpp_source.html#l00042">refresh()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="a698544d4a084715b4bfa62225e0be428" name="a698544d4a084715b4bfa62225e0be428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a698544d4a084715b4bfa62225e0be428">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ui_1_1ScenePanel.html">ScenePanel</a> &amp; eve::ui::ScenePanel::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1ScenePanel.html">ScenePanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa0d6bc8524f5aa985a79d72735a87cb8" name="aa0d6bc8524f5aa985a79d72735a87cb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0d6bc8524f5aa985a79d72735a87cb8">&#9670;&#160;</a></span>refresh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ScenePanel::refresh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-queries the scene graph and rebuilds the tree. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a> 第 <a class="el" href="ScenePanel_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScenePanel_8cpp_source.html#l00078">build()</a>, <a class="el" href="ScenePanel_8h_source.html#l00041">host()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenePanel_8cpp_source.html#l00078">build()</a> , 以及 <a class="el" href="ScenePanel_8cpp_source.html#l00021">open()</a>.</p>
+
+</div>
+</div>
+<a id="aaf0ac526954d253730a84004546a052d" name="aaf0ac526954d253730a84004546a052d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf0ac526954d253730a84004546a052d">&#9670;&#160;</a></span>selectedNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ui::ScenePanel::selectedNode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Id of the selected node ("" when none). </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8h_source.html">ScenePanel.h</a> 第 <a class="el" href="ScenePanel_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af12886c7a569c4cf397a64307db7f330" name="af12886c7a569c4cf397a64307db7f330"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af12886c7a569c4cf397a64307db7f330">&#9670;&#160;</a></span>selectNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::ScenePanel::selectNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selects a node by id; false when unknown or no scene module. </p>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a> 第 <a class="el" href="ScenePanel_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00075">info</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00078">scene</a>.</p>
+
+</div>
+</div>
+<a id="af1864184ff73888da64eaff7c82dd4d8" name="af1864184ff73888da64eaff7c82dd4d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1864184ff73888da64eaff7c82dd4d8">&#9670;&#160;</a></span>setPickHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ScenePanel::setPickHandler </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; void(const std::string &amp;)&gt;&#160;</td>
+          <td class="paramname"><em>handler</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers the pick handler for the Pick button. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handler</td><td>Receives the selected node id ("" = none). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a> 第 <a class="el" href="ScenePanel_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="ScenePanel_8h_source.html">ScenePanel.h</a></li>
+<li>src/modules/ui/<a class="el" href="ScenePanel_8cpp_source.html">ScenePanel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

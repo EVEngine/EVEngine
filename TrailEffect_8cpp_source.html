@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/TrailEffect.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TrailEffect.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TrailEffect_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="TrailEffect_8h.html">stylize/TrailEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/geometric.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keywordtype">bool</span> finite(glm::vec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> std::isfinite(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.x) &amp;&amp; std::isfinite(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.y) &amp;&amp; std::isfinite(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.z);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keywordtype">float</span> endpointDistance(<span class="keyword">const</span> TrailSample&amp; sample, glm::vec3 <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>, glm::vec3 tip) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> std::max(glm::length(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a> - sample.root), glm::length(tip - sample.tip));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1TrailEmitter.html#ab39f10a837d04023e7c86eea0eef2325">   20</a></span><a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#ab39f10a837d04023e7c86eea0eef2325">TrailEmitter::TrailEmitter</a>(<a class="code hl_struct" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a> settings) : settings_(settings) { validateSettings(settings_); }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keywordtype">void</span> TrailEmitter::validateSettings(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a>&amp; settings) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a50ea3cb1b3b4afe459fdb3766d6ec10e">maxSamples</a> &lt; 2) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;TrailEmitter: maxSamples must be at least two&quot;</span>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a7049438d5ca712fa6f5cdef61d7111f7">lifetime</a>) || <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a7049438d5ca712fa6f5cdef61d7111f7">lifetime</a> &lt;= 0.f)</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;TrailEmitter: lifetime must be finite and positive&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a39c45f17378c91024001d029f3e07ce7">minSampleDistance</a>) || <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a39c45f17378c91024001d029f3e07ce7">minSampleDistance</a> &lt; 0.f)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;TrailEmitter: minSampleDistance must be finite and non-negative&quot;</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a34b3f634468dcb0619e217e2d2a34319">teleportDistance</a>) || <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a34b3f634468dcb0619e217e2d2a34319">teleportDistance</a> &lt;= 0.f)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;TrailEmitter: teleportDistance must be finite and positive&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a34b3f634468dcb0619e217e2d2a34319">teleportDistance</a> &lt; <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a39c45f17378c91024001d029f3e07ce7">minSampleDistance</a>)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;TrailEmitter: teleportDistance must not be smaller than minSampleDistance&quot;</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1TrailEmitter.html#af26bfc268decb30cc46639474aac5cf5">   34</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#af26bfc268decb30cc46639474aac5cf5">TrailEmitter::setSettings</a>(<a class="code hl_struct" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a> settings) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    validateSettings(<a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    settings_ = <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">while</span> (samples_.size() &gt; settings_.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a50ea3cb1b3b4afe459fdb3766d6ec10e">maxSamples</a>) samples_.pop_front();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1TrailEmitter.html#aa72aa7a3f8d8dd76f930d71eed2abc03">   40</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#aa72aa7a3f8d8dd76f930d71eed2abc03">TrailEmitter::update</a>(<span class="keywordtype">float</span> dtSeconds) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (!std::isfinite(dtSeconds) || dtSeconds &lt; 0.f)</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;TrailEmitter.update: dt must be finite and non-negative&quot;</span>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">for</span> (<a class="code hl_struct" href="structeve_1_1stylize_1_1TrailSample.html">TrailSample</a>&amp; sample : samples_) sample.age += dtSeconds;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">while</span> (!samples_.empty() &amp;&amp; samples_.front().age &gt;= settings_.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a7049438d5ca712fa6f5cdef61d7111f7">lifetime</a>) samples_.pop_front();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1TrailEmitter.html#a46413061099d0f873875f9f29bb0d656">   47</a></span><a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">TrailAppendResult</a> <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a46413061099d0f873875f9f29bb0d656">TrailEmitter::append</a>(glm::vec3 <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>, glm::vec3 tip) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">if</span> (!finite(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>) || !finite(tip)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;TrailEmitter.append: endpoints must be finite&quot;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">TrailAppendResult</a> result = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17af29ddbfb905eb2593fdcdfb243f9af85">TrailAppendResult::Added</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (!samples_.empty() &amp;&amp; !forceBreak_) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> distance = endpointDistance(samples_.back(), <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>, tip);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (distance &lt; settings_.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a39c45f17378c91024001d029f3e07ce7">minSampleDistance</a>) <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17ab2b7a32d761ee65f88071d27bc97321a">TrailAppendResult::SkippedTooClose</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">if</span> (distance &gt; settings_.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a34b3f634468dcb0619e217e2d2a34319">teleportDistance</a>) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            ++segment_;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            result = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17ab432ed71443b899a31b6ba36938f8fb4">TrailAppendResult::StartedSegment</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (!samples_.empty()) ++segment_;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        result = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17ab432ed71443b899a31b6ba36938f8fb4">TrailAppendResult::StartedSegment</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    samples_.push_back({<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>, tip, 0.f, segment_});</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    forceBreak_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">while</span> (samples_.size() &gt; settings_.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a50ea3cb1b3b4afe459fdb3766d6ec10e">maxSamples</a>) samples_.pop_front();</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1TrailEmitter.html#abec5e34abbb1571f83b8276fee109461">   67</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#abec5e34abbb1571f83b8276fee109461">TrailEmitter::breakTrail</a>() noexcept { forceBreak_ = <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1TrailEmitter.html#a9ef05dc37af0aef7c08c0780c80930c7">   69</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#a9ef05dc37af0aef7c08c0780c80930c7">TrailEmitter::clear</a>() noexcept {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    samples_.clear();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    segment_ = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    forceBreak_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1TrailEmitter.html#ac1343311ff8bb74d31ce3eea17e0f251">   75</a></span><a class="code hl_struct" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">TrailMeshSnapshot</a> <a class="code hl_function" href="classeve_1_1stylize_1_1TrailEmitter.html#ac1343311ff8bb74d31ce3eea17e0f251">TrailEmitter::buildMesh</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">TrailMeshSnapshot</a> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html#ac12e16c08620aa819a0f5948f40d1b66">vertices</a>.reserve(samples_.size() * 2);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">if</span> (samples_.size() &lt; 2) <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    std::size_t segmentStart = 0;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">while</span> (segmentStart &lt; samples_.size()) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        std::size_t segmentEnd = segmentStart + 1;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">while</span> (segmentEnd &lt; samples_.size() &amp;&amp; samples_[segmentEnd].segment == samples_[segmentStart].segment)</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            ++segmentEnd;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keyword">const</span> std::size_t segmentSize = segmentEnd - segmentStart;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">for</span> (std::size_t i = segmentStart; i &lt; segmentEnd; ++i) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = segmentSize &gt; 1 ? float(i - segmentStart) / float(segmentSize - 1) : 0.f;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> alpha = std::clamp(1.f - samples_[i].age / settings_.<a class="code hl_variable" href="structeve_1_1stylize_1_1TrailSettings.html#a7049438d5ca712fa6f5cdef61d7111f7">lifetime</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.vertices.push_back({samples_[i].root, {<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, 0.f}, alpha});</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.vertices.push_back({samples_[i].tip, {<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, 1.f}, alpha});</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="keywordflow">if</span> (i &gt; segmentStart) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                <span class="keyword">const</span> std::uint32_t <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a> = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.vertices.size() - 4);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keyword">const</span> std::uint32_t current = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.vertices.size() - 2);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.indices.insert(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.indices.end(), {<a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>, <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a> + 1, current + 1,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                                                         <a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>, current + 1, current});</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        segmentStart = segmentEnd;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_aee43da4e9117b04a03d47cfb325445d4"><div class="ttname"><a href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a></div><div class="ttdeci">Value root</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00039">GltfImporter.cpp:39</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00236">Grass.cpp:236</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aOffscreenPreview_8cpp_html_ae3297973ca89615d6bee8dc8f02b05b1"><div class="ttname"><a href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a></div><div class="ttdeci">graphics::Canvas * previous</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00017">OffscreenPreview.cpp:17</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00731">RenderSystem3D.cpp:731</a></div></div>
+<div class="ttc" id="aTrailEffect_8h_html"><div class="ttname"><a href="TrailEffect_8h.html">TrailEffect.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1TrailEmitter_html_a11432543ddf3e807cd90556c39265a6c"><div class="ttname"><a href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">eve::stylize::TrailEmitter::settings</a></div><div class="ttdeci">TrailSettings settings() const noexcept</div><div class="ttdoc">Return a value snapshot of current settings.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00063">TrailEffect.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1TrailEmitter_html_a46413061099d0f873875f9f29bb0d656"><div class="ttname"><a href="classeve_1_1stylize_1_1TrailEmitter.html#a46413061099d0f873875f9f29bb0d656">eve::stylize::TrailEmitter::append</a></div><div class="ttdeci">TrailAppendResult append(glm::vec3 root, glm::vec3 tip)</div><div class="ttdoc">Append a weapon edge sample or report why it was not appended.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8cpp_source.html#l00047">TrailEffect.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1TrailEmitter_html_a9ef05dc37af0aef7c08c0780c80930c7"><div class="ttname"><a href="classeve_1_1stylize_1_1TrailEmitter.html#a9ef05dc37af0aef7c08c0780c80930c7">eve::stylize::TrailEmitter::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Remove all samples and reset segment numbering.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8cpp_source.html#l00069">TrailEffect.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1TrailEmitter_html_aa72aa7a3f8d8dd76f930d71eed2abc03"><div class="ttname"><a href="classeve_1_1stylize_1_1TrailEmitter.html#aa72aa7a3f8d8dd76f930d71eed2abc03">eve::stylize::TrailEmitter::update</a></div><div class="ttdeci">void update(float dtSeconds)</div><div class="ttdoc">Age samples and remove expired entries using injected dt.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8cpp_source.html#l00040">TrailEffect.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1TrailEmitter_html_ab39f10a837d04023e7c86eea0eef2325"><div class="ttname"><a href="classeve_1_1stylize_1_1TrailEmitter.html#ab39f10a837d04023e7c86eea0eef2325">eve::stylize::TrailEmitter::TrailEmitter</a></div><div class="ttdeci">TrailEmitter(TrailSettings settings={})</div><div class="ttdoc">Construct an empty emitter with validated settings.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8cpp_source.html#l00020">TrailEffect.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1TrailEmitter_html_abec5e34abbb1571f83b8276fee109461"><div class="ttname"><a href="classeve_1_1stylize_1_1TrailEmitter.html#abec5e34abbb1571f83b8276fee109461">eve::stylize::TrailEmitter::breakTrail</a></div><div class="ttdeci">void breakTrail() noexcept</div><div class="ttdoc">Start a disconnected segment at the next appended sample.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8cpp_source.html#l00067">TrailEffect.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1TrailEmitter_html_ac1343311ff8bb74d31ce3eea17e0f251"><div class="ttname"><a href="classeve_1_1stylize_1_1TrailEmitter.html#ac1343311ff8bb74d31ce3eea17e0f251">eve::stylize::TrailEmitter::buildMesh</a></div><div class="ttdeci">TrailMeshSnapshot buildMesh() const</div><div class="ttdoc">Build an owning triangle-list snapshot from current samples.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8cpp_source.html#l00075">TrailEffect.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1TrailEmitter_html_af26bfc268decb30cc46639474aac5cf5"><div class="ttname"><a href="classeve_1_1stylize_1_1TrailEmitter.html#af26bfc268decb30cc46639474aac5cf5">eve::stylize::TrailEmitter::setSettings</a></div><div class="ttdeci">void setSettings(TrailSettings settings)</div><div class="ttdoc">Replace settings and enforce the new sample budget.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8cpp_source.html#l00034">TrailEffect.cpp:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_acdc931d8a3a6a41d05d5b63fcf168b17"><div class="ttname"><a href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">eve::stylize::TrailAppendResult</a></div><div class="ttdeci">TrailAppendResult</div><div class="ttdoc">Result of attempting to append one weapon-edge sample.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00022">TrailEffect.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_acdc931d8a3a6a41d05d5b63fcf168b17ab2b7a32d761ee65f88071d27bc97321a"><div class="ttname"><a href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17ab2b7a32d761ee65f88071d27bc97321a">eve::stylize::TrailAppendResult::SkippedTooClose</a></div><div class="ttdeci">@ SkippedTooClose</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_acdc931d8a3a6a41d05d5b63fcf168b17ab432ed71443b899a31b6ba36938f8fb4"><div class="ttname"><a href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17ab432ed71443b899a31b6ba36938f8fb4">eve::stylize::TrailAppendResult::StartedSegment</a></div><div class="ttdeci">@ StartedSegment</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_acdc931d8a3a6a41d05d5b63fcf168b17af29ddbfb905eb2593fdcdfb243f9af85"><div class="ttname"><a href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17af29ddbfb905eb2593fdcdfb243f9af85">eve::stylize::TrailAppendResult::Added</a></div><div class="ttdeci">@ Added</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailMeshSnapshot_html"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">eve::stylize::TrailMeshSnapshot</a></div><div class="ttdoc">Owning CPU snapshot suitable for upload by a graphics adapter.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00040">TrailEffect.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailMeshSnapshot_html_ac12e16c08620aa819a0f5948f40d1b66"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailMeshSnapshot.html#ac12e16c08620aa819a0f5948f40d1b66">eve::stylize::TrailMeshSnapshot::vertices</a></div><div class="ttdeci">std::vector&lt; TrailVertex &gt; vertices</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00041">TrailEffect.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailSample_html"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailSample.html">eve::stylize::TrailSample</a></div><div class="ttdoc">One retained pair of weapon root/tip positions.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00025">TrailEffect.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailSettings_html"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailSettings.html">eve::stylize::TrailSettings</a></div><div class="ttdoc">Sampling and retention policy for a weapon ribbon trail.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00014">TrailEffect.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailSettings_html_a34b3f634468dcb0619e217e2d2a34319"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailSettings.html#a34b3f634468dcb0619e217e2d2a34319">eve::stylize::TrailSettings::teleportDistance</a></div><div class="ttdeci">float teleportDistance</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00018">TrailEffect.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailSettings_html_a39c45f17378c91024001d029f3e07ce7"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailSettings.html#a39c45f17378c91024001d029f3e07ce7">eve::stylize::TrailSettings::minSampleDistance</a></div><div class="ttdeci">float minSampleDistance</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00017">TrailEffect.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailSettings_html_a50ea3cb1b3b4afe459fdb3766d6ec10e"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailSettings.html#a50ea3cb1b3b4afe459fdb3766d6ec10e">eve::stylize::TrailSettings::maxSamples</a></div><div class="ttdeci">std::size_t maxSamples</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00015">TrailEffect.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailSettings_html_a7049438d5ca712fa6f5cdef61d7111f7"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailSettings.html#a7049438d5ca712fa6f5cdef61d7111f7">eve::stylize::TrailSettings::lifetime</a></div><div class="ttdeci">float lifetime</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00016">TrailEffect.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1particles.html">particles</a></li><li class="navelem"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::particles::ParticleEmitter 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae549f7a57a44c42ba3c17056f8fa6504">addBurst</a>(float time, int count)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a14109201ff9f1d72c646b93b2ba246e5">addColorStop</a>(float t, float r, float g, float b, float a)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a705f6e8d13a1ad94eac97d5f92acafa5">addForceField</a>(float x, float y, float radius, float strength, float falloff=1.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a9c8555fcd1aa814daa59984cf6a20306">addRotationCurvePoint</a>(float t, float v)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a093772b76280ae344e46d5b879050a19">addSizeCurvePoint</a>(float t, float v)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aa9e407a7eba6f54f7742e293e0e5480b">addSubEmitter</a>(ParticleEmitter *target, const std::string &amp;trigger, float inheritVelocity=0.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a1ee78f9d795f2d356f6cee3b865fe8cf">addVelocityCurvePoint</a>(float t, float v)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ac4e82e9fcdb06a399de6eac992b3d6b3">advance</a>(const eve::SimulationStep &amp;step)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a8f306eb4ee0d9c5144a092f0b5006855">applyConfig</a>(const std::string &amp;json)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a058a3d4aee67a4a293c0df8d74d163ca">applyPreset</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a78aa41ba89a2da837dcd84df531e86a0">attachToBone</a>(animation::AnimPose *pose, int boneIndex)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ad8601e032d2ef52b7ffb98650ef15f14">attachToBoneByName</a>(animation::AnimPose *pose, animation::AnimSkeleton *skeleton, const std::string &amp;boneName)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a20c97495dc7689915bd0103d8841ec68">attachToSkeleton2D</a>(eve::ik::Skeleton2D *skeleton, int boneId)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a21824e21d7ad2b55e60373dc7e1baf3d">attachToSkeleton3D</a>(eve::ik::Skeleton3D *skeleton, int boneId)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a4b2dbea65eb4365c29b4838bebe85944">attachToSpineBone</a>(animation::SpineSkeleton *spine, int boneIndex)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab4f5fc801a3a749c489c2ce45f897ec5">attachToSpineBoneByName</a>(animation::SpineSkeleton *spine, const std::string &amp;boneName)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a3d34adf40bf21551defede1b042b8309">bindFloatParameter</a>(const std::string &amp;name, const std::string &amp;target, float scale=1.f, float offset=0.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#abdc33e0e8fa3f52e008b16820faa354f">clearBursts</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab883a41b49775d4b36bd7edb5cb06ddd">clearColorGradient</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ad3c8641325ae458ee2740894be19a9fa">clearFloatParameterBindings</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a3f28ddd9f0c2661a90c2491c3b3d37af">clearFloatParameters</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae5029f91d5d257d123725f67efdb9252">clearForceFields</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aa805c559a0fd538ed6ad841e8619b878">clearRotationCurve</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a23035f1342af539c24a52d2b05f6f100">clearSizeCurve</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ada3ee534216839f6b97c4d4dbbb09f3a">clearSkinSource</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aadc18a185f70eed4937c18e313943e07">clearSubEmitters</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a121a7bc566c36d14df41a3c199b7a87f">clearVelocityCurve</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a4cef61245888bf2603644d8286a2f3be">createEmitter</a>(int bufferSize=1000)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a3db4a1ba0e6645e841b64bcc2d5bcaa4">currentSimulationTick</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a2bd068535af69775804fe063bbc47d8d">detach</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aed2ccc7338c811476262f31fea2c1d71">emit</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a80e823c159a56890480b25127f978c29">emitFromSkin</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a787a5f860689ba5d3fe18202176621e7">getAttachBone</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a582a947eed4d15aa755b027fc22e6858">getAttachKind</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab11bbac89370561b55b31aeb9d28ef3e">getAutoRandomSeed</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a044cf1e5f2f37b02c34c2e5e6283fa6c">getAutoReload</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a5a256a563bee3d2c1b745040ee3a0d28">getBlendMode</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a4437d9749d1620dcac702ac52f01b562">getBufferSize</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ad3ec2ea3f7ffff1dbcaf6a66abbd2c23">getConfigPath</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aa6850ffeffee2e3e7a3cbb7835371a95">getConfigReloadObservation</a>() const</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab31ae7be008a33a5abfc3c420a217055">getCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab53151d5771e40ae372662a8fc157052">getCullDistance</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aef2f4a83bca6e8c25368c33fd3e9fcae">getCullingMode</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a3075c1f211be301074b42b14456f7f7e">getDirection</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a3ee8ccac85455d4b8f77fff5146a4e29">getDistortionStrength</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#adb56a40565582337e6ded81c873ab837">getEmissionAreaType</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a94e8fc9b2215cb245d4c849cf78c6ac2">getEmissionAreaX</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a2951b889c1a7285017ea2a341d27dab6">getEmissionAreaY</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a52ae0b7afa6ed7ed5550b91442a1e225">getEmissionRate</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#abff2634644e2c8959c3e73f8fb564ae2">getEmissionRateOverDistance</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aa9658042a7eaed155ea680d6fa27e4bb">getEmitterLifetime</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae0472e83719ff24759f52984e44e96ed">getFixedTimeStep</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a22ac0f7a722b7c93fda271a75c884da4">getFloatParameter</a>(const std::string &amp;name, float fallback=0.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a82d002e0cf1df81b36237f7d1f2aece0">getGpuFallbackReason</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a559c4c348f99488d017fcd4b2748dfb6">getGpuSimulation</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a1dd8b7585baece96fb3f0ffd311e6af9">getLayer</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#af5e3e4383f6917a5ee0d3908c0b1ac51">getLightsEnabled</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a966c2331b00f261c2e913c50a22b29ba">getLooping</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aaab2fcdc7b0fe7036ffc249eb02c0d69">getMaterialMode</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a79b79f081dcc8a526d02efb9496e5cc5">getMaxSpawnPerFrame</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ad4fbbdf569310e7581a01fdfc894de53">getMinimumQuality</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a1e4b24129ff0f344e9d213147defcd27">getNormalTexture</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a17b0c7c79faf507f80933961064d7b6d">getParticleHeight</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ac466a103419d82b7a1225b01f4cafd7e">getParticleLifetimeMax</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6ae12c13a711700ea50e1a806616f0c2">getParticleLifetimeMin</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6be3dfd4cb3f29d2bfae38214d7f3d29">getParticleWidth</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ad0d36466ba5af5178f8855f0bd1dd163">getPlaybackSpeed</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a2f78b6a2503018a5ff4f8471a7348e9c">getPrewarmSeconds</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a450d78adb0ec45b920a578215f68c800">getPriority</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aeaa85e436d74ef7b229cfcdb6a973261">getRandomSeed</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a7d6050cba10ee01c18af72850341e67b">getResolvedParameterScale</a>(const std::string &amp;target)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae9bf82b35dbba124f8da671e22f0f6ca">getShader</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a3870c4ef5b3050435b40cba99dcfdf78">getSimulationBackend</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae375a8e9d064a6f242adbd6b9cb56f3b">getSizeVariation</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a06660b45f7f09e39ded52bd593486f24">getSortMode</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a3adbb2d55c009027ba4f577a86141853">getSpread</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6ae7c1123ed0297298530084ec063686">getTexture</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6ea13073bea2a3b9df82da34b88a3de5">getX</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a9dfee3bb857f3c1e122bef871dc7a2a7">getY</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a8ca3af674b5c61b582302ec1fa4c156c">hasFloatParameter</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a3a30f122e90ff88c67ac6e95fea794f7">hasSkinSource</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a29280072a184ca5f85b7f8f11644e6df">isActive</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aaf3aabe8a51ebf391abb3b136479d43b">isAttached</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a38479e30e5c745745ccd85d84f672c4b">isGpuFeatureSetSupported</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6bf216197f1b823bfc617eacbcf56f7f">isGpuSimulationActive</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab5dd080de182b6a609fc1ecc7be3fffa">isPaused</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a5b43a110ef7c4035a9fd6b78b4c20716">isSoftParticlesActive</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aae39222f193afef343734a97732232ce">isStopped</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#afe7b812eefdbd95566ae4f8fc3a01adf">isVisible</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a544225e36eb144320b9e49db1e3f2c00">loadConfig</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a2161ba211c4fa7823554181c77b8a551">moveTo</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a22d8423a4bad18b81850b6426f035be8">pause</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab20876de0a012c8141a474cfd6e9c80b">release</a>() override</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a2710d8d69d60d7e26a234825fab83891">reloadConfig</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ad6c39165e390e9f3cd11ee0647288140">reset</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae1e3876f849a554813b00f15c91c5874">setAttachOffset</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae9b275de7f9db939659b48d6f3f24be0">setAttachPlane</a>(const std::string &amp;plane)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#afcedc264572dc8f50e69fc03b0a34e84">setAttachScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab750c011f0bde5e93de878378b111de9">setAutoRandomSeed</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#acda924a97e94e58ffc59534e1e16964d">setAutoReload</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6e7c91e24ae780b3222d990d5ddd9117">setBlendMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a7cd35d85092fc1930c5b3ce790bf06a5">setCamera</a>(graphics::Camera2D *camera)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a7595e6e72bdc6e99b2c0e66b2a25e00d">setCanvas</a>(graphics::Canvas *canvas)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aa79d6b296522118559d2790b4335ef85">setCollision</a>(const std::string &amp;mode, float radius=0.f, float restitution=0.6f, float lifetimeLoss=0.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a575da009496a8b617a805b938593a742">setCollisionBounds</a>(bool enabled, float minX, float minY, float maxX, float maxY)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aaa0fd546516abfb9d60188390b5abc91">setColorEnd</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aaf9b1f912355b392ab8e2c7858f0d401">setColorStart</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae04c55aa80b72129fab0a98219a8ab56">setCullDistance</a>(float distance)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a34870818d9fa21c5e67f01d2c8ce6d2d">setCullingMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a705449354a3b5bf67057cad7023f4de4">setDamping</a>(float perSecond)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#acb4b24c3805961f761ba2e54a9630197">setDirection</a>(float radians)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a117cd49f224b96f221bb95b1932de44f">setDistortionStrength</a>(float strengthPixels)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aae4a2231561774dac314cdf09d887ead">setEmissionArea</a>(const std::string &amp;type, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a8c06a4dbd0d1d5a75a20dfde905d736d">setEmissionRate</a>(float rate)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ac9e30bc9b1afa247a3ca120ad2c77652">setEmissionRateOverDistance</a>(float rate)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a4037c2c03f2dc0e0c88ce4654bbafb4c">setEmitterLifetime</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#acee4f299200fd1873770e3e04f4fdc3c">setFixedTimeStep</a>(float seconds, int maxSubSteps=8)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a138d78644adfb710900bfd0931da0876">setFlipbook</a>(int hframes, int vframes, float framesPerSecond=0.f, float randomStart=0.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a1eea912c3fc093481d2086e04cbf10a3">setFloatParameter</a>(const std::string &amp;name, float value)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ac786703e0f6f09404505d697b5e25789">setFollowBoneRotation</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a10d71757afa49b0e4199af83b7eb7bc5">setGpuSimulation</a>(bool enable)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#afd4e31f8b323672935e45106a3500930">setGravity</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#af5589753ffb065a8eca8d8de6130ce5e">setInheritVelocity</a>(float fraction)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a2a8c0f2f4ed276a6ec8c6eaa38f331f2">setLayer</a>(int layer)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae1ed90e334431e1d098a18a7b84aa985">setLights</a>(bool enabled, float radius=120.f, float intensity=1.f, float r=1.f, float g=1.f, float b=1.f, int maxLights=4)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a181541896e49903e4b5d6cd7a4ccfe86">setLimitVelocity</a>(float maxSpeed)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a7f1f25e594626e05e234dce43ef9daab">setLinearAcceleration</a>(float xmin, float ymin, float xmax, float ymax)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ad7a01e0df164d1f3467054d0e972ab64">setLooping</a>(bool looping)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a4fcebc6ea6a3149a893b9c2c7a8cc6dc">setMaterialMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a0f2a48a2b8d2a95f195302e5a0bd8264">setMaxDeltaTime</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6e885cf9f0a31624178aac66236091a6">setMaxSpawnPerFrame</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aa82e633a8779909b61e9bf85f4232b5f">setMinimumQuality</a>(int quality)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab40fb366186d9dc81eb73d00416347fc">setNoise</a>(float strength, float frequency=1.f, float speed=1.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a4b515b4771865cefe1f5c39ca028b564">setNormalTexture</a>(graphics::Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a79503b7a22c10ea60048871230d54731">setOverflowMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae4ba225c3b77c975efc9cc6a38434015">setParticleLifetime</a>(float minLife, float maxLife)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#affafa56817d9a711fccc31f8215457ee">setParticleSize</a>(float width, float height)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a4d2b7b565bf03c5eb7b59027e9341034">setPlaybackSpeed</a>(float speed)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a41aa068aaad3185a367f9d0ec2a18dca">setPosition</a>(float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a04f1934789236550b624ca33a1cc1a79">setPrewarm</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#aa35dd5abcc8983d33c3484dcc9c29b16">setPriority</a>(int priority)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6b9cae568ad6fb0075864924bccbe634">setRadialAcceleration</a>(float minA, float maxA)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a1e89bcccd5d92a30d7881cd51c0d24cb">setRandomSeed</a>(int seed)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a645a911cf0af90a4e6206caca762db5f">setRenderAxis</a>(float degrees)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a464518b51214717da1c27d40ab816cb4">setRenderMode</a>(const std::string &amp;mode, float stretchFactor=1.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae367e5ce5b2e04d61be700a5b47364ca">setRibbon</a>(float width=1.f, float minSegmentLength=1.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ac896140037add05b26edb17b54bf06ab">setShader</a>(graphics::Shader *shader)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ae0bfe2dd8c7df0c8cf37cc98cf3b4635">setSimulationSpace</a>(const std::string &amp;space)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a60ab26e61adea8d8383d7115d83bffae">setSizes</a>(float startScale, float endScale)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ad4cc8edb3a0aa19e5ed02e4677690dc5">setSizeVariation</a>(float variation)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a15059ad7ee62f50d6074efafdc2e4c44">setSkinBoneFilter</a>(int skeletonBoneIndex, float minWeight=0.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a5221506c3fd94f36941b45159900ed83">setSkinBoneFilterByName</a>(animation::AnimSkeleton *skeleton, const std::string &amp;boneName, float minWeight=0.f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a5c58ec329c9e160937ed2fb6719fa1d6">setSkinPlane</a>(const std::string &amp;plane)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a742338b7460c33000a9859743e96844f">setSkinScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a99a1c368313b55e89d2ea8e7a5636c4b">setSkinSource</a>(animation::AnimSkin *skin, animation::AnimPose *pose)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a9ed35a72f5f83392c36206fdf032e32f">setSoftParticles</a>(bool enabled, float particleDepth=0.5f, float fadeDistance=0.05f)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab4bee20c458c79186fa612dd858149cf">setSortMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a6d7718b7849485e90f8782abd368f06d">setSpeed</a>(float minSpeed, float maxSpeed)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a230e2ff545a4482363fc443109364033">setSpin</a>(float minSpin, float maxSpin)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a22ff29faef31bb311e4626fa13bc93cb">setSpread</a>(float radians)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a7b72d217f437a3b60d0c82bcc4b23f6b">setStartRotation</a>(float minDeg, float maxDeg)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a88230d4c32078396cfa9dc8d9a37185c">setTangentialAcceleration</a>(float minA, float maxA)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a35c7d32916102438b137950f35a62d43">setTexture</a>(graphics::Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a4b9dbd840e4a121b76d05269e22f6718">setVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a1aa9c7b8c11bcb5e63d69a4dc65479d9">setWorldCollision</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#ab38271c268d7333ebe1381e40cecab00">start</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a17aa649b976c7d80aa3188ac37a594fb">stop</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a87741cc00e9715d2c41090097327bf28">syncAttach</a>()</td><td class="entry"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">eve::particles::ParticleEmitter</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

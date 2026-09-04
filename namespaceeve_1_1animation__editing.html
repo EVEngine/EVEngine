@@ -1,0 +1,536 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation_editing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation__editing.html">animation_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation_editing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable bone track addressed by skeleton bone name.  <a href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html">AnimationClipDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UI-neutral animation clip document with reversible stable-id timeline edits.  <a href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1AnimationClipPreview.html">AnimationClipPreview</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable timeline scrub result tied to one document revision.  <a href="structeve_1_1animation__editing_1_1AnimationClipPreview.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipRuntimeBuilder.html">AnimationClipRuntimeBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bridge producing a real runtime AnimClip from an editor document.  <a href="classeve_1_1animation__editing_1_1AnimationClipRuntimeBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable timeline event marker with optional payload.  <a href="structeve_1_1animation__editing_1_1AnimationEventRecord.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html">AnimationGraphCompileResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compilation result for a stable-reference animation state graph asset.  <a href="structeve_1_1animation__editing_1_1AnimationGraphCompileResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1AnimationMaskEntry.html">AnimationMaskEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-bone blend mask entry in normalized [0, 1] weight space.  <a href="structeve_1_1animation__editing_1_1AnimationMaskEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1AnimationRetargetPreview.html">AnimationRetargetPreview</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-destructive source-to-target skeleton mapping preview.  <a href="structeve_1_1animation__editing_1_1AnimationRetargetPreview.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1AnimationSampledBone.html">AnimationSampledBone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sampled local transform returned by non-destructive timeline scrubbing.  <a href="structeve_1_1animation__editing_1_1AnimationSampledBone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter.html">AnimationSkeletonOverlayAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bridge extracting an overlay from a real animation pose.  <a href="classeve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html">AnimationStateGraphDomain</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>animation.state</code> graph domain matching AnimStateMachine semantics.  <a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html">AnimationStateGraphRuntimeBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bridge constructing the real animation runtime from a validated graph.  <a href="classeve_1_1animation__editing_1_1AnimationStateGraphRuntimeBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1AnimationTransformKey.html">AnimationTransformKey</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One stable transform key used by the animation timeline.  <a href="structeve_1_1animation__editing_1_1AnimationTransformKey.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html">IAnimationClipEditTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timeline editing capability for skeletal clips.  <a href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1ProceduralBoneOverlayBuilder.html">ProceduralBoneOverlayBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds renderer-neutral dynamic-bone and Foot IK debug primitives.  <a href="classeve_1_1animation__editing_1_1ProceduralBoneOverlayBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1ProceduralBoneOverlayOptions.html">ProceduralBoneOverlayOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Feature toggles and safety budget for procedural animation overlays.  <a href="structeve_1_1animation__editing_1_1ProceduralBoneOverlayOptions.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html">SkeletonOverlayBone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable renderer-neutral world-space bone snapshot.  <a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1SkeletonOverlayBuilder.html">SkeletonOverlayBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds bone lines, joints, local axes and constraint arcs without a renderer dependency.  <a href="classeve_1_1animation__editing_1_1SkeletonOverlayBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html">SkeletonOverlayOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overlay density, feature toggles and hard safety budgets.  <a href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a670b04df53467b3e13077930c6215a0b" id="r_a670b04df53467b3e13077930c6215a0b"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a670b04df53467b3e13077930c6215a0b"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:a670b04df53467b3e13077930c6215a0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8d4779f45df94c6aab3165f06e07c7b" id="r_ae8d4779f45df94c6aab3165f06e07c7b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#ae8d4779f45df94c6aab3165f06e07c7b">EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:ae8d4779f45df94c6aab3165f06e07c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab318e42a80fd1a8dca9e58d28fb1a540" id="r_ab318e42a80fd1a8dca9e58d28fb1a540"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:ab318e42a80fd1a8dca9e58d28fb1a540"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac53c74d454d85f23135b81d931023290" id="r_ac53c74d454d85f23135b81d931023290"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#ac53c74d454d85f23135b81d931023290">EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:ac53c74d454d85f23135b81d931023290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd0d0db2cf6482f938464ca53bd8f54c" id="r_afd0d0db2cf6482f938464ca53bd8f54c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#afd0d0db2cf6482f938464ca53bd8f54c">DiagnosticSeverity</a> = <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td></tr>
+<tr class="separator:afd0d0db2cf6482f938464ca53bd8f54c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd0364993d148fecd66206167e6c0834" id="r_abd0364993d148fecd66206167e6c0834"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#abd0364993d148fecd66206167e6c0834">Revision</a> = <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td></tr>
+<tr class="separator:abd0364993d148fecd66206167e6c0834"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71149fce33bc9588696b7d54b72f7f92" id="r_a71149fce33bc9588696b7d54b72f7f92"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">RuleId</a> = <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td></tr>
+<tr class="separator:a71149fce33bc9588696b7d54b72f7f92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4663394e7883fb0cd0a80c177100a037" id="r_a4663394e7883fb0cd0a80c177100a037"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> = <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">editing::StableId</a></td></tr>
+<tr class="separator:a4663394e7883fb0cd0a80c177100a037"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a48032e7cd9cf878cd45b382050eb7049" id="r_a48032e7cd9cf878cd45b382050eb7049"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049">SkeletonRetargetState</a> { <a class="el" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a6fcdc090caeade09d0efd6253932b6f5">Unspecified</a>
+, <a class="el" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049ab65b6f388bb1788248938a5cff5bad1d">Matched</a>
+, <a class="el" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a164fe50bf145ff772a4229487cba0b50">Unmatched</a>
+, <a class="el" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a02266588dfd4e565cc42949d0c73f28c">Ambiguous</a>
+ }</td></tr>
+<tr class="memdesc:a48032e7cd9cf878cd45b382050eb7049"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retarget state used to color one skeleton overlay bone.  <a href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049">更多...</a><br /></td></tr>
+<tr class="separator:a48032e7cd9cf878cd45b382050eb7049"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ae8f8651546afecb6d548dacb9b23bec6" id="r_ae8f8651546afecb6d548dacb9b23bec6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#ae8f8651546afecb6d548dacb9b23bec6">parseAnimationBoneTrack</a> (const <a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ae8f8651546afecb6d548dacb9b23bec6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse one authored bone track from an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> payload.  <br /></td></tr>
+<tr class="separator:ae8f8651546afecb6d548dacb9b23bec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a092132820c26535df3605abda9dc511f" id="r_a092132820c26535df3605abda9dc511f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#a092132820c26535df3605abda9dc511f">parseAnimationEventRecord</a> (const <a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a092132820c26535df3605abda9dc511f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse one authored event marker from an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> payload.  <br /></td></tr>
+<tr class="separator:a092132820c26535df3605abda9dc511f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6616697648f9611624e94311bdd38835" id="r_a6616697648f9611624e94311bdd38835"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation__editing.html#a6616697648f9611624e94311bdd38835">registerEditingCommands</a> (<a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a6616697648f9611624e94311bdd38835"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register animation-clip commands with a generic editing host.  <br /></td></tr>
+<tr class="separator:a6616697648f9611624e94311bdd38835"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="afd0d0db2cf6482f938464ca53bd8f54c" name="afd0d0db2cf6482f938464ca53bd8f54c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd0d0db2cf6482f938464ca53bd8f54c">&#9670;&#160;</a></span>DiagnosticSeverity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::animation_editing::DiagnosticSeverity</a> = typedef <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkeletonOverlay_8h_source.html">SkeletonOverlay.h</a> 第 <a class="el" href="SkeletonOverlay_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac53c74d454d85f23135b81d931023290" name="ac53c74d454d85f23135b81d931023290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac53c74d454d85f23135b81d931023290">&#9670;&#160;</a></span>EditorDiagnostic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1animation__editing.html#ac53c74d454d85f23135b81d931023290">eve::animation_editing::EditorDiagnostic</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationEditingTypes_8h_source.html">AnimationEditingTypes.h</a> 第 <a class="el" href="AnimationEditingTypes_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a670b04df53467b3e13077930c6215a0b" name="a670b04df53467b3e13077930c6215a0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a670b04df53467b3e13077930c6215a0b">&#9670;&#160;</a></span>EditorResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">eve::animation_editing::EditorResult</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationEditingTypes_8h_source.html">AnimationEditingTypes.h</a> 第 <a class="el" href="AnimationEditingTypes_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8d4779f45df94c6aab3165f06e07c7b" name="ae8d4779f45df94c6aab3165f06e07c7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8d4779f45df94c6aab3165f06e07c7b">&#9670;&#160;</a></span>EditorStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a> <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::animation_editing::EditorStatus</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationEditingTypes_8h_source.html">AnimationEditingTypes.h</a> 第 <a class="el" href="AnimationEditingTypes_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab318e42a80fd1a8dca9e58d28fb1a540" name="ab318e42a80fd1a8dca9e58d28fb1a540"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab318e42a80fd1a8dca9e58d28fb1a540">&#9670;&#160;</a></span>EditorValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">eve::animation_editing::EditorValue</a> = typedef <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationEditingTypes_8h_source.html">AnimationEditingTypes.h</a> 第 <a class="el" href="AnimationEditingTypes_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abd0364993d148fecd66206167e6c0834" name="abd0364993d148fecd66206167e6c0834"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd0364993d148fecd66206167e6c0834">&#9670;&#160;</a></span>Revision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1animation__editing.html#abd0364993d148fecd66206167e6c0834">eve::animation_editing::Revision</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkeletonOverlay_8h_source.html">SkeletonOverlay.h</a> 第 <a class="el" href="SkeletonOverlay_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71149fce33bc9588696b7d54b72f7f92" name="a71149fce33bc9588696b7d54b72f7f92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71149fce33bc9588696b7d54b72f7f92">&#9670;&#160;</a></span>RuleId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">eve::animation_editing::RuleId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkeletonOverlay_8h_source.html">SkeletonOverlay.h</a> 第 <a class="el" href="SkeletonOverlay_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4663394e7883fb0cd0a80c177100a037" name="a4663394e7883fb0cd0a80c177100a037"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4663394e7883fb0cd0a80c177100a037">&#9670;&#160;</a></span>StableId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">eve::animation_editing::StableId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">editing::StableId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SkeletonOverlay_8h_source.html">SkeletonOverlay.h</a> 第 <a class="el" href="SkeletonOverlay_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a48032e7cd9cf878cd45b382050eb7049" name="a48032e7cd9cf878cd45b382050eb7049"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48032e7cd9cf878cd45b382050eb7049">&#9670;&#160;</a></span>SkeletonRetargetState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049">eve::animation_editing::SkeletonRetargetState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retarget state used to color one skeleton overlay bone. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a48032e7cd9cf878cd45b382050eb7049a6fcdc090caeade09d0efd6253932b6f5" name="a48032e7cd9cf878cd45b382050eb7049a6fcdc090caeade09d0efd6253932b6f5"></a>Unspecified&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a48032e7cd9cf878cd45b382050eb7049ab65b6f388bb1788248938a5cff5bad1d" name="a48032e7cd9cf878cd45b382050eb7049ab65b6f388bb1788248938a5cff5bad1d"></a>Matched&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a48032e7cd9cf878cd45b382050eb7049a164fe50bf145ff772a4229487cba0b50" name="a48032e7cd9cf878cd45b382050eb7049a164fe50bf145ff772a4229487cba0b50"></a>Unmatched&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a48032e7cd9cf878cd45b382050eb7049a02266588dfd4e565cc42949d0c73f28c" name="a48032e7cd9cf878cd45b382050eb7049a02266588dfd4e565cc42949d0c73f28c"></a>Ambiguous&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SkeletonOverlay_8h_source.html">SkeletonOverlay.h</a> 第 <a class="el" href="SkeletonOverlay_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ae8f8651546afecb6d548dacb9b23bec6" name="ae8f8651546afecb6d548dacb9b23bec6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8f8651546afecb6d548dacb9b23bec6">&#9670;&#160;</a></span>parseAnimationBoneTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a> &gt; eve::animation_editing::parseAnimationBoneTrack </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse one authored bone track from an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> payload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>Owning track object with id, bone and keys. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied track, or a structured rejection when required fields are missing. @thread Main/composition thread; payload is copied and not retained. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00339">parseAnimationBoneTrack()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00339">parseAnimationBoneTrack()</a> , 以及 <a class="el" href="AnimationEditingCommands_8cpp_source.html#l00054">registerEditingCommands()</a>.</p>
+
+</div>
+</div>
+<a id="a092132820c26535df3605abda9dc511f" name="a092132820c26535df3605abda9dc511f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a092132820c26535df3605abda9dc511f">&#9670;&#160;</a></span>parseAnimationEventRecord()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a> &gt; eve::animation_editing::parseAnimationEventRecord </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse one authored event marker from an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> payload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>Owning event object with id, time, name and payload. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied event, or a structured rejection when required fields are missing. @thread Main/composition thread; payload is copied and not retained. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00340">parseAnimationEventRecord()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00340">parseAnimationEventRecord()</a> , 以及 <a class="el" href="AnimationEditingCommands_8cpp_source.html#l00054">registerEditingCommands()</a>.</p>
+
+</div>
+</div>
+<a id="a6616697648f9611624e94311bdd38835" name="a6616697648f9611624e94311bdd38835"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6616697648f9611624e94311bdd38835">&#9670;&#160;</a></span>registerEditingCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::animation_editing::registerEditingCommands </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register animation-clip commands with a generic editing host. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationEditingCommands_8cpp_source.html">AnimationEditingCommands.cpp</a> 第 <a class="el" href="AnimationEditingCommands_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a>, <a class="el" href="EditingProtocol_8h_source.html#l00066">eve::editing::CommandPlan::operations</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00339">parseAnimationBoneTrack()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00340">parseAnimationEventRecord()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00047">eve::editing::CommandRequest::payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00067">eve::editing::CommandPlan::summary</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationEditorModule_8cpp_source.html#l00047">eve::animation_editor::AnimationEditorModule::AnimationEditorModule()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

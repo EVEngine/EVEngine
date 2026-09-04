@@ -1,0 +1,470 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/Mesh.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Mesh.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Mesh_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;assimp/mesh.h&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">const</span> std::vector&lt;float&gt; kEmptyAttribute;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a3dd932e2da2bb720daed7b918729b3cb">   16</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a3dd932e2da2bb720daed7b918729b3cb">Mesh::captureImportedAttributes</a>(const ::aiMesh &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    importedUvs_.clear();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> channel = 0; channel &lt; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.GetNumUVChannels(); ++channel) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.HasTextureCoords(channel)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        std::vector&lt;float&gt; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.reserve(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mNumVertices) * 2u);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mNumVertices; ++i) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.push_back(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mTextureCoords[channel][i].x);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.push_back(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mTextureCoords[channel][i].y);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        importedUvs_.push_back(std::move(<a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>));</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    importedColors_.clear();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> channel = 0; channel &lt; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.GetNumColorChannels(); ++channel) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.HasVertexColors(channel)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        std::vector&lt;float&gt; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.reserve(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mNumVertices) * 4u);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mNumVertices; ++i) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keyword">const</span> aiColor4D &amp;<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mColors[channel][i];</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.insert(<a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.end(), {c.r, c.g, c.b, c.a});</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        importedColors_.push_back(std::move(<a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    importedTangents_.clear();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    importedBitangents_.clear();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.HasTangentsAndBitangents()) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        importedTangents_.reserve(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mNumVertices) * 3u);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        importedBitangents_.reserve(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mNumVertices) * 3u);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i = 0; i &lt; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mNumVertices; ++i) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keyword">const</span> aiVector3D &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mTangents[i];</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keyword">const</span> aiVector3D &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.mBitangents[i];</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            importedTangents_.insert(importedTangents_.end(), {t.x, t.y, t.z});</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            importedBitangents_.insert(importedBitangents_.end(), {b.x, b.y, b.z});</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a2660c0ab5ae70945ba377daed07da204">   53</a></span><span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a2660c0ab5ae70945ba377daed07da204">Mesh::importedUv</a>(<span class="keywordtype">int</span> channel)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> channel &gt;= 0 &amp;&amp; <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(channel) &lt; importedUvs_.size()</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>               ? importedUvs_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(channel)]</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>               : kEmptyAttribute;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#ae8eda3578b12b23a658ecced039f1de1">   59</a></span><span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#ae8eda3578b12b23a658ecced039f1de1">Mesh::importedColor</a>(<span class="keywordtype">int</span> channel)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> channel &gt;= 0 &amp;&amp; <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(channel) &lt; importedColors_.size()</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>               ? importedColors_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(channel)]</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>               : kEmptyAttribute;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#acc91f5a6b211c6aa05513ea2029d8170">   65</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#acc91f5a6b211c6aa05513ea2029d8170">Mesh::setSkinPalette</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> *matrices, <span class="keywordtype">int</span> matrixCount) {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (!matrices || matrixCount &lt;= 0 || matrixCount &gt; <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#aba45a2b624f4ddb14cd8a308bea464a4">kMaxSkinBones</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    skinPalette_.assign(matrices, matrices + <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(matrixCount) * 16u);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a2f05165a32759bf50000829f23851ec9">   71</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a2f05165a32759bf50000829f23851ec9">Mesh::computeBounds</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> *posXYZ, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#a507804eccbf9e53ffea7f7c4f39f7246">boundsCx</a>     = 0.f;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#a74150482f73207f1b4f1efce8e006cbf">boundsCy</a>     = 0.f;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#a6b584df42325a3f61bce3ed160533d3d">boundsCz</a>     = 0.f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#ad01386bced1365ed37c833d9cd45c3bb">boundsRadius</a> = 0.f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">if</span> (!posXYZ || <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a> &lt;= 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = size_t(<a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    glm::vec3    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>(0.f);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.x += posXYZ[i * 3u + 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>];</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.y += posXYZ[i * 3u + 1u];</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.z += posXYZ[i * 3u + 2u];</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> /= float(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#a507804eccbf9e53ffea7f7c4f39f7246">boundsCx</a> = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.x;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#a74150482f73207f1b4f1efce8e006cbf">boundsCy</a> = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.y;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#a6b584df42325a3f61bce3ed160533d3d">boundsCz</a> = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.z;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = 0.f;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dx = posXYZ[i * 3u + 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>] - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.x;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dy = posXYZ[i * 3u + 1u] - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.y;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> dz = posXYZ[i * 3u + 2u] - <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>.z;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>  = std::sqrt(dx * dx + dy * dy + dz * dz);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> &gt; <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>) <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="comment">// Degenerate (single-point) meshes still get a tiny non-zero sphere so</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="comment">// hasBounds() stays meaningful and the culler never drops point geometry.</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#ad01386bced1365ed37c833d9cd45c3bb">boundsRadius</a> = <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> &gt; 0.f ? <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> : 1e-4f;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a6be1fa7819df7db83a3824c2b240568c">  103</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a6be1fa7819df7db83a3824c2b240568c">Mesh::drawOcclusion</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <span class="keyword">const</span> glm::mat4 &amp;matrix)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (!gfx || !<a class="code hl_function" href="classeve_1_1graphics_1_1Drawable.html#a84e1f90d6c78c65e64f2d74b36a3fbf2">getCastOcclusion</a>()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = matrix[3][0];</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = matrix[3][1];</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> = std::sqrt(matrix[0][0] * matrix[0][0] + matrix[0][1] * matrix[0][1]);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = std::sqrt(matrix[1][0] * matrix[1][0] + matrix[1][1] * matrix[1][1]);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> &lt;= 0.f || <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> &lt;= 0.f) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#aa947714ec1b34667d7149b47d58dd7b1">drawOcclusionSolid</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="foldopen" id="foldopen00113" data-start="{" data-end="}">
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a2cc283ad41d05d2b87b7af6e4bb55282">  113</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a2cc283ad41d05d2b87b7af6e4bb55282">Mesh::clearMorphData</a>() {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    basePos_.clear();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    baseNrm_.clear();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    baseUv_.clear();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    morphs_.clear();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    morphWeights_.clear();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    morphDirty_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}</div>
+</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="foldopen" id="foldopen00122" data-start="{" data-end="}">
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a1c3943e674994c49789dba24183e12fe">  122</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a1c3943e674994c49789dba24183e12fe">Mesh::initMorphBase</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, <span class="keyword">const</span> <span class="keywordtype">float</span> *posXYZ, <span class="keyword">const</span> <span class="keywordtype">float</span> *nrmXYZ,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                         <span class="keyword">const</span> <span class="keywordtype">float</span> *uvST) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a2cc283ad41d05d2b87b7af6e4bb55282">clearMorphData</a>();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a> &lt;= 0 || !posXYZ) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = size_t(<a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    basePos_.assign(posXYZ, posXYZ + <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> * 3);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (nrmXYZ)</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        baseNrm_.assign(nrmXYZ, nrmXYZ + <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> * 3);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        baseNrm_.assign(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> * 3, 0.f);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">if</span> (uvST)</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        baseUv_.assign(uvST, uvST + <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> * 2);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        baseUv_.assign(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> * 2, 0.f);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="foldopen" id="foldopen00138" data-start="{" data-end="}">
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a3feeb59137c1fd691ad71f0fc2088498">  138</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a3feeb59137c1fd691ad71f0fc2088498">Mesh::addMorphTarget</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> <span class="keywordtype">float</span> *deltaPosXYZ) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.empty() || !deltaPosXYZ || basePos_.empty()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a402786bed82234767cc571d6f4d1f3f8">hasMorph</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    MorphTarget <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.name = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.deltaPos.assign(deltaPosXYZ, deltaPosXYZ + basePos_.size());</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    morphs_.push_back(std::move(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>));</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    morphWeights_[<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>] = 0.f;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    morphDirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>}</div>
+</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="}">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a78328a141eed161190fdce5c05bad88a">  150</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a78328a141eed161190fdce5c05bad88a">Mesh::addMorphTargetAbsolute</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> <span class="keywordtype">float</span> *absPosXYZ) {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.empty() || !absPosXYZ || basePos_.empty()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a402786bed82234767cc571d6f4d1f3f8">hasMorph</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    MorphTarget <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.name = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.deltaPos.resize(basePos_.size());</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; basePos_.size(); ++i)</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.deltaPos[i] = absPosXYZ[i] - basePos_[i];</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    morphs_.push_back(std::move(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>));</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    morphWeights_[<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>] = 0.f;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    morphDirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>}</div>
+</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="foldopen" id="foldopen00164" data-start="{" data-end="}">
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#adbf822232b174297515415ca28f4dc48">  164</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#adbf822232b174297515415ca28f4dc48">Mesh::getVertexCount</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">if</span> (!basePos_.empty()) <span class="keywordflow">return</span> int(basePos_.size() / 3);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeve_1_1graphics_1_1Mesh.html#a3776de34f20a2e7d703667b990310000">gpuVertexCount</a>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>}</div>
+</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#ab5877ae19bdbbd902497fccd0039d85e">  169</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#ab5877ae19bdbbd902497fccd0039d85e">Mesh::getMorphCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> int(morphs_.size()); }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="foldopen" id="foldopen00171" data-start="{" data-end="}">
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#ac6fe702b407ef44ed3ece6951c62d509">  171</a></span>std::string <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#ac6fe702b407ef44ed3ece6951c62d509">Mesh::getMorphName</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; 0 || <span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) &gt;= morphs_.size()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">return</span> morphs_[size_t(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].name;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>}</div>
+</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="foldopen" id="foldopen00176" data-start="{" data-end="}">
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a402786bed82234767cc571d6f4d1f3f8">  176</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a402786bed82234767cc571d6f4d1f3f8">Mesh::hasMorph</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keywordflow">return</span> morphWeights_.find(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) != morphWeights_.end();</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>}</div>
+</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="foldopen" id="foldopen00180" data-start="{" data-end="}">
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a39a7c8746c72d500a7e8e4e756a096cf">  180</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a39a7c8746c72d500a7e8e4e756a096cf">Mesh::setMorphWeight</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">float</span> weight) {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">auto</span> it = morphWeights_.find(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">if</span> (it == morphWeights_.end()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordflow">if</span> (weight &lt; 0.f) weight = 0.f;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordflow">if</span> (weight &gt; 1.f) weight = 1.f;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">if</span> (std::fabs(it-&gt;second - weight) &gt; 1e-6f) {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        it-&gt;second = weight;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        morphDirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    }</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>}</div>
+</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="foldopen" id="foldopen00192" data-start="{" data-end="}">
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a70f27ea259e68762c14592949549aeaa">  192</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a70f27ea259e68762c14592949549aeaa">Mesh::getMorphWeight</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keyword">auto</span> it = morphWeights_.find(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordflow">return</span> it == morphWeights_.end() ? 0.f : it-&gt;second;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>}</div>
+</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="foldopen" id="foldopen00197" data-start="{" data-end="}">
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#a8bc9cbfef14d7ad91fbc7458a6a2d066">  197</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#a8bc9cbfef14d7ad91fbc7458a6a2d066">Mesh::clearMorphWeights</a>() {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;kv : morphWeights_) {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">if</span> (kv.second != 0.f) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            kv.second = 0.f;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            morphDirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        }</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>}</div>
+</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="foldopen" id="foldopen00206" data-start="{" data-end="}">
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Mesh.html#af02e1cf211e40a9dc394f542533cfbb6">  206</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1Mesh.html#af02e1cf211e40a9dc394f542533cfbb6">Mesh::computeMorphedPositions</a>(std::vector&lt;float&gt; &amp;outPos, std::vector&lt;float&gt; &amp;outNrm)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    outPos = basePos_;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    outNrm = baseNrm_;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordflow">if</span> (outPos.empty()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> MorphTarget &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> : morphs_) {</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="keyword">auto</span> it = morphWeights_.find(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.name);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> = (it == morphWeights_.end()) ? 0.f : it-&gt;second;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keywordflow">if</span> (std::fabs(<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>) &lt; 1e-8f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; outPos.size() &amp;&amp; i &lt; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.deltaPos.size(); ++i)</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            outPos[i] += <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.deltaPos[i] * <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    }</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>}</div>
+</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a127467c202a16db28ed73fe86239cfd3"><div class="ttname"><a href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a></div><div class="ttdeci">std::map&lt; std::string, Var &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00459">EditorHost.cpp:459</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7b19ff7daa03f593e552608463f5c9ca"><div class="ttname"><a href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a></div><div class="ttdeci">std::uint32_t vertexCount</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00235">GltfImporter.cpp:235</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00236">Grass.cpp:236</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00731">RenderSystem3D.cpp:731</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Drawable_html_a84e1f90d6c78c65e64f2d74b36a3fbf2"><div class="ttname"><a href="classeve_1_1graphics_1_1Drawable.html#a84e1f90d6c78c65e64f2d74b36a3fbf2">eve::graphics::Drawable::getCastOcclusion</a></div><div class="ttdeci">bool getCastOcclusion() const</div><div class="ttdoc">When false, skipped by Graphics::drawOcclusion / volumetric occluder passes.</div><div class="ttdef"><b>Definition</b> <a href="Drawable_8h_source.html#l00027">Drawable.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_aa947714ec1b34667d7149b47d58dd7b1"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#aa947714ec1b34667d7149b47d58dd7b1">eve::graphics::Graphics::drawOcclusionSolid</a></div><div class="ttdeci">virtual void drawOcclusionSolid(float x, float y, float w, float h)</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l01585">Graphics.cpp:1585</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a1c3943e674994c49789dba24183e12fe"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a1c3943e674994c49789dba24183e12fe">eve::graphics::Mesh::initMorphBase</a></div><div class="ttdeci">void initMorphBase(int vertexCount, const float *posXYZ, const float *nrmXYZ=nullptr, const float *uvST=nullptr)</div><div class="ttdoc">Capture base pose (xyz packed). Optional normals/uvs (same vertex count).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00122">Mesh.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a2660c0ab5ae70945ba377daed07da204"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a2660c0ab5ae70945ba377daed07da204">eve::graphics::Mesh::importedUv</a></div><div class="ttdeci">const std::vector&lt; float &gt; &amp; importedUv(int channel) const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00053">Mesh.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a2cc283ad41d05d2b87b7af6e4bb55282"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a2cc283ad41d05d2b87b7af6e4bb55282">eve::graphics::Mesh::clearMorphData</a></div><div class="ttdeci">void clearMorphData()</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00113">Mesh.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a2f05165a32759bf50000829f23851ec9"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a2f05165a32759bf50000829f23851ec9">eve::graphics::Mesh::computeBounds</a></div><div class="ttdeci">void computeBounds(const float *posXYZ, int vertexCount)</div><div class="ttdoc">Compute the bounding sphere (centroid + max radius) from positions.</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00071">Mesh.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a3776de34f20a2e7d703667b990310000"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a3776de34f20a2e7d703667b990310000">eve::graphics::Mesh::gpuVertexCount</a></div><div class="ttdeci">int gpuVertexCount</div><div class="ttdoc">Vertex count of the GPU buffer (morph CPU base may be empty).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00026">Mesh.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a39a7c8746c72d500a7e8e4e756a096cf"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a39a7c8746c72d500a7e8e4e756a096cf">eve::graphics::Mesh::setMorphWeight</a></div><div class="ttdeci">bool setMorphWeight(const std::string &amp;name, float weight)</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00180">Mesh.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a3dd932e2da2bb720daed7b918729b3cb"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a3dd932e2da2bb720daed7b918729b3cb">eve::graphics::Mesh::captureImportedAttributes</a></div><div class="ttdeci">void captureImportedAttributes(const ::aiMesh &amp;mesh)</div><div class="ttdoc">Retain imported UV/color/tangent streams for custom pipelines and baking.</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00016">Mesh.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a3feeb59137c1fd691ad71f0fc2088498"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a3feeb59137c1fd691ad71f0fc2088498">eve::graphics::Mesh::addMorphTarget</a></div><div class="ttdeci">bool addMorphTarget(const std::string &amp;name, const float *deltaPosXYZ)</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00138">Mesh.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a402786bed82234767cc571d6f4d1f3f8"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a402786bed82234767cc571d6f4d1f3f8">eve::graphics::Mesh::hasMorph</a></div><div class="ttdeci">bool hasMorph(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00176">Mesh.cpp:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a507804eccbf9e53ffea7f7c4f39f7246"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a507804eccbf9e53ffea7f7c4f39f7246">eve::graphics::Mesh::boundsCx</a></div><div class="ttdeci">float boundsCx</div><div class="ttdoc">Model-space bounding sphere used for view/cascade frustum culling. Computed from vertex positions at ...</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00044">Mesh.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a6b584df42325a3f61bce3ed160533d3d"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a6b584df42325a3f61bce3ed160533d3d">eve::graphics::Mesh::boundsCz</a></div><div class="ttdeci">float boundsCz</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00046">Mesh.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a6be1fa7819df7db83a3824c2b240568c"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a6be1fa7819df7db83a3824c2b240568c">eve::graphics::Mesh::drawOcclusion</a></div><div class="ttdeci">void drawOcclusion(Graphics *gfx, const glm::mat4 &amp;matrix) const override</div><div class="ttdoc">Screen-space black proxy for volumetric occlusion. Interprets matrix as 2D affine (translation + scal...</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00103">Mesh.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a70f27ea259e68762c14592949549aeaa"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a70f27ea259e68762c14592949549aeaa">eve::graphics::Mesh::getMorphWeight</a></div><div class="ttdeci">float getMorphWeight(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00192">Mesh.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a74150482f73207f1b4f1efce8e006cbf"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a74150482f73207f1b4f1efce8e006cbf">eve::graphics::Mesh::boundsCy</a></div><div class="ttdeci">float boundsCy</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00045">Mesh.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a78328a141eed161190fdce5c05bad88a"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a78328a141eed161190fdce5c05bad88a">eve::graphics::Mesh::addMorphTargetAbsolute</a></div><div class="ttdeci">bool addMorphTargetAbsolute(const std::string &amp;name, const float *absPosXYZ)</div><div class="ttdoc">Absolute morph (Assimp aiAnimMesh style): stored as delta from base.</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00150">Mesh.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_a8bc9cbfef14d7ad91fbc7458a6a2d066"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#a8bc9cbfef14d7ad91fbc7458a6a2d066">eve::graphics::Mesh::clearMorphWeights</a></div><div class="ttdeci">void clearMorphWeights()</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00197">Mesh.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_ab5877ae19bdbbd902497fccd0039d85e"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#ab5877ae19bdbbd902497fccd0039d85e">eve::graphics::Mesh::getMorphCount</a></div><div class="ttdeci">int getMorphCount() const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00169">Mesh.cpp:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_aba45a2b624f4ddb14cd8a308bea464a4"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#aba45a2b624f4ddb14cd8a308bea464a4">eve::graphics::Mesh::kMaxSkinBones</a></div><div class="ttdeci">static constexpr int kMaxSkinBones</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00022">Mesh.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_ac6fe702b407ef44ed3ece6951c62d509"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#ac6fe702b407ef44ed3ece6951c62d509">eve::graphics::Mesh::getMorphName</a></div><div class="ttdeci">std::string getMorphName(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00171">Mesh.cpp:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_acc91f5a6b211c6aa05513ea2029d8170"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#acc91f5a6b211c6aa05513ea2029d8170">eve::graphics::Mesh::setSkinPalette</a></div><div class="ttdeci">bool setSkinPalette(const float *matrices, int matrixCount)</div><div class="ttdoc">Replace the per-draw column-major GPU skinning palette.</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00065">Mesh.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_ad01386bced1365ed37c833d9cd45c3bb"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#ad01386bced1365ed37c833d9cd45c3bb">eve::graphics::Mesh::boundsRadius</a></div><div class="ttdeci">float boundsRadius</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00047">Mesh.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_adbf822232b174297515415ca28f4dc48"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#adbf822232b174297515415ca28f4dc48">eve::graphics::Mesh::getVertexCount</a></div><div class="ttdeci">int getVertexCount() const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00164">Mesh.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_ae8eda3578b12b23a658ecced039f1de1"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#ae8eda3578b12b23a658ecced039f1de1">eve::graphics::Mesh::importedColor</a></div><div class="ttdeci">const std::vector&lt; float &gt; &amp; importedColor(int channel) const</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00059">Mesh.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html_af02e1cf211e40a9dc394f542533cfbb6"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html#af02e1cf211e40a9dc394f542533cfbb6">eve::graphics::Mesh::computeMorphedPositions</a></div><div class="ttdeci">void computeMorphedPositions(std::vector&lt; float &gt; &amp;outPos, std::vector&lt; float &gt; &amp;outNrm) const</div><div class="ttdoc">Bake current weights into outPos / outNrm (xyz packed).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8cpp_source.html#l00206">Mesh.cpp:206</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

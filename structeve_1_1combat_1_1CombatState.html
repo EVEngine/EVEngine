@@ -1,0 +1,324 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::combat::CombatState结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1combat.html">combat</a></li><li class="navelem"><a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1combat_1_1CombatState-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::combat::CombatState结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Mutable combat state owned by the gameplay domain for one subject.  
+ <a href="structeve_1_1combat_1_1CombatState.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Damage_8h_source.html">Damage.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a04c802daa6856e10f808909043ecc226" id="r_a04c802daa6856e10f808909043ecc226"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatState.html#a04c802daa6856e10f808909043ecc226">validate</a> () const</td></tr>
+<tr class="memdesc:a04c802daa6856e10f808909043ecc226"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate finite ranges and the non-nil subject link.  <br /></td></tr>
+<tr class="separator:a04c802daa6856e10f808909043ecc226"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a7873aa37458caf32fded0fa0fa751724" id="r_a7873aa37458caf32fded0fa0fa751724"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatState.html#a7873aa37458caf32fded0fa0fa751724">subject</a></td></tr>
+<tr class="separator:a7873aa37458caf32fded0fa0fa751724"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78ddd41c20fb3b6416f310e816f15a06" id="r_a78ddd41c20fb3b6416f310e816f15a06"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatState.html#a78ddd41c20fb3b6416f310e816f15a06">health</a> = 0.0</td></tr>
+<tr class="separator:a78ddd41c20fb3b6416f310e816f15a06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad9a2612369ed2a01d63fff46d3dc481" id="r_aad9a2612369ed2a01d63fff46d3dc481"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatState.html#aad9a2612369ed2a01d63fff46d3dc481">maxHealth</a> = 0.0</td></tr>
+<tr class="separator:aad9a2612369ed2a01d63fff46d3dc481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa62bf3a6de42b010f472e99231c500c5" id="r_aa62bf3a6de42b010f472e99231c500c5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatState.html#aa62bf3a6de42b010f472e99231c500c5">poise</a> = 0.0</td></tr>
+<tr class="separator:aa62bf3a6de42b010f472e99231c500c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07f6555e63c2a5dd4af8fea4fd7bcf50" id="r_a07f6555e63c2a5dd4af8fea4fd7bcf50"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatState.html#a07f6555e63c2a5dd4af8fea4fd7bcf50">maxPoise</a> = 0.0</td></tr>
+<tr class="separator:a07f6555e63c2a5dd4af8fea4fd7bcf50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Mutable combat state owned by the gameplay domain for one subject. </p>
+<p>This is a focused component-like value, not an actor inheritance root. The owning domain resolves <a class="el" href="classeve_1_1SubjectRef.html" title="Strong, domain-neutral reference to a runtime subject.">SubjectRef</a> lifetime and persists/restores this value. </p>
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00033">33</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a04c802daa6856e10f808909043ecc226" name="a04c802daa6856e10f808909043ecc226"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04c802daa6856e10f808909043ecc226">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::combat::CombatState::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate finite ranges and the non-nil subject link. </p>
+
+<p class="definition">在文件 <a class="el" href="Damage_8cpp_source.html">Damage.cpp</a> 第 <a class="el" href="Damage_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Damage_8h_source.html#l00035">health</a>, <a class="el" href="SubjectRef_8h_source.html#l00038">eve::SubjectRef::isValid()</a>, <a class="el" href="Damage_8h_source.html#l00036">maxHealth</a>, <a class="el" href="Damage_8h_source.html#l00038">maxPoise</a>, <a class="el" href="Damage_8h_source.html#l00037">poise</a>, <a class="el" href="Damage_8h_source.html#l00034">subject</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a78ddd41c20fb3b6416f310e816f15a06" name="a78ddd41c20fb3b6416f310e816f15a06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78ddd41c20fb3b6416f310e816f15a06">&#9670;&#160;</a></span>health</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::combat::CombatState::health = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Damage_8cpp_source.html#l00079">eve::combat::DamageRuntime::apply()</a> , 以及 <a class="el" href="Damage_8cpp_source.html#l00034">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aad9a2612369ed2a01d63fff46d3dc481" name="aad9a2612369ed2a01d63fff46d3dc481"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad9a2612369ed2a01d63fff46d3dc481">&#9670;&#160;</a></span>maxHealth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::combat::CombatState::maxHealth = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Damage_8cpp_source.html#l00034">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a07f6555e63c2a5dd4af8fea4fd7bcf50" name="a07f6555e63c2a5dd4af8fea4fd7bcf50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07f6555e63c2a5dd4af8fea4fd7bcf50">&#9670;&#160;</a></span>maxPoise</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::combat::CombatState::maxPoise = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Damage_8cpp_source.html#l00034">validate()</a>.</p>
+
+</div>
+</div>
+<a id="aa62bf3a6de42b010f472e99231c500c5" name="aa62bf3a6de42b010f472e99231c500c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa62bf3a6de42b010f472e99231c500c5">&#9670;&#160;</a></span>poise</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::combat::CombatState::poise = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Damage_8cpp_source.html#l00079">eve::combat::DamageRuntime::apply()</a> , 以及 <a class="el" href="Damage_8cpp_source.html#l00034">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a7873aa37458caf32fded0fa0fa751724" name="a7873aa37458caf32fded0fa0fa751724"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7873aa37458caf32fded0fa0fa751724">&#9670;&#160;</a></span>subject</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::combat::CombatState::subject</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Damage_8cpp_source.html#l00034">validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/combat/<a class="el" href="Damage_8h_source.html">Damage.h</a></li>
+<li>src/modules/combat/<a class="el" href="Damage_8cpp_source.html">Damage.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

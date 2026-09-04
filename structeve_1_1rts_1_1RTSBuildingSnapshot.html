@@ -1,0 +1,769 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::RTSBuildingSnapshot结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html">RTSBuildingSnapshot</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1RTSBuildingSnapshot-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::RTSBuildingSnapshot结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One module-owned building snapshot with stable <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> relationships.  
+ <a href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a79e055f65e7174ec13cccaa50ddff1d7" id="r_a79e055f65e7174ec13cccaa50ddff1d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a79e055f65e7174ec13cccaa50ddff1d7">subject</a></td></tr>
+<tr class="separator:a79e055f65e7174ec13cccaa50ddff1d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13917a0ac087b067518fbcda6b0a723e" id="r_a13917a0ac087b067518fbcda6b0a723e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a13917a0ac087b067518fbcda6b0a723e">definition</a></td></tr>
+<tr class="separator:a13917a0ac087b067518fbcda6b0a723e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36f384f6fdf026ceba25c7f54697bdef" id="r_a36f384f6fdf026ceba25c7f54697bdef"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a36f384f6fdf026ceba25c7f54697bdef">displayName</a></td></tr>
+<tr class="separator:a36f384f6fdf026ceba25c7f54697bdef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbcc9c24e91027cb18a4d96415b16487" id="r_afbcc9c24e91027cb18a4d96415b16487"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#afbcc9c24e91027cb18a4d96415b16487">tags</a></td></tr>
+<tr class="separator:afbcc9c24e91027cb18a4d96415b16487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa85138c8ca337d9ab723222c37070f1" id="r_aaa85138c8ca337d9ab723222c37070f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1RTSEffectSnapshot.html">RTSEffectSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#aaa85138c8ca337d9ab723222c37070f1">effects</a></td></tr>
+<tr class="separator:aaa85138c8ca337d9ab723222c37070f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dc6b4a2def3a4abe666a0bb581aea77" id="r_a5dc6b4a2def3a4abe666a0bb581aea77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a5dc6b4a2def3a4abe666a0bb581aea77">faction</a></td></tr>
+<tr class="separator:a5dc6b4a2def3a4abe666a0bb581aea77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a085721e7c77bcdc8f83389fd0328cbaf" id="r_a085721e7c77bcdc8f83389fd0328cbaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Placement.html">Building::Placement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a085721e7c77bcdc8f83389fd0328cbaf">placement</a></td></tr>
+<tr class="separator:a085721e7c77bcdc8f83389fd0328cbaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6c982a6c103c6ff160c31c7a275a771" id="r_ab6c982a6c103c6ff160c31c7a275a771"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Construction.html">Building::Construction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#ab6c982a6c103c6ff160c31c7a275a771">construction</a></td></tr>
+<tr class="separator:ab6c982a6c103c6ff160c31c7a275a771"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a106eade949ebb98afa5217007b3bb099" id="r_a106eade949ebb98afa5217007b3bb099"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a106eade949ebb98afa5217007b3bb099">builders</a></td></tr>
+<tr class="separator:a106eade949ebb98afa5217007b3bb099"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04719363f6ebaeaf09fe135c66285c78" id="r_a04719363f6ebaeaf09fe135c66285c78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Integrity.html">Building::Integrity</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a04719363f6ebaeaf09fe135c66285c78">integrity</a></td></tr>
+<tr class="separator:a04719363f6ebaeaf09fe135c66285c78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bf137865e3d77facaf6d5957ba30eb9" id="r_a8bf137865e3d77facaf6d5957ba30eb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Shield.html">Building::Shield</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a8bf137865e3d77facaf6d5957ba30eb9">shield</a></td></tr>
+<tr class="separator:a8bf137865e3d77facaf6d5957ba30eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a843e13a406c8076cbb7034b46ad6831c" id="r_a843e13a406c8076cbb7034b46ad6831c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Capture.html">Building::Capture</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a843e13a406c8076cbb7034b46ad6831c">capture</a></td></tr>
+<tr class="separator:a843e13a406c8076cbb7034b46ad6831c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa29f835491e641547c047741b7c781fa" id="r_aa29f835491e641547c047741b7c781fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#aa29f835491e641547c047741b7c781fa">capturingFaction</a></td></tr>
+<tr class="separator:aa29f835491e641547c047741b7c781fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afabe2d2ec2aaf42eff8315960606c056" id="r_afabe2d2ec2aaf42eff8315960606c056"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Dropoff.html">Building::Dropoff</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#afabe2d2ec2aaf42eff8315960606c056">dropoff</a></td></tr>
+<tr class="separator:afabe2d2ec2aaf42eff8315960606c056"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae2822b738f3194d136c045056622b1d" id="r_aae2822b738f3194d136c045056622b1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html">Building::Rally</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#aae2822b738f3194d136c045056622b1d">rally</a></td></tr>
+<tr class="separator:aae2822b738f3194d136c045056622b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58cb552274515fdc3f028b10d5f3832f" id="r_a58cb552274515fdc3f028b10d5f3832f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a58cb552274515fdc3f028b10d5f3832f">rallyCommandTarget</a></td></tr>
+<tr class="separator:a58cb552274515fdc3f028b10d5f3832f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95b9979b5784dfe4f07c0f5479dc83ef" id="r_a95b9979b5784dfe4f07c0f5479dc83ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a95b9979b5784dfe4f07c0f5479dc83ef">rallyTransport</a></td></tr>
+<tr class="separator:a95b9979b5784dfe4f07c0f5479dc83ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e95042dc0975a7c4b1e8b4a53a1478a" id="r_a0e95042dc0975a7c4b1e8b4a53a1478a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a0e95042dc0975a7c4b1e8b4a53a1478a">reinforcements</a></td></tr>
+<tr class="separator:a0e95042dc0975a7c4b1e8b4a53a1478a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e525deb5646e4d61f8028255a99daed" id="r_a9e525deb5646e4d61f8028255a99daed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Combat.html">Building::Combat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a9e525deb5646e4d61f8028255a99daed">combat</a></td></tr>
+<tr class="separator:a9e525deb5646e4d61f8028255a99daed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c3eae62060d33472e80291d56f092d" id="r_a73c3eae62060d33472e80291d56f092d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a73c3eae62060d33472e80291d56f092d">combatTarget</a></td></tr>
+<tr class="separator:a73c3eae62060d33472e80291d56f092d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec190cae095655d2e73761b45875d21b" id="r_aec190cae095655d2e73761b45875d21b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#aec190cae095655d2e73761b45875d21b">airDefenseNetworkRoot</a></td></tr>
+<tr class="separator:aec190cae095655d2e73761b45875d21b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36f720f0ad43ec70cc83eb81ef5b5dfb" id="r_a36f720f0ad43ec70cc83eb81ef5b5dfb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Garrison.html">Building::Garrison</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a36f720f0ad43ec70cc83eb81ef5b5dfb">garrison</a></td></tr>
+<tr class="separator:a36f720f0ad43ec70cc83eb81ef5b5dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8870771ae802bcd0e5cf4e47a847e3d1" id="r_a8870771ae802bcd0e5cf4e47a847e3d1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a8870771ae802bcd0e5cf4e47a847e3d1">occupants</a></td></tr>
+<tr class="separator:a8870771ae802bcd0e5cf4e47a847e3d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58535cd2a639b59a916931a14e3ada8a" id="r_a58535cd2a639b59a916931a14e3ada8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Supply.html">Building::Supply</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a58535cd2a639b59a916931a14e3ada8a">supply</a></td></tr>
+<tr class="separator:a58535cd2a639b59a916931a14e3ada8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa057ac41b8f0fbf49c57e413e4d6c8ed" id="r_aa057ac41b8f0fbf49c57e413e4d6c8ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Vision.html">Building::Vision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#aa057ac41b8f0fbf49c57e413e4d6c8ed">vision</a></td></tr>
+<tr class="separator:aa057ac41b8f0fbf49c57e413e4d6c8ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa87c56167a52b0d09ab7bc17a9bd3ea0" id="r_aa87c56167a52b0d09ab7bc17a9bd3ea0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Technology.html">Building::Technology</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#aa87c56167a52b0d09ab7bc17a9bd3ea0">technology</a></td></tr>
+<tr class="separator:aa87c56167a52b0d09ab7bc17a9bd3ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7de4e766961f7974b6aae6314da5e737" id="r_a7de4e766961f7974b6aae6314da5e737"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Infrastructure.html">Building::Infrastructure</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a7de4e766961f7974b6aae6314da5e737">infrastructure</a></td></tr>
+<tr class="separator:a7de4e766961f7974b6aae6314da5e737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76e8e96029d6b788983eb355a805f7a2" id="r_a76e8e96029d6b788983eb355a805f7a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1Command.html">Building::Command</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a76e8e96029d6b788983eb355a805f7a2">command</a></td></tr>
+<tr class="separator:a76e8e96029d6b788983eb355a805f7a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09416e1a0ddb68b52124ff6f7e602f52" id="r_a09416e1a0ddb68b52124ff6f7e602f52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1Building_1_1IndirectFire.html">Building::IndirectFire</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a09416e1a0ddb68b52124ff6f7e602f52">indirectFire</a></td></tr>
+<tr class="separator:a09416e1a0ddb68b52124ff6f7e602f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a059c36f5ab78e1dbe5c2a42026ed746c" id="r_a059c36f5ab78e1dbe5c2a42026ed746c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a059c36f5ab78e1dbe5c2a42026ed746c">productionJson</a></td></tr>
+<tr class="separator:a059c36f5ab78e1dbe5c2a42026ed746c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46a2cfb65c7a9965c6090752711889ed" id="r_a46a2cfb65c7a9965c6090752711889ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1OrderComponent_1_1Snapshot.html">OrderComponent::Snapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#a46a2cfb65c7a9965c6090752711889ed">orders</a></td></tr>
+<tr class="separator:a46a2cfb65c7a9965c6090752711889ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7bc053aaae7d31e4325bb42541dc5c5" id="r_aa7bc053aaae7d31e4325bb42541dc5c5"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1RTSBuildingSnapshot.html#aa7bc053aaae7d31e4325bb42541dc5c5">orderTargets</a></td></tr>
+<tr class="separator:aa7bc053aaae7d31e4325bb42541dc5c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One module-owned building snapshot with stable <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> relationships. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00070">70</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aec190cae095655d2e73761b45875d21b" name="aec190cae095655d2e73761b45875d21b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec190cae095655d2e73761b45875d21b">&#9670;&#160;</a></span>airDefenseNetworkRoot</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSBuildingSnapshot::airDefenseNetworkRoot</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a106eade949ebb98afa5217007b3bb099" name="a106eade949ebb98afa5217007b3bb099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a106eade949ebb98afa5217007b3bb099">&#9670;&#160;</a></span>builders</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&gt; eve::rts::RTSBuildingSnapshot::builders</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a843e13a406c8076cbb7034b46ad6831c" name="a843e13a406c8076cbb7034b46ad6831c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a843e13a406c8076cbb7034b46ad6831c">&#9670;&#160;</a></span>capture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Capture.html">Building::Capture</a> eve::rts::RTSBuildingSnapshot::capture</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa29f835491e641547c047741b7c781fa" name="aa29f835491e641547c047741b7c781fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa29f835491e641547c047741b7c781fa">&#9670;&#160;</a></span>capturingFaction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSBuildingSnapshot::capturingFaction</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e525deb5646e4d61f8028255a99daed" name="a9e525deb5646e4d61f8028255a99daed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e525deb5646e4d61f8028255a99daed">&#9670;&#160;</a></span>combat</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Combat.html">Building::Combat</a> eve::rts::RTSBuildingSnapshot::combat</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73c3eae62060d33472e80291d56f092d" name="a73c3eae62060d33472e80291d56f092d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73c3eae62060d33472e80291d56f092d">&#9670;&#160;</a></span>combatTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSBuildingSnapshot::combatTarget</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a76e8e96029d6b788983eb355a805f7a2" name="a76e8e96029d6b788983eb355a805f7a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76e8e96029d6b788983eb355a805f7a2">&#9670;&#160;</a></span>command</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Command.html">Building::Command</a> eve::rts::RTSBuildingSnapshot::command</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab6c982a6c103c6ff160c31c7a275a771" name="ab6c982a6c103c6ff160c31c7a275a771"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6c982a6c103c6ff160c31c7a275a771">&#9670;&#160;</a></span>construction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Construction.html">Building::Construction</a> eve::rts::RTSBuildingSnapshot::construction</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13917a0ac087b067518fbcda6b0a723e" name="a13917a0ac087b067518fbcda6b0a723e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13917a0ac087b067518fbcda6b0a723e">&#9670;&#160;</a></span>definition</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> eve::rts::RTSBuildingSnapshot::definition</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a36f384f6fdf026ceba25c7f54697bdef" name="a36f384f6fdf026ceba25c7f54697bdef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36f384f6fdf026ceba25c7f54697bdef">&#9670;&#160;</a></span>displayName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::RTSBuildingSnapshot::displayName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afabe2d2ec2aaf42eff8315960606c056" name="afabe2d2ec2aaf42eff8315960606c056"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afabe2d2ec2aaf42eff8315960606c056">&#9670;&#160;</a></span>dropoff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Dropoff.html">Building::Dropoff</a> eve::rts::RTSBuildingSnapshot::dropoff</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa85138c8ca337d9ab723222c37070f1" name="aaa85138c8ca337d9ab723222c37070f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa85138c8ca337d9ab723222c37070f1">&#9670;&#160;</a></span>effects</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1RTSEffectSnapshot.html">RTSEffectSnapshot</a> eve::rts::RTSBuildingSnapshot::effects</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5dc6b4a2def3a4abe666a0bb581aea77" name="a5dc6b4a2def3a4abe666a0bb581aea77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dc6b4a2def3a4abe666a0bb581aea77">&#9670;&#160;</a></span>faction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSBuildingSnapshot::faction</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a36f720f0ad43ec70cc83eb81ef5b5dfb" name="a36f720f0ad43ec70cc83eb81ef5b5dfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36f720f0ad43ec70cc83eb81ef5b5dfb">&#9670;&#160;</a></span>garrison</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Garrison.html">Building::Garrison</a> eve::rts::RTSBuildingSnapshot::garrison</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a09416e1a0ddb68b52124ff6f7e602f52" name="a09416e1a0ddb68b52124ff6f7e602f52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09416e1a0ddb68b52124ff6f7e602f52">&#9670;&#160;</a></span>indirectFire</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1IndirectFire.html">Building::IndirectFire</a> eve::rts::RTSBuildingSnapshot::indirectFire</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7de4e766961f7974b6aae6314da5e737" name="a7de4e766961f7974b6aae6314da5e737"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7de4e766961f7974b6aae6314da5e737">&#9670;&#160;</a></span>infrastructure</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Infrastructure.html">Building::Infrastructure</a> eve::rts::RTSBuildingSnapshot::infrastructure</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a04719363f6ebaeaf09fe135c66285c78" name="a04719363f6ebaeaf09fe135c66285c78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04719363f6ebaeaf09fe135c66285c78">&#9670;&#160;</a></span>integrity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Integrity.html">Building::Integrity</a> eve::rts::RTSBuildingSnapshot::integrity</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8870771ae802bcd0e5cf4e47a847e3d1" name="a8870771ae802bcd0e5cf4e47a847e3d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8870771ae802bcd0e5cf4e47a847e3d1">&#9670;&#160;</a></span>occupants</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&gt; eve::rts::RTSBuildingSnapshot::occupants</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a46a2cfb65c7a9965c6090752711889ed" name="a46a2cfb65c7a9965c6090752711889ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46a2cfb65c7a9965c6090752711889ed">&#9670;&#160;</a></span>orders</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1OrderComponent_1_1Snapshot.html">OrderComponent::Snapshot</a> eve::rts::RTSBuildingSnapshot::orders</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa7bc053aaae7d31e4325bb42541dc5c5" name="aa7bc053aaae7d31e4325bb42541dc5c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7bc053aaae7d31e4325bb42541dc5c5">&#9670;&#160;</a></span>orderTargets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&gt; eve::rts::RTSBuildingSnapshot::orderTargets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a085721e7c77bcdc8f83389fd0328cbaf" name="a085721e7c77bcdc8f83389fd0328cbaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a085721e7c77bcdc8f83389fd0328cbaf">&#9670;&#160;</a></span>placement</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Placement.html">Building::Placement</a> eve::rts::RTSBuildingSnapshot::placement</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a059c36f5ab78e1dbe5c2a42026ed746c" name="a059c36f5ab78e1dbe5c2a42026ed746c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a059c36f5ab78e1dbe5c2a42026ed746c">&#9670;&#160;</a></span>productionJson</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::RTSBuildingSnapshot::productionJson</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aae2822b738f3194d136c045056622b1d" name="aae2822b738f3194d136c045056622b1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae2822b738f3194d136c045056622b1d">&#9670;&#160;</a></span>rally</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Rally.html">Building::Rally</a> eve::rts::RTSBuildingSnapshot::rally</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58cb552274515fdc3f028b10d5f3832f" name="a58cb552274515fdc3f028b10d5f3832f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58cb552274515fdc3f028b10d5f3832f">&#9670;&#160;</a></span>rallyCommandTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSBuildingSnapshot::rallyCommandTarget</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a95b9979b5784dfe4f07c0f5479dc83ef" name="a95b9979b5784dfe4f07c0f5479dc83ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95b9979b5784dfe4f07c0f5479dc83ef">&#9670;&#160;</a></span>rallyTransport</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSBuildingSnapshot::rallyTransport</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e95042dc0975a7c4b1e8b4a53a1478a" name="a0e95042dc0975a7c4b1e8b4a53a1478a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e95042dc0975a7c4b1e8b4a53a1478a">&#9670;&#160;</a></span>reinforcements</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&gt; eve::rts::RTSBuildingSnapshot::reinforcements</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8bf137865e3d77facaf6d5957ba30eb9" name="a8bf137865e3d77facaf6d5957ba30eb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bf137865e3d77facaf6d5957ba30eb9">&#9670;&#160;</a></span>shield</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Shield.html">Building::Shield</a> eve::rts::RTSBuildingSnapshot::shield</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79e055f65e7174ec13cccaa50ddff1d7" name="a79e055f65e7174ec13cccaa50ddff1d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79e055f65e7174ec13cccaa50ddff1d7">&#9670;&#160;</a></span>subject</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> eve::rts::RTSBuildingSnapshot::subject</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSnapshot_8cpp_source.html#l00158">eve::rts::RTS::snapshotState()</a>.</p>
+
+</div>
+</div>
+<a id="a58535cd2a639b59a916931a14e3ada8a" name="a58535cd2a639b59a916931a14e3ada8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58535cd2a639b59a916931a14e3ada8a">&#9670;&#160;</a></span>supply</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Supply.html">Building::Supply</a> eve::rts::RTSBuildingSnapshot::supply</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afbcc9c24e91027cb18a4d96415b16487" name="afbcc9c24e91027cb18a4d96415b16487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbcc9c24e91027cb18a4d96415b16487">&#9670;&#160;</a></span>tags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::rts::RTSBuildingSnapshot::tags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa87c56167a52b0d09ab7bc17a9bd3ea0" name="aa87c56167a52b0d09ab7bc17a9bd3ea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa87c56167a52b0d09ab7bc17a9bd3ea0">&#9670;&#160;</a></span>technology</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Technology.html">Building::Technology</a> eve::rts::RTSBuildingSnapshot::technology</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa057ac41b8f0fbf49c57e413e4d6c8ed" name="aa057ac41b8f0fbf49c57e413e4d6c8ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa057ac41b8f0fbf49c57e413e4d6c8ed">&#9670;&#160;</a></span>vision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1Building_1_1Vision.html">Building::Vision</a> eve::rts::RTSBuildingSnapshot::vision</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a> 第 <a class="el" href="RTSSnapshot_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSSnapshot_8h_source.html">RTSSnapshot.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

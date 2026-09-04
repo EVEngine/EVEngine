@@ -1,0 +1,2198 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::Cloth3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1Cloth3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::Cloth3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Interactive 3D cloth — Verlet particles + distance constraints. Meter space, +Y up, grid laid out in the XZ plane with the top row pinned.  
+ <a href="classeve_1_1physics_1_1Cloth3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics::Cloth3D 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1physics_1_1Cloth3D.png" usemap="#eve::physics::Cloth3D_map" alt=""/>
+  <map id="eve::physics::Cloth3D_map" name="eve::physics::Cloth3D_map">
+<area href="classeve_1_1physics_1_1ISimulationBackend.html" title="Minimal observable contract for physics simulation providers." alt="eve::physics::ISimulationBackend" shape="rect" coords="0,0,197,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2c7e66831949fc64260cc3430dc561fc" id="r_a2c7e66831949fc64260cc3430dc561fc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a2c7e66831949fc64260cc3430dc561fc">Cloth3D</a> (int cols, int rows, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, float originX, float originY, float originZ)</td></tr>
+<tr class="separator:a2c7e66831949fc64260cc3430dc561fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1449f7d4129da6a8b193d03e4b77c015" id="r_a1449f7d4129da6a8b193d03e4b77c015"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a1449f7d4129da6a8b193d03e4b77c015">~Cloth3D</a> ()</td></tr>
+<tr class="separator:a1449f7d4129da6a8b193d03e4b77c015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9f0427d9c9aec0f11b9d21e4cf03147" id="r_ae9f0427d9c9aec0f11b9d21e4cf03147"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ae9f0427d9c9aec0f11b9d21e4cf03147">Cloth3D</a> (const <a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> &amp;)=delete</td></tr>
+<tr class="separator:ae9f0427d9c9aec0f11b9d21e4cf03147"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4506228b1429ae878a065a7eceff7887" id="r_a4506228b1429ae878a065a7eceff7887"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a4506228b1429ae878a065a7eceff7887">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a4506228b1429ae878a065a7eceff7887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a463392710bd1685076b6904c659ab9" id="r_a9a463392710bd1685076b6904c659ab9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a9a463392710bd1685076b6904c659ab9">update</a> (float dt)</td></tr>
+<tr class="separator:a9a463392710bd1685076b6904c659ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66ecb3d6ba50b5721417cd8ab98d01e6" id="r_a66ecb3d6ba50b5721417cd8ab98d01e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a66ecb3d6ba50b5721417cd8ab98d01e6">step</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;step, const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;settings) override</td></tr>
+<tr class="memdesc:a66ecb3d6ba50b5721417cd8ab98d01e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances cloth with the shared ticked backend contract.  <br /></td></tr>
+<tr class="separator:a66ecb3d6ba50b5721417cd8ab98d01e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a901b3435d9cb6ca1c15df90051956042" id="r_a901b3435d9cb6ca1c15df90051956042"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a901b3435d9cb6ca1c15df90051956042">observation</a> () const noexcept override</td></tr>
+<tr class="memdesc:a901b3435d9cb6ca1c15df90051956042"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns completed tick/time observables.  <br /></td></tr>
+<tr class="separator:a901b3435d9cb6ca1c15df90051956042"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b5bb8e171e4b7da0cbad5530bf90ee8" id="r_a9b5bb8e171e4b7da0cbad5530bf90ee8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a9b5bb8e171e4b7da0cbad5530bf90ee8">kind</a> () const noexcept override</td></tr>
+<tr class="memdesc:a9b5bb8e171e4b7da0cbad5530bf90ee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identifies this production CPU cloth backend.  <br /></td></tr>
+<tr class="separator:a9b5bb8e171e4b7da0cbad5530bf90ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a352f5ecb695c4ce214171bb0e27122d3" id="r_a352f5ecb695c4ce214171bb0e27122d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a352f5ecb695c4ce214171bb0e27122d3">determinism</a> () const noexcept override</td></tr>
+<tr class="memdesc:a352f5ecb695c4ce214171bb0e27122d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU cloth uses bounded floating-point determinism.  <br /></td></tr>
+<tr class="separator:a352f5ecb695c4ce214171bb0e27122d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81f5d22780caee1c580e416f610288b9" id="r_a81f5d22780caee1c580e416f610288b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a81f5d22780caee1c580e416f610288b9">restoreObservation</a> (const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;<a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a901b3435d9cb6ca1c15df90051956042">observation</a>) override</td></tr>
+<tr class="memdesc:a81f5d22780caee1c580e416f610288b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores tick/progress metadata after an owner-level restore.  <br /></td></tr>
+<tr class="separator:a81f5d22780caee1c580e416f610288b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04e7183a0056d945eb0a6102d6ed520e" id="r_a04e7183a0056d945eb0a6102d6ed520e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a04e7183a0056d945eb0a6102d6ed520e">setGravity</a> (float gx, float gy, float gz)</td></tr>
+<tr class="separator:a04e7183a0056d945eb0a6102d6ed520e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c289497f46c0a5cf969839d34c28c07" id="r_a4c289497f46c0a5cf969839d34c28c07"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a4c289497f46c0a5cf969839d34c28c07">getGravityX</a> () const</td></tr>
+<tr class="separator:a4c289497f46c0a5cf969839d34c28c07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ee3dbbb69bba8fa1174bb7853724b53" id="r_a8ee3dbbb69bba8fa1174bb7853724b53"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8ee3dbbb69bba8fa1174bb7853724b53">getGravityY</a> () const</td></tr>
+<tr class="separator:a8ee3dbbb69bba8fa1174bb7853724b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa11c4b9061f446ddf50013ecce1b8684" id="r_aa11c4b9061f446ddf50013ecce1b8684"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#aa11c4b9061f446ddf50013ecce1b8684">getGravityZ</a> () const</td></tr>
+<tr class="separator:aa11c4b9061f446ddf50013ecce1b8684"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f04b4cee80a7e11235323dbbc719692" id="r_a5f04b4cee80a7e11235323dbbc719692"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a5f04b4cee80a7e11235323dbbc719692">setStiffness</a> (float stiffness)</td></tr>
+<tr class="memdesc:a5f04b4cee80a7e11235323dbbc719692"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constraint relaxation strength in [0,1] (default 0.85).  <br /></td></tr>
+<tr class="separator:a5f04b4cee80a7e11235323dbbc719692"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaeed1a85abe6281907215d2ed520e53" id="r_afaeed1a85abe6281907215d2ed520e53"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#afaeed1a85abe6281907215d2ed520e53">getStiffness</a> () const</td></tr>
+<tr class="separator:afaeed1a85abe6281907215d2ed520e53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98103830c76b7cb520ce35c3f62e71e9" id="r_a98103830c76b7cb520ce35c3f62e71e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a98103830c76b7cb520ce35c3f62e71e9">setIterations</a> (int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>)</td></tr>
+<tr class="memdesc:a98103830c76b7cb520ce35c3f62e71e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constraint solver iterations per substep (default 4).  <br /></td></tr>
+<tr class="separator:a98103830c76b7cb520ce35c3f62e71e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c644106852cab3d1a0ca90dcaa4f4e3" id="r_a8c644106852cab3d1a0ca90dcaa4f4e3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8c644106852cab3d1a0ca90dcaa4f4e3">getIterations</a> () const</td></tr>
+<tr class="separator:a8c644106852cab3d1a0ca90dcaa4f4e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa11e7a38f354be4c2a79429679996bda" id="r_aa11e7a38f354be4c2a79429679996bda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#aa11e7a38f354be4c2a79429679996bda">setDamping</a> (float damping)</td></tr>
+<tr class="memdesc:aa11e7a38f354be4c2a79429679996bda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Damping applied to Verlet velocity [0,1] (default 0.01).  <br /></td></tr>
+<tr class="separator:aa11e7a38f354be4c2a79429679996bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbcd6072285586b8a29247f437ba9018" id="r_abbcd6072285586b8a29247f437ba9018"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#abbcd6072285586b8a29247f437ba9018">getDamping</a> () const</td></tr>
+<tr class="separator:abbcd6072285586b8a29247f437ba9018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95b1a7b5e835e72c06ab72138dee993d" id="r_a95b1a7b5e835e72c06ab72138dee993d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a95b1a7b5e835e72c06ab72138dee993d">setParticleSize</a> (float size)</td></tr>
+<tr class="memdesc:a95b1a7b5e835e72c06ab72138dee993d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Particle radius in meters (default 0.1): self-collision separation, draw scale and rigid-body collision thickness.  <br /></td></tr>
+<tr class="separator:a95b1a7b5e835e72c06ab72138dee993d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c1e04641fd06ec9e8572d3dc62aec4" id="r_a71c1e04641fd06ec9e8572d3dc62aec4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a71c1e04641fd06ec9e8572d3dc62aec4">getParticleSize</a> () const</td></tr>
+<tr class="separator:a71c1e04641fd06ec9e8572d3dc62aec4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50f4c3389334e82884eb0630d62074a3" id="r_a50f4c3389334e82884eb0630d62074a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a50f4c3389334e82884eb0630d62074a3">setSelfCollision</a> (bool on)</td></tr>
+<tr class="memdesc:a50f4c3389334e82884eb0630d62074a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable proximity-based self-collision between non-adjacent particles and triangles (default true). Triangle-level pass keeps non-adjacent faces at least 2*particleSize apart, so the sheet cannot slip through itself between particles.  <br /></td></tr>
+<tr class="separator:a50f4c3389334e82884eb0630d62074a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaab6ab75019515a29d337ebe431a299f" id="r_aaab6ab75019515a29d337ebe431a299f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#aaab6ab75019515a29d337ebe431a299f">getSelfCollision</a> () const</td></tr>
+<tr class="separator:aaab6ab75019515a29d337ebe431a299f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7b1d87554652666d04e59ef8ce639f6" id="r_ab7b1d87554652666d04e59ef8ce639f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ab7b1d87554652666d04e59ef8ce639f6">setParticleMass</a> (float mass)</td></tr>
+<tr class="memdesc:ab7b1d87554652666d04e59ef8ce639f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implicit particle mass in kg (default 0.1). Used for mass-proportional momentum exchange when colliding with dynamic rigid bodies.  <br /></td></tr>
+<tr class="separator:ab7b1d87554652666d04e59ef8ce639f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8aa95e9a59d72903378ca91cccfa94a8" id="r_a8aa95e9a59d72903378ca91cccfa94a8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8aa95e9a59d72903378ca91cccfa94a8">getParticleMass</a> () const</td></tr>
+<tr class="separator:a8aa95e9a59d72903378ca91cccfa94a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1788b5b5536350a6207146c99d4a714" id="r_af1788b5b5536350a6207146c99d4a714"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#af1788b5b5536350a6207146c99d4a714">setFoldStiffness</a> (float k)</td></tr>
+<tr class="memdesc:af1788b5b5536350a6207146c99d4a714"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strength of the dihedral fold clamp [0,1] (default 0.5).  <br /></td></tr>
+<tr class="separator:af1788b5b5536350a6207146c99d4a714"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61c1f8e462c4b2f53f552b70e1739bea" id="r_a61c1f8e462c4b2f53f552b70e1739bea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a61c1f8e462c4b2f53f552b70e1739bea">getFoldStiffness</a> () const</td></tr>
+<tr class="separator:a61c1f8e462c4b2f53f552b70e1739bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac09f4bfa956c346eb60ea343a5d1a023" id="r_ac09f4bfa956c346eb60ea343a5d1a023"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ac09f4bfa956c346eb60ea343a5d1a023">setMaxFoldAngle</a> (float <a class="el" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>)</td></tr>
+<tr class="memdesc:ac09f4bfa956c346eb60ea343a5d1a023"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum fold angle between adjacent triangles in degrees Range is 0..180 degrees; default is 120. Zero is fully flat and 180 is folded onto itself; larger values allow stronger draping without creasing.  <br /></td></tr>
+<tr class="separator:ac09f4bfa956c346eb60ea343a5d1a023"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61079c79930d81ce47ea5e1fbdaecf0f" id="r_a61079c79930d81ce47ea5e1fbdaecf0f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a61079c79930d81ce47ea5e1fbdaecf0f">getMaxFoldAngle</a> () const</td></tr>
+<tr class="separator:a61079c79930d81ce47ea5e1fbdaecf0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82a285fd73c0b8ea01e7707809dedef1" id="r_a82a285fd73c0b8ea01e7707809dedef1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a82a285fd73c0b8ea01e7707809dedef1">setBounds</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, float <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>)</td></tr>
+<tr class="memdesc:a82a285fd73c0b8ea01e7707809dedef1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis-aligned box (origin + extents, meters); particles bounce inside.  <br /></td></tr>
+<tr class="separator:a82a285fd73c0b8ea01e7707809dedef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0144a02784819be75844e9570adcb9f6" id="r_a0144a02784819be75844e9570adcb9f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a0144a02784819be75844e9570adcb9f6">clearBounds</a> ()</td></tr>
+<tr class="separator:a0144a02784819be75844e9570adcb9f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fb856292f87d67f42d0f52eebd4f5c6" id="r_a0fb856292f87d67f42d0f52eebd4f5c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a0fb856292f87d67f42d0f52eebd4f5c6">pin</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a0fb856292f87d67f42d0f52eebd4f5c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fb2dd906065f77f049fa47fcca19a49" id="r_a7fb2dd906065f77f049fa47fcca19a49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a7fb2dd906065f77f049fa47fcca19a49">unpin</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a7fb2dd906065f77f049fa47fcca19a49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a587fdb227f97a92d0f63e03f8c0cdedb" id="r_a587fdb227f97a92d0f63e03f8c0cdedb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a587fdb227f97a92d0f63e03f8c0cdedb">pinTopRow</a> ()</td></tr>
+<tr class="separator:a587fdb227f97a92d0f63e03f8c0cdedb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55fe01000a4e538d33d1a3e2cb42452c" id="r_a55fe01000a4e538d33d1a3e2cb42452c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a55fe01000a4e538d33d1a3e2cb42452c">isPinned</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a55fe01000a4e538d33d1a3e2cb42452c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d1fa785e24ec83c79201eeb805d433" id="r_a51d1fa785e24ec83c79201eeb805d433"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a51d1fa785e24ec83c79201eeb805d433">grabAt</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>=0.3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a51d1fa785e24ec83c79201eeb805d433"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grab nearest free particle within radius (meters). Returns particle index, or -1 if none.  <br /></td></tr>
+<tr class="separator:a51d1fa785e24ec83c79201eeb805d433"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a904c8a3bec32fd21853dace6b5e071" id="r_a3a904c8a3bec32fd21853dace6b5e071"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a3a904c8a3bec32fd21853dace6b5e071">moveGrab</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a3a904c8a3bec32fd21853dace6b5e071"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c481e54c78378e4da7cbb6bf0ddb1ee" id="r_a8c481e54c78378e4da7cbb6bf0ddb1ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8c481e54c78378e4da7cbb6bf0ddb1ee">releaseGrab</a> ()</td></tr>
+<tr class="separator:a8c481e54c78378e4da7cbb6bf0ddb1ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ebae72dad555458b97749b0ce1d38e6" id="r_a4ebae72dad555458b97749b0ce1d38e6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a4ebae72dad555458b97749b0ce1d38e6">isGrabbing</a> () const</td></tr>
+<tr class="separator:a4ebae72dad555458b97749b0ce1d38e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0e8c6f25b834c5c7616b701cc10ee2c" id="r_aa0e8c6f25b834c5c7616b701cc10ee2c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#aa0e8c6f25b834c5c7616b701cc10ee2c">getGrabIndex</a> () const</td></tr>
+<tr class="separator:aa0e8c6f25b834c5c7616b701cc10ee2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab88d7470ab3c05f3cbc74a61482276b6" id="r_ab88d7470ab3c05f3cbc74a61482276b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ab88d7470ab3c05f3cbc74a61482276b6">applyForce</a> (float fx, float fy, float fz)</td></tr>
+<tr class="separator:ab88d7470ab3c05f3cbc74a61482276b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2965313753c4e634647d6a9b422eb591" id="r_a2965313753c4e634647d6a9b422eb591"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a2965313753c4e634647d6a9b422eb591">interactAt</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float strength)</td></tr>
+<tr class="memdesc:a2965313753c4e634647d6a9b422eb591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer-field interaction like <a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ae9eff6ad0549846a76687cb3cf0e9e4d" title="Mouse / pointer interaction: positive strength attracts, negative repels. Applied as acceleration wit...">Fluid2D::interactAt</a> (3D): positive strength attracts, negative repels within radius (meters).  <br /></td></tr>
+<tr class="separator:a2965313753c4e634647d6a9b422eb591"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fe81da25dd71c26e3a20871f5fcec83" id="r_a3fe81da25dd71c26e3a20871f5fcec83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a3fe81da25dd71c26e3a20871f5fcec83">setCollideWorld</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a3fe81da25dd71c26e3a20871f5fcec83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> so free particles collide with its non-sensor shapes in meter space. Passing null detaches it. Dynamic bodies receive a small push.  <br /></td></tr>
+<tr class="separator:a3fe81da25dd71c26e3a20871f5fcec83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25acb5103b0735e7422c7aa05f53618c" id="r_a25acb5103b0735e7422c7aa05f53618c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a25acb5103b0735e7422c7aa05f53618c">getCollideWorld</a> () const</td></tr>
+<tr class="memdesc:a25acb5103b0735e7422c7aa05f53618c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the attached collision world, or null when detached.  <br /></td></tr>
+<tr class="separator:a25acb5103b0735e7422c7aa05f53618c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a869247cb94a034cd5217603cd947b2f3" id="r_a869247cb94a034cd5217603cd947b2f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a869247cb94a034cd5217603cd947b2f3">reset</a> ()</td></tr>
+<tr class="memdesc:a869247cb94a034cd5217603cd947b2f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the flat grid pose (top row pinned) and clear transient state.  <br /></td></tr>
+<tr class="separator:a869247cb94a034cd5217603cd947b2f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ab5bb459ff685515c97a6e52f153185" id="r_a5ab5bb459ff685515c97a6e52f153185"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a5ab5bb459ff685515c97a6e52f153185">setColor</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a5ab5bb459ff685515c97a6e52f153185"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ea0177444d7dc52ba9100137d686a2a" id="r_a3ea0177444d7dc52ba9100137d686a2a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a3ea0177444d7dc52ba9100137d686a2a">getColorR</a> () const</td></tr>
+<tr class="separator:a3ea0177444d7dc52ba9100137d686a2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64d37ad9d3575c5d481e2811f1f12c2d" id="r_a64d37ad9d3575c5d481e2811f1f12c2d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a64d37ad9d3575c5d481e2811f1f12c2d">getColorG</a> () const</td></tr>
+<tr class="separator:a64d37ad9d3575c5d481e2811f1f12c2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ba060ad6d52ae71722b81aa72e04128" id="r_a8ba060ad6d52ae71722b81aa72e04128"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a8ba060ad6d52ae71722b81aa72e04128">getColorB</a> () const</td></tr>
+<tr class="separator:a8ba060ad6d52ae71722b81aa72e04128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4ba8b905c80a54b7509ac6e87ea5e93" id="r_ae4ba8b905c80a54b7509ac6e87ea5e93"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ae4ba8b905c80a54b7509ac6e87ea5e93">getColorA</a> () const</td></tr>
+<tr class="separator:ae4ba8b905c80a54b7509ac6e87ea5e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44d926c7da4eeb2de69b69d64177ebfb" id="r_a44d926c7da4eeb2de69b69d64177ebfb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a44d926c7da4eeb2de69b69d64177ebfb">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a44d926c7da4eeb2de69b69d64177ebfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the cloth as a triangle mesh (requires an open 3D frame).  <br /></td></tr>
+<tr class="separator:a44d926c7da4eeb2de69b69d64177ebfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4de07cd88b8846833c7a4b84e1bb51ef" id="r_a4de07cd88b8846833c7a4b84e1bb51ef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a4de07cd88b8846833c7a4b84e1bb51ef">getCols</a> () const</td></tr>
+<tr class="separator:a4de07cd88b8846833c7a4b84e1bb51ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a312540bb4ac53343a2932d32dceb4c2b" id="r_a312540bb4ac53343a2932d32dceb4c2b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a312540bb4ac53343a2932d32dceb4c2b">getRows</a> () const</td></tr>
+<tr class="separator:a312540bb4ac53343a2932d32dceb4c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac34ab9e246ffcdd8db5eb3c2eaa1ed40" id="r_ac34ab9e246ffcdd8db5eb3c2eaa1ed40"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ac34ab9e246ffcdd8db5eb3c2eaa1ed40">getParticleCount</a> () const</td></tr>
+<tr class="separator:ac34ab9e246ffcdd8db5eb3c2eaa1ed40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f472c58bc9e18e9081757dd5016f97e" id="r_a6f472c58bc9e18e9081757dd5016f97e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a6f472c58bc9e18e9081757dd5016f97e">getParticleX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a6f472c58bc9e18e9081757dd5016f97e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace5cfd822dc5c26aba0955b06000141a" id="r_ace5cfd822dc5c26aba0955b06000141a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ace5cfd822dc5c26aba0955b06000141a">getParticleY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ace5cfd822dc5c26aba0955b06000141a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abba41e6c6a7998589c67cef998b35fbe" id="r_abba41e6c6a7998589c67cef998b35fbe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#abba41e6c6a7998589c67cef998b35fbe">getParticleZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:abba41e6c6a7998589c67cef998b35fbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc6f40b73241a9c4f4e0a45425217096" id="r_abc6f40b73241a9c4f4e0a45425217096"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#abc6f40b73241a9c4f4e0a45425217096">setParticlePosition</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:abc6f40b73241a9c4f4e0a45425217096"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7beb78102356f662cc1ed5797b8012c" id="r_ad7beb78102356f662cc1ed5797b8012c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#ad7beb78102356f662cc1ed5797b8012c">getSpacing</a> () const</td></tr>
+<tr class="separator:ad7beb78102356f662cc1ed5797b8012c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbbb9ba969e575930d3ac79d097617ee" id="r_afbbb9ba969e575930d3ac79d097617ee"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#afbbb9ba969e575930d3ac79d097617ee">getOriginX</a> () const</td></tr>
+<tr class="separator:afbbb9ba969e575930d3ac79d097617ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a764f3651d26850041586c01fa584fbf2" id="r_a764f3651d26850041586c01fa584fbf2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a764f3651d26850041586c01fa584fbf2">getOriginY</a> () const</td></tr>
+<tr class="separator:a764f3651d26850041586c01fa584fbf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03e8b7213aae80d21c93d56c93c76e7e" id="r_a03e8b7213aae80d21c93d56c93c76e7e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a03e8b7213aae80d21c93d56c93c76e7e">getOriginZ</a> () const</td></tr>
+<tr class="separator:a03e8b7213aae80d21c93d56c93c76e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a313624ba2f442fb206bf2f5495e4391b" id="r_a313624ba2f442fb206bf2f5495e4391b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a313624ba2f442fb206bf2f5495e4391b">destroy</a> ()</td></tr>
+<tr class="separator:a313624ba2f442fb206bf2f5495e4391b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1physics_1_1ISimulationBackend')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></td></tr>
+<tr class="memitem:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend" id="r_a247d718f8968b22c8b1ee121d2790f7e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a> ()=default</td></tr>
+<tr class="memdesc:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the backend; borrowed domain state is not destroyed.  <br /></td></tr>
+<tr class="separator:a247d718f8968b22c8b1ee121d2790f7e inherit pub_methods_classeve_1_1physics_1_1ISimulationBackend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Interactive 3D cloth — Verlet particles + distance constraints. Meter space, +Y up, grid laid out in the XZ plane with the top row pinned. </p>
+<p>Supports self-collision (spatial-hash proximity), a dihedral fold-angle limit between adjacent triangles (avoids excessive creasing), and particle-vs-rigid-body collision when attached to a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>. Script-owned, independent of the Box3D world. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2c7e66831949fc64260cc3430dc561fc" name="a2c7e66831949fc64260cc3430dc561fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c7e66831949fc64260cc3430dc561fc">&#9670;&#160;</a></span>Cloth3D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Cloth3D::Cloth3D </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cols</td><td>grid columns (&gt;= 2), along +X </td></tr>
+    <tr><td class="paramname">rows</td><td>grid rows (&gt;= 2), along +Z </td></tr>
+    <tr><td class="paramname">spacing</td><td>particle spacing in meters </td></tr>
+    <tr><td class="paramname">originX</td><td>top-left particle X (meters) </td></tr>
+    <tr><td class="paramname">originY</td><td>top-left particle Y (meters) </td></tr>
+    <tr><td class="paramname">originZ</td><td>top-left particle Z (meters) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="Cloth3D_8cpp_source.html#l00441">pinTopRow()</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a1449f7d4129da6a8b193d03e4b77c015" name="a1449f7d4129da6a8b193d03e4b77c015"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1449f7d4129da6a8b193d03e4b77c015">&#9670;&#160;</a></span>~Cloth3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Cloth3D::~Cloth3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Cloth3D_8cpp_source.html#l00248">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="ae9f0427d9c9aec0f11b9d21e4cf03147" name="ae9f0427d9c9aec0f11b9d21e4cf03147"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9f0427d9c9aec0f11b9d21e4cf03147">&#9670;&#160;</a></span>Cloth3D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Cloth3D::Cloth3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab88d7470ab3c05f3cbc74a61482276b6" name="ab88d7470ab3c05f3cbc74a61482276b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab88d7470ab3c05f3cbc74a61482276b6">&#9670;&#160;</a></span>applyForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::applyForce </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Uniform wind / force impulse applied this frame (m/s²). </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00486">486</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0144a02784819be75844e9570adcb9f6" name="a0144a02784819be75844e9570adcb9f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0144a02784819be75844e9570adcb9f6">&#9670;&#160;</a></span>clearBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::clearBounds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00429">429</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth3D_8cpp_source.html#l00415">setBounds()</a>.</p>
+
+</div>
+</div>
+<a id="a313624ba2f442fb206bf2f5495e4391b" name="a313624ba2f442fb206bf2f5495e4391b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a313624ba2f442fb206bf2f5495e4391b">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth3D_8cpp_source.html#l00246">~Cloth3D()</a>.</p>
+
+</div>
+</div>
+<a id="a352f5ecb695c4ce214171bb0e27122d3" name="a352f5ecb695c4ce214171bb0e27122d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a352f5ecb695c4ce214171bb0e27122d3">&#9670;&#160;</a></span>determinism()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> eve::physics::Cloth3D::determinism </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>CPU cloth uses bounded floating-point determinism. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#ac16a11fbede61795119d03f323c3809c">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">eve::physics::ToleranceBounded</a>.</p>
+
+</div>
+</div>
+<a id="a44d926c7da4eeb2de69b69d64177ebfb" name="a44d926c7da4eeb2de69b69d64177ebfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44d926c7da4eeb2de69b69d64177ebfb">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw the cloth as a triangle mesh (requires an open 3D frame). </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01103">1103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a39dc078edf0474abe3bc94e517802934">eve::graphics::Graphics::drawMesh()</a>, <a class="el" href="Cloth3D_8h_source.html#l00179">getParticleCount()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00236">indexCount</a>, <a class="el" href="EvpackGraphicsLoader_8cpp_source.html#l00031">indices</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">eve::graphics::Graphics::updateMeshVertices()</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00016">uv</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00235">vertexCount</a>.</p>
+
+</div>
+</div>
+<a id="a25acb5103b0735e7422c7aa05f53618c" name="a25acb5103b0735e7422c7aa05f53618c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25acb5103b0735e7422c7aa05f53618c">&#9670;&#160;</a></span>getCollideWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> * eve::physics::Cloth3D::getCollideWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the attached collision world, or null when detached. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> pointer owned by the physics registry. @ownership <a class="el" href="classeve_1_1physics_1_1Cloth3D.html" title="Interactive 3D cloth — Verlet particles + distance constraints. Meter space, +Y up,...">Cloth3D</a> does not own the world and callers must not delete it. @lifetime Valid until the world is destroyed or detached. @thread Call on the owning physics thread. @reentrancy The accessor invokes no callbacks and is invalid across world mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4ba8b905c80a54b7509ac6e87ea5e93" name="ae4ba8b905c80a54b7509ac6e87ea5e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4ba8b905c80a54b7509ac6e87ea5e93">&#9670;&#160;</a></span>getColorA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getColorA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00172">172</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ba060ad6d52ae71722b81aa72e04128" name="a8ba060ad6d52ae71722b81aa72e04128"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ba060ad6d52ae71722b81aa72e04128">&#9670;&#160;</a></span>getColorB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getColorB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a64d37ad9d3575c5d481e2811f1f12c2d" name="a64d37ad9d3575c5d481e2811f1f12c2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64d37ad9d3575c5d481e2811f1f12c2d">&#9670;&#160;</a></span>getColorG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getColorG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ea0177444d7dc52ba9100137d686a2a" name="a3ea0177444d7dc52ba9100137d686a2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ea0177444d7dc52ba9100137d686a2a">&#9670;&#160;</a></span>getColorR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getColorR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00169">169</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4de07cd88b8846833c7a4b84e1bb51ef" name="a4de07cd88b8846833c7a4b84e1bb51ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4de07cd88b8846833c7a4b84e1bb51ef">&#9670;&#160;</a></span>getCols()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Cloth3D::getCols </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00177">177</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abbcd6072285586b8a29247f437ba9018" name="abbcd6072285586b8a29247f437ba9018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbcd6072285586b8a29247f437ba9018">&#9670;&#160;</a></span>getDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getDamping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a61c1f8e462c4b2f53f552b70e1739bea" name="a61c1f8e462c4b2f53f552b70e1739bea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61c1f8e462c4b2f53f552b70e1739bea">&#9670;&#160;</a></span>getFoldStiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getFoldStiffness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0e8c6f25b834c5c7616b701cc10ee2c" name="aa0e8c6f25b834c5c7616b701cc10ee2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0e8c6f25b834c5c7616b701cc10ee2c">&#9670;&#160;</a></span>getGrabIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Cloth3D::getGrabIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00131">131</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4c289497f46c0a5cf969839d34c28c07" name="a4c289497f46c0a5cf969839d34c28c07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c289497f46c0a5cf969839d34c28c07">&#9670;&#160;</a></span>getGravityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getGravityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ee3dbbb69bba8fa1174bb7853724b53" name="a8ee3dbbb69bba8fa1174bb7853724b53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ee3dbbb69bba8fa1174bb7853724b53">&#9670;&#160;</a></span>getGravityY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getGravityY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa11c4b9061f446ddf50013ecce1b8684" name="aa11c4b9061f446ddf50013ecce1b8684"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa11c4b9061f446ddf50013ecce1b8684">&#9670;&#160;</a></span>getGravityZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getGravityZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c644106852cab3d1a0ca90dcaa4f4e3" name="a8c644106852cab3d1a0ca90dcaa4f4e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c644106852cab3d1a0ca90dcaa4f4e3">&#9670;&#160;</a></span>getIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Cloth3D::getIterations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a61079c79930d81ce47ea5e1fbdaecf0f" name="a61079c79930d81ce47ea5e1fbdaecf0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61079c79930d81ce47ea5e1fbdaecf0f">&#9670;&#160;</a></span>getMaxFoldAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getMaxFoldAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afbbb9ba969e575930d3ac79d097617ee" name="afbbb9ba969e575930d3ac79d097617ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbbb9ba969e575930d3ac79d097617ee">&#9670;&#160;</a></span>getOriginX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getOriginX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a764f3651d26850041586c01fa584fbf2" name="a764f3651d26850041586c01fa584fbf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a764f3651d26850041586c01fa584fbf2">&#9670;&#160;</a></span>getOriginY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getOriginY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00187">187</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03e8b7213aae80d21c93d56c93c76e7e" name="a03e8b7213aae80d21c93d56c93c76e7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03e8b7213aae80d21c93d56c93c76e7e">&#9670;&#160;</a></span>getOriginZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getOriginZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac34ab9e246ffcdd8db5eb3c2eaa1ed40" name="ac34ab9e246ffcdd8db5eb3c2eaa1ed40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac34ab9e246ffcdd8db5eb3c2eaa1ed40">&#9670;&#160;</a></span>getParticleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Cloth3D::getParticleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth3D_8cpp_source.html#l01103">draw()</a> , 以及 <a class="el" href="Cloth3D_8cpp_source.html#l00451">grabAt()</a>.</p>
+
+</div>
+</div>
+<a id="a8aa95e9a59d72903378ca91cccfa94a8" name="a8aa95e9a59d72903378ca91cccfa94a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8aa95e9a59d72903378ca91cccfa94a8">&#9670;&#160;</a></span>getParticleMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getParticleMass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71c1e04641fd06ec9e8572d3dc62aec4" name="a71c1e04641fd06ec9e8572d3dc62aec4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c1e04641fd06ec9e8572d3dc62aec4">&#9670;&#160;</a></span>getParticleSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getParticleSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f472c58bc9e18e9081757dd5016f97e" name="a6f472c58bc9e18e9081757dd5016f97e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f472c58bc9e18e9081757dd5016f97e">&#9670;&#160;</a></span>getParticleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getParticleX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00509">509</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="ace5cfd822dc5c26aba0955b06000141a" name="ace5cfd822dc5c26aba0955b06000141a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace5cfd822dc5c26aba0955b06000141a">&#9670;&#160;</a></span>getParticleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getParticleY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00514">514</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="abba41e6c6a7998589c67cef998b35fbe" name="abba41e6c6a7998589c67cef998b35fbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abba41e6c6a7998589c67cef998b35fbe">&#9670;&#160;</a></span>getParticleZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getParticleZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00519">519</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a312540bb4ac53343a2932d32dceb4c2b" name="a312540bb4ac53343a2932d32dceb4c2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a312540bb4ac53343a2932d32dceb4c2b">&#9670;&#160;</a></span>getRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Cloth3D::getRows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00178">178</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaab6ab75019515a29d337ebe431a299f" name="aaab6ab75019515a29d337ebe431a299f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaab6ab75019515a29d337ebe431a299f">&#9670;&#160;</a></span>getSelfCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Cloth3D::getSelfCollision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad7beb78102356f662cc1ed5797b8012c" name="ad7beb78102356f662cc1ed5797b8012c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7beb78102356f662cc1ed5797b8012c">&#9670;&#160;</a></span>getSpacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getSpacing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afaeed1a85abe6281907215d2ed520e53" name="afaeed1a85abe6281907215d2ed520e53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaeed1a85abe6281907215d2ed520e53">&#9670;&#160;</a></span>getStiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Cloth3D::getStiffness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51d1fa785e24ec83c79201eeb805d433" name="a51d1fa785e24ec83c79201eeb805d433"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d1fa785e24ec83c79201eeb805d433">&#9670;&#160;</a></span>grabAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Cloth3D::grabAt </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em> = <code>0.3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Grab nearest free particle within radius (meters). Returns particle index, or -1 if none. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Cloth3D_8h_source.html#l00179">getParticleCount()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l00470">moveGrab()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a2965313753c4e634647d6a9b422eb591" name="a2965313753c4e634647d6a9b422eb591"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2965313753c4e634647d6a9b422eb591">&#9670;&#160;</a></span>interactAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::interactAt </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pointer-field interaction like <a class="el" href="classeve_1_1physics_1_1Fluid2D.html#ae9eff6ad0549846a76687cb3cf0e9e4d" title="Mouse / pointer interaction: positive strength attracts, negative repels. Applied as acceleration wit...">Fluid2D::interactAt</a> (3D): positive strength attracts, negative repels within radius (meters). </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00492">492</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a4ebae72dad555458b97749b0ce1d38e6" name="a4ebae72dad555458b97749b0ce1d38e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ebae72dad555458b97749b0ce1d38e6">&#9670;&#160;</a></span>isGrabbing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Cloth3D::isGrabbing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00130">130</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55fe01000a4e538d33d1a3e2cb42452c" name="a55fe01000a4e538d33d1a3e2cb42452c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55fe01000a4e538d33d1a3e2cb42452c">&#9670;&#160;</a></span>isPinned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Cloth3D::isPinned </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00446">446</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a9b5bb8e171e4b7da0cbad5530bf90ee8" name="a9b5bb8e171e4b7da0cbad5530bf90ee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b5bb8e171e4b7da0cbad5530bf90ee8">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> eve::physics::Cloth3D::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Identifies this production CPU cloth backend. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a82a8e64a28853aa0c51da564a5b136ae">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">eve::physics::Cpu</a>.</p>
+
+</div>
+</div>
+<a id="a3a904c8a3bec32fd21853dace6b5e071" name="a3a904c8a3bec32fd21853dace6b5e071"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a904c8a3bec32fd21853dace6b5e071">&#9670;&#160;</a></span>moveGrab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::moveGrab </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00470">470</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth3D_8cpp_source.html#l00451">grabAt()</a>.</p>
+
+</div>
+</div>
+<a id="a901b3435d9cb6ca1c15df90051956042" name="a901b3435d9cb6ca1c15df90051956042"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a901b3435d9cb6ca1c15df90051956042">&#9670;&#160;</a></span>observation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> eve::physics::Cloth3D::observation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns completed tick/time observables. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a11a8e09cf239e3899592c779d48a5032">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a> 第 <a class="el" href="Cloth3D_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth3D_8cpp_source.html#l01092">restoreObservation()</a>.</p>
+
+</div>
+</div>
+<a id="a4506228b1429ae878a065a7eceff7887" name="a4506228b1429ae878a065a7eceff7887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4506228b1429ae878a065a7eceff7887">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> &amp; eve::physics::Cloth3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0fb856292f87d67f42d0f52eebd4f5c6" name="a0fb856292f87d67f42d0f52eebd4f5c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fb856292f87d67f42d0f52eebd4f5c6">&#9670;&#160;</a></span>pin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::pin </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00431">431</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a587fdb227f97a92d0f63e03f8c0cdedb" name="a587fdb227f97a92d0f63e03f8c0cdedb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a587fdb227f97a92d0f63e03f8c0cdedb">&#9670;&#160;</a></span>pinTopRow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::pinTopRow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00441">441</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth3D_8cpp_source.html#l00223">Cloth3D()</a> , 以及 <a class="el" href="Cloth3D_8cpp_source.html#l00250">reset()</a>.</p>
+
+</div>
+</div>
+<a id="a8c481e54c78378e4da7cbb6bf0ddb1ee" name="a8c481e54c78378e4da7cbb6bf0ddb1ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c481e54c78378e4da7cbb6bf0ddb1ee">&#9670;&#160;</a></span>releaseGrab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::releaseGrab </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00484">484</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a869247cb94a034cd5217603cd947b2f3" name="a869247cb94a034cd5217603cd947b2f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a869247cb94a034cd5217603cd947b2f3">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the flat grid pose (top row pinned) and clear transient state. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="Cloth3D_8cpp_source.html#l00441">pinTopRow()</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a81f5d22780caee1c580e416f610288b9" name="a81f5d22780caee1c580e416f610288b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81f5d22780caee1c580e416f610288b9">&#9670;&#160;</a></span>restoreObservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::Cloth3D::restoreObservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>observation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restores tick/progress metadata after an owner-level restore. </p>
+
+<p>重载 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a0afa52c7c90a1575bed612e94332f41e">eve::physics::ISimulationBackend</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01092">1092</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Cloth3D_8h_source.html#l00050">observation()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<a id="a82a285fd73c0b8ea01e7707809dedef1" name="a82a285fd73c0b8ea01e7707809dedef1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82a285fd73c0b8ea01e7707809dedef1">&#9670;&#160;</a></span>setBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setBounds </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>d</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Axis-aligned box (origin + extents, meters); particles bounce inside. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Cloth3D_8cpp_source.html#l00429">clearBounds()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a3fe81da25dd71c26e3a20871f5fcec83" name="a3fe81da25dd71c26e3a20871f5fcec83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fe81da25dd71c26e3a20871f5fcec83">&#9670;&#160;</a></span>setCollideWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setCollideWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> so free particles collide with its non-sensor shapes in meter space. Passing null detaches it. Dynamic bodies receive a small push. </p>
+<p>Attach a borrowed 3D world for collision queries; null detaches it. @ownership <a class="el" href="classeve_1_1physics_1_1Cloth3D.html" title="Interactive 3D cloth — Verlet particles + distance constraints. Meter space, +Y up,...">Cloth3D</a> never owns the <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> pointer; the physics registry owns it. @lifetime The association is valid only while the world remains alive; clear it before world destruction. @thread Call on the owning physics thread. @reentrancy Does not invoke callbacks; do not destroy the world re-entrantly. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00500">500</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a5ab5bb459ff685515c97a6e52f153185" name="a5ab5bb459ff685515c97a6e52f153185"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ab5bb459ff685515c97a6e52f153185">&#9670;&#160;</a></span>setColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00502">502</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="aa11e7a38f354be4c2a79429679996bda" name="aa11e7a38f354be4c2a79429679996bda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa11e7a38f354be4c2a79429679996bda">&#9670;&#160;</a></span>setDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setDamping </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Damping applied to Verlet velocity [0,1] (default 0.01). </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00393">393</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af1788b5b5536350a6207146c99d4a714" name="af1788b5b5536350a6207146c99d4a714"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1788b5b5536350a6207146c99d4a714">&#9670;&#160;</a></span>setFoldStiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setFoldStiffness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>k</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Strength of the dihedral fold clamp [0,1] (default 0.5). </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a04e7183a0056d945eb0a6102d6ed520e" name="a04e7183a0056d945eb0a6102d6ed520e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04e7183a0056d945eb0a6102d6ed520e">&#9670;&#160;</a></span>setGravity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setGravity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a98103830c76b7cb520ce35c3f62e71e9" name="a98103830c76b7cb520ce35c3f62e71e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98103830c76b7cb520ce35c3f62e71e9">&#9670;&#160;</a></span>setIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setIterations </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constraint solver iterations per substep (default 4). </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00389">389</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00193">iterations</a>.</p>
+
+</div>
+</div>
+<a id="ac09f4bfa956c346eb60ea343a5d1a023" name="ac09f4bfa956c346eb60ea343a5d1a023"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac09f4bfa956c346eb60ea343a5d1a023">&#9670;&#160;</a></span>setMaxFoldAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setMaxFoldAngle </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degrees</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum fold angle between adjacent triangles in degrees Range is 0..180 degrees; default is 120. Zero is fully flat and 180 is folded onto itself; larger values allow stronger draping without creasing. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00035">degrees</a>.</p>
+
+</div>
+</div>
+<a id="ab7b1d87554652666d04e59ef8ce639f6" name="ab7b1d87554652666d04e59ef8ce639f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7b1d87554652666d04e59ef8ce639f6">&#9670;&#160;</a></span>setParticleMass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setParticleMass </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mass</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Implicit particle mass in kg (default 0.1). Used for mass-proportional momentum exchange when colliding with dynamic rigid bodies. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00401">401</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc6f40b73241a9c4f4e0a45425217096" name="abc6f40b73241a9c4f4e0a45425217096"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc6f40b73241a9c4f4e0a45425217096">&#9670;&#160;</a></span>setParticlePosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setParticlePosition </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00524">524</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a95b1a7b5e835e72c06ab72138dee993d" name="a95b1a7b5e835e72c06ab72138dee993d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95b1a7b5e835e72c06ab72138dee993d">&#9670;&#160;</a></span>setParticleSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setParticleSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Particle radius in meters (default 0.1): self-collision separation, draw scale and rigid-body collision thickness. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a50f4c3389334e82884eb0630d62074a3" name="a50f4c3389334e82884eb0630d62074a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50f4c3389334e82884eb0630d62074a3">&#9670;&#160;</a></span>setSelfCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setSelfCollision </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable proximity-based self-collision between non-adjacent particles and triangles (default true). Triangle-level pass keeps non-adjacent faces at least 2*particleSize apart, so the sheet cannot slip through itself between particles. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00405">405</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f04b4cee80a7e11235323dbbc719692" name="a5f04b4cee80a7e11235323dbbc719692"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f04b4cee80a7e11235323dbbc719692">&#9670;&#160;</a></span>setStiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::setStiffness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stiffness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constraint relaxation strength in [0,1] (default 0.85). </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66ecb3d6ba50b5721417cd8ab98d01e6" name="a66ecb3d6ba50b5721417cd8ab98d01e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ecb3d6ba50b5721417cd8ab98d01e6">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::Cloth3D::step </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advances cloth with the shared ticked backend contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a29e5cb31452eaadf312522b2ddaafa0b">eve::physics::ISimulationBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01071">1071</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Time_8h_source.html#l00157">eve::SimulationStep::delta</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Time_8cpp_source.html#l00028">eve::Duration::seconds()</a>, <a class="el" href="SimulationBackend_8h_source.html#l00107">eve::physics::SimulationSettings::subStepCount</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<a id="a7fb2dd906065f77f049fa47fcca19a49" name="a7fb2dd906065f77f049fa47fcca19a49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fb2dd906065f77f049fa47fcca19a49">&#9670;&#160;</a></span>unpin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::unpin </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l00436">436</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a9a463392710bd1685076b6904c659ab9" name="a9a463392710bd1685076b6904c659ab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a463392710bd1685076b6904c659ab9">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Cloth3D::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01038">1038</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="Cloth3D_8h_source.html">Cloth3D.h</a></li>
+<li>src/modules/physics/<a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

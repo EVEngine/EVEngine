@@ -1,0 +1,1006 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::statepatch::Store类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1statepatch.html">statepatch</a></li><li class="navelem"><a class="el" href="classeve_1_1statepatch_1_1Store.html">Store</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1statepatch_1_1Store-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::statepatch::Store类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic subject-and-key JSON value store with atomic patching.  
+ <a href="classeve_1_1statepatch_1_1Store.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StatePatch_8h_source.html">StatePatch.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abfea0d194995871a3a1faa215a0778aa" id="r_abfea0d194995871a3a1faa215a0778aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#abfea0d194995871a3a1faa215a0778aa">Store</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId={})</td></tr>
+<tr class="memdesc:abfea0d194995871a3a1faa215a0778aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty store with an optional persistent identity.  <br /></td></tr>
+<tr class="separator:abfea0d194995871a3a1faa215a0778aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9e13882dd4cbc3a72abb6a263cca08d" id="r_ad9e13882dd4cbc3a72abb6a263cca08d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1statepatch.html#a132e352ce9085c0048af63c934e9fc90">PatchBatchHandleRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#ad9e13882dd4cbc3a72abb6a263cca08d">newBatch</a> ()</td></tr>
+<tr class="memdesc:ad9e13882dd4cbc3a72abb6a263cca08d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a store-owned empty patch batch and returns its handle.  <br /></td></tr>
+<tr class="separator:ad9e13882dd4cbc3a72abb6a263cca08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8a69852af0f77219e4816edf6b97e88" id="r_aa8a69852af0f77219e4816edf6b97e88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1Borrowed.html">eve::script::Borrowed</a>&lt; <a class="el" href="classeve_1_1statepatch_1_1PatchBatch.html">PatchBatch</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#aa8a69852af0f77219e4816edf6b97e88">resolveBatch</a> (<a class="el" href="namespaceeve_1_1statepatch.html#a132e352ce9085c0048af63c934e9fc90">PatchBatchHandleRef</a> <a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) noexcept</td></tr>
+<tr class="memdesc:aa8a69852af0f77219e4816edf6b97e88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a live batch as a non-owning observation.  <br /></td></tr>
+<tr class="separator:aa8a69852af0f77219e4816edf6b97e88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37370001ff53c6bc589f4c85885b4283" id="r_a37370001ff53c6bc589f4c85885b4283"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a37370001ff53c6bc589f4c85885b4283">releaseBatch</a> (<a class="el" href="namespaceeve_1_1statepatch.html#a132e352ce9085c0048af63c934e9fc90">PatchBatchHandleRef</a> <a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>)</td></tr>
+<tr class="memdesc:a37370001ff53c6bc589f4c85885b4283"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases a store-owned patch batch.  <br /></td></tr>
+<tr class="separator:a37370001ff53c6bc589f4c85885b4283"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb5484907d30db05cab1b32654dafad5" id="r_acb5484907d30db05cab1b32654dafad5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#acb5484907d30db05cab1b32654dafad5">isBatchStale</a> (<a class="el" href="namespaceeve_1_1statepatch.html#a132e352ce9085c0048af63c934e9fc90">PatchBatchHandleRef</a> <a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) const noexcept</td></tr>
+<tr class="memdesc:acb5484907d30db05cab1b32654dafad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports whether a batch reference is stale for this <a class="el" href="classeve_1_1statepatch_1_1Store.html" title="Deterministic subject-and-key JSON value store with atomic patching.">Store</a>.  <br /></td></tr>
+<tr class="separator:acb5484907d30db05cab1b32654dafad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10da93f7320c47acdb21b459c1671a6e" id="r_a10da93f7320c47acdb21b459c1671a6e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a10da93f7320c47acdb21b459c1671a6e">commit</a> (<a class="el" href="classeve_1_1statepatch_1_1PatchBatch.html">PatchBatch</a> *batch)</td></tr>
+<tr class="memdesc:a10da93f7320c47acdb21b459c1671a6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates and atomically commits a batch.  <br /></td></tr>
+<tr class="separator:a10da93f7320c47acdb21b459c1671a6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05e5d14caf7c74e9d31377bda157575f" id="r_a05e5d14caf7c74e9d31377bda157575f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a05e5d14caf7c74e9d31377bda157575f">has</a> (const std::string &amp;subject, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:a05e5d14caf7c74e9d31377bda157575f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a subject and key currently exist.  <br /></td></tr>
+<tr class="separator:a05e5d14caf7c74e9d31377bda157575f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ad9e0c9a6b33c1d15cb2089543ceae4" id="r_a0ad9e0c9a6b33c1d15cb2089543ceae4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a0ad9e0c9a6b33c1d15cb2089543ceae4">get</a> (const std::string &amp;subject, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:a0ad9e0c9a6b33c1d15cb2089543ceae4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns canonical JSON for a value, or an empty string when absent.  <br /></td></tr>
+<tr class="separator:a0ad9e0c9a6b33c1d15cb2089543ceae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4f74e33799beb76afcfd9999d8d0747" id="r_ae4f74e33799beb76afcfd9999d8d0747"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#ae4f74e33799beb76afcfd9999d8d0747">valueRevision</a> (const std::string &amp;subject, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:ae4f74e33799beb76afcfd9999d8d0747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the revision at which a value last changed, or zero when absent.  <br /></td></tr>
+<tr class="separator:ae4f74e33799beb76afcfd9999d8d0747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a073c66724049d87c839b198af31a2119" id="r_a073c66724049d87c839b198af31a2119"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a073c66724049d87c839b198af31a2119">revision</a> () const</td></tr>
+<tr class="memdesc:a073c66724049d87c839b198af31a2119"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current global store revision.  <br /></td></tr>
+<tr class="separator:a073c66724049d87c839b198af31a2119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab58b553c36caa20b1c080b01a23158bc" id="r_ab58b553c36caa20b1c080b01a23158bc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#ab58b553c36caa20b1c080b01a23158bc">querySubjects</a> ()</td></tr>
+<tr class="memdesc:ab58b553c36caa20b1c080b01a23158bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries subjects in lexical order.  <br /></td></tr>
+<tr class="separator:ab58b553c36caa20b1c080b01a23158bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdcc1e8e02204c673410557c8f832d45" id="r_afdcc1e8e02204c673410557c8f832d45"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#afdcc1e8e02204c673410557c8f832d45">queryKeys</a> (const std::string &amp;subject)</td></tr>
+<tr class="memdesc:afdcc1e8e02204c673410557c8f832d45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries keys for a subject in lexical order.  <br /></td></tr>
+<tr class="separator:afdcc1e8e02204c673410557c8f832d45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb0c22c2b5329919f0ecbef0209edcde" id="r_acb0c22c2b5329919f0ecbef0209edcde"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#acb0c22c2b5329919f0ecbef0209edcde">queryAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:acb0c22c2b5329919f0ecbef0209edcde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an item from the latest subject or key query.  <br /></td></tr>
+<tr class="separator:acb0c22c2b5329919f0ecbef0209edcde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e7d5a08a4e95cc98ad441719dd9d10e" id="r_a7e7d5a08a4e95cc98ad441719dd9d10e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a7e7d5a08a4e95cc98ad441719dd9d10e">queryDirty</a> ()</td></tr>
+<tr class="memdesc:a7e7d5a08a4e95cc98ad441719dd9d10e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries dirty subject-key pairs in lexical order.  <br /></td></tr>
+<tr class="separator:a7e7d5a08a4e95cc98ad441719dd9d10e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab77580f305a8d438e5fbdd7a41a1c142" id="r_ab77580f305a8d438e5fbdd7a41a1c142"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#ab77580f305a8d438e5fbdd7a41a1c142">dirtySubjectAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ab77580f305a8d438e5fbdd7a41a1c142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the subject for a dirty query item.  <br /></td></tr>
+<tr class="separator:ab77580f305a8d438e5fbdd7a41a1c142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9eb2144d38bc54e1003e4b06ff1ef3a" id="r_ad9eb2144d38bc54e1003e4b06ff1ef3a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#ad9eb2144d38bc54e1003e4b06ff1ef3a">dirtyKeyAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ad9eb2144d38bc54e1003e4b06ff1ef3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the key for a dirty query item.  <br /></td></tr>
+<tr class="separator:ad9eb2144d38bc54e1003e4b06ff1ef3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accfa1ff6d96bd729acb95185423d0e4c" id="r_accfa1ff6d96bd729acb95185423d0e4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#accfa1ff6d96bd729acb95185423d0e4c">clearDirty</a> ()</td></tr>
+<tr class="memdesc:accfa1ff6d96bd729acb95185423d0e4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all dirty-key markers without changing values.  <br /></td></tr>
+<tr class="separator:accfa1ff6d96bd729acb95185423d0e4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe35796f8dd6f16ce27d5b02f47daa91" id="r_afe35796f8dd6f16ce27d5b02f47daa91"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#afe35796f8dd6f16ce27d5b02f47daa91">eventCount</a> () const</td></tr>
+<tr class="memdesc:afe35796f8dd6f16ce27d5b02f47daa91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of retained change events.  <br /></td></tr>
+<tr class="separator:afe35796f8dd6f16ce27d5b02f47daa91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae83cbe2faf6e3addcb33942a5cf66f1f" id="r_ae83cbe2faf6e3addcb33942a5cf66f1f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1statepatch_1_1ChangeEvent.html">ChangeEvent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#ae83cbe2faf6e3addcb33942a5cf66f1f">eventAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ae83cbe2faf6e3addcb33942a5cf66f1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a retained change event, or nullptr.  <br /></td></tr>
+<tr class="separator:ae83cbe2faf6e3addcb33942a5cf66f1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d246dc8d16c75ba6edf9aef05c0981a" id="r_a4d246dc8d16c75ba6edf9aef05c0981a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a4d246dc8d16c75ba6edf9aef05c0981a">clearEvents</a> ()</td></tr>
+<tr class="memdesc:a4d246dc8d16c75ba6edf9aef05c0981a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes retained change events without resetting sequence allocation.  <br /></td></tr>
+<tr class="separator:a4d246dc8d16c75ba6edf9aef05c0981a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ce2d06c98b71ca37ee15558f79222fa" id="r_a6ce2d06c98b71ca37ee15558f79222fa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a6ce2d06c98b71ca37ee15558f79222fa">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a6ce2d06c98b71ca37ee15558f79222fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exports all persistent store state as deterministic compact JSON.  <br /></td></tr>
+<tr class="separator:a6ce2d06c98b71ca37ee15558f79222fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b349def4b7acdc3a669b07a3b431d2f" id="r_a6b349def4b7acdc3a669b07a3b431d2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a6b349def4b7acdc3a669b07a3b431d2f">restoreJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a6b349def4b7acdc3a669b07a3b431d2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally restores a snapshot produced by <a class="el" href="classeve_1_1statepatch_1_1Store.html#a6ce2d06c98b71ca37ee15558f79222fa" title="Exports all persistent store state as deterministic compact JSON.">snapshotJson()</a>.  <br /></td></tr>
+<tr class="separator:a6b349def4b7acdc3a669b07a3b431d2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa90f1caa263728197f59b77b6fcf69ec" id="r_aa90f1caa263728197f59b77b6fcf69ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#aa90f1caa263728197f59b77b6fcf69ec">snapshot</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:aa90f1caa263728197f59b77b6fcf69ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the state-patch payload in the common snapshot envelope.  <br /></td></tr>
+<tr class="separator:aa90f1caa263728197f59b77b6fcf69ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f8e7b7b5a860230b342c4f3df02763a" id="r_a9f8e7b7b5a860230b342c4f3df02763a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a9f8e7b7b5a860230b342c4f3df02763a">restoreSnapshot</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="classeve_1_1statepatch_1_1Store.html#aa90f1caa263728197f59b77b6fcf69ec">snapshot</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a9f8e7b7b5a860230b342c4f3df02763a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a verified or migrated state-patch envelope atomically.  <br /></td></tr>
+<tr class="separator:a9f8e7b7b5a860230b342c4f3df02763a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e67a9ff0c592fcba591f5f1876c4561" id="r_a3e67a9ff0c592fcba591f5f1876c4561"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a3e67a9ff0c592fcba591f5f1876c4561">snapshotEnvelopeJson</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a3e67a9ff0c592fcba591f5f1876c4561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the common state-patch snapshot envelope.  <br /></td></tr>
+<tr class="separator:a3e67a9ff0c592fcba591f5f1876c4561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab83f3438081d5c245c5a8d16f09b1fd" id="r_aab83f3438081d5c245c5a8d16f09b1fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#aab83f3438081d5c245c5a8d16f09b1fd">restoreSnapshotJson</a> (std::string_view json, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:aab83f3438081d5c245c5a8d16f09b1fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and transactionally restores a common state-patch envelope.  <br /></td></tr>
+<tr class="separator:aab83f3438081d5c245c5a8d16f09b1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a2fcc9ad122fa090c07cf1bfee2585b1e" id="r_a2fcc9ad122fa090c07cf1bfee2585b1e"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1statepatch_1_1Store.html#a2fcc9ad122fa090c07cf1bfee2585b1e">StoreTransactionParticipant</a></td></tr>
+<tr class="separator:a2fcc9ad122fa090c07cf1bfee2585b1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic subject-and-key JSON value store with atomic patching. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8h_source.html">StatePatch.h</a> 第 <a class="el" href="StatePatch_8h_source.html#l00114">114</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abfea0d194995871a3a1faa215a0778aa" name="abfea0d194995871a3a1faa215a0778aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfea0d194995871a3a1faa215a0778aa">&#9670;&#160;</a></span>Store()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::statepatch::Store::Store </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an empty store with an optional persistent identity. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="accfa1ff6d96bd729acb95185423d0e4c" name="accfa1ff6d96bd729acb95185423d0e4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accfa1ff6d96bd729acb95185423d0e4c">&#9670;&#160;</a></span>clearDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::statepatch::Store::clearDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears all dirty-key markers without changing values. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00369">369</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d246dc8d16c75ba6edf9aef05c0981a" name="a4d246dc8d16c75ba6edf9aef05c0981a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d246dc8d16c75ba6edf9aef05c0981a">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::statepatch::Store::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes retained change events without resetting sequence allocation. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a10da93f7320c47acdb21b459c1671a6e" name="a10da93f7320c47acdb21b459c1671a6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10da93f7320c47acdb21b459c1671a6e">&#9670;&#160;</a></span>commit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::statepatch::Store::commit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1statepatch_1_1PatchBatch.html">PatchBatch</a> *&#160;</td>
+          <td class="paramname"><em>batch</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates and atomically commits a batch. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="StatePatch_8h_source.html#l00066">eve::statepatch::PatchResult::errors</a>, <a class="el" href="StatePatch_8cpp_source.html#l00313">has()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::Pending</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a>, <a class="el" href="StatePatch_8h_source.html#l00065">eve::statepatch::PatchResult::revisionAfter</a>, <a class="el" href="StatePatch_8h_source.html#l00064">eve::statepatch::PatchResult::revisionBefore</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ad9eb2144d38bc54e1003e4b06ff1ef3a" name="ad9eb2144d38bc54e1003e4b06ff1ef3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9eb2144d38bc54e1003e4b06ff1ef3a">&#9670;&#160;</a></span>dirtyKeyAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::statepatch::Store::dirtyKeyAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the key for a dirty query item. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ab77580f305a8d438e5fbdd7a41a1c142" name="ab77580f305a8d438e5fbdd7a41a1c142"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab77580f305a8d438e5fbdd7a41a1c142">&#9670;&#160;</a></span>dirtySubjectAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::statepatch::Store::dirtySubjectAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the subject for a dirty query item. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ae83cbe2faf6e3addcb33942a5cf66f1f" name="ae83cbe2faf6e3addcb33942a5cf66f1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae83cbe2faf6e3addcb33942a5cf66f1f">&#9670;&#160;</a></span>eventAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1statepatch_1_1ChangeEvent.html">ChangeEvent</a> * eve::statepatch::Store::eventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a retained change event, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="afe35796f8dd6f16ce27d5b02f47daa91" name="afe35796f8dd6f16ce27d5b02f47daa91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe35796f8dd6f16ce27d5b02f47daa91">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::statepatch::Store::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of retained change events. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ad9e0c9a6b33c1d15cb2089543ceae4" name="a0ad9e0c9a6b33c1d15cb2089543ceae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ad9e0c9a6b33c1d15cb2089543ceae4">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::statepatch::Store::get </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns canonical JSON for a value, or an empty string when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a05e5d14caf7c74e9d31377bda157575f" name="a05e5d14caf7c74e9d31377bda157575f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05e5d14caf7c74e9d31377bda157575f">&#9670;&#160;</a></span>has()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::statepatch::Store::has </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether a subject and key currently exist. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="statepatch_2StateAccessAdapter_8cpp_source.html#l00067">eve::statepatch::StatePatchStateAdapter::apply()</a>, <a class="el" href="StatePatch_8cpp_source.html#l00232">commit()</a> , 以及 <a class="el" href="statepatch_2StateAccessAdapter_8cpp_source.html#l00052">eve::statepatch::StatePatchStateAdapter::hasTag()</a>.</p>
+
+</div>
+</div>
+<a id="acb5484907d30db05cab1b32654dafad5" name="acb5484907d30db05cab1b32654dafad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb5484907d30db05cab1b32654dafad5">&#9670;&#160;</a></span>isBatchStale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::statepatch::Store::isBatchStale </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1statepatch.html#a132e352ce9085c0048af63c934e9fc90">PatchBatchHandleRef</a>&#160;</td>
+          <td class="paramname"><em>reference</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reports whether a batch reference is stale for this <a class="el" href="classeve_1_1statepatch_1_1Store.html" title="Deterministic subject-and-key JSON value store with atomic patching.">Store</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>.</p>
+
+</div>
+</div>
+<a id="ad9e13882dd4cbc3a72abb6a263cca08d" name="ad9e13882dd4cbc3a72abb6a263cca08d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9e13882dd4cbc3a72abb6a263cca08d">&#9670;&#160;</a></span>newBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1statepatch.html#a132e352ce9085c0048af63c934e9fc90">PatchBatchHandleRef</a> &gt; eve::statepatch::Store::newBatch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocates a store-owned empty patch batch and returns its handle. </p>
+<dl class="section return"><dt>返回</dt><dd>A generation-qualified batch reference local to this <a class="el" href="classeve_1_1statepatch_1_1Store.html" title="Deterministic subject-and-key JSON value store with atomic patching.">Store</a>. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The reference becomes stale after release, restore, <a class="el" href="classeve_1_1statepatch_1_1Store.html" title="Deterministic subject-and-key JSON value store with atomic patching.">Store</a> destruction, or module unload/reload. Resolve is borrowed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="statepatch_2StateAccessAdapter_8cpp_source.html#l00067">eve::statepatch::StatePatchStateAdapter::apply()</a>.</p>
+
+</div>
+</div>
+<a id="acb0c22c2b5329919f0ecbef0209edcde" name="acb0c22c2b5329919f0ecbef0209edcde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb0c22c2b5329919f0ecbef0209edcde">&#9670;&#160;</a></span>queryAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::statepatch::Store::queryAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an item from the latest subject or key query. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00348">348</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7e7d5a08a4e95cc98ad441719dd9d10e" name="a7e7d5a08a4e95cc98ad441719dd9d10e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e7d5a08a4e95cc98ad441719dd9d10e">&#9670;&#160;</a></span>queryDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::statepatch::Store::queryDirty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries dirty subject-key pairs in lexical order. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00353">353</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afdcc1e8e02204c673410557c8f832d45" name="afdcc1e8e02204c673410557c8f832d45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdcc1e8e02204c673410557c8f832d45">&#9670;&#160;</a></span>queryKeys()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::statepatch::Store::queryKeys </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries keys for a subject in lexical order. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ab58b553c36caa20b1c080b01a23158bc" name="ab58b553c36caa20b1c080b01a23158bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab58b553c36caa20b1c080b01a23158bc">&#9670;&#160;</a></span>querySubjects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::statepatch::Store::querySubjects </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries subjects in lexical order. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>.</p>
+
+</div>
+</div>
+<a id="a37370001ff53c6bc589f4c85885b4283" name="a37370001ff53c6bc589f4c85885b4283"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37370001ff53c6bc589f4c85885b4283">&#9670;&#160;</a></span>releaseBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::statepatch::Store::releaseBatch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1statepatch.html#a132e352ce9085c0048af63c934e9fc90">PatchBatchHandleRef</a>&#160;</td>
+          <td class="paramname"><em>reference</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases a store-owned patch batch. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="statepatch_2StateAccessAdapter_8cpp_source.html#l00067">eve::statepatch::StatePatchStateAdapter::apply()</a>.</p>
+
+</div>
+</div>
+<a id="aa8a69852af0f77219e4816edf6b97e88" name="aa8a69852af0f77219e4816edf6b97e88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8a69852af0f77219e4816edf6b97e88">&#9670;&#160;</a></span>resolveBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1Borrowed.html">eve::script::Borrowed</a>&lt; <a class="el" href="classeve_1_1statepatch_1_1PatchBatch.html">PatchBatch</a> &gt; eve::statepatch::Store::resolveBatch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1statepatch.html#a132e352ce9085c0048af63c934e9fc90">PatchBatchHandleRef</a>&#160;</td>
+          <td class="paramname"><em>reference</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves a live batch as a non-owning observation. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="statepatch_2StateAccessAdapter_8cpp_source.html#l00067">eve::statepatch::StatePatchStateAdapter::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a6b349def4b7acdc3a669b07a3b431d2f" name="a6b349def4b7acdc3a669b07a3b431d2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b349def4b7acdc3a669b07a3b431d2f">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::statepatch::Store::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally restores a snapshot produced by <a class="el" href="classeve_1_1statepatch_1_1Store.html#a6ce2d06c98b71ca37ee15558f79222fa" title="Exports all persistent store state as deterministic compact JSON.">snapshotJson()</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Snapshot JSON to parse and validate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a parse/validation diagnostic; on failure the <a class="el" href="classeve_1_1statepatch_1_1Store.html" title="Deterministic subject-and-key JSON value store with atomic patching.">Store</a> remains unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00154">dirty</a>, <a class="el" href="Value_8h_source.html#l00099">eve::Value::isObject()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatePatch_8cpp_source.html#l00469">restoreSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a9f8e7b7b5a860230b342c4f3df02763a" name="a9f8e7b7b5a860230b342c4f3df02763a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f8e7b7b5a860230b342c4f3df02763a">&#9670;&#160;</a></span>restoreSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::statepatch::Store::restoreSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restores a verified or migrated state-patch envelope atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">snapshot</td><td>Source envelope with schema <code>statepatch:store</code>. </td></tr>
+    <tr><td class="paramname">hashProvider</td><td>Explicit content-digest provider. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a failure leaving all values and metadata unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00469">469</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="StatePatch_8cpp_source.html#l00404">restoreJson()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="common_2Snapshot_8cpp_source.html#l00081">eve::validateSnapshotPayloadMetadata()</a>.</p>
+
+</div>
+</div>
+<a id="aab83f3438081d5c245c5a8d16f09b1fd" name="aab83f3438081d5c245c5a8d16f09b1fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab83f3438081d5c245c5a8d16f09b1fd">&#9670;&#160;</a></span>restoreSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::statepatch::Store::restoreSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses and transactionally restores a common state-patch envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00505">505</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00189">eve::parseSnapshotEnvelope()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a073c66724049d87c839b198af31a2119" name="a073c66724049d87c839b198af31a2119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a073c66724049d87c839b198af31a2119">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::statepatch::Store::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the current global store revision. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa90f1caa263728197f59b77b6fcf69ec" name="aa90f1caa263728197f59b77b6fcf69ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa90f1caa263728197f59b77b6fcf69ec">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt; eve::statepatch::Store::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures the state-patch payload in the common snapshot envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00462">462</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00104">eve::makeSnapshotEnvelope()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>.</p>
+
+</div>
+</div>
+<a id="a3e67a9ff0c592fcba591f5f1876c4561" name="a3e67a9ff0c592fcba591f5f1876c4561"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e67a9ff0c592fcba591f5f1876c4561">&#9670;&#160;</a></span>snapshotEnvelopeJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::statepatch::Store::snapshotEnvelopeJson </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes the common state-patch snapshot envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00498">498</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a6ce2d06c98b71ca37ee15558f79222fa" name="a6ce2d06c98b71ca37ee15558f79222fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ce2d06c98b71ca37ee15558f79222fa">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::statepatch::Store::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exports all persistent store state as deterministic compact JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LanguageText_8cpp_source.html#l00015">quote</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ae4f74e33799beb76afcfd9999d8d0747" name="ae4f74e33799beb76afcfd9999d8d0747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4f74e33799beb76afcfd9999d8d0747">&#9670;&#160;</a></span>valueRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::statepatch::Store::valueRevision </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the revision at which a value last changed, or zero when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a> 第 <a class="el" href="StatePatch_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a2fcc9ad122fa090c07cf1bfee2585b1e" name="a2fcc9ad122fa090c07cf1bfee2585b1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fcc9ad122fa090c07cf1bfee2585b1e">&#9670;&#160;</a></span>StoreTransactionParticipant</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1statepatch_1_1StoreTransactionParticipant.html">StoreTransactionParticipant</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StatePatch_8h_source.html">StatePatch.h</a> 第 <a class="el" href="StatePatch_8h_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/statepatch/<a class="el" href="StatePatch_8h_source.html">StatePatch.h</a></li>
+<li>src/modules/statepatch/<a class="el" href="StatePatch_8cpp_source.html">StatePatch.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

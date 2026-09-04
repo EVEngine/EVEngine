@@ -1,0 +1,1136 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::social::SocialGraph类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1social.html">social</a></li><li class="navelem"><a class="el" href="classeve_1_1social_1_1SocialGraph.html">SocialGraph</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1social_1_1SocialGraph-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::social::SocialGraph类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Indexed ownership, control, assignment, and typed-relation graph.  
+ <a href="classeve_1_1social_1_1SocialGraph.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SocialGraph_8h_source.html">SocialGraph.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2b311fea6438a931293b5fb756041994" id="r_a2b311fea6438a931293b5fb756041994"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a2b311fea6438a931293b5fb756041994">setOwner</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;entity, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;owner)</td></tr>
+<tr class="memdesc:a2b311fea6438a931293b5fb756041994"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets an entity's owner; an empty owner removes ownership.  <br /></td></tr>
+<tr class="separator:a2b311fea6438a931293b5fb756041994"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd242585b9acb2e761a793fb4340e1bc" id="r_acd242585b9acb2e761a793fb4340e1bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#acd242585b9acb2e761a793fb4340e1bc">ownerOf</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;entity) const</td></tr>
+<tr class="memdesc:acd242585b9acb2e761a793fb4340e1bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an entity's owner, or an empty string when absent.  <br /></td></tr>
+<tr class="separator:acd242585b9acb2e761a793fb4340e1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25c6af9dcafc3fb51cc839ab8eb3f6cd" id="r_a25c6af9dcafc3fb51cc839ab8eb3f6cd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a25c6af9dcafc3fb51cc839ab8eb3f6cd">ownedBy</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;owner) const</td></tr>
+<tr class="memdesc:a25c6af9dcafc3fb51cc839ab8eb3f6cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns entities owned by owner in deterministic ID order.  <br /></td></tr>
+<tr class="separator:a25c6af9dcafc3fb51cc839ab8eb3f6cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91c415211382a875107338238aef329d" id="r_a91c415211382a875107338238aef329d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a91c415211382a875107338238aef329d">setController</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;entity, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;controller)</td></tr>
+<tr class="memdesc:a91c415211382a875107338238aef329d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets an entity's controller; an empty controller removes control.  <br /></td></tr>
+<tr class="separator:a91c415211382a875107338238aef329d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f475e873e3801fbecac18a1f70a6b2c" id="r_a1f475e873e3801fbecac18a1f70a6b2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a1f475e873e3801fbecac18a1f70a6b2c">controllerOf</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;entity) const</td></tr>
+<tr class="memdesc:a1f475e873e3801fbecac18a1f70a6b2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an entity's controller, or an empty string when absent.  <br /></td></tr>
+<tr class="separator:a1f475e873e3801fbecac18a1f70a6b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ecfc0df8f2d71f90969aecbde292222" id="r_a5ecfc0df8f2d71f90969aecbde292222"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a5ecfc0df8f2d71f90969aecbde292222">controlledBy</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;controller) const</td></tr>
+<tr class="memdesc:a5ecfc0df8f2d71f90969aecbde292222"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns entities controlled by controller in deterministic ID order.  <br /></td></tr>
+<tr class="separator:a5ecfc0df8f2d71f90969aecbde292222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e3b9694e948814b778907251e6e595e" id="r_a0e3b9694e948814b778907251e6e595e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a0e3b9694e948814b778907251e6e595e">assign</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const std::string &amp;role, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a0e3b9694e948814b778907251e6e595e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a role-based source-to-target assignment.  <br /></td></tr>
+<tr class="separator:a0e3b9694e948814b778907251e6e595e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86e4ae6c182188e3b6ddaef2b81f344d" id="r_a86e4ae6c182188e3b6ddaef2b81f344d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a86e4ae6c182188e3b6ddaef2b81f344d">unassign</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const std::string &amp;role, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a86e4ae6c182188e3b6ddaef2b81f344d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a role-based source-to-target assignment.  <br /></td></tr>
+<tr class="separator:a86e4ae6c182188e3b6ddaef2b81f344d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecbadf84ad8c9cae8716d7f5c467d526" id="r_aecbadf84ad8c9cae8716d7f5c467d526"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#aecbadf84ad8c9cae8716d7f5c467d526">isAssigned</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const std::string &amp;role, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) const</td></tr>
+<tr class="memdesc:aecbadf84ad8c9cae8716d7f5c467d526"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests whether an exact assignment exists.  <br /></td></tr>
+<tr class="separator:aecbadf84ad8c9cae8716d7f5c467d526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfbe8a23ff7987c09f00b10a15b568d4" id="r_abfbe8a23ff7987c09f00b10a15b568d4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#abfbe8a23ff7987c09f00b10a15b568d4">targetsOf</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const std::string &amp;role) const</td></tr>
+<tr class="memdesc:abfbe8a23ff7987c09f00b10a15b568d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns targets assigned from source with role in deterministic order.  <br /></td></tr>
+<tr class="separator:abfbe8a23ff7987c09f00b10a15b568d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6e3f4fbaa008032159b5a07cd0f7656" id="r_ac6e3f4fbaa008032159b5a07cd0f7656"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#ac6e3f4fbaa008032159b5a07cd0f7656">assigneesOf</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;role) const</td></tr>
+<tr class="memdesc:ac6e3f4fbaa008032159b5a07cd0f7656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns sources assigned to target with role in deterministic order.  <br /></td></tr>
+<tr class="separator:ac6e3f4fbaa008032159b5a07cd0f7656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86da29bfa7d9becf777e121ce18dabca" id="r_a86da29bfa7d9becf777e121ce18dabca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a86da29bfa7d9becf777e121ce18dabca">setRelation</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a86da29bfa7d9becf777e121ce18dabca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a directed typed relation weight, creating the edge if needed.  <br /></td></tr>
+<tr class="separator:a86da29bfa7d9becf777e121ce18dabca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31bb4257cd417d82b630d9bcc1cc4510" id="r_a31bb4257cd417d82b630d9bcc1cc4510"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a31bb4257cd417d82b630d9bcc1cc4510">addRelation</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, double delta)</td></tr>
+<tr class="memdesc:a31bb4257cd417d82b630d9bcc1cc4510"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds delta to a directed typed relation and returns its new weight.  <br /></td></tr>
+<tr class="separator:a31bb4257cd417d82b630d9bcc1cc4510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fb21f7032bd9f6c4a9ce2267f33cf4a" id="r_a1fb21f7032bd9f6c4a9ce2267f33cf4a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a1fb21f7032bd9f6c4a9ce2267f33cf4a">link</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="memdesc:a1fb21f7032bd9f6c4a9ce2267f33cf4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a directed typed relation with weight 1.  <br /></td></tr>
+<tr class="separator:a1fb21f7032bd9f6c4a9ce2267f33cf4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9bbf53259fd77ab7e888b0c5259025a" id="r_ad9bbf53259fd77ab7e888b0c5259025a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#ad9bbf53259fd77ab7e888b0c5259025a">removeRelation</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="memdesc:ad9bbf53259fd77ab7e888b0c5259025a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an exact directed typed relation.  <br /></td></tr>
+<tr class="separator:ad9bbf53259fd77ab7e888b0c5259025a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af94dbe18effb171e7c7b7a67f96ca893" id="r_af94dbe18effb171e7c7b7a67f96ca893"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#af94dbe18effb171e7c7b7a67f96ca893">hasRelation</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) const</td></tr>
+<tr class="memdesc:af94dbe18effb171e7c7b7a67f96ca893"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests whether an exact directed typed relation exists.  <br /></td></tr>
+<tr class="separator:af94dbe18effb171e7c7b7a67f96ca893"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af04a0039a70507b73f701093cd44d4fb" id="r_af04a0039a70507b73f701093cd44d4fb"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#af04a0039a70507b73f701093cd44d4fb">relation</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, double fallback=0.0) const</td></tr>
+<tr class="memdesc:af04a0039a70507b73f701093cd44d4fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an exact relation weight, or fallback when absent.  <br /></td></tr>
+<tr class="separator:af04a0039a70507b73f701093cd44d4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af81906e478c973f8ba87b3dd4c2c2a0a" id="r_af81906e478c973f8ba87b3dd4c2c2a0a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#af81906e478c973f8ba87b3dd4c2c2a0a">relationTargets</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, double <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>=0.0) const</td></tr>
+<tr class="memdesc:af81906e478c973f8ba87b3dd4c2c2a0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns outgoing relation targets filtered by type and minimum weight.  <br /></td></tr>
+<tr class="separator:af81906e478c973f8ba87b3dd4c2c2a0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcd4e3a4b6d53388784a5322c6bd0d08" id="r_afcd4e3a4b6d53388784a5322c6bd0d08"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#afcd4e3a4b6d53388784a5322c6bd0d08">relationSources</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, double <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>=0.0) const</td></tr>
+<tr class="memdesc:afcd4e3a4b6d53388784a5322c6bd0d08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns incoming relation sources filtered by type and minimum weight.  <br /></td></tr>
+<tr class="separator:afcd4e3a4b6d53388784a5322c6bd0d08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac450d03603d3c77cbe8d18bc04d8e13a" id="r_ac450d03603d3c77cbe8d18bc04d8e13a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#ac450d03603d3c77cbe8d18bc04d8e13a">removeEntity</a> (const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;entity)</td></tr>
+<tr class="memdesc:ac450d03603d3c77cbe8d18bc04d8e13a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an entity and every incoming/outgoing graph reference to it.  <br /></td></tr>
+<tr class="separator:ac450d03603d3c77cbe8d18bc04d8e13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada61cf66ef2b21e7d8f59340364b08b1" id="r_ada61cf66ef2b21e7d8f59340364b08b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#ada61cf66ef2b21e7d8f59340364b08b1">clear</a> ()</td></tr>
+<tr class="memdesc:ada61cf66ef2b21e7d8f59340364b08b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all graph state and pending events.  <br /></td></tr>
+<tr class="separator:ada61cf66ef2b21e7d8f59340364b08b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa92f4d5ff37d2be502595af2b2096be" id="r_afa92f4d5ff37d2be502595af2b2096be"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1social_1_1SocialChangeEvent.html">SocialChangeEvent</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#afa92f4d5ff37d2be502595af2b2096be">events</a> () const</td></tr>
+<tr class="memdesc:afa92f4d5ff37d2be502595af2b2096be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns queued mutation events in sequence order.  <br /></td></tr>
+<tr class="separator:afa92f4d5ff37d2be502595af2b2096be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a331f7f56869ed13472a17ed1ebfb7654" id="r_a331f7f56869ed13472a17ed1ebfb7654"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a331f7f56869ed13472a17ed1ebfb7654">clearEvents</a> ()</td></tr>
+<tr class="memdesc:a331f7f56869ed13472a17ed1ebfb7654"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears queued events without changing graph state.  <br /></td></tr>
+<tr class="separator:a331f7f56869ed13472a17ed1ebfb7654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a2e38500d9aaed00e060dddfee0f11f00" id="r_a2e38500d9aaed00e060dddfee0f11f00"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1social_1_1SocialGraph.html#a2e38500d9aaed00e060dddfee0f11f00">integerId</a> (std::int64_t <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a2e38500d9aaed00e060dddfee0f11f00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a stable integer ID to its canonical graph key.  <br /></td></tr>
+<tr class="separator:a2e38500d9aaed00e060dddfee0f11f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Indexed ownership, control, assignment, and typed-relation graph. </p>
+<p>IDs are opaque. String IDs are stored verbatim; integer helpers use a reserved representation so integer 12 cannot collide with the string "12". </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8h_source.html">SocialGraph.h</a> 第 <a class="el" href="SocialGraph_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a31bb4257cd417d82b630d9bcc1cc4510" name="a31bb4257cd417d82b630d9bcc1cc4510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31bb4257cd417d82b630d9bcc1cc4510">&#9670;&#160;</a></span>addRelation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::social::SocialGraph::addRelation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds delta to a directed typed relation and returns its new weight. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SocialGraph_8cpp_source.html#l00160">relation()</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00121">setRelation()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00078">eve::social::Social::addRelation()</a>.</p>
+
+</div>
+</div>
+<a id="a0e3b9694e948814b778907251e6e595e" name="a0e3b9694e948814b778907251e6e595e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e3b9694e948814b778907251e6e595e">&#9670;&#160;</a></span>assign()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::assign </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>role</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a role-based source-to-target assignment. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00047">eve::social::Social::assign()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00050">eve::social::Social::assignInt()</a>.</p>
+
+</div>
+</div>
+<a id="ac6e3f4fbaa008032159b5a07cd0f7656" name="ac6e3f4fbaa008032159b5a07cd0f7656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6e3f4fbaa008032159b5a07cd0f7656">&#9670;&#160;</a></span>assigneesOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt; eve::social::SocialGraph::assigneesOf </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>role</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns sources assigned to target with role in deterministic order. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00068">eve::social::Social::assigneeAt()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00065">eve::social::Social::assigneeCount()</a>.</p>
+
+</div>
+</div>
+<a id="ada61cf66ef2b21e7d8f59340364b08b1" name="ada61cf66ef2b21e7d8f59340364b08b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada61cf66ef2b21e7d8f59340364b08b1">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::social::SocialGraph::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears all graph state and pending events. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00111">eve::social::Social::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a331f7f56869ed13472a17ed1ebfb7654" name="a331f7f56869ed13472a17ed1ebfb7654"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a331f7f56869ed13472a17ed1ebfb7654">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::social::SocialGraph::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears queued events without changing graph state. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8h_source.html">SocialGraph.h</a> 第 <a class="el" href="SocialGraph_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00142">eve::social::Social::clearEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a5ecfc0df8f2d71f90969aecbde292222" name="a5ecfc0df8f2d71f90969aecbde292222"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ecfc0df8f2d71f90969aecbde292222">&#9670;&#160;</a></span>controlledBy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt; eve::social::SocialGraph::controlledBy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>controller</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns entities controlled by controller in deterministic ID order. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00043">eve::social::Social::controlledAt()</a>, <a class="el" href="Social_8cpp_source.html#l00040">eve::social::Social::controlledCount()</a> , 以及 <a class="el" href="SocialGraph_8cpp_source.html#l00188">removeEntity()</a>.</p>
+
+</div>
+</div>
+<a id="a1f475e873e3801fbecac18a1f70a6b2c" name="a1f475e873e3801fbecac18a1f70a6b2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f475e873e3801fbecac18a1f70a6b2c">&#9670;&#160;</a></span>controllerOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> eve::social::SocialGraph::controllerOf </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an entity's controller, or an empty string when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00038">eve::social::Social::controllerOf()</a>, <a class="el" href="Social_8cpp_source.html#l00039">eve::social::Social::controllerOfInt()</a> , 以及 <a class="el" href="SocialGraph_8cpp_source.html#l00061">setController()</a>.</p>
+
+</div>
+</div>
+<a id="afa92f4d5ff37d2be502595af2b2096be" name="afa92f4d5ff37d2be502595af2b2096be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa92f4d5ff37d2be502595af2b2096be">&#9670;&#160;</a></span>events()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1social_1_1SocialChangeEvent.html">SocialChangeEvent</a> &gt; &amp; eve::social::SocialGraph::events </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns queued mutation events in sequence order. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8h_source.html">SocialGraph.h</a> 第 <a class="el" href="SocialGraph_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00113">eve::social::Social::eventCount()</a>.</p>
+
+</div>
+</div>
+<a id="af94dbe18effb171e7c7b7a67f96ca893" name="af94dbe18effb171e7c7b7a67f96ca893"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af94dbe18effb171e7c7b7a67f96ca893">&#9670;&#160;</a></span>hasRelation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::hasRelation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests whether an exact directed typed relation exists. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00087">eve::social::Social::hasRelation()</a>.</p>
+
+</div>
+</div>
+<a id="a2e38500d9aaed00e060dddfee0f11f00" name="a2e38500d9aaed00e060dddfee0f11f00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e38500d9aaed00e060dddfee0f11f00">&#9670;&#160;</a></span>integerId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> eve::social::SocialGraph::integerId </td>
+          <td>(</td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Converts a stable integer ID to its canonical graph key. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00050">eve::social::Social::assignInt()</a>, <a class="el" href="Social_8cpp_source.html#l00039">eve::social::Social::controllerOfInt()</a>, <a class="el" href="Social_8cpp_source.html#l00021">eve::social::Social::idFromInt()</a>, <a class="el" href="Social_8cpp_source.html#l00028">eve::social::Social::ownerOfInt()</a>, <a class="el" href="Social_8cpp_source.html#l00110">eve::social::Social::removeEntityInt()</a>, <a class="el" href="Social_8cpp_source.html#l00035">eve::social::Social::setControllerInt()</a>, <a class="el" href="Social_8cpp_source.html#l00024">eve::social::Social::setOwnerInt()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00075">eve::social::Social::setRelationInt()</a>.</p>
+
+</div>
+</div>
+<a id="aecbadf84ad8c9cae8716d7f5c467d526" name="aecbadf84ad8c9cae8716d7f5c467d526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecbadf84ad8c9cae8716d7f5c467d526">&#9670;&#160;</a></span>isAssigned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::isAssigned </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>role</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests whether an exact assignment exists. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00056">eve::social::Social::isAssigned()</a>.</p>
+
+</div>
+</div>
+<a id="a1fb21f7032bd9f6c4a9ce2267f33cf4a" name="a1fb21f7032bd9f6c4a9ce2267f33cf4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fb21f7032bd9f6c4a9ce2267f33cf4a">&#9670;&#160;</a></span>link()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::link </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a directed typed relation with weight 1. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SocialGraph_8cpp_source.html#l00121">setRelation()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00081">eve::social::Social::link()</a>.</p>
+
+</div>
+</div>
+<a id="a25c6af9dcafc3fb51cc839ab8eb3f6cd" name="a25c6af9dcafc3fb51cc839ab8eb3f6cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25c6af9dcafc3fb51cc839ab8eb3f6cd">&#9670;&#160;</a></span>ownedBy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt; eve::social::SocialGraph::ownedBy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns entities owned by owner in deterministic ID order. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00030">eve::social::Social::ownedAt()</a>, <a class="el" href="Social_8cpp_source.html#l00029">eve::social::Social::ownedCount()</a> , 以及 <a class="el" href="SocialGraph_8cpp_source.html#l00188">removeEntity()</a>.</p>
+
+</div>
+</div>
+<a id="acd242585b9acb2e761a793fb4340e1bc" name="acd242585b9acb2e761a793fb4340e1bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd242585b9acb2e761a793fb4340e1bc">&#9670;&#160;</a></span>ownerOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> eve::social::SocialGraph::ownerOf </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an entity's owner, or an empty string when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00027">eve::social::Social::ownerOf()</a>, <a class="el" href="Social_8cpp_source.html#l00028">eve::social::Social::ownerOfInt()</a> , 以及 <a class="el" href="SocialGraph_8cpp_source.html#l00036">setOwner()</a>.</p>
+
+</div>
+</div>
+<a id="af04a0039a70507b73f701093cd44d4fb" name="af04a0039a70507b73f701093cd44d4fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af04a0039a70507b73f701093cd44d4fb">&#9670;&#160;</a></span>relation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::social::SocialGraph::relation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an exact relation weight, or fallback when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SocialGraph_8cpp_source.html#l00134">addRelation()</a>, <a class="el" href="Social_8cpp_source.html#l00090">eve::social::Social::relation()</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00177">relationSources()</a> , 以及 <a class="el" href="SocialGraph_8cpp_source.html#l00166">relationTargets()</a>.</p>
+
+</div>
+</div>
+<a id="afcd4e3a4b6d53388784a5322c6bd0d08" name="afcd4e3a4b6d53388784a5322c6bd0d08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcd4e3a4b6d53388784a5322c6bd0d08">&#9670;&#160;</a></span>relationSources()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt; eve::social::SocialGraph::relationSources </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minimum</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns incoming relation sources filtered by type and minimum weight. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00160">relation()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00104">eve::social::Social::relationSourceAt()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00101">eve::social::Social::relationSourceCount()</a>.</p>
+
+</div>
+</div>
+<a id="af81906e478c973f8ba87b3dd4c2c2a0a" name="af81906e478c973f8ba87b3dd4c2c2a0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af81906e478c973f8ba87b3dd4c2c2a0a">&#9670;&#160;</a></span>relationTargets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt; eve::social::SocialGraph::relationTargets </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minimum</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns outgoing relation targets filtered by type and minimum weight. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00160">relation()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00097">eve::social::Social::relationTargetAt()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00094">eve::social::Social::relationTargetCount()</a>.</p>
+
+</div>
+</div>
+<a id="ac450d03603d3c77cbe8d18bc04d8e13a" name="ac450d03603d3c77cbe8d18bc04d8e13a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac450d03603d3c77cbe8d18bc04d8e13a">&#9670;&#160;</a></span>removeEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::removeEntity </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>entity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes an entity and every incoming/outgoing graph reference to it. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SocialGraph_8cpp_source.html#l00081">controlledBy()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00056">ownedBy()</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00144">removeRelation()</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00061">setController()</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00036">setOwner()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00096">unassign()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00109">eve::social::Social::removeEntity()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00110">eve::social::Social::removeEntityInt()</a>.</p>
+
+</div>
+</div>
+<a id="ad9bbf53259fd77ab7e888b0c5259025a" name="ad9bbf53259fd77ab7e888b0c5259025a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9bbf53259fd77ab7e888b0c5259025a">&#9670;&#160;</a></span>removeRelation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::removeRelation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes an exact directed typed relation. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SocialGraph_8cpp_source.html#l00188">removeEntity()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00084">eve::social::Social::removeRelation()</a>.</p>
+
+</div>
+</div>
+<a id="a91c415211382a875107338238aef329d" name="a91c415211382a875107338238aef329d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91c415211382a875107338238aef329d">&#9670;&#160;</a></span>setController()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::setController </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>controller</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets an entity's controller; an empty controller removes control. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SocialGraph_8cpp_source.html#l00076">controllerOf()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SocialGraph_8cpp_source.html#l00188">removeEntity()</a>, <a class="el" href="Social_8cpp_source.html#l00032">eve::social::Social::setController()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00035">eve::social::Social::setControllerInt()</a>.</p>
+
+</div>
+</div>
+<a id="a2b311fea6438a931293b5fb756041994" name="a2b311fea6438a931293b5fb756041994"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b311fea6438a931293b5fb756041994">&#9670;&#160;</a></span>setOwner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::setOwner </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>owner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets an entity's owner; an empty owner removes ownership. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SocialGraph_8cpp_source.html#l00051">ownerOf()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SocialGraph_8cpp_source.html#l00188">removeEntity()</a>, <a class="el" href="Social_8cpp_source.html#l00023">eve::social::Social::setOwner()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00024">eve::social::Social::setOwnerInt()</a>.</p>
+
+</div>
+</div>
+<a id="a86da29bfa7d9becf777e121ce18dabca" name="a86da29bfa7d9becf777e121ce18dabca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86da29bfa7d9becf777e121ce18dabca">&#9670;&#160;</a></span>setRelation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::setRelation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets a directed typed relation weight, creating the edge if needed. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SocialGraph_8cpp_source.html#l00134">addRelation()</a>, <a class="el" href="SocialGraph_8cpp_source.html#l00140">link()</a>, <a class="el" href="Social_8cpp_source.html#l00072">eve::social::Social::setRelation()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00075">eve::social::Social::setRelationInt()</a>.</p>
+
+</div>
+</div>
+<a id="abfbe8a23ff7987c09f00b10a15b568d4" name="abfbe8a23ff7987c09f00b10a15b568d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfbe8a23ff7987c09f00b10a15b568d4">&#9670;&#160;</a></span>targetsOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &gt; eve::social::SocialGraph::targetsOf </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>role</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns targets assigned from source with role in deterministic order. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00062">eve::social::Social::targetAt()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00059">eve::social::Social::targetCount()</a>.</p>
+
+</div>
+</div>
+<a id="a86e4ae6c182188e3b6ddaef2b81f344d" name="a86e4ae6c182188e3b6ddaef2b81f344d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86e4ae6c182188e3b6ddaef2b81f344d">&#9670;&#160;</a></span>unassign()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::social::SocialGraph::unassign </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>role</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a role-based source-to-target assignment. </p>
+
+<p class="definition">在文件 <a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a> 第 <a class="el" href="SocialGraph_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SocialGraph_8cpp_source.html#l00188">removeEntity()</a> , 以及 <a class="el" href="Social_8cpp_source.html#l00053">eve::social::Social::unassign()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/social/<a class="el" href="SocialGraph_8h_source.html">SocialGraph.h</a></li>
+<li>src/modules/social/<a class="el" href="SocialGraph_8cpp_source.html">SocialGraph.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

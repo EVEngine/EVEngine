@@ -1,0 +1,594 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::vehicle::VehicleSeatContainerAdapter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1vehicle.html">vehicle</a></li><li class="navelem"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html">VehicleSeatContainerAdapter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::vehicle::VehicleSeatContainerAdapter类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Transactional adapter over one <a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1Seats.html" title="座位列表（FPS 面）。">VehicleEntity::Seats</a> component.  
+ <a href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="vehicle_2ContainerAdapters_8h_source.html">ContainerAdapters.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::vehicle::VehicleSeatContainerAdapter 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.png" usemap="#eve::vehicle::VehicleSeatContainerAdapter_map" alt=""/>
+  <map id="eve::vehicle::VehicleSeatContainerAdapter_map" name="eve::vehicle::VehicleSeatContainerAdapter_map">
+<area href="classeve_1_1container_1_1IContainer.html" title="Borrowed container implementation owned by a domain adapter." alt="eve::container::IContainer" shape="rect" coords="0,0,254,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter_1_1PreparedState.html">PreparedState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af53a72e1eb32b93ae42ff3f84b764407" id="r_af53a72e1eb32b93ae42ff3f84b764407"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#af53a72e1eb32b93ae42ff3f84b764407">VehicleSeatContainerAdapter</a> (<a class="el" href="classeve_1_1container_1_1ContainerId.html">eve::container::ContainerId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *vehicle, <a class="el" href="namespaceeve_1_1container.html#a38774bd1a822ce1c4a11720b86d0f8eb">eve::container::AcceptedCondition</a> accepted={})</td></tr>
+<tr class="memdesc:af53a72e1eb32b93ae42ff3f84b764407"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds an adapter to a live ECS vehicle.  <br /></td></tr>
+<tr class="separator:af53a72e1eb32b93ae42ff3f84b764407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad43317163570ce3b8fd23b6330a4ead" id="r_aad43317163570ce3b8fd23b6330a4ead"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1container_1_1ContainerDescriptor.html">eve::container::ContainerDescriptor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#aad43317163570ce3b8fd23b6330a4ead">descriptor</a> () const noexcept override</td></tr>
+<tr class="memdesc:aad43317163570ce3b8fd23b6330a4ead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return immutable container metadata.  <br /></td></tr>
+<tr class="separator:aad43317163570ce3b8fd23b6330a4ead"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6e8a44fed7a14c211e6dcac95b319b8" id="r_ab6e8a44fed7a14c211e6dcac95b319b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1container_1_1ContainerSnapshot.html">eve::container::ContainerSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#ab6e8a44fed7a14c211e6dcac95b319b8">snapshot</a> () const override</td></tr>
+<tr class="memdesc:ab6e8a44fed7a14c211e6dcac95b319b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current lossless state without retaining adapter pointers.  <br /></td></tr>
+<tr class="separator:ab6e8a44fed7a14c211e6dcac95b319b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70624c04add31e4f402769869fcf9e3e" id="r_a70624c04add31e4f402769869fcf9e3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#a70624c04add31e4f402769869fcf9e3e">validateInsert</a> (const <a class="el" href="structeve_1_1container_1_1ContainerObject.html">eve::container::ContainerObject</a> &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, std::optional&lt; <a class="el" href="classeve_1_1container_1_1SlotIndex.html">eve::container::SlotIndex</a> &gt; destination, std::optional&lt; <a class="el" href="classeve_1_1container_1_1MembershipId.html">eve::container::MembershipId</a> &gt; ignoredObject=std::nullopt) const override</td></tr>
+<tr class="memdesc:a70624c04add31e4f402769869fcf9e3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate insertion while optionally ignoring one moved object.  <br /></td></tr>
+<tr class="separator:a70624c04add31e4f402769869fcf9e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ba606c9af7911a5599b3cad24dad240" id="r_a3ba606c9af7911a5599b3cad24dad240"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1container_1_1IContainer_1_1PreparedState.html">eve::container::IContainer::PreparedState</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#a3ba606c9af7911a5599b3cad24dad240">prepare</a> (const <a class="el" href="structeve_1_1container_1_1ContainerSnapshot.html">eve::container::ContainerSnapshot</a> &amp;expected, const <a class="el" href="structeve_1_1container_1_1ContainerSnapshot.html">eve::container::ContainerSnapshot</a> &amp;candidate) override</td></tr>
+<tr class="memdesc:a3ba606c9af7911a5599b3cad24dad240"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare an exact replacement from <code>expected</code> to <code>candidate</code>.    <br /></td></tr>
+<tr class="separator:a3ba606c9af7911a5599b3cad24dad240"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adba1ad271c7444bb432f08a549f7b2f0" id="r_adba1ad271c7444bb432f08a549f7b2f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#adba1ad271c7444bb432f08a549f7b2f0">revision</a> () const noexcept</td></tr>
+<tr class="memdesc:adba1ad271c7444bb432f08a549f7b2f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the live seat-component revision, or zero when stale.  <br /></td></tr>
+<tr class="separator:adba1ad271c7444bb432f08a549f7b2f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8a8fd3537d3601bd72f19f1d7f37abb" id="r_ad8a8fd3537d3601bd72f19f1d7f37abb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1container_1_1MembershipId.html">eve::container::MembershipId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#ad8a8fd3537d3601bd72f19f1d7f37abb">enter</a> (<a class="el" href="classeve_1_1container_1_1SlotIndex.html">eve::container::SlotIndex</a> seatIndex, int occupantId, <a class="el" href="namespaceeve_1_1container.html#a97c20b2d603d16692b6611bd4eb14ad7">eve::container::GameEventSink</a> sink={}, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>=<a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>())</td></tr>
+<tr class="memdesc:ad8a8fd3537d3601bd72f19f1d7f37abb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stage and publish an occupant entering a seat.  <br /></td></tr>
+<tr class="separator:ad8a8fd3537d3601bd72f19f1d7f37abb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac37cf883cd59cb881d5334501087228d" id="r_ac37cf883cd59cb881d5334501087228d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1container_1_1MembershipId.html">eve::container::MembershipId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleSeatContainerAdapter.html#ac37cf883cd59cb881d5334501087228d">exit</a> (<a class="el" href="classeve_1_1container_1_1SlotIndex.html">eve::container::SlotIndex</a> seatIndex, <a class="el" href="namespaceeve_1_1container.html#a97c20b2d603d16692b6611bd4eb14ad7">eve::container::GameEventSink</a> sink={}, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>=<a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>())</td></tr>
+<tr class="memdesc:ac37cf883cd59cb881d5334501087228d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stage and publish the occupant leaving a seat.  <br /></td></tr>
+<tr class="separator:ac37cf883cd59cb881d5334501087228d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1container_1_1IContainer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1container_1_1IContainer')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1container_1_1IContainer.html">eve::container::IContainer</a></td></tr>
+<tr class="memitem:a9d7d1d0e341d518b227234b5eeaa8803 inherit pub_methods_classeve_1_1container_1_1IContainer" id="r_a9d7d1d0e341d518b227234b5eeaa8803"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1container_1_1IContainer.html#a9d7d1d0e341d518b227234b5eeaa8803">~IContainer</a> ()=default</td></tr>
+<tr class="separator:a9d7d1d0e341d518b227234b5eeaa8803 inherit pub_methods_classeve_1_1container_1_1IContainer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Transactional adapter over one <a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1Seats.html" title="座位列表（FPS 面）。">VehicleEntity::Seats</a> component. </p>
+<p>The ECS entity is held by a generation-qualified handle. The adapter does not own the vehicle or occupants. A prepared state must be committed or rolled back before the vehicle entity is destroyed; stale destruction is rejected during snapshot/prepare and an invalid lifetime during noexcept commit terminates, as required by <code>IContainer::PreparedState</code>.</p>
+<p>Seat membership is explicit-slot, capacity equals the number of declared seats, and the seat component's revision is the sole optimistic-concurrency revision. <a class="el" href="classeve_1_1vehicle_1_1VehicleSystem.html" title="载具系统：移动注册 + 命令处理 + 更新。">VehicleSystem</a>'s legacy enter/exit facade delegates to this class. </p>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8h_source.html">ContainerAdapters.h</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8h_source.html#l00040">40</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af53a72e1eb32b93ae42ff3f84b764407" name="af53a72e1eb32b93ae42ff3f84b764407"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af53a72e1eb32b93ae42ff3f84b764407">&#9670;&#160;</a></span>VehicleSeatContainerAdapter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::vehicle::VehicleSeatContainerAdapter::VehicleSeatContainerAdapter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1container_1_1ContainerId.html">eve::container::ContainerId</a>&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>vehicle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1container.html#a38774bd1a822ce1c4a11720b86d0f8eb">eve::container::AcceptedCondition</a>&#160;</td>
+          <td class="paramname"><em>accepted</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Binds an adapter to a live ECS vehicle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable container identity, normally <code>vehicle:seat:&lt;vehicle-id&gt;</code>. </td></tr>
+    <tr><td class="paramname">vehicle</td><td>Borrowed <a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html" title="载具实体：数据全部在组件里，行为在 VehicleSystem。">VehicleEntity</a>; the ECS handle detects destruction and slot reuse after construction. </td></tr>
+    <tr><td class="paramname">accepted</td><td>Optional side-effect-free object filter. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html">ContainerAdapters.cpp</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aad43317163570ce3b8fd23b6330a4ead" name="aad43317163570ce3b8fd23b6330a4ead"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad43317163570ce3b8fd23b6330a4ead">&#9670;&#160;</a></span>descriptor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1container_1_1ContainerDescriptor.html">eve::container::ContainerDescriptor</a> &amp; eve::vehicle::VehicleSeatContainerAdapter::descriptor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return immutable container metadata. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1container_1_1IContainer.html#a22014ceb7180b4c5bfb8cece86bc51a3">eve::container::IContainer</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8h_source.html">ContainerAdapters.h</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad8a8fd3537d3601bd72f19f1d7f37abb" name="ad8a8fd3537d3601bd72f19f1d7f37abb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8a8fd3537d3601bd72f19f1d7f37abb">&#9670;&#160;</a></span>enter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1container_1_1MembershipId.html">eve::container::MembershipId</a> &gt; eve::vehicle::VehicleSeatContainerAdapter::enter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1container_1_1SlotIndex.html">eve::container::SlotIndex</a>&#160;</td>
+          <td class="paramname"><em>seatIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>occupantId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1container.html#a97c20b2d603d16692b6611bd4eb14ad7">eve::container::GameEventSink</a>&#160;</td>
+          <td class="paramname"><em>sink</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em> = <code><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stage and publish an occupant entering a seat. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seatIndex</td><td>Explicit seat slot. </td></tr>
+    <tr><td class="paramname">occupantId</td><td>Positive stable gameplay occupant ID. </td></tr>
+    <tr><td class="paramname">sink</td><td>Optional synchronous canonical GameEvent observer. </td></tr>
+    <tr><td class="paramname">tick</td><td>Injected simulation tick for emitted envelopes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Occupant membership identity, or a rejection with no mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html">ContainerAdapters.cpp</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcca382ab522931673c11e398ead1b7b1678">eve::container::Accepted</a>, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccaf1851d5600eae616ee802a31ac74701b">eve::container::Enter</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00084">eve::Status::failure()</a>, <a class="el" href="Container_8h_source.html#l00178">eve::container::ContainerDescriptor::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00279">prepare()</a>, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccad37b1f6c0512e2118cee17fea015b699">eve::container::Rejected</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00182">revision()</a>, <a class="el" href="UISystem_8cpp_source.html#l00038">serial</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00209">snapshot()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00234">validateInsert()</a> , 以及 <a class="el" href="Container_8h_source.html#l00115">eve::container::SlotIndex::value()</a>.</p>
+
+</div>
+</div>
+<a id="ac37cf883cd59cb881d5334501087228d" name="ac37cf883cd59cb881d5334501087228d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac37cf883cd59cb881d5334501087228d">&#9670;&#160;</a></span>exit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1container_1_1MembershipId.html">eve::container::MembershipId</a> &gt; eve::vehicle::VehicleSeatContainerAdapter::exit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1container_1_1SlotIndex.html">eve::container::SlotIndex</a>&#160;</td>
+          <td class="paramname"><em>seatIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1container.html#a97c20b2d603d16692b6611bd4eb14ad7">eve::container::GameEventSink</a>&#160;</td>
+          <td class="paramname"><em>sink</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em> = <code><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stage and publish the occupant leaving a seat. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seatIndex</td><td>Explicit seat slot. </td></tr>
+    <tr><td class="paramname">sink</td><td>Optional synchronous canonical GameEvent observer. </td></tr>
+    <tr><td class="paramname">tick</td><td>Injected simulation tick for emitted envelopes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Removed occupant identity, or a rejection with no mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html">ContainerAdapters.cpp</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00388">388</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dcca382ab522931673c11e398ead1b7b1678">eve::container::Accepted</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccafef46e5063ce3dc78b8ae64fa474241d">eve::container::Exit</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00084">eve::Status::failure()</a>, <a class="el" href="Container_8h_source.html#l00178">eve::container::ContainerDescriptor::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Container_8h_source.html#l00074">eve::container::MembershipId::isValid()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00279">prepare()</a>, <a class="el" href="namespaceeve_1_1container.html#a4eb2e27638cbb6f9a7043f80dafe2dccad37b1f6c0512e2118cee17fea015b699">eve::container::Rejected</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00182">revision()</a>, <a class="el" href="UISystem_8cpp_source.html#l00038">serial</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00209">snapshot()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="Container_8h_source.html#l00115">eve::container::SlotIndex::value()</a>.</p>
+
+</div>
+</div>
+<a id="a3ba606c9af7911a5599b3cad24dad240" name="a3ba606c9af7911a5599b3cad24dad240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ba606c9af7911a5599b3cad24dad240">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1container_1_1IContainer_1_1PreparedState.html">eve::container::IContainer::PreparedState</a> &gt; &gt; eve::vehicle::VehicleSeatContainerAdapter::prepare </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1container_1_1ContainerSnapshot.html">eve::container::ContainerSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>expected</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1container_1_1ContainerSnapshot.html">eve::container::ContainerSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>candidate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prepare an exact replacement from <code>expected</code> to <code>candidate</code>.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">expected</td><td>Snapshot observed during transfer preflight. </td></tr>
+    <tr><td class="paramname">candidate</td><td>Fully constructed post-transfer snapshot. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A detached state whose commit and rollback operations cannot fail; no observable state may change before commit. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The adapter must reject a stale <code>expected</code> snapshot. The adapter is borrowed and must outlive the returned state; the caller must externally serialize access to the adapter.   </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1container_1_1IContainer.html#acb213ba52b30f7d1db8d260875d59ee1">eve::container::IContainer</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html">ContainerAdapters.cpp</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Container_8h_source.html#l00173">eve::container::ContainerSnapshot::entries</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Container_8h_source.html#l00171">eve::container::ContainerSnapshot::id</a>, <a class="el" href="Container_8h_source.html#l00178">eve::container::ContainerDescriptor::id</a>, <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Container_8h_source.html#l00053">eve::container::ContainerId::isValid()</a>, <a class="el" href="Container_8h_source.html#l00172">eve::container::ContainerSnapshot::revision</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00209">snapshot()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00330">enter()</a> , 以及 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00388">exit()</a>.</p>
+
+</div>
+</div>
+<a id="adba1ad271c7444bb432f08a549f7b2f0" name="adba1ad271c7444bb432f08a549f7b2f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adba1ad271c7444bb432f08a549f7b2f0">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> eve::vehicle::VehicleSeatContainerAdapter::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the live seat-component revision, or zero when stale. </p>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html">ContainerAdapters.cpp</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00330">enter()</a> , 以及 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00388">exit()</a>.</p>
+
+</div>
+</div>
+<a id="ab6e8a44fed7a14c211e6dcac95b319b8" name="ab6e8a44fed7a14c211e6dcac95b319b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6e8a44fed7a14c211e6dcac95b319b8">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1container_1_1ContainerSnapshot.html">eve::container::ContainerSnapshot</a> &gt; eve::vehicle::VehicleSeatContainerAdapter::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return current lossless state without retaining adapter pointers. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1container_1_1IContainer.html#af860f95ab42e0821478516615cb774ff">eve::container::IContainer</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html">ContainerAdapters.cpp</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Container_8h_source.html#l00178">eve::container::ContainerDescriptor::id</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Container_8h_source.html#l00053">eve::container::ContainerId::isValid()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00330">enter()</a>, <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00388">exit()</a> , 以及 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00279">prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a70624c04add31e4f402769869fcf9e3e" name="a70624c04add31e4f402769869fcf9e3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70624c04add31e4f402769869fcf9e3e">&#9670;&#160;</a></span>validateInsert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::vehicle::VehicleSeatContainerAdapter::validateInsert </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1container_1_1ContainerObject.html">eve::container::ContainerObject</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="classeve_1_1container_1_1SlotIndex.html">eve::container::SlotIndex</a> &gt;&#160;</td>
+          <td class="paramname"><em>destination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="classeve_1_1container_1_1MembershipId.html">eve::container::MembershipId</a> &gt;&#160;</td>
+          <td class="paramname"><em>ignoredObject</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate insertion while optionally ignoring one moved object. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1container_1_1IContainer.html#ad627bb8d47b357c485acb4608d98eff2">eve::container::IContainer</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html">ContainerAdapters.cpp</a> 第 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Container_8h_source.html#l00132">eve::container::Filter::evaluate()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Container_8h_source.html#l00181">eve::container::ContainerDescriptor::filter</a>, <a class="el" href="Container_8h_source.html#l00178">eve::container::ContainerDescriptor::id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Container_8h_source.html#l00053">eve::container::ContainerId::isValid()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html#l00330">enter()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/vehicle/<a class="el" href="vehicle_2ContainerAdapters_8h_source.html">ContainerAdapters.h</a></li>
+<li>src/modules/vehicle/<a class="el" href="vehicle_2ContainerAdapters_8cpp_source.html">ContainerAdapters.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

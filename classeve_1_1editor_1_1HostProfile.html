@@ -1,0 +1,729 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::HostProfile类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1HostProfile-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::HostProfile类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Upper capability boundary for one editor host.  
+ <a href="classeve_1_1editor_1_1HostProfile.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a23e4908b639bb20d37724608501f7efa" id="r_a23e4908b639bb20d37724608501f7efa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a23e4908b639bb20d37724608501f7efa">HostProfile</a> ()=default</td></tr>
+<tr class="separator:a23e4908b639bb20d37724608501f7efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0699e6862c0e54a5f68eb34e0ad87a8" id="r_aa0699e6862c0e54a5f68eb34e0ad87a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#aa0699e6862c0e54a5f68eb34e0ad87a8">HostProfile</a> (<a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1f">HostKind</a> <a class="el" href="classeve_1_1editor_1_1HostProfile.html#ad3157914befe38eb3f801bb3d843b6c8">kind</a>)</td></tr>
+<tr class="separator:aa0699e6862c0e54a5f68eb34e0ad87a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3157914befe38eb3f801bb3d843b6c8" id="r_ad3157914befe38eb3f801bb3d843b6c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1f">HostKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#ad3157914befe38eb3f801bb3d843b6c8">kind</a> () const</td></tr>
+<tr class="separator:ad3157914befe38eb3f801bb3d843b6c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefb7da2d733115efb1ca1e3dd60e402a" id="r_aefb7da2d733115efb1ca1e3dd60e402a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5">HostFeature</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#aefb7da2d733115efb1ca1e3dd60e402a">features</a> () const</td></tr>
+<tr class="separator:aefb7da2d733115efb1ca1e3dd60e402a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a897acc7e9a2a1fefd5f5dac857cb3e0a" id="r_a897acc7e9a2a1fefd5f5dac857cb3e0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a897acc7e9a2a1fefd5f5dac857cb3e0a">setFeatures</a> (<a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5">HostFeature</a> <a class="el" href="classeve_1_1editor_1_1HostProfile.html#aefb7da2d733115efb1ca1e3dd60e402a">features</a>)</td></tr>
+<tr class="separator:a897acc7e9a2a1fefd5f5dac857cb3e0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad468a68f8a9933da97a8ec89467c0320" id="r_ad468a68f8a9933da97a8ec89467c0320"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#ad468a68f8a9933da97a8ec89467c0320">addFeatures</a> (<a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5">HostFeature</a> <a class="el" href="classeve_1_1editor_1_1HostProfile.html#aefb7da2d733115efb1ca1e3dd60e402a">features</a>)</td></tr>
+<tr class="separator:ad468a68f8a9933da97a8ec89467c0320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a831a35b9ec148aefc73ece2f05048102" id="r_a831a35b9ec148aefc73ece2f05048102"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a831a35b9ec148aefc73ece2f05048102">hasFeatures</a> (<a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5">HostFeature</a> <a class="el" href="MapObjectContract_8cpp.html#a89ebe0265f74c9919a622df7dccbfe5c">required</a>) const</td></tr>
+<tr class="separator:a831a35b9ec148aefc73ece2f05048102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64a87bca710cdb83bfbd8f8bf7e5635c" id="r_a64a87bca710cdb83bfbd8f8bf7e5635c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a64a87bca710cdb83bfbd8f8bf7e5635c">setAllowAllCommands</a> (bool allow)</td></tr>
+<tr class="separator:a64a87bca710cdb83bfbd8f8bf7e5635c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d70ec46899a3127d977021bafe69eb0" id="r_a0d70ec46899a3127d977021bafe69eb0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a0d70ec46899a3127d977021bafe69eb0">allowsAllCommands</a> () const</td></tr>
+<tr class="separator:a0d70ec46899a3127d977021bafe69eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accd7322be9a571425c75d75d435f28a8" id="r_accd7322be9a571425c75d75d435f28a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#accd7322be9a571425c75d75d435f28a8">allowCommand</a> (<a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:accd7322be9a571425c75d75d435f28a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a396988887130dd2c780e66c8f2e5e93d" id="r_a396988887130dd2c780e66c8f2e5e93d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a396988887130dd2c780e66c8f2e5e93d">allowCommands</a> (std::initializer_list&lt; <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &gt; <a class="el" href="GraphicsVirtualGeometry_8cpp.html#a7199017871c97339c74bf0d61d90f1f5">ids</a>)</td></tr>
+<tr class="separator:a396988887130dd2c780e66c8f2e5e93d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8121669eac008e584aaeca967fb71bc3" id="r_a8121669eac008e584aaeca967fb71bc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a8121669eac008e584aaeca967fb71bc3">denyCommand</a> (const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a8121669eac008e584aaeca967fb71bc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b1786e0b47b3192f913455db8fc2642" id="r_a8b1786e0b47b3192f913455db8fc2642"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a8b1786e0b47b3192f913455db8fc2642">allowsCommand</a> (const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a8b1786e0b47b3192f913455db8fc2642"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f6fe2fc96c94532e31d3165fce91bea" id="r_a4f6fe2fc96c94532e31d3165fce91bea"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a4f6fe2fc96c94532e31d3165fce91bea">maxPayloadBytes</a> () const</td></tr>
+<tr class="separator:a4f6fe2fc96c94532e31d3165fce91bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d44d8f3f7412d209cbd8a69d58e12e" id="r_a12d44d8f3f7412d209cbd8a69d58e12e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a12d44d8f3f7412d209cbd8a69d58e12e">setMaxPayloadBytes</a> (size_t bytes)</td></tr>
+<tr class="separator:a12d44d8f3f7412d209cbd8a69d58e12e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a1ed69bd0915eba18592a74670c4c855b" id="r_a1ed69bd0915eba18592a74670c4c855b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a1ed69bd0915eba18592a74670c4c855b">developer</a> ()</td></tr>
+<tr class="memdesc:a1ed69bd0915eba18592a74670c4c855b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unrestricted developer profile used by legacy sessions.  <br /></td></tr>
+<tr class="separator:a1ed69bd0915eba18592a74670c4c855b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a023a79464f35f563c038d37438ad62" id="r_a0a023a79464f35f563c038d37438ad62"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#a0a023a79464f35f563c038d37438ad62">runtimeBuilder</a> ()</td></tr>
+<tr class="memdesc:a0a023a79464f35f563c038d37438ad62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Safe runtime profile that denies commands unless allow-listed.  <br /></td></tr>
+<tr class="separator:a0a023a79464f35f563c038d37438ad62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee7ea438a93a84985c453a8e6ccf2280" id="r_aee7ea438a93a84985c453a8e6ccf2280"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1HostProfile.html#aee7ea438a93a84985c453a8e6ccf2280">automation</a> ()</td></tr>
+<tr class="memdesc:aee7ea438a93a84985c453a8e6ccf2280"><td class="mdescLeft">&#160;</td><td class="mdescRight">Headless profile that denies commands unless allow-listed.  <br /></td></tr>
+<tr class="separator:aee7ea438a93a84985c453a8e6ccf2280"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Upper capability boundary for one editor host. </p>
+<p>This profile gates discovery, execution and build exposure. It does not replace target constraints, gameplay policy or server-side authority. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a23e4908b639bb20d37724608501f7efa" name="a23e4908b639bb20d37724608501f7efa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23e4908b639bb20d37724608501f7efa">&#9670;&#160;</a></span>HostProfile() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::HostProfile::HostProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa0699e6862c0e54a5f68eb34e0ad87a8" name="aa0699e6862c0e54a5f68eb34e0ad87a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0699e6862c0e54a5f68eb34e0ad87a8">&#9670;&#160;</a></span>HostProfile() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::HostProfile::HostProfile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1f">HostKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad468a68f8a9933da97a8ec89467c0320" name="ad468a68f8a9933da97a8ec89467c0320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad468a68f8a9933da97a8ec89467c0320">&#9670;&#160;</a></span>addFeatures()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::HostProfile::addFeatures </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5">HostFeature</a>&#160;</td>
+          <td class="paramname"><em>features</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHostProfile_8h_source.html#l00059">features()</a>.</p>
+
+</div>
+</div>
+<a id="accd7322be9a571425c75d75d435f28a8" name="accd7322be9a571425c75d75d435f28a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accd7322be9a571425c75d75d435f28a8">&#9670;&#160;</a></span>allowCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::HostProfile::allowCommand </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a> 第 <a class="el" href="EditorHostProfile_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorHostProfile_8cpp_source.html#l00036">allowCommands()</a>, <a class="el" href="EditorExtension_8cpp_source.html#l00048">eve::editor::EditorExtensionRegistry::configureProfile()</a> , 以及 <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a396988887130dd2c780e66c8f2e5e93d" name="a396988887130dd2c780e66c8f2e5e93d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a396988887130dd2c780e66c8f2e5e93d">&#9670;&#160;</a></span>allowCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::HostProfile::allowCommands </td>
+          <td>(</td>
+          <td class="paramtype">std::initializer_list&lt; <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &gt;&#160;</td>
+          <td class="paramname"><em>ids</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a> 第 <a class="el" href="EditorHostProfile_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHostProfile_8cpp_source.html#l00030">allowCommand()</a> , 以及 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>.</p>
+
+</div>
+</div>
+<a id="a0d70ec46899a3127d977021bafe69eb0" name="a0d70ec46899a3127d977021bafe69eb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d70ec46899a3127d977021bafe69eb0">&#9670;&#160;</a></span>allowsAllCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::HostProfile::allowsAllCommands </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b1786e0b47b3192f913455db8fc2642" name="a8b1786e0b47b3192f913455db8fc2642"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b1786e0b47b3192f913455db8fc2642">&#9670;&#160;</a></span>allowsCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::HostProfile::allowsCommand </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a> 第 <a class="el" href="EditorHostProfile_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorCommandService_8cpp_source.html#l00124">eve::editor::EditorCommandService::commands()</a>.</p>
+
+</div>
+</div>
+<a id="aee7ea438a93a84985c453a8e6ccf2280" name="aee7ea438a93a84985c453a8e6ccf2280"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee7ea438a93a84985c453a8e6ccf2280">&#9670;&#160;</a></span>automation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a> eve::editor::HostProfile::automation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Headless profile that denies commands unless allow-listed. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a> 第 <a class="el" href="EditorHostProfile_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5aa5e4959ed26131d703e0b97116239958">eve::editor::ProjectDocuments</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5ac71bd880a1119e46a2a6716b3bed8af1">eve::editor::RuntimeWorld</a>.</p>
+
+</div>
+</div>
+<a id="a8121669eac008e584aaeca967fb71bc3" name="a8121669eac008e584aaeca967fb71bc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8121669eac008e584aaeca967fb71bc3">&#9670;&#160;</a></span>denyCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::HostProfile::denyCommand </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a> 第 <a class="el" href="EditorHostProfile_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ed69bd0915eba18592a74670c4c855b" name="a1ed69bd0915eba18592a74670c4c855b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ed69bd0915eba18592a74670c4c855b">&#9670;&#160;</a></span>developer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a> eve::editor::HostProfile::developer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unrestricted developer profile used by legacy sessions. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a> 第 <a class="el" href="EditorHostProfile_8cpp_source.html#l00005">5</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5a88c78fbdbc840a044dafc723e24aca63">eve::editor::ArbitraryScript</a>, <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5aad673d7881a2cf3195c56131f59643c8">eve::editor::BuildCook</a>, <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5ab1b814e6bc1d0273f27e12f84003998d">eve::editor::DebugOverride</a>, <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5a1827b63d277290a92568105d67cc7c05">eve::editor::MultiplayerSubmit</a>, <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5aa5e4959ed26131d703e0b97116239958">eve::editor::ProjectDocuments</a>, <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5ac71bd880a1119e46a2a6716b3bed8af1">eve::editor::RuntimeWorld</a>, <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5a034f82f1623c1a0161ea5d962aee2d86">eve::editor::SourceAssets</a>, <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5a2c476631489fbff611b404a2f1e8499c">eve::editor::SourceControl</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5aa80cbe71061f3a1a6c139970f5b5f706">eve::editor::UserCreations</a>.</p>
+
+</div>
+</div>
+<a id="aefb7da2d733115efb1ca1e3dd60e402a" name="aefb7da2d733115efb1ca1e3dd60e402a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefb7da2d733115efb1ca1e3dd60e402a">&#9670;&#160;</a></span>features()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5">HostFeature</a> eve::editor::HostProfile::features </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorHostProfile_8h_source.html#l00061">addFeatures()</a> , 以及 <a class="el" href="EditorHostProfile_8h_source.html#l00060">setFeatures()</a>.</p>
+
+</div>
+</div>
+<a id="a831a35b9ec148aefc73ece2f05048102" name="a831a35b9ec148aefc73ece2f05048102"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a831a35b9ec148aefc73ece2f05048102">&#9670;&#160;</a></span>hasFeatures()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::HostProfile::hasFeatures </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5">HostFeature</a>&#160;</td>
+          <td class="paramname"><em>required</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a> 第 <a class="el" href="EditorHostProfile_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MapObjectContract_8cpp_source.html#l00069">required</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorCommandService_8cpp_source.html#l00124">eve::editor::EditorCommandService::commands()</a>, <a class="el" href="EditorPropertyPresenter_8cpp_source.html#l00078">eve::editor::RuntimePropertyPresenter::editIntent()</a>, <a class="el" href="EditorPropertyPresenter_8cpp_source.html#l00062">eve::editor::RuntimePropertyPresenter::present()</a> , 以及 <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="ad3157914befe38eb3f801bb3d843b6c8" name="ad3157914befe38eb3f801bb3d843b6c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3157914befe38eb3f801bb3d843b6c8">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#add1bde2bf56703377f12a2779142da1f">HostKind</a> eve::editor::HostProfile::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00162">eve::editor::EditorSession::contextSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a4f6fe2fc96c94532e31d3165fce91bea" name="a4f6fe2fc96c94532e31d3165fce91bea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f6fe2fc96c94532e31d3165fce91bea">&#9670;&#160;</a></span>maxPayloadBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::editor::HostProfile::maxPayloadBytes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a023a79464f35f563c038d37438ad62" name="a0a023a79464f35f563c038d37438ad62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a023a79464f35f563c038d37438ad62">&#9670;&#160;</a></span>runtimeBuilder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a> eve::editor::HostProfile::runtimeBuilder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Safe runtime profile that denies commands unless allow-listed. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a> 第 <a class="el" href="EditorHostProfile_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5ac71bd880a1119e46a2a6716b3bed8af1">eve::editor::RuntimeWorld</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5aa80cbe71061f3a1a6c139970f5b5f706">eve::editor::UserCreations</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a64a87bca710cdb83bfbd8f8bf7e5635c" name="a64a87bca710cdb83bfbd8f8bf7e5635c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64a87bca710cdb83bfbd8f8bf7e5635c">&#9670;&#160;</a></span>setAllowAllCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::HostProfile::setAllowAllCommands </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allow</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a897acc7e9a2a1fefd5f5dac857cb3e0a" name="a897acc7e9a2a1fefd5f5dac857cb3e0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a897acc7e9a2a1fefd5f5dac857cb3e0a">&#9670;&#160;</a></span>setFeatures()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::HostProfile::setFeatures </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a85636c9a74c906f9fd6dc715e7db1ff5">HostFeature</a>&#160;</td>
+          <td class="paramname"><em>features</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHostProfile_8h_source.html#l00059">features()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a12d44d8f3f7412d209cbd8a69d58e12e" name="a12d44d8f3f7412d209cbd8a69d58e12e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12d44d8f3f7412d209cbd8a69d58e12e">&#9670;&#160;</a></span>setMaxPayloadBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::HostProfile::setMaxPayloadBytes </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a> 第 <a class="el" href="EditorHostProfile_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorHostProfile_8h_source.html">EditorHostProfile.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorHostProfile_8cpp_source.html">EditorHostProfile.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::transaction 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1transaction.html">transaction</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::transaction 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicResourcePayment.html">AtomicResourcePayment</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinates a resource debit with one domain effect participant.  <a href="classeve_1_1transaction_1_1AtomicResourcePayment.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1Coordinator.html">Coordinator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinates participant lifecycles with deterministic ordering.  <a href="classeve_1_1transaction_1_1Coordinator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1transaction_1_1Event.html">Event</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministically ordered transaction lifecycle event.  <a href="structeve_1_1transaction_1_1Event.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">ITransactionParticipant</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronous participant contract for one coordinator transaction.  <a href="classeve_1_1transaction_1_1ITransactionParticipant.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1Ledger.html">Ledger</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic owner and identifier allocator for transaction plans.  <a href="classeve_1_1transaction_1_1Ledger.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One inert, script-interpreted operation in a transaction plan.  <a href="structeve_1_1transaction_1_1Operation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1Plan.html">Plan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable-after-validation operation plan for script-coordinated work.  <a href="classeve_1_1transaction_1_1Plan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1ResourceDebitParticipant.html">ResourceDebitParticipant</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapts IResourceAccount debit semantics to <a class="el" href="classeve_1_1transaction_1_1Coordinator.html" title="Coordinates participant lifecycles with deterministic ordering.">Coordinator</a>.  <a href="classeve_1_1transaction_1_1ResourceDebitParticipant.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1Transaction.html">Transaction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script module factory for generic transaction ledgers.  <a href="classeve_1_1transaction_1_1Transaction.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1TransactionContext.html">TransactionContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable context shared by every participant of one transaction.  <a href="classeve_1_1transaction_1_1TransactionContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">TransactionReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable summary returned after an atomic participant commit.  <a href="structeve_1_1transaction_1_1TransactionReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a662cd3605e5c5810223a4ea97e488817" id="r_a662cd3605e5c5810223a4ea97e488817"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">ResourceDebitState</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817ae599161956d626eda4cb0a5ffb85271c">Idle</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb">Prepared</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3">Committed</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817ae01daed8f2af5888e53470aff7955d86">RolledBack</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817a843e44b3516301279b16e1fb62ffbc84">Compensated</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a662cd3605e5c5810223a4ea97e488817"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lifecycle state of a resource debit participant.  <a href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">更多...</a><br /></td></tr>
+<tr class="separator:a662cd3605e5c5810223a4ea97e488817"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaca344632314780dd628db7bb82fd8d" id="r_adaca344632314780dd628db7bb82fd8d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8d">CoordinatorState</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8dafd8f656590df4b2d2b217b060b7204d3">Committed</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8da843e44b3516301279b16e1fb62ffbc84">Compensated</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8da6c2d495dc11ac8cca7edfcb543995242">CompensationFailed</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8dae01daed8f2af5888e53470aff7955d86">RolledBack</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8da705dff458c3632ef70646c26f2fa8d48">RollbackFailed</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8daf7dd2bb7c120e538812f6847f2e36a0a">PartiallyCommitted</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:adaca344632314780dd628db7bb82fd8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminal or in-flight outcome of coordinator-managed participants.  <a href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8d">更多...</a><br /></td></tr>
+<tr class="separator:adaca344632314780dd628db7bb82fd8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53bbb6eb237734f3ed663d08f16c786a" id="r_a53bbb6eb237734f3ed663d08f16c786a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786a">State</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aac3bf447eabe632720a3aa1a7ce401274">Open</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aa5364259abab90e94890f2ed2481b9824">Validated</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aafd8f656590df4b2d2b217b060b7204d3">Committed</a>
+, <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aae01daed8f2af5888e53470aff7955d86">RolledBack</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a53bbb6eb237734f3ed663d08f16c786a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lifecycle state of a generic transaction plan.  <a href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786a">更多...</a><br /></td></tr>
+<tr class="separator:a53bbb6eb237734f3ed663d08f16c786a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a452807e0ecfaf88844631b7605368755" id="r_a452807e0ecfaf88844631b7605368755"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1transaction.html#a452807e0ecfaf88844631b7605368755">stateName</a> (<a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786a">State</a> state)</td></tr>
+<tr class="memdesc:a452807e0ecfaf88844631b7605368755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable lowercase name of a transaction state.  <br /></td></tr>
+<tr class="separator:a452807e0ecfaf88844631b7605368755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b72955fc7f33611f066f27512523b7" id="r_ac9b72955fc7f33611f066f27512523b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1transaction.html#ac9b72955fc7f33611f066f27512523b7">findMutable</a> (std::deque&lt; <a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a> &gt; &amp;operations, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:ac9b72955fc7f33611f066f27512523b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54318a359d44d198de06755f3e7c2ae7" id="r_a54318a359d44d198de06755f3e7c2ae7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1transaction.html#a54318a359d44d198de06755f3e7c2ae7">findMutable</a> (std::deque&lt; <a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a> &gt; &amp;operations, <a class="el" href="namespaceeve.html#aeedf20f530c2a65b5b1024b672c8a161">eve::OperationId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a54318a359d44d198de06755f3e7c2ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b3ea3d5dd78b9831523eab0b6fef513" id="r_a8b3ea3d5dd78b9831523eab0b6fef513"><td class="memTemplParams" colspan="2">template&lt;class T  = void&gt; </td></tr>
+<tr class="memitem:a8b3ea3d5dd78b9831523eab0b6fef513"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1transaction.html#a8b3ea3d5dd78b9831523eab0b6fef513">planFailure</a> (<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> code, std::string message)</td></tr>
+<tr class="separator:a8b3ea3d5dd78b9831523eab0b6fef513"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabc2fae87d3320467dae01f3783f28a4" id="r_aabc2fae87d3320467dae01f3783f28a4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1transaction.html#aabc2fae87d3320467dae01f3783f28a4">Module_IMPL</a> (<a class="el" href="classeve_1_1transaction_1_1Transaction.html">Transaction</a>, new <a class="el" href="classeve_1_1transaction_1_1Transaction.html">Transaction</a>())</td></tr>
+<tr class="separator:aabc2fae87d3320467dae01f3783f28a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="adaca344632314780dd628db7bb82fd8d" name="adaca344632314780dd628db7bb82fd8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaca344632314780dd628db7bb82fd8d">&#9670;&#160;</a></span>CoordinatorState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1transaction.html#adaca344632314780dd628db7bb82fd8d">eve::transaction::CoordinatorState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Terminal or in-flight outcome of coordinator-managed participants. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="adaca344632314780dd628db7bb82fd8dafd8f656590df4b2d2b217b060b7204d3" name="adaca344632314780dd628db7bb82fd8dafd8f656590df4b2d2b217b060b7204d3"></a>Committed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adaca344632314780dd628db7bb82fd8da843e44b3516301279b16e1fb62ffbc84" name="adaca344632314780dd628db7bb82fd8da843e44b3516301279b16e1fb62ffbc84"></a>Compensated&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adaca344632314780dd628db7bb82fd8da6c2d495dc11ac8cca7edfcb543995242" name="adaca344632314780dd628db7bb82fd8da6c2d495dc11ac8cca7edfcb543995242"></a>CompensationFailed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adaca344632314780dd628db7bb82fd8dae01daed8f2af5888e53470aff7955d86" name="adaca344632314780dd628db7bb82fd8dae01daed8f2af5888e53470aff7955d86"></a>RolledBack&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adaca344632314780dd628db7bb82fd8da705dff458c3632ef70646c26f2fa8d48" name="adaca344632314780dd628db7bb82fd8da705dff458c3632ef70646c26f2fa8d48"></a>RollbackFailed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="adaca344632314780dd628db7bb82fd8daf7dd2bb7c120e538812f6847f2e36a0a" name="adaca344632314780dd628db7bb82fd8daf7dd2bb7c120e538812f6847f2e36a0a"></a>PartiallyCommitted&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Transaction_8h_source.html">Transaction.h</a> 第 <a class="el" href="Transaction_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a662cd3605e5c5810223a4ea97e488817" name="a662cd3605e5c5810223a4ea97e488817"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a662cd3605e5c5810223a4ea97e488817">&#9670;&#160;</a></span>ResourceDebitState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1transaction.html#a662cd3605e5c5810223a4ea97e488817">eve::transaction::ResourceDebitState</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Lifecycle state of a resource debit participant. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a662cd3605e5c5810223a4ea97e488817ae599161956d626eda4cb0a5ffb85271c" name="a662cd3605e5c5810223a4ea97e488817ae599161956d626eda4cb0a5ffb85271c"></a>Idle&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb" name="a662cd3605e5c5810223a4ea97e488817a4f8ebbe84c83c694e33dfc679cf40ddb"></a>Prepared&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3" name="a662cd3605e5c5810223a4ea97e488817afd8f656590df4b2d2b217b060b7204d3"></a>Committed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a662cd3605e5c5810223a4ea97e488817ae01daed8f2af5888e53470aff7955d86" name="a662cd3605e5c5810223a4ea97e488817ae01daed8f2af5888e53470aff7955d86"></a>RolledBack&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a662cd3605e5c5810223a4ea97e488817a843e44b3516301279b16e1fb62ffbc84" name="a662cd3605e5c5810223a4ea97e488817a843e44b3516301279b16e1fb62ffbc84"></a>Compensated&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccountParticipant_8h_source.html">ResourceAccountParticipant.h</a> 第 <a class="el" href="ResourceAccountParticipant_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53bbb6eb237734f3ed663d08f16c786a" name="a53bbb6eb237734f3ed663d08f16c786a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53bbb6eb237734f3ed663d08f16c786a">&#9670;&#160;</a></span>State</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786a">eve::transaction::State</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Lifecycle state of a generic transaction plan. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a53bbb6eb237734f3ed663d08f16c786aac3bf447eabe632720a3aa1a7ce401274" name="a53bbb6eb237734f3ed663d08f16c786aac3bf447eabe632720a3aa1a7ce401274"></a>Open&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a53bbb6eb237734f3ed663d08f16c786aa5364259abab90e94890f2ed2481b9824" name="a53bbb6eb237734f3ed663d08f16c786aa5364259abab90e94890f2ed2481b9824"></a>Validated&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a53bbb6eb237734f3ed663d08f16c786aafd8f656590df4b2d2b217b060b7204d3" name="a53bbb6eb237734f3ed663d08f16c786aafd8f656590df4b2d2b217b060b7204d3"></a>Committed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a53bbb6eb237734f3ed663d08f16c786aae01daed8f2af5888e53470aff7955d86" name="a53bbb6eb237734f3ed663d08f16c786aae01daed8f2af5888e53470aff7955d86"></a>RolledBack&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a53bbb6eb237734f3ed663d08f16c786aad7c8c85bf79bbe1b7188497c32c3b0ca" name="a53bbb6eb237734f3ed663d08f16c786aad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Transaction_8h_source.html">Transaction.h</a> 第 <a class="el" href="Transaction_8h_source.html#l00197">197</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ac9b72955fc7f33611f066f27512523b7" name="ac9b72955fc7f33611f066f27512523b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9b72955fc7f33611f066f27512523b7">&#9670;&#160;</a></span>findMutable() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a> * eve::transaction::findMutable </td>
+          <td>(</td>
+          <td class="paramtype">std::deque&lt; <a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>operations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transaction_8cpp_source.html">Transaction.cpp</a> 第 <a class="el" href="Transaction_8cpp_source.html#l00402">402</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Transaction_8cpp_source.html#l00402">findMutable()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Transaction_8cpp_source.html#l00402">findMutable()</a>, <a class="el" href="Transaction_8cpp_source.html#l00407">findMutable()</a>, <a class="el" href="Transaction_8cpp_source.html#l00440">eve::transaction::Plan::markInvalid()</a>, <a class="el" href="Transaction_8cpp_source.html#l00451">eve::transaction::Plan::markInvalid()</a>, <a class="el" href="Transaction_8cpp_source.html#l00418">eve::transaction::Plan::markValid()</a> , 以及 <a class="el" href="Transaction_8cpp_source.html#l00429">eve::transaction::Plan::markValid()</a>.</p>
+
+</div>
+</div>
+<a id="a54318a359d44d198de06755f3e7c2ae7" name="a54318a359d44d198de06755f3e7c2ae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54318a359d44d198de06755f3e7c2ae7">&#9670;&#160;</a></span>findMutable() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a> * eve::transaction::findMutable </td>
+          <td>(</td>
+          <td class="paramtype">std::deque&lt; <a class="el" href="structeve_1_1transaction_1_1Operation.html">Operation</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>operations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#aeedf20f530c2a65b5b1024b672c8a161">eve::OperationId</a>&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transaction_8cpp_source.html">Transaction.cpp</a> 第 <a class="el" href="Transaction_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Transaction_8cpp_source.html#l00402">findMutable()</a>.</p>
+
+</div>
+</div>
+<a id="aabc2fae87d3320467dae01f3783f28a4" name="aabc2fae87d3320467dae01f3783f28a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabc2fae87d3320467dae01f3783f28a4">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::transaction::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1transaction_1_1Transaction.html">Transaction</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Transaction</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8b3ea3d5dd78b9831523eab0b6fef513" name="a8b3ea3d5dd78b9831523eab0b6fef513"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b3ea3d5dd78b9831523eab0b6fef513">&#9670;&#160;</a></span>planFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T  = void&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt; eve::transaction::planFailure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Transaction_8cpp_source.html">Transaction.cpp</a> 第 <a class="el" href="Transaction_8cpp_source.html#l00414">414</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Transaction_8cpp_source.html#l00414">planFailure()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Transaction_8cpp_source.html#l00482">eve::transaction::Plan::commit()</a>, <a class="el" href="Transaction_8cpp_source.html#l00498">eve::transaction::Plan::fail()</a>, <a class="el" href="Transaction_8cpp_source.html#l00440">eve::transaction::Plan::markInvalid()</a>, <a class="el" href="Transaction_8cpp_source.html#l00451">eve::transaction::Plan::markInvalid()</a>, <a class="el" href="Transaction_8cpp_source.html#l00418">eve::transaction::Plan::markValid()</a>, <a class="el" href="Transaction_8cpp_source.html#l00429">eve::transaction::Plan::markValid()</a>, <a class="el" href="Transaction_8cpp_source.html#l00414">planFailure()</a>, <a class="el" href="Transaction_8cpp_source.html#l00489">eve::transaction::Plan::rollback()</a> , 以及 <a class="el" href="Transaction_8cpp_source.html#l00462">eve::transaction::Plan::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a452807e0ecfaf88844631b7605368755" name="a452807e0ecfaf88844631b7605368755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a452807e0ecfaf88844631b7605368755">&#9670;&#160;</a></span>stateName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::transaction::stateName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786a">State</a>&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the stable lowercase name of a transaction state. </p>
+
+<p class="definition">在文件 <a class="el" href="Transaction_8cpp_source.html">Transaction.cpp</a> 第 <a class="el" href="Transaction_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aafd8f656590df4b2d2b217b060b7204d3">Committed</a>, <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aac3bf447eabe632720a3aa1a7ce401274">Open</a>, <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aae01daed8f2af5888e53470aff7955d86">RolledBack</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="namespaceeve_1_1transaction.html#a53bbb6eb237734f3ed663d08f16c786aa5364259abab90e94890f2ed2481b9824">Validated</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/inventory/InventorySystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b8bc26f51279c81dc355e07e5e1d99ba.html">inventory</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">InventorySystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="InventorySystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// 库存操作静态入口 + 可插拔接纳 / 容量 / 堆叠 / 变更钩子。</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">//</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// C++ 侧通过 register* 扩展；脚本侧通过 Bag 上的策略名字符串选用已注册规则。</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="ItemTypes_8h.html">inventory/ItemTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1inventory.html">eve::inventory</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1inventory.html#aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca">Bag</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>EquipmentSet;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>InventoryResourceAccount;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>InventorySaveSession;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1inventory_1_1InventoryItemGrant.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1inventory_1_1InventoryItemGrant.html">InventoryItemGrant</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1inventory_1_1InventoryItemGrant.html#a16a20436b7550a1d6e10f6c8093297da">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1inventory_1_1InventoryItemGrant.html#a16a20436b7550a1d6e10f6c8093297da">itemId</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1inventory_1_1InventoryItemGrant.html#a512f5a216e9decfaf0a7fbf8e784cea3">   26</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1inventory_1_1InventoryItemGrant.html#a512f5a216e9decfaf0a7fbf8e784cea3">quantity</a> = 0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">   34</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#a159a5dc71ed8806c7545fb7307916549">   36</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#a159a5dc71ed8806c7545fb7307916549">PreparedInventoryAdd</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#ab931c8f73b18166f31ff9748c6e688f8">   37</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#ab931c8f73b18166f31ff9748c6e688f8">~PreparedInventoryAdd</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#af545f8af1d6721c2734be7f53c29d233">   38</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#af545f8af1d6721c2734be7f53c29d233">PreparedInventoryAdd</a>(<a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a> &amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#aeeafd8d4c1ed422339e3ca95ac1af92d">   39</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a> &amp;operator=(<a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a> &amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#a060bac3c2e67c7b625fc84dcb1c5cd81">   40</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a>(const <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a> &amp;) = delete;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#ab0b6abcf8ad24d3896fbc2dde8dcefed">   41</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a> &amp;operator=(const <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a> &amp;) = delete;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>private:</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    struct <a class="code hl_struct" href="structeve_1_1inventory_1_1PreparedInventoryAdd_1_1State.html">State</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::unique_ptr&lt;<a class="code hl_struct" href="structeve_1_1inventory_1_1PreparedInventoryAdd_1_1State.html">State</a>&gt; state_;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#a2a9378e40379e793ec6458397a534bb1">   46</a></span>    friend class <a class="code hl_class" href="classeve_1_1inventory_1_1InventorySystem.html">InventorySystem</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">   54</a></span>class <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a9b5102c8edf680ecb306939a34834195">   56</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a9b5102c8edf680ecb306939a34834195">PreparedInventoryRemove</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a015851a996f8e8e85dbafcf4acd85d7a">   57</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a015851a996f8e8e85dbafcf4acd85d7a">~PreparedInventoryRemove</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a271c1da97623875cd75ac60d61a9017f">   58</a></span>    <a class="code hl_function" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a271c1da97623875cd75ac60d61a9017f">PreparedInventoryRemove</a>(<a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a> &amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a150e9d7a4f3bb6b9af6136590db0690f">   59</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a> &amp;operator=(<a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a> &amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#ad1e92e56898559f18c621c34d2daf599">   60</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a>(const <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a> &amp;) = delete;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#afc1c80ee4916afde393576883efddad9">   61</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a> &amp;operator=(const <a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a> &amp;) = delete;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>private:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    struct <a class="code hl_struct" href="structeve_1_1inventory_1_1PreparedInventoryRemove_1_1State.html">State</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::unique_ptr&lt;<a class="code hl_struct" href="structeve_1_1inventory_1_1PreparedInventoryRemove_1_1State.html">State</a>&gt; state_;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a2a9378e40379e793ec6458397a534bb1">   66</a></span>    friend class <a class="code hl_class" href="classeve_1_1inventory_1_1InventorySystem.html">InventorySystem</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="};">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventorySystem.html">   69</a></span>class <a class="code hl_class" href="classeve_1_1inventory_1_1InventorySystem.html">InventorySystem</a> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">   71</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">AcceptFn</a> =</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        std::function&lt;bool(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def, <span class="keywordtype">int</span> quantity, std::string *reason)&gt;;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">   73</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">CapacityFn</a> =</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        std::function&lt;bool(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def, <span class="keywordtype">int</span> quantity, std::string *reason)&gt;;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">   75</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">StackFn</a> =</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        std::function&lt;bool(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemStack.html">ItemStack</a> &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemStack.html">ItemStack</a> &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def)&gt;;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">   77</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">ChangeHook</a> = std::function&lt;void(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> &amp;ev)&gt;;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> registerAcceptRule(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_typedef" href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">AcceptFn</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> unregisterAcceptRule(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> hasAcceptRule(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> registerCapacityPolicy(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_typedef" href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">CapacityFn</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> unregisterCapacityPolicy(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> hasCapacityPolicy(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> registerStackRule(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_typedef" href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">StackFn</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> unregisterStackRule(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> hasStackRule(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> registerChangeHook(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_typedef" href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">ChangeHook</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> unregisterChangeHook(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> hasChangeHook(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> ensureBuiltins();</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> canAdd(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keywordtype">int</span> quantity, std::string *reason = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> addItem(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keywordtype">int</span> quantity);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PreparedInventoryAdd&gt;</a></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    prepareAddBatch(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::vector&lt;InventoryItemGrant&gt; &amp;grants);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> commitAddBatch(<a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">PreparedInventoryAdd</a> prepared);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PreparedInventoryRemove&gt;</a></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    prepareRemove(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keywordtype">int</span> quantity);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> commitRemove(<a class="code hl_class" href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">PreparedInventoryRemove</a> prepared);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> removeItem(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keywordtype">int</span> quantity);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> removeAt(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keywordtype">int</span> slot, <span class="keywordtype">int</span> quantity);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> swapSlots(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keywordtype">int</span> slotA, <span class="keywordtype">int</span> slotB);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> moveSlot(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keywordtype">int</span> fromSlot, <span class="keywordtype">int</span> toSlot);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> splitStack(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keywordtype">int</span> slot, <span class="keywordtype">int</span> quantity, <span class="keywordtype">int</span> toSlot);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> transfer(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *<a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keywordtype">int</span> quantity);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> transferSlot(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, <span class="keywordtype">int</span> fromSlot, <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *<a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>, <span class="keywordtype">int</span> quantity);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> countItem(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> findItem(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> findItemByTag(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::string &amp;tag);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keyword">static</span> <span class="keywordtype">float</span> usedWeight(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keyword">static</span> <span class="keywordtype">float</span> usedVolume(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> usedSlotCount(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> clearBag(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> equipFromBag(<a class="code hl_class" href="classeve_1_1inventory_1_1EquipmentSet.html">EquipmentSet</a> *eq, <span class="keyword">const</span> std::string &amp;equipSlot, <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keywordtype">int</span> bagSlot);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> unequipToBag(<a class="code hl_class" href="classeve_1_1inventory_1_1EquipmentSet.html">EquipmentSet</a> *eq, <span class="keyword">const</span> std::string &amp;equipSlot, <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> pushEvent(<a class="code hl_struct" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> ev);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> pollEvents(std::vector&lt;InventoryChangeEvent&gt; &amp;out);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> clearEvents();</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;InventoryChangeEvent&gt; &amp;<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>();</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> nextInstanceId();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventorySystem.html#a453abe91d1912146dd6198663d6e0aeb">  160</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1inventory_1_1InventoryResourceAccount.html">InventoryResourceAccount</a>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classeve_1_1inventory_1_1InventorySystem.html#a8d48776c5fde609b79c171d7be5f93df">  161</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1inventory_1_1InventorySaveSession.html">InventorySaveSession</a>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> ensureNextInstanceIdAbove(<span class="keywordtype">int</span> usedInstanceId) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> canStackTogether(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemStack.html">ItemStack</a> &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemStack.html">ItemStack</a> &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>,</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                                 <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> checkAccept(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def, <span class="keywordtype">int</span> quantity,</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                            std::string *reason);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> checkCapacity(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def, <span class="keywordtype">int</span> quantity,</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                              std::string *reason);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> freeSpaceInSlot(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;bag, <span class="keywordtype">int</span> slot, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1inventory_1_1ItemDefinition.html">ItemDefinition</a> &amp;def);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> emit(<a class="code hl_struct" href="structeve_1_1inventory_1_1InventoryChangeEvent.html">InventoryChangeEvent</a> ev);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> addItemImpl(<a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> *bag, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keywordtype">int</span> quantity, <span class="keywordtype">bool</span> publish);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, AcceptFn&gt; &amp;acceptRules();</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, CapacityFn&gt; &amp;capacityPolicies();</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, StackFn&gt; &amp;stackRules();</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keyword">static</span> std::unordered_map&lt;std::string, ChangeHook&gt; &amp;changeHooks();</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">static</span> std::vector&lt;InventoryChangeEvent&gt; &amp;eventQueue();</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> &amp;instanceCounter();</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> &amp;builtinsReady();</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span>                                        &amp;changeHooksSuppressed();</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keyword">static</span> std::unique_ptr&lt;Bag&gt; cloneBag(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> bagsEqual(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">Bag</a> &amp;baseline);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>};</div>
+</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>}  <span class="comment">// namespace eve::inventory</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ac5758f9b5a368e496aaa5da3aa74dfd6"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00020">ActionTimelineWidget.cpp:20</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aItemTypes_8h_html"><div class="ttname"><a href="ItemTypes_8h.html">ItemTypes.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPixelWorldPhysics_8cpp_html_a4951cbf0b20c4996ed09481097db841f"><div class="ttname"><a href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a></div><div class="ttdeci">GridPoint to</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldPhysics_8cpp_source.html#l00094">PixelWorldPhysics.cpp:94</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a6432e7a83650f875c816d914fb84d4ad"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a></div><div class="ttdeci">Battle::Events events</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00135">TacticsPersistence.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1Bag_html"><div class="ttname"><a href="classeve_1_1inventory_1_1Bag.html">eve::inventory::Bag</a></div><div class="ttdoc">格子型物品容器（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="Bag_8h_source.html#l00019">Bag.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1EquipmentSet_html"><div class="ttname"><a href="classeve_1_1inventory_1_1EquipmentSet.html">eve::inventory::EquipmentSet</a></div><div class="ttdef"><b>Definition</b> <a href="Equipment_8h_source.html#l00016">Equipment.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventoryResourceAccount_html"><div class="ttname"><a href="classeve_1_1inventory_1_1InventoryResourceAccount.html">eve::inventory::InventoryResourceAccount</a></div><div class="ttdoc">Adapts one Bag's item quantities to the common resource protocol.</div><div class="ttdef"><b>Definition</b> <a href="InventoryResourceAccount_8h_source.html#l00028">InventoryResourceAccount.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventorySaveSession_html"><div class="ttname"><a href="classeve_1_1inventory_1_1InventorySaveSession.html">eve::inventory::InventorySaveSession</a></div><div class="ttdoc">Coordinates persistent inventory owners without duplicating their live state.</div><div class="ttdef"><b>Definition</b> <a href="InventorySaveSession_8h_source.html#l00020">InventorySaveSession.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventorySystem_html"><div class="ttname"><a href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00069">InventorySystem.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventorySystem_html_a4d80e1fcfe55095047d243314b69a7ee"><div class="ttname"><a href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">eve::inventory::InventorySystem::ChangeHook</a></div><div class="ttdeci">std::function&lt; void(const InventoryChangeEvent &amp;ev)&gt; ChangeHook</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00077">InventorySystem.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventorySystem_html_a73f55fc4ff05f6c0b02912886b5d2abe"><div class="ttname"><a href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">eve::inventory::InventorySystem::CapacityFn</a></div><div class="ttdeci">std::function&lt; bool(const Bag &amp;bag, const ItemDefinition &amp;def, int quantity, std::string *reason)&gt; CapacityFn</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00073">InventorySystem.h:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventorySystem_html_a8d7eadcfc5492411ced8dd78c55581b6"><div class="ttname"><a href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">eve::inventory::InventorySystem::AcceptFn</a></div><div class="ttdeci">std::function&lt; bool(const Bag &amp;bag, const ItemDefinition &amp;def, int quantity, std::string *reason)&gt; AcceptFn</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00071">InventorySystem.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1InventorySystem_html_ab96855112d060449449bf064c439e73e"><div class="ttname"><a href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">eve::inventory::InventorySystem::StackFn</a></div><div class="ttdeci">std::function&lt; bool(const ItemStack &amp;a, const ItemStack &amp;b, const ItemDefinition &amp;def)&gt; StackFn</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00075">InventorySystem.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1PreparedInventoryAdd_html"><div class="ttname"><a href="classeve_1_1inventory_1_1PreparedInventoryAdd.html">eve::inventory::PreparedInventoryAdd</a></div><div class="ttdoc">Move-only, validated inventory state prepared for one Bag.</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00034">InventorySystem.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1PreparedInventoryAdd_html_a159a5dc71ed8806c7545fb7307916549"><div class="ttname"><a href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#a159a5dc71ed8806c7545fb7307916549">eve::inventory::PreparedInventoryAdd::PreparedInventoryAdd</a></div><div class="ttdeci">PreparedInventoryAdd()</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1PreparedInventoryAdd_html_ab931c8f73b18166f31ff9748c6e688f8"><div class="ttname"><a href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#ab931c8f73b18166f31ff9748c6e688f8">eve::inventory::PreparedInventoryAdd::~PreparedInventoryAdd</a></div><div class="ttdeci">~PreparedInventoryAdd()</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1PreparedInventoryAdd_html_af545f8af1d6721c2734be7f53c29d233"><div class="ttname"><a href="classeve_1_1inventory_1_1PreparedInventoryAdd.html#af545f8af1d6721c2734be7f53c29d233">eve::inventory::PreparedInventoryAdd::PreparedInventoryAdd</a></div><div class="ttdeci">PreparedInventoryAdd(PreparedInventoryAdd &amp;&amp;) noexcept</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1PreparedInventoryRemove_html"><div class="ttname"><a href="classeve_1_1inventory_1_1PreparedInventoryRemove.html">eve::inventory::PreparedInventoryRemove</a></div><div class="ttdoc">Move-only, validated inventory removal prepared for one Bag.</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00054">InventorySystem.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1PreparedInventoryRemove_html_a015851a996f8e8e85dbafcf4acd85d7a"><div class="ttname"><a href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a015851a996f8e8e85dbafcf4acd85d7a">eve::inventory::PreparedInventoryRemove::~PreparedInventoryRemove</a></div><div class="ttdeci">~PreparedInventoryRemove()</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1PreparedInventoryRemove_html_a271c1da97623875cd75ac60d61a9017f"><div class="ttname"><a href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a271c1da97623875cd75ac60d61a9017f">eve::inventory::PreparedInventoryRemove::PreparedInventoryRemove</a></div><div class="ttdeci">PreparedInventoryRemove(PreparedInventoryRemove &amp;&amp;) noexcept</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1PreparedInventoryRemove_html_a9b5102c8edf680ecb306939a34834195"><div class="ttname"><a href="classeve_1_1inventory_1_1PreparedInventoryRemove.html#a9b5102c8edf680ecb306939a34834195">eve::inventory::PreparedInventoryRemove::PreparedInventoryRemove</a></div><div class="ttdeci">PreparedInventoryRemove()</div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html"><div class="ttname"><a href="namespaceeve_1_1inventory.html">eve::inventory</a></div><div class="ttdoc">运行时容器：固定格数的背包 / 箱子 / 商店栏等。 行为由 InventorySystem 提供；本类暴露便于脚本绑定的薄封装方法。</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00035">AvatarInstance.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html_aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca"><div class="ttname"><a href="namespaceeve_1_1inventory.html#aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca">eve::inventory::InventoryContainerKind::Bag</a></div><div class="ttdeci">@ Bag</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00030">Settlement.cpp:30</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1InventoryChangeEvent_html"><div class="ttname"><a href="structeve_1_1inventory_1_1InventoryChangeEvent.html">eve::inventory::InventoryChangeEvent</a></div><div class="ttdoc">一次成功库存变更的事件（供脚本 poll / C++ hook）。</div><div class="ttdef"><b>Definition</b> <a href="ItemTypes_8h_source.html#l00046">ItemTypes.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1InventoryItemGrant_html"><div class="ttname"><a href="structeve_1_1inventory_1_1InventoryItemGrant.html">eve::inventory::InventoryItemGrant</a></div><div class="ttdoc">One exact item quantity requested by an atomic inventory batch.</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00024">InventorySystem.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1InventoryItemGrant_html_a16a20436b7550a1d6e10f6c8093297da"><div class="ttname"><a href="structeve_1_1inventory_1_1InventoryItemGrant.html#a16a20436b7550a1d6e10f6c8093297da">eve::inventory::InventoryItemGrant::itemId</a></div><div class="ttdeci">std::string itemId</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00025">InventorySystem.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1InventoryItemGrant_html_a512f5a216e9decfaf0a7fbf8e784cea3"><div class="ttname"><a href="structeve_1_1inventory_1_1InventoryItemGrant.html#a512f5a216e9decfaf0a7fbf8e784cea3">eve::inventory::InventoryItemGrant::quantity</a></div><div class="ttdeci">int quantity</div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8h_source.html#l00026">InventorySystem.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1ItemDefinition_html"><div class="ttname"><a href="structeve_1_1inventory_1_1ItemDefinition.html">eve::inventory::ItemDefinition</a></div><div class="ttdoc">物品模板（进程级注册表中的定义，不含运行时数量）。</div><div class="ttdef"><b>Definition</b> <a href="ItemTypes_8h_source.html#l00013">ItemTypes.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1ItemStack_html"><div class="ttname"><a href="structeve_1_1inventory_1_1ItemStack.html">eve::inventory::ItemStack</a></div><div class="ttdoc">容器中的一格堆叠（空槽：itemId 为空或 quantity &lt;= 0）。</div><div class="ttdef"><b>Definition</b> <a href="ItemTypes_8h_source.html#l00030">ItemTypes.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1PreparedInventoryAdd_1_1State_html"><div class="ttname"><a href="structeve_1_1inventory_1_1PreparedInventoryAdd_1_1State.html">eve::inventory::PreparedInventoryAdd::State</a></div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8cpp_source.html#l00011">InventorySystem.cpp:11</a></div></div>
+<div class="ttc" id="astructeve_1_1inventory_1_1PreparedInventoryRemove_1_1State_html"><div class="ttname"><a href="structeve_1_1inventory_1_1PreparedInventoryRemove_1_1State.html">eve::inventory::PreparedInventoryRemove::State</a></div><div class="ttdef"><b>Definition</b> <a href="InventorySystem_8cpp_source.html#l00019">InventorySystem.cpp:19</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

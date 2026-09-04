@@ -1,0 +1,339 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/Battle.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Battle.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Battle_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span>BattleTacticsCatalogue;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg_1_1BattleSide.html">   24</a></span><span class="keyword">namespace </span>BattleSide {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg_1_1BattleSide.html#ab4c48d3dad3251d18f039f903b4c6510">   25</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_class" href="classeve_1_1rpg_1_1Party.html">Party</a> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg_1_1BattleSide.html#a19b0b6a85f860774d7ead153d80836bf">   26</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="namespaceeve_1_1rpg_1_1BattleSide.html#a19b0b6a85f860774d7ead153d80836bf">Enemies</a> = 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">   30</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">BattleTargetPolicy</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca06b9281e396db002010bde1de57262eb">Auto</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0caad6e7652b1bdfb38783486c2c3d5e806">Self</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0cad4dc7acbb6ffa7b4b85f89623ddd2b77">LowestHealthAlly</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca40ee82cbad04251ddadd1ec20bc487eb">LowestHealthEnemy</a> };</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1BattleEvent.html">BattleEvent</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#aea215c97fea578b742f8d1ed79e0f68a">   35</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#aea215c97fea578b742f8d1ed79e0f68a">action</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a2c4072e78effceec5ac1d98585236545">   36</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a2c4072e78effceec5ac1d98585236545">skillId</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a462ec995c58b8c758144d882dcc86c1f">   37</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a462ec995c58b8c758144d882dcc86c1f">caster</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a6969ccd9aaadb9f510dd16c9fb9855c7">   38</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a6969ccd9aaadb9f510dd16c9fb9855c7">target</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a4657f360f4d74adcc7f48d26dca40eeb">   39</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a4657f360f4d74adcc7f48d26dca40eeb">amount</a> = 0.0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1BattleEvent.html#a7433694c6585feb92f4c18eca66a4911">   40</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1BattleEvent.html#a7433694c6585feb92f4c18eca66a4911">crit</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html">   48</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1Battle.html">Battle</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#a8ddf7019ce56827b9f6fe745059c34d3">   50</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a8ddf7019ce56827b9f6fe745059c34d3">Battle</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#acf25af084c4bf0090d2c493bc458236c">   51</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#acf25af084c4bf0090d2c493bc458236c">~Battle</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#a42174b8456818f5490c1145d679d9e35">   53</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a42174b8456818f5490c1145d679d9e35">Battle</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#a943b76fbda7a00808bc6a5e545cbfaea">   54</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp;<a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a943b76fbda7a00808bc6a5e545cbfaea">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a0eef2771b780661d2cd145c1d709042f">addActor</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a559ea2b384df26aaa49ca0af9f296b7d">setAction</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> std::string &amp;skillId, <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#ad5642d37e50e09b94c503d9db120f70c">setActionChecked</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <span class="keyword">const</span> std::string &amp;skillId,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                                     <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#aeacc44cedd98e57b5e9cd8a3a3ecb1e9">setActionByPolicyChecked</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                                             <span class="keyword">const</span> std::string &amp;skillId,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                                             <a class="code hl_enumeration" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">BattleTargetPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a2545da8dd1c012fe3e1d7e61c9f5fd3d">autoEnemyActions</a>();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a0354e9a21b26f5136f48ee1b7857658e">startRound</a>();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#aeb269ea08e86aa80daa1cf03d44d45f4">executeNextAction</a>();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#af8789e2a2aa753fb9f994a8928a8215d">isFinished</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#afde92a99d2a07705a3333949aaa190e8">isVictory</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#aeb6d8885f173a314625f07283075c302">isDefeat</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a19b61cec4b47dbde9a0a28a00959621e">setPlayerSide</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a1e208699e43e2f4e6a452799e39e6c46">getPlayerSide</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a9e68a2b76696112cb10238c1f3e907b1">getWinnerSide</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#ad1b2f0222eb2ff16ed0e05d879d53c11">getTurn</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#ad270dfc2bd10de239d7ecd2fee470fe0">isActorAlive</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#ae8d9dd735c30a325448d93eb2a4ad92e">getActorCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a02fcc5536bffde4b589867bda45d647e">getActor</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a5a4472806ac4d955ec3ecc646f69da35">getSide</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#af826f99ff0d100386ba73a8298f9541d">getEventCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_struct" href="structeve_1_1rpg_1_1BattleEvent.html">BattleEvent</a> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#ae28d4d76944d3c7df21510d674313af2">getEvent</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#adec9d85fe27a919c96a93ff9656c0d30">pollEvents</a>();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="comment">// 事件字段访问（脚本向）</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::string <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#ac5d277f65227d98e3233eabba10586f2">getEventAction</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::string <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a6b5b461936bc69bf4f02f6300aae2ae4">getEventSkillId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#aaa7a71b1933374a9dfb10cf7bd988252">getEventCaster</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#ab1078b1ee6ceec8ced4288305fbb4e56">getEventTarget</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a56a5ba454797c57e1fe96ac78317d73d">getEventAmount</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1Battle.html#a4312901b4c827a889322d6eba396298e">getEventCrit</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">struct </span>Participant {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> = 0;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    };</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keyword">struct </span>PendingAction {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        std::string skillId;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordtype">double</span> initiative = 0.0;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    };</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">bool</span> isDead(<span class="keyword">const</span> Participant &amp;<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    std::vector&lt;RPGActor *&gt; livingOnSide(<span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">int</span> sideOf(RPGActor *actor) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    RPGActor *randomOpponent(<span class="keywordtype">int</span> mySide);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    RPGActor *lowestHealthTarget(<span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>, <span class="keywordtype">bool</span> sameSide) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">int</span> computeWinnerSide() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">void</span> execute(PendingAction &amp;pa, <span class="keywordtype">unsigned</span> &amp;seedCounter);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    std::vector&lt;Participant&gt; participants_;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    std::vector&lt;PendingAction&gt; queue_;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    std::vector&lt;PendingAction&gt; roundActions_;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    std::vector&lt;BattleEvent&gt; events_;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    std::vector&lt;BattleEvent&gt; polled_;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordtype">int</span> turn_ = 0;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">bool</span> started_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">bool</span> finished_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordtype">int</span> winner_ = -1;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordtype">int</span> playerSide_ = <a class="code hl_variable" href="namespaceeve_1_1rpg_1_1BattleSide.html#ab4c48d3dad3251d18f039f903b4c6510">BattleSide::Party</a>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordtype">unsigned</span> seedCounter_ = 1;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1Battle.html#afe1b81265c1b16ba5a640d3b7265e90c">  168</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1BattleTacticsCatalogue.html">BattleTacticsCatalogue</a>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>};</div>
+</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_af7594145399eb356e6b338bf7d5a5c54"><div class="ttname"><a href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a></div><div class="ttdeci">ecs::EntityHandle side</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00114">TacticsPersistence.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleTacticsCatalogue_html"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleTacticsCatalogue.html">eve::rpg::BattleTacticsCatalogue</a></div><div class="ttdoc">Process-local strict catalogue that selects and queues companion/AI actions.</div><div class="ttdef"><b>Definition</b> <a href="BattleTactics_8h_source.html#l00030">BattleTactics.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html">eve::rpg::Battle</a></div><div class="ttdoc">一场回合制战斗（任意阵营数）。 @ownership 由调用方创建/销毁；Battle 不持有参与者的所有权（参与者为借用 ECS actor）。 @thread 在单一模拟线程上驱动整场战斗。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00048">Battle.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a02fcc5536bffde4b589867bda45d647e"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a02fcc5536bffde4b589867bda45d647e">eve::rpg::Battle::getActor</a></div><div class="ttdeci">RPGActor * getActor(int index) const</div><div class="ttdoc">Return a participant actor by index, or null when out of range.</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00327">Battle.cpp:327</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a0354e9a21b26f5136f48ee1b7857658e"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a0354e9a21b26f5136f48ee1b7857658e">eve::rpg::Battle::startRound</a></div><div class="ttdeci">void startRound()</div><div class="ttdoc">结算所有已设行动：先攻排序、清空待行动，回合数 +1。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00192">Battle.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a0eef2771b780661d2cd145c1d709042f"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a0eef2771b780661d2cd145c1d709042f">eve::rpg::Battle::addActor</a></div><div class="ttdeci">void addActor(RPGActor *actor, int side)</div><div class="ttdoc">加入参战者；side 为任意阵营 id。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00015">Battle.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a19b61cec4b47dbde9a0a28a00959621e"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a19b61cec4b47dbde9a0a28a00959621e">eve::rpg::Battle::setPlayerSide</a></div><div class="ttdeci">void setPlayerSide(int side)</div><div class="ttdoc">玩家阵营 id（isVictory/isDefeat 依据），默认 0。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00067">Battle.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a1e208699e43e2f4e6a452799e39e6c46"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a1e208699e43e2f4e6a452799e39e6c46">eve::rpg::Battle::getPlayerSide</a></div><div class="ttdeci">int getPlayerSide() const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00068">Battle.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a2545da8dd1c012fe3e1d7e61c9f5fd3d"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a2545da8dd1c012fe3e1d7e61c9f5fd3d">eve::rpg::Battle::autoEnemyActions</a></div><div class="ttdeci">void autoEnemyActions()</div><div class="ttdoc">未设行动的 AI 侧自动选一个随机已学技能（或普攻）打随机存活敌对目标。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00166">Battle.cpp:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a42174b8456818f5490c1145d679d9e35"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a42174b8456818f5490c1145d679d9e35">eve::rpg::Battle::Battle</a></div><div class="ttdeci">Battle(const Battle &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a4312901b4c827a889322d6eba396298e"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a4312901b4c827a889322d6eba396298e">eve::rpg::Battle::getEventCrit</a></div><div class="ttdeci">bool getEventCrit(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00366">Battle.cpp:366</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a559ea2b384df26aaa49ca0af9f296b7d"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a559ea2b384df26aaa49ca0af9f296b7d">eve::rpg::Battle::setAction</a></div><div class="ttdeci">void setAction(RPGActor *actor, const std::string &amp;skillId, RPGActor *target=nullptr)</div><div class="ttdoc">为参战者设置本回合行动；target 为空由目标规则自动解析。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00076">Battle.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a56a5ba454797c57e1fe96ac78317d73d"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a56a5ba454797c57e1fe96ac78317d73d">eve::rpg::Battle::getEventAmount</a></div><div class="ttdeci">double getEventAmount(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00362">Battle.cpp:362</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a5a4472806ac4d955ec3ecc646f69da35"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a5a4472806ac4d955ec3ecc646f69da35">eve::rpg::Battle::getSide</a></div><div class="ttdeci">int getSide(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00331">Battle.cpp:331</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a6b5b461936bc69bf4f02f6300aae2ae4"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a6b5b461936bc69bf4f02f6300aae2ae4">eve::rpg::Battle::getEventSkillId</a></div><div class="ttdeci">std::string getEventSkillId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00350">Battle.cpp:350</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a8ddf7019ce56827b9f6fe745059c34d3"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a8ddf7019ce56827b9f6fe745059c34d3">eve::rpg::Battle::Battle</a></div><div class="ttdeci">Battle()=default</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a943b76fbda7a00808bc6a5e545cbfaea"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a943b76fbda7a00808bc6a5e545cbfaea">eve::rpg::Battle::operator=</a></div><div class="ttdeci">Battle &amp; operator=(const Battle &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_a9e68a2b76696112cb10238c1f3e907b1"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#a9e68a2b76696112cb10238c1f3e907b1">eve::rpg::Battle::getWinnerSide</a></div><div class="ttdeci">int getWinnerSide() const</div><div class="ttdoc">获胜阵营 id；未结束或平局（双方全灭）返回 -1。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00073">Battle.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_aaa7a71b1933374a9dfb10cf7bd988252"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#aaa7a71b1933374a9dfb10cf7bd988252">eve::rpg::Battle::getEventCaster</a></div><div class="ttdeci">RPGActor * getEventCaster(int index) const</div><div class="ttdoc">Return the caster of a polled event, or null when out of range.</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00354">Battle.cpp:354</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_ab1078b1ee6ceec8ced4288305fbb4e56"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#ab1078b1ee6ceec8ced4288305fbb4e56">eve::rpg::Battle::getEventTarget</a></div><div class="ttdeci">RPGActor * getEventTarget(int index) const</div><div class="ttdoc">Return the target of a polled event, or null when out of range.</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00358">Battle.cpp:358</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_ac5d277f65227d98e3233eabba10586f2"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#ac5d277f65227d98e3233eabba10586f2">eve::rpg::Battle::getEventAction</a></div><div class="ttdeci">std::string getEventAction(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00346">Battle.cpp:346</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_acf25af084c4bf0090d2c493bc458236c"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#acf25af084c4bf0090d2c493bc458236c">eve::rpg::Battle::~Battle</a></div><div class="ttdeci">~Battle()=default</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_ad1b2f0222eb2ff16ed0e05d879d53c11"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#ad1b2f0222eb2ff16ed0e05d879d53c11">eve::rpg::Battle::getTurn</a></div><div class="ttdeci">int getTurn() const</div><div class="ttdoc">当前回合数（1 起）。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00074">Battle.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_ad270dfc2bd10de239d7ecd2fee470fe0"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#ad270dfc2bd10de239d7ecd2fee470fe0">eve::rpg::Battle::isActorAlive</a></div><div class="ttdeci">bool isActorAlive(RPGActor *actor) const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00024">Battle.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_ad5642d37e50e09b94c503d9db120f70c"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#ad5642d37e50e09b94c503d9db120f70c">eve::rpg::Battle::setActionChecked</a></div><div class="ttdeci">eve::Result&lt; void &gt; setActionChecked(RPGActor *actor, const std::string &amp;skillId, RPGActor *target=nullptr)</div><div class="ttdoc">Validate and queue exactly one action for a living participant this round.</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00096">Battle.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_adec9d85fe27a919c96a93ff9656c0d30"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#adec9d85fe27a919c96a93ff9656c0d30">eve::rpg::Battle::pollEvents</a></div><div class="ttdeci">void pollEvents()</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00341">Battle.cpp:341</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_ae28d4d76944d3c7df21510d674313af2"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#ae28d4d76944d3c7df21510d674313af2">eve::rpg::Battle::getEvent</a></div><div class="ttdeci">BattleEvent getEvent(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00337">Battle.cpp:337</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_ae8d9dd735c30a325448d93eb2a4ad92e"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#ae8d9dd735c30a325448d93eb2a4ad92e">eve::rpg::Battle::getActorCount</a></div><div class="ttdeci">int getActorCount() const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00326">Battle.cpp:326</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_aeacc44cedd98e57b5e9cd8a3a3ecb1e9"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#aeacc44cedd98e57b5e9cd8a3a3ecb1e9">eve::rpg::Battle::setActionByPolicyChecked</a></div><div class="ttdeci">eve::Result&lt; void &gt; setActionByPolicyChecked(RPGActor *actor, const std::string &amp;skillId, BattleTargetPolicy policy)</div><div class="ttdoc">Resolve a deterministic target policy and queue one checked action atomically.</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00148">Battle.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_aeb269ea08e86aa80daa1cf03d44d45f4"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#aeb269ea08e86aa80daa1cf03d44d45f4">eve::rpg::Battle::executeNextAction</a></div><div class="ttdeci">bool executeNextAction()</div><div class="ttdoc">执行下一条行动（compatibility facade (脚本兼容门面)）；返回是否执行了一条。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00212">Battle.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_aeb6d8885f173a314625f07283075c302"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#aeb6d8885f173a314625f07283075c302">eve::rpg::Battle::isDefeat</a></div><div class="ttdeci">bool isDefeat() const</div><div class="ttdoc">是否战败：已结束且获胜方 != 玩家侧。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00072">Battle.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_af826f99ff0d100386ba73a8298f9541d"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#af826f99ff0d100386ba73a8298f9541d">eve::rpg::Battle::getEventCount</a></div><div class="ttdeci">int getEventCount() const</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00336">Battle.cpp:336</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_af8789e2a2aa753fb9f994a8928a8215d"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#af8789e2a2aa753fb9f994a8928a8215d">eve::rpg::Battle::isFinished</a></div><div class="ttdeci">bool isFinished() const</div><div class="ttdoc">战斗是否已结束（仅剩一方存活 / 双方全灭）。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00070">Battle.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Battle_html_afde92a99d2a07705a3333949aaa190e8"><div class="ttname"><a href="classeve_1_1rpg_1_1Battle.html#afde92a99d2a07705a3333949aaa190e8">eve::rpg::Battle::isVictory</a></div><div class="ttdeci">bool isVictory() const</div><div class="ttdoc">是否胜利：获胜方 == 玩家侧。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8cpp_source.html#l00071">Battle.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Party_html"><div class="ttname"><a href="classeve_1_1rpg_1_1Party.html">eve::rpg::Party</a></div><div class="ttdoc">Authoritative ordered relationship between stable party member IDs and RPG actors....</div><div class="ttdef"><b>Definition</b> <a href="Party_8h_source.html#l00022">Party.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_1_1BattleSide_html_a19b0b6a85f860774d7ead153d80836bf"><div class="ttname"><a href="namespaceeve_1_1rpg_1_1BattleSide.html#a19b0b6a85f860774d7ead153d80836bf">eve::rpg::BattleSide::Enemies</a></div><div class="ttdeci">constexpr int Enemies</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00026">Battle.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_1_1BattleSide_html_ab4c48d3dad3251d18f039f903b4c6510"><div class="ttname"><a href="namespaceeve_1_1rpg_1_1BattleSide.html#ab4c48d3dad3251d18f039f903b4c6510">eve::rpg::BattleSide::Party</a></div><div class="ttdeci">constexpr int Party</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00025">Battle.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0c"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">eve::rpg::BattleTargetPolicy</a></div><div class="ttdeci">BattleTargetPolicy</div><div class="ttdoc">Deterministic target-selection policies for queued battle actions.</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00030">Battle.h:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0ca06b9281e396db002010bde1de57262eb"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca06b9281e396db002010bde1de57262eb">eve::rpg::BattleTargetPolicy::Auto</a></div><div class="ttdeci">@ Auto</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0ca40ee82cbad04251ddadd1ec20bc487eb"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca40ee82cbad04251ddadd1ec20bc487eb">eve::rpg::BattleTargetPolicy::LowestHealthEnemy</a></div><div class="ttdeci">@ LowestHealthEnemy</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0caad6e7652b1bdfb38783486c2c3d5e806"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0caad6e7652b1bdfb38783486c2c3d5e806">eve::rpg::BattleTargetPolicy::Self</a></div><div class="ttdeci">@ Self</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a248f45dc14ba0fdb68e353c3fddeef0cad4dc7acbb6ffa7b4b85f89623ddd2b77"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0cad4dc7acbb6ffa7b4b85f89623ddd2b77">eve::rpg::BattleTargetPolicy::LowestHealthAlly</a></div><div class="ttdeci">@ LowestHealthAlly</div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html">eve::rpg::BattleEvent</a></div><div class="ttdoc">一次战斗反馈事件。</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00033">Battle.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a2c4072e78effceec5ac1d98585236545"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a2c4072e78effceec5ac1d98585236545">eve::rpg::BattleEvent::skillId</a></div><div class="ttdeci">std::string skillId</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00036">Battle.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a462ec995c58b8c758144d882dcc86c1f"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a462ec995c58b8c758144d882dcc86c1f">eve::rpg::BattleEvent::caster</a></div><div class="ttdeci">class RPGActor * caster</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00037">Battle.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a4657f360f4d74adcc7f48d26dca40eeb"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a4657f360f4d74adcc7f48d26dca40eeb">eve::rpg::BattleEvent::amount</a></div><div class="ttdeci">double amount</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00039">Battle.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a6969ccd9aaadb9f510dd16c9fb9855c7"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a6969ccd9aaadb9f510dd16c9fb9855c7">eve::rpg::BattleEvent::target</a></div><div class="ttdeci">class RPGActor * target</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00038">Battle.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_a7433694c6585feb92f4c18eca66a4911"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#a7433694c6585feb92f4c18eca66a4911">eve::rpg::BattleEvent::crit</a></div><div class="ttdeci">bool crit</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00040">Battle.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleEvent_html_aea215c97fea578b742f8d1ed79e0f68a"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleEvent.html#aea215c97fea578b742f8d1ed79e0f68a">eve::rpg::BattleEvent::action</a></div><div class="ttdeci">std::string action</div><div class="ttdoc">roundStart | actionStart | damage | heal | miss | effect | victory | defeat</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00035">Battle.h:35</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

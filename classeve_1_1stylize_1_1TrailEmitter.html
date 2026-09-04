@@ -1,0 +1,530 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::stylize::TrailEmitter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></li><li class="navelem"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1stylize_1_1TrailEmitter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::stylize::TrailEmitter类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic CPU sampler and ribbon mesh generator for weapon trails.  
+ <a href="classeve_1_1stylize_1_1TrailEmitter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TrailEffect_8h_source.html">TrailEffect.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab39f10a837d04023e7c86eea0eef2325" id="r_ab39f10a837d04023e7c86eea0eef2325"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#ab39f10a837d04023e7c86eea0eef2325">TrailEmitter</a> (<a class="el" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a> <a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>={})</td></tr>
+<tr class="memdesc:ab39f10a837d04023e7c86eea0eef2325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty emitter with validated settings.  <br /></td></tr>
+<tr class="separator:ab39f10a837d04023e7c86eea0eef2325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22d61404af13361b721f1b410171334c" id="r_a22d61404af13361b721f1b410171334c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#a22d61404af13361b721f1b410171334c">TrailEmitter</a> (const <a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp;)=delete</td></tr>
+<tr class="separator:a22d61404af13361b721f1b410171334c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb5376d12a5d7fbdec1172c57e55a059" id="r_adb5376d12a5d7fbdec1172c57e55a059"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#adb5376d12a5d7fbdec1172c57e55a059">operator=</a> (const <a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp;)=delete</td></tr>
+<tr class="separator:adb5376d12a5d7fbdec1172c57e55a059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af26bfc268decb30cc46639474aac5cf5" id="r_af26bfc268decb30cc46639474aac5cf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#af26bfc268decb30cc46639474aac5cf5">setSettings</a> (<a class="el" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a> <a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a>)</td></tr>
+<tr class="memdesc:af26bfc268decb30cc46639474aac5cf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace settings and enforce the new sample budget.  <br /></td></tr>
+<tr class="separator:af26bfc268decb30cc46639474aac5cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11432543ddf3e807cd90556c39265a6c" id="r_a11432543ddf3e807cd90556c39265a6c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#a11432543ddf3e807cd90556c39265a6c">settings</a> () const noexcept</td></tr>
+<tr class="memdesc:a11432543ddf3e807cd90556c39265a6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a value snapshot of current settings.  <br /></td></tr>
+<tr class="separator:a11432543ddf3e807cd90556c39265a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa72aa7a3f8d8dd76f930d71eed2abc03" id="r_aa72aa7a3f8d8dd76f930d71eed2abc03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#aa72aa7a3f8d8dd76f930d71eed2abc03">update</a> (float dtSeconds)</td></tr>
+<tr class="memdesc:aa72aa7a3f8d8dd76f930d71eed2abc03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Age samples and remove expired entries using injected dt.  <br /></td></tr>
+<tr class="separator:aa72aa7a3f8d8dd76f930d71eed2abc03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46413061099d0f873875f9f29bb0d656" id="r_a46413061099d0f873875f9f29bb0d656"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">TrailAppendResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#a46413061099d0f873875f9f29bb0d656">append</a> (glm::vec3 <a class="el" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>, glm::vec3 tip)</td></tr>
+<tr class="memdesc:a46413061099d0f873875f9f29bb0d656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a weapon edge sample or report why it was not appended.  <br /></td></tr>
+<tr class="separator:a46413061099d0f873875f9f29bb0d656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abec5e34abbb1571f83b8276fee109461" id="r_abec5e34abbb1571f83b8276fee109461"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#abec5e34abbb1571f83b8276fee109461">breakTrail</a> () noexcept</td></tr>
+<tr class="memdesc:abec5e34abbb1571f83b8276fee109461"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a disconnected segment at the next appended sample.  <br /></td></tr>
+<tr class="separator:abec5e34abbb1571f83b8276fee109461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ef05dc37af0aef7c08c0780c80930c7" id="r_a9ef05dc37af0aef7c08c0780c80930c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#a9ef05dc37af0aef7c08c0780c80930c7">clear</a> () noexcept</td></tr>
+<tr class="memdesc:a9ef05dc37af0aef7c08c0780c80930c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all samples and reset segment numbering.  <br /></td></tr>
+<tr class="separator:a9ef05dc37af0aef7c08c0780c80930c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97aca719ef379b7e749eee9d9dddedeb" id="r_a97aca719ef379b7e749eee9d9dddedeb"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#a97aca719ef379b7e749eee9d9dddedeb">sampleCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a97aca719ef379b7e749eee9d9dddedeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of retained root/tip samples.  <br /></td></tr>
+<tr class="separator:a97aca719ef379b7e749eee9d9dddedeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1343311ff8bb74d31ce3eea17e0f251" id="r_ac1343311ff8bb74d31ce3eea17e0f251"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">TrailMeshSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html#ac1343311ff8bb74d31ce3eea17e0f251">buildMesh</a> () const</td></tr>
+<tr class="memdesc:ac1343311ff8bb74d31ce3eea17e0f251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build an owning triangle-list snapshot from current samples.  <br /></td></tr>
+<tr class="separator:ac1343311ff8bb74d31ce3eea17e0f251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic CPU sampler and ribbon mesh generator for weapon trails. </p>
+<p>Call update(dt) once per simulation step, then append(root, tip). A large endpoint jump starts a disconnected segment, preventing teleport triangles. The emitter owns all samples and returned snapshots own their data. It is main-thread affine, performs no rendering, and invokes no callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8h_source.html">TrailEffect.h</a> 第 <a class="el" href="TrailEffect_8h_source.html#l00053">53</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab39f10a837d04023e7c86eea0eef2325" name="ab39f10a837d04023e7c86eea0eef2325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab39f10a837d04023e7c86eea0eef2325">&#9670;&#160;</a></span>TrailEmitter() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::TrailEmitter::TrailEmitter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a>&#160;</td>
+          <td class="paramname"><em>settings</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty emitter with validated settings. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8cpp_source.html">TrailEffect.cpp</a> 第 <a class="el" href="TrailEffect_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a22d61404af13361b721f1b410171334c" name="a22d61404af13361b721f1b410171334c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22d61404af13361b721f1b410171334c">&#9670;&#160;</a></span>TrailEmitter() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::TrailEmitter::TrailEmitter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a46413061099d0f873875f9f29bb0d656" name="a46413061099d0f873875f9f29bb0d656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46413061099d0f873875f9f29bb0d656">&#9670;&#160;</a></span>append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">TrailAppendResult</a> eve::stylize::TrailEmitter::append </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>tip</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a weapon edge sample or report why it was not appended. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8cpp_source.html">TrailEffect.cpp</a> 第 <a class="el" href="TrailEffect_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17af29ddbfb905eb2593fdcdfb243f9af85">eve::stylize::Added</a>, <a class="el" href="TrailEffect_8h_source.html#l00015">eve::stylize::TrailSettings::maxSamples</a>, <a class="el" href="TrailEffect_8h_source.html#l00017">eve::stylize::TrailSettings::minSampleDistance</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17ab2b7a32d761ee65f88071d27bc97321a">eve::stylize::SkippedTooClose</a>, <a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17ab432ed71443b899a31b6ba36938f8fb4">eve::stylize::StartedSegment</a> , 以及 <a class="el" href="TrailEffect_8h_source.html#l00018">eve::stylize::TrailSettings::teleportDistance</a>.</p>
+
+</div>
+</div>
+<a id="abec5e34abbb1571f83b8276fee109461" name="abec5e34abbb1571f83b8276fee109461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abec5e34abbb1571f83b8276fee109461">&#9670;&#160;</a></span>breakTrail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::TrailEmitter::breakTrail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start a disconnected segment at the next appended sample. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8cpp_source.html">TrailEffect.cpp</a> 第 <a class="el" href="TrailEffect_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac1343311ff8bb74d31ce3eea17e0f251" name="ac1343311ff8bb74d31ce3eea17e0f251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1343311ff8bb74d31ce3eea17e0f251">&#9670;&#160;</a></span>buildMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">TrailMeshSnapshot</a> eve::stylize::TrailEmitter::buildMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build an owning triangle-list snapshot from current samples. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8cpp_source.html">TrailEffect.cpp</a> 第 <a class="el" href="TrailEffect_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TrailEffect_8h_source.html#l00016">eve::stylize::TrailSettings::lifetime</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="TrailEffect_8h_source.html#l00041">eve::stylize::TrailMeshSnapshot::vertices</a>.</p>
+
+</div>
+</div>
+<a id="a9ef05dc37af0aef7c08c0780c80930c7" name="a9ef05dc37af0aef7c08c0780c80930c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ef05dc37af0aef7c08c0780c80930c7">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::TrailEmitter::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove all samples and reset segment numbering. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8cpp_source.html">TrailEffect.cpp</a> 第 <a class="el" href="TrailEffect_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adb5376d12a5d7fbdec1172c57e55a059" name="adb5376d12a5d7fbdec1172c57e55a059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb5376d12a5d7fbdec1172c57e55a059">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp; eve::stylize::TrailEmitter::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a97aca719ef379b7e749eee9d9dddedeb" name="a97aca719ef379b7e749eee9d9dddedeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97aca719ef379b7e749eee9d9dddedeb">&#9670;&#160;</a></span>sampleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::stylize::TrailEmitter::sampleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of retained root/tip samples. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8h_source.html">TrailEffect.h</a> 第 <a class="el" href="TrailEffect_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af26bfc268decb30cc46639474aac5cf5" name="af26bfc268decb30cc46639474aac5cf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af26bfc268decb30cc46639474aac5cf5">&#9670;&#160;</a></span>setSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::TrailEmitter::setSettings </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a>&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace settings and enforce the new sample budget. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8cpp_source.html">TrailEffect.cpp</a> 第 <a class="el" href="TrailEffect_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TrailEffect_8h_source.html#l00015">eve::stylize::TrailSettings::maxSamples</a> , 以及 <a class="el" href="TrailEffect_8h_source.html#l00063">settings()</a>.</p>
+
+</div>
+</div>
+<a id="a11432543ddf3e807cd90556c39265a6c" name="a11432543ddf3e807cd90556c39265a6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11432543ddf3e807cd90556c39265a6c">&#9670;&#160;</a></span>settings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1stylize_1_1TrailSettings.html">TrailSettings</a> eve::stylize::TrailEmitter::settings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a value snapshot of current settings. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8h_source.html">TrailEffect.h</a> 第 <a class="el" href="TrailEffect_8h_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TrailEffect_8cpp_source.html#l00034">setSettings()</a>.</p>
+
+</div>
+</div>
+<a id="aa72aa7a3f8d8dd76f930d71eed2abc03" name="aa72aa7a3f8d8dd76f930d71eed2abc03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa72aa7a3f8d8dd76f930d71eed2abc03">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::TrailEmitter::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Age samples and remove expired entries using injected dt. </p>
+
+<p class="definition">在文件 <a class="el" href="TrailEffect_8cpp_source.html">TrailEffect.cpp</a> 第 <a class="el" href="TrailEffect_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TrailEffect_8h_source.html#l00016">eve::stylize::TrailSettings::lifetime</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/stylize/<a class="el" href="TrailEffect_8h_source.html">TrailEffect.h</a></li>
+<li>src/modules/stylize/<a class="el" href="TrailEffect_8cpp_source.html">TrailEffect.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

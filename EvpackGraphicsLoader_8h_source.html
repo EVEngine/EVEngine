@@ -1,0 +1,269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset_graphics/EvpackGraphicsLoader.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_605ef59b007d9ff09ce0534631561e56.html">asset_graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EvpackGraphicsLoader.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EvpackGraphicsLoader_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EvpackResourceReader_8h.html">asset/EvpackResourceReader.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="IMeshResourceFactory_8h.html">graphics/IMeshResourceFactory.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>IResourceFactory;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__graphics.html">eve::asset_graphics</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html">LoadedGraphicsMesh</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#aa0394496ab8324a25846c05544721d01">   17</a></span>    <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>                      <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#aa0394496ab8324a25846c05544721d01">asset</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#a8b6f6e8f3f4817af022334a24838f82b">   18</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>*               <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#a8b6f6e8f3f4817af022334a24838f82b">mesh</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#a73ed18aa4f63f56fe034a9a7aa088c6d">   19</a></span>    <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackVariantSelection.html">asset::EvpackVariantSelection</a> <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#a73ed18aa4f63f56fe034a9a7aa088c6d">variant</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html">GraphicsAssetLoadLimits</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a1d7cf1c0fd5ff606747c71734faea472">   24</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a1d7cf1c0fd5ff606747c71734faea472">maximumVertices</a> = 4&#39;000&#39;000;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a3767cf14965e2c37b3719207b0626091">   25</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a3767cf14965e2c37b3719207b0626091">maximumIndices</a> = 12&#39;000&#39;000;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a32a4d9244532f5a46997fca041b24e2a">   26</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a32a4d9244532f5a46997fca041b24e2a">maximumDecodedBytes</a> = 512ull * 1024ull * 1024ull;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html">   30</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html">GraphicsMeshFactoryAdapter</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1graphics_1_1IMeshResourceFactory.html">graphics::IMeshResourceFactory</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html#ae1406b54e97e68f14871c6c7ed78d53e">   33</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html#ae1406b54e97e68f14871c6c7ed78d53e">GraphicsMeshFactoryAdapter</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1IResourceFactory.html">graphics::IResourceFactory</a>&amp; factory) noexcept</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        : factory_(factory) {}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;graphics::Mesh*&gt;</a> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html#aa9e2616194cb0108bf3acc6e1cdcb918">uploadMesh</a>(</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>* posXYZ, <span class="keyword">const</span> <span class="keywordtype">float</span>* nrmXYZ, <span class="keyword">const</span> <span class="keywordtype">float</span>* uvST, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">const</span> std::uint32_t* <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html#a9a2a6269715e782e813e935d05bfacf1">releaseMesh</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1IResourceFactory.html">graphics::IResourceFactory</a>&amp; factory_;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html">   56</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html">EvpackGraphicsLoader</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html#a0fca73c7db61b9c9cd0d2dd8e667874f">   59</a></span>    <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html#a0fca73c7db61b9c9cd0d2dd8e667874f">EvpackGraphicsLoader</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a>&amp; reader,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                         <a class="code hl_class" href="classeve_1_1graphics_1_1IMeshResourceFactory.html">graphics::IMeshResourceFactory</a>&amp; factory) noexcept</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        : reader_(reader), factory_(factory) {}</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;LoadedGraphicsMesh&gt;</a> <a class="code hl_function" href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html#aff6142959d95485c8dfbe08c5d6125ad">loadMesh</a>(</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>&amp; asset, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackCapabilities.html">asset::EvpackCapabilities</a>&amp; capabilities,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html">GraphicsAssetLoadLimits</a>&amp; limits = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1asset_1_1EvpackResourceReader.html">asset::EvpackResourceReader</a>&amp; reader_;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1IMeshResourceFactory.html">graphics::IMeshResourceFactory</a>&amp;    factory_;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}  <span class="comment">// namespace eve::asset_graphics</span></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00031">EvpackGraphicsLoader.cpp:31</a></div></div>
+<div class="ttc" id="aEvpackResourceReader_8h_html"><div class="ttname"><a href="EvpackResourceReader_8h.html">EvpackResourceReader.h</a></div><div class="ttdoc">Typed capability-aware runtime access to admitted packs.</div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7b19ff7daa03f593e552608463f5c9ca"><div class="ttname"><a href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a></div><div class="ttdeci">std::uint32_t vertexCount</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00235">GltfImporter.cpp:235</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ad2ae269d4b0d530bbbcc259246388784"><div class="ttname"><a href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a></div><div class="ttdeci">std::uint32_t indexCount</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00236">GltfImporter.cpp:236</a></div></div>
+<div class="ttc" id="aIMeshResourceFactory_8h_html"><div class="ttname"><a href="IMeshResourceFactory_8h.html">IMeshResourceFactory.h</a></div><div class="ttdoc">Narrow backend boundary for canonical mesh resources.</div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00731">RenderSystem3D.cpp:731</a></div></div>
+<div class="ttc" id="aclasseve_1_1AssetRef_html"><div class="ttname"><a href="classeve_1_1AssetRef.html">eve::AssetRef</a></div><div class="ttdoc">Stable asset identity backed by PersistentId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00051">ResourceRef.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackResourceReader_html"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackResourceReader.html">eve::asset::EvpackResourceReader</a></div><div class="ttdoc">Immutable reader retaining an admitted pack by shared ownership.</div><div class="ttdef"><b>Definition</b> <a href="EvpackResourceReader_8h_source.html#l00027">EvpackResourceReader.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackGraphicsLoader_html"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html">eve::asset_graphics::EvpackGraphicsLoader</a></div><div class="ttdoc">Capability-aware adapter from admitted .evpack assets to graphics resources.</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00056">EvpackGraphicsLoader.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackGraphicsLoader_html_a0fca73c7db61b9c9cd0d2dd8e667874f"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html#a0fca73c7db61b9c9cd0d2dd8e667874f">eve::asset_graphics::EvpackGraphicsLoader::EvpackGraphicsLoader</a></div><div class="ttdeci">EvpackGraphicsLoader(const asset::EvpackResourceReader &amp;reader, graphics::IMeshResourceFactory &amp;factory) noexcept</div><div class="ttdoc">Bind a reader and backend factory; both must outlive this adapter.</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00059">EvpackGraphicsLoader.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1EvpackGraphicsLoader_html_aff6142959d95485c8dfbe08c5d6125ad"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1EvpackGraphicsLoader.html#aff6142959d95485c8dfbe08c5d6125ad">eve::asset_graphics::EvpackGraphicsLoader::loadMesh</a></div><div class="ttdeci">Result&lt; LoadedGraphicsMesh &gt; loadMesh(const AssetRef &amp;asset, const asset::EvpackCapabilities &amp;capabilities, const GraphicsAssetLoadLimits &amp;limits={}) const</div><div class="ttdoc">Validate and upload one canonical eve.mesh/1 asset atomically.</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00100">EvpackGraphicsLoader.cpp:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter_html"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html">eve::asset_graphics::GraphicsMeshFactoryAdapter</a></div><div class="ttdoc">Result-based adapter over the engine's established graphics resource factory.</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00030">EvpackGraphicsLoader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter_html_a9a2a6269715e782e813e935d05bfacf1"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html#a9a2a6269715e782e813e935d05bfacf1">eve::asset_graphics::GraphicsMeshFactoryAdapter::releaseMesh</a></div><div class="ttdeci">Result&lt; void &gt; releaseMesh(graphics::Mesh *mesh) override</div><div class="ttdoc">Release a mesh previously returned by this factory.</div><div class="ttdef"><b>Definition</b> <a href="GraphicsMeshFactoryAdapter_8cpp_source.html#l00027">GraphicsMeshFactoryAdapter.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter_html_aa9e2616194cb0108bf3acc6e1cdcb918"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html#aa9e2616194cb0108bf3acc6e1cdcb918">eve::asset_graphics::GraphicsMeshFactoryAdapter::uploadMesh</a></div><div class="ttdeci">Result&lt; graphics::Mesh * &gt; uploadMesh(const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const std::uint32_t *indices, int indexCount) override</div><div class="ttdoc">Upload validated, tightly packed mesh arrays.</div><div class="ttdef"><b>Definition</b> <a href="GraphicsMeshFactoryAdapter_8cpp_source.html#l00016">GraphicsMeshFactoryAdapter.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter_html_ae1406b54e97e68f14871c6c7ed78d53e"><div class="ttname"><a href="classeve_1_1asset__graphics_1_1GraphicsMeshFactoryAdapter.html#ae1406b54e97e68f14871c6c7ed78d53e">eve::asset_graphics::GraphicsMeshFactoryAdapter::GraphicsMeshFactoryAdapter</a></div><div class="ttdeci">GraphicsMeshFactoryAdapter(graphics::IResourceFactory &amp;factory) noexcept</div><div class="ttdoc">Bind a borrowed graphics factory that must outlive this adapter.</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00033">EvpackGraphicsLoader.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IMeshResourceFactory_html"><div class="ttname"><a href="classeve_1_1graphics_1_1IMeshResourceFactory.html">eve::graphics::IMeshResourceFactory</a></div><div class="ttdoc">Backend-owned mesh upload and release operations.</div><div class="ttdef"><b>Definition</b> <a href="IMeshResourceFactory_8h_source.html#l00014">IMeshResourceFactory.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></div><div class="ttdoc">Texture / mesh / shader / canvas creation and release.</div><div class="ttdef"><b>Definition</b> <a href="IResourceFactory_8h_source.html#l00035">IResourceFactory.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00020">Mesh.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__graphics_html"><div class="ttname"><a href="namespaceeve_1_1asset__graphics.html">eve::asset_graphics</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00009">EvpackGraphicsLoader.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackCapabilities_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackCapabilities.html">eve::asset::EvpackCapabilities</a></div><div class="ttdoc">Actual runtime device capabilities used for variant selection.</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00088">Evpack.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackVariantSelection_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackVariantSelection.html">eve::asset::EvpackVariantSelection</a></div><div class="ttdoc">Result of ordered capability variant selection.</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00151">Evpack.h:151</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits_html"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html">eve::asset_graphics::GraphicsAssetLoadLimits</a></div><div class="ttdoc">Bounds applied before allocating canonical mesh staging arrays.</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00023">EvpackGraphicsLoader.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits_html_a1d7cf1c0fd5ff606747c71734faea472"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a1d7cf1c0fd5ff606747c71734faea472">eve::asset_graphics::GraphicsAssetLoadLimits::maximumVertices</a></div><div class="ttdeci">std::uint32_t maximumVertices</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00024">EvpackGraphicsLoader.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits_html_a32a4d9244532f5a46997fca041b24e2a"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a32a4d9244532f5a46997fca041b24e2a">eve::asset_graphics::GraphicsAssetLoadLimits::maximumDecodedBytes</a></div><div class="ttdeci">std::uint64_t maximumDecodedBytes</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00026">EvpackGraphicsLoader.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits_html_a3767cf14965e2c37b3719207b0626091"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1GraphicsAssetLoadLimits.html#a3767cf14965e2c37b3719207b0626091">eve::asset_graphics::GraphicsAssetLoadLimits::maximumIndices</a></div><div class="ttdeci">std::uint32_t maximumIndices</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00025">EvpackGraphicsLoader.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1LoadedGraphicsMesh_html"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html">eve::asset_graphics::LoadedGraphicsMesh</a></div><div class="ttdoc">Successfully uploaded backend mesh and the selected package variant.</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00016">EvpackGraphicsLoader.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1LoadedGraphicsMesh_html_a73ed18aa4f63f56fe034a9a7aa088c6d"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#a73ed18aa4f63f56fe034a9a7aa088c6d">eve::asset_graphics::LoadedGraphicsMesh::variant</a></div><div class="ttdeci">asset::EvpackVariantSelection variant</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00019">EvpackGraphicsLoader.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1LoadedGraphicsMesh_html_a8b6f6e8f3f4817af022334a24838f82b"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#a8b6f6e8f3f4817af022334a24838f82b">eve::asset_graphics::LoadedGraphicsMesh::mesh</a></div><div class="ttdeci">graphics::Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00018">EvpackGraphicsLoader.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__graphics_1_1LoadedGraphicsMesh_html_aa0394496ab8324a25846c05544721d01"><div class="ttname"><a href="structeve_1_1asset__graphics_1_1LoadedGraphicsMesh.html#aa0394496ab8324a25846c05544721d01">eve::asset_graphics::LoadedGraphicsMesh::asset</a></div><div class="ttdeci">AssetRef asset</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8h_source.html#l00017">EvpackGraphicsLoader.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

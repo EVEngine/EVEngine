@@ -1,0 +1,1154 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::production::WorkQueue类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1production.html">production</a></li><li class="navelem"><a class="el" href="classeve_1_1production_1_1WorkQueue.html">WorkQueue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1production_1_1WorkQueue-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::production::WorkQueue类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Generic multi-owner, multi-slot continuous-progress work queue.  
+ <a href="classeve_1_1production_1_1WorkQueue.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Production_8h_source.html">Production.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a20946359b1719f5c74c1160a0bae4437" id="r_a20946359b1719f5c74c1160a0bae4437"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a20946359b1719f5c74c1160a0bae4437">WorkQueue</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId={})</td></tr>
+<tr class="memdesc:a20946359b1719f5c74c1160a0bae4437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty queue with an optional persistent identity.  <br /></td></tr>
+<tr class="separator:a20946359b1719f5c74c1160a0bae4437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada1ceb08f3e634577f288f5153ee2231" id="r_ada1ceb08f3e634577f288f5153ee2231"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#ada1ceb08f3e634577f288f5153ee2231">enqueue</a> (std::string_view owner, std::string_view <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, std::string_view product, <a class="el" href="classeve_1_1Value.html">eve::Value</a> context, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:ada1ceb08f3e634577f288f5153ee2231"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueues a task and returns its stable ID.  <br /></td></tr>
+<tr class="separator:ada1ceb08f3e634577f288f5153ee2231"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af67e6635282b0644b5c59fb8005a3f8d" id="r_af67e6635282b0644b5c59fb8005a3f8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#af67e6635282b0644b5c59fb8005a3f8d">pause</a> (std::string_view <a class="el" href="Production_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a>)</td></tr>
+<tr class="memdesc:af67e6635282b0644b5c59fb8005a3f8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses a queued or running task, or returns NotFound/Conflict.  <br /></td></tr>
+<tr class="separator:af67e6635282b0644b5c59fb8005a3f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a573f965d1b0cecf54aa16571788c1b82" id="r_a573f965d1b0cecf54aa16571788c1b82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a573f965d1b0cecf54aa16571788c1b82">resume</a> (std::string_view <a class="el" href="Production_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a>)</td></tr>
+<tr class="memdesc:a573f965d1b0cecf54aa16571788c1b82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a paused task to deterministic scheduling.  <br /></td></tr>
+<tr class="separator:a573f965d1b0cecf54aa16571788c1b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7259219eecc6e2478658cf39eb676137" id="r_a7259219eecc6e2478658cf39eb676137"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a7259219eecc6e2478658cf39eb676137">cancel</a> (std::string_view <a class="el" href="Production_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a>, std::string_view reason=&quot;cancelled&quot;)</td></tr>
+<tr class="memdesc:a7259219eecc6e2478658cf39eb676137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels a non-terminal task with a structured outcome.  <br /></td></tr>
+<tr class="separator:a7259219eecc6e2478658cf39eb676137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af68c23b0788819f70e0c0c8134ce6de6" id="r_af68c23b0788819f70e0c0c8134ce6de6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#af68c23b0788819f70e0c0c8134ce6de6">fail</a> (std::string_view <a class="el" href="Production_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a>, std::string_view reason=&quot;failed&quot;)</td></tr>
+<tr class="memdesc:af68c23b0788819f70e0c0c8134ce6de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks a non-terminal task failed with a structured outcome.  <br /></td></tr>
+<tr class="separator:af68c23b0788819f70e0c0c8134ce6de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad83bfad8a4379fcef29bf689ab75268d" id="r_ad83bfad8a4379fcef29bf689ab75268d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#ad83bfad8a4379fcef29bf689ab75268d">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:ad83bfad8a4379fcef29bf689ab75268d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies one injected deterministic simulation step.  <br /></td></tr>
+<tr class="separator:ad83bfad8a4379fcef29bf689ab75268d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24866f3489e850eaf68465799502d4f1" id="r_a24866f3489e850eaf68465799502d4f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a24866f3489e850eaf68465799502d4f1">currentTick</a> () const noexcept</td></tr>
+<tr class="memdesc:a24866f3489e850eaf68465799502d4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the latest simulation tick applied to this queue.  <br /></td></tr>
+<tr class="separator:a24866f3489e850eaf68465799502d4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a777ea658721561adf16d2fcd4f0ecedf" id="r_a777ea658721561adf16d2fcd4f0ecedf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a777ea658721561adf16d2fcd4f0ecedf">setSlotCount</a> (std::string_view owner, int slots)</td></tr>
+<tr class="memdesc:a777ea658721561adf16d2fcd4f0ecedf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets an owner's parallel slot count; zero prevents new tasks from running.  <br /></td></tr>
+<tr class="separator:a777ea658721561adf16d2fcd4f0ecedf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee9310c62a1ae975b83607a53b9404e5" id="r_aee9310c62a1ae975b83607a53b9404e5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#aee9310c62a1ae975b83607a53b9404e5">slotCount</a> (std::string_view owner) const</td></tr>
+<tr class="memdesc:aee9310c62a1ae975b83607a53b9404e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an owner's slot count, defaulting to one.  <br /></td></tr>
+<tr class="separator:aee9310c62a1ae975b83607a53b9404e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad30165b4e1ada5ad80ad853112b454b9" id="r_ad30165b4e1ada5ad80ad853112b454b9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#ad30165b4e1ada5ad80ad853112b454b9">runningCount</a> (std::string_view owner) const</td></tr>
+<tr class="memdesc:ad30165b4e1ada5ad80ad853112b454b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of currently running tasks for an owner.  <br /></td></tr>
+<tr class="separator:ad30165b4e1ada5ad80ad853112b454b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b620a9954d6f385b23be97d9a2584fe" id="r_a2b620a9954d6f385b23be97d9a2584fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a2b620a9954d6f385b23be97d9a2584fe">find</a> (std::string_view <a class="el" href="Production_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a>)</td></tr>
+<tr class="memdesc:a2b620a9954d6f385b23be97d9a2584fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a retained task by stable ID.  <br /></td></tr>
+<tr class="separator:a2b620a9954d6f385b23be97d9a2584fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a39742f216b22f33f2a8dfe126d7289" id="r_a5a39742f216b22f33f2a8dfe126d7289"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a5a39742f216b22f33f2a8dfe126d7289">find</a> (std::string_view <a class="el" href="Production_8cpp.html#af7530e9222ed55ae78fe956969b66bef">taskId</a>) const</td></tr>
+<tr class="memdesc:a5a39742f216b22f33f2a8dfe126d7289"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const overload of find with the same immediate-borrow lifetime.  <br /></td></tr>
+<tr class="separator:a5a39742f216b22f33f2a8dfe126d7289"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4173e0da721ec7b604d2ff5622a6f7a5" id="r_a4173e0da721ec7b604d2ff5622a6f7a5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a4173e0da721ec7b604d2ff5622a6f7a5">taskCount</a> () const</td></tr>
+<tr class="memdesc:a4173e0da721ec7b604d2ff5622a6f7a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns retained task count in enqueue order.  <br /></td></tr>
+<tr class="separator:a4173e0da721ec7b604d2ff5622a6f7a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29804a3b28cccbc7bc88c24db4807d22" id="r_a29804a3b28cccbc7bc88c24db4807d22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a29804a3b28cccbc7bc88c24db4807d22">taskAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a29804a3b28cccbc7bc88c24db4807d22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a retained task by enqueue index, or an empty borrowed reference.  <br /></td></tr>
+<tr class="separator:a29804a3b28cccbc7bc88c24db4807d22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4f3b3f2d44e9ea37a448298f18bf9aa" id="r_ad4f3b3f2d44e9ea37a448298f18bf9aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#ad4f3b3f2d44e9ea37a448298f18bf9aa">taskAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ad4f3b3f2d44e9ea37a448298f18bf9aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const overload of taskAt with the same immediate-borrow lifetime.  <br /></td></tr>
+<tr class="separator:ad4f3b3f2d44e9ea37a448298f18bf9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adeb5512a2162f5cff621ae0715c41aae" id="r_adeb5512a2162f5cff621ae0715c41aae"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#adeb5512a2162f5cff621ae0715c41aae">ownerTaskCount</a> (std::string_view owner) const</td></tr>
+<tr class="memdesc:adeb5512a2162f5cff621ae0715c41aae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns retained task count for an owner.  <br /></td></tr>
+<tr class="separator:adeb5512a2162f5cff621ae0715c41aae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ffded474ebb10bee7cfcc1901efa773" id="r_a8ffded474ebb10bee7cfcc1901efa773"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a8ffded474ebb10bee7cfcc1901efa773">ownerTaskAt</a> (std::string_view owner, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a8ffded474ebb10bee7cfcc1901efa773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an owner's retained task by enqueue index, or an empty borrowed reference.  <br /></td></tr>
+<tr class="separator:a8ffded474ebb10bee7cfcc1901efa773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3088c229404ddecb09ffb62a5def84a5" id="r_a3088c229404ddecb09ffb62a5def84a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a3088c229404ddecb09ffb62a5def84a5">ownerTaskAt</a> (std::string_view owner, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a3088c229404ddecb09ffb62a5def84a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const overload of ownerTaskAt with the same immediate-borrow lifetime.  <br /></td></tr>
+<tr class="separator:a3088c229404ddecb09ffb62a5def84a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74268c1085609b42a83d1b8bef6fc919" id="r_a74268c1085609b42a83d1b8bef6fc919"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a74268c1085609b42a83d1b8bef6fc919">eventCount</a> () const</td></tr>
+<tr class="memdesc:a74268c1085609b42a83d1b8bef6fc919"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns retained event count.  <br /></td></tr>
+<tr class="separator:a74268c1085609b42a83d1b8bef6fc919"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc91d995bbebd0ed47d6a184831d1335" id="r_afc91d995bbebd0ed47d6a184831d1335"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1production_1_1ProductionEvent.html">ProductionEvent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#afc91d995bbebd0ed47d6a184831d1335">eventAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:afc91d995bbebd0ed47d6a184831d1335"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an event by sequence index, or an empty borrowed reference.  <br /></td></tr>
+<tr class="separator:afc91d995bbebd0ed47d6a184831d1335"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a136cfa9896486b26f202a210aec8a2a4" id="r_a136cfa9896486b26f202a210aec8a2a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1production_1_1ProductionEvent.html">ProductionEvent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a136cfa9896486b26f202a210aec8a2a4">eventAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a136cfa9896486b26f202a210aec8a2a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const overload of eventAt with the same immediate-borrow lifetime.  <br /></td></tr>
+<tr class="separator:a136cfa9896486b26f202a210aec8a2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe027c2226448afb93f12675f879a660" id="r_afe027c2226448afb93f12675f879a660"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#afe027c2226448afb93f12675f879a660">clearEvents</a> ()</td></tr>
+<tr class="memdesc:afe027c2226448afb93f12675f879a660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears retained events without resetting sequence numbering.  <br /></td></tr>
+<tr class="separator:afe027c2226448afb93f12675f879a660"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f9a9cafef6172984b3ae9f776674f5d" id="r_a0f9a9cafef6172984b3ae9f776674f5d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a0f9a9cafef6172984b3ae9f776674f5d">snapshot</a> () const</td></tr>
+<tr class="memdesc:a0f9a9cafef6172984b3ae9f776674f5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the complete queue as deterministic JSON.  <br /></td></tr>
+<tr class="separator:a0f9a9cafef6172984b3ae9f776674f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7af4f7dde2912f72ef36dc8e9fc8e007" id="r_a7af4f7dde2912f72ef36dc8e9fc8e007"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a7af4f7dde2912f72ef36dc8e9fc8e007">restore</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a7af4f7dde2912f72ef36dc8e9fc8e007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally restores a snapshot; failure preserves current state.  <br /></td></tr>
+<tr class="separator:a7af4f7dde2912f72ef36dc8e9fc8e007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7001fad05ce8f94791b9010c454ed6a2" id="r_a7001fad05ce8f94791b9010c454ed6a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a7001fad05ce8f94791b9010c454ed6a2">clear</a> ()</td></tr>
+<tr class="memdesc:a7001fad05ce8f94791b9010c454ed6a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears tasks, owner settings, events, and stable counters.  <br /></td></tr>
+<tr class="separator:a7001fad05ce8f94791b9010c454ed6a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c073691be759894f621f157eff721ef" id="r_a4c073691be759894f621f157eff721ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a4c073691be759894f621f157eff721ef">snapshot</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a4c073691be759894f621f157eff721ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the production payload in the common snapshot envelope.  <br /></td></tr>
+<tr class="separator:a4c073691be759894f621f157eff721ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a279759c5eb6a4cb062741a9a21898cfc" id="r_a279759c5eb6a4cb062741a9a21898cfc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a279759c5eb6a4cb062741a9a21898cfc">restoreSnapshot</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="classeve_1_1production_1_1WorkQueue.html#a0f9a9cafef6172984b3ae9f776674f5d">snapshot</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a279759c5eb6a4cb062741a9a21898cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a verified or migrated production envelope atomically.  <br /></td></tr>
+<tr class="separator:a279759c5eb6a4cb062741a9a21898cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f540cb038d972e83ed80161ba485dd3" id="r_a0f540cb038d972e83ed80161ba485dd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#a0f540cb038d972e83ed80161ba485dd3">snapshotEnvelopeJson</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a0f540cb038d972e83ed80161ba485dd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the common production snapshot envelope.  <br /></td></tr>
+<tr class="separator:a0f540cb038d972e83ed80161ba485dd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab88a7b697d8414f3764ef41d92bb47cb" id="r_ab88a7b697d8414f3764ef41d92bb47cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1production_1_1WorkQueue.html#ab88a7b697d8414f3764ef41d92bb47cb">restoreSnapshotJson</a> (std::string_view json, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:ab88a7b697d8414f3764ef41d92bb47cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and transactionally restores a common production envelope.  <br /></td></tr>
+<tr class="separator:ab88a7b697d8414f3764ef41d92bb47cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Generic multi-owner, multi-slot continuous-progress work queue. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8h_source.html">Production.h</a> 第 <a class="el" href="Production_8h_source.html#l00054">54</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a20946359b1719f5c74c1160a0bae4437" name="a20946359b1719f5c74c1160a0bae4437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20946359b1719f5c74c1160a0bae4437">&#9670;&#160;</a></span>WorkQueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::production::WorkQueue::WorkQueue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an empty queue with an optional persistent identity. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad83bfad8a4379fcef29bf689ab75268d" name="ad83bfad8a4379fcef29bf689ab75268d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad83bfad8a4379fcef29bf689ab75268d">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies one injected deterministic simulation step. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">step</td><td>Tick and fixed duration supplied by a <a class="el" href="classeve_1_1SimulationClock.html" title="Owner-thread fixed-step scheduler driven by an injected time source.">SimulationClock</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured failure if the tick is not strictly newer or the step is invalid. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Owner-thread only. The queue never reads a wall clock. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52da07ca5050e697392c9ed47e6453f1453f">eve::production::Completed</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52da5bda814c4aedb126839228f1a3d92f09">eve::production::Running</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7259219eecc6e2478658cf39eb676137" name="a7259219eecc6e2478658cf39eb676137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7259219eecc6e2478658cf39eb676137">&#9670;&#160;</a></span>cancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::cancel </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>taskId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>&quot;cancelled&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels a non-terminal task with a structured outcome. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52daa149e85a44aeec9140e92733d9ed694e">eve::production::Cancelled</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Production_8cpp_source.html#l00332">find()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00030">taskId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00402">eve::rts::RTSProductionActionAdapter::cancel()</a>.</p>
+
+</div>
+</div>
+<a id="a7001fad05ce8f94791b9010c454ed6a2" name="a7001fad05ce8f94791b9010c454ed6a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7001fad05ce8f94791b9010c454ed6a2">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::production::WorkQueue::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears tasks, owner settings, events, and stable counters. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00642">642</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;::zero()</a>.</p>
+
+</div>
+</div>
+<a id="afe027c2226448afb93f12675f879a660" name="afe027c2226448afb93f12675f879a660"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe027c2226448afb93f12675f879a660">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::production::WorkQueue::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears retained events without resetting sequence numbering. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00487">487</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a24866f3489e850eaf68465799502d4f1" name="a24866f3489e850eaf68465799502d4f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24866f3489e850eaf68465799502d4f1">&#9670;&#160;</a></span>currentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> eve::production::WorkQueue::currentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the latest simulation tick applied to this queue. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8h_source.html">Production.h</a> 第 <a class="el" href="Production_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ada1ceb08f3e634577f288f5153ee2231" name="ada1ceb08f3e634577f288f5153ee2231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada1ceb08f3e634577f288f5153ee2231">&#9670;&#160;</a></span>enqueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::production::WorkQueue::enqueue </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>owner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>product</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enqueues a task and returns its stable ID. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">owner</td><td>Logical owner of the work slots. </td></tr>
+    <tr><td class="paramname">kind</td><td>Domain task kind; the queue does not interpret it. </td></tr>
+    <tr><td class="paramname">product</td><td>Domain product identifier; the queue does not interpret it. </td></tr>
+    <tr><td class="paramname">context</td><td>Owning canonical payload for the task. </td></tr>
+    <tr><td class="paramname">duration</td><td>Positive work duration in seconds. </td></tr>
+    <tr><td class="paramname">priority</td><td>Higher priorities run first; enqueue order breaks ties. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A stable task ID, or a structured validation/allocation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="namespaceeve_1_1production.html#a35080dbe7252c4137654a46e542700b7abc3103209dec18761c01c5488d9a924e">eve::production::Enqueued</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8cpp_source.html#l00016">eve::Duration::fromSeconds()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00099">eve::Value::isObject()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="afc91d995bbebd0ed47d6a184831d1335" name="afc91d995bbebd0ed47d6a184831d1335"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc91d995bbebd0ed47d6a184831d1335">&#9670;&#160;</a></span>eventAt() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1production_1_1ProductionEvent.html">ProductionEvent</a> &gt; eve::production::WorkQueue::eventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an event by sequence index, or an empty borrowed reference. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00477">477</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QueueInspector_8cpp_source.html#l00047">eve::queue_editing::RuntimeQueueInspector::capture()</a>.</p>
+
+</div>
+</div>
+<a id="a136cfa9896486b26f202a210aec8a2a4" name="a136cfa9896486b26f202a210aec8a2a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a136cfa9896486b26f202a210aec8a2a4">&#9670;&#160;</a></span>eventAt() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1production_1_1ProductionEvent.html">ProductionEvent</a> &gt; eve::production::WorkQueue::eventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Const overload of eventAt with the same immediate-borrow lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a74268c1085609b42a83d1b8bef6fc919" name="a74268c1085609b42a83d1b8bef6fc919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74268c1085609b42a83d1b8bef6fc919">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::production::WorkQueue::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns retained event count. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00475">475</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QueueInspector_8cpp_source.html#l00047">eve::queue_editing::RuntimeQueueInspector::capture()</a>.</p>
+
+</div>
+</div>
+<a id="af68c23b0788819f70e0c0c8134ce6de6" name="af68c23b0788819f70e0c0c8134ce6de6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af68c23b0788819f70e0c0c8134ce6de6">&#9670;&#160;</a></span>fail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::fail </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>taskId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>&quot;failed&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Marks a non-terminal task failed with a structured outcome. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00389">389</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52dad7c8c85bf79bbe1b7188497c32c3b0ca">eve::production::Failed</a>, <a class="el" href="Production_8cpp_source.html#l00332">find()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00030">taskId</a>.</p>
+
+</div>
+</div>
+<a id="a2b620a9954d6f385b23be97d9a2584fe" name="a2b620a9954d6f385b23be97d9a2584fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b620a9954d6f385b23be97d9a2584fe">&#9670;&#160;</a></span>find() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt; eve::production::WorkQueue::find </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>taskId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds a retained task by stable ID. </p>
+<dl class="section return"><dt>返回</dt><dd>An immediate borrowed reference, empty when the ID is absent. @ownership <a class="el" href="classeve_1_1production_1_1WorkQueue.html" title="Generic multi-owner, multi-slot continuous-progress work queue.">WorkQueue</a> owns the task; the reference is not owning. @lifetime Valid until queue mutation, restore, clear, or destruction. @thread Owner-thread only; no synchronization is provided. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00030">taskId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Production_8cpp_source.html#l00374">cancel()</a>, <a class="el" href="Production_8cpp_source.html#l00389">fail()</a>, <a class="el" href="Production_8cpp_source.html#l00346">pause()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00360">resume()</a>.</p>
+
+</div>
+</div>
+<a id="a5a39742f216b22f33f2a8dfe126d7289" name="a5a39742f216b22f33f2a8dfe126d7289"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a39742f216b22f33f2a8dfe126d7289">&#9670;&#160;</a></span>find() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt; eve::production::WorkQueue::find </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>taskId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Const overload of find with the same immediate-borrow lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00030">taskId</a>.</p>
+
+</div>
+</div>
+<a id="a8ffded474ebb10bee7cfcc1901efa773" name="a8ffded474ebb10bee7cfcc1901efa773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ffded474ebb10bee7cfcc1901efa773">&#9670;&#160;</a></span>ownerTaskAt() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt; eve::production::WorkQueue::ownerTaskAt </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>owner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an owner's retained task by enqueue index, or an empty borrowed reference. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a3088c229404ddecb09ffb62a5def84a5" name="a3088c229404ddecb09ffb62a5def84a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3088c229404ddecb09ffb62a5def84a5">&#9670;&#160;</a></span>ownerTaskAt() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt; eve::production::WorkQueue::ownerTaskAt </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>owner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Const overload of ownerTaskAt with the same immediate-borrow lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00468">468</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="adeb5512a2162f5cff621ae0715c41aae" name="adeb5512a2162f5cff621ae0715c41aae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeb5512a2162f5cff621ae0715c41aae">&#9670;&#160;</a></span>ownerTaskCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::production::WorkQueue::ownerTaskCount </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns retained task count for an owner. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="af67e6635282b0644b5c59fb8005a3f8d" name="af67e6635282b0644b5c59fb8005a3f8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af67e6635282b0644b5c59fb8005a3f8d">&#9670;&#160;</a></span>pause()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::pause </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>taskId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pauses a queued or running task, or returns NotFound/Conflict. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Production_8cpp_source.html#l00332">find()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52dae99180abf47a8b3a856e0bcb2656990a">eve::production::Paused</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52da7b2f31b90fe1c2cc33a52233c1925df3">eve::production::Queued</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52da5bda814c4aedb126839228f1a3d92f09">eve::production::Running</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00030">taskId</a>.</p>
+
+</div>
+</div>
+<a id="a7af4f7dde2912f72ef36dc8e9fc8e007" name="a7af4f7dde2912f72ef36dc8e9fc8e007"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7af4f7dde2912f72ef36dc8e9fc8e007">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::restore </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally restores a snapshot; failure preserves current state. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00527">527</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="Production_8h_source.html#l00046">eve::production::ProductionEvent::kind</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52da7b2f31b90fe1c2cc33a52233c1925df3">eve::production::Queued</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Scheduling_8h_source.html#l00022">eve::scheduling::EventMetadata::sequence</a>, <a class="el" href="Production_8cpp_source.html#l00430">setSlotCount()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00402">eve::rts::RTSProductionActionAdapter::cancel()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00528">eve::rts::ProductionComponent::Impl::Impl()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00532">eve::rts::ProductionComponent::Impl::operator=()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00610">eve::rts::ProductionComponent::restore()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00660">restoreSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a279759c5eb6a4cb062741a9a21898cfc" name="a279759c5eb6a4cb062741a9a21898cfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a279759c5eb6a4cb062741a9a21898cfc">&#9670;&#160;</a></span>restoreSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::restoreSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restores a verified or migrated production envelope atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">snapshot</td><td>Source envelope with schema <code>production:queue</code>. </td></tr>
+    <tr><td class="paramname">hashProvider</td><td>Explicit content-digest provider. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a failure leaving queue state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00660">660</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="Production_8cpp_source.html#l00527">restore()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="common_2Snapshot_8cpp_source.html#l00081">eve::validateSnapshotPayloadMetadata()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Production_8cpp_source.html#l00694">restoreSnapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="ab88a7b697d8414f3764ef41d92bb47cb" name="ab88a7b697d8414f3764ef41d92bb47cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab88a7b697d8414f3764ef41d92bb47cb">&#9670;&#160;</a></span>restoreSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::restoreSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses and transactionally restores a common production envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00694">694</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00189">eve::parseSnapshotEnvelope()</a>, <a class="el" href="Production_8cpp_source.html#l00660">restoreSnapshot()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a573f965d1b0cecf54aa16571788c1b82" name="a573f965d1b0cecf54aa16571788c1b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a573f965d1b0cecf54aa16571788c1b82">&#9670;&#160;</a></span>resume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::resume </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>taskId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a paused task to deterministic scheduling. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Production_8cpp_source.html#l00332">find()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52dae99180abf47a8b3a856e0bcb2656990a">eve::production::Paused</a>, <a class="el" href="namespaceeve_1_1production.html#a075946719406dcb259eddd883f2df52da7b2f31b90fe1c2cc33a52233c1925df3">eve::production::Queued</a>, <a class="el" href="namespaceeve_1_1production.html#a35080dbe7252c4137654a46e542700b7ab2a21932ddc3b1e41c012d711c7bd238">eve::production::Resumed</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00030">taskId</a>.</p>
+
+</div>
+</div>
+<a id="ad30165b4e1ada5ad80ad853112b454b9" name="ad30165b4e1ada5ad80ad853112b454b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad30165b4e1ada5ad80ad853112b454b9">&#9670;&#160;</a></span>runningCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::production::WorkQueue::runningCount </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of currently running tasks for an owner. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a777ea658721561adf16d2fcd4f0ecedf" name="a777ea658721561adf16d2fcd4f0ecedf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a777ea658721561adf16d2fcd4f0ecedf">&#9670;&#160;</a></span>setSlotCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::production::WorkQueue::setSlotCount </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>owner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slots</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets an owner's parallel slot count; zero prevents new tasks from running. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Production_8cpp_source.html#l00527">restore()</a>.</p>
+
+</div>
+</div>
+<a id="aee9310c62a1ae975b83607a53b9404e5" name="aee9310c62a1ae975b83607a53b9404e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee9310c62a1ae975b83607a53b9404e5">&#9670;&#160;</a></span>slotCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::production::WorkQueue::slotCount </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an owner's slot count, defaulting to one. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a0f9a9cafef6172984b3ae9f776674f5d" name="a0f9a9cafef6172984b3ae9f776674f5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f9a9cafef6172984b3ae9f776674f5d">&#9670;&#160;</a></span>snapshot() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::production::WorkQueue::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes the complete queue as deterministic JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00489">489</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00250">eve::production::eventKindName()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="LanguageText_8cpp_source.html#l00015">quote</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="Production_8cpp_source.html#l00238">eve::production::taskStateName()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00402">eve::rts::RTSProductionActionAdapter::cancel()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00528">eve::rts::ProductionComponent::Impl::Impl()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00532">eve::rts::ProductionComponent::Impl::operator=()</a>, <a class="el" href="Production_8cpp_source.html#l00651">snapshot()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00687">snapshotEnvelopeJson()</a>.</p>
+
+</div>
+</div>
+<a id="a4c073691be759894f621f157eff721ef" name="a4c073691be759894f621f157eff721ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c073691be759894f621f157eff721ef">&#9670;&#160;</a></span>snapshot() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt; eve::production::WorkQueue::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures the production payload in the common snapshot envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00651">651</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00104">eve::makeSnapshotEnvelope()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00489">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a0f540cb038d972e83ed80161ba485dd3" name="a0f540cb038d972e83ed80161ba485dd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f540cb038d972e83ed80161ba485dd3">&#9670;&#160;</a></span>snapshotEnvelopeJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::production::WorkQueue::snapshotEnvelopeJson </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes the common production snapshot envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00687">687</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a>, <a class="el" href="Production_8cpp_source.html#l00489">snapshot()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a29804a3b28cccbc7bc88c24db4807d22" name="a29804a3b28cccbc7bc88c24db4807d22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29804a3b28cccbc7bc88c24db4807d22">&#9670;&#160;</a></span>taskAt() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt; eve::production::WorkQueue::taskAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a retained task by enqueue index, or an empty borrowed reference. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00446">446</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QueueInspector_8cpp_source.html#l00047">eve::queue_editing::RuntimeQueueInspector::capture()</a>.</p>
+
+</div>
+</div>
+<a id="ad4f3b3f2d44e9ea37a448298f18bf9aa" name="ad4f3b3f2d44e9ea37a448298f18bf9aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4f3b3f2d44e9ea37a448298f18bf9aa">&#9670;&#160;</a></span>taskAt() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1production_1_1ProductionTask.html">ProductionTask</a> &gt; eve::production::WorkQueue::taskAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Const overload of taskAt with the same immediate-borrow lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a4173e0da721ec7b604d2ff5622a6f7a5" name="a4173e0da721ec7b604d2ff5622a6f7a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4173e0da721ec7b604d2ff5622a6f7a5">&#9670;&#160;</a></span>taskCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::production::WorkQueue::taskCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns retained task count in enqueue order. </p>
+
+<p class="definition">在文件 <a class="el" href="Production_8cpp_source.html">Production.cpp</a> 第 <a class="el" href="Production_8cpp_source.html#l00444">444</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QueueInspector_8cpp_source.html#l00047">eve::queue_editing::RuntimeQueueInspector::capture()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/production/<a class="el" href="Production_8h_source.html">Production.h</a></li>
+<li>src/modules/production/<a class="el" href="Production_8cpp_source.html">Production.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

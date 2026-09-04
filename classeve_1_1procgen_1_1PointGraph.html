@@ -1,0 +1,2657 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::PointGraph类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1PointGraph-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::PointGraph类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A data-flow graph for attributed procedural points.  
+ <a href="classeve_1_1procgen_1_1PointGraph.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PointGraph_8h_source.html">PointGraph.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8bedc147d1316067ec54f2ca51b5364e" id="r_a8bedc147d1316067ec54f2ca51b5364e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a8bedc147d1316067ec54f2ca51b5364e">PointGraph</a> ()</td></tr>
+<tr class="separator:a8bedc147d1316067ec54f2ca51b5364e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6ef07cf4cdf8762d5a8838f249d50af" id="r_af6ef07cf4cdf8762d5a8838f249d50af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af6ef07cf4cdf8762d5a8838f249d50af">addNode</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;operation)</td></tr>
+<tr class="memdesc:af6ef07cf4cdf8762d5a8838f249d50af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a node using one of the operations returned by operationAt().  <br /></td></tr>
+<tr class="separator:af6ef07cf4cdf8762d5a8838f249d50af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b73f919f3b5142fbd694e077890ce9b" id="r_a1b73f919f3b5142fbd694e077890ce9b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1b73f919f3b5142fbd694e077890ce9b">removeNode</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a1b73f919f3b5142fbd694e077890ce9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a node and every edge that references it.  <br /></td></tr>
+<tr class="separator:a1b73f919f3b5142fbd694e077890ce9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af059e0ecd9e8f11a3e763db807803006" id="r_af059e0ecd9e8f11a3e763db807803006"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af059e0ecd9e8f11a3e763db807803006">hasNode</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:af059e0ecd9e8f11a3e763db807803006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6971920099029aeae6ab9696691f6583" id="r_a6971920099029aeae6ab9696691f6583"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a6971920099029aeae6ab9696691f6583">getNodeCount</a> () const</td></tr>
+<tr class="separator:a6971920099029aeae6ab9696691f6583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade66ba1447213320442e017c228360c6" id="r_ade66ba1447213320442e017c228360c6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ade66ba1447213320442e017c228360c6">getNodeId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ade66ba1447213320442e017c228360c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45c5a9e4e60ae632e5617264913b44ef" id="r_a45c5a9e4e60ae632e5617264913b44ef"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a45c5a9e4e60ae632e5617264913b44ef">getNodeOperation</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a45c5a9e4e60ae632e5617264913b44ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46fbad0186b929df1322eb26910de8c4" id="r_a46fbad0186b929df1322eb26910de8c4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a46fbad0186b929df1322eb26910de8c4">connect</a> (const std::string &amp;fromId, const std::string &amp;toId, int inputIndex=0)</td></tr>
+<tr class="memdesc:a46fbad0186b929df1322eb26910de8c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect an output to input slot 0 or 1. Replaces that input connection.  <br /></td></tr>
+<tr class="separator:a46fbad0186b929df1322eb26910de8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad049547256aa9ecdca46f180e913120c" id="r_ad049547256aa9ecdca46f180e913120c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ad049547256aa9ecdca46f180e913120c">disconnect</a> (const std::string &amp;toId, int inputIndex=0)</td></tr>
+<tr class="memdesc:ad049547256aa9ecdca46f180e913120c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one input connection.  <br /></td></tr>
+<tr class="separator:ad049547256aa9ecdca46f180e913120c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dad31b6f6ab39c13012f1e8422e0ed7" id="r_a3dad31b6f6ab39c13012f1e8422e0ed7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a3dad31b6f6ab39c13012f1e8422e0ed7">getInputNode</a> (const std::string &amp;nodeId, int inputIndex) const</td></tr>
+<tr class="separator:a3dad31b6f6ab39c13012f1e8422e0ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7897d29f01d47a5f6374e6823dda540" id="r_ae7897d29f01d47a5f6374e6823dda540"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ae7897d29f01d47a5f6374e6823dda540">setNodePoints</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>)</td></tr>
+<tr class="memdesc:ae7897d29f01d47a5f6374e6823dda540"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign a copied <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> to an <code>input</code> node.  <br /></td></tr>
+<tr class="separator:ae7897d29f01d47a5f6374e6823dda540"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac5a0a73e4b7dfedf47976861c7292cd" id="r_aac5a0a73e4b7dfedf47976861c7292cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aac5a0a73e4b7dfedf47976861c7292cd">setNodeSpatial</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> *spatial)</td></tr>
+<tr class="memdesc:aac5a0a73e4b7dfedf47976861c7292cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign copied spatial data to a spatial sample, filter, projection, or biome node.  <br /></td></tr>
+<tr class="separator:aac5a0a73e4b7dfedf47976861c7292cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9f6bf1ddc324a910c408175724333ad" id="r_af9f6bf1ddc324a910c408175724333ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af9f6bf1ddc324a910c408175724333ad">setNodeBiomeRules</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1procgen_1_1BiomeRules.html">BiomeRules</a> *rules)</td></tr>
+<tr class="memdesc:af9f6bf1ddc324a910c408175724333ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign copied biome rules to a <code>biome.generate</code> node.  <br /></td></tr>
+<tr class="separator:af9f6bf1ddc324a910c408175724333ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae23b64c749333239cc0bfe943ceed97a" id="r_ae23b64c749333239cc0bfe943ceed97a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ae23b64c749333239cc0bfe943ceed97a">setNodeShapeGrammar</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html">ShapeGrammar</a> *grammar)</td></tr>
+<tr class="memdesc:ae23b64c749333239cc0bfe943ceed97a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign a copied shape grammar to a <code>grammar.generate</code> node.  <br /></td></tr>
+<tr class="separator:ae23b64c749333239cc0bfe943ceed97a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a778c47a58683db537081a41556b870" id="r_a1a778c47a58683db537081a41556b870"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1a778c47a58683db537081a41556b870">setNodeFloat</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a1a778c47a58683db537081a41556b870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0ddd62d432f501fe055fb41097b86f9" id="r_ad0ddd62d432f501fe055fb41097b86f9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ad0ddd62d432f501fe055fb41097b86f9">setNodeInt</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, int <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ad0ddd62d432f501fe055fb41097b86f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28c4a2268feb3097bccb1c32c673eef1" id="r_a28c4a2268feb3097bccb1c32c673eef1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a28c4a2268feb3097bccb1c32c673eef1">setNodeString</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a28c4a2268feb3097bccb1c32c673eef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f1b06d1867a0df1521db5c292b1585f" id="r_a1f1b06d1867a0df1521db5c292b1585f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1f1b06d1867a0df1521db5c292b1585f">exposeParameter</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;nodeId, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="memdesc:a1f1b06d1867a0df1521db5c292b1585f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose one reflected node parameter for per-instance overrides.  <br /></td></tr>
+<tr class="separator:a1f1b06d1867a0df1521db5c292b1585f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95d8f3df0ad66f40c1b8b4c49a847ba3" id="r_a95d8f3df0ad66f40c1b8b4c49a847ba3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a95d8f3df0ad66f40c1b8b4c49a847ba3">getParameterCount</a> () const</td></tr>
+<tr class="memdesc:a95d8f3df0ad66f40c1b8b4c49a847ba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of exposed graph parameters.  <br /></td></tr>
+<tr class="separator:a95d8f3df0ad66f40c1b8b4c49a847ba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc29fd5498059ba297b86ca636ac03cc" id="r_abc29fd5498059ba297b86ca636ac03cc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#abc29fd5498059ba297b86ca636ac03cc">getParameterName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:abc29fd5498059ba297b86ca636ac03cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an exposed parameter name by stable insertion index.  <br /></td></tr>
+<tr class="separator:abc29fd5498059ba297b86ca636ac03cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf38f1fd17875aad0ae61eed22a1c895" id="r_acf38f1fd17875aad0ae61eed22a1c895"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#acf38f1fd17875aad0ae61eed22a1c895">getParameterKind</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:acf38f1fd17875aad0ae61eed22a1c895"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the reflected kind of an exposed parameter.  <br /></td></tr>
+<tr class="separator:acf38f1fd17875aad0ae61eed22a1c895"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0505c877e9ea3942ad8471a09b682ab" id="r_ad0505c877e9ea3942ad8471a09b682ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ad0505c877e9ea3942ad8471a09b682ab">hasParameterOverride</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:ad0505c877e9ea3942ad8471a09b682ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report whether an instance override is active.  <br /></td></tr>
+<tr class="separator:ad0505c877e9ea3942ad8471a09b682ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a109b00ed568a5ac604ce92f71339c9a7" id="r_a109b00ed568a5ac604ce92f71339c9a7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a109b00ed568a5ac604ce92f71339c9a7">setParameterFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a109b00ed568a5ac604ce92f71339c9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override an exposed floating-point parameter for this graph instance.  <br /></td></tr>
+<tr class="separator:a109b00ed568a5ac604ce92f71339c9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af543e74a2b1198e797890fedbe83ea97" id="r_af543e74a2b1198e797890fedbe83ea97"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af543e74a2b1198e797890fedbe83ea97">setParameterInt</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:af543e74a2b1198e797890fedbe83ea97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override an exposed integer or Boolean parameter for this graph instance.  <br /></td></tr>
+<tr class="separator:af543e74a2b1198e797890fedbe83ea97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaee3d793f0f150f7a25f419a8162699" id="r_aeaee3d793f0f150f7a25f419a8162699"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aeaee3d793f0f150f7a25f419a8162699">setParameterString</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:aeaee3d793f0f150f7a25f419a8162699"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override an exposed string parameter for this graph instance.  <br /></td></tr>
+<tr class="separator:aeaee3d793f0f150f7a25f419a8162699"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6d5483c1bbb78c8258af4ad095fcd49" id="r_ab6d5483c1bbb78c8258af4ad095fcd49"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab6d5483c1bbb78c8258af4ad095fcd49">getParameterFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float fallback) const</td></tr>
+<tr class="memdesc:ab6d5483c1bbb78c8258af4ad095fcd49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the effective floating-point parameter value.  <br /></td></tr>
+<tr class="separator:ab6d5483c1bbb78c8258af4ad095fcd49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee0afb34b3a37b5256096aab468f9e4b" id="r_aee0afb34b3a37b5256096aab468f9e4b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aee0afb34b3a37b5256096aab468f9e4b">getParameterInt</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int fallback) const</td></tr>
+<tr class="memdesc:aee0afb34b3a37b5256096aab468f9e4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the effective integer or Boolean parameter value.  <br /></td></tr>
+<tr class="separator:aee0afb34b3a37b5256096aab468f9e4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9cfe0662290ed203af15a8a63ce12f4" id="r_ae9cfe0662290ed203af15a8a63ce12f4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ae9cfe0662290ed203af15a8a63ce12f4">getParameterString</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;fallback) const</td></tr>
+<tr class="memdesc:ae9cfe0662290ed203af15a8a63ce12f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the effective string parameter value.  <br /></td></tr>
+<tr class="separator:ae9cfe0662290ed203af15a8a63ce12f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab402f645323f91eac23b495bfeaac0f9" id="r_ab402f645323f91eac23b495bfeaac0f9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab402f645323f91eac23b495bfeaac0f9">clearParameterOverride</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:ab402f645323f91eac23b495bfeaac0f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an instance override and restore the asset default.  <br /></td></tr>
+<tr class="separator:ab402f645323f91eac23b495bfeaac0f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fb7601bc752d6c4bd9457237eab8c6e" id="r_a8fb7601bc752d6c4bd9457237eab8c6e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a8fb7601bc752d6c4bd9457237eab8c6e">setNodeSubgraph</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> *<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, const std::string &amp;inputNode, const std::string &amp;outputNode)</td></tr>
+<tr class="memdesc:a8fb7601bc752d6c4bd9457237eab8c6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign an immutable nested graph.  <br /></td></tr>
+<tr class="separator:a8fb7601bc752d6c4bd9457237eab8c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70ed29a7ad0f2dd1a900430f0f599a92" id="r_a70ed29a7ad0f2dd1a900430f0f599a92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a70ed29a7ad0f2dd1a900430f0f599a92">execute</a> (const std::string &amp;outputId)</td></tr>
+<tr class="memdesc:a70ed29a7ad0f2dd1a900430f0f599a92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate one node and return a caller-owned result, or nullptr on failure.  <br /></td></tr>
+<tr class="separator:a70ed29a7ad0f2dd1a900430f0f599a92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c836a029e3d2f3197c805941c547b8f" id="r_a1c836a029e3d2f3197c805941c547b8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1c836a029e3d2f3197c805941c547b8f">setExecutionNodeBudget</a> (int nodes)</td></tr>
+<tr class="memdesc:a1c836a029e3d2f3197c805941c547b8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limit uncached nodes evaluated by one execute call; zero disables the limit.  <br /></td></tr>
+<tr class="separator:a1c836a029e3d2f3197c805941c547b8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8211d3a385d099becba1d22c7eff2d99" id="r_a8211d3a385d099becba1d22c7eff2d99"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a8211d3a385d099becba1d22c7eff2d99">getExecutionNodeBudget</a> () const</td></tr>
+<tr class="separator:a8211d3a385d099becba1d22c7eff2d99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91a7615acedeebdbd9e8e35996f8ddcd" id="r_a91a7615acedeebdbd9e8e35996f8ddcd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a91a7615acedeebdbd9e8e35996f8ddcd">setMaxNodeOutputPoints</a> (int <a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>)</td></tr>
+<tr class="memdesc:a91a7615acedeebdbd9e8e35996f8ddcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limit points produced by any node; zero disables the limit.  <br /></td></tr>
+<tr class="separator:a91a7615acedeebdbd9e8e35996f8ddcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f5f1988dc668fceef93601611c9c1cb" id="r_a7f5f1988dc668fceef93601611c9c1cb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7f5f1988dc668fceef93601611c9c1cb">getMaxNodeOutputPoints</a> () const</td></tr>
+<tr class="memdesc:a7f5f1988dc668fceef93601611c9c1cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the per-node point output limit; zero means unlimited.  <br /></td></tr>
+<tr class="separator:a7f5f1988dc668fceef93601611c9c1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c422a097ca57a792ce4a1a02f67d1ec" id="r_a6c422a097ca57a792ce4a1a02f67d1ec"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a6c422a097ca57a792ce4a1a02f67d1ec">setComputePolicy</a> (const std::string &amp;<a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:a6c422a097ca57a792ce4a1a02f67d1ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select <code>auto</code>, <code>gpu</code>, or <code>cpu</code> point execution; GPU failures fall back to CPU.  <br /></td></tr>
+<tr class="separator:a6c422a097ca57a792ce4a1a02f67d1ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4d9220c3b2dff0c4f16b32321bf557" id="r_a7b4d9220c3b2dff0c4f16b32321bf557"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7b4d9220c3b2dff0c4f16b32321bf557">getComputePolicy</a> () const</td></tr>
+<tr class="memdesc:a7b4d9220c3b2dff0c4f16b32321bf557"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the configured point compute policy.  <br /></td></tr>
+<tr class="separator:a7b4d9220c3b2dff0c4f16b32321bf557"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc8d0aa10f9c6bb57d06b9e17cd7001e" id="r_afc8d0aa10f9c6bb57d06b9e17cd7001e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#afc8d0aa10f9c6bb57d06b9e17cd7001e">setComputeMinimumPoints</a> (int <a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>)</td></tr>
+<tr class="memdesc:afc8d0aa10f9c6bb57d06b9e17cd7001e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the minimum point count for <code>auto</code> GPU dispatch.  <br /></td></tr>
+<tr class="separator:afc8d0aa10f9c6bb57d06b9e17cd7001e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51bc76df86bcd7efbeaf2b8a458fe742" id="r_a51bc76df86bcd7efbeaf2b8a458fe742"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a51bc76df86bcd7efbeaf2b8a458fe742">getComputeMinimumPoints</a> () const</td></tr>
+<tr class="memdesc:a51bc76df86bcd7efbeaf2b8a458fe742"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the minimum point count for automatic GPU dispatch.  <br /></td></tr>
+<tr class="separator:a51bc76df86bcd7efbeaf2b8a458fe742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b95463c40d60d8fdbece6d7c0d2ea4b" id="r_a5b95463c40d60d8fdbece6d7c0d2ea4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a5b95463c40d60d8fdbece6d7c0d2ea4b">requestCancel</a> ()</td></tr>
+<tr class="memdesc:a5b95463c40d60d8fdbece6d7c0d2ea4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel subsequent execution until resetCancellation is called.  <br /></td></tr>
+<tr class="separator:a5b95463c40d60d8fdbece6d7c0d2ea4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00ff022b5051710da4b397246ca17c4d" id="r_a00ff022b5051710da4b397246ca17c4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a00ff022b5051710da4b397246ca17c4d">resetCancellation</a> ()</td></tr>
+<tr class="separator:a00ff022b5051710da4b397246ca17c4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f804fd9d0d79fa34d1f9eabcfde18ae" id="r_a2f804fd9d0d79fa34d1f9eabcfde18ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a2f804fd9d0d79fa34d1f9eabcfde18ae">wasCancelled</a> () const</td></tr>
+<tr class="separator:a2f804fd9d0d79fa34d1f9eabcfde18ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c4346fcc6630a0a1555d0b560c4bb05" id="r_a7c4346fcc6630a0a1555d0b560c4bb05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7c4346fcc6630a0a1555d0b560c4bb05">validate</a> ()</td></tr>
+<tr class="memdesc:a7c4346fcc6630a0a1555d0b560c4bb05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate ids, operations, required inputs and graph acyclicity.  <br /></td></tr>
+<tr class="separator:a7c4346fcc6630a0a1555d0b560c4bb05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4c73e2caef431101f50516bdaa97da8" id="r_ac4c73e2caef431101f50516bdaa97da8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ac4c73e2caef431101f50516bdaa97da8">getError</a> () const</td></tr>
+<tr class="separator:ac4c73e2caef431101f50516bdaa97da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2639d01bfc9bebdc3ea7ba13a9d857e7" id="r_a2639d01bfc9bebdc3ea7ba13a9d857e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a2639d01bfc9bebdc3ea7ba13a9d857e7">clearCache</a> ()</td></tr>
+<tr class="separator:a2639d01bfc9bebdc3ea7ba13a9d857e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a8eb9b051cb5688ea1bc105e2a2e298" id="r_a4a8eb9b051cb5688ea1bc105e2a2e298"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a4a8eb9b051cb5688ea1bc105e2a2e298">getRevision</a> () const</td></tr>
+<tr class="memdesc:a4a8eb9b051cb5688ea1bc105e2a2e298"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic topology/parameter revision used by asset and preview caches.  <br /></td></tr>
+<tr class="separator:a4a8eb9b051cb5688ea1bc105e2a2e298"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6156c442a94a0d67314f1ba9b4f0bc6e" id="r_a6156c442a94a0d67314f1ba9b4f0bc6e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a6156c442a94a0d67314f1ba9b4f0bc6e">getExecutionCount</a> () const</td></tr>
+<tr class="separator:a6156c442a94a0d67314f1ba9b4f0bc6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac87484116f519d94344fc0e93d995e36" id="r_ac87484116f519d94344fc0e93d995e36"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ac87484116f519d94344fc0e93d995e36">getCacheHitCount</a> () const</td></tr>
+<tr class="separator:ac87484116f519d94344fc0e93d995e36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a386ccb6f9406242cd82ba26435ed073c" id="r_a386ccb6f9406242cd82ba26435ed073c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a386ccb6f9406242cd82ba26435ed073c">getMetricCount</a> () const</td></tr>
+<tr class="separator:a386ccb6f9406242cd82ba26435ed073c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc11c1e91a9f576013058fbc07b64479" id="r_adc11c1e91a9f576013058fbc07b64479"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#adc11c1e91a9f576013058fbc07b64479">getMetricNodeId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:adc11c1e91a9f576013058fbc07b64479"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af452d21eab7b7b13afbfe03970a8ae88" id="r_af452d21eab7b7b13afbfe03970a8ae88"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af452d21eab7b7b13afbfe03970a8ae88">getMetricOutputCount</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:af452d21eab7b7b13afbfe03970a8ae88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a225f532b67995c3c2334d5603c259b9e" id="r_a225f532b67995c3c2334d5603c259b9e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a225f532b67995c3c2334d5603c259b9e">getMetricMilliseconds</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a225f532b67995c3c2334d5603c259b9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75239d7d760129033963687ecf5c5aa3" id="r_a75239d7d760129033963687ecf5c5aa3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a75239d7d760129033963687ecf5c5aa3">isMetricCacheHit</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a75239d7d760129033963687ecf5c5aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82f8129fb98ff3465c7202c4db2d26d0" id="r_a82f8129fb98ff3465c7202c4db2d26d0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a82f8129fb98ff3465c7202c4db2d26d0">getMetricBackend</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a82f8129fb98ff3465c7202c4db2d26d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return <code>cpu</code>, <code>vulkan</code>, or <code>webgpu</code> for one evaluated node.  <br /></td></tr>
+<tr class="separator:a82f8129fb98ff3465c7202c4db2d26d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a506c8c9656f12326a7206862339000ca" id="r_a506c8c9656f12326a7206862339000ca"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a506c8c9656f12326a7206862339000ca">getComputeFallbackReason</a> () const</td></tr>
+<tr class="memdesc:a506c8c9656f12326a7206862339000ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return why the latest eligible GPU node used the CPU fallback.  <br /></td></tr>
+<tr class="separator:a506c8c9656f12326a7206862339000ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2f0e6d7ead147b5f51371d7f948d000" id="r_ab2f0e6d7ead147b5f51371d7f948d000"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab2f0e6d7ead147b5f51371d7f948d000">getComputeUploadCount</a> () const</td></tr>
+<tr class="memdesc:ab2f0e6d7ead147b5f51371d7f948d000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return successful point-compute uploads for this graph executor.  <br /></td></tr>
+<tr class="separator:ab2f0e6d7ead147b5f51371d7f948d000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeab9d2921e1f22e31f7498cb3785f926" id="r_aeab9d2921e1f22e31f7498cb3785f926"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aeab9d2921e1f22e31f7498cb3785f926">getComputeDispatchCount</a> () const</td></tr>
+<tr class="memdesc:aeab9d2921e1f22e31f7498cb3785f926"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return successful point-compute dispatches for this graph executor.  <br /></td></tr>
+<tr class="separator:aeab9d2921e1f22e31f7498cb3785f926"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57a1c45ad1809b8994eee98a0b0ae85b" id="r_a57a1c45ad1809b8994eee98a0b0ae85b"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a57a1c45ad1809b8994eee98a0b0ae85b">getComputeReadbackCount</a> () const</td></tr>
+<tr class="memdesc:a57a1c45ad1809b8994eee98a0b0ae85b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return successful point-compute readbacks for this graph executor.  <br /></td></tr>
+<tr class="separator:a57a1c45ad1809b8994eee98a0b0ae85b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1968ff0f863466cede898dbdd74cdd4b" id="r_a1968ff0f863466cede898dbdd74cdd4b"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1968ff0f863466cede898dbdd74cdd4b">getComputeBufferReuseCount</a> () const</td></tr>
+<tr class="memdesc:a1968ff0f863466cede898dbdd74cdd4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return executions that reused allocated point-compute buffers.  <br /></td></tr>
+<tr class="separator:a1968ff0f863466cede898dbdd74cdd4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a061cc0cf9900a4655f5be94b0c2c65cc" id="r_a061cc0cf9900a4655f5be94b0c2c65cc"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a061cc0cf9900a4655f5be94b0c2c65cc">getComputePeakBufferBytes</a> () const</td></tr>
+<tr class="memdesc:a061cc0cf9900a4655f5be94b0c2c65cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return peak bytes reserved in each reusable point-compute buffer.  <br /></td></tr>
+<tr class="separator:a061cc0cf9900a4655f5be94b0c2c65cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73b86fdf1f397a8785f4bc66b0d6166e" id="r_a73b86fdf1f397a8785f4bc66b0d6166e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a73b86fdf1f397a8785f4bc66b0d6166e">getLastFusedTransformCount</a> () const</td></tr>
+<tr class="memdesc:a73b86fdf1f397a8785f4bc66b0d6166e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return logical transforms in the latest successful fused dispatch.  <br /></td></tr>
+<tr class="separator:a73b86fdf1f397a8785f4bc66b0d6166e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae220929656a150962ce6c1d9c8cf1bbe" id="r_ae220929656a150962ce6c1d9c8cf1bbe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ae220929656a150962ce6c1d9c8cf1bbe">getMetricMinX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ae220929656a150962ce6c1d9c8cf1bbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return cached output bounds for editor/debug visualization.  <br /></td></tr>
+<tr class="separator:ae220929656a150962ce6c1d9c8cf1bbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac4a51ab982ef3d4c5ce82fefa360c5e" id="r_aac4a51ab982ef3d4c5ce82fefa360c5e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aac4a51ab982ef3d4c5ce82fefa360c5e">getMetricMinY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aac4a51ab982ef3d4c5ce82fefa360c5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the cached minimum output Y coordinate.  <br /></td></tr>
+<tr class="separator:aac4a51ab982ef3d4c5ce82fefa360c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14d52e9c612dc1989aa61135e015ac4c" id="r_a14d52e9c612dc1989aa61135e015ac4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a14d52e9c612dc1989aa61135e015ac4c">getMetricMinZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a14d52e9c612dc1989aa61135e015ac4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the cached minimum output Z coordinate.  <br /></td></tr>
+<tr class="separator:a14d52e9c612dc1989aa61135e015ac4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34dc87be7da7d611e799265053e53895" id="r_a34dc87be7da7d611e799265053e53895"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a34dc87be7da7d611e799265053e53895">getMetricMaxX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a34dc87be7da7d611e799265053e53895"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the cached maximum output X coordinate.  <br /></td></tr>
+<tr class="separator:a34dc87be7da7d611e799265053e53895"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1dffd36492ef69ad67a730e2b553de9" id="r_ab1dffd36492ef69ad67a730e2b553de9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab1dffd36492ef69ad67a730e2b553de9">getMetricMaxY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ab1dffd36492ef69ad67a730e2b553de9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the cached maximum output Y coordinate.  <br /></td></tr>
+<tr class="separator:ab1dffd36492ef69ad67a730e2b553de9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9e848a3abcb1118060b5bf749f6b591" id="r_ad9e848a3abcb1118060b5bf749f6b591"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ad9e848a3abcb1118060b5bf749f6b591">getMetricMaxZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ad9e848a3abcb1118060b5bf749f6b591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the cached maximum output Z coordinate.  <br /></td></tr>
+<tr class="separator:ad9e848a3abcb1118060b5bf749f6b591"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8341d8e1878e2f94f0a114748f68fd12" id="r_a8341d8e1878e2f94f0a114748f68fd12"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a8341d8e1878e2f94f0a114748f68fd12">getMetricAverageDensity</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a8341d8e1878e2f94f0a114748f68fd12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the mean point density of one node output.  <br /></td></tr>
+<tr class="separator:a8341d8e1878e2f94f0a114748f68fd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5481f04dee202477ebfab9e747f6c375" id="r_a5481f04dee202477ebfab9e747f6c375"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a5481f04dee202477ebfab9e747f6c375">getNodeOutput</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a5481f04dee202477ebfab9e747f6c375"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the cached/debug output of a node after execution.  <br /></td></tr>
+<tr class="separator:a5481f04dee202477ebfab9e747f6c375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afab71aeeff2e2f57d58fe01a8b3919bc" id="r_afab71aeeff2e2f57d58fe01a8b3919bc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#afab71aeeff2e2f57d58fe01a8b3919bc">debugReport</a> () const</td></tr>
+<tr class="separator:afab71aeeff2e2f57d58fe01a8b3919bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a5543c407fc35001ee8f1e88af3275c" id="r_a4a5543c407fc35001ee8f1e88af3275c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a4a5543c407fc35001ee8f1e88af3275c">serializeDefinition</a> () const</td></tr>
+<tr class="memdesc:a4a5543c407fc35001ee8f1e88af3275c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize graph topology, parameters and nested graphs.  <br /></td></tr>
+<tr class="separator:a4a5543c407fc35001ee8f1e88af3275c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fca936dddf0bb87704b64519569dbe3" id="r_a7fca936dddf0bb87704b64519569dbe3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7fca936dddf0bb87704b64519569dbe3">deserializeDefinition</a> (const std::string &amp;definition)</td></tr>
+<tr class="memdesc:a7fca936dddf0bb87704b64519569dbe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally replace this graph from serializeDefinition output.  <br /></td></tr>
+<tr class="separator:a7fca936dddf0bb87704b64519569dbe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e980275ce70aed601e131b315507b2d" id="r_a1e980275ce70aed601e131b315507b2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1e980275ce70aed601e131b315507b2d">instantiate</a> () const</td></tr>
+<tr class="memdesc:a1e980275ce70aed601e131b315507b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an independent runtime instance without external inputs or overrides.  <br /></td></tr>
+<tr class="separator:a1e980275ce70aed601e131b315507b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a271db63bdcae2f8619351bb4f97e6275" id="r_a271db63bdcae2f8619351bb4f97e6275"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a271db63bdcae2f8619351bb4f97e6275">getOperationCount</a> ()</td></tr>
+<tr class="separator:a271db63bdcae2f8619351bb4f97e6275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81f66ba74cdc09b27713e07199382c69" id="r_a81f66ba74cdc09b27713e07199382c69"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a81f66ba74cdc09b27713e07199382c69">getOperationId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a81f66ba74cdc09b27713e07199382c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff4b392c85db2a708ed7c0e9f3431660" id="r_aff4b392c85db2a708ed7c0e9f3431660"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aff4b392c85db2a708ed7c0e9f3431660">getOperationInputCount</a> (const std::string &amp;operation)</td></tr>
+<tr class="separator:aff4b392c85db2a708ed7c0e9f3431660"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d27f8fb12c291a4547061a02c42194b" id="r_a7d27f8fb12c291a4547061a02c42194b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7d27f8fb12c291a4547061a02c42194b">getOperationParamCount</a> (const std::string &amp;operation)</td></tr>
+<tr class="separator:a7d27f8fb12c291a4547061a02c42194b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee8f52021d4b58808fc347ad18ea5404" id="r_aee8f52021d4b58808fc347ad18ea5404"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aee8f52021d4b58808fc347ad18ea5404">getOperationParamKey</a> (const std::string &amp;operation, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:aee8f52021d4b58808fc347ad18ea5404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5f596c08951825afd1765832f0f7d62" id="r_ab5f596c08951825afd1765832f0f7d62"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab5f596c08951825afd1765832f0f7d62">getOperationParamKind</a> (const std::string &amp;operation, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:ab5f596c08951825afd1765832f0f7d62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09f1d43d7dc761e0cf0d06f85875d165" id="r_a09f1d43d7dc761e0cf0d06f85875d165"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a09f1d43d7dc761e0cf0d06f85875d165">getOperationParamDefault</a> (const std::string &amp;operation, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a09f1d43d7dc761e0cf0d06f85875d165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A data-flow graph for attributed procedural points. </p>
+<p>Nodes are addressed by stable string ids and evaluated lazily from a chosen output. Graph mutations invalidate cached results. Execution rejects missing inputs and cycles, retains inspectable node outputs, and supports nested graphs through the <code>subgraph</code> operation. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8h_source.html">PointGraph.h</a> 第 <a class="el" href="PointGraph_8h_source.html#l00042">42</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8bedc147d1316067ec54f2ca51b5364e" name="a8bedc147d1316067ec54f2ca51b5364e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bedc147d1316067ec54f2ca51b5364e">&#9670;&#160;</a></span>PointGraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::PointGraph::PointGraph </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphAsset_8cpp_source.html#l00221">instantiate()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af6ef07cf4cdf8762d5a8838f249d50af" name="af6ef07cf4cdf8762d5a8838f249d50af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6ef07cf4cdf8762d5a8838f249d50af">&#9670;&#160;</a></span>addNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::addNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a node using one of the operations returned by operationAt(). </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a2639d01bfc9bebdc3ea7ba13a9d857e7" name="a2639d01bfc9bebdc3ea7ba13a9d857e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2639d01bfc9bebdc3ea7ba13a9d857e7">&#9670;&#160;</a></span>clearCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointGraph::clearCache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00437">437</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00414">setComputeMinimumPoints()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00406">setComputePolicy()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00399">setMaxNodeOutputPoints()</a>.</p>
+
+</div>
+</div>
+<a id="ab402f645323f91eac23b495bfeaac0f9" name="ab402f645323f91eac23b495bfeaac0f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab402f645323f91eac23b495bfeaac0f9">&#9670;&#160;</a></span>clearParameterOverride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::clearParameterOverride </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove an instance override and restore the asset default. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00356">356</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00311">hasParameterOverride()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a46fbad0186b929df1322eb26910de8c4" name="a46fbad0186b929df1322eb26910de8c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46fbad0186b929df1322eb26910de8c4">&#9670;&#160;</a></span>connect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::connect </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fromId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>toId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>inputIndex</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Connect an output to input slot 0 or 1. Replaces that input connection. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a> , 以及 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="afab71aeeff2e2f57d58fe01a8b3919bc" name="afab71aeeff2e2f57d58fe01a8b3919bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afab71aeeff2e2f57d58fe01a8b3919bc">&#9670;&#160;</a></span>debugReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::debugReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00509">509</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a7fca936dddf0bb87704b64519569dbe3" name="a7fca936dddf0bb87704b64519569dbe3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fca936dddf0bb87704b64519569dbe3">&#9670;&#160;</a></span>deserializeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::deserializeDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally replace this graph from serializeDefinition output. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraphAsset_8cpp_source.html">PointGraphAsset.cpp</a> 第 <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00142">addNode()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00184">connect()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00285">exposeParameter()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00436">getError()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="PointGraph_8cpp_source.html#l00252">setNodeFloat()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00262">setNodeInt()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00274">setNodeString()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00366">setNodeSubgraph()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ad049547256aa9ecdca46f180e913120c" name="ad049547256aa9ecdca46f180e913120c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad049547256aa9ecdca46f180e913120c">&#9670;&#160;</a></span>disconnect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::disconnect </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>toId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>inputIndex</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one input connection. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a70ed29a7ad0f2dd1a900430f0f599a92" name="a70ed29a7ad0f2dd1a900430f0f599a92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70ed29a7ad0f2dd1a900430f0f599a92">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> * eve::procgen::PointGraph::execute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>outputId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate one node and return a caller-owned result, or nullptr on failure. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a1f1b06d1867a0df1521db5c292b1585f" name="a1f1b06d1867a0df1521db5c292b1585f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f1b06d1867a0df1521db5c292b1585f">&#9670;&#160;</a></span>exposeParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::exposeParameter </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expose one reflected node parameter for per-instance overrides. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ac87484116f519d94344fc0e93d995e36" name="ac87484116f519d94344fc0e93d995e36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac87484116f519d94344fc0e93d995e36">&#9670;&#160;</a></span>getCacheHitCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getCacheHitCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00445">445</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a1968ff0f863466cede898dbdd74cdd4b" name="a1968ff0f863466cede898dbdd74cdd4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1968ff0f863466cede898dbdd74cdd4b">&#9670;&#160;</a></span>getComputeBufferReuseCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::procgen::PointGraph::getComputeBufferReuseCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return executions that reused allocated point-compute buffers. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00467">467</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="aeab9d2921e1f22e31f7498cb3785f926" name="aeab9d2921e1f22e31f7498cb3785f926"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeab9d2921e1f22e31f7498cb3785f926">&#9670;&#160;</a></span>getComputeDispatchCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::procgen::PointGraph::getComputeDispatchCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return successful point-compute dispatches for this graph executor. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00465">465</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a506c8c9656f12326a7206862339000ca" name="a506c8c9656f12326a7206862339000ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a506c8c9656f12326a7206862339000ca">&#9670;&#160;</a></span>getComputeFallbackReason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getComputeFallbackReason </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return why the latest eligible GPU node used the CPU fallback. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00463">463</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a51bc76df86bcd7efbeaf2b8a458fe742" name="a51bc76df86bcd7efbeaf2b8a458fe742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51bc76df86bcd7efbeaf2b8a458fe742">&#9670;&#160;</a></span>getComputeMinimumPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getComputeMinimumPoints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the minimum point count for automatic GPU dispatch. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00420">420</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a061cc0cf9900a4655f5be94b0c2c65cc" name="a061cc0cf9900a4655f5be94b0c2c65cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a061cc0cf9900a4655f5be94b0c2c65cc">&#9670;&#160;</a></span>getComputePeakBufferBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::procgen::PointGraph::getComputePeakBufferBytes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return peak bytes reserved in each reusable point-compute buffer. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00468">468</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a7b4d9220c3b2dff0c4f16b32321bf557" name="a7b4d9220c3b2dff0c4f16b32321bf557"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4d9220c3b2dff0c4f16b32321bf557">&#9670;&#160;</a></span>getComputePolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getComputePolicy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the configured point compute policy. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a57a1c45ad1809b8994eee98a0b0ae85b" name="a57a1c45ad1809b8994eee98a0b0ae85b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57a1c45ad1809b8994eee98a0b0ae85b">&#9670;&#160;</a></span>getComputeReadbackCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::procgen::PointGraph::getComputeReadbackCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return successful point-compute readbacks for this graph executor. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00466">466</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ab2f0e6d7ead147b5f51371d7f948d000" name="ab2f0e6d7ead147b5f51371d7f948d000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2f0e6d7ead147b5f51371d7f948d000">&#9670;&#160;</a></span>getComputeUploadCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::procgen::PointGraph::getComputeUploadCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return successful point-compute uploads for this graph executor. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00464">464</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ac4c73e2caef431101f50516bdaa97da8" name="ac4c73e2caef431101f50516bdaa97da8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4c73e2caef431101f50516bdaa97da8">&#9670;&#160;</a></span>getError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00436">436</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a6156c442a94a0d67314f1ba9b4f0bc6e" name="a6156c442a94a0d67314f1ba9b4f0bc6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6156c442a94a0d67314f1ba9b4f0bc6e">&#9670;&#160;</a></span>getExecutionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getExecutionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00444">444</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a8211d3a385d099becba1d22c7eff2d99" name="a8211d3a385d099becba1d22c7eff2d99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8211d3a385d099becba1d22c7eff2d99">&#9670;&#160;</a></span>getExecutionNodeBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getExecutionNodeBudget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a3dad31b6f6ab39c13012f1e8422e0ed7" name="a3dad31b6f6ab39c13012f1e8422e0ed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dad31b6f6ab39c13012f1e8422e0ed7">&#9670;&#160;</a></span>getInputNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getInputNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>inputIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a73b86fdf1f397a8785f4bc66b0d6166e" name="a73b86fdf1f397a8785f4bc66b0d6166e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73b86fdf1f397a8785f4bc66b0d6166e">&#9670;&#160;</a></span>getLastFusedTransformCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getLastFusedTransformCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return logical transforms in the latest successful fused dispatch. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00469">469</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a7f5f1988dc668fceef93601611c9c1cb" name="a7f5f1988dc668fceef93601611c9c1cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f5f1988dc668fceef93601611c9c1cb">&#9670;&#160;</a></span>getMaxNodeOutputPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getMaxNodeOutputPoints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the per-node point output limit; zero means unlimited. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00405">405</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a8341d8e1878e2f94f0a114748f68fd12" name="a8341d8e1878e2f94f0a114748f68fd12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8341d8e1878e2f94f0a114748f68fd12">&#9670;&#160;</a></span>getMetricAverageDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getMetricAverageDensity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the mean point density of one node output. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00488">488</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a82f8129fb98ff3465c7202c4db2d26d0" name="a82f8129fb98ff3465c7202c4db2d26d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82f8129fb98ff3465c7202c4db2d26d0">&#9670;&#160;</a></span>getMetricBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getMetricBackend </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return <code>cpu</code>, <code>vulkan</code>, or <code>webgpu</code> for one evaluated node. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00460">460</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a386ccb6f9406242cd82ba26435ed073c" name="a386ccb6f9406242cd82ba26435ed073c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a386ccb6f9406242cd82ba26435ed073c">&#9670;&#160;</a></span>getMetricCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getMetricCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00447">447</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a34dc87be7da7d611e799265053e53895" name="a34dc87be7da7d611e799265053e53895"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34dc87be7da7d611e799265053e53895">&#9670;&#160;</a></span>getMetricMaxX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getMetricMaxX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the cached maximum output X coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00479">479</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ab1dffd36492ef69ad67a730e2b553de9" name="ab1dffd36492ef69ad67a730e2b553de9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1dffd36492ef69ad67a730e2b553de9">&#9670;&#160;</a></span>getMetricMaxY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getMetricMaxY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the cached maximum output Y coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ad9e848a3abcb1118060b5bf749f6b591" name="ad9e848a3abcb1118060b5bf749f6b591"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9e848a3abcb1118060b5bf749f6b591">&#9670;&#160;</a></span>getMetricMaxZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getMetricMaxZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the cached maximum output Z coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00485">485</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a225f532b67995c3c2334d5603c259b9e" name="a225f532b67995c3c2334d5603c259b9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a225f532b67995c3c2334d5603c259b9e">&#9670;&#160;</a></span>getMetricMilliseconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getMetricMilliseconds </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00454">454</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ae220929656a150962ce6c1d9c8cf1bbe" name="ae220929656a150962ce6c1d9c8cf1bbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae220929656a150962ce6c1d9c8cf1bbe">&#9670;&#160;</a></span>getMetricMinX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getMetricMinX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return cached output bounds for editor/debug visualization. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00470">470</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="aac4a51ab982ef3d4c5ce82fefa360c5e" name="aac4a51ab982ef3d4c5ce82fefa360c5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac4a51ab982ef3d4c5ce82fefa360c5e">&#9670;&#160;</a></span>getMetricMinY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getMetricMinY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the cached minimum output Y coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00473">473</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a14d52e9c612dc1989aa61135e015ac4c" name="a14d52e9c612dc1989aa61135e015ac4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14d52e9c612dc1989aa61135e015ac4c">&#9670;&#160;</a></span>getMetricMinZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getMetricMinZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the cached minimum output Z coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00476">476</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="adc11c1e91a9f576013058fbc07b64479" name="adc11c1e91a9f576013058fbc07b64479"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc11c1e91a9f576013058fbc07b64479">&#9670;&#160;</a></span>getMetricNodeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getMetricNodeId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00448">448</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="af452d21eab7b7b13afbfe03970a8ae88" name="af452d21eab7b7b13afbfe03970a8ae88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af452d21eab7b7b13afbfe03970a8ae88">&#9670;&#160;</a></span>getMetricOutputCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getMetricOutputCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a6971920099029aeae6ab9696691f6583" name="a6971920099029aeae6ab9696691f6583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6971920099029aeae6ab9696691f6583">&#9670;&#160;</a></span>getNodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getNodeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ade66ba1447213320442e017c228360c6" name="ade66ba1447213320442e017c228360c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade66ba1447213320442e017c228360c6">&#9670;&#160;</a></span>getNodeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getNodeId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a45c5a9e4e60ae632e5617264913b44ef" name="a45c5a9e4e60ae632e5617264913b44ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45c5a9e4e60ae632e5617264913b44ef">&#9670;&#160;</a></span>getNodeOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getNodeOperation </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a5481f04dee202477ebfab9e747f6c375" name="a5481f04dee202477ebfab9e747f6c375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5481f04dee202477ebfab9e747f6c375">&#9670;&#160;</a></span>getNodeOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> * eve::procgen::PointGraph::getNodeOutput </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy the cached/debug output of a node after execution. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00493">493</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a271db63bdcae2f8619351bb4f97e6275" name="a271db63bdcae2f8619351bb4f97e6275"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a271db63bdcae2f8619351bb4f97e6275">&#9670;&#160;</a></span>getOperationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getOperationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00521">521</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a81f66ba74cdc09b27713e07199382c69" name="a81f66ba74cdc09b27713e07199382c69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81f66ba74cdc09b27713e07199382c69">&#9670;&#160;</a></span>getOperationId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getOperationId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00522">522</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="aff4b392c85db2a708ed7c0e9f3431660" name="aff4b392c85db2a708ed7c0e9f3431660"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff4b392c85db2a708ed7c0e9f3431660">&#9670;&#160;</a></span>getOperationInputCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getOperationInputCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00527">527</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a> , 以及 <a class="el" href="PcgGraph_8cpp_source.html#l00073">eve::procgen_editing::PcgPointGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="a7d27f8fb12c291a4547061a02c42194b" name="a7d27f8fb12c291a4547061a02c42194b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d27f8fb12c291a4547061a02c42194b">&#9670;&#160;</a></span>getOperationParamCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getOperationParamCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00531">531</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a> , 以及 <a class="el" href="PcgGraph_8cpp_source.html#l00073">eve::procgen_editing::PcgPointGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="a09f1d43d7dc761e0cf0d06f85875d165" name="a09f1d43d7dc761e0cf0d06f85875d165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09f1d43d7dc761e0cf0d06f85875d165">&#9670;&#160;</a></span>getOperationParamDefault()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getOperationParamDefault </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00547">547</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a> , 以及 <a class="el" href="PcgGraph_8cpp_source.html#l00073">eve::procgen_editing::PcgPointGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="aee8f52021d4b58808fc347ad18ea5404" name="aee8f52021d4b58808fc347ad18ea5404"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee8f52021d4b58808fc347ad18ea5404">&#9670;&#160;</a></span>getOperationParamKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getOperationParamKey </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00535">535</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a> , 以及 <a class="el" href="PcgGraph_8cpp_source.html#l00073">eve::procgen_editing::PcgPointGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="ab5f596c08951825afd1765832f0f7d62" name="ab5f596c08951825afd1765832f0f7d62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5f596c08951825afd1765832f0f7d62">&#9670;&#160;</a></span>getOperationParamKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getOperationParamKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00541">541</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a> , 以及 <a class="el" href="PcgGraph_8cpp_source.html#l00073">eve::procgen_editing::PcgPointGraphDomain::makeNode()</a>.</p>
+
+</div>
+</div>
+<a id="a95d8f3df0ad66f40c1b8b4c49a847ba3" name="a95d8f3df0ad66f40c1b8b4c49a847ba3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95d8f3df0ad66f40c1b8b4c49a847ba3">&#9670;&#160;</a></span>getParameterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getParameterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of exposed graph parameters. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00302">302</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ab6d5483c1bbb78c8258af4ad095fcd49" name="ab6d5483c1bbb78c8258af4ad095fcd49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6d5483c1bbb78c8258af4ad095fcd49">&#9670;&#160;</a></span>getParameterFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointGraph::getParameterFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the effective floating-point parameter value. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="aee0afb34b3a37b5256096aab468f9e4b" name="aee0afb34b3a37b5256096aab468f9e4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee0afb34b3a37b5256096aab468f9e4b">&#9670;&#160;</a></span>getParameterInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointGraph::getParameterInt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the effective integer or Boolean parameter value. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="acf38f1fd17875aad0ae61eed22a1c895" name="acf38f1fd17875aad0ae61eed22a1c895"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf38f1fd17875aad0ae61eed22a1c895">&#9670;&#160;</a></span>getParameterKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getParameterKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the reflected kind of an exposed parameter. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="abc29fd5498059ba297b86ca636ac03cc" name="abc29fd5498059ba297b86ca636ac03cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc29fd5498059ba297b86ca636ac03cc">&#9670;&#160;</a></span>getParameterName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getParameterName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an exposed parameter name by stable insertion index. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00303">303</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ae9cfe0662290ed203af15a8a63ce12f4" name="ae9cfe0662290ed203af15a8a63ce12f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9cfe0662290ed203af15a8a63ce12f4">&#9670;&#160;</a></span>getParameterString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::getParameterString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the effective string parameter value. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a4a8eb9b051cb5688ea1bc105e2a2e298" name="a4a8eb9b051cb5688ea1bc105e2a2e298"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a8eb9b051cb5688ea1bc105e2a2e298">&#9670;&#160;</a></span>getRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::procgen::PointGraph::getRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Monotonic topology/parameter revision used by asset and preview caches. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00446">446</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="af059e0ecd9e8f11a3e763db807803006" name="af059e0ecd9e8f11a3e763db807803006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af059e0ecd9e8f11a3e763db807803006">&#9670;&#160;</a></span>hasNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::hasNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ad0505c877e9ea3942ad8471a09b682ab" name="ad0505c877e9ea3942ad8471a09b682ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0505c877e9ea3942ad8471a09b682ab">&#9670;&#160;</a></span>hasParameterOverride()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::hasParameterOverride </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Report whether an instance override is active. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraph_8cpp_source.html#l00356">clearParameterOverride()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a1e980275ce70aed601e131b315507b2d" name="a1e980275ce70aed601e131b315507b2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e980275ce70aed601e131b315507b2d">&#9670;&#160;</a></span>instantiate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> * eve::procgen::PointGraph::instantiate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an independent runtime instance without external inputs or overrides. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraphAsset_8cpp_source.html">PointGraphAsset.cpp</a> 第 <a class="el" href="PointGraphAsset_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00140">PointGraph()</a> , 以及 <a class="el" href="PointGraphAsset_8cpp_source.html#l00044">serializeDefinition()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a75239d7d760129033963687ecf5c5aa3" name="a75239d7d760129033963687ecf5c5aa3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75239d7d760129033963687ecf5c5aa3">&#9670;&#160;</a></span>isMetricCacheHit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::isMetricCacheHit </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00457">457</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a1b73f919f3b5142fbd694e077890ce9b" name="a1b73f919f3b5142fbd694e077890ce9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b73f919f3b5142fbd694e077890ce9b">&#9670;&#160;</a></span>removeNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::removeNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a node and every edge that references it. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a5b95463c40d60d8fdbece6d7c0d2ea4b" name="a5b95463c40d60d8fdbece6d7c0d2ea4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b95463c40d60d8fdbece6d7c0d2ea4b">&#9670;&#160;</a></span>requestCancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointGraph::requestCancel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancel subsequent execution until resetCancellation is called. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00421">421</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a00ff022b5051710da4b397246ca17c4d" name="a00ff022b5051710da4b397246ca17c4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00ff022b5051710da4b397246ca17c4d">&#9670;&#160;</a></span>resetCancellation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointGraph::resetCancellation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a4a5543c407fc35001ee8f1e88af3275c" name="a4a5543c407fc35001ee8f1e88af3275c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a5543c407fc35001ee8f1e88af3275c">&#9670;&#160;</a></span>serializeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointGraph::serializeDefinition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize graph topology, parameters and nested graphs. </p>
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html" title="Queryable spatial input for procedural pipelines.">SpatialData</a>, <a class="el" href="classeve_1_1procgen_1_1BiomeRules.html" title="Data-driven biome distribution rules compatible with PointGraph and scene batches.">BiomeRules</a> and <a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html" title="Module-based shape grammar expanded continuously along a 3D polyline.">ShapeGrammar</a> values are external slots and are not embedded; callers rebind them after loading. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraphAsset_8cpp_source.html">PointGraphAsset.cpp</a> 第 <a class="el" href="PointGraphAsset_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a> , 以及 <a class="el" href="PointGraphAsset_8cpp_source.html#l00221">instantiate()</a>.</p>
+
+</div>
+</div>
+<a id="afc8d0aa10f9c6bb57d06b9e17cd7001e" name="afc8d0aa10f9c6bb57d06b9e17cd7001e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc8d0aa10f9c6bb57d06b9e17cd7001e">&#9670;&#160;</a></span>setComputeMinimumPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointGraph::setComputeMinimumPoints </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>points</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the minimum point count for <code>auto</code> GPU dispatch. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00414">414</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00437">clearCache()</a> , 以及 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a6c422a097ca57a792ce4a1a02f67d1ec" name="a6c422a097ca57a792ce4a1a02f67d1ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c422a097ca57a792ce4a1a02f67d1ec">&#9670;&#160;</a></span>setComputePolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setComputePolicy </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select <code>auto</code>, <code>gpu</code>, or <code>cpu</code> point execution; GPU failures fall back to CPU. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00437">clearCache()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a1c836a029e3d2f3197c805941c547b8f" name="a1c836a029e3d2f3197c805941c547b8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c836a029e3d2f3197c805941c547b8f">&#9670;&#160;</a></span>setExecutionNodeBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointGraph::setExecutionNodeBudget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limit uncached nodes evaluated by one execute call; zero disables the limit. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a91a7615acedeebdbd9e8e35996f8ddcd" name="a91a7615acedeebdbd9e8e35996f8ddcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91a7615acedeebdbd9e8e35996f8ddcd">&#9670;&#160;</a></span>setMaxNodeOutputPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointGraph::setMaxNodeOutputPoints </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>points</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limit points produced by any node; zero disables the limit. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00399">399</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00437">clearCache()</a> , 以及 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="af9f6bf1ddc324a910c408175724333ad" name="af9f6bf1ddc324a910c408175724333ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9f6bf1ddc324a910c408175724333ad">&#9670;&#160;</a></span>setNodeBiomeRules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setNodeBiomeRules </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html">BiomeRules</a> *&#160;</td>
+          <td class="paramname"><em>rules</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign copied biome rules to a <code>biome.generate</code> node. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a1a778c47a58683db537081a41556b870" name="a1a778c47a58683db537081a41556b870"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a778c47a58683db537081a41556b870">&#9670;&#160;</a></span>setNodeFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setNodeFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ad0ddd62d432f501fe055fb41097b86f9" name="ad0ddd62d432f501fe055fb41097b86f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0ddd62d432f501fe055fb41097b86f9">&#9670;&#160;</a></span>setNodeInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setNodeInt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ae7897d29f01d47a5f6374e6823dda540" name="ae7897d29f01d47a5f6374e6823dda540"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7897d29f01d47a5f6374e6823dda540">&#9670;&#160;</a></span>setNodePoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setNodePoints </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td>
+          <td class="paramname"><em>points</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign a copied <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> to an <code>input</code> node. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="ae23b64c749333239cc0bfe943ceed97a" name="ae23b64c749333239cc0bfe943ceed97a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae23b64c749333239cc0bfe943ceed97a">&#9670;&#160;</a></span>setNodeShapeGrammar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setNodeShapeGrammar </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html">ShapeGrammar</a> *&#160;</td>
+          <td class="paramname"><em>grammar</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign a copied shape grammar to a <code>grammar.generate</code> node. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="aac5a0a73e4b7dfedf47976861c7292cd" name="aac5a0a73e4b7dfedf47976861c7292cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac5a0a73e4b7dfedf47976861c7292cd">&#9670;&#160;</a></span>setNodeSpatial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setNodeSpatial </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> *&#160;</td>
+          <td class="paramname"><em>spatial</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign copied spatial data to a spatial sample, filter, projection, or biome node. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a28c4a2268feb3097bccb1c32c673eef1" name="a28c4a2268feb3097bccb1c32c673eef1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28c4a2268feb3097bccb1c32c673eef1">&#9670;&#160;</a></span>setNodeString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setNodeString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a8fb7601bc752d6c4bd9457237eab8c6e" name="a8fb7601bc752d6c4bd9457237eab8c6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fb7601bc752d6c4bd9457237eab8c6e">&#9670;&#160;</a></span>setNodeSubgraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setNodeSubgraph </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> *&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>inputNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>outputNode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign an immutable nested graph. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inputNode</td><td>Nested <code>input</code> node receiving this node's first input. </td></tr>
+    <tr><td class="paramname">outputNode</td><td>Nested node returned by the subgraph. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00059">graph</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">deserializeDefinition()</a> , 以及 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a109b00ed568a5ac604ce92f71339c9a7" name="a109b00ed568a5ac604ce92f71339c9a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a109b00ed568a5ac604ce92f71339c9a7">&#9670;&#160;</a></span>setParameterFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setParameterFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Override an exposed floating-point parameter for this graph instance. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="af543e74a2b1198e797890fedbe83ea97" name="af543e74a2b1198e797890fedbe83ea97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af543e74a2b1198e797890fedbe83ea97">&#9670;&#160;</a></span>setParameterInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setParameterInt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Override an exposed integer or Boolean parameter for this graph instance. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="aeaee3d793f0f150f7a25f419a8162699" name="aeaee3d793f0f150f7a25f419a8162699"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaee3d793f0f150f7a25f419a8162699">&#9670;&#160;</a></span>setParameterString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::setParameterString </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Override an exposed string parameter for this graph instance. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a7c4346fcc6630a0a1555d0b560c4bb05" name="a7c4346fcc6630a0a1555d0b560c4bb05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c4346fcc6630a0a1555d0b560c4bb05">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate ids, operations, required inputs and graph acyclicity. </p>
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a2f804fd9d0d79fa34d1f9eabcfde18ae" name="a2f804fd9d0d79fa34d1f9eabcfde18ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f804fd9d0d79fa34d1f9eabcfde18ae">&#9670;&#160;</a></span>wasCancelled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointGraph::wasCancelled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a> 第 <a class="el" href="PointGraph_8cpp_source.html#l00426">426</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointGraphScript_8cpp_source.html#l00011">eve::procgen::exposePointGraph()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="PointGraph_8h_source.html">PointGraph.h</a></li>
+<li>src/modules/procgen/<a class="el" href="PointGraph_8cpp_source.html">PointGraph.cpp</a></li>
+<li>src/modules/procgen/<a class="el" href="PointGraphAsset_8cpp_source.html">PointGraphAsset.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

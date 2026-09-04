@@ -1,0 +1,805 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weather::Weather::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weather.html">weather</a></li><li class="navelem"><a class="el" href="classeve_1_1weather_1_1Weather.html">Weather</a></li><li class="navelem"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1weather_1_1Weather_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weather::Weather::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a618af85a3aeb1f30fb2441caa24df148" id="r_a618af85a3aeb1f30fb2441caa24df148"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a618af85a3aeb1f30fb2441caa24df148">gfx</a> = nullptr</td></tr>
+<tr class="separator:a618af85a3aeb1f30fb2441caa24df148"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d083a3105d3173906dddf8de0ff4d7" id="r_a51d083a3105d3173906dddf8de0ff4d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a51d083a3105d3173906dddf8de0ff4d7">built</a> = false</td></tr>
+<tr class="separator:a51d083a3105d3173906dddf8de0ff4d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d046a41d4c83da176353d2379fbf793" id="r_a9d046a41d4c83da176353d2379fbf793"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a9d046a41d4c83da176353d2379fbf793">time</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9d046a41d4c83da176353d2379fbf793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2447f496658b4b83109b895971739fa" id="r_ab2447f496658b4b83109b895971739fa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#ab2447f496658b4b83109b895971739fa">preset</a> = 0</td></tr>
+<tr class="separator:ab2447f496658b4b83109b895971739fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3576e62ccd750651a7307489fb081d5" id="r_ac3576e62ccd750651a7307489fb081d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#ac3576e62ccd750651a7307489fb081d5">intensity</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac3576e62ccd750651a7307489fb081d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0535e5072624281bb9f50ceb3b095519" id="r_a0535e5072624281bb9f50ceb3b095519"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a0535e5072624281bb9f50ceb3b095519">intensityCur</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0535e5072624281bb9f50ceb3b095519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ca899fb6e593a1e8e558f01f7fd300a" id="r_a9ca899fb6e593a1e8e558f01f7fd300a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a9ca899fb6e593a1e8e558f01f7fd300a">windSpeed</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9ca899fb6e593a1e8e558f01f7fd300a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93198d146b1e8c95f51cf076aab611b3" id="r_a93198d146b1e8c95f51cf076aab611b3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a93198d146b1e8c95f51cf076aab611b3">windDirDeg</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a93198d146b1e8c95f51cf076aab611b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9bdb190ca4b03991ba4b96de5b95163" id="r_af9bdb190ca4b03991ba4b96de5b95163"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#af9bdb190ca4b03991ba4b96de5b95163">lightningEnabled</a> = true</td></tr>
+<tr class="separator:af9bdb190ca4b03991ba4b96de5b95163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a607952d686594046c318163431938bf0" id="r_a607952d686594046c318163431938bf0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a607952d686594046c318163431938bf0">flash</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a607952d686594046c318163431938bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a987255e30db7f49e3b8ffe643186b71a" id="r_a987255e30db7f49e3b8ffe643186b71a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a987255e30db7f49e3b8ffe643186b71a">flashTimer</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a987255e30db7f49e3b8ffe643186b71a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2de65ffe09eeaaea685179420e8c1f3" id="r_ae2de65ffe09eeaaea685179420e8c1f3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#ae2de65ffe09eeaaea685179420e8c1f3">nextStrike</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae2de65ffe09eeaaea685179420e8c1f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7a235d5bd3ead10a5bce1cf0f95269c" id="r_ac7a235d5bd3ead10a5bce1cf0f95269c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#ac7a235d5bd3ead10a5bce1cf0f95269c">environmentEnabled</a> = true</td></tr>
+<tr class="separator:ac7a235d5bd3ead10a5bce1cf0f95269c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6564e291484eee2a4e91ca9777ae5d77" id="r_a6564e291484eee2a4e91ca9777ae5d77"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a6564e291484eee2a4e91ca9777ae5d77">skyR</a> = 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6564e291484eee2a4e91ca9777ae5d77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad90af8320db1e8cbbc20294c250c02df" id="r_ad90af8320db1e8cbbc20294c250c02df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#ad90af8320db1e8cbbc20294c250c02df">skyG</a> = 0.53<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad90af8320db1e8cbbc20294c250c02df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ae2434f9eb6afd5bb455070308a63d6" id="r_a8ae2434f9eb6afd5bb455070308a63d6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a8ae2434f9eb6afd5bb455070308a63d6">skyB</a> = 0.62<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8ae2434f9eb6afd5bb455070308a63d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e71352a50f1c98690bbc819addfdacf" id="r_a0e71352a50f1c98690bbc819addfdacf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a0e71352a50f1c98690bbc819addfdacf">sunIntensity</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0e71352a50f1c98690bbc819addfdacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68d74a4098d454005b9b96a8d0f833ed" id="r_a68d74a4098d454005b9b96a8d0f833ed"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a68d74a4098d454005b9b96a8d0f833ed">fogR</a> = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a68d74a4098d454005b9b96a8d0f833ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37712299804aade9fa7ea5c108bee636" id="r_a37712299804aade9fa7ea5c108bee636"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a37712299804aade9fa7ea5c108bee636">fogG</a> = 0.58<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a37712299804aade9fa7ea5c108bee636"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa9f996698f77ab19008b7ad5a7df4d" id="r_aafa9f996698f77ab19008b7ad5a7df4d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#aafa9f996698f77ab19008b7ad5a7df4d">fogB</a> = 0.62<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aafa9f996698f77ab19008b7ad5a7df4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa0d5b87c2c04b31e4ab8ad6980cb745" id="r_aaa0d5b87c2c04b31e4ab8ad6980cb745"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#aaa0d5b87c2c04b31e4ab8ad6980cb745">fogDensity</a> = 0.004<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aaa0d5b87c2c04b31e4ab8ad6980cb745"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a003e77a7c8083b50694e4855e9f4704c" id="r_a003e77a7c8083b50694e4855e9f4704c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a003e77a7c8083b50694e4855e9f4704c">rain</a> = nullptr</td></tr>
+<tr class="separator:a003e77a7c8083b50694e4855e9f4704c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f11b6f6b7e296dcd56891cc5371db4e" id="r_a0f11b6f6b7e296dcd56891cc5371db4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a0f11b6f6b7e296dcd56891cc5371db4e">snow</a> = nullptr</td></tr>
+<tr class="separator:a0f11b6f6b7e296dcd56891cc5371db4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f796700ba643974119363054d5a6ac3" id="r_a9f796700ba643974119363054d5a6ac3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a9f796700ba643974119363054d5a6ac3">bolts</a></td></tr>
+<tr class="separator:a9f796700ba643974119363054d5a6ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47f7596b0e4bf8321a00c409fb40ce8d" id="r_a47f7596b0e4bf8321a00c409fb40ce8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Material.html">graphics::Material</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a47f7596b0e4bf8321a00c409fb40ce8d">rainMat</a> = nullptr</td></tr>
+<tr class="separator:a47f7596b0e4bf8321a00c409fb40ce8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc0bdca0a8395ab7e1cebba13d3d47d5" id="r_adc0bdca0a8395ab7e1cebba13d3d47d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Material.html">graphics::Material</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#adc0bdca0a8395ab7e1cebba13d3d47d5">snowMat</a> = nullptr</td></tr>
+<tr class="separator:adc0bdca0a8395ab7e1cebba13d3d47d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3d99ebce932d329f4ffc59bf37c908f" id="r_ab3d99ebce932d329f4ffc59bf37c908f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1graphics_1_1Material.html">graphics::Material</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#ab3d99ebce932d329f4ffc59bf37c908f">boltMats</a></td></tr>
+<tr class="separator:ab3d99ebce932d329f4ffc59bf37c908f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d5b2e7ae76bdede533f2c138ca7eb67" id="r_a9d5b2e7ae76bdede533f2c138ca7eb67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a9d5b2e7ae76bdede533f2c138ca7eb67">activeBolt</a> = -1</td></tr>
+<tr class="separator:a9d5b2e7ae76bdede533f2c138ca7eb67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e59ef1eea25252c0e44606fdb240e7c" id="r_a0e59ef1eea25252c0e44606fdb240e7c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a0e59ef1eea25252c0e44606fdb240e7c">boltLife</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0e59ef1eea25252c0e44606fdb240e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae77c5ff503ec74127950ca27f22891c1" id="r_ae77c5ff503ec74127950ca27f22891c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#ae77c5ff503ec74127950ca27f22891c1">boltOnceFired</a> = false</td></tr>
+<tr class="separator:ae77c5ff503ec74127950ca27f22891c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6beb56753d7e4dd722171694995f19c7" id="r_a6beb56753d7e4dd722171694995f19c7"><td class="memItemLeft" align="right" valign="top">Lcg&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weather_1_1Weather_1_1Impl.html#a6beb56753d7e4dd722171694995f19c7">rng</a></td></tr>
+<tr class="separator:a6beb56753d7e4dd722171694995f19c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00265">265</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a9d5b2e7ae76bdede533f2c138ca7eb67" name="a9d5b2e7ae76bdede533f2c138ca7eb67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d5b2e7ae76bdede533f2c138ca7eb67">&#9670;&#160;</a></span>activeBolt</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::weather::Weather::Impl::activeBolt = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a0e59ef1eea25252c0e44606fdb240e7c" name="a0e59ef1eea25252c0e44606fdb240e7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e59ef1eea25252c0e44606fdb240e7c">&#9670;&#160;</a></span>boltLife</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::boltLife = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="ab3d99ebce932d329f4ffc59bf37c908f" name="ab3d99ebce932d329f4ffc59bf37c908f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3d99ebce932d329f4ffc59bf37c908f">&#9670;&#160;</a></span>boltMats</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1graphics_1_1Material.html">graphics::Material</a> *&gt; eve::weather::Weather::Impl::boltMats</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="ae77c5ff503ec74127950ca27f22891c1" name="ae77c5ff503ec74127950ca27f22891c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae77c5ff503ec74127950ca27f22891c1">&#9670;&#160;</a></span>boltOnceFired</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::weather::Weather::Impl::boltOnceFired = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a>.</p>
+
+</div>
+</div>
+<a id="a9f796700ba643974119363054d5a6ac3" name="a9f796700ba643974119363054d5a6ac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f796700ba643974119363054d5a6ac3">&#9670;&#160;</a></span>bolts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> *&gt; eve::weather::Weather::Impl::bolts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>, <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a51d083a3105d3173906dddf8de0ff4d7" name="a51d083a3105d3173906dddf8de0ff4d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51d083a3105d3173906dddf8de0ff4d7">&#9670;&#160;</a></span>built</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::weather::Weather::Impl::built = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>, <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="ac7a235d5bd3ead10a5bce1cf0f95269c" name="ac7a235d5bd3ead10a5bce1cf0f95269c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7a235d5bd3ead10a5bce1cf0f95269c">&#9670;&#160;</a></span>environmentEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::weather::Weather::Impl::environmentEnabled = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00497">eve::weather::Weather::isEnvironmentEnabled()</a>, <a class="el" href="Weather_8cpp_source.html#l00496">eve::weather::Weather::setEnvironmentEnabled()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a607952d686594046c318163431938bf0" name="a607952d686594046c318163431938bf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a607952d686594046c318163431938bf0">&#9670;&#160;</a></span>flash</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::flash = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00474">eve::weather::Weather::getFlash()</a>, <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a987255e30db7f49e3b8ffe643186b71a" name="a987255e30db7f49e3b8ffe643186b71a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a987255e30db7f49e3b8ffe643186b71a">&#9670;&#160;</a></span>flashTimer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::flashTimer = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="aafa9f996698f77ab19008b7ad5a7df4d" name="aafa9f996698f77ab19008b7ad5a7df4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa9f996698f77ab19008b7ad5a7df4d">&#9670;&#160;</a></span>fogB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::fogB = 0.62<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00491">eve::weather::Weather::getFogColorB()</a>, <a class="el" href="Weather_8cpp_source.html#l00486">eve::weather::Weather::setFogColor()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="aaa0d5b87c2c04b31e4ab8ad6980cb745" name="aaa0d5b87c2c04b31e4ab8ad6980cb745"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa0d5b87c2c04b31e4ab8ad6980cb745">&#9670;&#160;</a></span>fogDensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::fogDensity = 0.004<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00494">eve::weather::Weather::getFogDensity()</a>, <a class="el" href="Weather_8cpp_source.html#l00493">eve::weather::Weather::setFogDensity()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a37712299804aade9fa7ea5c108bee636" name="a37712299804aade9fa7ea5c108bee636"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37712299804aade9fa7ea5c108bee636">&#9670;&#160;</a></span>fogG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::fogG = 0.58<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00490">eve::weather::Weather::getFogColorG()</a>, <a class="el" href="Weather_8cpp_source.html#l00486">eve::weather::Weather::setFogColor()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a68d74a4098d454005b9b96a8d0f833ed" name="a68d74a4098d454005b9b96a8d0f833ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68d74a4098d454005b9b96a8d0f833ed">&#9670;&#160;</a></span>fogR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::fogR = 0.55<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00489">eve::weather::Weather::getFogColorR()</a>, <a class="el" href="Weather_8cpp_source.html#l00486">eve::weather::Weather::setFogColor()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a618af85a3aeb1f30fb2441caa24df148" name="a618af85a3aeb1f30fb2441caa24df148"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a618af85a3aeb1f30fb2441caa24df148">&#9670;&#160;</a></span>gfx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* eve::weather::Weather::Impl::gfx = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00266">266</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="ac3576e62ccd750651a7307489fb081d5" name="ac3576e62ccd750651a7307489fb081d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3576e62ccd750651a7307489fb081d5">&#9670;&#160;</a></span>intensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::intensity = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00453">eve::weather::Weather::getIntensity()</a>, <a class="el" href="Weather_8cpp_source.html#l00450">eve::weather::Weather::setIntensity()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a0535e5072624281bb9f50ceb3b095519" name="a0535e5072624281bb9f50ceb3b095519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0535e5072624281bb9f50ceb3b095519">&#9670;&#160;</a></span>intensityCur</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::intensityCur = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00499">eve::weather::Weather::getAmbientBrightness()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="af9bdb190ca4b03991ba4b96de5b95163" name="af9bdb190ca4b03991ba4b96de5b95163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9bdb190ca4b03991ba4b96de5b95163">&#9670;&#160;</a></span>lightningEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::weather::Weather::Impl::lightningEnabled = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00462">eve::weather::Weather::isLightningEnabled()</a>, <a class="el" href="Weather_8cpp_source.html#l00461">eve::weather::Weather::setLightningEnabled()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="ae2de65ffe09eeaaea685179420e8c1f3" name="ae2de65ffe09eeaaea685179420e8c1f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2de65ffe09eeaaea685179420e8c1f3">&#9670;&#160;</a></span>nextStrike</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::nextStrike = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="ab2447f496658b4b83109b895971739fa" name="ab2447f496658b4b83109b895971739fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2447f496658b4b83109b895971739fa">&#9670;&#160;</a></span>preset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::weather::Weather::Impl::preset = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00448">eve::weather::Weather::getPreset()</a>, <a class="el" href="Weather_8cpp_source.html#l00439">eve::weather::Weather::setPreset()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a003e77a7c8083b50694e4855e9f4704c" name="a003e77a7c8083b50694e4855e9f4704c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a003e77a7c8083b50694e4855e9f4704c">&#9670;&#160;</a></span>rain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a>* eve::weather::Weather::Impl::rain = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00289">289</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a47f7596b0e4bf8321a00c409fb40ce8d" name="a47f7596b0e4bf8321a00c409fb40ce8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47f7596b0e4bf8321a00c409fb40ce8d">&#9670;&#160;</a></span>rainMat</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Material.html">graphics::Material</a>* eve::weather::Weather::Impl::rainMat = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a6beb56753d7e4dd722171694995f19c7" name="a6beb56753d7e4dd722171694995f19c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6beb56753d7e4dd722171694995f19c7">&#9670;&#160;</a></span>rng</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Lcg eve::weather::Weather::Impl::rng</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00464">eve::weather::Weather::strike()</a>.</p>
+
+</div>
+</div>
+<a id="a8ae2434f9eb6afd5bb455070308a63d6" name="a8ae2434f9eb6afd5bb455070308a63d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ae2434f9eb6afd5bb455070308a63d6">&#9670;&#160;</a></span>skyB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::skyB = 0.62<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00481">eve::weather::Weather::getSkyColorB()</a>, <a class="el" href="Weather_8cpp_source.html#l00476">eve::weather::Weather::setSkyColor()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="ad90af8320db1e8cbbc20294c250c02df" name="ad90af8320db1e8cbbc20294c250c02df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad90af8320db1e8cbbc20294c250c02df">&#9670;&#160;</a></span>skyG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::skyG = 0.53<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00480">eve::weather::Weather::getSkyColorG()</a>, <a class="el" href="Weather_8cpp_source.html#l00476">eve::weather::Weather::setSkyColor()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a6564e291484eee2a4e91ca9777ae5d77" name="a6564e291484eee2a4e91ca9777ae5d77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6564e291484eee2a4e91ca9777ae5d77">&#9670;&#160;</a></span>skyR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::skyR = 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00479">eve::weather::Weather::getSkyColorR()</a>, <a class="el" href="Weather_8cpp_source.html#l00476">eve::weather::Weather::setSkyColor()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a0f11b6f6b7e296dcd56891cc5371db4e" name="a0f11b6f6b7e296dcd56891cc5371db4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f11b6f6b7e296dcd56891cc5371db4e">&#9670;&#160;</a></span>snow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a>* eve::weather::Weather::Impl::snow = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="adc0bdca0a8395ab7e1cebba13d3d47d5" name="adc0bdca0a8395ab7e1cebba13d3d47d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc0bdca0a8395ab7e1cebba13d3d47d5">&#9670;&#160;</a></span>snowMat</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Material.html">graphics::Material</a>* eve::weather::Weather::Impl::snowMat = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a0e71352a50f1c98690bbc819addfdacf" name="a0e71352a50f1c98690bbc819addfdacf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e71352a50f1c98690bbc819addfdacf">&#9670;&#160;</a></span>sunIntensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::sunIntensity = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00484">eve::weather::Weather::getSunIntensity()</a>, <a class="el" href="Weather_8cpp_source.html#l00483">eve::weather::Weather::setSunIntensity()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a9d046a41d4c83da176353d2379fbf793" name="a9d046a41d4c83da176353d2379fbf793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d046a41d4c83da176353d2379fbf793">&#9670;&#160;</a></span>time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::time = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a93198d146b1e8c95f51cf076aab611b3" name="a93198d146b1e8c95f51cf076aab611b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93198d146b1e8c95f51cf076aab611b3">&#9670;&#160;</a></span>windDirDeg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::windDirDeg = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00459">eve::weather::Weather::getWindDirection()</a>, <a class="el" href="Weather_8cpp_source.html#l00458">eve::weather::Weather::setWindDirection()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<a id="a9ca899fb6e593a1e8e558f01f7fd300a" name="a9ca899fb6e593a1e8e558f01f7fd300a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ca899fb6e593a1e8e558f01f7fd300a">&#9670;&#160;</a></span>windSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weather::Weather::Impl::windSpeed = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Weather_8cpp_source.html">Weather.cpp</a> 第 <a class="el" href="Weather_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00456">eve::weather::Weather::getWindSpeed()</a>, <a class="el" href="Weather_8cpp_source.html#l00455">eve::weather::Weather::setWindSpeed()</a> , 以及 <a class="el" href="Weather_8cpp_source.html#l00507">eve::weather::Weather::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/weather/<a class="el" href="Weather_8cpp_source.html">Weather.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

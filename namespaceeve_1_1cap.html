@@ -1,0 +1,447 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::cap 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1cap.html">cap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::cap 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1cap_1_1detail" id="r_namespaceeve_1_1cap_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html">detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a577610c6e7a6517f439b8216bf009f79" id="r_a577610c6e7a6517f439b8216bf009f79"><td class="memTemplParams" colspan="2">template&lt;class I &gt; </td></tr>
+<tr class="memitem:a577610c6e7a6517f439b8216bf009f79"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#a577610c6e7a6517f439b8216bf009f79">provide</a> (I *<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)</td></tr>
+<tr class="separator:a577610c6e7a6517f439b8216bf009f79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f15b92e22dafc466a09ee40fdca7050" id="r_a4f15b92e22dafc466a09ee40fdca7050"><td class="memTemplParams" colspan="2">template&lt;class I &gt; </td></tr>
+<tr class="memitem:a4f15b92e22dafc466a09ee40fdca7050"><td class="memTemplItemLeft" align="right" valign="top">I *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#a4f15b92e22dafc466a09ee40fdca7050">query</a> ()</td></tr>
+<tr class="separator:a4f15b92e22dafc466a09ee40fdca7050"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f8208c592b85ac2ea8a706a152c3c54" id="r_a3f8208c592b85ac2ea8a706a152c3c54"><td class="memTemplParams" colspan="2">template&lt;class I &gt; </td></tr>
+<tr class="memitem:a3f8208c592b85ac2ea8a706a152c3c54"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#a3f8208c592b85ac2ea8a706a152c3c54">revoke</a> (I *<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)</td></tr>
+<tr class="separator:a3f8208c592b85ac2ea8a706a152c3c54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8c82df4ff9214296d71d3e9280cee4b" id="r_ae8c82df4ff9214296d71d3e9280cee4b"><td class="memTemplParams" colspan="2">template&lt;class I &gt; </td></tr>
+<tr class="memitem:ae8c82df4ff9214296d71d3e9280cee4b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#ae8c82df4ff9214296d71d3e9280cee4b">addListener</a> (I *<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="separator:ae8c82df4ff9214296d71d3e9280cee4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e50d413b41184bdbfd1fe20e56cdcef" id="r_a8e50d413b41184bdbfd1fe20e56cdcef"><td class="memTemplParams" colspan="2">template&lt;class I &gt; </td></tr>
+<tr class="memitem:a8e50d413b41184bdbfd1fe20e56cdcef"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#a8e50d413b41184bdbfd1fe20e56cdcef">removeListener</a> (I *<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)</td></tr>
+<tr class="separator:a8e50d413b41184bdbfd1fe20e56cdcef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ad93e57af2cffe8cf2f1017736ab40" id="r_ac2ad93e57af2cffe8cf2f1017736ab40"><td class="memTemplParams" colspan="2">template&lt;class I &gt; </td></tr>
+<tr class="memitem:ac2ad93e57af2cffe8cf2f1017736ab40"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#ac2ad93e57af2cffe8cf2f1017736ab40">listenerCount</a> ()</td></tr>
+<tr class="separator:ac2ad93e57af2cffe8cf2f1017736ab40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea357ab7c140999ae6c07001ae402b5b" id="r_aea357ab7c140999ae6c07001ae402b5b"><td class="memTemplParams" colspan="2">template&lt;class I &gt; </td></tr>
+<tr class="memitem:aea357ab7c140999ae6c07001ae402b5b"><td class="memTemplItemLeft" align="right" valign="top">I *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#aea357ab7c140999ae6c07001ae402b5b">listenerAt</a> (size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:aea357ab7c140999ae6c07001ae402b5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb00a364e0c251873d9b8fa54f9b0f0f" id="r_afb00a364e0c251873d9b8fa54f9b0f0f"><td class="memTemplParams" colspan="2">template&lt;class I , class F &gt; </td></tr>
+<tr class="memitem:afb00a364e0c251873d9b8fa54f9b0f0f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#afb00a364e0c251873d9b8fa54f9b0f0f">forEach</a> (F &amp;&amp;<a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="memdesc:afb00a364e0c251873d9b8fa54f9b0f0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code>fn</code> for every implementation of I in priority order.  <br /></td></tr>
+<tr class="separator:afb00a364e0c251873d9b8fa54f9b0f0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ec57ba821a8bafe11d9bc7b1ef5268" id="r_ac6ec57ba821a8bafe11d9bc7b1ef5268"><td class="memTemplParams" colspan="2">template&lt;class I , class F &gt; </td></tr>
+<tr class="memitem:ac6ec57ba821a8bafe11d9bc7b1ef5268"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html#ac6ec57ba821a8bafe11d9bc7b1ef5268">forEachUntil</a> (F &amp;&amp;<a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>)</td></tr>
+<tr class="memdesc:ac6ec57ba821a8bafe11d9bc7b1ef5268"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code>fn</code> for each snapshotted implementation until one returns true.  <br /></td></tr>
+<tr class="separator:ac6ec57ba821a8bafe11d9bc7b1ef5268"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="ae8c82df4ff9214296d71d3e9280cee4b" name="ae8c82df4ff9214296d71d3e9280cee4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8c82df4ff9214296d71d3e9280cee4b">&#9670;&#160;</a></span>addListener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::cap::addListener </td>
+          <td>(</td>
+          <td class="paramtype">I *&#160;</td>
+          <td class="paramname"><em>impl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add one of possibly many implementations. Lower priority runs first. </p>
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00056">eve::cap::detail::addListenerRaw()</a>, <a class="el" href="Capability_8cpp_source.html#l00014">impl</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+</div>
+</div>
+<a id="afb00a364e0c251873d9b8fa54f9b0f0f" name="afb00a364e0c251873d9b8fa54f9b0f0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb00a364e0c251873d9b8fa54f9b0f0f">&#9670;&#160;</a></span>forEach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class F &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::cap::forEach </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>fn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code>fn</code> for every implementation of I in priority order. </p>
+<p>Dispatch uses a snapshot of the listener pointers taken before the first callback. Registrations and withdrawals made by a callback affect later dispatches, but not the dispatch already in progress. A withdrawn listener must therefore remain alive until the current dispatch returns. </p>
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="Capability_8cpp_source.html#l00014">impl</a>, <a class="el" href="Capability_8cpp_source.html#l00085">eve::cap::detail::listenerAtRaw()</a>, <a class="el" href="Capability_8cpp_source.html#l00078">eve::cap::detail::listenerCountRaw()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="ac6ec57ba821a8bafe11d9bc7b1ef5268" name="ac6ec57ba821a8bafe11d9bc7b1ef5268"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6ec57ba821a8bafe11d9bc7b1ef5268">&#9670;&#160;</a></span>forEachUntil()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I , class F &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::cap::forEachUntil </td>
+          <td>(</td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>fn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code>fn</code> for each snapshotted implementation until one returns true. </p>
+<p>Listener mutations have the same next-dispatch semantics as <a class="el" href="namespaceeve_1_1cap.html#afb00a364e0c251873d9b8fa54f9b0f0f" title="Call fn for every implementation of I in priority order.">forEach()</a>. </p><dl class="section return"><dt>返回</dt><dd>Whether any implementation returned true. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="Capability_8cpp_source.html#l00014">impl</a>, <a class="el" href="Capability_8cpp_source.html#l00085">eve::cap::detail::listenerAtRaw()</a>, <a class="el" href="Capability_8cpp_source.html#l00078">eve::cap::detail::listenerCountRaw()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="aea357ab7c140999ae6c07001ae402b5b" name="aea357ab7c140999ae6c07001ae402b5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea357ab7c140999ae6c07001ae402b5b">&#9670;&#160;</a></span>listenerAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">I * eve::cap::listenerAt </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00085">eve::cap::detail::listenerAtRaw()</a>.</p>
+
+</div>
+</div>
+<a id="ac2ad93e57af2cffe8cf2f1017736ab40" name="ac2ad93e57af2cffe8cf2f1017736ab40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ad93e57af2cffe8cf2f1017736ab40">&#9670;&#160;</a></span>listenerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::cap::listenerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00078">eve::cap::detail::listenerCountRaw()</a>.</p>
+
+</div>
+</div>
+<a id="a577610c6e7a6517f439b8216bf009f79" name="a577610c6e7a6517f439b8216bf009f79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a577610c6e7a6517f439b8216bf009f79">&#9670;&#160;</a></span>provide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::cap::provide </td>
+          <td>(</td>
+          <td class="paramtype">I *&#160;</td>
+          <td class="paramname"><em>impl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Register the single implementation of I, replacing any previous one. </p>
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00014">impl</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00035">eve::cap::detail::provideRaw()</a>.</p>
+
+</div>
+</div>
+<a id="a4f15b92e22dafc466a09ee40fdca7050" name="a4f15b92e22dafc466a09ee40fdca7050"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f15b92e22dafc466a09ee40fdca7050">&#9670;&#160;</a></span>query()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">I * eve::cap::query </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The implementation of I, or nullptr when no module provides it. </p>
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00040">eve::cap::detail::queryRaw()</a>.</p>
+
+</div>
+</div>
+<a id="a8e50d413b41184bdbfd1fe20e56cdcef" name="a8e50d413b41184bdbfd1fe20e56cdcef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e50d413b41184bdbfd1fe20e56cdcef">&#9670;&#160;</a></span>removeListener()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::cap::removeListener </td>
+          <td>(</td>
+          <td class="paramtype">I *&#160;</td>
+          <td class="paramname"><em>impl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00014">impl</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00067">eve::cap::detail::removeListenerRaw()</a>.</p>
+
+</div>
+</div>
+<a id="a3f8208c592b85ac2ea8a706a152c3c54" name="a3f8208c592b85ac2ea8a706a152c3c54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f8208c592b85ac2ea8a706a152c3c54">&#9670;&#160;</a></span>revoke()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class I &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::cap::revoke </td>
+          <td>(</td>
+          <td class="paramtype">I *&#160;</td>
+          <td class="paramname"><em>impl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Withdraw <code>impl</code>; a no-op when something else has since taken the slot. </p>
+
+<p class="definition">在文件 <a class="el" href="Capability_8h_source.html">Capability.h</a> 第 <a class="el" href="Capability_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00014">impl</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00047">eve::cap::detail::revokeRaw()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

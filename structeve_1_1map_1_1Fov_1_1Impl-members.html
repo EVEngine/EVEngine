@@ -1,0 +1,242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map.html">map</a></li><li class="navelem"><a class="el" href="classeve_1_1map_1_1Fov.html">Fov</a></li><li class="navelem"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::map::Fov::Impl 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ac06a49e7abc25df1b099f7bb352319ab">addAngleShadow</a>(std::vector&lt; AngleShadow &gt; &amp;shadows, float a0, float a1) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#af0f50e769f7ac8b6bbbc712a8245a711">algorithm</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ab1398f3903485d4c0845e52415db2a84">angleFullyCovered</a>(float a0, float a1, const std::vector&lt; AngleShadow &gt; &amp;shadows) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#abda7cd791d4896ab08976a19e7069657">applyAutoTopologyFromLayer</a>()</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ad207a642d14a72dcd6fc8d7f24c0ea06">bindLayer</a>(TileLayer *l)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a8cf9eb793a2e2e0ec0b88b30168a17fc">blockEmpty</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aa2b21fc5c79c6724a562e680550fadff">buildOpaqueRects</a>(int ox, int oy, int radius, int zSlice) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a98c1f82828b24d5f03880aaddf702322">castLight</a>(int ox, int oy, int radius, int row, float startSlope, float endSlope, int xx, int xy, int yx, int yy, int zSlice, bool useCone, float facingDeg, float halfAngleDeg)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a67b8959f339c41ee3614b521650289e6">castRayLine</a>(int ox, int oy, int tx, int ty, int zSlice, bool useCone, float facingDeg, float halfAngleDeg, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aa164d7aec71dd91c1656db5af09bacfe">cellOpaque2</a>(int x, int y) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a854681ff7713f23ea89231b92b19c426">cellOpaque3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#afed798b36aa14f6984baeb86f06b26c3">cellOpaqueOnSlice</a>(int x, int y, int zSlice) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ac3ceda8e1e5a09aee6e3148b6bbc21ef">clearAllMemory</a>()</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a742181a89509dcbb13f9636f1eeb9aa2">cliffBlock</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae188c7d5ab12909f594d292112120856">compute</a>()</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#abd74f5ce38bbb8ca5e267af58cd3def4">computeHexShadowcast</a>(const Revealer &amp;r, int zSlice, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1d46d2a6db4d310e7426bbdc39d700d5">computeOrthoShadowcast</a>(const Revealer &amp;r, int zSlice, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1ae56429c5f4936a349168d55b36b44e">computePermissive</a>(const Revealer &amp;r, int zSlice, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a0c58072a3f7bb11c9844aa6f27d9d42d">computeRaycast</a>(const Revealer &amp;r, int zSlice, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1dc02cbb2ae7614968cd7967b6abe49a">computeRectangle</a>(const Revealer &amp;r, int zSlice, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aefc6be66f0e9ca39e62574a708ca766b">computeRevealer</a>(const Revealer &amp;r)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a0b8e786aa5f6d42ce8b6843f8b7063d7">computeShadowcast</a>(const Revealer &amp;r, int zSlice, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1d30f2d1d66cee11128dd44471a67144">cornerPeek</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a792151c00d73cb812c45fb9e317f3bb1">depth</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a69bdb7ce77a8a30742eb5a3396e84dc2">detectionMargin</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a0b2a69c76b22ebf72111111c7f93acd5">dirty</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae32a2232867abfaba485ab1d8e070223">effectiveRadiusOf</a>(const Revealer &amp;r) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a8b668cb7241c18ed5fbfad5fa11dadd4">effectiveVerticalRange</a>() const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ade3360c322e3ee794897b9e4289610a5">elevAt</a>(int x, int y) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a92117f4aa53b411cb2e558634306292d">elevation</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#afc77ac547017434d4cd6ebcde04144a7">extendVertical</a>(const Revealer &amp;r, int zSlice, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#afefe2b6b694af3d917597a30f4d52f2c">eyeOffset</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ac726dc3b81dc642d3e99c838f77e4b08">findRevealer</a>(int id)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a264735a81493b403037bd601c5828f2e">findRevealerConst</a>(int id) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a32fcb706afec3f00e390b67397d7403f">height</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a09b831958a538eb7ceba07780b822131">hexCellAngle</a>(int ox, int oy, int x, int y) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae2a9dde8b329cc39ff74cc121dc4f937">inBounds2</a>(int x, int y) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a6fddd9361c78f2cc5d40c757a8ce9d5f">inBounds3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a44da8b2d2478bcfe01bad4ba5c793f39">index2</a>(int x, int y) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae2475168c9caafdcdf08bb92deb6ebd5">index3</a>(int x, int y, int z) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aea8b0e8d64335952208780ec3b92da66">inRadius2</a>(int ox, int oy, int x, int y, int radius) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aa673b1f77dd788a40ec1e78a044919af">inRadius3</a>(int ox, int oy, int oz, int x, int y, int z, int radius) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae9011bc69e982b690bb3ad850fadaa50">layer</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aba6ad69185ad5f929ef75b09e43eed91">layerRevision</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#acdce1670c59dd14401f0919824ee28cc">los2</a>(int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ad3bd280e36a8c5934499194c52cdb088">losBresenham2</a>(int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#adc69278ae567415cf03829d54ea15a83">losHexCube</a>(int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a3e85c7997ae6eac9e6dbb3dbcd20f9e0">markVisible2</a>(int x, int y)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a85b4e9467f584a8a2ca9d34840ada0a9">markVisible3</a>(int x, int y, int z)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a28f92fed410f2a0e7d39ed705cfbd50b">markVisibleIdx</a>(int idx)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1e617b8c5d9622e0a0d0748a8cd263a7">metric</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a718e65aebceec4f1e947a4b332f6d4b2">mode</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a1cd618a9f6e6b9151ba11c9fa08246ab">nextRevealerId</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a136273db9ec605f27d28af254392349f">opaque</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ac934ae145be9af8b6ff4014c8a694d8f">opaqueGids</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a7412a5fe0269253448aaf71d01c0218e">passesHeightToTarget</a>(int ox, int oy, int tx, int ty) const</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a94c1ad9b91382e3c441e66828d4002ea">perceptionRadiusScale</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a901e530a932cfadbd9a887056df9f01d">resetVisibleKeepExplored</a>()</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#aaee15f445a40f79c999cfb2fb0d49b29">resize</a>(int w, int h, int d)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a9dfb66464c61f97cdff5ff24bf0ab86d">revealers</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a2c9dcfaec0246886645e7518fa0780db">state</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a7c80f9099b1e3a1a59c589de0b3cec62">syncFromLayer</a>()</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a039376ce5e16f889136e9f183f021b0c">topology</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#af80ee72e70ba064626428e27cc0d1446">topologyManual</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ae189495c56f87f866c236f5918e1fb5b">tryMark2</a>(int ox, int oy, int x, int y, int zSlice, bool useCone, float facingDeg, float halfAngleDeg, int radius)</td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#a2e6a20add84b8baf8dfb9ad8c3871e93">verticalRange</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#ad9e09d7ef68baf88ccee65219093d382">visibleList</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html#afaaf87288127ebd8ab67acf0746f0346">width</a></td><td class="entry"><a class="el" href="structeve_1_1map_1_1Fov_1_1Impl.html">eve::map::Fov::Impl</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/thread/Thread.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d0f964ef2f4a5250338b1e00ea12ead0.html">thread</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Thread.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Thread_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Thread_8h.html">thread/Thread.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AsyncWork_8h.html">common/AsyncWork.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="MainThreadPost_8h.html">common/MainThreadPost.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>thread {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>PoolExecutor final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1caps_1_1IAsyncWorkExecutor.html">eve::caps::IAsyncWorkExecutor</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">explicit</span> PoolExecutor(Thread *owner) : owner_(owner) {}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> submit(std::function&lt;<span class="keywordtype">void</span>()&gt; work)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">if</span> (!work) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;IAsyncWorkExecutor: null work&quot;</span>));</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            std::unique_ptr&lt;Task&gt; task(owner_-&gt;getPool()-&gt;submit(std::move(work)));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a> &amp;ex) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>, ex.<a class="code hl_function" href="classeve_1_1Exception.html#ad96e921c4a5fa5115c6881224c736a6d">what</a>()));</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    Thread *owner_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespaceeve_1_1thread.html#a811e25e8d960cad8e813301064131f33">   44</a></span><a class="code hl_define" href="Module_8h.html#a91ade12cb7684447c2302317e2203fc4">Module_IMPL</a>(<a class="code hl_class" href="classeve_1_1thread_1_1Thread.html">Thread</a>, <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1thread_1_1Thread.html">Thread</a>());</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#ac924870b8a8a7c413cd8eabe5c360ddd">   46</a></span><a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#ac924870b8a8a7c413cd8eabe5c360ddd">Thread::Thread</a>() {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    executor_ = std::make_unique&lt;PoolExecutor&gt;(<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    cap::provide&lt;caps::IAsyncWorkExecutor&gt;(executor_.get());</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#af527da8d5d3590adb2a0cc837e003d4f">   51</a></span><a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#af527da8d5d3590adb2a0cc837e003d4f">Thread::~Thread</a>() {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    cap::revoke&lt;caps::IAsyncWorkExecutor&gt;(executor_.get());</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (defaultPool_)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        defaultPool_-&gt;stop();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (defaultJobSystem_)</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        defaultJobSystem_-&gt;stop();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#af4c52df757fa71dacee61a452cec7d05">   59</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#af4c52df757fa71dacee61a452cec7d05">Thread::getHardwareConcurrency</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">unsigned</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = std::thread::hardware_concurrency();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> == 0 ? 1 : <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#a2411fdc23bbc079526e67bd5909a9959">   64</a></span><a class="code hl_class" href="classeve_1_1thread_1_1ThreadPool.html">ThreadPool</a> *<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#a2411fdc23bbc079526e67bd5909a9959">Thread::getPool</a>() {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (!defaultPool_)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        defaultPool_ = std::make_unique&lt;ThreadPool&gt;(<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#af4c52df757fa71dacee61a452cec7d05">getHardwareConcurrency</a>());</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> defaultPool_.get();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#aa039895fbc6bdb8fc814f3b83f7e403f">   71</a></span><a class="code hl_class" href="classeve_1_1thread_1_1ThreadPool.html">ThreadPool</a> *<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#aa039895fbc6bdb8fc814f3b83f7e403f">Thread::newThreadPool</a>(<span class="keywordtype">int</span> workerCount) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (workerCount &lt; 0)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Thread::newThreadPool: workerCount must be &gt;= 0&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1thread_1_1ThreadPool.html">ThreadPool</a>(workerCount);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#a659c302fa0c37fd3aea563401475c9ed">   77</a></span><a class="code hl_class" href="classeve_1_1thread_1_1JobSystem.html">JobSystem</a> *<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#a659c302fa0c37fd3aea563401475c9ed">Thread::getJobSystem</a>() {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (!defaultJobSystem_)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        defaultJobSystem_ = std::unique_ptr&lt;JobSystem&gt;(<a class="code hl_function" href="namespaceeve_1_1thread.html#af52a6b5e3f7ad0dc47ba9e1380555d31">createJobSystem</a>(<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#af4c52df757fa71dacee61a452cec7d05">getHardwareConcurrency</a>()));</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> defaultJobSystem_.get();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#ae9d7cb864be8f70215ead9897fc780ab">   84</a></span><a class="code hl_class" href="classeve_1_1thread_1_1Channel.html">Channel</a> *<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#ae9d7cb864be8f70215ead9897fc780ab">Thread::getChannel</a>(std::string channelName) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (channelName.empty())</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Thread::getChannel: name must not be empty&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::lock_guard&lt;std::mutex&gt; lock(mu_);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">auto</span> it = namedChannels_.find(channelName);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (it != namedChannels_.end())</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> it-&gt;second.get();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">auto</span> ch = std::make_unique&lt;Channel&gt;(channelName);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classeve_1_1thread_1_1Channel.html">Channel</a> *raw = ch.get();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    namedChannels_.emplace(std::move(channelName), std::move(ch));</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> raw;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#a218c080c8305a46afa58e590ae74f91e">   97</a></span><a class="code hl_class" href="classeve_1_1thread_1_1Channel.html">Channel</a> *<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#a218c080c8305a46afa58e590ae74f91e">Thread::newChannel</a>() { <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1thread_1_1Channel.html">Channel</a>(); }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="foldopen" id="foldopen00099" data-start="{" data-end="}">
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1thread_1_1Thread.html#a1b8efea6a6b7156f95d0f17ef246cf10">   99</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#a1b8efea6a6b7156f95d0f17ef246cf10">Thread::postMain</a>(std::string eventName, std::string data) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">if</span> (eventName.empty())</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Thread::postMain: name must not be empty&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">auto</span> *poster = cap::query&lt;caps::IMainThreadPost&gt;();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (!poster)</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Thread::postMain: no main-thread queue (event module not linked)&quot;</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    poster-&gt;prepare();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    poster-&gt;postToMainThread(std::move(eventName), std::move(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>));</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>}</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="keywordtype">void</span> Thread::expose(ssq::Table &amp;table) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a> = table.addClass(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, Thread::create, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    expose(<a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="comment">// Avoid clashing with network::Channel (&quot;Channel&quot;).</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keyword">auto</span> ch = table.addClass&lt;<a class="code hl_class" href="classeve_1_1thread_1_1Channel.html">Channel</a>&gt;(</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="stringliteral">&quot;ThreadChannel&quot;</span>, std::function&lt;Channel *()&gt;([]() -&gt; <a class="code hl_class" href="classeve_1_1thread_1_1Channel.html">Channel</a> * { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }), <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    ch.addFunc(<span class="stringliteral">&quot;getName&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Channel.html#ae40b573fe14c856f6612b0b18acce6d5">Channel::getName</a>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    ch.addFunc(<span class="stringliteral">&quot;push&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Channel.html#a0cbf20a0cdc947f655339c619d592b1b">Channel::push</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    ch.addFunc(<span class="stringliteral">&quot;pop&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Channel.html#a599aec7484e5bd4415a82b0b765317e4">Channel::pop</a>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    ch.addFunc(<span class="stringliteral">&quot;demand&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Channel.html#aa442a8b539940ce1631fa3d1a846adc3">Channel::demand</a>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    ch.addFunc(<span class="stringliteral">&quot;supply&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Channel.html#afa2ab4e8b57106e90fc1f7d84fee2e34">Channel::supply</a>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    ch.addFunc(<span class="stringliteral">&quot;hasData&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Channel.html#a3b7c35bc22e4d6c584de38ab5529c982">Channel::hasData</a>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    ch.addFunc(<span class="stringliteral">&quot;getCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Channel.html#adab92647b561dfdf41c99cdc4288e90a">Channel::getCount</a>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    ch.addFunc(<span class="stringliteral">&quot;clear&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Channel.html#aad681a78ac859396f719b02fd045e6b5">Channel::clear</a>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keyword">auto</span> task = table.addClass&lt;Task&gt;(</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="stringliteral">&quot;Task&quot;</span>, std::function&lt;Task *()&gt;([]() -&gt; Task * { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }), <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    task.addFunc(<span class="stringliteral">&quot;getStatus&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Task.html#ac95fa6db32813ae5474067b500b4e517">Task::getStatus</a>);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    task.addFunc(<span class="stringliteral">&quot;isDone&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Task.html#ac32bb08559bd2b3e3a1ec6b7003bcc26">Task::isDone</a>);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    task.addFunc(<span class="stringliteral">&quot;hasFailed&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Task.html#a00b0506053152b3f8a8873f986a6e70c">Task::hasFailed</a>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    task.addFunc(<span class="stringliteral">&quot;getError&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Task.html#a6e4f30a7e3a800d1b6418e62a9ed89a2">Task::getError</a>);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    task.addFunc(<span class="stringliteral">&quot;wait&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Task.html#a0663a03f6379112f286921600b7286e3">Task::wait</a>);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">auto</span> pool = table.addClass&lt;ThreadPool&gt;(</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="stringliteral">&quot;ThreadPool&quot;</span>, std::function&lt;ThreadPool *()&gt;([]() -&gt; ThreadPool * { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }), <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    pool.addFunc(<span class="stringliteral">&quot;getWorkerCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1ThreadPool.html#af4eff0b4ef2c628dabb0bcb64376156b">ThreadPool::getWorkerCount</a>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    pool.addFunc(<span class="stringliteral">&quot;getPendingCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1ThreadPool.html#a5b343ca11560bfa8486b6eccbbc7a81d">ThreadPool::getPendingCount</a>);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    pool.addFunc(<span class="stringliteral">&quot;isRunning&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1ThreadPool.html#ad9a91d937825556ae4fbf67010b223c7">ThreadPool::isRunning</a>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    pool.addFunc(<span class="stringliteral">&quot;submitSleep&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1ThreadPool.html#aa3b2599eb5121fda74f948181c436cfd">ThreadPool::submitSleep</a>);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    pool.addFunc(<span class="stringliteral">&quot;submitPush&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1ThreadPool.html#afbc40a5cca38e02567994cc02568ef09">ThreadPool::submitPush</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    pool.addFunc(<span class="stringliteral">&quot;submitPost&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1ThreadPool.html#ae193309339295d01aa471fcda6b2e0f2">ThreadPool::submitPost</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    pool.addFunc(<span class="stringliteral">&quot;waitAll&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1ThreadPool.html#a2293a417cda82be16c4f111c1832db13">ThreadPool::waitAll</a>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    pool.addFunc(<span class="stringliteral">&quot;stop&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1ThreadPool.html#ac3f1f09c57a3dc1be7077bf9b7aededb">ThreadPool::stop</a>);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>}</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keywordtype">void</span> Thread::expose(ssq::Class &amp;<a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>) {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getName&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">Thread::getName</a>);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getHardwareConcurrency&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#af4c52df757fa71dacee61a452cec7d05">Thread::getHardwareConcurrency</a>);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getPool&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#a2411fdc23bbc079526e67bd5909a9959">Thread::getPool</a>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;newThreadPool&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#aa039895fbc6bdb8fc814f3b83f7e403f">Thread::newThreadPool</a>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getChannel&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#ae9d7cb864be8f70215ead9897fc780ab">Thread::getChannel</a>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;newChannel&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#a218c080c8305a46afa58e590ae74f91e">Thread::newChannel</a>);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;postMain&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1thread_1_1Thread.html#a1b8efea6a6b7156f95d0f17ef246cf10">Thread::postMain</a>);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>}</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>}  <span class="comment">// namespace thread</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aAsyncWork_8h_html"><div class="ttname"><a href="AsyncWork_8h.html">AsyncWork.h</a></div><div class="ttdoc">Capability for submitting CPU work onto a worker pool.</div></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00021">ECS.cpp:21</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aMainThreadPost_8h_html"><div class="ttname"><a href="MainThreadPost_8h.html">MainThreadPost.h</a></div></div>
+<div class="ttc" id="aModule_8h_html_a91ade12cb7684447c2302317e2203fc4"><div class="ttname"><a href="Module_8h.html#a91ade12cb7684447c2302317e2203fc4">Module_IMPL</a></div><div class="ttdeci">#define Module_IMPL(ModuleName, newExpr)</div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00026">Module.h:26</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00192">RenderSystem.cpp:192</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aThread_8h_html"><div class="ttname"><a href="Thread_8h.html">Thread.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html_ad96e921c4a5fa5115c6881224c736a6d"><div class="ttname"><a href="classeve_1_1Exception.html#ad96e921c4a5fa5115c6881224c736a6d">eve::Exception::what</a></div><div class="ttdeci">virtual const char * what() const</div><div class="ttdoc">Returns a string containing reason for the exception.</div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00023">Exception.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html_ae00d561f21eef86f21d032b53ca84da0"><div class="ttname"><a href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">eve::Module::getName</a></div><div class="ttdeci">virtual std::string getName() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1caps_1_1IAsyncWorkExecutor_html"><div class="ttname"><a href="classeve_1_1caps_1_1IAsyncWorkExecutor.html">eve::caps::IAsyncWorkExecutor</a></div><div class="ttdoc">Fire-and-forget CPU job submission used by the resource cache.</div><div class="ttdef"><b>Definition</b> <a href="AsyncWork_8h_source.html#l00026">AsyncWork.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html">eve::thread::Channel</a></div><div class="ttdoc">Thread-safe message queue (love2d-style Channel). Values are strings so the API stays overload-free f...</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8h_source.html#l00017">Channel.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html_a0cbf20a0cdc947f655339c619d592b1b"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html#a0cbf20a0cdc947f655339c619d592b1b">eve::thread::Channel::push</a></div><div class="ttdeci">void push(std::string value)</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8cpp_source.html#l00016">Channel.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html_a3b7c35bc22e4d6c584de38ab5529c982"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html#a3b7c35bc22e4d6c584de38ab5529c982">eve::thread::Channel::hasData</a></div><div class="ttdeci">bool hasData() const</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8cpp_source.html#l00054">Channel.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html_a599aec7484e5bd4415a82b0b765317e4"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html#a599aec7484e5bd4415a82b0b765317e4">eve::thread::Channel::pop</a></div><div class="ttdeci">std::string pop()</div><div class="ttdoc">Non-blocking pop; returns &quot;&quot; if empty.</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8cpp_source.html#l00024">Channel.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html_aa442a8b539940ce1631fa3d1a846adc3"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html#aa442a8b539940ce1631fa3d1a846adc3">eve::thread::Channel::demand</a></div><div class="ttdeci">std::string demand()</div><div class="ttdoc">Block until a value is available, then pop it.</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8cpp_source.html#l00033">Channel.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html_aad681a78ac859396f719b02fd045e6b5"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html#aad681a78ac859396f719b02fd045e6b5">eve::thread::Channel::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8cpp_source.html#l00064">Channel.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html_adab92647b561dfdf41c99cdc4288e90a"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html#adab92647b561dfdf41c99cdc4288e90a">eve::thread::Channel::getCount</a></div><div class="ttdeci">int getCount() const</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8cpp_source.html#l00059">Channel.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html_ae40b573fe14c856f6612b0b18acce6d5"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html#ae40b573fe14c856f6612b0b18acce6d5">eve::thread::Channel::getName</a></div><div class="ttdeci">std::string getName() const</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8cpp_source.html#l00014">Channel.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Channel_html_afa2ab4e8b57106e90fc1f7d84fee2e34"><div class="ttname"><a href="classeve_1_1thread_1_1Channel.html#afa2ab4e8b57106e90fc1f7d84fee2e34">eve::thread::Channel::supply</a></div><div class="ttdeci">std::string supply(int timeoutMs)</div><div class="ttdoc">Block up to timeoutMs; returns &quot;&quot; on timeout.</div><div class="ttdef"><b>Definition</b> <a href="thread_2Channel_8cpp_source.html#l00042">Channel.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1JobSystem_html"><div class="ttname"><a href="classeve_1_1thread_1_1JobSystem.html">eve::thread::JobSystem</a></div><div class="ttdoc">Abstract job scheduler: dependencies, parallel_for, task_group, arena.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8h_source.html#l00153">JobSystem.h:153</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Task_html_a00b0506053152b3f8a8873f986a6e70c"><div class="ttname"><a href="classeve_1_1thread_1_1Task.html#a00b0506053152b3f8a8873f986a6e70c">eve::thread::Task::hasFailed</a></div><div class="ttdeci">bool hasFailed() const</div><div class="ttdef"><b>Definition</b> <a href="Task_8cpp_source.html#l00028">Task.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Task_html_a0663a03f6379112f286921600b7286e3"><div class="ttname"><a href="classeve_1_1thread_1_1Task.html#a0663a03f6379112f286921600b7286e3">eve::thread::Task::wait</a></div><div class="ttdeci">void wait()</div><div class="ttdoc">Block until the task finishes (done or failed).</div><div class="ttdef"><b>Definition</b> <a href="Task_8cpp_source.html#l00038">Task.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Task_html_a6e4f30a7e3a800d1b6418e62a9ed89a2"><div class="ttname"><a href="classeve_1_1thread_1_1Task.html#a6e4f30a7e3a800d1b6418e62a9ed89a2">eve::thread::Task::getError</a></div><div class="ttdeci">std::string getError() const</div><div class="ttdef"><b>Definition</b> <a href="Task_8cpp_source.html#l00033">Task.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Task_html_ac32bb08559bd2b3e3a1ec6b7003bcc26"><div class="ttname"><a href="classeve_1_1thread_1_1Task.html#ac32bb08559bd2b3e3a1ec6b7003bcc26">eve::thread::Task::isDone</a></div><div class="ttdeci">bool isDone() const</div><div class="ttdef"><b>Definition</b> <a href="Task_8cpp_source.html#l00023">Task.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Task_html_ac95fa6db32813ae5474067b500b4e517"><div class="ttname"><a href="classeve_1_1thread_1_1Task.html#ac95fa6db32813ae5474067b500b4e517">eve::thread::Task::getStatus</a></div><div class="ttdeci">std::string getStatus() const</div><div class="ttdef"><b>Definition</b> <a href="Task_8cpp_source.html#l00018">Task.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html">eve::thread::ThreadPool</a></div><div class="ttdoc">Fixed-size worker pool. Owns worker std::threads; tasks run FIFO. Squirrel VM is not thread-safe — do...</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8h_source.html#l00024">ThreadPool.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html_a2293a417cda82be16c4f111c1832db13"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html#a2293a417cda82be16c4f111c1832db13">eve::thread::ThreadPool::waitAll</a></div><div class="ttdeci">void waitAll()</div><div class="ttdoc">Block until idle. Throws when called by a worker belonging to this pool.</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8cpp_source.html#l00156">ThreadPool.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html_a5b343ca11560bfa8486b6eccbbc7a81d"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html#a5b343ca11560bfa8486b6eccbbc7a81d">eve::thread::ThreadPool::getPendingCount</a></div><div class="ttdeci">int getPendingCount() const</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8cpp_source.html#l00081">ThreadPool.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html_aa3b2599eb5121fda74f948181c436cfd"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html#aa3b2599eb5121fda74f948181c436cfd">eve::thread::ThreadPool::submitSleep</a></div><div class="ttdeci">Task * submitSleep(int ms)</div><div class="ttdoc">Sleep on a worker, then mark done — useful from scripts / tests.</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8cpp_source.html#l00109">ThreadPool.cpp:109</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html_ac3f1f09c57a3dc1be7077bf9b7aededb"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html#ac3f1f09c57a3dc1be7077bf9b7aededb">eve::thread::ThreadPool::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdoc">Stop accepting work and join workers. Worker calls are rejected. Idempotent.</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8cpp_source.html#l00164">ThreadPool.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html_ad9a91d937825556ae4fbf67010b223c7"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html#ad9a91d937825556ae4fbf67010b223c7">eve::thread::ThreadPool::isRunning</a></div><div class="ttdeci">bool isRunning() const</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8cpp_source.html#l00086">ThreadPool.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html_ae193309339295d01aa471fcda6b2e0f2"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html#ae193309339295d01aa471fcda6b2e0f2">eve::thread::ThreadPool::submitPost</a></div><div class="ttdeci">Task * submitPost(std::string name, std::string data=&quot;&quot;, int delayMs=0)</div><div class="ttdoc">Sleep, then post an Event on the main queue (thread-safe). Scripts poll via event....</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8cpp_source.html#l00134">ThreadPool.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html_af4eff0b4ef2c628dabb0bcb64376156b"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html#af4eff0b4ef2c628dabb0bcb64376156b">eve::thread::ThreadPool::getWorkerCount</a></div><div class="ttdeci">int getWorkerCount() const</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8cpp_source.html#l00079">ThreadPool.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1ThreadPool_html_afbc40a5cca38e02567994cc02568ef09"><div class="ttname"><a href="classeve_1_1thread_1_1ThreadPool.html#afbc40a5cca38e02567994cc02568ef09">eve::thread::ThreadPool::submitPush</a></div><div class="ttdeci">Task * submitPush(Channel *channel, std::string message, int delayMs=0)</div><div class="ttdoc">Sleep, then push a message onto a channel (cross-thread signalling).</div><div class="ttdef"><b>Definition</b> <a href="ThreadPool_8cpp_source.html#l00117">ThreadPool.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html">eve::thread::Thread</a></div><div class="ttdoc">Thread module: default pool, named channels, pool factory. Script: eve.Thread() → getPool / newThread...</div><div class="ttdef"><b>Definition</b> <a href="Thread_8h_source.html#l00022">Thread.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_a1b8efea6a6b7156f95d0f17ef246cf10"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#a1b8efea6a6b7156f95d0f17ef246cf10">eve::thread::Thread::postMain</a></div><div class="ttdeci">void postMain(std::string eventName, std::string data=&quot;&quot;)</div><div class="ttdoc">Thread-safe post onto the Event module queue (any thread). Main loop: event.pump is unrelated; just e...</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00099">Thread.cpp:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_a218c080c8305a46afa58e590ae74f91e"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#a218c080c8305a46afa58e590ae74f91e">eve::thread::Thread::newChannel</a></div><div class="ttdeci">Channel * newChannel()</div><div class="ttdoc">Anonymous channel (not registered in the name map). Caller owns it.</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00097">Thread.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_a2411fdc23bbc079526e67bd5909a9959"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#a2411fdc23bbc079526e67bd5909a9959">eve::thread::Thread::getPool</a></div><div class="ttdeci">ThreadPool * getPool()</div><div class="ttdoc">Shared default pool (created lazily with hardwareConcurrency workers).</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00064">Thread.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_a659c302fa0c37fd3aea563401475c9ed"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#a659c302fa0c37fd3aea563401475c9ed">eve::thread::Thread::getJobSystem</a></div><div class="ttdeci">JobSystem * getJobSystem()</div><div class="ttdoc">Shared engine-wide JobSystem (created lazily with hardware concurrency workers). Use it for dependenc...</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00077">Thread.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_aa039895fbc6bdb8fc814f3b83f7e403f"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#aa039895fbc6bdb8fc814f3b83f7e403f">eve::thread::Thread::newThreadPool</a></div><div class="ttdeci">ThreadPool * newThreadPool(int workerCount=0)</div><div class="ttdoc">Create an independent pool. Caller owns it (delete when done).</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00071">Thread.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_ac924870b8a8a7c413cd8eabe5c360ddd"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#ac924870b8a8a7c413cd8eabe5c360ddd">eve::thread::Thread::Thread</a></div><div class="ttdeci">Thread()</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00046">Thread.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_ae9d7cb864be8f70215ead9897fc780ab"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#ae9d7cb864be8f70215ead9897fc780ab">eve::thread::Thread::getChannel</a></div><div class="ttdeci">Channel * getChannel(std::string channelName)</div><div class="ttdoc">Named shared channel (love2d-style). Same name → same Channel instance for the lifetime of the module...</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00084">Thread.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_af4c52df757fa71dacee61a452cec7d05"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#af4c52df757fa71dacee61a452cec7d05">eve::thread::Thread::getHardwareConcurrency</a></div><div class="ttdeci">int getHardwareConcurrency() const</div><div class="ttdoc">Hardware concurrency hint (at least 1).</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00059">Thread.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1thread_1_1Thread_html_af527da8d5d3590adb2a0cc837e003d4f"><div class="ttname"><a href="classeve_1_1thread_1_1Thread.html#af527da8d5d3590adb2a0cc837e003d4f">eve::thread::Thread::~Thread</a></div><div class="ttdeci">~Thread() override</div><div class="ttdef"><b>Definition</b> <a href="Thread_8cpp_source.html#l00051">Thread.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1thread_html_af52a6b5e3f7ad0dc47ba9e1380555d31"><div class="ttname"><a href="namespaceeve_1_1thread.html#af52a6b5e3f7ad0dc47ba9e1380555d31">eve::thread::createJobSystem</a></div><div class="ttdeci">JobSystem * createJobSystem(int workerCount)</div><div class="ttdoc">Create a JobSystem with the configured backend.</div><div class="ttdef"><b>Definition</b> <a href="JobSystem_8cpp_source.html#l00014">JobSystem.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

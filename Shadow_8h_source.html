@@ -1,0 +1,226 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/Shadow.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Shadow.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Shadow_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowConfig.html">    7</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1ShadowConfig.html">ShadowConfig</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowConfig.html#a55ee4e7c8425560c6970116f5cda3ed2">    8</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowConfig.html#a55ee4e7c8425560c6970116f5cda3ed2">kCascades</a> = 3;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowConfig.html#a29e427efb2139eead64058f533a4b964">    9</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowConfig.html#a29e427efb2139eead64058f533a4b964">kMapSize</a> = 2048;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowConfig.html#a0af7e08a9477920e3db5f568c742a04e">   10</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowConfig.html#a0af7e08a9477920e3db5f568c742a04e">kSplitLambda</a> = 0.7f;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowConfig.html#a32e01defc5482ed7675a31438bacfcc5">   13</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowConfig.html#a32e01defc5482ed7675a31438bacfcc5">kMaxDistance</a> = 64.f;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>};</div>
+</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUBO.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1ShadowUBO.html">ShadowUBO</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUBO.html#afffbf316ac010ebbe83b79261ce6d14b">   18</a></span>    glm::mat4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUBO.html#afffbf316ac010ebbe83b79261ce6d14b">lightVP</a>[<a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowConfig.html#a55ee4e7c8425560c6970116f5cda3ed2">ShadowConfig::kCascades</a>]{};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUBO.html#a795bf997c0800dacfa9ca8a104a047e7">   19</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUBO.html#a795bf997c0800dacfa9ca8a104a047e7">splits</a>{0.f};  <span class="comment">// xyz = view-space +Z split ends (camera-forward distance); w = strength</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUBO.html#a6320d71ee1140af1959fb2699ed30695">   20</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUBO.html#a6320d71ee1140af1959fb2699ed30695">bias</a>{0.002f, 0.f, 1.f, 0.02f};  <span class="comment">// w=directional source angular radius</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUBO.html#abd3c40fc77e72e933aaddcaf06cbd93b">   21</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUBO.html#abd3c40fc77e72e933aaddcaf06cbd93b">cascadeBias</a>{0.f};             <span class="comment">// xyz = per-cascade NDC compare bias</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUBO.html#a1053f73d01a6b842ff733bd399166391">   22</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUBO.html#a1053f73d01a6b842ff733bd399166391">cascadeTexel</a>{0.f};            <span class="comment">// xyz = world units per shadow texel</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUpload.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1ShadowUpload.html">ShadowUpload</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUpload.html#acd0cce027f3888cb8fa575288e8f03d0">   26</a></span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1ShadowUBO.html">ShadowUBO</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUpload.html#acd0cce027f3888cb8fa575288e8f03d0">ubo</a>{};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ShadowUpload.html#a558327eb86fd65dad60aa632930321eb">   27</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUpload.html#a558327eb86fd65dad60aa632930321eb">active</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><a class="code hl_struct" href="structeve_1_1graphics_1_1ShadowUpload.html">ShadowUpload</a> <a class="code hl_function" href="namespaceeve_1_1graphics.html#abc5a9c9b32d895c9876ec8789ceb88da">buildDirectionalCSM</a>(<span class="keyword">const</span> glm::vec3 &amp;lightDirTowardSurface, <span class="keyword">const</span> glm::vec3 &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                 <span class="keyword">const</span> glm::vec3 &amp;<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> glm::vec3 &amp;up, <span class="keywordtype">float</span> fovYRad,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                 <span class="keywordtype">float</span> aspect, <span class="keywordtype">float</span> nearZ, <span class="keywordtype">float</span> farZ, <span class="keywordtype">float</span> bias, <span class="keywordtype">float</span> strength);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a420d8d8ece65c00c51be184d896cdca9"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a></div><div class="ttdeci">glm::vec3 eye</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00681">RenderSystem3D.cpp:681</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_abc5a9c9b32d895c9876ec8789ceb88da"><div class="ttname"><a href="namespaceeve_1_1graphics.html#abc5a9c9b32d895c9876ec8789ceb88da">eve::graphics::buildDirectionalCSM</a></div><div class="ttdeci">ShadowUpload buildDirectionalCSM(const glm::vec3 &amp;lightDirTowardSurface, const glm::vec3 &amp;eye, const glm::vec3 &amp;target, const glm::vec3 &amp;up, float fovYRad, float aspect, float nearZ, float farZ, float bias, float strength)</div><div class="ttdoc">Build 3 cascade light view-proj matrices for a directional light.</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00083">Shadow.cpp:83</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowConfig_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowConfig.html">eve::graphics::ShadowConfig</a></div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00007">Shadow.h:7</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowConfig_html_a0af7e08a9477920e3db5f568c742a04e"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowConfig.html#a0af7e08a9477920e3db5f568c742a04e">eve::graphics::ShadowConfig::kSplitLambda</a></div><div class="ttdeci">static constexpr float kSplitLambda</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00010">Shadow.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowConfig_html_a29e427efb2139eead64058f533a4b964"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowConfig.html#a29e427efb2139eead64058f533a4b964">eve::graphics::ShadowConfig::kMapSize</a></div><div class="ttdeci">static constexpr int kMapSize</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00009">Shadow.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowConfig_html_a32e01defc5482ed7675a31438bacfcc5"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowConfig.html#a32e01defc5482ed7675a31438bacfcc5">eve::graphics::ShadowConfig::kMaxDistance</a></div><div class="ttdeci">static constexpr float kMaxDistance</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00013">Shadow.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowConfig_html_a55ee4e7c8425560c6970116f5cda3ed2"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowConfig.html#a55ee4e7c8425560c6970116f5cda3ed2">eve::graphics::ShadowConfig::kCascades</a></div><div class="ttdeci">static constexpr int kCascades</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00008">Shadow.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUBO_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUBO.html">eve::graphics::ShadowUBO</a></div><div class="ttdoc">Per-frame / per-draw CSM constants (std140). Binding separate from Mesh3D Frame UBO.</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00017">Shadow.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUBO_html_a1053f73d01a6b842ff733bd399166391"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUBO.html#a1053f73d01a6b842ff733bd399166391">eve::graphics::ShadowUBO::cascadeTexel</a></div><div class="ttdeci">glm::vec4 cascadeTexel</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00022">Shadow.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUBO_html_a6320d71ee1140af1959fb2699ed30695"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUBO.html#a6320d71ee1140af1959fb2699ed30695">eve::graphics::ShadowUBO::bias</a></div><div class="ttdeci">glm::vec4 bias</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00020">Shadow.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUBO_html_a795bf997c0800dacfa9ca8a104a047e7"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUBO.html#a795bf997c0800dacfa9ca8a104a047e7">eve::graphics::ShadowUBO::splits</a></div><div class="ttdeci">glm::vec4 splits</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00019">Shadow.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUBO_html_abd3c40fc77e72e933aaddcaf06cbd93b"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUBO.html#abd3c40fc77e72e933aaddcaf06cbd93b">eve::graphics::ShadowUBO::cascadeBias</a></div><div class="ttdeci">glm::vec4 cascadeBias</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00021">Shadow.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUBO_html_afffbf316ac010ebbe83b79261ce6d14b"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUBO.html#afffbf316ac010ebbe83b79261ce6d14b">eve::graphics::ShadowUBO::lightVP</a></div><div class="ttdeci">glm::mat4 lightVP[ShadowConfig::kCascades]</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00018">Shadow.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUpload_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUpload.html">eve::graphics::ShadowUpload</a></div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00025">Shadow.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUpload_html_a558327eb86fd65dad60aa632930321eb"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUpload.html#a558327eb86fd65dad60aa632930321eb">eve::graphics::ShadowUpload::active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00027">Shadow.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUpload_html_acd0cce027f3888cb8fa575288e8f03d0"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUpload.html#acd0cce027f3888cb8fa575288e8f03d0">eve::graphics::ShadowUpload::ubo</a></div><div class="ttdeci">ShadowUBO ubo</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00026">Shadow.h:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

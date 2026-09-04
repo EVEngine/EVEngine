@@ -1,0 +1,514 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation_editing::IAnimationClipEditTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation__editing.html">animation_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html">IAnimationClipEditTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation_editing::IAnimationClipEditTarget类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Timeline editing capability for skeletal clips.  
+ <a href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::animation_editing::IAnimationClipEditTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.png" usemap="#eve::animation_5Fediting::IAnimationClipEditTarget_map" alt=""/>
+  <map id="eve::animation_5Fediting::IAnimationClipEditTarget_map" name="eve::animation_5Fediting::IAnimationClipEditTarget_map">
+<area href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html" title="UI-neutral animation clip document with reversible stable-id timeline edits." alt="eve::animation_editing::AnimationClipDocumentTarget" shape="rect" coords="0,56,311,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7a90982d570167fa3491e51c690f75ee" id="r_a7a90982d570167fa3491e51c690f75ee"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a7a90982d570167fa3491e51c690f75ee">~IAnimationClipEditTarget</a> ()=default</td></tr>
+<tr class="separator:a7a90982d570167fa3491e51c690f75ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32d2f5369f09fa2ef04af7c6d212b771" id="r_a32d2f5369f09fa2ef04af7c6d212b771"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a32d2f5369f09fa2ef04af7c6d212b771">makeSetSettings</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>, double sampleRate, bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a5ed2b25d9f2f070cb0ee764aa0985308">loop</a>) const =0</td></tr>
+<tr class="memdesc:a32d2f5369f09fa2ef04af7c6d212b771"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan replacement of duration, sample rate and looping settings.  <br /></td></tr>
+<tr class="separator:a32d2f5369f09fa2ef04af7c6d212b771"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4581962e0be78013902d683225a0471" id="r_af4581962e0be78013902d683225a0471"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#af4581962e0be78013902d683225a0471">makeSetTrack</a> (const <a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a> &amp;track) const =0</td></tr>
+<tr class="memdesc:af4581962e0be78013902d683225a0471"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan creation or replacement of a complete stable bone track.  <br /></td></tr>
+<tr class="separator:af4581962e0be78013902d683225a0471"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fae869d0a479ab84ec8c63db521c7ea" id="r_a1fae869d0a479ab84ec8c63db521c7ea"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a1fae869d0a479ab84ec8c63db521c7ea">makeDeleteTrack</a> (const <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> &amp;track) const =0</td></tr>
+<tr class="memdesc:a1fae869d0a479ab84ec8c63db521c7ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan removal of a stable bone track.  <br /></td></tr>
+<tr class="separator:a1fae869d0a479ab84ec8c63db521c7ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8126f4fd8a022858b3e1cb81979ca30c" id="r_a8126f4fd8a022858b3e1cb81979ca30c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a8126f4fd8a022858b3e1cb81979ca30c">makeSetEvent</a> (const <a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a> &amp;event) const =0</td></tr>
+<tr class="memdesc:a8126f4fd8a022858b3e1cb81979ca30c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan creation or replacement of an event marker.  <br /></td></tr>
+<tr class="separator:a8126f4fd8a022858b3e1cb81979ca30c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a2c7132a7a666e7c47a269305b55da5" id="r_a9a2c7132a7a666e7c47a269305b55da5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a9a2c7132a7a666e7c47a269305b55da5">makeDeleteEvent</a> (const <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> &amp;event) const =0</td></tr>
+<tr class="memdesc:a9a2c7132a7a666e7c47a269305b55da5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan removal of an event marker.  <br /></td></tr>
+<tr class="separator:a9a2c7132a7a666e7c47a269305b55da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21c4609b74ebea24e977c07b19db223c" id="r_a21c4609b74ebea24e977c07b19db223c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a21c4609b74ebea24e977c07b19db223c">makeSetMask</a> (const <a class="el" href="structeve_1_1animation__editing_1_1AnimationMaskEntry.html">AnimationMaskEntry</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>) const =0</td></tr>
+<tr class="memdesc:a21c4609b74ebea24e977c07b19db223c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan replacement of a bone mask weight.  <br /></td></tr>
+<tr class="separator:a21c4609b74ebea24e977c07b19db223c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad48703763e60bd1219c25045185f2529" id="r_ad48703763e60bd1219c25045185f2529"><td class="memItemLeft" align="right" valign="top">static CapabilityId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#ad48703763e60bd1219c25045185f2529">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:ad48703763e60bd1219c25045185f2529"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability id for clip timeline operations.  <br /></td></tr>
+<tr class="separator:ad48703763e60bd1219c25045185f2529"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4909d7f198a5bddf6954356374a1f315" id="r_a4909d7f198a5bddf6954356374a1f315"><td class="memItemLeft" align="right" valign="top">static CapabilityId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a4909d7f198a5bddf6954356374a1f315">editorCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a4909d7f198a5bddf6954356374a1f315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility spelling retained for existing editor tools.  <br /></td></tr>
+<tr class="separator:a4909d7f198a5bddf6954356374a1f315"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Timeline editing capability for skeletal clips. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00076">76</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7a90982d570167fa3491e51c690f75ee" name="a7a90982d570167fa3491e51c690f75ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a90982d570167fa3491e51c690f75ee">&#9670;&#160;</a></span>~IAnimationClipEditTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::animation_editing::IAnimationClipEditTarget::~IAnimationClipEditTarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad48703763e60bd1219c25045185f2529" name="ad48703763e60bd1219c25045185f2529"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad48703763e60bd1219c25045185f2529">&#9670;&#160;</a></span>editingCapabilityId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static CapabilityId eve::animation_editing::IAnimationClipEditTarget::editingCapabilityId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable capability id for clip timeline operations. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00152">eve::animation_editing::AnimationClipDocumentTarget::describe()</a>, <a class="el" href="AnimationClip_8h_source.html#l00082">editorCapabilityId()</a> , 以及 <a class="el" href="AnimationClip_8cpp_source.html#l00160">eve::animation_editing::AnimationClipDocumentTarget::queryCapability()</a>.</p>
+
+</div>
+</div>
+<a id="a4909d7f198a5bddf6954356374a1f315" name="a4909d7f198a5bddf6954356374a1f315"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4909d7f198a5bddf6954356374a1f315">&#9670;&#160;</a></span>editorCapabilityId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static CapabilityId eve::animation_editing::IAnimationClipEditTarget::editorCapabilityId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compatibility spelling retained for existing editor tools. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00080">editingCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a9a2c7132a7a666e7c47a269305b55da5" name="a9a2c7132a7a666e7c47a269305b55da5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a2c7132a7a666e7c47a269305b55da5">&#9670;&#160;</a></span>makeDeleteEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::IAnimationClipEditTarget::makeDeleteEvent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan removal of an event marker. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a85a52d839cab3762b5bfe3409efe7cf8">eve::animation_editing::AnimationClipDocumentTarget</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a1fae869d0a479ab84ec8c63db521c7ea" name="a1fae869d0a479ab84ec8c63db521c7ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fae869d0a479ab84ec8c63db521c7ea">&#9670;&#160;</a></span>makeDeleteTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::IAnimationClipEditTarget::makeDeleteTrack </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>track</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan removal of a stable bone track. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a7b6e5e03c9ffe8945197aee13980b325">eve::animation_editing::AnimationClipDocumentTarget</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a8126f4fd8a022858b3e1cb81979ca30c" name="a8126f4fd8a022858b3e1cb81979ca30c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8126f4fd8a022858b3e1cb81979ca30c">&#9670;&#160;</a></span>makeSetEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::IAnimationClipEditTarget::makeSetEvent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan creation or replacement of an event marker. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a9101a55a6e953397455a8e1709d721ad">eve::animation_editing::AnimationClipDocumentTarget</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a21c4609b74ebea24e977c07b19db223c" name="a21c4609b74ebea24e977c07b19db223c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21c4609b74ebea24e977c07b19db223c">&#9670;&#160;</a></span>makeSetMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::IAnimationClipEditTarget::makeSetMask </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation__editing_1_1AnimationMaskEntry.html">AnimationMaskEntry</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan replacement of a bone mask weight. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a7f5a2f049c0225593c4a5f253b6cfa0d">eve::animation_editing::AnimationClipDocumentTarget</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a32d2f5369f09fa2ef04af7c6d212b771" name="a32d2f5369f09fa2ef04af7c6d212b771"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32d2f5369f09fa2ef04af7c6d212b771">&#9670;&#160;</a></span>makeSetSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::IAnimationClipEditTarget::makeSetSettings </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sampleRate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>loop</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan replacement of duration, sample rate and looping settings. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a3073af5758406c275249fb618a3dce3e">eve::animation_editing::AnimationClipDocumentTarget</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="af4581962e0be78013902d683225a0471" name="af4581962e0be78013902d683225a0471"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4581962e0be78013902d683225a0471">&#9670;&#160;</a></span>makeSetTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::IAnimationClipEditTarget::makeSetTrack </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a> &amp;&#160;</td>
+          <td class="paramname"><em>track</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan creation or replacement of a complete stable bone track. </p>
+
+<p>在 <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a56cf4eeae44d4162bd82f1714ab38ab0">eve::animation_editing::AnimationClipDocumentTarget</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation_editing/<a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

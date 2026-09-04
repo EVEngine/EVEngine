@@ -1,0 +1,371 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/BattleVictory.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BattleVictory.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BattleVictory_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="BattleVictory_8h.html">rpg/BattleVictory.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ClassSystem_8h.html">rpg/ClassSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="GameState_8h.html">rpg/GameState.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="LevelSystem_8h.html">rpg/LevelSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="RPGActor_8h.html">rpg/RPGActor.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Tracker_8h.html">rpg/Tracker.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="WorldState_8h.html">rpg/WorldState.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;BattleVictoryReceipt&gt;</a> victoryFailure(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> code, std::string message,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                                                  std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                                  <span class="keyword">const</span> BattleVictoryRequest &amp;request) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;BattleVictoryReceipt&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        code, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>),</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        {{<span class="stringliteral">&quot;mapId&quot;</span>, request.mapId}, {<span class="stringliteral">&quot;objectId&quot;</span>, request.objectId}}, <span class="stringliteral">&quot;rpg.battle-victory&quot;</span>));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">struct </span>TrackerRollback {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">   24</a></span>    std::unordered_map&lt;std::string, QuestRuntime&gt; <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">   25</a></span>    std::vector&lt;std::string&gt;                      <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">   26</a></span>    std::vector&lt;QuestEvent&gt;                       <a class="code hl_variable" href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="BattleVictory_8cpp.html#af43d531b02c9237640722db6bf913b56">   27</a></span>    std::vector&lt;QuestEvent&gt;                       <a class="code hl_variable" href="BattleVictory_8cpp.html#af43d531b02c9237640722db6bf913b56">polled</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">void</span> restoreTracker(Tracker &amp;tracker, TrackerRollback rollback) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    tracker.entries = std::move(rollback.entries);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    tracker.order = std::move(rollback.order);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    tracker.pending = std::move(rollback.pending);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    tracker.polled = std::move(rollback.polled);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keywordtype">bool</span> finiteAddition(<span class="keyword">const</span> GameState &amp;state, <span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>, <span class="keywordtype">double</span> amount) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> <span class="keywordtype">id</span>.empty() ? amount == 0.0 : std::isfinite(amount) &amp;&amp;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                             std::isfinite(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.getVariable(<span class="keywordtype">id</span>) + amount);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;BattleVictoryReceipt&gt;</a></div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1BattleVictory.html#a3c625271ea94d637efd931401b0f51ce">   45</a></span><a class="code hl_function" href="classeve_1_1rpg_1_1BattleVictory.html#a3c625271ea94d637efd931401b0f51ce">BattleVictory::settle</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> &amp;actor, <a class="code hl_class" href="classeve_1_1rpg_1_1GameState.html">GameState</a> &amp;gameState, <a class="code hl_class" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> &amp;tracker,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1BattleVictoryRequest.html">BattleVictoryRequest</a> &amp;request) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a20bbac603885de148000987316d93b32">requiredQuestId</a>.empty() || tracker.<a class="code hl_function" href="classeve_1_1rpg_1_1Tracker.html#ae377c51439b0d121dec68449c4975a22">getState</a>(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a20bbac603885de148000987316d93b32">requiredQuestId</a>) != <span class="stringliteral">&quot;active&quot;</span>)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                              <span class="stringliteral">&quot;required quest must be active before victory settlement&quot;</span>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                              <span class="stringliteral">&quot;requiredQuestId&quot;</span>, request);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">if</span> (request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a544ca3e46c94a904696bdd3bd97b0310">notifyTopic</a>.empty() || request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#aa65aa863e7bc7da31e2f129f8d10689d">notifyTarget</a>.empty() || request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#afe5ba6ed7bcd541bfe27e83b5b8c7607">notifyAmount</a> &lt;= 0)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                              <span class="stringliteral">&quot;victory quest notification must be complete and positive&quot;</span>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                              <span class="stringliteral">&quot;notification&quot;</span>, request);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#abcb3c230400048ba488b02d504d2d5bb">attributeId</a>.empty() || !std::isfinite(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a723ebccc39b3785699eb9a94c8f20fe1">attributeAmount</a>) ||</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a723ebccc39b3785699eb9a94c8f20fe1">attributeAmount</a> &lt; 0.0 ||</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        !finiteAddition(gameState, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#abcb3c230400048ba488b02d504d2d5bb">attributeId</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a723ebccc39b3785699eb9a94c8f20fe1">attributeAmount</a>))</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                              <span class="stringliteral">&quot;victory attribute reward is invalid or non-finite&quot;</span>, <span class="stringliteral">&quot;attribute&quot;</span>, request);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a8d1ef3928cc7ddaa2fec806710617ee9">defeatCounterId</a>.empty() || request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a82bcce5f5464b2ff595e073b8906cd31">defeatCounterAmount</a> &lt;= 0 ||</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        !finiteAddition(gameState, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a8d1ef3928cc7ddaa2fec806710617ee9">defeatCounterId</a>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a82bcce5f5464b2ff595e073b8906cd31">defeatCounterAmount</a>)))</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                              <span class="stringliteral">&quot;victory counter increment is invalid&quot;</span>, <span class="stringliteral">&quot;defeatCounter&quot;</span>, request);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">if</span> (request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a67f1a0c4818fca2d57fdc4db1ced190e">levelPointAttributeId</a>.empty() || request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a5688bd02970ead8b9837fa5627c1f861">pointsPerLevel</a> &lt; 0)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                              <span class="stringliteral">&quot;level-point reward configuration is invalid&quot;</span>, <span class="stringliteral">&quot;levelPoints&quot;</span>, request);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">auto</span> preparedXp = <a class="code hl_function" href="classeve_1_1rpg_1_1LevelSystem.html#a2232d6f9d365389296024d773e54d286">LevelSystem::prepareGainXp</a>(&amp;actor, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#ad82d430edd8457e62472069661661067">xpAmount</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a03b8bb70c84ca330cd706ba65b798a74">xpGrowth</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">if</span> (!preparedXp.ok())</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;BattleVictoryReceipt&gt;::failure</a>(preparedXp.status());</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1PreparedProgressionGain.html">PreparedProgressionGain</a> xp = std::move(preparedXp).takeValue();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> levelsGained = xp.<a class="code hl_function" href="classeve_1_1rpg_1_1PreparedProgressionGain.html#a413c3536c2af05b1c6c9f7282720a57f">levelsGained</a>();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> levelPoints = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(levelsGained) * request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a5688bd02970ead8b9837fa5627c1f861">pointsPerLevel</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">if</span> (!finiteAddition(gameState, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a67f1a0c4818fca2d57fdc4db1ced190e">levelPointAttributeId</a>, levelPoints))</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                              <span class="stringliteral">&quot;level-point reward would produce a non-finite value&quot;</span>, <span class="stringliteral">&quot;levelPoints&quot;</span>, request);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">auto</span> gameStateBefore = gameState.<a class="code hl_function" href="classeve_1_1rpg_1_1GameState.html#a6d951a4c4b95ed139786880eb7229b38">snapshotJson</a>();</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (!gameStateBefore.ok())</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;BattleVictoryReceipt&gt;::failure</a>(gameStateBefore.status());</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::string gameStateSnapshot = std::move(gameStateBefore).takeValue();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1GameState.html">GameState</a> candidateState;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">auto</span> candidateRestore = candidateState.<a class="code hl_function" href="classeve_1_1rpg_1_1GameState.html#a3d8374bea1f01a766d4db8f582866edb">restoreSnapshotJson</a>(gameStateSnapshot);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">if</span> (!candidateRestore.ok())</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;BattleVictoryReceipt&gt;::failure</a>(candidateRestore.status());</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1WorldState.html">WorldState</a> candidateWorld(candidateState);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (candidateWorld.<a class="code hl_function" href="classeve_1_1rpg_1_1WorldState.html#a87186de5e5b3115e8e6be48b06411f6e">isObjectConsumed</a>(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a9b5ea946997666a5843009ffbfd76961">mapId</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#aed8685d89b16896ab116819d4ab3bee3">objectId</a>))</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                              <span class="stringliteral">&quot;encounter was already consumed&quot;</span>, <span class="stringliteral">&quot;objectId&quot;</span>, request);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">auto</span> candidateConsume = candidateWorld.<a class="code hl_function" href="classeve_1_1rpg_1_1WorldState.html#aa6ecf2de755c4139ef82b719707a27f2">consumeObject</a>(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a9b5ea946997666a5843009ffbfd76961">mapId</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#aed8685d89b16896ab116819d4ab3bee3">objectId</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (!candidateConsume.ok())</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;BattleVictoryReceipt&gt;::failure</a>(candidateConsume.status());</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    TrackerRollback trackerBefore{tracker.<a class="code hl_variable" href="classeve_1_1rpg_1_1Tracker.html#a3157cb1ee4a26aa20cb3bdb7d704d523">entries</a>, tracker.<a class="code hl_variable" href="classeve_1_1rpg_1_1Tracker.html#a5556a2564ab3b33fb06e6565ca9c0791">order</a>, tracker.<a class="code hl_variable" href="classeve_1_1rpg_1_1Tracker.html#abe59f76741d5f1b6f837f50c5e40d467">pending</a>, tracker.<a class="code hl_variable" href="classeve_1_1rpg_1_1Tracker.html#aeafcecbf733995adc7e1b715bf903341">polled</a>};</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    gameState.<a class="code hl_function" href="classeve_1_1rpg_1_1GameState.html#a0f576a01be205e337a4b4a98d2e140d8">addVariable</a>(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#abcb3c230400048ba488b02d504d2d5bb">attributeId</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a723ebccc39b3785699eb9a94c8f20fe1">attributeAmount</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    gameState.<a class="code hl_function" href="classeve_1_1rpg_1_1GameState.html#a0f576a01be205e337a4b4a98d2e140d8">addVariable</a>(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a8d1ef3928cc7ddaa2fec806710617ee9">defeatCounterId</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a82bcce5f5464b2ff595e073b8906cd31">defeatCounterAmount</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">if</span> (levelPoints &gt; 0.0) gameState.<a class="code hl_function" href="classeve_1_1rpg_1_1GameState.html#a0f576a01be205e337a4b4a98d2e140d8">addVariable</a>(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a67f1a0c4818fca2d57fdc4db1ced190e">levelPointAttributeId</a>, levelPoints);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    tracker.<a class="code hl_function" href="classeve_1_1rpg_1_1Tracker.html#ad9a0ace441ccae98770b0ff20928723b">notify</a>(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a544ca3e46c94a904696bdd3bd97b0310">notifyTopic</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#aa65aa863e7bc7da31e2f129f8d10689d">notifyTarget</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#afe5ba6ed7bcd541bfe27e83b5b8c7607">notifyAmount</a>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_class" href="classeve_1_1rpg_1_1WorldState.html">WorldState</a> <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>(gameState);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="vulkan_2Graphics_8cpp.html#a5923b9221705546ddd88c92230707bd5">consumed</a> = <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>.consumeObject(request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a9b5ea946997666a5843009ffbfd76961">mapId</a>, request.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryRequest.html#aed8685d89b16896ab116819d4ab3bee3">objectId</a>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="vulkan_2Graphics_8cpp.html#a5923b9221705546ddd88c92230707bd5">consumed</a>.ok() || <a class="code hl_variable" href="vulkan_2Graphics_8cpp.html#a5923b9221705546ddd88c92230707bd5">consumed</a>.code() != <a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a>) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keyword">auto</span> restored = gameState.<a class="code hl_function" href="classeve_1_1rpg_1_1GameState.html#a3d8374bea1f01a766d4db8f582866edb">restoreSnapshotJson</a>(gameStateSnapshot);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> restoredOk = restored.<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">ok</a>();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        restoreTracker(tracker, std::move(trackerBefore));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">if</span> (!restoredOk)</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a>,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                                  <span class="stringliteral">&quot;victory rollback could not restore GameState&quot;</span>, <span class="stringliteral">&quot;rollback&quot;</span>, request);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a>,</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                              <span class="stringliteral">&quot;encounter changed before victory commit&quot;</span>, <span class="stringliteral">&quot;objectId&quot;</span>, request);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">auto</span> committedXp = <a class="code hl_function" href="classeve_1_1rpg_1_1LevelSystem.html#a5009d8860bcf8fb81107f533b0d7d71f">LevelSystem::commitGainXp</a>(std::move(xp));</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (!committedXp.ok()) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keyword">auto</span> restored = gameState.<a class="code hl_function" href="classeve_1_1rpg_1_1GameState.html#a3d8374bea1f01a766d4db8f582866edb">restoreSnapshotJson</a>(gameStateSnapshot);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> restoredOk = restored.<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">ok</a>();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        restoreTracker(tracker, std::move(trackerBefore));</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">if</span> (!restoredOk)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordflow">return</span> victoryFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a>,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                                  <span class="stringliteral">&quot;victory rollback could not restore GameState&quot;</span>, <span class="stringliteral">&quot;rollback&quot;</span>, request);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;BattleVictoryReceipt&gt;::failure</a>(committedXp.status());</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_struct" href="structeve_1_1rpg_1_1BattleVictoryReceipt.html">BattleVictoryReceipt</a> receipt;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    receipt.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryReceipt.html#a802a9bcb44e1ceb0288e58bc346d55c7">levelsGained</a> = std::move(committedXp).takeValue();</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    receipt.<a class="code hl_variable" href="structeve_1_1rpg_1_1BattleVictoryReceipt.html#a4280ab8e963c43687fc23ac015286bb0">skillsLearned</a> = <a class="code hl_function" href="classeve_1_1rpg_1_1ClassSystem.html#ab1f2df10310463af8bc960a4e0a98618">ClassSystem::checkLevelSkills</a>(&amp;actor);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;BattleVictoryReceipt&gt;::success</a>(</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        std::move(receipt), <a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a318c52c4cdd810a5dbbd886bf5d38244"><div class="ttname"><a href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a></div><div class="ttdeci">std::vector&lt; QuestEvent &gt; pending</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00026">BattleVictory.cpp:26</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a377aed406d9f5138df4526b90a56c3c0"><div class="ttname"><a href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00025">BattleVictory.cpp:25</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_aeab8fb65bf7593cd8b7f00fb67d2dc09"><div class="ttname"><a href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a></div><div class="ttdeci">std::unordered_map&lt; std::string, QuestRuntime &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00024">BattleVictory.cpp:24</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_af43d531b02c9237640722db6bf913b56"><div class="ttname"><a href="BattleVictory_8cpp.html#af43d531b02c9237640722db6bf913b56">polled</a></div><div class="ttdeci">std::vector&lt; QuestEvent &gt; polled</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00027">BattleVictory.cpp:27</a></div></div>
+<div class="ttc" id="aBattleVictory_8h_html"><div class="ttname"><a href="BattleVictory_8h.html">BattleVictory.h</a></div><div class="ttdoc">Atomic post-battle progression and persistent-world settlement.</div></div>
+<div class="ttc" id="aClassSystem_8h_html"><div class="ttname"><a href="ClassSystem_8h.html">ClassSystem.h</a></div><div class="ttdoc">职业系统：设定职业、施加职业基础特征、按等级自动学习技能。</div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aGameState_8h_html"><div class="ttname"><a href="GameState_8h.html">GameState.h</a></div><div class="ttdoc">全局游戏状态：开关（bool）、变量（数字）、独立变量（按作用域）。</div></div>
+<div class="ttc" id="aLevelSystem_8h_html"><div class="ttname"><a href="LevelSystem_8h.html">LevelSystem.h</a></div><div class="ttdoc">角色成长：等级 / 经验 / 升级。</div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aRPGActor_8h_html"><div class="ttname"><a href="RPGActor_8h.html">RPGActor.h</a></div></div>
+<div class="ttc" id="aTracker_8h_html"><div class="ttname"><a href="Tracker_8h.html">Tracker.h</a></div><div class="ttdoc">目标追踪器运行时实例（玩家日志 / 成就 / 教程可各建一份）。</div></div>
+<div class="ttc" id="aWorldState_8h_html"><div class="ttname"><a href="WorldState_8h.html">WorldState.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_a18d816508fd802a87608171ce0c67354"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#a18d816508fd802a87608171ce0c67354">eve::Result&lt; void &gt;::ok</a></div><div class="ttdeci">bool ok() const noexcept</div><div class="ttdoc">Whether this result represents a non-failure outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00416">Result.h:416</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1BattleVictory_html_a3c625271ea94d637efd931401b0f51ce"><div class="ttname"><a href="classeve_1_1rpg_1_1BattleVictory.html#a3c625271ea94d637efd931401b0f51ce">eve::rpg::BattleVictory::settle</a></div><div class="ttdeci">static eve::Result&lt; BattleVictoryReceipt &gt; settle(RPGActor &amp;actor, GameState &amp;gameState, Tracker &amp;tracker, const BattleVictoryRequest &amp;request)</div><div class="ttdoc">Atomically settle XP, derived class skills, attributes, quest progress, and encounter consumption.</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00045">BattleVictory.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ClassSystem_html_ab1f2df10310463af8bc960a4e0a98618"><div class="ttname"><a href="classeve_1_1rpg_1_1ClassSystem.html#ab1f2df10310463af8bc960a4e0a98618">eve::rpg::ClassSystem::checkLevelSkills</a></div><div class="ttdeci">static int checkLevelSkills(RPGActor *actor)</div><div class="ttdoc">按当前等级补学尚未学过的升级技能。</div><div class="ttdef"><b>Definition</b> <a href="ClassSystem_8cpp_source.html#l00040">ClassSystem.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1GameState_html"><div class="ttname"><a href="classeve_1_1rpg_1_1GameState.html">eve::rpg::GameState</a></div><div class="ttdoc">一份游戏状态（开关/变量/独立变量）。</div><div class="ttdef"><b>Definition</b> <a href="GameState_8h_source.html#l00023">GameState.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1GameState_html_a0f576a01be205e337a4b4a98d2e140d8"><div class="ttname"><a href="classeve_1_1rpg_1_1GameState.html#a0f576a01be205e337a4b4a98d2e140d8">eve::rpg::GameState::addVariable</a></div><div class="ttdeci">void addVariable(const std::string &amp;name, double delta)</div><div class="ttdef"><b>Definition</b> <a href="GameState_8cpp_source.html#l00056">GameState.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1GameState_html_a3d8374bea1f01a766d4db8f582866edb"><div class="ttname"><a href="classeve_1_1rpg_1_1GameState.html#a3d8374bea1f01a766d4db8f582866edb">eve::rpg::GameState::restoreSnapshotJson</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreSnapshotJson(std::string_view json)</div><div class="ttdoc">Validate and atomically restore a canonical RPG game-state JSON document.</div><div class="ttdef"><b>Definition</b> <a href="GameState_8cpp_source.html#l00103">GameState.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1GameState_html_a6d951a4c4b95ed139786880eb7229b38"><div class="ttname"><a href="classeve_1_1rpg_1_1GameState.html#a6d951a4c4b95ed139786880eb7229b38">eve::rpg::GameState::snapshotJson</a></div><div class="ttdeci">eve::Result&lt; std::string &gt; snapshotJson() const</div><div class="ttdoc">Serialize this state as the canonical versioned RPG game-state JSON document.</div><div class="ttdef"><b>Definition</b> <a href="GameState_8cpp_source.html#l00083">GameState.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LevelSystem_html_a2232d6f9d365389296024d773e54d286"><div class="ttname"><a href="classeve_1_1rpg_1_1LevelSystem.html#a2232d6f9d365389296024d773e54d286">eve::rpg::LevelSystem::prepareGainXp</a></div><div class="ttdeci">static eve::Result&lt; PreparedProgressionGain &gt; prepareGainXp(RPGActor *actor, double amount, double xpGrowth=1.2)</div><div class="ttdoc">Validate an XP gain and calculate its complete progression candidate without mutation/events.</div><div class="ttdef"><b>Definition</b> <a href="LevelSystem_8cpp_source.html#l00067">LevelSystem.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1LevelSystem_html_a5009d8860bcf8fb81107f533b0d7d71f"><div class="ttname"><a href="classeve_1_1rpg_1_1LevelSystem.html#a5009d8860bcf8fb81107f533b0d7d71f">eve::rpg::LevelSystem::commitGainXp</a></div><div class="ttdeci">static eve::Result&lt; int &gt; commitGainXp(PreparedProgressionGain prepared)</div><div class="ttdoc">Commit a prepared XP gain if actor progression is still unchanged.</div><div class="ttdef"><b>Definition</b> <a href="LevelSystem_8cpp_source.html#l00113">LevelSystem.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1PreparedProgressionGain_html"><div class="ttname"><a href="classeve_1_1rpg_1_1PreparedProgressionGain.html">eve::rpg::PreparedProgressionGain</a></div><div class="ttdoc">Move-only progression gain prepared against one actor revision.</div><div class="ttdef"><b>Definition</b> <a href="LevelSystem_8h_source.html#l00023">LevelSystem.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1PreparedProgressionGain_html_a413c3536c2af05b1c6c9f7282720a57f"><div class="ttname"><a href="classeve_1_1rpg_1_1PreparedProgressionGain.html#a413c3536c2af05b1c6c9f7282720a57f">eve::rpg::PreparedProgressionGain::levelsGained</a></div><div class="ttdeci">int levelsGained() const noexcept</div><div class="ttdoc">Number of level transitions contained in this prepared candidate.</div><div class="ttdef"><b>Definition</b> <a href="LevelSystem_8h_source.html#l00027">LevelSystem.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Tracker_html"><div class="ttname"><a href="classeve_1_1rpg_1_1Tracker.html">eve::rpg::Tracker</a></div><div class="ttdoc">一份任务进度 + 本实例事件队列。</div><div class="ttdef"><b>Definition</b> <a href="Tracker_8h_source.html#l00024">Tracker.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Tracker_html_a3157cb1ee4a26aa20cb3bdb7d704d523"><div class="ttname"><a href="classeve_1_1rpg_1_1Tracker.html#a3157cb1ee4a26aa20cb3bdb7d704d523">eve::rpg::Tracker::entries</a></div><div class="ttdeci">std::unordered_map&lt; std::string, QuestRuntime &gt; entries</div><div class="ttdoc">运行时条目（QuestSystem 读写；公开以便测试与脚本查询）。</div><div class="ttdef"><b>Definition</b> <a href="Tracker_8h_source.html#l00095">Tracker.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Tracker_html_a5556a2564ab3b33fb06e6565ca9c0791"><div class="ttname"><a href="classeve_1_1rpg_1_1Tracker.html#a5556a2564ab3b33fb06e6565ca9c0791">eve::rpg::Tracker::order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="Tracker_8h_source.html#l00096">Tracker.h:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Tracker_html_abe59f76741d5f1b6f837f50c5e40d467"><div class="ttname"><a href="classeve_1_1rpg_1_1Tracker.html#abe59f76741d5f1b6f837f50c5e40d467">eve::rpg::Tracker::pending</a></div><div class="ttdeci">std::vector&lt; QuestEvent &gt; pending</div><div class="ttdef"><b>Definition</b> <a href="Tracker_8h_source.html#l00097">Tracker.h:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Tracker_html_ad9a0ace441ccae98770b0ff20928723b"><div class="ttname"><a href="classeve_1_1rpg_1_1Tracker.html#ad9a0ace441ccae98770b0ff20928723b">eve::rpg::Tracker::notify</a></div><div class="ttdeci">void notify(const std::string &amp;topic, const std::string &amp;target, int amount)</div><div class="ttdef"><b>Definition</b> <a href="Tracker_8cpp_source.html#l00025">Tracker.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Tracker_html_ae377c51439b0d121dec68449c4975a22"><div class="ttname"><a href="classeve_1_1rpg_1_1Tracker.html#ae377c51439b0d121dec68449c4975a22">eve::rpg::Tracker::getState</a></div><div class="ttdeci">std::string getState(const std::string &amp;id) const</div><div class="ttdef"><b>Definition</b> <a href="Tracker_8cpp_source.html#l00172">Tracker.cpp:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Tracker_html_aeafcecbf733995adc7e1b715bf903341"><div class="ttname"><a href="classeve_1_1rpg_1_1Tracker.html#aeafcecbf733995adc7e1b715bf903341">eve::rpg::Tracker::polled</a></div><div class="ttdeci">std::vector&lt; QuestEvent &gt; polled</div><div class="ttdef"><b>Definition</b> <a href="Tracker_8h_source.html#l00098">Tracker.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1WorldState_html"><div class="ttname"><a href="classeve_1_1rpg_1_1WorldState.html">eve::rpg::WorldState</a></div><div class="ttdoc">Non-owning typed adapter for persistent per-map object lifecycle state.</div><div class="ttdef"><b>Definition</b> <a href="WorldState_8h_source.html#l00017">WorldState.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1WorldState_html_a87186de5e5b3115e8e6be48b06411f6e"><div class="ttname"><a href="classeve_1_1rpg_1_1WorldState.html#a87186de5e5b3115e8e6be48b06411f6e">eve::rpg::WorldState::isObjectConsumed</a></div><div class="ttdeci">bool isObjectConsumed(std::string_view mapId, std::string_view objectId) const</div><div class="ttdoc">Query whether a stable object has been consumed in one map.</div><div class="ttdef"><b>Definition</b> <a href="WorldState_8cpp_source.html#l00029">WorldState.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1WorldState_html_aa6ecf2de755c4139ef82b719707a27f2"><div class="ttname"><a href="classeve_1_1rpg_1_1WorldState.html#aa6ecf2de755c4139ef82b719707a27f2">eve::rpg::WorldState::consumeObject</a></div><div class="ttdeci">eve::Result&lt; void &gt; consumeObject(std::string_view mapId, std::string_view objectId)</div><div class="ttdoc">Idempotently publish the consumed fact for one stable map object.</div><div class="ttdef"><b>Definition</b> <a href="WorldState_8cpp_source.html#l00037">WorldState.cpp:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a></div><div class="ttdeci">@ InvariantViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryReceipt_html"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryReceipt.html">eve::rpg::BattleVictoryReceipt</a></div><div class="ttdoc">Observable summary returned after a complete victory settlement.</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00037">BattleVictory.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryReceipt_html_a4280ab8e963c43687fc23ac015286bb0"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryReceipt.html#a4280ab8e963c43687fc23ac015286bb0">eve::rpg::BattleVictoryReceipt::skillsLearned</a></div><div class="ttdeci">int skillsLearned</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00039">BattleVictory.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryReceipt_html_a802a9bcb44e1ceb0288e58bc346d55c7"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryReceipt.html#a802a9bcb44e1ceb0288e58bc346d55c7">eve::rpg::BattleVictoryReceipt::levelsGained</a></div><div class="ttdeci">int levelsGained</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00038">BattleVictory.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html">eve::rpg::BattleVictoryRequest</a></div><div class="ttdoc">Complete data needed to settle one victorious persistent encounter.</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00019">BattleVictory.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a03b8bb70c84ca330cd706ba65b798a74"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a03b8bb70c84ca330cd706ba65b798a74">eve::rpg::BattleVictoryRequest::xpGrowth</a></div><div class="ttdeci">double xpGrowth</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00024">BattleVictory.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a20bbac603885de148000987316d93b32"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a20bbac603885de148000987316d93b32">eve::rpg::BattleVictoryRequest::requiredQuestId</a></div><div class="ttdeci">std::string requiredQuestId</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00022">BattleVictory.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a544ca3e46c94a904696bdd3bd97b0310"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a544ca3e46c94a904696bdd3bd97b0310">eve::rpg::BattleVictoryRequest::notifyTopic</a></div><div class="ttdeci">std::string notifyTopic</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00027">BattleVictory.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a5688bd02970ead8b9837fa5627c1f861"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a5688bd02970ead8b9837fa5627c1f861">eve::rpg::BattleVictoryRequest::pointsPerLevel</a></div><div class="ttdeci">int pointsPerLevel</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00033">BattleVictory.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a67f1a0c4818fca2d57fdc4db1ced190e"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a67f1a0c4818fca2d57fdc4db1ced190e">eve::rpg::BattleVictoryRequest::levelPointAttributeId</a></div><div class="ttdeci">std::string levelPointAttributeId</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00032">BattleVictory.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a723ebccc39b3785699eb9a94c8f20fe1"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a723ebccc39b3785699eb9a94c8f20fe1">eve::rpg::BattleVictoryRequest::attributeAmount</a></div><div class="ttdeci">double attributeAmount</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00026">BattleVictory.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a82bcce5f5464b2ff595e073b8906cd31"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a82bcce5f5464b2ff595e073b8906cd31">eve::rpg::BattleVictoryRequest::defeatCounterAmount</a></div><div class="ttdeci">int defeatCounterAmount</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00031">BattleVictory.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a8d1ef3928cc7ddaa2fec806710617ee9"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a8d1ef3928cc7ddaa2fec806710617ee9">eve::rpg::BattleVictoryRequest::defeatCounterId</a></div><div class="ttdeci">std::string defeatCounterId</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00030">BattleVictory.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_a9b5ea946997666a5843009ffbfd76961"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#a9b5ea946997666a5843009ffbfd76961">eve::rpg::BattleVictoryRequest::mapId</a></div><div class="ttdeci">std::string mapId</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00020">BattleVictory.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_aa65aa863e7bc7da31e2f129f8d10689d"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#aa65aa863e7bc7da31e2f129f8d10689d">eve::rpg::BattleVictoryRequest::notifyTarget</a></div><div class="ttdeci">std::string notifyTarget</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00028">BattleVictory.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_abcb3c230400048ba488b02d504d2d5bb"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#abcb3c230400048ba488b02d504d2d5bb">eve::rpg::BattleVictoryRequest::attributeId</a></div><div class="ttdeci">std::string attributeId</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00025">BattleVictory.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_ad82d430edd8457e62472069661661067"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#ad82d430edd8457e62472069661661067">eve::rpg::BattleVictoryRequest::xpAmount</a></div><div class="ttdeci">double xpAmount</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00023">BattleVictory.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_aed8685d89b16896ab116819d4ab3bee3"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#aed8685d89b16896ab116819d4ab3bee3">eve::rpg::BattleVictoryRequest::objectId</a></div><div class="ttdeci">std::string objectId</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00021">BattleVictory.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1BattleVictoryRequest_html_afe5ba6ed7bcd541bfe27e83b5b8c7607"><div class="ttname"><a href="structeve_1_1rpg_1_1BattleVictoryRequest.html#afe5ba6ed7bcd541bfe27e83b5b8c7607">eve::rpg::BattleVictoryRequest::notifyAmount</a></div><div class="ttdeci">int notifyAmount</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8h_source.html#l00029">BattleVictory.h:29</a></div></div>
+<div class="ttc" id="avulkan_2Graphics_8cpp_html_a5923b9221705546ddd88c92230707bd5"><div class="ttname"><a href="vulkan_2Graphics_8cpp.html#a5923b9221705546ddd88c92230707bd5">consumed</a></div><div class="ttdeci">bool consumed</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8cpp_source.html#l00179">Graphics.cpp:179</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

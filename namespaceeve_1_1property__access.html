@@ -1,0 +1,566 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::property_access 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1property__access.html">property_access</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::property_access 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">IPropertyAccess</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renderer- and transaction-independent MVVM property surface.  <a href="classeve_1_1property__access_1_1IPropertyAccess.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1property__access_1_1NumericMetadata.html">NumericMetadata</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Numeric editing metadata independent of a slider or spin-box widget.  <a href="structeve_1_1property__access_1_1NumericMetadata.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1property__access_1_1PropertyChange.html">PropertyChange</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable notification emitted after a model property changes.  <a href="structeve_1_1property__access_1_1PropertyChange.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1property__access_1_1PropertyDescriptor.html">PropertyDescriptor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One stable property description consumed by any UI shell.  <a href="structeve_1_1property__access_1_1PropertyDescriptor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1property__access_1_1PropertySchema.html">PropertySchema</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Versioned schema for one view model or editable target.  <a href="structeve_1_1property__access_1_1PropertySchema.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1property__access_1_1WriteResult.html">WriteResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of a model write, including a stable diagnostic code.  <a href="structeve_1_1property__access_1_1WriteResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:ab940760613fb74791e7cbdc6250ccd9a" id="r_ab940760613fb74791e7cbdc6250ccd9a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1property__access.html#ab940760613fb74791e7cbdc6250ccd9a">Subscription</a> = <a class="el" href="classeve_1_1Subscription.html">eve::Subscription</a></td></tr>
+<tr class="memdesc:ab940760613fb74791e7cbdc6250ccd9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility alias for the common observer lifetime token.  <br /></td></tr>
+<tr class="separator:ab940760613fb74791e7cbdc6250ccd9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ae28f734d649d2b3eb257179eea236638" id="r_ae28f734d649d2b3eb257179eea236638"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638">PropertyKind</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a06b9281e396db002010bde1de57262eb">Auto</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638ac26f15e86e3de4c398a8273272aba034">Bool</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638aa0faef0851b4294c06f2b94bb1cb2044">Integer</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638ab2ee912b91d69b435159c7c3f6df7f5f">Number</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a27118326006d3829667a400ad23d5d98">String</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638acf20423ed48998082c20099488a0917c">Enum</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638acb5feb1b7314637725a2e73bdc9f7295">Color</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a01b2dc1a2922d9be9e12ef0709600977">Vec3</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638af67402842935c0240e8109e7312def66">Vec4</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a675714e2978e42bb70d853ddbd95fb9e">AssetRef</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a771d51735305d4fccf5380814a764c3d">ObjectRef</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a886ef5dbd655a6c97726d7091c6b173e">Struct</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a4410ec34d9e6c1a68100ca0ce033fb17">Array</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a46f3ea056caa3126b91f3f70beea068c">Map</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a004bf6c9a40003140292e97330236c53">Action</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638ac9414beaf0eba1e59bfe104f0ee222e1">ReadOnlyText</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ae28f734d649d2b3eb257179eea236638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Semantic property kind used by renderer-independent presenters.  <a href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638">更多...</a><br /></td></tr>
+<tr class="separator:ae28f734d649d2b3eb257179eea236638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad86155da7237b52085a08d0ad15a0059" id="r_ad86155da7237b52085a08d0ad15a0059"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> : std::uint64_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0
+, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059a131fb182a881796e7606ed6da27f1197">ReadOnly</a> = 1ull &lt;&lt; 0
+, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059a9b6545e4cea9b4ad4979d41bb9170e2b">Advanced</a> = 1ull &lt;&lt; 1
+, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059adcce482edd4952b5db985648edea26a0">EditorOnly</a> = 1ull &lt;&lt; 2
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059abc366f2d0ba3d681e7a3899917c5d3de">Runtime</a> = 1ull &lt;&lt; 3
+, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059ab1f023eff9a6b5308d6024e4c6b3d475">Transient</a> = 1ull &lt;&lt; 4
+, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059af44f1629db33ba70816eb97d3c4e2282">Dangerous</a> = 1ull &lt;&lt; 5
+, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059aa332d780e4ba495717077c780df4f8ab">MultiEdit</a> = 1ull &lt;&lt; 6
+<br />
+ }</td></tr>
+<tr class="memdesc:ad86155da7237b52085a08d0ad15a0059"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-host property visibility and editing flags.  <a href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">更多...</a><br /></td></tr>
+<tr class="separator:ad86155da7237b52085a08d0ad15a0059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad140ddb2497b20b648304a6f4a49014b" id="r_ad140ddb2497b20b648304a6f4a49014b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014b">PropertyChangeState</a> { <a class="el" href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014ba689202409e48743b914713f96d93947c">Value</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014ba699b4f79215d191584653efebf156e52">Mixed</a>
+, <a class="el" href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014ba2aee0be2678ee90fd327cc186826438e">Missing</a>
+ }</td></tr>
+<tr class="memdesc:ad140ddb2497b20b648304a6f4a49014b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Availability of a property in an immutable model snapshot.  <a href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014b">更多...</a><br /></td></tr>
+<tr class="separator:ad140ddb2497b20b648304a6f4a49014b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a9a04519cbcd2dda01a2943ce2685edb3" id="r_a9a04519cbcd2dda01a2943ce2685edb3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1property__access_1_1WriteResult.html">WriteResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1property__access.html#a9a04519cbcd2dda01a2943ce2685edb3">validatePropertyValue</a> (const <a class="el" href="structeve_1_1property__access_1_1PropertyDescriptor.html">PropertyDescriptor</a> &amp;property, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a9a04519cbcd2dda01a2943ce2685edb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate one candidate value against the shared property contract.  <br /></td></tr>
+<tr class="separator:a9a04519cbcd2dda01a2943ce2685edb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaa968e8293288690a5367b1a38d37f2" id="r_adaa968e8293288690a5367b1a38d37f2"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1property__access.html#adaa968e8293288690a5367b1a38d37f2">operator|</a> (<a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> <a class="el" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> <a class="el" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>)</td></tr>
+<tr class="separator:adaa968e8293288690a5367b1a38d37f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45ff45f7e0aa968dc1cb625b387e8baa" id="r_a45ff45f7e0aa968dc1cb625b387e8baa"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1property__access.html#a45ff45f7e0aa968dc1cb625b387e8baa">operator&amp;</a> (<a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> <a class="el" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> <a class="el" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>)</td></tr>
+<tr class="separator:a45ff45f7e0aa968dc1cb625b387e8baa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa248ffd659f7aa91172414706c3a499b" id="r_aa248ffd659f7aa91172414706c3a499b"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1property__access.html#aa248ffd659f7aa91172414706c3a499b">hasFlag</a> (<a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> flag)</td></tr>
+<tr class="separator:aa248ffd659f7aa91172414706c3a499b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="ab940760613fb74791e7cbdc6250ccd9a" name="ab940760613fb74791e7cbdc6250ccd9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab940760613fb74791e7cbdc6250ccd9a">&#9670;&#160;</a></span>Subscription</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1property__access.html#ab940760613fb74791e7cbdc6250ccd9a">eve::property_access::Subscription</a> = typedef <a class="el" href="classeve_1_1Subscription.html">eve::Subscription</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility alias for the common observer lifetime token. </p>
+<p>The common <code><a class="el" href="classeve_1_1Subscription.html" title="Move-only RAII token that owns one observer registration.">eve::Subscription</a></code> owns the only cancellation lifecycle. This alias preserves the property-access API without maintaining a second token implementation. </p>
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="ad140ddb2497b20b648304a6f4a49014b" name="ad140ddb2497b20b648304a6f4a49014b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad140ddb2497b20b648304a6f4a49014b">&#9670;&#160;</a></span>PropertyChangeState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1property__access.html#ad140ddb2497b20b648304a6f4a49014b">eve::property_access::PropertyChangeState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Availability of a property in an immutable model snapshot. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad140ddb2497b20b648304a6f4a49014ba689202409e48743b914713f96d93947c" name="ad140ddb2497b20b648304a6f4a49014ba689202409e48743b914713f96d93947c"></a>Value&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad140ddb2497b20b648304a6f4a49014ba699b4f79215d191584653efebf156e52" name="ad140ddb2497b20b648304a6f4a49014ba699b4f79215d191584653efebf156e52"></a>Mixed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad140ddb2497b20b648304a6f4a49014ba2aee0be2678ee90fd327cc186826438e" name="ad140ddb2497b20b648304a6f4a49014ba2aee0be2678ee90fd327cc186826438e"></a>Missing&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad86155da7237b52085a08d0ad15a0059" name="ad86155da7237b52085a08d0ad15a0059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad86155da7237b52085a08d0ad15a0059">&#9670;&#160;</a></span>PropertyFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">eve::property_access::PropertyFlag</a> : std::uint64_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cross-host property visibility and editing flags. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad86155da7237b52085a08d0ad15a0059a6adf97f83acf6453d4a6a4b1070f3754" name="ad86155da7237b52085a08d0ad15a0059a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad86155da7237b52085a08d0ad15a0059a131fb182a881796e7606ed6da27f1197" name="ad86155da7237b52085a08d0ad15a0059a131fb182a881796e7606ed6da27f1197"></a>ReadOnly&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad86155da7237b52085a08d0ad15a0059a9b6545e4cea9b4ad4979d41bb9170e2b" name="ad86155da7237b52085a08d0ad15a0059a9b6545e4cea9b4ad4979d41bb9170e2b"></a>Advanced&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad86155da7237b52085a08d0ad15a0059adcce482edd4952b5db985648edea26a0" name="ad86155da7237b52085a08d0ad15a0059adcce482edd4952b5db985648edea26a0"></a>EditorOnly&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad86155da7237b52085a08d0ad15a0059abc366f2d0ba3d681e7a3899917c5d3de" name="ad86155da7237b52085a08d0ad15a0059abc366f2d0ba3d681e7a3899917c5d3de"></a>Runtime&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad86155da7237b52085a08d0ad15a0059ab1f023eff9a6b5308d6024e4c6b3d475" name="ad86155da7237b52085a08d0ad15a0059ab1f023eff9a6b5308d6024e4c6b3d475"></a>Transient&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad86155da7237b52085a08d0ad15a0059af44f1629db33ba70816eb97d3c4e2282" name="ad86155da7237b52085a08d0ad15a0059af44f1629db33ba70816eb97d3c4e2282"></a>Dangerous&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad86155da7237b52085a08d0ad15a0059aa332d780e4ba495717077c780df4f8ab" name="ad86155da7237b52085a08d0ad15a0059aa332d780e4ba495717077c780df4f8ab"></a>MultiEdit&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae28f734d649d2b3eb257179eea236638" name="ae28f734d649d2b3eb257179eea236638"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae28f734d649d2b3eb257179eea236638">&#9670;&#160;</a></span>PropertyKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638">eve::property_access::PropertyKind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Semantic property kind used by renderer-independent presenters. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a06b9281e396db002010bde1de57262eb" name="ae28f734d649d2b3eb257179eea236638a06b9281e396db002010bde1de57262eb"></a>Auto&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638ac26f15e86e3de4c398a8273272aba034" name="ae28f734d649d2b3eb257179eea236638ac26f15e86e3de4c398a8273272aba034"></a>Bool&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638aa0faef0851b4294c06f2b94bb1cb2044" name="ae28f734d649d2b3eb257179eea236638aa0faef0851b4294c06f2b94bb1cb2044"></a>Integer&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638ab2ee912b91d69b435159c7c3f6df7f5f" name="ae28f734d649d2b3eb257179eea236638ab2ee912b91d69b435159c7c3f6df7f5f"></a>Number&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a27118326006d3829667a400ad23d5d98" name="ae28f734d649d2b3eb257179eea236638a27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638acf20423ed48998082c20099488a0917c" name="ae28f734d649d2b3eb257179eea236638acf20423ed48998082c20099488a0917c"></a>Enum&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638acb5feb1b7314637725a2e73bdc9f7295" name="ae28f734d649d2b3eb257179eea236638acb5feb1b7314637725a2e73bdc9f7295"></a>Color&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638afe98032d4f1c52a2f0b617f9205d5f80" name="ae28f734d649d2b3eb257179eea236638afe98032d4f1c52a2f0b617f9205d5f80"></a>Vec2&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a01b2dc1a2922d9be9e12ef0709600977" name="ae28f734d649d2b3eb257179eea236638a01b2dc1a2922d9be9e12ef0709600977"></a>Vec3&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638af67402842935c0240e8109e7312def66" name="ae28f734d649d2b3eb257179eea236638af67402842935c0240e8109e7312def66"></a>Vec4&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a675714e2978e42bb70d853ddbd95fb9e" name="ae28f734d649d2b3eb257179eea236638a675714e2978e42bb70d853ddbd95fb9e"></a>AssetRef&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a771d51735305d4fccf5380814a764c3d" name="ae28f734d649d2b3eb257179eea236638a771d51735305d4fccf5380814a764c3d"></a>ObjectRef&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a886ef5dbd655a6c97726d7091c6b173e" name="ae28f734d649d2b3eb257179eea236638a886ef5dbd655a6c97726d7091c6b173e"></a>Struct&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a4410ec34d9e6c1a68100ca0ce033fb17" name="ae28f734d649d2b3eb257179eea236638a4410ec34d9e6c1a68100ca0ce033fb17"></a>Array&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a46f3ea056caa3126b91f3f70beea068c" name="ae28f734d649d2b3eb257179eea236638a46f3ea056caa3126b91f3f70beea068c"></a>Map&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638a004bf6c9a40003140292e97330236c53" name="ae28f734d649d2b3eb257179eea236638a004bf6c9a40003140292e97330236c53"></a>Action&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae28f734d649d2b3eb257179eea236638ac9414beaf0eba1e59bfe104f0ee222e1" name="ae28f734d649d2b3eb257179eea236638ac9414beaf0eba1e59bfe104f0ee222e1"></a>ReadOnlyText&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="aa248ffd659f7aa91172414706c3a499b" name="aa248ffd659f7aa91172414706c3a499b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa248ffd659f7aa91172414706c3a499b">&#9670;&#160;</a></span>hasFlag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool eve::property_access::hasFlag </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>flag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PropertyView_8cpp_source.html#l00223">eve::ui::syncPropertyView()</a> , 以及 <a class="el" href="PropertyAccess_8cpp_source.html#l00016">validatePropertyValue()</a>.</p>
+
+</div>
+</div>
+<a id="a45ff45f7e0aa968dc1cb625b387e8baa" name="a45ff45f7e0aa968dc1cb625b387e8baa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45ff45f7e0aa968dc1cb625b387e8baa">&#9670;&#160;</a></span>operator&amp;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> eve::property_access::operator&amp; </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>right</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>.</p>
+
+</div>
+</div>
+<a id="adaa968e8293288690a5367b1a38d37f2" name="adaa968e8293288690a5367b1a38d37f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaa968e8293288690a5367b1a38d37f2">&#9670;&#160;</a></span>operator|()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a> eve::property_access::operator| </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059">PropertyFlag</a>&#160;</td>
+          <td class="paramname"><em>right</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>.</p>
+
+</div>
+</div>
+<a id="a9a04519cbcd2dda01a2943ce2685edb3" name="a9a04519cbcd2dda01a2943ce2685edb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a04519cbcd2dda01a2943ce2685edb3">&#9670;&#160;</a></span>validatePropertyValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1property__access_1_1WriteResult.html">WriteResult</a> eve::property_access::validatePropertyValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1property__access_1_1PropertyDescriptor.html">PropertyDescriptor</a> &amp;&#160;</td>
+          <td class="paramname"><em>property</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate one candidate value against the shared property contract. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">property</td><td>Property kind, flags, choices and numeric constraints. </td></tr>
+    <tr><td class="paramname">value</td><td>Candidate value. Floating-point values must be finite. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Accepted on success, otherwise a stable property-access property diagnostic.</dd></dl>
+<p>This is the single semantic validation entry point for property-access property adapters. Host-specific adapters may translate its diagnostics, but must not reimplement kind, enum, finite or numeric-range validation. </p>
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8cpp_source.html">PropertyAccess.cpp</a> 第 <a class="el" href="PropertyAccess_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a004bf6c9a40003140292e97330236c53">Action</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a4410ec34d9e6c1a68100ca0ce033fb17">eve::Value::Array</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a4410ec34d9e6c1a68100ca0ce033fb17">Array</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a675714e2978e42bb70d853ddbd95fb9e">AssetRef</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a06b9281e396db002010bde1de57262eb">Auto</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742ac26f15e86e3de4c398a8273272aba034">eve::Value::Bool</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638ac26f15e86e3de4c398a8273272aba034">Bool</a>, <a class="el" href="PropertyAccess_8h_source.html#l00078">eve::property_access::PropertyDescriptor::choices</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638acb5feb1b7314637725a2e73bdc9f7295">Color</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638acf20423ed48998082c20099488a0917c">Enum</a>, <a class="el" href="PropertyAccess_8h_source.html#l00075">eve::property_access::PropertyDescriptor::flags</a>, <a class="el" href="PropertyAccess_8h_source.html#l00057">hasFlag()</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742aa0faef0851b4294c06f2b94bb1cb2044">eve::Value::Integer</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638aa0faef0851b4294c06f2b94bb1cb2044">Integer</a>, <a class="el" href="PropertyAccess_8h_source.html#l00074">eve::property_access::PropertyDescriptor::kind</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a46f3ea056caa3126b91f3f70beea068c">Map</a>, <a class="el" href="PropertyAccess_8h_source.html#l00062">eve::property_access::NumericMetadata::maximum</a>, <a class="el" href="PropertyAccess_8h_source.html#l00061">eve::property_access::NumericMetadata::minimum</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742ab2ee912b91d69b435159c7c3f6df7f5f">eve::Value::Number</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638ab2ee912b91d69b435159c7c3f6df7f5f">Number</a>, <a class="el" href="PropertyAccess_8h_source.html#l00077">eve::property_access::PropertyDescriptor::numeric</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a497031794414a552435f90151ac3b54b">eve::Value::Object</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a771d51735305d4fccf5380814a764c3d">ObjectRef</a>, <a class="el" href="namespaceeve_1_1property__access.html#ad86155da7237b52085a08d0ad15a0059a131fb182a881796e7606ed6da27f1197">ReadOnly</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638ac9414beaf0eba1e59bfe104f0ee222e1">ReadOnlyText</a>, <a class="el" href="PropertyAccess_8h_source.html#l00099">eve::property_access::WriteResult::reject()</a>, <a class="el" href="classeve_1_1Value.html#a91aa989866fb244908f7032ea059e742a27118326006d3829667a400ad23d5d98">eve::Value::String</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a27118326006d3829667a400ad23d5d98">String</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a886ef5dbd655a6c97726d7091c6b173e">Struct</a>, <a class="el" href="PropertyAccess_8h_source.html#l00098">eve::property_access::WriteResult::success()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a>, <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638a01b2dc1a2922d9be9e12ef0709600977">Vec3</a> , 以及 <a class="el" href="namespaceeve_1_1property__access.html#ae28f734d649d2b3eb257179eea236638af67402842935c0240e8109e7312def66">Vec4</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditingProperty_8cpp_source.html#l00138">eve::editing::validatePropertyValue()</a> , 以及 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00208">eve::scriptmodel::ReflectedPropertyModel::write()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

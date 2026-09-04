@@ -1,0 +1,333 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/IResourceFactory.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">IResourceFactory.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="IResourceFactory_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// Narrow resource-factory interface of the Graphics backend.</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Consumers that only create textures / meshes / shaders / canvases (model3d,</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// animation, avatar, sceneloader) depend on this instead of the full</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// graphics::Graphics god class.</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;assimp/matrix4x4.h&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">struct </span>aiMesh;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1font.html">eve::font</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>FontData;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1image.html">eve::image</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">ImageData</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">class </span>Canvas;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span>Font;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">struct </span>TextureCreateInfo;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">struct </span>TextureSampler;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html">   35</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1IResourceFactory.html">IResourceFactory</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#ac1c1e4c1e2b5b51a91b825849fb13e0a">   37</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#ac1c1e4c1e2b5b51a91b825849fb13e0a">~IResourceFactory</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a7d3f7a0f592185fa38c8fdbda3892382">   39</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a7d3f7a0f592185fa38c8fdbda3892382">newTexture</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keyword">const</span> uint8_t *rgba, <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a> = <span class="keyword">false</span>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a> = <span class="keyword">false</span>) = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#acccd461d429dca2c591f885c29cc0a58">   41</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#acccd461d429dca2c591f885c29cc0a58">newTexture</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keyword">const</span> uint8_t *rgba,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>) = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a887e434d0b4d9d72029e8da826ffa54f">   43</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a887e434d0b4d9d72029e8da826ffa54f">newCubemap</a>(<span class="keywordtype">int</span> faceSize, <span class="keyword">const</span> uint8_t *rgbaFaces) = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#afd67efcfb1b77017b4b10f2f32ef4f6e">   44</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#afd67efcfb1b77017b4b10f2f32ef4f6e">newCubemap</a>(<span class="keywordtype">int</span> faceSize, <span class="keyword">const</span> uint8_t *rgbaFaces,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>) = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a13eccdb5cb04744f7e70c0b07be02bb9">   46</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a13eccdb5cb04744f7e70c0b07be02bb9">newTexture</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data) = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#aef0070ca64d27095a7b40d0c4cd7eb43">   47</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#aef0070ca64d27095a7b40d0c4cd7eb43">newTexture</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>) = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#ae22556294f4ccf7731807f85c227a57e">   48</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#ae22556294f4ccf7731807f85c227a57e">newTextureFromImageData</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data, <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a> = <span class="keyword">false</span>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                             <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a> = <span class="keyword">false</span>) = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a3de093c273f0fe33beed6532163d2dc2">   50</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a3de093c273f0fe33beed6532163d2dc2">newTextureFromImageData</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                                             <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureCreateInfo.html">TextureCreateInfo</a> &amp;<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>) = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a819231cdb9258c0aad704f3b975a2782">   52</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a819231cdb9258c0aad704f3b975a2782">newTextureWithSampler</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> *data, <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                           <span class="keywordtype">bool</span> generateMipmaps, <span class="keywordtype">float</span> maxAnisotropy,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                           <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="SceneLoader_8cpp.html#a7ff9ea9faba6452397840da54a677bfe">mipmap</a>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                           <span class="keywordtype">float</span> lodBias = 0.f) = 0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a275ebc6f392ce1d917da8ca0c72a6229">   56</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a275ebc6f392ce1d917da8ca0c72a6229">setTextureSampler</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> &amp;sampler) = 0;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#ade27edda90dcebb8c821d96ef5c727d1">   57</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#ade27edda90dcebb8c821d96ef5c727d1">newTextureFromFile</a>(<span class="keyword">const</span> std::string &amp;filename) = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#ac1ba78c5e5e1ccf5e188c5a2ffd767ab">   58</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#ac1ba78c5e5e1ccf5e188c5a2ffd767ab">newTextureFromFileRepeated</a>(<span class="keyword">const</span> std::string &amp;filename, <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                                <span class="keywordtype">bool</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a>) = 0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a86dc2defd091b04e02df33ab4c7d6803">   60</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a86dc2defd091b04e02df33ab4c7d6803">reloadTextureFromFile</a>(<span class="keyword">const</span> std::string &amp;filename) = 0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a0ecfd2fb281000bfc8e7cd0f4ca506e3">   61</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a0ecfd2fb281000bfc8e7cd0f4ca506e3">getMaxAnisotropy</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#adbf75e5ba5f97271237354ea28dbe7f8">   62</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#adbf75e5ba5f97271237354ea28dbe7f8">releaseTexture</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture) = 0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#af5a29a007ac152798f2a091c9ff6732f">   64</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#af5a29a007ac152798f2a091c9ff6732f">newMeshFromAssimp</a>(const ::aiMesh &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>) = 0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#aff5302a7b59b7aa1f9f3ddf6baf4f369">   65</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#aff5302a7b59b7aa1f9f3ddf6baf4f369">newMeshFromAssimp</a>(const ::aiMesh &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <span class="keyword">const</span> aiMatrix4x4 &amp;worldTransform) = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a98f94ab97738af03d0de220f77657848">   66</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a98f94ab97738af03d0de220f77657848">newMeshFromArrays</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> *posXYZ, <span class="keyword">const</span> <span class="keywordtype">float</span> *nrmXYZ, <span class="keyword">const</span> <span class="keywordtype">float</span> *uvST,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                    <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, <span class="keyword">const</span> uint32_t *<a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>) = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a0831158498daceb7d2b39052e6fd5e02">   68</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a0831158498daceb7d2b39052e6fd5e02">updateMeshVertices</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <span class="keyword">const</span> <span class="keywordtype">float</span> *posXYZ, <span class="keyword">const</span> <span class="keywordtype">float</span> *nrmXYZ,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                    <span class="keyword">const</span> <span class="keywordtype">float</span> *uvST, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, <span class="keyword">const</span> uint32_t *<a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                    <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>) = 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#afe34b54084fecbe5eebf2e6f50d11ccb">   71</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#afe34b54084fecbe5eebf2e6f50d11ccb">bakeMeshMorph</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>) = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a88b1e82bc12beea69205e4aa57ec2b90">   72</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a88b1e82bc12beea69205e4aa57ec2b90">newMeshSphere</a>(<span class="keywordtype">int</span> slices, <span class="keywordtype">int</span> stacks) = 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a9070038431b83e6304b7e1d24949e50f">   73</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a9070038431b83e6304b7e1d24949e50f">newMeshCylinder</a>(<span class="keywordtype">int</span> slices, <span class="keywordtype">int</span> stacks, <span class="keywordtype">bool</span> caps) = 0;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#ad5aa1d5cbb5d3c01235aa03122debbc0">   74</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#ad5aa1d5cbb5d3c01235aa03122debbc0">newMeshCube</a>(<span class="keywordtype">float</span> size) = 0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a77a43e6150b61416d5daf63c7b5adeab">   75</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a77a43e6150b61416d5daf63c7b5adeab">releaseMesh</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>) = 0;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a8fd984f68cb7652fbb805eaee76c6f50">   77</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a8fd984f68cb7652fbb805eaee76c6f50">newShaderFromSpv</a>(<span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;vertSpv,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                     <span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;fragSpv) = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a5a053b3c141f8dbf7170c4434cd693d3">   79</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a5a053b3c141f8dbf7170c4434cd693d3">newShaderFromSpvFile</a>(<span class="keyword">const</span> std::string &amp;vertPath,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                         <span class="keyword">const</span> std::string &amp;fragPath) = 0;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a085b6dd10968fe48949ede801549f781">   81</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a085b6dd10968fe48949ede801549f781">newShader</a>(<span class="keyword">const</span> std::string &amp;vertGlsl, <span class="keyword">const</span> std::string &amp;fragGlsl) = 0;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#aaa0b6c0bd837d3eade1833dc59045121">   90</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#aaa0b6c0bd837d3eade1833dc59045121">newShaderFromWgsl</a>(<span class="keyword">const</span> std::string &amp;vertWgsl,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                                      <span class="keyword">const</span> std::string &amp;fragWgsl) = 0;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#abdc1430176b5ff2fed83cbadf1437d27">   92</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#abdc1430176b5ff2fed83cbadf1437d27">newMeshShaderFromSpv</a>(<span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;vertSpv,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                                         <span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;fragSpv) = 0;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#ab67d98661130ef04a1b9aa9bcaae00ab">   94</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#ab67d98661130ef04a1b9aa9bcaae00ab">newMeshShaderFromWgsl</a>(<span class="keyword">const</span> std::string &amp;vertWgsl,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                                          <span class="keyword">const</span> std::string &amp;fragWgsl) = 0;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a0292eb1ae8de3f1a2e81b61f142f974e">   96</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a0292eb1ae8de3f1a2e81b61f142f974e">newMeshShader</a>(<span class="keyword">const</span> std::string &amp;vertGlsl, <span class="keyword">const</span> std::string &amp;fragGlsl) = 0;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a72cd0a743063451736462575fff527a7">   97</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a72cd0a743063451736462575fff527a7">newHairShaderFromSpv</a>(<span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;vertSpv,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                                         <span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;fragSpv) = 0;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#afbdadc9978622cef72895cc8e4f4c518">   99</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#afbdadc9978622cef72895cc8e4f4c518">releaseShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>) = 0;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a3812ae22c02892eb1dff4ed5decdb62f">  101</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a3812ae22c02892eb1dff4ed5decdb62f">newCanvas</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>) = 0;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IResourceFactory.html#a6537ec293e87d4a3e33ad5319b84199c">  102</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Font.html">Font</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IResourceFactory.html#a6537ec293e87d4a3e33ad5319b84199c">newFont</a>(<a class="code hl_class" href="classeve_1_1font_1_1FontData.html">font::FontData</a> *data, std::string charset) = 0;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>};</div>
+</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00031">EvpackGraphicsLoader.cpp:31</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7b19ff7daa03f593e552608463f5c9ca"><div class="ttname"><a href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a></div><div class="ttdeci">std::uint32_t vertexCount</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00235">GltfImporter.cpp:235</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ad2ae269d4b0d530bbbcc259246388784"><div class="ttname"><a href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a></div><div class="ttdeci">std::uint32_t indexCount</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00236">GltfImporter.cpp:236</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00731">RenderSystem3D.cpp:731</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a03f092ee0f36aa0f2fc311a44f72b7e8"><div class="ttname"><a href="SceneLoader_8cpp.html#a03f092ee0f36aa0f2fc311a44f72b7e8">repeatV</a></div><div class="ttdeci">bool repeatV</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00182">SceneLoader.cpp:182</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a61e0e449fd7e8647d521cafd4f1d55a3"><div class="ttname"><a href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a></div><div class="ttdeci">std::string filter</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00184">SceneLoader.cpp:184</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a7ff9ea9faba6452397840da54a677bfe"><div class="ttname"><a href="SceneLoader_8cpp.html#a7ff9ea9faba6452397840da54a677bfe">mipmap</a></div><div class="ttdeci">std::string mipmap</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00185">SceneLoader.cpp:185</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a814b9636d707902b5b8d57d3f8c4c60c"><div class="ttname"><a href="SceneLoader_8cpp.html#a814b9636d707902b5b8d57d3f8c4c60c">repeatU</a></div><div class="ttdeci">bool repeatU</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00181">SceneLoader.cpp:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1font_1_1FontData_html"><div class="ttname"><a href="classeve_1_1font_1_1FontData.html">eve::font::FontData</a></div><div class="ttdoc">CPU-side decoded font face (FreeType FT_Face + owned font bytes). Does not upload to GPU — rasterize ...</div><div class="ttdef"><b>Definition</b> <a href="FontData_8h_source.html#l00023">FontData.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Font_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Font.html">eve::graphics::Font</a></div><div class="ttdoc">GPU-side font: wraps a decoded font::FontData and rasterizes a fixed set of codepoints into a single ...</div><div class="ttdef"><b>Definition</b> <a href="graphics_2Font_8h_source.html#l00033">Font.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html">eve::graphics::IResourceFactory</a></div><div class="ttdoc">Texture / mesh / shader / canvas creation and release.</div><div class="ttdef"><b>Definition</b> <a href="IResourceFactory_8h_source.html#l00035">IResourceFactory.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a0292eb1ae8de3f1a2e81b61f142f974e"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a0292eb1ae8de3f1a2e81b61f142f974e">eve::graphics::IResourceFactory::newMeshShader</a></div><div class="ttdeci">virtual Shader * newMeshShader(const std::string &amp;vertGlsl, const std::string &amp;fragGlsl)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a0831158498daceb7d2b39052e6fd5e02"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a0831158498daceb7d2b39052e6fd5e02">eve::graphics::IResourceFactory::updateMeshVertices</a></div><div class="ttdeci">virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a085b6dd10968fe48949ede801549f781"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a085b6dd10968fe48949ede801549f781">eve::graphics::IResourceFactory::newShader</a></div><div class="ttdeci">virtual Shader * newShader(const std::string &amp;vertGlsl, const std::string &amp;fragGlsl)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a0ecfd2fb281000bfc8e7cd0f4ca506e3"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a0ecfd2fb281000bfc8e7cd0f4ca506e3">eve::graphics::IResourceFactory::getMaxAnisotropy</a></div><div class="ttdeci">virtual float getMaxAnisotropy() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a13eccdb5cb04744f7e70c0b07be02bb9"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a13eccdb5cb04744f7e70c0b07be02bb9">eve::graphics::IResourceFactory::newTexture</a></div><div class="ttdeci">virtual Texture * newTexture(image::ImageData *data)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a275ebc6f392ce1d917da8ca0c72a6229"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a275ebc6f392ce1d917da8ca0c72a6229">eve::graphics::IResourceFactory::setTextureSampler</a></div><div class="ttdeci">virtual void setTextureSampler(Texture *texture, const TextureSampler &amp;sampler)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a3812ae22c02892eb1dff4ed5decdb62f"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a3812ae22c02892eb1dff4ed5decdb62f">eve::graphics::IResourceFactory::newCanvas</a></div><div class="ttdeci">virtual Canvas * newCanvas(int width, int height)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a3de093c273f0fe33beed6532163d2dc2"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a3de093c273f0fe33beed6532163d2dc2">eve::graphics::IResourceFactory::newTextureFromImageData</a></div><div class="ttdeci">virtual Texture * newTextureFromImageData(image::ImageData *data, const TextureCreateInfo &amp;info)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a5a053b3c141f8dbf7170c4434cd693d3"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a5a053b3c141f8dbf7170c4434cd693d3">eve::graphics::IResourceFactory::newShaderFromSpvFile</a></div><div class="ttdeci">virtual Shader * newShaderFromSpvFile(const std::string &amp;vertPath, const std::string &amp;fragPath)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a6537ec293e87d4a3e33ad5319b84199c"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a6537ec293e87d4a3e33ad5319b84199c">eve::graphics::IResourceFactory::newFont</a></div><div class="ttdeci">virtual Font * newFont(font::FontData *data, std::string charset)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a72cd0a743063451736462575fff527a7"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a72cd0a743063451736462575fff527a7">eve::graphics::IResourceFactory::newHairShaderFromSpv</a></div><div class="ttdeci">virtual Shader * newHairShaderFromSpv(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a77a43e6150b61416d5daf63c7b5adeab"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a77a43e6150b61416d5daf63c7b5adeab">eve::graphics::IResourceFactory::releaseMesh</a></div><div class="ttdeci">virtual bool releaseMesh(Mesh *mesh)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a7d3f7a0f592185fa38c8fdbda3892382"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a7d3f7a0f592185fa38c8fdbda3892382">eve::graphics::IResourceFactory::newTexture</a></div><div class="ttdeci">virtual Texture * newTexture(int width, int height, const uint8_t *rgba, bool repeatU=false, bool repeatV=false)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a819231cdb9258c0aad704f3b975a2782"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a819231cdb9258c0aad704f3b975a2782">eve::graphics::IResourceFactory::newTextureWithSampler</a></div><div class="ttdeci">virtual Texture * newTextureWithSampler(image::ImageData *data, bool repeatU, bool repeatV, bool generateMipmaps, float maxAnisotropy, const std::string &amp;filter, const std::string &amp;mipmap, float lodBias=0.f)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a86dc2defd091b04e02df33ab4c7d6803"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a86dc2defd091b04e02df33ab4c7d6803">eve::graphics::IResourceFactory::reloadTextureFromFile</a></div><div class="ttdeci">virtual bool reloadTextureFromFile(const std::string &amp;filename)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a887e434d0b4d9d72029e8da826ffa54f"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a887e434d0b4d9d72029e8da826ffa54f">eve::graphics::IResourceFactory::newCubemap</a></div><div class="ttdeci">virtual Texture * newCubemap(int faceSize, const uint8_t *rgbaFaces)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a88b1e82bc12beea69205e4aa57ec2b90"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a88b1e82bc12beea69205e4aa57ec2b90">eve::graphics::IResourceFactory::newMeshSphere</a></div><div class="ttdeci">virtual Mesh * newMeshSphere(int slices, int stacks)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a8fd984f68cb7652fbb805eaee76c6f50"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a8fd984f68cb7652fbb805eaee76c6f50">eve::graphics::IResourceFactory::newShaderFromSpv</a></div><div class="ttdeci">virtual Shader * newShaderFromSpv(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a9070038431b83e6304b7e1d24949e50f"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a9070038431b83e6304b7e1d24949e50f">eve::graphics::IResourceFactory::newMeshCylinder</a></div><div class="ttdeci">virtual Mesh * newMeshCylinder(int slices, int stacks, bool caps)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_a98f94ab97738af03d0de220f77657848"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#a98f94ab97738af03d0de220f77657848">eve::graphics::IResourceFactory::newMeshFromArrays</a></div><div class="ttdeci">virtual Mesh * newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST, int vertexCount, const uint32_t *indices, int indexCount)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_aaa0b6c0bd837d3eade1833dc59045121"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#aaa0b6c0bd837d3eade1833dc59045121">eve::graphics::IResourceFactory::newShaderFromWgsl</a></div><div class="ttdeci">virtual Shader * newShaderFromWgsl(const std::string &amp;vertWgsl, const std::string &amp;fragWgsl)=0</div><div class="ttdoc">Create a 2D custom shader from WGSL source (WebGPU backend). Empty vert → default textured vertex sha...</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_ab67d98661130ef04a1b9aa9bcaae00ab"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#ab67d98661130ef04a1b9aa9bcaae00ab">eve::graphics::IResourceFactory::newMeshShaderFromWgsl</a></div><div class="ttdeci">virtual Shader * newMeshShaderFromWgsl(const std::string &amp;vertWgsl, const std::string &amp;fragWgsl)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_abdc1430176b5ff2fed83cbadf1437d27"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#abdc1430176b5ff2fed83cbadf1437d27">eve::graphics::IResourceFactory::newMeshShaderFromSpv</a></div><div class="ttdeci">virtual Shader * newMeshShaderFromSpv(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_ac1ba78c5e5e1ccf5e188c5a2ffd767ab"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#ac1ba78c5e5e1ccf5e188c5a2ffd767ab">eve::graphics::IResourceFactory::newTextureFromFileRepeated</a></div><div class="ttdeci">virtual Texture * newTextureFromFileRepeated(const std::string &amp;filename, bool repeatU, bool repeatV)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_ac1c1e4c1e2b5b51a91b825849fb13e0a"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#ac1c1e4c1e2b5b51a91b825849fb13e0a">eve::graphics::IResourceFactory::~IResourceFactory</a></div><div class="ttdeci">virtual ~IResourceFactory()=default</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_acccd461d429dca2c591f885c29cc0a58"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#acccd461d429dca2c591f885c29cc0a58">eve::graphics::IResourceFactory::newTexture</a></div><div class="ttdeci">virtual Texture * newTexture(int width, int height, const uint8_t *rgba, const TextureCreateInfo &amp;info)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_ad5aa1d5cbb5d3c01235aa03122debbc0"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#ad5aa1d5cbb5d3c01235aa03122debbc0">eve::graphics::IResourceFactory::newMeshCube</a></div><div class="ttdeci">virtual Mesh * newMeshCube(float size)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_adbf75e5ba5f97271237354ea28dbe7f8"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#adbf75e5ba5f97271237354ea28dbe7f8">eve::graphics::IResourceFactory::releaseTexture</a></div><div class="ttdeci">virtual bool releaseTexture(Texture *texture)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_ade27edda90dcebb8c821d96ef5c727d1"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#ade27edda90dcebb8c821d96ef5c727d1">eve::graphics::IResourceFactory::newTextureFromFile</a></div><div class="ttdeci">virtual Texture * newTextureFromFile(const std::string &amp;filename)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_ae22556294f4ccf7731807f85c227a57e"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#ae22556294f4ccf7731807f85c227a57e">eve::graphics::IResourceFactory::newTextureFromImageData</a></div><div class="ttdeci">virtual Texture * newTextureFromImageData(image::ImageData *data, bool repeatU=false, bool repeatV=false)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_aef0070ca64d27095a7b40d0c4cd7eb43"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#aef0070ca64d27095a7b40d0c4cd7eb43">eve::graphics::IResourceFactory::newTexture</a></div><div class="ttdeci">virtual Texture * newTexture(image::ImageData *data, const TextureCreateInfo &amp;info)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_af5a29a007ac152798f2a091c9ff6732f"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#af5a29a007ac152798f2a091c9ff6732f">eve::graphics::IResourceFactory::newMeshFromAssimp</a></div><div class="ttdeci">virtual Mesh * newMeshFromAssimp(const ::aiMesh &amp;mesh)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_afbdadc9978622cef72895cc8e4f4c518"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#afbdadc9978622cef72895cc8e4f4c518">eve::graphics::IResourceFactory::releaseShader</a></div><div class="ttdeci">virtual bool releaseShader(Shader *shader)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_afd67efcfb1b77017b4b10f2f32ef4f6e"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#afd67efcfb1b77017b4b10f2f32ef4f6e">eve::graphics::IResourceFactory::newCubemap</a></div><div class="ttdeci">virtual Texture * newCubemap(int faceSize, const uint8_t *rgbaFaces, const TextureCreateInfo &amp;info)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_afe34b54084fecbe5eebf2e6f50d11ccb"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#afe34b54084fecbe5eebf2e6f50d11ccb">eve::graphics::IResourceFactory::bakeMeshMorph</a></div><div class="ttdeci">virtual bool bakeMeshMorph(Mesh *mesh)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IResourceFactory_html_aff5302a7b59b7aa1f9f3ddf6baf4f369"><div class="ttname"><a href="classeve_1_1graphics_1_1IResourceFactory.html#aff5302a7b59b7aa1f9f3ddf6baf4f369">eve::graphics::IResourceFactory::newMeshFromAssimp</a></div><div class="ttdeci">virtual Mesh * newMeshFromAssimp(const ::aiMesh &amp;mesh, const aiMatrix4x4 &amp;worldTransform)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00020">Mesh.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00033">ImageData.h:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">eve::artifact::PartKind::ImageData</a></div><div class="ttdeci">@ ImageData</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1font_html"><div class="ttname"><a href="namespaceeve_1_1font.html">eve::font</a></div><div class="ttdef"><b>Definition</b> <a href="font_2Font_8cpp_source.html#l00018">Font.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html"><div class="ttname"><a href="namespaceeve_1_1image.html">eve::image</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00023">AvatarInstance.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureCreateInfo_html"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureCreateInfo.html">eve::graphics::TextureCreateInfo</a></div><div class="ttdoc">Options for Graphics::newTexture / newCubemap. When generateMipmaps is true and sampler....</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00104">TextureSampler.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1TextureSampler_html"><div class="ttname"><a href="structeve_1_1graphics_1_1TextureSampler.html">eve::graphics::TextureSampler</a></div><div class="ttdoc">Sampler state for a Texture (filter, wrap, mip LOD, anisotropy). Defaults match historical engine beh...</div><div class="ttdef"><b>Definition</b> <a href="TextureSampler_8h_source.html#l00027">TextureSampler.h:27</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_ab98e1009b45d02ebdfba0d2ea4e605b5"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a></div><div class="ttdeci">glm::uvec4 info</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00075">GraphicsGpuDriven.cpp:75</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

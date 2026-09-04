@@ -1,0 +1,253 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSAction.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RTSAction.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RTSAction_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="RTSTypes_8h.html">rts/RTSTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1action.html">eve::action</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>ActionRuntime;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rts.html">eve::rts</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20">ActionDisposition</a> : std::uint8_t {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20a2d13df6f8b5e4c5af9f87e0dc39df69d">Pending</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20a07ca5050e697392c9ed47e6453f1453f">Completed</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>};</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1ActionExecutionResult.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1ActionExecutionResult.html">ActionExecutionResult</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1ActionExecutionResult.html#ac6790e264e12d7349c86a8407fe7b460">   26</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20">ActionDisposition</a> <a class="code hl_variable" href="structeve_1_1rts_1_1ActionExecutionResult.html#ac6790e264e12d7349c86a8407fe7b460">disposition</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20a2d13df6f8b5e4c5af9f87e0dc39df69d">ActionDisposition::Pending</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1IRTSActionExecutor.html">   36</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rts_1_1IRTSActionExecutor.html">IRTSActionExecutor</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1IRTSActionExecutor.html#a6dd2a5053bf1e474cab68234fef0fb03">   38</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1rts_1_1IRTSActionExecutor.html#a6dd2a5053bf1e474cab68234fef0fb03">~IRTSActionExecutor</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1IRTSActionExecutor.html#a16a69a53232a402fd7ab1caf41801379">   47</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionExecutionResult&gt;</a> <a class="code hl_function" href="classeve_1_1rts_1_1IRTSActionExecutor.html#a16a69a53232a402fd7ab1caf41801379">execute</a>(<a class="code hl_class" href="classeve_1_1rts_1_1Unit.html">Unit</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rts_1_1OrderRecord.html">OrderRecord</a>&amp; <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                                                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1ActionAdapter.html">   58</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rts_1_1ActionAdapter.html">ActionAdapter</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1rts_1_1IRTSActionExecutor.html">IRTSActionExecutor</a> {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1rts_1_1ActionAdapter.html">ActionAdapter</a>(<a class="code hl_class" href="classeve_1_1action_1_1ActionRuntime.html">action::ActionRuntime</a>&amp; runtime);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1ActionAdapter.html#af16970b6c39970a362a5cb14f179ca86">   62</a></span>    <a class="code hl_function" href="classeve_1_1rts_1_1ActionAdapter.html#af16970b6c39970a362a5cb14f179ca86">~ActionAdapter</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1ActionAdapter.html#ae8297b61f744f4de717a6b3cbbbe98b2">   64</a></span>    <a class="code hl_function" href="classeve_1_1rts_1_1ActionAdapter.html#ae8297b61f744f4de717a6b3cbbbe98b2">ActionAdapter</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rts_1_1ActionAdapter.html">ActionAdapter</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1ActionAdapter.html#a044ae264ff5be78d782c807c941e1db1">   65</a></span>    <a class="code hl_class" href="classeve_1_1rts_1_1ActionAdapter.html">ActionAdapter</a>&amp; <a class="code hl_function" href="classeve_1_1rts_1_1ActionAdapter.html#a044ae264ff5be78d782c807c941e1db1">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1rts_1_1ActionAdapter.html">ActionAdapter</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionExecutionResult&gt;</a> <a class="code hl_function" href="classeve_1_1rts_1_1ActionAdapter.html#afd85bac19ef74f02e5c7e3ecd1d482d7">execute</a>(<a class="code hl_class" href="classeve_1_1rts_1_1Unit.html">Unit</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rts_1_1OrderRecord.html">OrderRecord</a>&amp; <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                                        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rts_1_1ActionAdapter.html#a4702968d3dc3373a113abc72915b2c06">clear</a>() noexcept;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>private:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    struct <a class="code hl_struct" href="structeve_1_1rts_1_1ActionAdapter_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::unique_ptr&lt;<a class="code hl_struct" href="structeve_1_1rts_1_1ActionAdapter_1_1Impl.html">Impl</a>&gt; impl_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}  <span class="comment">// namespace eve::rts</span></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a377aed406d9f5138df4526b90a56c3c0"><div class="ttname"><a href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00025">BattleVictory.cpp:25</a></div></div>
+<div class="ttc" id="aRTSTypes_8h_html"><div class="ttname"><a href="RTSTypes_8h.html">RTSTypes.h</a></div><div class="ttdoc">RTS domain roots and composition-only components.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a5b77101175f979d95b9601fe99c12994"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a></div><div class="ttdeci">TacticalUnit * unit</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00113">TacticsPersistence.cpp:113</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionRuntime_html"><div class="ttname"><a href="classeve_1_1action_1_1ActionRuntime.html">eve::action::ActionRuntime</a></div><div class="ttdoc">Deterministic action lifecycle coordinator.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00474">Action.h:474</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1ActionAdapter_html"><div class="ttname"><a href="classeve_1_1rts_1_1ActionAdapter.html">eve::rts::ActionAdapter</a></div><div class="ttdoc">Adapter that maps RTS orders to the existing action::ActionRuntime.</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8h_source.html#l00058">RTSAction.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1ActionAdapter_html_a044ae264ff5be78d782c807c941e1db1"><div class="ttname"><a href="classeve_1_1rts_1_1ActionAdapter.html#a044ae264ff5be78d782c807c941e1db1">eve::rts::ActionAdapter::operator=</a></div><div class="ttdeci">ActionAdapter &amp; operator=(const ActionAdapter &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1ActionAdapter_html_a4702968d3dc3373a113abc72915b2c06"><div class="ttname"><a href="classeve_1_1rts_1_1ActionAdapter.html#a4702968d3dc3373a113abc72915b2c06">eve::rts::ActionAdapter::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Forget runtime execution correlations so restored orders are rebound on their next step.</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8cpp_source.html#l00058">RTSAction.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1ActionAdapter_html_ae8297b61f744f4de717a6b3cbbbe98b2"><div class="ttname"><a href="classeve_1_1rts_1_1ActionAdapter.html#ae8297b61f744f4de717a6b3cbbbe98b2">eve::rts::ActionAdapter::ActionAdapter</a></div><div class="ttdeci">ActionAdapter(const ActionAdapter &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1ActionAdapter_html_af16970b6c39970a362a5cb14f179ca86"><div class="ttname"><a href="classeve_1_1rts_1_1ActionAdapter.html#af16970b6c39970a362a5cb14f179ca86">eve::rts::ActionAdapter::~ActionAdapter</a></div><div class="ttdeci">~ActionAdapter() override</div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1ActionAdapter_html_afd85bac19ef74f02e5c7e3ecd1d482d7"><div class="ttname"><a href="classeve_1_1rts_1_1ActionAdapter.html#afd85bac19ef74f02e5c7e3ecd1d482d7">eve::rts::ActionAdapter::execute</a></div><div class="ttdeci">Result&lt; ActionExecutionResult &gt; execute(Unit &amp;unit, const OrderRecord &amp;order, const SimulationStep &amp;step) override</div><div class="ttdoc">Execute or advance one active RTS order.</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8cpp_source.html#l00062">RTSAction.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1IRTSActionExecutor_html"><div class="ttname"><a href="classeve_1_1rts_1_1IRTSActionExecutor.html">eve::rts::IRTSActionExecutor</a></div><div class="ttdoc">Interface isolating RTS orders from the shared action runtime.</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8h_source.html#l00036">RTSAction.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1IRTSActionExecutor_html_a16a69a53232a402fd7ab1caf41801379"><div class="ttname"><a href="classeve_1_1rts_1_1IRTSActionExecutor.html#a16a69a53232a402fd7ab1caf41801379">eve::rts::IRTSActionExecutor::execute</a></div><div class="ttdeci">virtual Result&lt; ActionExecutionResult &gt; execute(Unit &amp;unit, const OrderRecord &amp;order, const SimulationStep &amp;step)=0</div><div class="ttdoc">Execute or advance one active RTS order.</div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1IRTSActionExecutor_html_a6dd2a5053bf1e474cab68234fef0fb03"><div class="ttname"><a href="classeve_1_1rts_1_1IRTSActionExecutor.html#a6dd2a5053bf1e474cab68234fef0fb03">eve::rts::IRTSActionExecutor::~IRTSActionExecutor</a></div><div class="ttdeci">virtual ~IRTSActionExecutor()=default</div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1Unit_html"><div class="ttname"><a href="classeve_1_1rts_1_1Unit.html">eve::rts::Unit</a></div><div class="ttdoc">RTS unit domain root.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00452">RTSTypes.h:452</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html"><div class="ttname"><a href="namespaceeve_1_1action.html">eve::action</a></div><div class="ttdef"><b>Definition</b> <a href="AbilityController_8cpp_source.html#l00007">AbilityController.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html"><div class="ttname"><a href="namespaceeve_1_1rts.html">eve::rts</a></div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00023">RTS.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_a111feee24c450d21a29fab5096a81d20"><div class="ttname"><a href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20">eve::rts::ActionDisposition</a></div><div class="ttdeci">ActionDisposition</div><div class="ttdoc">Outcome of one RTS order-to-action adapter call.</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8h_source.html#l00019">RTSAction.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_a111feee24c450d21a29fab5096a81d20a07ca5050e697392c9ed47e6453f1453f"><div class="ttname"><a href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20a07ca5050e697392c9ed47e6453f1453f">eve::rts::ActionDisposition::Completed</a></div><div class="ttdeci">@ Completed</div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_a111feee24c450d21a29fab5096a81d20a2d13df6f8b5e4c5af9f87e0dc39df69d"><div class="ttname"><a href="namespaceeve_1_1rts.html#a111feee24c450d21a29fab5096a81d20a2d13df6f8b5e4c5af9f87e0dc39df69d">eve::rts::ActionDisposition::Pending</a></div><div class="ttdeci">@ Pending</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1ActionAdapter_1_1Impl_html"><div class="ttname"><a href="structeve_1_1rts_1_1ActionAdapter_1_1Impl.html">eve::rts::ActionAdapter::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8cpp_source.html#l00041">RTSAction.cpp:41</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1ActionExecutionResult_html"><div class="ttname"><a href="structeve_1_1rts_1_1ActionExecutionResult.html">eve::rts::ActionExecutionResult</a></div><div class="ttdoc">Owning, domain-local projection of an action adapter outcome.</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8h_source.html#l00025">RTSAction.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1ActionExecutionResult_html_ac6790e264e12d7349c86a8407fe7b460"><div class="ttname"><a href="structeve_1_1rts_1_1ActionExecutionResult.html#ac6790e264e12d7349c86a8407fe7b460">eve::rts::ActionExecutionResult::disposition</a></div><div class="ttdeci">ActionDisposition disposition</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8h_source.html#l00026">RTSAction.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1OrderRecord_html"><div class="ttname"><a href="structeve_1_1rts_1_1OrderRecord.html">eve::rts::OrderRecord</a></div><div class="ttdoc">Owning projection of the active generic order used by RTS systems.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00115">RTSTypes.h:115</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

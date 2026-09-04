@@ -1,0 +1,718 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::climbing::ClimbingAnchorGraphInstance类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1climbing.html">climbing</a></li><li class="navelem"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html">ClimbingAnchorGraphInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::climbing::ClimbingAnchorGraphInstance类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> instance binding one immutable graph generation to one Physics body.  
+ <a href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ClimbingAnchorGraph_8h_source.html">ClimbingAnchorGraph.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a758267e0ae6e5de4afd9aae938cebe03" id="r_a758267e0ae6e5de4afd9aae938cebe03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#a758267e0ae6e5de4afd9aae938cebe03">nodeRef</a> (std::string_view nodeId) const</td></tr>
+<tr class="memdesc:a758267e0ae6e5de4afd9aae938cebe03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a current-generation reference for a stable node id.  <br /></td></tr>
+<tr class="separator:a758267e0ae6e5de4afd9aae938cebe03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad53598684fa3851fdc506b45cab95519" id="r_ad53598684fa3851fdc506b45cab95519"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ResolvedClimbingAnchorNode.html">ResolvedClimbingAnchorNode</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#ad53598684fa3851fdc506b45cab95519">resolveNode</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;<a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) const</td></tr>
+<tr class="memdesc:ad53598684fa3851fdc506b45cab95519"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a current node from body-local to world space after validating world/body generation.  <br /></td></tr>
+<tr class="separator:ad53598684fa3851fdc506b45cab95519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae5affc26d4d9e7fb2d258248e23a750" id="r_aae5affc26d4d9e7fb2d258248e23a750"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ResolvedClimbingAnchorNode.html">ResolvedClimbingAnchorNode</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#aae5affc26d4d9e7fb2d258248e23a750">resolveNodeKinematics</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;<a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) const</td></tr>
+<tr class="memdesc:aae5affc26d4d9e7fb2d258248e23a750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves per-tick anchor transforms without copying cold tag metadata.  <br /></td></tr>
+<tr class="separator:aae5affc26d4d9e7fb2d258248e23a750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a347af6503c6d46931cf9e728a146cfc6" id="r_a347af6503c6d46931cf9e728a146cfc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorEdgeDefinition.html">ClimbingAnchorEdgeDefinition</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#a347af6503c6d46931cf9e728a146cfc6">edgesFrom</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;<a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>) const</td></tr>
+<tr class="memdesc:a347af6503c6d46931cf9e728a146cfc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns deterministic outgoing edges for a current-generation node reference.  <br /></td></tr>
+<tr class="separator:a347af6503c6d46931cf9e728a146cfc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af25851a5599163278e4332a414eaf32a" id="r_af25851a5599163278e4332a414eaf32a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorRoute.html">ClimbingAnchorRoute</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#af25851a5599163278e4332a414eaf32a">planRoute</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorRouteRequest.html">ClimbingAnchorRouteRequest</a> &amp;request) const</td></tr>
+<tr class="memdesc:af25851a5599163278e4332a414eaf32a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the shortest occupancy-aware route using stable edge-kind/node-id tie breaking.  <br /></td></tr>
+<tr class="separator:af25851a5599163278e4332a414eaf32a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa97f3b4200a61a826a04f5767654cd91" id="r_aa97f3b4200a61a826a04f5767654cd91"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#aa97f3b4200a61a826a04f5767654cd91">reserve</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;<a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>, <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorOccupant.html">ClimbingAnchorOccupant</a> occupant)</td></tr>
+<tr class="memdesc:aa97f3b4200a61a826a04f5767654cd91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserves the lowest free slot on a node for one non-zero agent/execution identity.  <br /></td></tr>
+<tr class="separator:aa97f3b4200a61a826a04f5767654cd91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a893cf9ed68ee6b99a38dd8235269ce88" id="r_a893cf9ed68ee6b99a38dd8235269ce88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#a893cf9ed68ee6b99a38dd8235269ce88">validateReservation</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &amp;reservation) const</td></tr>
+<tr class="memdesc:a893cf9ed68ee6b99a38dd8235269ce88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates that a reservation credential still names the exact live slot record.  <br /></td></tr>
+<tr class="separator:a893cf9ed68ee6b99a38dd8235269ce88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42029b1cee0bcdca55fd8e3c04c423c1" id="r_a42029b1cee0bcdca55fd8e3c04c423c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#a42029b1cee0bcdca55fd8e3c04c423c1">transferReservation</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &amp;reservation)</td></tr>
+<tr class="memdesc:a42029b1cee0bcdca55fd8e3c04c423c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically transfers a live slot claim to a newly issued credential.  <br /></td></tr>
+<tr class="separator:a42029b1cee0bcdca55fd8e3c04c423c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae97eedbd83531fd73aec2da393ca90ca" id="r_ae97eedbd83531fd73aec2da393ca90ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#ae97eedbd83531fd73aec2da393ca90ca">restoreReservation</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &amp;reservation)</td></tr>
+<tr class="memdesc:ae97eedbd83531fd73aec2da393ca90ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Claims a snapshot reservation by transfer or exact-slot reacquisition.  <br /></td></tr>
+<tr class="separator:ae97eedbd83531fd73aec2da393ca90ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a596824d81f0e35c165ecfaccda7c6039" id="r_a596824d81f0e35c165ecfaccda7c6039"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#a596824d81f0e35c165ecfaccda7c6039">release</a> (const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &amp;reservation)</td></tr>
+<tr class="memdesc:a596824d81f0e35c165ecfaccda7c6039"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases exactly the live reservation described by the credential.  <br /></td></tr>
+<tr class="separator:a596824d81f0e35c165ecfaccda7c6039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc2c2e4c23116690b3e978e6e5074d9a" id="r_abc2c2e4c23116690b3e978e6e5074d9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#abc2c2e4c23116690b3e978e6e5074d9a">releaseOccupant</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorOccupant.html">ClimbingAnchorOccupant</a> occupant)</td></tr>
+<tr class="memdesc:abc2c2e4c23116690b3e978e6e5074d9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases all reservations owned by an agent/execution pair and returns the released count.  <br /></td></tr>
+<tr class="separator:abc2c2e4c23116690b3e978e6e5074d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad815019ee416d4c4bdf0ae7ee6457cfc" id="r_ad815019ee416d4c4bdf0ae7ee6457cfc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphReload.html">ClimbingAnchorGraphReload</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#ad815019ee416d4c4bdf0ae7ee6457cfc">reload</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a> <a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>)</td></tr>
+<tr class="memdesc:ad815019ee416d4c4bdf0ae7ee6457cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publishes a validated graph generation and invalidates old-generation reservations.  <br /></td></tr>
+<tr class="separator:ad815019ee416d4c4bdf0ae7ee6457cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85100c46e0fc3ce340d44a337095ef5a" id="r_a85100c46e0fc3ce340d44a337095ef5a"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#a85100c46e0fc3ce340d44a337095ef5a">generation</a> () const noexcept</td></tr>
+<tr class="memdesc:a85100c46e0fc3ce340d44a337095ef5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current monotonically increasing topology generation.  <br /></td></tr>
+<tr class="separator:a85100c46e0fc3ce340d44a337095ef5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a877fca5d898e9c26df76ead4cff18492" id="r_a877fca5d898e9c26df76ead4cff18492"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#af19be51edf7c02c551a459bc96bd2058">physics::PhysicsBodyHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#a877fca5d898e9c26df76ead4cff18492">body</a> () const noexcept</td></tr>
+<tr class="memdesc:a877fca5d898e9c26df76ead4cff18492"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target Physics body handle; stale detection occurs during resolve.  <br /></td></tr>
+<tr class="separator:a877fca5d898e9c26df76ead4cff18492"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba5c7db4b2f0e9b932f3b1388c6f3dd1" id="r_aba5c7db4b2f0e9b932f3b1388c6f3dd1"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#aba5c7db4b2f0e9b932f3b1388c6f3dd1">reservationCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aba5c7db4b2f0e9b932f3b1388c6f3dd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of live reservations in this graph instance.  <br /></td></tr>
+<tr class="separator:aba5c7db4b2f0e9b932f3b1388c6f3dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa978682a2aedeaf8fd0a7f3b802e628b" id="r_aa978682a2aedeaf8fd0a7f3b802e628b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html">ClimbingAnchorGraphInstance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#aa978682a2aedeaf8fd0a7f3b802e628b">bind</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a> <a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, <a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="namespaceeve_1_1physics.html#af19be51edf7c02c551a459bc96bd2058">physics::PhysicsBodyHandle</a> <a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html#a877fca5d898e9c26df76ead4cff18492">body</a>)</td></tr>
+<tr class="memdesc:aa978682a2aedeaf8fd0a7f3b802e628b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates and binds a graph snapshot to an existing Physics body.  <br /></td></tr>
+<tr class="separator:aa978682a2aedeaf8fd0a7f3b802e628b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> instance binding one immutable graph generation to one Physics body. </p>
+<p>The instance owns topology and reservations, but stores only generation-checked Physics handles. It never retains World3D or Body3D pointers across calls. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8h_source.html">ClimbingAnchorGraph.h</a> 第 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00190">190</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aa978682a2aedeaf8fd0a7f3b802e628b" name="aa978682a2aedeaf8fd0a7f3b802e628b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa978682a2aedeaf8fd0a7f3b802e628b">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1climbing_1_1ClimbingAnchorGraphInstance.html">ClimbingAnchorGraphInstance</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a>&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#af19be51edf7c02c551a459bc96bd2058">physics::PhysicsBodyHandle</a>&#160;</td>
+          <td class="paramname"><em>body</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validates and binds a graph snapshot to an existing Physics body. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">graph</td><td>Owning definition candidate. </td></tr>
+    <tr><td class="paramname">world</td><td>Borrowed synchronously for link validation only. </td></tr>
+    <tr><td class="paramname">body</td><td>Generation-checked target body handle. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00253">body()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00067">eve::RuntimeHandle&lt; Tag &gt;::isValid()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00214">eve::climbing::validateClimbingAnchorGraphDefinition()</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingRegistry_8cpp_source.html#l00036">eve::climbing::Climbing::newAnchorGraph()</a>.</p>
+
+</div>
+</div>
+<a id="a877fca5d898e9c26df76ead4cff18492" name="a877fca5d898e9c26df76ead4cff18492"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a877fca5d898e9c26df76ead4cff18492">&#9670;&#160;</a></span>body()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#af19be51edf7c02c551a459bc96bd2058">physics::PhysicsBodyHandle</a> eve::climbing::ClimbingAnchorGraphInstance::body </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Target Physics body handle; stale detection occurs during resolve. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8h_source.html">ClimbingAnchorGraph.h</a> 第 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00384">bind()</a> , 以及 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00422">resolveNodeKinematics()</a>.</p>
+
+</div>
+</div>
+<a id="a347af6503c6d46931cf9e728a146cfc6" name="a347af6503c6d46931cf9e728a146cfc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a347af6503c6d46931cf9e728a146cfc6">&#9670;&#160;</a></span>edgesFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorEdgeDefinition.html">ClimbingAnchorEdgeDefinition</a> &gt; &gt; eve::climbing::ClimbingAnchorGraphInstance::edgesFrom </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>reference</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns deterministic outgoing edges for a current-generation node reference. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00477">477</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00082">eve::climbing::ClimbingAnchorGraphDefinition::edges</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00062">eve::climbing::ClimbingAnchorEdgeDefinition::from</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00078">eve::climbing::ClimbingAnchorGraphDefinition::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00063">eve::climbing::ClimbingAnchorEdgeDefinition::to</a>.</p>
+
+</div>
+</div>
+<a id="a85100c46e0fc3ce340d44a337095ef5a" name="a85100c46e0fc3ce340d44a337095ef5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85100c46e0fc3ce340d44a337095ef5a">&#9670;&#160;</a></span>generation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::climbing::ClimbingAnchorGraphInstance::generation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current monotonically increasing topology generation. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8h_source.html">ClimbingAnchorGraph.h</a> 第 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00251">251</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a758267e0ae6e5de4afd9aae938cebe03" name="a758267e0ae6e5de4afd9aae938cebe03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a758267e0ae6e5de4afd9aae938cebe03">&#9670;&#160;</a></span>nodeRef()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::nodeRef </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a current-generation reference for a stable node id. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00078">eve::climbing::ClimbingAnchorGraphDefinition::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af25851a5599163278e4332a414eaf32a" name="af25851a5599163278e4332a414eaf32a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af25851a5599163278e4332a414eaf32a">&#9670;&#160;</a></span>planRoute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorRoute.html">ClimbingAnchorRoute</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::planRoute </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorRouteRequest.html">ClimbingAnchorRouteRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds the shortest occupancy-aware route using stable edge-kind/node-id tie breaking. </p>
+<dl class="section return"><dt>返回</dt><dd>An owning current-generation route; NotFound means no permitted complete route exists. @thread Call on the graph owner thread; this method is read-only and invokes no callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00506">506</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00106">eve::climbing::ClimbingAnchorOccupant::agentId</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00140">eve::climbing::ClimbingAnchorRouteRequest::allowedEdgeKinds</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00142">eve::climbing::ClimbingAnchorRouteRequest::availableTags</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00107">eve::climbing::ClimbingAnchorOccupant::executionId</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00135">eve::climbing::ClimbingAnchorRouteRequest::goal</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00116">eve::climbing::ClimbingAnchorNodeRef::graphGeneration</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00114">eve::climbing::ClimbingAnchorNodeRef::graphId</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00078">eve::climbing::ClimbingAnchorGraphDefinition::id</a>, <a class="el" href="namespaceeve_1_1climbing.html#a61054b76acb2c73a9f03397cc662d93cafd038fc7f319e48f3115d92bf5bdbef9">eve::climbing::Ignore</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00144">eve::climbing::ClimbingAnchorRouteRequest::maxVisitedNodes</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00115">eve::climbing::ClimbingAnchorNodeRef::nodeId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00136">eve::climbing::ClimbingAnchorRouteRequest::occupancyPolicy</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00138">eve::climbing::ClimbingAnchorRouteRequest::requester</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00134">eve::climbing::ClimbingAnchorRouteRequest::start</a>.</p>
+
+</div>
+</div>
+<a id="a596824d81f0e35c165ecfaccda7c6039" name="a596824d81f0e35c165ecfaccda7c6039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a596824d81f0e35c165ecfaccda7c6039">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingAnchorGraphInstance::release </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>reservation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases exactly the live reservation described by the credential. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00666">666</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00121">eve::climbing::ClimbingAnchorReservation::id</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<a id="abc2c2e4c23116690b3e978e6e5074d9a" name="abc2c2e4c23116690b3e978e6e5074d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc2c2e4c23116690b3e978e6e5074d9a">&#9670;&#160;</a></span>releaseOccupant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::uint32_t &gt; eve::climbing::ClimbingAnchorGraphInstance::releaseOccupant </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorOccupant.html">ClimbingAnchorOccupant</a>&#160;</td>
+          <td class="paramname"><em>occupant</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases all reservations owned by an agent/execution pair and returns the released count. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00747">747</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00106">eve::climbing::ClimbingAnchorOccupant::agentId</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00107">eve::climbing::ClimbingAnchorOccupant::executionId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad815019ee416d4c4bdf0ae7ee6457cfc" name="ad815019ee416d4c4bdf0ae7ee6457cfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad815019ee416d4c4bdf0ae7ee6457cfc">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphReload.html">ClimbingAnchorGraphReload</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::reload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorGraphDefinition.html">ClimbingAnchorGraphDefinition</a>&#160;</td>
+          <td class="paramname"><em>graph</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically publishes a validated graph generation and invalidates old-generation reservations. </p>
+<dl class="section return"><dt>返回</dt><dd>Sorted unique agent/execution identities that the caller must safely cancel or migrate. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00764">764</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00181">eve::climbing::ClimbingAnchorGraphReload::invalidatedOccupants</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00180">eve::climbing::ClimbingAnchorGraphReload::newGeneration</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00179">eve::climbing::ClimbingAnchorGraphReload::oldGeneration</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00214">eve::climbing::validateClimbingAnchorGraphDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="aba5c7db4b2f0e9b932f3b1388c6f3dd1" name="aba5c7db4b2f0e9b932f3b1388c6f3dd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba5c7db4b2f0e9b932f3b1388c6f3dd1">&#9670;&#160;</a></span>reservationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::climbing::ClimbingAnchorGraphInstance::reservationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of live reservations in this graph instance. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8h_source.html">ClimbingAnchorGraph.h</a> 第 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00255">255</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa97f3b4200a61a826a04f5767654cd91" name="aa97f3b4200a61a826a04f5767654cd91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa97f3b4200a61a826a04f5767654cd91">&#9670;&#160;</a></span>reserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::reserve </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>reference</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorOccupant.html">ClimbingAnchorOccupant</a>&#160;</td>
+          <td class="paramname"><em>occupant</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reserves the lowest free slot on a node for one non-zero agent/execution identity. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00623">623</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00106">eve::climbing::ClimbingAnchorOccupant::agentId</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00107">eve::climbing::ClimbingAnchorOccupant::executionId</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad53598684fa3851fdc506b45cab95519" name="ad53598684fa3851fdc506b45cab95519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad53598684fa3851fdc506b45cab95519">&#9670;&#160;</a></span>resolveNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ResolvedClimbingAnchorNode.html">ResolvedClimbingAnchorNode</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::resolveNode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>reference</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolves a current node from body-local to world space after validating world/body generation. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00422">resolveNodeKinematics()</a>, <a class="el" href="NodeDesc_8h_source.html#l00033">eve::scene::NodeDesc::tags</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="aae5affc26d4d9e7fb2d258248e23a750" name="aae5affc26d4d9e7fb2d258248e23a750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae5affc26d4d9e7fb2d258248e23a750">&#9670;&#160;</a></span>resolveNodeKinematics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ResolvedClimbingAnchorNode.html">ResolvedClimbingAnchorNode</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::resolveNodeKinematics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>reference</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolves per-tick anchor transforms without copying cold tag metadata. </p>
+<dl class="section remark"><dt>备注</dt><dd>The returned tags are empty by contract; use resolveNode for authoring/transition validation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00166">eve::climbing::ResolvedClimbingAnchorNode::body</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00253">body()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00172">eve::climbing::ResolvedClimbingAnchorNode::feetSocket</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00078">eve::climbing::ClimbingAnchorGraphDefinition::id</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00165">eve::climbing::ResolvedClimbingAnchorNode::kind</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00170">eve::climbing::ResolvedClimbingAnchorNode::leftHandSocket</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00168">eve::climbing::ResolvedClimbingAnchorNode::normal</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00173">eve::climbing::ResolvedClimbingAnchorNode::pointVelocity</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00167">eve::climbing::ResolvedClimbingAnchorNode::position</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00164">eve::climbing::ResolvedClimbingAnchorNode::reference</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00171">eve::climbing::ResolvedClimbingAnchorNode::rightHandSocket</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00169">eve::climbing::ResolvedClimbingAnchorNode::tangent</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00080">tangent</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::x</a>, <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::y</a> , 以及 <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00412">resolveNode()</a>.</p>
+
+</div>
+</div>
+<a id="ae97eedbd83531fd73aec2da393ca90ca" name="ae97eedbd83531fd73aec2da393ca90ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae97eedbd83531fd73aec2da393ca90ca">&#9670;&#160;</a></span>restoreReservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::restoreReservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>reservation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Claims a snapshot reservation by transfer or exact-slot reacquisition. </p>
+<p>A still-live matching credential is transferred and invalidated. If its prior owner already released it, the authored slot is reacquired only when still free. A conflicting live claim is never displaced. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00706">706</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00106">eve::climbing::ClimbingAnchorOccupant::agentId</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00123">eve::climbing::ClimbingAnchorReservation::claimGeneration</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00107">eve::climbing::ClimbingAnchorOccupant::executionId</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00122">eve::climbing::ClimbingAnchorReservation::graphGeneration</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00121">eve::climbing::ClimbingAnchorReservation::id</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00124">eve::climbing::ClimbingAnchorReservation::nodeId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00126">eve::climbing::ClimbingAnchorReservation::occupant</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00125">eve::climbing::ClimbingAnchorReservation::slot</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<a id="a42029b1cee0bcdca55fd8e3c04c423c1" name="a42029b1cee0bcdca55fd8e3c04c423c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42029b1cee0bcdca55fd8e3c04c423c1">&#9670;&#160;</a></span>transferReservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &gt; eve::climbing::ClimbingAnchorGraphInstance::transferReservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>reservation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically transfers a live slot claim to a newly issued credential. </p>
+<dl class="section return"><dt>返回</dt><dd>A credential with an incremented claim generation; the input credential becomes stale. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00690">690</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00123">eve::climbing::ClimbingAnchorReservation::claimGeneration</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00121">eve::climbing::ClimbingAnchorReservation::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<a id="a893cf9ed68ee6b99a38dd8235269ce88" name="a893cf9ed68ee6b99a38dd8235269ce88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a893cf9ed68ee6b99a38dd8235269ce88">&#9670;&#160;</a></span>validateReservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingAnchorGraphInstance::validateReservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorReservation.html">ClimbingAnchorReservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>reservation</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates that a reservation credential still names the exact live slot record. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a> 第 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00673">673</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00123">eve::climbing::ClimbingAnchorReservation::claimGeneration</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00122">eve::climbing::ClimbingAnchorReservation::graphGeneration</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00121">eve::climbing::ClimbingAnchorReservation::id</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00124">eve::climbing::ClimbingAnchorReservation::nodeId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00126">eve::climbing::ClimbingAnchorReservation::occupant</a>, <a class="el" href="ClimbingAnchorGraph_8h_source.html#l00125">eve::climbing::ClimbingAnchorReservation::slot</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/climbing/<a class="el" href="ClimbingAnchorGraph_8h_source.html">ClimbingAnchorGraph.h</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingAnchorGraph_8cpp_source.html">ClimbingAnchorGraph.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

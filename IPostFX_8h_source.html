@@ -1,0 +1,243 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/IPostFX.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">IPostFX.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="IPostFX_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// Narrow post-processing / effect-factory interface of the Graphics backend.</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Consumers (stylize, daynight, weather, editor previews) create effect</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// objects without depending on the full graphics::Graphics god class.</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>AmbientOcclusion;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>AntiAliasing;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>GlobalIllumination;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>GrassField;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>Outline;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>ScreenSpaceReflection;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>Volumetric;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span><a class="code hl_variable" href="namespaceeve_1_1procgen_1_1Semantic.html#ae5b92f11f345ebc0bdbfa29d93683e2d">Water</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>Waterfall;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html">   21</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1IPostFX.html">IPostFX</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#afd7fb18fe7b4f4ddc31a98927571db89">   23</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#afd7fb18fe7b4f4ddc31a98927571db89">~IPostFX</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a1179dcad38e48239a2a23d5f657b2a68">   25</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a1179dcad38e48239a2a23d5f657b2a68">newGrassShader</a>() = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a81e763d52dc6eedc1708c7609bd32df3">   26</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1GrassField.html">GrassField</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a81e763d52dc6eedc1708c7609bd32df3">newGrassField</a>() = 0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a65bb4d009ab6f9667d5c9a071506d297">   27</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Waterfall.html">Waterfall</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a65bb4d009ab6f9667d5c9a071506d297">newWaterfall</a>() = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a4834e2e515878c7a37892b621a021416">   28</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Water.html">Water</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a4834e2e515878c7a37892b621a021416">newWater</a>() = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#ae3a857cadc08b4d0936b5d9f4ab2dec2">   29</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Volumetric.html">Volumetric</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#ae3a857cadc08b4d0936b5d9f4ab2dec2">newVolumetric</a>() = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a04e824e578a14fed07555386c1beb39f">   30</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a04e824e578a14fed07555386c1beb39f">newAmbientOcclusion</a>() = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a6d4f34245e600c2ee4a93b5f952b0411">   31</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Outline.html">Outline</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a6d4f34245e600c2ee4a93b5f952b0411">newOutline</a>() = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#aab84feb3ea54b23ed052c08b5814019d">   32</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#aab84feb3ea54b23ed052c08b5814019d">newGlobalIllumination</a>() = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a3baabbf69b9f5e7061e4b54a6f4761f6">   33</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">ScreenSpaceReflection</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a3baabbf69b9f5e7061e4b54a6f4761f6">newScreenSpaceReflection</a>() = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#af2f5ae8ca83a7c3cab24299dd0dc97d4">   34</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#af2f5ae8ca83a7c3cab24299dd0dc97d4">newAntiAliasing</a>() = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a8578b65c9bb9f6094ee5b687a19c631c">   36</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a8578b65c9bb9f6094ee5b687a19c631c">pipelineAmbientOcclusion</a>() = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a1d50a55b7ee14b53333c201b8bcfec34">   37</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1GlobalIllumination.html">GlobalIllumination</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a1d50a55b7ee14b53333c201b8bcfec34">pipelineGlobalIllumination</a>() = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#a2086734ba124a87a39ba036830da4813">   38</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#a2086734ba124a87a39ba036830da4813">pipelineAntiAliasing</a>() = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1IPostFX.html#af7cf7a85cee36a56ff2fedd4af143fa9">   39</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1graphics_1_1Outline.html">Outline</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1IPostFX.html#af7cf7a85cee36a56ff2fedd4af143fa9">pipelineOutline</a>() = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AmbientOcclusion_html"><div class="ttname"><a href="classeve_1_1graphics_1_1AmbientOcclusion.html">eve::graphics::AmbientOcclusion</a></div><div class="ttdoc">Screen-space ambient occlusion.</div><div class="ttdef"><b>Definition</b> <a href="AmbientOcclusion_8h_source.html#l00027">AmbientOcclusion.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AntiAliasing_html"><div class="ttname"><a href="classeve_1_1graphics_1_1AntiAliasing.html">eve::graphics::AntiAliasing</a></div><div class="ttdoc">Classic image-space anti-aliasing.</div><div class="ttdef"><b>Definition</b> <a href="AntiAliasing_8h_source.html#l00031">AntiAliasing.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GlobalIllumination_html"><div class="ttname"><a href="classeve_1_1graphics_1_1GlobalIllumination.html">eve::graphics::GlobalIllumination</a></div><div class="ttdoc">Screen-space single-bounce GI (SSGI). @lifetime All texture arguments are borrowed for the duration o...</div><div class="ttdef"><b>Definition</b> <a href="GlobalIllumination_8h_source.html#l00028">GlobalIllumination.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GrassField_html"><div class="ttname"><a href="classeve_1_1graphics_1_1GrassField.html">eve::graphics::GrassField</a></div><div class="ttdoc">Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*; GPU Mesh / Shader / Texture are o...</div><div class="ttdef"><b>Definition</b> <a href="Grass_8h_source.html#l00124">Grass.h:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html">eve::graphics::IPostFX</a></div><div class="ttdoc">Post-process / special-effect object factory.</div><div class="ttdef"><b>Definition</b> <a href="IPostFX_8h_source.html#l00021">IPostFX.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a04e824e578a14fed07555386c1beb39f"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a04e824e578a14fed07555386c1beb39f">eve::graphics::IPostFX::newAmbientOcclusion</a></div><div class="ttdeci">virtual AmbientOcclusion * newAmbientOcclusion()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a1179dcad38e48239a2a23d5f657b2a68"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a1179dcad38e48239a2a23d5f657b2a68">eve::graphics::IPostFX::newGrassShader</a></div><div class="ttdeci">virtual Shader * newGrassShader()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a1d50a55b7ee14b53333c201b8bcfec34"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a1d50a55b7ee14b53333c201b8bcfec34">eve::graphics::IPostFX::pipelineGlobalIllumination</a></div><div class="ttdeci">virtual GlobalIllumination * pipelineGlobalIllumination()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a2086734ba124a87a39ba036830da4813"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a2086734ba124a87a39ba036830da4813">eve::graphics::IPostFX::pipelineAntiAliasing</a></div><div class="ttdeci">virtual AntiAliasing * pipelineAntiAliasing()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a3baabbf69b9f5e7061e4b54a6f4761f6"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a3baabbf69b9f5e7061e4b54a6f4761f6">eve::graphics::IPostFX::newScreenSpaceReflection</a></div><div class="ttdeci">virtual ScreenSpaceReflection * newScreenSpaceReflection()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a4834e2e515878c7a37892b621a021416"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a4834e2e515878c7a37892b621a021416">eve::graphics::IPostFX::newWater</a></div><div class="ttdeci">virtual Water * newWater()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a65bb4d009ab6f9667d5c9a071506d297"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a65bb4d009ab6f9667d5c9a071506d297">eve::graphics::IPostFX::newWaterfall</a></div><div class="ttdeci">virtual Waterfall * newWaterfall()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a6d4f34245e600c2ee4a93b5f952b0411"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a6d4f34245e600c2ee4a93b5f952b0411">eve::graphics::IPostFX::newOutline</a></div><div class="ttdeci">virtual Outline * newOutline()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a81e763d52dc6eedc1708c7609bd32df3"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a81e763d52dc6eedc1708c7609bd32df3">eve::graphics::IPostFX::newGrassField</a></div><div class="ttdeci">virtual GrassField * newGrassField()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_a8578b65c9bb9f6094ee5b687a19c631c"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#a8578b65c9bb9f6094ee5b687a19c631c">eve::graphics::IPostFX::pipelineAmbientOcclusion</a></div><div class="ttdeci">virtual AmbientOcclusion * pipelineAmbientOcclusion()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_aab84feb3ea54b23ed052c08b5814019d"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#aab84feb3ea54b23ed052c08b5814019d">eve::graphics::IPostFX::newGlobalIllumination</a></div><div class="ttdeci">virtual GlobalIllumination * newGlobalIllumination()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_ae3a857cadc08b4d0936b5d9f4ab2dec2"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#ae3a857cadc08b4d0936b5d9f4ab2dec2">eve::graphics::IPostFX::newVolumetric</a></div><div class="ttdeci">virtual Volumetric * newVolumetric()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_af2f5ae8ca83a7c3cab24299dd0dc97d4"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#af2f5ae8ca83a7c3cab24299dd0dc97d4">eve::graphics::IPostFX::newAntiAliasing</a></div><div class="ttdeci">virtual AntiAliasing * newAntiAliasing()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_af7cf7a85cee36a56ff2fedd4af143fa9"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#af7cf7a85cee36a56ff2fedd4af143fa9">eve::graphics::IPostFX::pipelineOutline</a></div><div class="ttdeci">virtual Outline * pipelineOutline()=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1IPostFX_html_afd7fb18fe7b4f4ddc31a98927571db89"><div class="ttname"><a href="classeve_1_1graphics_1_1IPostFX.html#afd7fb18fe7b4f4ddc31a98927571db89">eve::graphics::IPostFX::~IPostFX</a></div><div class="ttdeci">virtual ~IPostFX()=default</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Outline_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Outline.html">eve::graphics::Outline</a></div><div class="ttdoc">Screen-space model outline (t3ssel8r-style), computed from the GBuffer hardware depth + world-normal ...</div><div class="ttdef"><b>Definition</b> <a href="Outline_8h_source.html#l00031">Outline.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ScreenSpaceReflection_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ScreenSpaceReflection.html">eve::graphics::ScreenSpaceReflection</a></div><div class="ttdoc">Screen-space reflections (SSR) as a fullscreen post pass. @lifetime All Graphics and texture argument...</div><div class="ttdef"><b>Definition</b> <a href="ScreenSpaceReflection_8h_source.html#l00028">ScreenSpaceReflection.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Volumetric_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Volumetric.html">eve::graphics::Volumetric</a></div><div class="ttdoc">Volumetric light + fog.</div><div class="ttdef"><b>Definition</b> <a href="Volumetric_8h_source.html#l00031">Volumetric.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Water_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Water.html">eve::graphics::Water</a></div><div class="ttdoc">Dynamic water surface with sky reflection and animated ripples.</div><div class="ttdef"><b>Definition</b> <a href="Water_8h_source.html#l00033">Water.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Waterfall_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Waterfall.html">eve::graphics::Waterfall</a></div><div class="ttdoc">Flowing waterfall (falling water sheet) rendered on a vertical plane.</div><div class="ttdef"><b>Definition</b> <a href="Waterfall_8h_source.html#l00034">Waterfall.h:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1Semantic_html_ae5b92f11f345ebc0bdbfa29d93683e2d"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1Semantic.html#ae5b92f11f345ebc0bdbfa29d93683e2d">eve::procgen::Semantic::Water</a></div><div class="ttdeci">constexpr uint32_t Water</div><div class="ttdef"><b>Definition</b> <a href="Semantic_8h_source.html#l00014">Semantic.h:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

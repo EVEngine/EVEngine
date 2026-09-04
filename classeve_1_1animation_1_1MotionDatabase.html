@@ -1,0 +1,879 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::MotionDatabase类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1MotionDatabase-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::MotionDatabase类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Baked motion-matching feature database from one or more AnimClips. Feature layout per frame: [0..1] root velocity xz [2..7] trajectory pos xz at +0.33/+0.66/+1.0s (character space) [8..10] trajectory facing dir xz + yaw sin/cos packed as (fx,fz) for +1.0s [11..] selected joint world positions (xyz each) Script type: <code><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html" title="Baked motion-matching feature database from one or more AnimClips. Feature layout per frame: [0....">MotionDatabase</a></code>.  
+ <a href="classeve_1_1animation_1_1MotionDatabase.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">Frame</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aeb0ecc320576e69eaa1f23232703d439" id="r_aeb0ecc320576e69eaa1f23232703d439"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#aeb0ecc320576e69eaa1f23232703d439">MotionDatabase</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="separator:aeb0ecc320576e69eaa1f23232703d439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5694002f1ab15b4f71fc7161418e11b9" id="r_a5694002f1ab15b4f71fc7161418e11b9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a5694002f1ab15b4f71fc7161418e11b9">~MotionDatabase</a> ()=default</td></tr>
+<tr class="separator:a5694002f1ab15b4f71fc7161418e11b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a100fb2811dd7aa99fdff211f935768b7" id="r_a100fb2811dd7aa99fdff211f935768b7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a100fb2811dd7aa99fdff211f935768b7">MotionDatabase</a> (const <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> &amp;)=delete</td></tr>
+<tr class="separator:a100fb2811dd7aa99fdff211f935768b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d6d30a61787357b121ed75975f1a6e6" id="r_a9d6d30a61787357b121ed75975f1a6e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a9d6d30a61787357b121ed75975f1a6e6">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> &amp;)=delete</td></tr>
+<tr class="separator:a9d6d30a61787357b121ed75975f1a6e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a548ea9be45d12d548ebcf66fd3ff4a35" id="r_a548ea9be45d12d548ebcf66fd3ff4a35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a548ea9be45d12d548ebcf66fd3ff4a35">getSkeleton</a> () const</td></tr>
+<tr class="separator:a548ea9be45d12d548ebcf66fd3ff4a35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bf4a6aba74de54b7118fdad0c68ade6" id="r_a6bf4a6aba74de54b7118fdad0c68ade6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a6bf4a6aba74de54b7118fdad0c68ade6">addFeatureBone</a> (int boneIndex)</td></tr>
+<tr class="memdesc:a6bf4a6aba74de54b7118fdad0c68ade6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Include bone world position in pose features (by index).  <br /></td></tr>
+<tr class="separator:a6bf4a6aba74de54b7118fdad0c68ade6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadbec4520c558175161489b7220cd909" id="r_aadbec4520c558175161489b7220cd909"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#aadbec4520c558175161489b7220cd909">addFeatureBoneByName</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:aadbec4520c558175161489b7220cd909"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7c79ad639da9fd2aed13fba31f1343b" id="r_ad7c79ad639da9fd2aed13fba31f1343b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#ad7c79ad639da9fd2aed13fba31f1343b">setRootBone</a> (int boneIndex)</td></tr>
+<tr class="memdesc:ad7c79ad639da9fd2aed13fba31f1343b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bone used for trajectory / velocity features (default 0). Mixamo clips typically want hips (<code>mixamorig:Hips</code>).  <br /></td></tr>
+<tr class="separator:ad7c79ad639da9fd2aed13fba31f1343b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaba2b199dfeea4af0d306ee952b335b4" id="r_aaba2b199dfeea4af0d306ee952b335b4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#aaba2b199dfeea4af0d306ee952b335b4">getRootBone</a> () const</td></tr>
+<tr class="separator:aaba2b199dfeea4af0d306ee952b335b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a062a12025e27d153037d1969fb91f8bd" id="r_a062a12025e27d153037d1969fb91f8bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a062a12025e27d153037d1969fb91f8bd">setRootBoneByName</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a062a12025e27d153037d1969fb91f8bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8718e56659410d175a9c3141341f4ca" id="r_ad8718e56659410d175a9c3141341f4ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#ad8718e56659410d175a9c3141341f4ca">addClip</a> (<a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</td></tr>
+<tr class="separator:ad8718e56659410d175a9c3141341f4ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff47233d6ab752bd14a1ebfff13840f9" id="r_aff47233d6ab752bd14a1ebfff13840f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#aff47233d6ab752bd14a1ebfff13840f9">getClipCount</a> () const</td></tr>
+<tr class="separator:aff47233d6ab752bd14a1ebfff13840f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac65330fd021464b5205a871f5bf60056" id="r_ac65330fd021464b5205a871f5bf60056"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#ac65330fd021464b5205a871f5bf60056">bake</a> ()</td></tr>
+<tr class="memdesc:ac65330fd021464b5205a871f5bf60056"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake all clips into searchable frames. Call after addClip / feature bones.  <br /></td></tr>
+<tr class="separator:ac65330fd021464b5205a871f5bf60056"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f25390f7ea3290d45c4470b2321aa40" id="r_a6f25390f7ea3290d45c4470b2321aa40"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a6f25390f7ea3290d45c4470b2321aa40">isBaked</a> () const</td></tr>
+<tr class="separator:a6f25390f7ea3290d45c4470b2321aa40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4b7b1edd6147867fa84bcb63befa312" id="r_ad4b7b1edd6147867fa84bcb63befa312"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#ad4b7b1edd6147867fa84bcb63befa312">getFrameCount</a> () const</td></tr>
+<tr class="separator:ad4b7b1edd6147867fa84bcb63befa312"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab4ac7fa8df6c33973a0ef48d5c79ab2" id="r_aab4ac7fa8df6c33973a0ef48d5c79ab2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#aab4ac7fa8df6c33973a0ef48d5c79ab2">getFeatureSize</a> () const</td></tr>
+<tr class="separator:aab4ac7fa8df6c33973a0ef48d5c79ab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6da4289df7ab57f5951fe21f891f0548" id="r_a6da4289df7ab57f5951fe21f891f0548"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a6da4289df7ab57f5951fe21f891f0548">getFrameTime</a> (int frameIndex) const</td></tr>
+<tr class="separator:a6da4289df7ab57f5951fe21f891f0548"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe878640aede16a19dd4109e53c8afab" id="r_afe878640aede16a19dd4109e53c8afab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#afe878640aede16a19dd4109e53c8afab">getFrameClipIndex</a> (int frameIndex) const</td></tr>
+<tr class="separator:afe878640aede16a19dd4109e53c8afab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a48b6237a196d92665917555314946a" id="r_a8a48b6237a196d92665917555314946a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a8a48b6237a196d92665917555314946a">getClip</a> (int clipIndex) const</td></tr>
+<tr class="separator:a8a48b6237a196d92665917555314946a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a744f7b218206ab26bb27e06510b9987f" id="r_a744f7b218206ab26bb27e06510b9987f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a744f7b218206ab26bb27e06510b9987f">getFeatureBoneCount</a> () const</td></tr>
+<tr class="separator:a744f7b218206ab26bb27e06510b9987f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb2a07b4482d8fbd8c024358f1cbf3b6" id="r_acb2a07b4482d8fbd8c024358f1cbf3b6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#acb2a07b4482d8fbd8c024358f1cbf3b6">getFeatureBone</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:acb2a07b4482d8fbd8c024358f1cbf3b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b0ceac193af44a1abb719ad90c7197" id="r_a57b0ceac193af44a1abb719ad90c7197"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a57b0ceac193af44a1abb719ad90c7197">getFeature</a> (int frameIndex, float *out, int outCount) const</td></tr>
+<tr class="memdesc:a57b0ceac193af44a1abb719ad90c7197"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy feature vector into out[0..featureSize).  <br /></td></tr>
+<tr class="separator:a57b0ceac193af44a1abb719ad90c7197"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51e8acdf802ca3722f1bbef334e412cf" id="r_a51e8acdf802ca3722f1bbef334e412cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a51e8acdf802ca3722f1bbef334e412cf">normalizeFeature</a> (std::vector&lt; float &gt; &amp;feature) const</td></tr>
+<tr class="memdesc:a51e8acdf802ca3722f1bbef334e412cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize a query with statistics computed by <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#ac65330fd021464b5205a871f5bf60056" title="Bake all clips into searchable frames. Call after addClip / feature bones.">bake()</a>.  <br /></td></tr>
+<tr class="separator:a51e8acdf802ca3722f1bbef334e412cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d577c76c8379326265e6e8bc3bc9b88" id="r_a9d577c76c8379326265e6e8bc3bc9b88"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">Frame</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#a9d577c76c8379326265e6e8bc3bc9b88">frameAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a9d577c76c8379326265e6e8bc3bc9b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Baked motion-matching feature database from one or more AnimClips. Feature layout per frame: [0..1] root velocity xz [2..7] trajectory pos xz at +0.33/+0.66/+1.0s (character space) [8..10] trajectory facing dir xz + yaw sin/cos packed as (fx,fz) for +1.0s [11..] selected joint world positions (xyz each) Script type: <code><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html" title="Baked motion-matching feature database from one or more AnimClips. Feature layout per frame: [0....">MotionDatabase</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a> 第 <a class="el" href="MotionDatabase_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aeb0ecc320576e69eaa1f23232703d439" name="aeb0ecc320576e69eaa1f23232703d439"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb0ecc320576e69eaa1f23232703d439">&#9670;&#160;</a></span>MotionDatabase() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MotionDatabase::MotionDatabase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a> , 以及 <a class="el" href="AnimPose_8cpp_source.html#l00105">eve::animation::AnimPose::resize()</a>.</p>
+
+</div>
+</div>
+<a id="a5694002f1ab15b4f71fc7161418e11b9" name="a5694002f1ab15b4f71fc7161418e11b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5694002f1ab15b4f71fc7161418e11b9">&#9670;&#160;</a></span>~MotionDatabase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MotionDatabase::~MotionDatabase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a100fb2811dd7aa99fdff211f935768b7" name="a100fb2811dd7aa99fdff211f935768b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a100fb2811dd7aa99fdff211f935768b7">&#9670;&#160;</a></span>MotionDatabase() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MotionDatabase::MotionDatabase </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad8718e56659410d175a9c3141341f4ca" name="ad8718e56659410d175a9c3141341f4ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8718e56659410d175a9c3141341f4ca">&#9670;&#160;</a></span>addClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionDatabase::addClip </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *&#160;</td>
+          <td class="paramname"><em>clip</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>.</p>
+
+</div>
+</div>
+<a id="a6bf4a6aba74de54b7118fdad0c68ade6" name="a6bf4a6aba74de54b7118fdad0c68ade6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bf4a6aba74de54b7118fdad0c68ade6">&#9670;&#160;</a></span>addFeatureBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionDatabase::addFeatureBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Include bone world position in pose features (by index). </p>
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabase_8cpp_source.html#l00028">addFeatureBoneByName()</a> , 以及 <a class="el" href="MotionDatabase_8cpp_source.html#l00149">bake()</a>.</p>
+
+</div>
+</div>
+<a id="aadbec4520c558175161489b7220cd909" name="aadbec4520c558175161489b7220cd909"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadbec4520c558175161489b7220cd909">&#9670;&#160;</a></span>addFeatureBoneByName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionDatabase::addFeatureBoneByName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionDatabase_8cpp_source.html#l00017">addFeatureBone()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00037">eve::animation::AnimSkeleton::findBone()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="ac65330fd021464b5205a871f5bf60056" name="ac65330fd021464b5205a871f5bf60056"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac65330fd021464b5205a871f5bf60056">&#9670;&#160;</a></span>bake()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionDatabase::bake </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake all clips into searchable frames. Call after addClip / feature bones. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionDatabase_8cpp_source.html#l00017">addFeatureBone()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="MotionDatabase_8h_source.html#l00067">eve::animation::MotionDatabase::Frame::clipIndex</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="MotionDatabase_8h_source.html#l00045">getClipCount()</a>, <a class="el" href="MotionDatabase_8cpp_source.html#l00197">normalizeFeature()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">rate</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a9d577c76c8379326265e6e8bc3bc9b88" name="a9d577c76c8379326265e6e8bc3bc9b88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d577c76c8379326265e6e8bc3bc9b88">&#9670;&#160;</a></span>frameAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1animation_1_1MotionDatabase_1_1Frame.html">MotionDatabase::Frame</a> &amp; eve::animation::MotionDatabase::frameAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionDatabase_8h_source.html#l00051">getFrameCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabase_8cpp_source.html#l00221">getFeature()</a>, <a class="el" href="MotionDatabase_8cpp_source.html#l00219">getFrameClipIndex()</a>, <a class="el" href="MotionDatabase_8cpp_source.html#l00217">getFrameTime()</a> , 以及 <a class="el" href="MotionMatcher_8cpp_source.html#l00150">eve::animation::MotionMatcher::search()</a>.</p>
+
+</div>
+</div>
+<a id="a8a48b6237a196d92665917555314946a" name="a8a48b6237a196d92665917555314946a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a48b6237a196d92665917555314946a">&#9670;&#160;</a></span>getClip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> * eve::animation::MotionDatabase::getClip </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>clipIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionDatabase_8h_source.html#l00045">getClipCount()</a>.</p>
+
+</div>
+</div>
+<a id="aff47233d6ab752bd14a1ebfff13840f9" name="aff47233d6ab752bd14a1ebfff13840f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff47233d6ab752bd14a1ebfff13840f9">&#9670;&#160;</a></span>getClipCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionDatabase::getClipCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a> 第 <a class="el" href="MotionDatabase_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabase_8cpp_source.html#l00149">bake()</a> , 以及 <a class="el" href="MotionDatabase_8cpp_source.html#l00054">getClip()</a>.</p>
+
+</div>
+</div>
+<a id="a57b0ceac193af44a1abb719ad90c7197" name="a57b0ceac193af44a1abb719ad90c7197"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57b0ceac193af44a1abb719ad90c7197">&#9670;&#160;</a></span>getFeature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionDatabase::getFeature </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frameIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>outCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy feature vector into out[0..featureSize). </p>
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a> , 以及 <a class="el" href="MotionDatabase_8cpp_source.html#l00209">frameAt()</a>.</p>
+
+</div>
+</div>
+<a id="acb2a07b4482d8fbd8c024358f1cbf3b6" name="acb2a07b4482d8fbd8c024358f1cbf3b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb2a07b4482d8fbd8c024358f1cbf3b6">&#9670;&#160;</a></span>getFeatureBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionDatabase::getFeatureBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionDatabase_8h_source.html#l00058">getFeatureBoneCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a744f7b218206ab26bb27e06510b9987f" name="a744f7b218206ab26bb27e06510b9987f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a744f7b218206ab26bb27e06510b9987f">&#9670;&#160;</a></span>getFeatureBoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionDatabase::getFeatureBoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a> 第 <a class="el" href="MotionDatabase_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabase_8cpp_source.html#l00071">getFeatureBone()</a>.</p>
+
+</div>
+</div>
+<a id="aab4ac7fa8df6c33973a0ef48d5c79ab2" name="aab4ac7fa8df6c33973a0ef48d5c79ab2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab4ac7fa8df6c33973a0ef48d5c79ab2">&#9670;&#160;</a></span>getFeatureSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionDatabase::getFeatureSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a> 第 <a class="el" href="MotionDatabase_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe878640aede16a19dd4109e53c8afab" name="afe878640aede16a19dd4109e53c8afab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe878640aede16a19dd4109e53c8afab">&#9670;&#160;</a></span>getFrameClipIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionDatabase::getFrameClipIndex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frameIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionDatabase_8h_source.html#l00067">eve::animation::MotionDatabase::Frame::clipIndex</a> , 以及 <a class="el" href="MotionDatabase_8cpp_source.html#l00209">frameAt()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcher_8cpp_source.html#l00065">eve::animation::MotionMatcher::getMatchedClipIndex()</a> , 以及 <a class="el" href="MotionMatcher_8cpp_source.html#l00150">eve::animation::MotionMatcher::search()</a>.</p>
+
+</div>
+</div>
+<a id="ad4b7b1edd6147867fa84bcb63befa312" name="ad4b7b1edd6147867fa84bcb63befa312"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4b7b1edd6147867fa84bcb63befa312">&#9670;&#160;</a></span>getFrameCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionDatabase::getFrameCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a> 第 <a class="el" href="MotionDatabase_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabase_8cpp_source.html#l00209">frameAt()</a> , 以及 <a class="el" href="MotionMatcher_8cpp_source.html#l00150">eve::animation::MotionMatcher::search()</a>.</p>
+
+</div>
+</div>
+<a id="a6da4289df7ab57f5951fe21f891f0548" name="a6da4289df7ab57f5951fe21f891f0548"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6da4289df7ab57f5951fe21f891f0548">&#9670;&#160;</a></span>getFrameTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionDatabase::getFrameTime </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frameIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00217">217</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionDatabase_8cpp_source.html#l00209">frameAt()</a> , 以及 <a class="el" href="MotionDatabase_8h_source.html#l00068">eve::animation::MotionDatabase::Frame::time</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcher_8cpp_source.html#l00150">eve::animation::MotionMatcher::search()</a>.</p>
+
+</div>
+</div>
+<a id="aaba2b199dfeea4af0d306ee952b335b4" name="aaba2b199dfeea4af0d306ee952b335b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaba2b199dfeea4af0d306ee952b335b4">&#9670;&#160;</a></span>getRootBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionDatabase::getRootBone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a> 第 <a class="el" href="MotionDatabase_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a548ea9be45d12d548ebcf66fd3ff4a35" name="a548ea9be45d12d548ebcf66fd3ff4a35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a548ea9be45d12d548ebcf66fd3ff4a35">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::MotionDatabase::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a> 第 <a class="el" href="MotionDatabase_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcher_8cpp_source.html#l00015">eve::animation::MotionMatcher::MotionMatcher()</a>.</p>
+
+</div>
+</div>
+<a id="a6f25390f7ea3290d45c4470b2321aa40" name="a6f25390f7ea3290d45c4470b2321aa40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f25390f7ea3290d45c4470b2321aa40">&#9670;&#160;</a></span>isBaked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::MotionDatabase::isBaked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a> 第 <a class="el" href="MotionDatabase_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcher_8cpp_source.html#l00150">eve::animation::MotionMatcher::search()</a>.</p>
+
+</div>
+</div>
+<a id="a51e8acdf802ca3722f1bbef334e412cf" name="a51e8acdf802ca3722f1bbef334e412cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51e8acdf802ca3722f1bbef334e412cf">&#9670;&#160;</a></span>normalizeFeature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionDatabase::normalizeFeature </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>feature</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Normalize a query with statistics computed by <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html#ac65330fd021464b5205a871f5bf60056" title="Bake all clips into searchable frames. Call after addClip / feature bones.">bake()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabase_8cpp_source.html#l00149">bake()</a>.</p>
+
+</div>
+</div>
+<a id="a9d6d30a61787357b121ed75975f1a6e6" name="a9d6d30a61787357b121ed75975f1a6e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d6d30a61787357b121ed75975f1a6e6">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> &amp; eve::animation::MotionDatabase::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad7c79ad639da9fd2aed13fba31f1343b" name="ad7c79ad639da9fd2aed13fba31f1343b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7c79ad639da9fd2aed13fba31f1343b">&#9670;&#160;</a></span>setRootBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionDatabase::setRootBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bone used for trajectory / velocity features (default 0). Mixamo clips typically want hips (<code>mixamorig:Hips</code>). </p>
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabase_8cpp_source.html#l00042">setRootBoneByName()</a>.</p>
+
+</div>
+</div>
+<a id="a062a12025e27d153037d1969fb91f8bd" name="a062a12025e27d153037d1969fb91f8bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a062a12025e27d153037d1969fb91f8bd">&#9670;&#160;</a></span>setRootBoneByName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MotionDatabase::setRootBoneByName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a> 第 <a class="el" href="MotionDatabase_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8cpp_source.html#l00037">eve::animation::AnimSkeleton::findBone()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="MotionDatabase_8cpp_source.html#l00034">setRootBone()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="MotionDatabase_8h_source.html">MotionDatabase.h</a></li>
+<li>src/modules/animation/<a class="el" href="MotionDatabase_8cpp_source.html">MotionDatabase.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

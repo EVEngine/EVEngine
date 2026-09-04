@@ -1,0 +1,609 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::stylize::SkillMeshEffect类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></li><li class="navelem"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html">SkillMeshEffect</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1stylize_1_1SkillMeshEffect-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::stylize::SkillMeshEffect类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning runtime composition for one common gameplay mesh effect.  
+ <a href="classeve_1_1stylize_1_1SkillMeshEffect.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SkillMeshEffect_8h_source.html">SkillMeshEffect.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7bbb78c63d93dc6c254ec16c371a69e5" id="r_a7bbb78c63d93dc6c254ec16c371a69e5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#a7bbb78c63d93dc6c254ec16c371a69e5">SkillMeshEffect</a> (<a class="el" href="namespaceeve_1_1stylize.html#ac25b7ae73b1f937a9db3f1c47e147171">SkillMeshEffectKind</a> <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#aa782304a0a0ce720056f2af1d0c959a3">kind</a>)</td></tr>
+<tr class="memdesc:a7bbb78c63d93dc6c254ec16c371a69e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct one built-in composition with validated preset data.  <br /></td></tr>
+<tr class="separator:a7bbb78c63d93dc6c254ec16c371a69e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa43a314fbba3a146a9fc399b9dd56d3c" id="r_aa43a314fbba3a146a9fc399b9dd56d3c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#aa43a314fbba3a146a9fc399b9dd56d3c">SkillMeshEffect</a> (const <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html">SkillMeshEffect</a> &amp;)=delete</td></tr>
+<tr class="separator:aa43a314fbba3a146a9fc399b9dd56d3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa41a36ebbb8c26a2b6bfee768896c10" id="r_aaa41a36ebbb8c26a2b6bfee768896c10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html">SkillMeshEffect</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#aaa41a36ebbb8c26a2b6bfee768896c10">operator=</a> (const <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html">SkillMeshEffect</a> &amp;)=delete</td></tr>
+<tr class="separator:aaa41a36ebbb8c26a2b6bfee768896c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa782304a0a0ce720056f2af1d0c959a3" id="r_aa782304a0a0ce720056f2af1d0c959a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1stylize.html#ac25b7ae73b1f937a9db3f1c47e147171">SkillMeshEffectKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#aa782304a0a0ce720056f2af1d0c959a3">kind</a> () const noexcept</td></tr>
+<tr class="memdesc:aa782304a0a0ce720056f2af1d0c959a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the immutable built-in recipe identity.  <br /></td></tr>
+<tr class="separator:aa782304a0a0ce720056f2af1d0c959a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c3a38d49c8741d55feec3333281f06" id="r_ae2c3a38d49c8741d55feec3333281f06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#ae2c3a38d49c8741d55feec3333281f06">effect</a> () noexcept</td></tr>
+<tr class="memdesc:ae2c3a38d49c8741d55feec3333281f06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the owned primary mesh-effect runtime.  <br /></td></tr>
+<tr class="separator:ae2c3a38d49c8741d55feec3333281f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1545d6ae7a6819441463cd99c2cdb719" id="r_a1545d6ae7a6819441463cd99c2cdb719"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#a1545d6ae7a6819441463cd99c2cdb719">effect</a> () const noexcept</td></tr>
+<tr class="memdesc:a1545d6ae7a6819441463cd99c2cdb719"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the owned primary mesh-effect runtime.  <br /></td></tr>
+<tr class="separator:a1545d6ae7a6819441463cd99c2cdb719"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4071cf8efc2adce36eaf471837092e33" id="r_a4071cf8efc2adce36eaf471837092e33"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#a4071cf8efc2adce36eaf471837092e33">hasTrail</a> () const noexcept</td></tr>
+<tr class="memdesc:a4071cf8efc2adce36eaf471837092e33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether this recipe includes a weapon ribbon.  <br /></td></tr>
+<tr class="separator:a4071cf8efc2adce36eaf471837092e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52c563724e45a9ab12df1e24aa7d0a1b" id="r_a52c563724e45a9ab12df1e24aa7d0a1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#a52c563724e45a9ab12df1e24aa7d0a1b">trail</a> ()</td></tr>
+<tr class="memdesc:a52c563724e45a9ab12df1e24aa7d0a1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the owned ribbon or throw when this recipe has no ribbon.  <br /></td></tr>
+<tr class="separator:a52c563724e45a9ab12df1e24aa7d0a1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c8d1aebe54952bdab62f910855b52d6" id="r_a2c8d1aebe54952bdab62f910855b52d6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#a2c8d1aebe54952bdab62f910855b52d6">trail</a> () const</td></tr>
+<tr class="memdesc:a2c8d1aebe54952bdab62f910855b52d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the owned ribbon or throw when this recipe has no ribbon.  <br /></td></tr>
+<tr class="separator:a2c8d1aebe54952bdab62f910855b52d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe072aaa49c06aefd2fd7b6036105c5b" id="r_abe072aaa49c06aefd2fd7b6036105c5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#abe072aaa49c06aefd2fd7b6036105c5b">bindTarget</a> (<a class="el" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">MeshEffectTargetHandle</a> <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:abe072aaa49c06aefd2fd7b6036105c5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the primary effect to a process-local target identity.  <br /></td></tr>
+<tr class="separator:abe072aaa49c06aefd2fd7b6036105c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81434478f06c0de25af751d7be51a11d" id="r_a81434478f06c0de25af751d7be51a11d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#a81434478f06c0de25af751d7be51a11d">play</a> () noexcept</td></tr>
+<tr class="memdesc:a81434478f06c0de25af751d7be51a11d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restart playback and clear any retained ribbon samples.  <br /></td></tr>
+<tr class="separator:a81434478f06c0de25af751d7be51a11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3a33efd42fdf310ea76b59366336a7b" id="r_ab3a33efd42fdf310ea76b59366336a7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#ab3a33efd42fdf310ea76b59366336a7b">stop</a> (float fadeOutSeconds=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ab3a33efd42fdf310ea76b59366336a7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop playback, optionally fading from the current envelope.  <br /></td></tr>
+<tr class="separator:ab3a33efd42fdf310ea76b59366336a7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa952485e5e8784364c2e26b17d53c485" id="r_aa952485e5e8784364c2e26b17d53c485"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#aa952485e5e8784364c2e26b17d53c485">update</a> (float dtSeconds)</td></tr>
+<tr class="memdesc:aa952485e5e8784364c2e26b17d53c485"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance all owned deterministic runtime state.  <br /></td></tr>
+<tr class="separator:aa952485e5e8784364c2e26b17d53c485"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a325e132e410e350bc85eeb63898e035c" id="r_a325e132e410e350bc85eeb63898e035c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">TrailAppendResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#a325e132e410e350bc85eeb63898e035c">appendBlade</a> (glm::vec3 <a class="el" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>, glm::vec3 tip)</td></tr>
+<tr class="memdesc:a325e132e410e350bc85eeb63898e035c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append one blade-edge sample or throw if the recipe has no trail.  <br /></td></tr>
+<tr class="separator:a325e132e410e350bc85eeb63898e035c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning runtime composition for one common gameplay mesh effect. </p>
+<p>The composition owns deterministic playback and optional CPU trail state. It does not own scene targets or GPU resources. Call <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#aa952485e5e8784364c2e26b17d53c485" title="Advance all owned deterministic runtime state.">update()</a> with simulation dt, resolve the target through its authoritative owner, then submit <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#ae2c3a38d49c8741d55feec3333281f06" title="Return the owned primary mesh-effect runtime.">effect()</a> and <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#a52c563724e45a9ab12df1e24aa7d0a1b" title="Return the owned ribbon or throw when this recipe has no ribbon.">trail()</a>.buildMesh() through <a class="el" href="classeve_1_1stylize_1_1MeshEffectRenderer.html" title="Render-thread adapter from stylize runtime state to Graphics mesh draws.">MeshEffectRenderer</a> on the render thread. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8h_source.html">SkillMeshEffect.h</a> 第 <a class="el" href="SkillMeshEffect_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7bbb78c63d93dc6c254ec16c371a69e5" name="a7bbb78c63d93dc6c254ec16c371a69e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bbb78c63d93dc6c254ec16c371a69e5">&#9670;&#160;</a></span>SkillMeshEffect() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::SkillMeshEffect::SkillMeshEffect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1stylize.html#ac25b7ae73b1f937a9db3f1c47e147171">SkillMeshEffectKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct one built-in composition with validated preset data. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a> 第 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillMeshEffect_8h_source.html#l00032">kind()</a> , 以及 <a class="el" href="namespaceeve_1_1stylize.html#ac25b7ae73b1f937a9db3f1c47e147171a65153c2a4112cda3a12005613050e80c">eve::stylize::WeaponSlash</a>.</p>
+
+</div>
+</div>
+<a id="aa43a314fbba3a146a9fc399b9dd56d3c" name="aa43a314fbba3a146a9fc399b9dd56d3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa43a314fbba3a146a9fc399b9dd56d3c">&#9670;&#160;</a></span>SkillMeshEffect() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::SkillMeshEffect::SkillMeshEffect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html">SkillMeshEffect</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a325e132e410e350bc85eeb63898e035c" name="a325e132e410e350bc85eeb63898e035c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a325e132e410e350bc85eeb63898e035c">&#9670;&#160;</a></span>appendBlade()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1stylize.html#acdc931d8a3a6a41d05d5b63fcf168b17">TrailAppendResult</a> eve::stylize::SkillMeshEffect::appendBlade </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>tip</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append one blade-edge sample or throw if the recipe has no trail. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a> 第 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>.</p>
+
+</div>
+</div>
+<a id="abe072aaa49c06aefd2fd7b6036105c5b" name="abe072aaa49c06aefd2fd7b6036105c5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe072aaa49c06aefd2fd7b6036105c5b">&#9670;&#160;</a></span>bindTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::SkillMeshEffect::bindTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">MeshEffectTargetHandle</a>&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind the primary effect to a process-local target identity. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a> 第 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="a1545d6ae7a6819441463cd99c2cdb719" name="a1545d6ae7a6819441463cd99c2cdb719"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1545d6ae7a6819441463cd99c2cdb719">&#9670;&#160;</a></span>effect() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp; eve::stylize::SkillMeshEffect::effect </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the owned primary mesh-effect runtime. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8h_source.html">SkillMeshEffect.h</a> 第 <a class="el" href="SkillMeshEffect_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2c3a38d49c8741d55feec3333281f06" name="ae2c3a38d49c8741d55feec3333281f06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2c3a38d49c8741d55feec3333281f06">&#9670;&#160;</a></span>effect() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp; eve::stylize::SkillMeshEffect::effect </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the owned primary mesh-effect runtime. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8h_source.html">SkillMeshEffect.h</a> 第 <a class="el" href="SkillMeshEffect_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4071cf8efc2adce36eaf471837092e33" name="a4071cf8efc2adce36eaf471837092e33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4071cf8efc2adce36eaf471837092e33">&#9670;&#160;</a></span>hasTrail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::stylize::SkillMeshEffect::hasTrail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether this recipe includes a weapon ribbon. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8h_source.html">SkillMeshEffect.h</a> 第 <a class="el" href="SkillMeshEffect_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa782304a0a0ce720056f2af1d0c959a3" name="aa782304a0a0ce720056f2af1d0c959a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa782304a0a0ce720056f2af1d0c959a3">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1stylize.html#ac25b7ae73b1f937a9db3f1c47e147171">SkillMeshEffectKind</a> eve::stylize::SkillMeshEffect::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the immutable built-in recipe identity. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8h_source.html">SkillMeshEffect.h</a> 第 <a class="el" href="SkillMeshEffect_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00028">SkillMeshEffect()</a>.</p>
+
+</div>
+</div>
+<a id="aaa41a36ebbb8c26a2b6bfee768896c10" name="aaa41a36ebbb8c26a2b6bfee768896c10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa41a36ebbb8c26a2b6bfee768896c10">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html">SkillMeshEffect</a> &amp; eve::stylize::SkillMeshEffect::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html">SkillMeshEffect</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a81434478f06c0de25af751d7be51a11d" name="a81434478f06c0de25af751d7be51a11d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81434478f06c0de25af751d7be51a11d">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::SkillMeshEffect::play </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restart playback and clear any retained ribbon samples. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a> 第 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3a33efd42fdf310ea76b59366336a7b" name="ab3a33efd42fdf310ea76b59366336a7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3a33efd42fdf310ea76b59366336a7b">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::SkillMeshEffect::stop </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fadeOutSeconds</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop playback, optionally fading from the current envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a> 第 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a52c563724e45a9ab12df1e24aa7d0a1b" name="a52c563724e45a9ab12df1e24aa7d0a1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52c563724e45a9ab12df1e24aa7d0a1b">&#9670;&#160;</a></span>trail() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp; eve::stylize::SkillMeshEffect::trail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the owned ribbon or throw when this recipe has no ribbon. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a> 第 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c8d1aebe54952bdab62f910855b52d6" name="a2c8d1aebe54952bdab62f910855b52d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c8d1aebe54952bdab62f910855b52d6">&#9670;&#160;</a></span>trail() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1stylize_1_1TrailEmitter.html">TrailEmitter</a> &amp; eve::stylize::SkillMeshEffect::trail </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the owned ribbon or throw when this recipe has no ribbon. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a> 第 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa952485e5e8784364c2e26b17d53c485" name="aa952485e5e8784364c2e26b17d53c485"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa952485e5e8784364c2e26b17d53c485">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::SkillMeshEffect::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance all owned deterministic runtime state. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a> 第 <a class="el" href="SkillMeshEffect_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/stylize/<a class="el" href="SkillMeshEffect_8h_source.html">SkillMeshEffect.h</a></li>
+<li>src/modules/stylize/<a class="el" href="SkillMeshEffect_8cpp_source.html">SkillMeshEffect.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

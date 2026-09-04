@@ -1,0 +1,2195 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::camera::CameraController类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1camera.html">camera</a></li><li class="navelem"><a class="el" href="classeve_1_1camera_1_1CameraController.html">CameraController</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1camera_1_1CameraController-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::camera::CameraController类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>3D 摄像机控制器（eve.Camera / eve.CameraController）。  
+ <a href="classeve_1_1camera_1_1CameraController.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CameraController_8h_source.html">CameraController.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3ea4ec54c3753a1daa5413253dcefede" id="r_a3ea4ec54c3753a1daa5413253dcefede"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a3ea4ec54c3753a1daa5413253dcefede">CameraController</a> ()</td></tr>
+<tr class="separator:a3ea4ec54c3753a1daa5413253dcefede"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f24481e3137ef226e471a072af6944f" id="r_a9f24481e3137ef226e471a072af6944f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a9f24481e3137ef226e471a072af6944f">~CameraController</a> ()=default</td></tr>
+<tr class="separator:a9f24481e3137ef226e471a072af6944f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5666b34e00b64a8820f39d461bb89375" id="r_a5666b34e00b64a8820f39d461bb89375"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a5666b34e00b64a8820f39d461bb89375">setCamera</a> (<a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *cam)</td></tr>
+<tr class="separator:a5666b34e00b64a8820f39d461bb89375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ceea414f33070df886c8eacfb72278" id="r_a72ceea414f33070df886c8eacfb72278"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a72ceea414f33070df886c8eacfb72278">getCamera</a> () const</td></tr>
+<tr class="separator:a72ceea414f33070df886c8eacfb72278"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3efc5dddfafacd0cc288be69d0ba4a1c" id="r_a3efc5dddfafacd0cc288be69d0ba4a1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a3efc5dddfafacd0cc288be69d0ba4a1c">setTarget</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a3efc5dddfafacd0cc288be69d0ba4a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abca9bb3e181869bf9f7a85c713f34a0d" id="r_abca9bb3e181869bf9f7a85c713f34a0d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#abca9bb3e181869bf9f7a85c713f34a0d">setTargetNode</a> (<a class="el" href="classeve_1_1scene_1_1SceneNodeRef.html">scene::SceneNodeRef</a> *node)</td></tr>
+<tr class="memdesc:abca9bb3e181869bf9f7a85c713f34a0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Follow a stable scene-node handle. nullptr restores explicit coordinates.  <br /></td></tr>
+<tr class="separator:abca9bb3e181869bf9f7a85c713f34a0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bd21b3b51a5f57c96307bfe056c480f" id="r_a9bd21b3b51a5f57c96307bfe056c480f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a9bd21b3b51a5f57c96307bfe056c480f">getTargetX</a> () const</td></tr>
+<tr class="separator:a9bd21b3b51a5f57c96307bfe056c480f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af09290beb7bbe2c4d438354c5b8336b1" id="r_af09290beb7bbe2c4d438354c5b8336b1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#af09290beb7bbe2c4d438354c5b8336b1">getTargetY</a> () const</td></tr>
+<tr class="separator:af09290beb7bbe2c4d438354c5b8336b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e034c7854b854f2e73bbefa04d68a87" id="r_a7e034c7854b854f2e73bbefa04d68a87"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a7e034c7854b854f2e73bbefa04d68a87">getTargetZ</a> () const</td></tr>
+<tr class="separator:a7e034c7854b854f2e73bbefa04d68a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1d045bdd40b60b54ab346d833938352" id="r_ac1d045bdd40b60b54ab346d833938352"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ac1d045bdd40b60b54ab346d833938352">setOffset</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:ac1d045bdd40b60b54ab346d833938352"><td class="mdescLeft">&#160;</td><td class="mdescRight">follow：摄像机相对 target 的偏移（默认 (0, 2, 6)）。  <br /></td></tr>
+<tr class="separator:ac1d045bdd40b60b54ab346d833938352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1b797a785c4e5d8cc19627dd86aafad" id="r_ab1b797a785c4e5d8cc19627dd86aafad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ab1b797a785c4e5d8cc19627dd86aafad">setLookAhead</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:ab1b797a785c4e5d8cc19627dd86aafad"><td class="mdescLeft">&#160;</td><td class="mdescRight">follow：额外的视线前移点（可让镜头看向玩家前方）。  <br /></td></tr>
+<tr class="separator:ab1b797a785c4e5d8cc19627dd86aafad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6d74ff1d2b22e462286987018b1a261" id="r_ab6d74ff1d2b22e462286987018b1a261"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ab6d74ff1d2b22e462286987018b1a261">setMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="separator:ab6d74ff1d2b22e462286987018b1a261"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a773dfecdaac11648444e57d9149c7111" id="r_a773dfecdaac11648444e57d9149c7111"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a773dfecdaac11648444e57d9149c7111">getMode</a> () const</td></tr>
+<tr class="separator:a773dfecdaac11648444e57d9149c7111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4305b46d815f6b4158793c1adc92b99f" id="r_a4305b46d815f6b4158793c1adc92b99f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a4305b46d815f6b4158793c1adc92b99f">setRadius</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>)</td></tr>
+<tr class="separator:a4305b46d815f6b4158793c1adc92b99f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed6391a86e44a78982e1c85088aad4fc" id="r_aed6391a86e44a78982e1c85088aad4fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aed6391a86e44a78982e1c85088aad4fc">setAzimuth</a> (float deg)</td></tr>
+<tr class="separator:aed6391a86e44a78982e1c85088aad4fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0f779e8700f240cc2c1e0eaf48d3b5a" id="r_ad0f779e8700f240cc2c1e0eaf48d3b5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ad0f779e8700f240cc2c1e0eaf48d3b5a">setElevation</a> (float deg)</td></tr>
+<tr class="separator:ad0f779e8700f240cc2c1e0eaf48d3b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae22ae4d228cd499f2af89c007aef3cbf" id="r_ae22ae4d228cd499f2af89c007aef3cbf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ae22ae4d228cd499f2af89c007aef3cbf">setOrbitSpeed</a> (float degPerSec)</td></tr>
+<tr class="separator:ae22ae4d228cd499f2af89c007aef3cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13f4f7f407b7de323eb652575b09fc69" id="r_a13f4f7f407b7de323eb652575b09fc69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a13f4f7f407b7de323eb652575b09fc69">setYaw</a> (float deg)</td></tr>
+<tr class="separator:a13f4f7f407b7de323eb652575b09fc69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ced5b600dc72a7f01d95b87147a1747" id="r_a7ced5b600dc72a7f01d95b87147a1747"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a7ced5b600dc72a7f01d95b87147a1747">setPitch</a> (float deg)</td></tr>
+<tr class="separator:a7ced5b600dc72a7f01d95b87147a1747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8601a9d2b140c396aca7bfd99072961d" id="r_a8601a9d2b140c396aca7bfd99072961d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a8601a9d2b140c396aca7bfd99072961d">addInput</a> (float yawDeltaDeg, float pitchDeltaDeg, float zoomDelta)</td></tr>
+<tr class="memdesc:a8601a9d2b140c396aca7bfd99072961d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies device-independent yaw, pitch and zoom deltas.  <br /></td></tr>
+<tr class="separator:a8601a9d2b140c396aca7bfd99072961d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67bb4de011bdbf460fd13064750dc16b" id="r_a67bb4de011bdbf460fd13064750dc16b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a67bb4de011bdbf460fd13064750dc16b">setComposition</a> (float screenX, float screenY)</td></tr>
+<tr class="memdesc:a67bb4de011bdbf460fd13064750dc16b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-space composition offset, expressed as normalized view fractions.  <br /></td></tr>
+<tr class="separator:a67bb4de011bdbf460fd13064750dc16b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9cc9d1159a770309fb6b8dabbc5de21" id="r_ae9cc9d1159a770309fb6b8dabbc5de21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ae9cc9d1159a770309fb6b8dabbc5de21">setDeadZone</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:ae9cc9d1159a770309fb6b8dabbc5de21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dead-zone radius in world units around the tracked target.  <br /></td></tr>
+<tr class="separator:ae9cc9d1159a770309fb6b8dabbc5de21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7d0f63281fe4c1f1125dda00360585a" id="r_ac7d0f63281fe4c1f1125dda00360585a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ac7d0f63281fe4c1f1125dda00360585a">setFov</a> (float <a class="el" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>)</td></tr>
+<tr class="separator:ac7d0f63281fe4c1f1125dda00360585a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a861c5ef4b90c19e99ccd31537733b75b" id="r_a861c5ef4b90c19e99ccd31537733b75b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a861c5ef4b90c19e99ccd31537733b75b">getFov</a> () const</td></tr>
+<tr class="separator:a861c5ef4b90c19e99ccd31537733b75b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a415ee789c8637709a276e58f0f1982ac" id="r_a415ee789c8637709a276e58f0f1982ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a415ee789c8637709a276e58f0f1982ac">setSmooth</a> (float damping)</td></tr>
+<tr class="separator:a415ee789c8637709a276e58f0f1982ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabde7a3a6a2f8e71975975c70cecb779" id="r_aabde7a3a6a2f8e71975975c70cecb779"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aabde7a3a6a2f8e71975975c70cecb779">setPositionSmooth</a> (float damping)</td></tr>
+<tr class="separator:aabde7a3a6a2f8e71975975c70cecb779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae77ebc6fd91088d2ed62fb0375aa3b47" id="r_ae77ebc6fd91088d2ed62fb0375aa3b47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ae77ebc6fd91088d2ed62fb0375aa3b47">setTargetSmooth</a> (float damping)</td></tr>
+<tr class="separator:ae77ebc6fd91088d2ed62fb0375aa3b47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abec4a138111273072ff39070b156cc18" id="r_abec4a138111273072ff39070b156cc18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#abec4a138111273072ff39070b156cc18">setMaxSpeed</a> (float unitsPerSec)</td></tr>
+<tr class="separator:abec4a138111273072ff39070b156cc18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeab9f953664a20828a4125457e9f543f" id="r_aeab9f953664a20828a4125457e9f543f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aeab9f953664a20828a4125457e9f543f">snap</a> ()</td></tr>
+<tr class="separator:aeab9f953664a20828a4125457e9f543f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93566cd69794b7747757c04149cea373" id="r_a93566cd69794b7747757c04149cea373"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a93566cd69794b7747757c04149cea373">setCollisionEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a93566cd69794b7747757c04149cea373"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables swept-sphere obstruction against boxes registered below.  <br /></td></tr>
+<tr class="separator:a93566cd69794b7747757c04149cea373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cdff54f2737ad4c7e23ee8d4296710a" id="r_a2cdff54f2737ad4c7e23ee8d4296710a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a2cdff54f2737ad4c7e23ee8d4296710a">setCollisionRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a2cdff54f2737ad4c7e23ee8d4296710a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84ef6acd62b5a608cb7ce514f1e71f8" id="r_af84ef6acd62b5a608cb7ce514f1e71f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#af84ef6acd62b5a608cb7ce514f1e71f8">setCollisionRecovery</a> (float damping)</td></tr>
+<tr class="separator:af84ef6acd62b5a608cb7ce514f1e71f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a110394f0de14d67bede55495a48c26bb" id="r_a110394f0de14d67bede55495a48c26bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a110394f0de14d67bede55495a48c26bb">setCollisionMask</a> (uint64_t maskBits)</td></tr>
+<tr class="memdesc:a110394f0de14d67bede55495a48c26bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the Box3D category mask used by dynamic obstruction queries.  <br /></td></tr>
+<tr class="separator:a110394f0de14d67bede55495a48c26bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93203251739f01e2f688c84fa8b56483" id="r_a93203251739f01e2f688c84fa8b56483"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a93203251739f01e2f688c84fa8b56483">setCollisionIgnoredBody</a> (int bodyId)</td></tr>
+<tr class="memdesc:a93203251739f01e2f688c84fa8b56483"><td class="mdescLeft">&#160;</td><td class="mdescRight">Excludes one Box3D body id, normally the followed player body.  <br /></td></tr>
+<tr class="separator:a93203251739f01e2f688c84fa8b56483"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc9480cf43022879b96cdfe350772573" id="r_abc9480cf43022879b96cdfe350772573"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#abc9480cf43022879b96cdfe350772573">clearCollisionBoxes</a> ()</td></tr>
+<tr class="separator:abc9480cf43022879b96cdfe350772573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec63a2c106e77f1b52721583fed270ee" id="r_aec63a2c106e77f1b52721583fed270ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aec63a2c106e77f1b52721583fed270ee">addCollisionBox</a> (float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="separator:aec63a2c106e77f1b52721583fed270ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19249695d80205b8299f9edd4af97884" id="r_a19249695d80205b8299f9edd4af97884"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a19249695d80205b8299f9edd4af97884">isObstructed</a> () const</td></tr>
+<tr class="separator:a19249695d80205b8299f9edd4af97884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ba3a482ce12c7a7dda06f98f226f80b" id="r_a1ba3a482ce12c7a7dda06f98f226f80b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a1ba3a482ce12c7a7dda06f98f226f80b">getCollisionBodyId</a> () const</td></tr>
+<tr class="separator:a1ba3a482ce12c7a7dda06f98f226f80b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90865ddbab943fc0a2fbf061a1ed0a08" id="r_a90865ddbab943fc0a2fbf061a1ed0a08"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a90865ddbab943fc0a2fbf061a1ed0a08">addRig</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;mode, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>)</td></tr>
+<tr class="separator:a90865ddbab943fc0a2fbf061a1ed0a08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b46d73e39440fdb9793d8b8e20d4332" id="r_a6b46d73e39440fdb9793d8b8e20d4332"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a6b46d73e39440fdb9793d8b8e20d4332">removeRig</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a6b46d73e39440fdb9793d8b8e20d4332"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc7bd39e64991223a7f1edff8b5bca2e" id="r_adc7bd39e64991223a7f1edff8b5bca2e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#adc7bd39e64991223a7f1edff8b5bca2e">setRigPriority</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>)</td></tr>
+<tr class="separator:adc7bd39e64991223a7f1edff8b5bca2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52f7788393e7e00dd1e268d82fb45e70" id="r_a52f7788393e7e00dd1e268d82fb45e70"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a52f7788393e7e00dd1e268d82fb45e70">setRigEnabled</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:a52f7788393e7e00dd1e268d82fb45e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace9d6b465e207a97e17dba3d112427fa" id="r_ace9d6b465e207a97e17dba3d112427fa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ace9d6b465e207a97e17dba3d112427fa">saveRigState</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:ace9d6b465e207a97e17dba3d112427fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores the controller's current framing/lens parameters in a rig preset.  <br /></td></tr>
+<tr class="separator:ace9d6b465e207a97e17dba3d112427fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addcec7ff03594d0bacbedf4f9a9f2eda" id="r_addcec7ff03594d0bacbedf4f9a9f2eda"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#addcec7ff03594d0bacbedf4f9a9f2eda">activateRig</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float blendTime)</td></tr>
+<tr class="separator:addcec7ff03594d0bacbedf4f9a9f2eda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48b9fcdc7cb40acfa7ff33e01036b167" id="r_a48b9fcdc7cb40acfa7ff33e01036b167"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a48b9fcdc7cb40acfa7ff33e01036b167">getActiveRig</a> () const</td></tr>
+<tr class="separator:a48b9fcdc7cb40acfa7ff33e01036b167"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaab5d18e46913f57b948e92049b3262f" id="r_aaab5d18e46913f57b948e92049b3262f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aaab5d18e46913f57b948e92049b3262f">addImpulse</a> (float positionAmplitude, float rotationAmplitude, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>, unsigned int <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>=0)</td></tr>
+<tr class="memdesc:aaab5d18e46913f57b948e92049b3262f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a damped positional/rotational camera impulse.  <br /></td></tr>
+<tr class="separator:aaab5d18e46913f57b948e92049b3262f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa211e2d96f2f555af852a74eacb6e696" id="r_aa211e2d96f2f555af852a74eacb6e696"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aa211e2d96f2f555af852a74eacb6e696">addFovImpulse</a> (float <a class="el" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>)</td></tr>
+<tr class="separator:aa211e2d96f2f555af852a74eacb6e696"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba7b15ff68e59e8dbfee1ff34968fe2b" id="r_aba7b15ff68e59e8dbfee1ff34968fe2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#aba7b15ff68e59e8dbfee1ff34968fe2b">clearImpulses</a> ()</td></tr>
+<tr class="separator:aba7b15ff68e59e8dbfee1ff34968fe2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e68fbcfa9415121fa6e79571b23c409" id="r_a2e68fbcfa9415121fa6e79571b23c409"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a2e68fbcfa9415121fa6e79571b23c409">addView</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float ex, float ey, float ez, float tx, float ty, float tz)</td></tr>
+<tr class="separator:a2e68fbcfa9415121fa6e79571b23c409"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac03a7780869c3eea5c2b4041c71c32bd" id="r_ac03a7780869c3eea5c2b4041c71c32bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ac03a7780869c3eea5c2b4041c71c32bd">switchTo</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float blendTime)</td></tr>
+<tr class="separator:ac03a7780869c3eea5c2b4041c71c32bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86a94839859d8436f84bd89de6f33a0e" id="r_a86a94839859d8436f84bd89de6f33a0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a86a94839859d8436f84bd89de6f33a0e">playSequence</a> (float stepTime)</td></tr>
+<tr class="separator:a86a94839859d8436f84bd89de6f33a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a408ad2001daacf41e595ee8d6e0d3d7d" id="r_a408ad2001daacf41e595ee8d6e0d3d7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a408ad2001daacf41e595ee8d6e0d3d7d">stopSequence</a> ()</td></tr>
+<tr class="separator:a408ad2001daacf41e595ee8d6e0d3d7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93dfd58712f97237e76d098129ee024e" id="r_a93dfd58712f97237e76d098129ee024e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a93dfd58712f97237e76d098129ee024e">isPlaying</a> () const</td></tr>
+<tr class="separator:a93dfd58712f97237e76d098129ee024e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56075ec7f1b1320289983ad0af1e2ff5" id="r_a56075ec7f1b1320289983ad0af1e2ff5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a56075ec7f1b1320289983ad0af1e2ff5">clearTimeline</a> ()</td></tr>
+<tr class="separator:a56075ec7f1b1320289983ad0af1e2ff5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a418b8b4c489348a2746ec2783cb60ea6" id="r_a418b8b4c489348a2746ec2783cb60ea6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a418b8b4c489348a2746ec2783cb60ea6">addTimelineCut</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>, const std::string &amp;rigName, float blendTime)</td></tr>
+<tr class="separator:a418b8b4c489348a2746ec2783cb60ea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9b3b66f89b087b703aea22158d660d7" id="r_af9b3b66f89b087b703aea22158d660d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#af9b3b66f89b087b703aea22158d660d7">addTimelineEvent</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;data)</td></tr>
+<tr class="separator:af9b3b66f89b087b703aea22158d660d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d5ac7596b6aab5fbc3b37b48908a8ef" id="r_a5d5ac7596b6aab5fbc3b37b48908a8ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a5d5ac7596b6aab5fbc3b37b48908a8ef">addTimelineFloat</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>, const std::string &amp;property, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a5d5ac7596b6aab5fbc3b37b48908a8ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a linearly interpolated camera property key.  <br /></td></tr>
+<tr class="separator:a5d5ac7596b6aab5fbc3b37b48908a8ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19acdef9bd014546dae5e5a9bf89ffea" id="r_a19acdef9bd014546dae5e5a9bf89ffea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a19acdef9bd014546dae5e5a9bf89ffea">setEventSink</a> (<a class="el" href="classeve_1_1platform__event_1_1PlatformEvent.html">platform_event::PlatformEvent</a> *sink)</td></tr>
+<tr class="separator:a19acdef9bd014546dae5e5a9bf89ffea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e52d33c7529fd0a6a83b4a07afb0e00" id="r_a6e52d33c7529fd0a6a83b4a07afb0e00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a6e52d33c7529fd0a6a83b4a07afb0e00">playTimeline</a> (bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a5ed2b25d9f2f070cb0ee764aa0985308">loop</a>)</td></tr>
+<tr class="separator:a6e52d33c7529fd0a6a83b4a07afb0e00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb8d2a0d03f0356904a1dac834d4ea74" id="r_acb8d2a0d03f0356904a1dac834d4ea74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#acb8d2a0d03f0356904a1dac834d4ea74">pauseTimeline</a> ()</td></tr>
+<tr class="separator:acb8d2a0d03f0356904a1dac834d4ea74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b697e0981cd01e2b750abac4f6f8265" id="r_a4b697e0981cd01e2b750abac4f6f8265"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a4b697e0981cd01e2b750abac4f6f8265">stopTimeline</a> ()</td></tr>
+<tr class="separator:a4b697e0981cd01e2b750abac4f6f8265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84664bb3ac08cbd63edce9186f67a78f" id="r_a84664bb3ac08cbd63edce9186f67a78f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a84664bb3ac08cbd63edce9186f67a78f">seekTimeline</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>, bool fireEvents=false)</td></tr>
+<tr class="separator:a84664bb3ac08cbd63edce9186f67a78f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ca6c2b88ea5ad6b4fbad0190ea276c" id="r_a97ca6c2b88ea5ad6b4fbad0190ea276c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a97ca6c2b88ea5ad6b4fbad0190ea276c">isTimelinePlaying</a> () const</td></tr>
+<tr class="separator:a97ca6c2b88ea5ad6b4fbad0190ea276c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5271bb3da93eacecd16d8d1f989df420" id="r_a5271bb3da93eacecd16d8d1f989df420"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a5271bb3da93eacecd16d8d1f989df420">getTimelineTime</a> () const</td></tr>
+<tr class="separator:a5271bb3da93eacecd16d8d1f989df420"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dd67e484486d80c1ec8a22c000e2123" id="r_a9dd67e484486d80c1ec8a22c000e2123"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a9dd67e484486d80c1ec8a22c000e2123">consumeTimelineEvent</a> ()</td></tr>
+<tr class="separator:a9dd67e484486d80c1ec8a22c000e2123"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab13d7790b37a9c7483b088f25880ada6" id="r_ab13d7790b37a9c7483b088f25880ada6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#ab13d7790b37a9c7483b088f25880ada6">getTimelineEventData</a> () const</td></tr>
+<tr class="separator:ab13d7790b37a9c7483b088f25880ada6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b1f3f5b3de05e76533be1dabb53bebf" id="r_a8b1f3f5b3de05e76533be1dabb53bebf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a8b1f3f5b3de05e76533be1dabb53bebf">getPendingTimelineEventCount</a> () const</td></tr>
+<tr class="separator:a8b1f3f5b3de05e76533be1dabb53bebf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11afef4c850035e04b0c6cdecb7344a1" id="r_a11afef4c850035e04b0c6cdecb7344a1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a11afef4c850035e04b0c6cdecb7344a1">getTimelineDuration</a> () const</td></tr>
+<tr class="separator:a11afef4c850035e04b0c6cdecb7344a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a056658236c8661ccff73c5e55cfc629e" id="r_a056658236c8661ccff73c5e55cfc629e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a056658236c8661ccff73c5e55cfc629e">getRigCount</a> () const</td></tr>
+<tr class="separator:a056658236c8661ccff73c5e55cfc629e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53f5e11dcbfa38790fcd06ef8902d9fc" id="r_a53f5e11dcbfa38790fcd06ef8902d9fc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a53f5e11dcbfa38790fcd06ef8902d9fc">serializeAsset</a> () const</td></tr>
+<tr class="memdesc:a53f5e11dcbfa38790fcd06ef8902d9fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes rigs and timeline data as a versioned JSON asset.  <br /></td></tr>
+<tr class="separator:a53f5e11dcbfa38790fcd06ef8902d9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12463208aba255ba4127b671980764e0" id="r_a12463208aba255ba4127b671980764e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a12463208aba255ba4127b671980764e0">deserializeAsset</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a12463208aba255ba4127b671980764e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces rigs and timeline data from a versioned JSON asset.  <br /></td></tr>
+<tr class="separator:a12463208aba255ba4127b671980764e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f9f6773385ade1d0b8a95cf6146c098" id="r_a3f9f6773385ade1d0b8a95cf6146c098"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera_1_1CameraController.html#a3f9f6773385ade1d0b8a95cf6146c098">update</a> (float dt)</td></tr>
+<tr class="separator:a3f9f6773385ade1d0b8a95cf6146c098"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>3D 摄像机控制器（eve.Camera / eve.CameraController）。 </p>
+<p>驱动一个 graphics::Camera3D，内置多种方便玩家使用的视角行为：</p><ul>
+<li>follow 自动追踪目标（第三人称跟随，镜头挂在 target + offset）</li>
+<li>orbit 自动盘旋（绕 target 公转，azimuth 按 orbitSpeed 自动旋转）</li>
+<li>topdown 俯视（从 target 正上方往下拍）</li>
+<li>firstperson 第一人称（eye 位于 target，用 yaw/pitch 控制朝向）</li>
+<li>cinematic 过场/自动切换视角（在一组命名 View 之间平滑插值）</li>
+</ul>
+<p>所有行为都经过统一的指数阻尼平滑（setSmooth，对应"平滑移动"）， 也支持 maxSpeed 限速避免抖动，snap() 可立即到位不做平滑。 </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00037">37</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3ea4ec54c3753a1daa5413253dcefede" name="a3ea4ec54c3753a1daa5413253dcefede"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ea4ec54c3753a1daa5413253dcefede">&#9670;&#160;</a></span>CameraController()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::camera::CameraController::CameraController </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9f24481e3137ef226e471a072af6944f" name="a9f24481e3137ef226e471a072af6944f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f24481e3137ef226e471a072af6944f">&#9670;&#160;</a></span>~CameraController()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::camera::CameraController::~CameraController </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00681">eye</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="addcec7ff03594d0bacbedf4f9a9f2eda" name="addcec7ff03594d0bacbedf4f9a9f2eda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addcec7ff03594d0bacbedf4f9a9f2eda">&#9670;&#160;</a></span>activateRig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::activateRig </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>blendTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="CameraController_8cpp_source.html#l00112">setSmooth()</a> , 以及 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00350">seekTimeline()</a>.</p>
+
+</div>
+</div>
+<a id="aec63a2c106e77f1b52721583fed270ee" name="aec63a2c106e77f1b52721583fed270ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec63a2c106e77f1b52721583fed270ee">&#9670;&#160;</a></span>addCollisionBox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::addCollisionBox </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>.</p>
+
+</div>
+</div>
+<a id="aa211e2d96f2f555af852a74eacb6e696" name="aa211e2d96f2f555af852a74eacb6e696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa211e2d96f2f555af852a74eacb6e696">&#9670;&#160;</a></span>addFovImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::addFovImpulse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>duration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00035">degrees</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00236">u</a>.</p>
+
+</div>
+</div>
+<a id="aaab5d18e46913f57b948e92049b3262f" name="aaab5d18e46913f57b948e92049b3262f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaab5d18e46913f57b948e92049b3262f">&#9670;&#160;</a></span>addImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::addImpulse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>positionAmplitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationAmplitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a damped positional/rotational camera impulse. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>.</p>
+
+</div>
+</div>
+<a id="a8601a9d2b140c396aca7bfd99072961d" name="a8601a9d2b140c396aca7bfd99072961d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8601a9d2b140c396aca7bfd99072961d">&#9670;&#160;</a></span>addInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::addInput </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yawDeltaDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pitchDeltaDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>zoomDelta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies device-independent yaw, pitch and zoom deltas. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CameraController_8cpp_source.html#l00091">setElevation()</a>, <a class="el" href="CameraController_8cpp_source.html#l00095">setPitch()</a> , 以及 <a class="el" href="CameraController_8cpp_source.html#l00089">setRadius()</a>.</p>
+
+</div>
+</div>
+<a id="a90865ddbab943fc0a2fbf061a1ed0a08" name="a90865ddbab943fc0a2fbf061a1ed0a08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90865ddbab943fc0a2fbf061a1ed0a08">&#9670;&#160;</a></span>addRig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::addRig </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a> , 以及 <a class="el" href="CameraController_8cpp_source.html#l00177">saveRigState()</a>.</p>
+
+</div>
+</div>
+<a id="a418b8b4c489348a2746ec2783cb60ea6" name="a418b8b4c489348a2746ec2783cb60ea6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a418b8b4c489348a2746ec2783cb60ea6">&#9670;&#160;</a></span>addTimelineCut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::addTimelineCut </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>rigName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>blendTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00421">deserializeAsset()</a>.</p>
+
+</div>
+</div>
+<a id="af9b3b66f89b087b703aea22158d660d7" name="af9b3b66f89b087b703aea22158d660d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9b3b66f89b087b703aea22158d660d7">&#9670;&#160;</a></span>addTimelineEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::addTimelineEvent </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00421">deserializeAsset()</a>.</p>
+
+</div>
+</div>
+<a id="a5d5ac7596b6aab5fbc3b37b48908a8ef" name="a5d5ac7596b6aab5fbc3b37b48908a8ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d5ac7596b6aab5fbc3b37b48908a8ef">&#9670;&#160;</a></span>addTimelineFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::addTimelineFloat </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>property</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a linearly interpolated camera property key. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00421">deserializeAsset()</a>.</p>
+
+</div>
+</div>
+<a id="a2e68fbcfa9415121fa6e79571b23c409" name="a2e68fbcfa9415121fa6e79571b23c409"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e68fbcfa9415121fa6e79571b23c409">&#9670;&#160;</a></span>addView()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::addView </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ez</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="abc9480cf43022879b96cdfe350772573" name="abc9480cf43022879b96cdfe350772573"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc9480cf43022879b96cdfe350772573">&#9670;&#160;</a></span>clearCollisionBoxes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::clearCollisionBoxes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba7b15ff68e59e8dbfee1ff34968fe2b" name="aba7b15ff68e59e8dbfee1ff34968fe2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba7b15ff68e59e8dbfee1ff34968fe2b">&#9670;&#160;</a></span>clearImpulses()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::clearImpulses </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a56075ec7f1b1320289983ad0af1e2ff5" name="a56075ec7f1b1320289983ad0af1e2ff5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56075ec7f1b1320289983ad0af1e2ff5">&#9670;&#160;</a></span>clearTimeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::clearTimeline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CameraController_8cpp_source.html#l00344">stopTimeline()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00421">deserializeAsset()</a>.</p>
+
+</div>
+</div>
+<a id="a9dd67e484486d80c1ec8a22c000e2123" name="a9dd67e484486d80c1ec8a22c000e2123"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dd67e484486d80c1ec8a22c000e2123">&#9670;&#160;</a></span>consumeTimelineEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::camera::CameraController::consumeTimelineEvent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a12463208aba255ba4127b671980764e0" name="a12463208aba255ba4127b671980764e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12463208aba255ba4127b671980764e0">&#9670;&#160;</a></span>deserializeAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::deserializeAsset </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces rigs and timeline data from a versioned JSON asset. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00421">421</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CameraController_8cpp_source.html#l00317">addTimelineCut()</a>, <a class="el" href="CameraController_8cpp_source.html#l00328">addTimelineEvent()</a>, <a class="el" href="CameraController_8cpp_source.html#l00305">addTimelineFloat()</a>, <a class="el" href="CameraController_8cpp_source.html#l00296">clearTimeline()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00025">cuts</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00135">events</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="a48b9fcdc7cb40acfa7ff33e01036b167" name="a48b9fcdc7cb40acfa7ff33e01036b167"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48b9fcdc7cb40acfa7ff33e01036b167">&#9670;&#160;</a></span>getActiveRig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::camera::CameraController::getActiveRig </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72ceea414f33070df886c8eacfb72278" name="a72ceea414f33070df886c8eacfb72278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72ceea414f33070df886c8eacfb72278">&#9670;&#160;</a></span>getCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> * eve::camera::CameraController::getCamera </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ba3a482ce12c7a7dda06f98f226f80b" name="a1ba3a482ce12c7a7dda06f98f226f80b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ba3a482ce12c7a7dda06f98f226f80b">&#9670;&#160;</a></span>getCollisionBodyId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::camera::CameraController::getCollisionBodyId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a861c5ef4b90c19e99ccd31537733b75b" name="a861c5ef4b90c19e99ccd31537733b75b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a861c5ef4b90c19e99ccd31537733b75b">&#9670;&#160;</a></span>getFov()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraController::getFov </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a773dfecdaac11648444e57d9149c7111" name="a773dfecdaac11648444e57d9149c7111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a773dfecdaac11648444e57d9149c7111">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::camera::CameraController::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b1f3f5b3de05e76533be1dabb53bebf" name="a8b1f3f5b3de05e76533be1dabb53bebf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b1f3f5b3de05e76533be1dabb53bebf">&#9670;&#160;</a></span>getPendingTimelineEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::camera::CameraController::getPendingTimelineEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a056658236c8661ccff73c5e55cfc629e" name="a056658236c8661ccff73c5e55cfc629e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a056658236c8661ccff73c5e55cfc629e">&#9670;&#160;</a></span>getRigCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::camera::CameraController::getRigCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9bd21b3b51a5f57c96307bfe056c480f" name="a9bd21b3b51a5f57c96307bfe056c480f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bd21b3b51a5f57c96307bfe056c480f">&#9670;&#160;</a></span>getTargetX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraController::getTargetX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af09290beb7bbe2c4d438354c5b8336b1" name="af09290beb7bbe2c4d438354c5b8336b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af09290beb7bbe2c4d438354c5b8336b1">&#9670;&#160;</a></span>getTargetY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraController::getTargetY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e034c7854b854f2e73bbefa04d68a87" name="a7e034c7854b854f2e73bbefa04d68a87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e034c7854b854f2e73bbefa04d68a87">&#9670;&#160;</a></span>getTargetZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraController::getTargetZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a11afef4c850035e04b0c6cdecb7344a1" name="a11afef4c850035e04b0c6cdecb7344a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11afef4c850035e04b0c6cdecb7344a1">&#9670;&#160;</a></span>getTimelineDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraController::getTimelineDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab13d7790b37a9c7483b088f25880ada6" name="ab13d7790b37a9c7483b088f25880ada6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab13d7790b37a9c7483b088f25880ada6">&#9670;&#160;</a></span>getTimelineEventData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::camera::CameraController::getTimelineEventData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5271bb3da93eacecd16d8d1f989df420" name="a5271bb3da93eacecd16d8d1f989df420"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5271bb3da93eacecd16d8d1f989df420">&#9670;&#160;</a></span>getTimelineTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraController::getTimelineTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a19249695d80205b8299f9edd4af97884" name="a19249695d80205b8299f9edd4af97884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19249695d80205b8299f9edd4af97884">&#9670;&#160;</a></span>isObstructed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::isObstructed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a93dfd58712f97237e76d098129ee024e" name="a93dfd58712f97237e76d098129ee024e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93dfd58712f97237e76d098129ee024e">&#9670;&#160;</a></span>isPlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::isPlaying </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a97ca6c2b88ea5ad6b4fbad0190ea276c" name="a97ca6c2b88ea5ad6b4fbad0190ea276c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ca6c2b88ea5ad6b4fbad0190ea276c">&#9670;&#160;</a></span>isTimelinePlaying()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::isTimelinePlaying </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb8d2a0d03f0356904a1dac834d4ea74" name="acb8d2a0d03f0356904a1dac834d4ea74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb8d2a0d03f0356904a1dac834d4ea74">&#9670;&#160;</a></span>pauseTimeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::pauseTimeline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a86a94839859d8436f84bd89de6f33a0e" name="a86a94839859d8436f84bd89de6f33a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86a94839859d8436f84bd89de6f33a0e">&#9670;&#160;</a></span>playSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::playSequence </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stepTime</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CameraController_8cpp_source.html#l00252">switchTo()</a>.</p>
+
+</div>
+</div>
+<a id="a6e52d33c7529fd0a6a83b4a07afb0e00" name="a6e52d33c7529fd0a6a83b4a07afb0e00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e52d33c7529fd0a6a83b4a07afb0e00">&#9670;&#160;</a></span>playTimeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::playTimeline </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>loop</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a>.</p>
+
+</div>
+</div>
+<a id="a6b46d73e39440fdb9793d8b8e20d4332" name="a6b46d73e39440fdb9793d8b8e20d4332"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b46d73e39440fdb9793d8b8e20d4332">&#9670;&#160;</a></span>removeRig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::removeRig </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="ace9d6b465e207a97e17dba3d112427fa" name="ace9d6b465e207a97e17dba3d112427fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace9d6b465e207a97e17dba3d112427fa">&#9670;&#160;</a></span>saveRigState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::saveRigState </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stores the controller's current framing/lens parameters in a rig preset. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00137">addRig()</a>.</p>
+
+</div>
+</div>
+<a id="a84664bb3ac08cbd63edce9186f67a78f" name="a84664bb3ac08cbd63edce9186f67a78f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84664bb3ac08cbd63edce9186f67a78f">&#9670;&#160;</a></span>seekTimeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::seekTimeline </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fireEvents</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CameraController_8cpp_source.html#l00197">activateRig()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a>.</p>
+
+</div>
+</div>
+<a id="a53f5e11dcbfa38790fcd06ef8902d9fc" name="a53f5e11dcbfa38790fcd06ef8902d9fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53f5e11dcbfa38790fcd06ef8902d9fc">&#9670;&#160;</a></span>serializeAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::camera::CameraController::serializeAsset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes rigs and timeline data as a versioned JSON asset. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="aed6391a86e44a78982e1c85088aad4fc" name="aed6391a86e44a78982e1c85088aad4fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed6391a86e44a78982e1c85088aad4fc">&#9670;&#160;</a></span>setAzimuth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setAzimuth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5666b34e00b64a8820f39d461bb89375" name="a5666b34e00b64a8820f39d461bb89375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5666b34e00b64a8820f39d461bb89375">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setCamera </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> *&#160;</td>
+          <td class="paramname"><em>cam</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a93566cd69794b7747757c04149cea373" name="a93566cd69794b7747757c04149cea373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93566cd69794b7747757c04149cea373">&#9670;&#160;</a></span>setCollisionEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setCollisionEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables swept-sphere obstruction against boxes registered below. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a93203251739f01e2f688c84fa8b56483" name="a93203251739f01e2f688c84fa8b56483"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93203251739f01e2f688c84fa8b56483">&#9670;&#160;</a></span>setCollisionIgnoredBody()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setCollisionIgnoredBody </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bodyId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Excludes one Box3D body id, normally the followed player body. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a110394f0de14d67bede55495a48c26bb" name="a110394f0de14d67bede55495a48c26bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a110394f0de14d67bede55495a48c26bb">&#9670;&#160;</a></span>setCollisionMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setCollisionMask </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>maskBits</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the Box3D category mask used by dynamic obstruction queries. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2cdff54f2737ad4c7e23ee8d4296710a" name="a2cdff54f2737ad4c7e23ee8d4296710a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cdff54f2737ad4c7e23ee8d4296710a">&#9670;&#160;</a></span>setCollisionRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setCollisionRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="af84ef6acd62b5a608cb7ce514f1e71f8" name="af84ef6acd62b5a608cb7ce514f1e71f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84ef6acd62b5a608cb7ce514f1e71f8">&#9670;&#160;</a></span>setCollisionRecovery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setCollisionRecovery </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67bb4de011bdbf460fd13064750dc16b" name="a67bb4de011bdbf460fd13064750dc16b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67bb4de011bdbf460fd13064750dc16b">&#9670;&#160;</a></span>setComposition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setComposition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>screenX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>screenY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Screen-space composition offset, expressed as normalized view fractions. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9cc9d1159a770309fb6b8dabbc5de21" name="ae9cc9d1159a770309fb6b8dabbc5de21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9cc9d1159a770309fb6b8dabbc5de21">&#9670;&#160;</a></span>setDeadZone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setDeadZone </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Dead-zone radius in world units around the tracked target. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="ad0f779e8700f240cc2c1e0eaf48d3b5a" name="ad0f779e8700f240cc2c1e0eaf48d3b5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0f779e8700f240cc2c1e0eaf48d3b5a">&#9670;&#160;</a></span>setElevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setElevation </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00096">addInput()</a>.</p>
+
+</div>
+</div>
+<a id="a19acdef9bd014546dae5e5a9bf89ffea" name="a19acdef9bd014546dae5e5a9bf89ffea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19acdef9bd014546dae5e5a9bf89ffea">&#9670;&#160;</a></span>setEventSink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setEventSink </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1platform__event_1_1PlatformEvent.html">platform_event::PlatformEvent</a> *&#160;</td>
+          <td class="paramname"><em>sink</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00337">337</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac7d0f63281fe4c1f1125dda00360585a" name="ac7d0f63281fe4c1f1125dda00360585a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7d0f63281fe4c1f1125dda00360585a">&#9670;&#160;</a></span>setFov()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setFov </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degrees</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00035">degrees</a>.</p>
+
+</div>
+</div>
+<a id="ab1b797a785c4e5d8cc19627dd86aafad" name="ab1b797a785c4e5d8cc19627dd86aafad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1b797a785c4e5d8cc19627dd86aafad">&#9670;&#160;</a></span>setLookAhead()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setLookAhead </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>follow：额外的视线前移点（可让镜头看向玩家前方）。 </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="abec4a138111273072ff39070b156cc18" name="abec4a138111273072ff39070b156cc18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abec4a138111273072ff39070b156cc18">&#9670;&#160;</a></span>setMaxSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setMaxSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>unitsPerSec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab6d74ff1d2b22e462286987018b1a261" name="ab6d74ff1d2b22e462286987018b1a261"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6d74ff1d2b22e462286987018b1a261">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac1d045bdd40b60b54ab346d833938352" name="ac1d045bdd40b60b54ab346d833938352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1d045bdd40b60b54ab346d833938352">&#9670;&#160;</a></span>setOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setOffset </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>follow：摄像机相对 target 的偏移（默认 (0, 2, 6)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ae22ae4d228cd499f2af89c007aef3cbf" name="ae22ae4d228cd499f2af89c007aef3cbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae22ae4d228cd499f2af89c007aef3cbf">&#9670;&#160;</a></span>setOrbitSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setOrbitSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degPerSec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7ced5b600dc72a7f01d95b87147a1747" name="a7ced5b600dc72a7f01d95b87147a1747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ced5b600dc72a7f01d95b87147a1747">&#9670;&#160;</a></span>setPitch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setPitch </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00096">addInput()</a>.</p>
+
+</div>
+</div>
+<a id="aabde7a3a6a2f8e71975975c70cecb779" name="aabde7a3a6a2f8e71975975c70cecb779"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabde7a3a6a2f8e71975975c70cecb779">&#9670;&#160;</a></span>setPositionSmooth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setPositionSmooth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4305b46d815f6b4158793c1adc92b99f" name="a4305b46d815f6b4158793c1adc92b99f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4305b46d815f6b4158793c1adc92b99f">&#9670;&#160;</a></span>setRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00096">addInput()</a>.</p>
+
+</div>
+</div>
+<a id="a52f7788393e7e00dd1e268d82fb45e70" name="a52f7788393e7e00dd1e268d82fb45e70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52f7788393e7e00dd1e268d82fb45e70">&#9670;&#160;</a></span>setRigEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::setRigEnabled </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="adc7bd39e64991223a7f1edff8b5bca2e" name="adc7bd39e64991223a7f1edff8b5bca2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc7bd39e64991223a7f1edff8b5bca2e">&#9670;&#160;</a></span>setRigPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::setRigPriority </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+</div>
+</div>
+<a id="a415ee789c8637709a276e58f0f1982ac" name="a415ee789c8637709a276e58f0f1982ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a415ee789c8637709a276e58f0f1982ac">&#9670;&#160;</a></span>setSmooth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setSmooth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00197">activateRig()</a>.</p>
+
+</div>
+</div>
+<a id="a3efc5dddfafacd0cc288be69d0ba4a1c" name="a3efc5dddfafacd0cc288be69d0ba4a1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3efc5dddfafacd0cc288be69d0ba4a1c">&#9670;&#160;</a></span>setTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setTarget </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="abca9bb3e181869bf9f7a85c713f34a0d" name="abca9bb3e181869bf9f7a85c713f34a0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abca9bb3e181869bf9f7a85c713f34a0d">&#9670;&#160;</a></span>setTargetNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setTargetNode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1scene_1_1SceneNodeRef.html">scene::SceneNodeRef</a> *&#160;</td>
+          <td class="paramname"><em>node</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Follow a stable scene-node handle. nullptr restores explicit coordinates. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae77ebc6fd91088d2ed62fb0375aa3b47" name="ae77ebc6fd91088d2ed62fb0375aa3b47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae77ebc6fd91088d2ed62fb0375aa3b47">&#9670;&#160;</a></span>setTargetSmooth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setTargetSmooth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a13f4f7f407b7de323eb652575b09fc69" name="a13f4f7f407b7de323eb652575b09fc69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13f4f7f407b7de323eb652575b09fc69">&#9670;&#160;</a></span>setYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::setYaw </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeab9f953664a20828a4125457e9f543f" name="aeab9f953664a20828a4125457e9f543f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeab9f953664a20828a4125457e9f543f">&#9670;&#160;</a></span>snap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::snap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00741">741</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a408ad2001daacf41e595ee8d6e0d3d7d" name="a408ad2001daacf41e595ee8d6e0d3d7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a408ad2001daacf41e595ee8d6e0d3d7d">&#9670;&#160;</a></span>stopSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::stopSequence </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b697e0981cd01e2b750abac4f6f8265" name="a4b697e0981cd01e2b750abac4f6f8265"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b697e0981cd01e2b750abac4f6f8265">&#9670;&#160;</a></span>stopTimeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::stopTimeline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00296">clearTimeline()</a>.</p>
+
+</div>
+</div>
+<a id="ac03a7780869c3eea5c2b4041c71c32bd" name="ac03a7780869c3eea5c2b4041c71c32bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac03a7780869c3eea5c2b4041c71c32bd">&#9670;&#160;</a></span>switchTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraController::switchTo </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>blendTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00282">playSequence()</a> , 以及 <a class="el" href="CameraController_8cpp_source.html#l00747">update()</a>.</p>
+
+</div>
+</div>
+<a id="a3f9f6773385ade1d0b8a95cf6146c098" name="a3f9f6773385ade1d0b8a95cf6146c098"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f9f6773385ade1d0b8a95cf6146c098">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera::CameraController::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a> 第 <a class="el" href="CameraController_8cpp_source.html#l00747">747</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CameraController_8cpp_source.html#l00252">switchTo()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/camera/<a class="el" href="CameraController_8h_source.html">CameraController.h</a></li>
+<li>src/modules/camera/<a class="el" href="CameraController_8cpp_source.html">CameraController.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

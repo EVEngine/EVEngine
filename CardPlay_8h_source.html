@@ -1,0 +1,343 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/card/CardPlay.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b6d14880155a7b1832962a5fc46a0e3c.html">card</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CardPlay.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CardPlay_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="CardTypes_8h.html">card/CardTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Container_8h.html">common/Container.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Condition_8h.html">decision/Condition.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="AtomicResourcePayment_8h.html">transaction/AtomicResourcePayment.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1card.html">eve::card</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayConditionQueries.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1card_1_1CardPlayConditionQueries.html">CardPlayConditionQueries</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayConditionQueries.html#ad042e50f7032654f39ca3bc2dc189812">   28</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structeve_1_1card_1_1CardPlayConditionQueries.html#ad042e50f7032654f39ca3bc2dc189812">Resource</a>  = std::function&lt;std::optional&lt;eve::Value&gt;(std::string_view <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)&gt;;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayConditionQueries.html#a46ad1ac280082e4d7a93f99b542220ae">   29</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structeve_1_1card_1_1CardPlayConditionQueries.html#a46ad1ac280082e4d7a93f99b542220ae">Authority</a> = std::function&lt;std::optional&lt;bool&gt;(std::string_view <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>)&gt;;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayConditionQueries.html#a68ee19c5b6a4228490a41093adad3691">   30</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structeve_1_1card_1_1CardPlayConditionQueries.html#a68ee19c5b6a4228490a41093adad3691">Policy</a> =</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        std::function&lt;std::optional&lt;decision::ConditionResult&gt;(std::string_view <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; arguments)&gt;;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayConditionQueries.html#adcf876812ff717eb15f1836365f37275">   33</a></span>    <a class="code hl_typedef" href="structeve_1_1card_1_1CardPlayConditionQueries.html#ad042e50f7032654f39ca3bc2dc189812">Resource</a>  <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayConditionQueries.html#adcf876812ff717eb15f1836365f37275">resource</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayConditionQueries.html#a6124d2c870c12683ac8a9338cf132782">   34</a></span>    <a class="code hl_typedef" href="structeve_1_1card_1_1CardPlayConditionQueries.html#a46ad1ac280082e4d7a93f99b542220ae">Authority</a> <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayConditionQueries.html#a6124d2c870c12683ac8a9338cf132782">authority</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayConditionQueries.html#ac79e06565ab85be5874094753b45e343">   35</a></span>    <a class="code hl_typedef" href="structeve_1_1card_1_1CardPlayConditionQueries.html#a68ee19c5b6a4228490a41093adad3691">Policy</a>    <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayConditionQueries.html#ac79e06565ab85be5874094753b45e343">policy</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardPlayConditionContext.html">   45</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1card_1_1CardPlayConditionContext.html">CardPlayConditionContext</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1decision_1_1EvaluationContext.html">decision::EvaluationContext</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_class" href="classeve_1_1card_1_1CardPlayConditionContext.html">CardPlayConditionContext</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>* card, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardDefinition.html">CardDefinition</a>&amp; definition,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                             <a class="code hl_struct" href="structeve_1_1card_1_1CardPlayConditionQueries.html">CardPlayConditionQueries</a> queries = {});</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    [[nodiscard]] std::optional&lt;eve::Value&gt; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>(std::string_view <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    [[nodiscard]] std::optional&lt;bool&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardPlayConditionContext.html#a4110a3d51ff8b385d8dd198672f9bf27">hasTag</a>(std::string_view tag) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] std::optional&lt;eve::Value&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardPlayConditionContext.html#ad6c6dbcbe80dce776b8fcc4751f64005">attribute</a>(std::string_view <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    [[nodiscard]] std::optional&lt;eve::Value&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardPlayConditionContext.html#a521b8141891c2c28aa744a262da27956">resource</a>(std::string_view <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] std::optional&lt;eve::Value&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardPlayConditionContext.html#ad0feac0ce2fff6fb660f94f8362c91b5">state</a>(std::string_view <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] std::optional&lt;bool&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardPlayConditionContext.html#a58d0829f5b785268ea038ef68c55efe6">authority</a>(std::string_view <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    [[nodiscard]] std::optional&lt;decision::ConditionResult&gt; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>(std::string_view  <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                                                  <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; arguments) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>*          card_       = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardDefinition.html">CardDefinition</a>*    definition_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_struct" href="structeve_1_1card_1_1CardPlayConditionQueries.html">CardPlayConditionQueries</a> queries_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="};">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardPlayConditionAdapter.html">   79</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1card_1_1CardPlayConditionAdapter.html">CardPlayConditionAdapter</a> {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1decision_1_1ConditionResult.html">decision::ConditionResult</a> <a class="code hl_function" href="classeve_1_1card_1_1CardPlayConditionAdapter.html#a2e0886f7b76a5f79516d29f96ecbd86c">evaluate</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>* card, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardDefinition.html">CardDefinition</a>&amp; definition,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                                                            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1decision_1_1Condition.html">decision::Condition</a>&amp; condition,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                                                            <a class="code hl_struct" href="structeve_1_1card_1_1CardPlayConditionQueries.html">CardPlayConditionQueries</a>   queries = {});</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>};</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="};">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardPlayParticipant.html">  102</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1card_1_1CardPlayParticipant.html">CardPlayParticipant</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a> {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1card_1_1CardPlayParticipant.html">CardPlayParticipant</a>(<a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>&amp; card);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardPlayParticipant.html#afde6828fb47f373735565feceb6ffed2">  108</a></span>    [[nodiscard]] std::string_view <a class="code hl_function" href="classeve_1_1card_1_1CardPlayParticipant.html#afde6828fb47f373735565feceb6ffed2">name</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;card-play-effect&quot;</span>; }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardPlayParticipant.html#a9c8011afb47cc3c6bbb8cb8c0bc68a2f">prepare</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardPlayParticipant.html#a83b163ad859707cd965bb3a5cdafcdf2">commit</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardPlayParticipant.html#a5cf53693d59f8a1e8f68c6c49cddbe2e">rollback</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardPlayParticipant.html#ab08c18ebd7389dd393c8cdbe6b24fd40">compensate</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>&amp; card_;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_enumeration" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7ab">CardState</a> previousState_ = <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7abaa78b1ac16c0cd02168097fc9a9bd7604">CardState::Hand</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">bool</span>      prepared_      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">bool</span>      committed_     = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>};</div>
+</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="foldopen" id="foldopen00134" data-start="{" data-end="};">
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayComposition.html">  134</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1card_1_1CardPlayComposition.html">CardPlayComposition</a> {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayComposition.html#ae0bccb6004196b8241954a7a81db18e6">  135</a></span>    <a class="code hl_struct" href="structeve_1_1card_1_1CardPlayConditionQueries.html">CardPlayConditionQueries</a>                   <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayComposition.html#ae0bccb6004196b8241954a7a81db18e6">conditionQueries</a>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayComposition.html#aacf591a689ab70efd5e49561387f2748">  136</a></span>    <a class="code hl_class" href="classeve_1_1container_1_1IContainer.html">eve::container::IContainer</a>*                <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayComposition.html#aacf591a689ab70efd5e49561387f2748">source</a>      = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayComposition.html#ad1e58004d77b25652e3ce9f61769b1f4">  137</a></span>    <a class="code hl_class" href="classeve_1_1container_1_1IContainer.html">eve::container::IContainer</a>*                <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayComposition.html#ad1e58004d77b25652e3ce9f61769b1f4">destination</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayComposition.html#a5225ad815f909f9dc3b6ff23c444657c">  138</a></span>    std::optional&lt;eve::container::SlotIndex&gt;   <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayComposition.html#a5225ad815f909f9dc3b6ff23c444657c">sourceSlot</a>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayComposition.html#aaa63f03d802ab7302e87339434da61e8">  139</a></span>    std::optional&lt;eve::container::SlotIndex&gt;   <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayComposition.html#aaa63f03d802ab7302e87339434da61e8">destinationSlot</a>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayComposition.html#a6eebba5ad913d3300359376427f8ea11">  140</a></span>    <a class="code hl_class" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a>* <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayComposition.html#a6eebba5ad913d3300359376427f8ea11">effect</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>};</div>
+</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="};">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayRequest.html">  150</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1card_1_1CardPlayRequest.html">CardPlayRequest</a> {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayRequest.html#a911ed3f26a2154fe19d1b48b2af3e83c">  151</a></span>    <a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>*                        <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayRequest.html#a911ed3f26a2154fe19d1b48b2af3e83c">card</a>          = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayRequest.html#a584eac2735ff466720f936d519b8c5d4">  152</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardDefinition.html">CardDefinition</a>*            <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayRequest.html#a584eac2735ff466720f936d519b8c5d4">definition</a>    = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayRequest.html#a224e49252b6853d812e7281156384ac2">  153</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a>* <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayRequest.html#a224e49252b6853d812e7281156384ac2">playerAccount</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayRequest.html#a70f445562a535ea67966eefb8a6811cb">  154</a></span>    <a class="code hl_struct" href="structeve_1_1card_1_1CardPlayComposition.html">CardPlayComposition</a>              <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayRequest.html#a70f445562a535ea67966eefb8a6811cb">composition</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardPlayRequest.html#ac5519f81b64af443ec507de0d9b2c205">  155</a></span>    std::string                      <a class="code hl_variable" href="structeve_1_1card_1_1CardPlayRequest.html#ac5519f81b64af443ec507de0d9b2c205">transactionId</a>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>};</div>
+</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="foldopen" id="foldopen00165" data-start="{" data-end="};">
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardPlayPaymentAdapter.html">  165</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1card_1_1CardPlayPaymentAdapter.html">CardPlayPaymentAdapter</a> final {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::transaction::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardPlayPaymentAdapter.html#a8d222b10b3606f37820e1a74c7dd24e1">play</a>(<a class="code hl_struct" href="structeve_1_1card_1_1CardPlayRequest.html">CardPlayRequest</a> request);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::optional&lt;eve::resource::CostSpec&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardPlayPaymentAdapter.html#a6233d761e4c6d8d51dbd5d2a4147812e">manaCost</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardDefinition.html">CardDefinition</a>&amp; definition);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::transaction::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardPlayPaymentAdapter.html#a8d222b10b3606f37820e1a74c7dd24e1">play</a>(</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>&amp; card, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1card_1_1CardDefinition.html">CardDefinition</a>&amp; definition, <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a>&amp; playerAccount,</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        std::string transactionId = {});</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>};</div>
+</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>}  <span class="comment">// namespace eve::card</span></div>
+<div class="ttc" id="aAtomicResourcePayment_8h_html"><div class="ttname"><a href="AtomicResourcePayment_8h.html">AtomicResourcePayment.h</a></div><div class="ttdoc">Small transaction facade for a resource cost plus one domain effect.</div></div>
+<div class="ttc" id="aCardTypes_8h_html"><div class="ttname"><a href="CardTypes_8h.html">CardTypes.h</a></div></div>
+<div class="ttc" id="aCondition_8h_html"><div class="ttname"><a href="Condition_8h.html">Condition.h</a></div><div class="ttdoc">Pure, explainable condition trees shared by gameplay domains.</div></div>
+<div class="ttc" id="aContainer_8h_html"><div class="ttname"><a href="Container_8h.html">Container.h</a></div><div class="ttdoc">Low-level container membership, zone and atomic transfer contracts.</div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_acca1405ad8722c85f51c891decedadda"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a></div><div class="ttdeci">JobScope scope</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00158">JobSystemThreadPool.cpp:158</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardData_html"><div class="ttname"><a href="classeve_1_1card_1_1CardData.html">eve::card::CardData</a></div><div class="ttdoc">单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8h_source.html#l00092">CardTypes.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionAdapter_html"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionAdapter.html">eve::card::CardPlayConditionAdapter</a></div><div class="ttdoc">Evaluates one card play condition without moving or mutating a card.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00079">CardPlay.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionAdapter_html_a2e0886f7b76a5f79516d29f96ecbd86c"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionAdapter.html#a2e0886f7b76a5f79516d29f96ecbd86c">eve::card::CardPlayConditionAdapter::evaluate</a></div><div class="ttdeci">static decision::ConditionResult evaluate(const CardData *card, const CardDefinition &amp;definition, const decision::Condition &amp;condition, CardPlayConditionQueries queries={})</div><div class="ttdoc">Evaluate a card definition's play condition against one instance.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00068">CardPlay.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionContext_html"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionContext.html">eve::card::CardPlayConditionContext</a></div><div class="ttdoc">Read-only EvaluationContext backed by one card instance and definition.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00045">CardPlay.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionContext_html_a4110a3d51ff8b385d8dd198672f9bf27"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionContext.html#a4110a3d51ff8b385d8dd198672f9bf27">eve::card::CardPlayConditionContext::hasTag</a></div><div class="ttdeci">std::optional&lt; bool &gt; hasTag(std::string_view tag) const override</div><div class="ttdoc">Query tag membership; nullopt means the tag source is unavailable.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00035">CardPlay.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionContext_html_a521b8141891c2c28aa744a262da27956"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionContext.html#a521b8141891c2c28aa744a262da27956">eve::card::CardPlayConditionContext::resource</a></div><div class="ttdeci">std::optional&lt; eve::Value &gt; resource(std::string_view key) const override</div><div class="ttdoc">Query a resource amount or resource marker.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00048">CardPlay.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionContext_html_a58d0829f5b785268ea038ef68c55efe6"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionContext.html#a58d0829f5b785268ea038ef68c55efe6">eve::card::CardPlayConditionContext::authority</a></div><div class="ttdeci">std::optional&lt; bool &gt; authority(std::string_view scope) const override</div><div class="ttdoc">Query authority without changing grants, leases, or state.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00057">CardPlay.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionContext_html_ad0feac0ce2fff6fb660f94f8362c91b5"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionContext.html#ad0feac0ce2fff6fb660f94f8362c91b5">eve::card::CardPlayConditionContext::state</a></div><div class="ttdeci">std::optional&lt; eve::Value &gt; state(std::string_view key) const override</div><div class="ttdoc">Query a state value for StateEquals nodes.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00053">CardPlay.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionContext_html_ad6c6dbcbe80dce776b8fcc4751f64005"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionContext.html#ad6c6dbcbe80dce776b8fcc4751f64005">eve::card::CardPlayConditionContext::attribute</a></div><div class="ttdeci">std::optional&lt; eve::Value &gt; attribute(std::string_view key) const override</div><div class="ttdoc">Query an attribute value; nullopt means the attribute is absent.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00040">CardPlay.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayParticipant_html"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayParticipant.html">eve::card::CardPlayParticipant</a></div><div class="ttdoc">Transaction participant that publishes one CardData play.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00102">CardPlay.h:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayParticipant_html_a5cf53693d59f8a1e8f68c6c49cddbe2e"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayParticipant.html#a5cf53693d59f8a1e8f68c6c49cddbe2e">eve::card::CardPlayParticipant::rollback</a></div><div class="ttdeci">eve::Result&lt; void &gt; rollback(const eve::transaction::TransactionContext &amp;context) override</div><div class="ttdoc">Discard a prepared but not committed stage.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00291">CardPlay.cpp:291</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayParticipant_html_a83b163ad859707cd965bb3a5cdafcdf2"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayParticipant.html#a83b163ad859707cd965bb3a5cdafcdf2">eve::card::CardPlayParticipant::commit</a></div><div class="ttdeci">eve::Result&lt; void &gt; commit(const eve::transaction::TransactionContext &amp;context) override</div><div class="ttdoc">Publish this participant's staged changes.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00278">CardPlay.cpp:278</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayParticipant_html_a9c8011afb47cc3c6bbb8cb8c0bc68a2f"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayParticipant.html#a9c8011afb47cc3c6bbb8cb8c0bc68a2f">eve::card::CardPlayParticipant::prepare</a></div><div class="ttdeci">eve::Result&lt; void &gt; prepare(const eve::transaction::TransactionContext &amp;context) override</div><div class="ttdoc">Validate and stage local changes for the transaction.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00266">CardPlay.cpp:266</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayParticipant_html_ab08c18ebd7389dd393c8cdbe6b24fd40"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayParticipant.html#ab08c18ebd7389dd393c8cdbe6b24fd40">eve::card::CardPlayParticipant::compensate</a></div><div class="ttdeci">eve::Result&lt; void &gt; compensate(const eve::transaction::TransactionContext &amp;context) override</div><div class="ttdoc">Undo an already committed external effect by compensation.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00299">CardPlay.cpp:299</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayParticipant_html_afde6828fb47f373735565feceb6ffed2"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayParticipant.html#afde6828fb47f373735565feceb6ffed2">eve::card::CardPlayParticipant::name</a></div><div class="ttdeci">std::string_view name() const noexcept override</div><div class="ttdoc">Stable transaction diagnostic name.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00108">CardPlay.h:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayPaymentAdapter_html"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayPaymentAdapter.html">eve::card::CardPlayPaymentAdapter</a></div><div class="ttdoc">Connects a card's mana field to the owning player's resource account.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00165">CardPlay.h:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayPaymentAdapter_html_a6233d761e4c6d8d51dbd5d2a4147812e"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayPaymentAdapter.html#a6233d761e4c6d8d51dbd5d2a4147812e">eve::card::CardPlayPaymentAdapter::manaCost</a></div><div class="ttdeci">static eve::Result&lt; std::optional&lt; eve::resource::CostSpec &gt; &gt; manaCost(const CardDefinition &amp;definition)</div><div class="ttdoc">Convert a non-negative card mana value into a canonical cost.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00309">CardPlay.cpp:309</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayPaymentAdapter_html_a8d222b10b3606f37820e1a74c7dd24e1"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayPaymentAdapter.html#a8d222b10b3606f37820e1a74c7dd24e1">eve::card::CardPlayPaymentAdapter::play</a></div><div class="ttdeci">static eve::Result&lt; eve::transaction::TransactionReceipt &gt; play(CardPlayRequest request)</div><div class="ttdoc">Execute condition, movement, card effect and Mana as one transaction.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00333">CardPlay.cpp:333</a></div></div>
+<div class="ttc" id="aclasseve_1_1container_1_1IContainer_html"><div class="ttname"><a href="classeve_1_1container_1_1IContainer.html">eve::container::IContainer</a></div><div class="ttdoc">Borrowed container implementation owned by a domain adapter.</div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00266">Container.h:266</a></div></div>
+<div class="ttc" id="aclasseve_1_1decision_1_1ConditionResult_html"><div class="ttname"><a href="classeve_1_1decision_1_1ConditionResult.html">eve::decision::ConditionResult</a></div><div class="ttdoc">Explain one condition evaluation in a UI- and log-friendly form.</div><div class="ttdef"><b>Definition</b> <a href="Condition_8h_source.html#l00126">Condition.h:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1decision_1_1Condition_html"><div class="ttname"><a href="classeve_1_1decision_1_1Condition.html">eve::decision::Condition</a></div><div class="ttdoc">Immutable condition AST node.</div><div class="ttdef"><b>Definition</b> <a href="Condition_8h_source.html#l00189">Condition.h:189</a></div></div>
+<div class="ttc" id="aclasseve_1_1decision_1_1EvaluationContext_html"><div class="ttname"><a href="classeve_1_1decision_1_1EvaluationContext.html">eve::decision::EvaluationContext</a></div><div class="ttdoc">Read-only state boundary used by every condition evaluation.</div><div class="ttdef"><b>Definition</b> <a href="Condition_8h_source.html#l00161">Condition.h:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a></div><div class="ttdoc">Provider-neutral resource account contract.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00308">ResourceAccount.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ITransactionParticipant_html"><div class="ttname"><a href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a></div><div class="ttdoc">Synchronous participant contract for one coordinator transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00119">Transaction.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1TransactionContext_html"><div class="ttname"><a href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a></div><div class="ttdoc">Immutable context shared by every participant of one transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00028">Transaction.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html"><div class="ttname"><a href="namespaceeve_1_1card.html">eve::card</a></div><div class="ttdef"><b>Definition</b> <a href="Card_8cpp_source.html#l00016">Card.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a642062e9cce7e18736dc90063850a7ab"><div class="ttname"><a href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7ab">eve::card::CardState</a></div><div class="ttdeci">CardState</div><div class="ttdoc">单张卡牌的运行时状态。</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8h_source.html#l00029">CardTypes.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a642062e9cce7e18736dc90063850a7abaa78b1ac16c0cd02168097fc9a9bd7604"><div class="ttname"><a href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7abaa78b1ac16c0cd02168097fc9a9bd7604">eve::card::CardState::Hand</a></div><div class="ttdeci">@ Hand</div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardDefinition_html"><div class="ttname"><a href="structeve_1_1card_1_1CardDefinition.html">eve::card::CardDefinition</a></div><div class="ttdoc">卡牌类型定义（registerCardsFromJson 注册）。</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8h_source.html#l00077">CardTypes.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayComposition_html"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayComposition.html">eve::card::CardPlayComposition</a></div><div class="ttdoc">Optional cross-domain operations that belong to one card play.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00134">CardPlay.h:134</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayComposition_html_a5225ad815f909f9dc3b6ff23c444657c"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayComposition.html#a5225ad815f909f9dc3b6ff23c444657c">eve::card::CardPlayComposition::sourceSlot</a></div><div class="ttdeci">std::optional&lt; eve::container::SlotIndex &gt; sourceSlot</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00138">CardPlay.h:138</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayComposition_html_a6eebba5ad913d3300359376427f8ea11"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayComposition.html#a6eebba5ad913d3300359376427f8ea11">eve::card::CardPlayComposition::effect</a></div><div class="ttdeci">eve::transaction::ITransactionParticipant * effect</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00140">CardPlay.h:140</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayComposition_html_aaa63f03d802ab7302e87339434da61e8"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayComposition.html#aaa63f03d802ab7302e87339434da61e8">eve::card::CardPlayComposition::destinationSlot</a></div><div class="ttdeci">std::optional&lt; eve::container::SlotIndex &gt; destinationSlot</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00139">CardPlay.h:139</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayComposition_html_aacf591a689ab70efd5e49561387f2748"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayComposition.html#aacf591a689ab70efd5e49561387f2748">eve::card::CardPlayComposition::source</a></div><div class="ttdeci">eve::container::IContainer * source</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00136">CardPlay.h:136</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayComposition_html_ad1e58004d77b25652e3ce9f61769b1f4"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayComposition.html#ad1e58004d77b25652e3ce9f61769b1f4">eve::card::CardPlayComposition::destination</a></div><div class="ttdeci">eve::container::IContainer * destination</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00137">CardPlay.h:137</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayComposition_html_ae0bccb6004196b8241954a7a81db18e6"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayComposition.html#ae0bccb6004196b8241954a7a81db18e6">eve::card::CardPlayComposition::conditionQueries</a></div><div class="ttdeci">CardPlayConditionQueries conditionQueries</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00135">CardPlay.h:135</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayConditionQueries_html"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayConditionQueries.html">eve::card::CardPlayConditionQueries</a></div><div class="ttdoc">Read-only extension points used while evaluating a card play.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00027">CardPlay.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayConditionQueries_html_a46ad1ac280082e4d7a93f99b542220ae"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayConditionQueries.html#a46ad1ac280082e4d7a93f99b542220ae">eve::card::CardPlayConditionQueries::Authority</a></div><div class="ttdeci">std::function&lt; std::optional&lt; bool &gt;(std::string_view scope)&gt; Authority</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00029">CardPlay.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayConditionQueries_html_a6124d2c870c12683ac8a9338cf132782"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayConditionQueries.html#a6124d2c870c12683ac8a9338cf132782">eve::card::CardPlayConditionQueries::authority</a></div><div class="ttdeci">Authority authority</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00034">CardPlay.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayConditionQueries_html_a68ee19c5b6a4228490a41093adad3691"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayConditionQueries.html#a68ee19c5b6a4228490a41093adad3691">eve::card::CardPlayConditionQueries::Policy</a></div><div class="ttdeci">std::function&lt; std::optional&lt; decision::ConditionResult &gt;(std::string_view name, const eve::Value &amp;arguments)&gt; Policy</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00030">CardPlay.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayConditionQueries_html_ac79e06565ab85be5874094753b45e343"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayConditionQueries.html#ac79e06565ab85be5874094753b45e343">eve::card::CardPlayConditionQueries::policy</a></div><div class="ttdeci">Policy policy</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00035">CardPlay.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayConditionQueries_html_ad042e50f7032654f39ca3bc2dc189812"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayConditionQueries.html#ad042e50f7032654f39ca3bc2dc189812">eve::card::CardPlayConditionQueries::Resource</a></div><div class="ttdeci">std::function&lt; std::optional&lt; eve::Value &gt;(std::string_view key)&gt; Resource</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00028">CardPlay.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayConditionQueries_html_adcf876812ff717eb15f1836365f37275"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayConditionQueries.html#adcf876812ff717eb15f1836365f37275">eve::card::CardPlayConditionQueries::resource</a></div><div class="ttdeci">Resource resource</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00033">CardPlay.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayRequest_html"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayRequest.html">eve::card::CardPlayRequest</a></div><div class="ttdoc">Complete caller-owned input for one atomic card play.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00150">CardPlay.h:150</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayRequest_html_a224e49252b6853d812e7281156384ac2"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayRequest.html#a224e49252b6853d812e7281156384ac2">eve::card::CardPlayRequest::playerAccount</a></div><div class="ttdeci">eve::resource::IResourceAccount * playerAccount</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00153">CardPlay.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayRequest_html_a584eac2735ff466720f936d519b8c5d4"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayRequest.html#a584eac2735ff466720f936d519b8c5d4">eve::card::CardPlayRequest::definition</a></div><div class="ttdeci">const CardDefinition * definition</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00152">CardPlay.h:152</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayRequest_html_a70f445562a535ea67966eefb8a6811cb"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayRequest.html#a70f445562a535ea67966eefb8a6811cb">eve::card::CardPlayRequest::composition</a></div><div class="ttdeci">CardPlayComposition composition</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00154">CardPlay.h:154</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayRequest_html_a911ed3f26a2154fe19d1b48b2af3e83c"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayRequest.html#a911ed3f26a2154fe19d1b48b2af3e83c">eve::card::CardPlayRequest::card</a></div><div class="ttdeci">CardData * card</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00151">CardPlay.h:151</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardPlayRequest_html_ac5519f81b64af443ec507de0d9b2c205"><div class="ttname"><a href="structeve_1_1card_1_1CardPlayRequest.html#ac5519f81b64af443ec507de0d9b2c205">eve::card::CardPlayRequest::transactionId</a></div><div class="ttdeci">std::string transactionId</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8h_source.html#l00155">CardPlay.h:155</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

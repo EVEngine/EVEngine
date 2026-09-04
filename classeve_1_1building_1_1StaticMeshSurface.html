@@ -1,0 +1,460 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::StaticMeshSurface类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html">StaticMeshSurface</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1building_1_1StaticMeshSurface-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::StaticMeshSurface类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Immutable world-space triangle mesh accelerated for placement-surface projection.  
+ <a href="classeve_1_1building_1_1StaticMeshSurface.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StaticMeshSurface_8h_source.html">StaticMeshSurface.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">Config</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable identity, hit policy and metadata for one static mesh snapshot.  <a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a61031b8b6cf63b80e4b0f2e05a62a56a" id="r_a61031b8b6cf63b80e4b0f2e05a62a56a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56a">HitSelection</a> { <a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aa582996407922dab08d5cf2b3d2a7c1c9">Highest</a>
+, <a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aab5b8e20937205384be7b9e0c29a28fdb">Lowest</a>
+, <a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aac8a503919ac8c0729ea244f9ee1044a8">ClosestToReference</a>
+ }</td></tr>
+<tr class="memdesc:a61031b8b6cf63b80e4b0f2e05a62a56a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic policy for multiple triangles under one plane coordinate.  <a href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56a">更多...</a><br /></td></tr>
+<tr class="separator:a61031b8b6cf63b80e4b0f2e05a62a56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a588ea0ec71bbf5cc21c37fa7eb6dcc7e" id="r_a588ea0ec71bbf5cc21c37fa7eb6dcc7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementSystem::PlacementHit</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#a588ea0ec71bbf5cc21c37fa7eb6dcc7e">sample</a> (const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, float planeX, float planeY) const</td></tr>
+<tr class="memdesc:a588ea0ec71bbf5cc21c37fa7eb6dcc7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project one grid-plane coordinate through the BVH and sample the selected triangle.  <br /></td></tr>
+<tr class="separator:a588ea0ec71bbf5cc21c37fa7eb6dcc7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af04e2f8258079a02b8e7171afb5ae765" id="r_af04e2f8258079a02b8e7171afb5ae765"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">Config</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#af04e2f8258079a02b8e7171afb5ae765">config</a> () const</td></tr>
+<tr class="memdesc:af04e2f8258079a02b8e7171afb5ae765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the immutable construction configuration.  <br /></td></tr>
+<tr class="separator:af04e2f8258079a02b8e7171afb5ae765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b80e932d5135d64cd0b6dfc0e5c141b" id="r_a0b80e932d5135d64cd0b6dfc0e5c141b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#a0b80e932d5135d64cd0b6dfc0e5c141b">triangleCount</a> () const</td></tr>
+<tr class="memdesc:a0b80e932d5135d64cd0b6dfc0e5c141b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of source triangles indexed by the BVH.  <br /></td></tr>
+<tr class="separator:a0b80e932d5135d64cd0b6dfc0e5c141b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add852cf981bfc6ab8f305eee63d001a9" id="r_add852cf981bfc6ab8f305eee63d001a9"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#add852cf981bfc6ab8f305eee63d001a9">nodeCount</a> () const</td></tr>
+<tr class="memdesc:add852cf981bfc6ab8f305eee63d001a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of BVH nodes, including leaves.  <br /></td></tr>
+<tr class="separator:add852cf981bfc6ab8f305eee63d001a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a7c6095d9e0a482396d36700de8911e1b" id="r_a7c6095d9e0a482396d36700de8911e1b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::shared_ptr&lt; const <a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html">StaticMeshSurface</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#a7c6095d9e0a482396d36700de8911e1b">create</a> (<a class="el" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">Config</a> <a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#af04e2f8258079a02b8e7171afb5ae765">config</a>, std::vector&lt; float &gt; <a class="el" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>, std::vector&lt; uint32_t &gt; <a class="el" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, std::vector&lt; float &gt; <a class="el" href="EvpackGraphicsLoader_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>={})</td></tr>
+<tr class="memdesc:a7c6095d9e0a482396d36700de8911e1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate world-space triangle data and build an owning median-split BVH.  <br /></td></tr>
+<tr class="separator:a7c6095d9e0a482396d36700de8911e1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Immutable world-space triangle mesh accelerated for placement-surface projection. </p>
+
+<p class="definition">在文件 <a class="el" href="StaticMeshSurface_8h_source.html">StaticMeshSurface.h</a> 第 <a class="el" href="StaticMeshSurface_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a61031b8b6cf63b80e4b0f2e05a62a56a" name="a61031b8b6cf63b80e4b0f2e05a62a56a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61031b8b6cf63b80e4b0f2e05a62a56a">&#9670;&#160;</a></span>HitSelection</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56a">eve::building::StaticMeshSurface::HitSelection</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deterministic policy for multiple triangles under one plane coordinate. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a61031b8b6cf63b80e4b0f2e05a62a56aa582996407922dab08d5cf2b3d2a7c1c9" name="a61031b8b6cf63b80e4b0f2e05a62a56aa582996407922dab08d5cf2b3d2a7c1c9"></a>Highest&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a61031b8b6cf63b80e4b0f2e05a62a56aab5b8e20937205384be7b9e0c29a28fdb" name="a61031b8b6cf63b80e4b0f2e05a62a56aab5b8e20937205384be7b9e0c29a28fdb"></a>Lowest&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a61031b8b6cf63b80e4b0f2e05a62a56aac8a503919ac8c0729ea244f9ee1044a8" name="a61031b8b6cf63b80e4b0f2e05a62a56aac8a503919ac8c0729ea244f9ee1044a8"></a>ClosestToReference&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="StaticMeshSurface_8h_source.html">StaticMeshSurface.h</a> 第 <a class="el" href="StaticMeshSurface_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af04e2f8258079a02b8e7171afb5ae765" name="af04e2f8258079a02b8e7171afb5ae765"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af04e2f8258079a02b8e7171afb5ae765">&#9670;&#160;</a></span>config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">Config</a> &amp; eve::building::StaticMeshSurface::config </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the immutable construction configuration. </p>
+
+<p class="definition">在文件 <a class="el" href="StaticMeshSurface_8h_source.html">StaticMeshSurface.h</a> 第 <a class="el" href="StaticMeshSurface_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7c6095d9e0a482396d36700de8911e1b" name="a7c6095d9e0a482396d36700de8911e1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c6095d9e0a482396d36700de8911e1b">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::shared_ptr&lt; const <a class="el" href="classeve_1_1building_1_1StaticMeshSurface.html">StaticMeshSurface</a> &gt; &gt; eve::building::StaticMeshSurface::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">Config</a>&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>vertices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint32_t &gt;&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>normals</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate world-space triangle data and build an owning median-split BVH. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">config</td><td>Stable identity, hit selection and build settings. </td></tr>
+    <tr><td class="paramname">vertices</td><td>Packed finite XYZ positions. </td></tr>
+    <tr><td class="paramname">indices</td><td>Three valid vertex indices per non-degenerate triangle. </td></tr>
+    <tr><td class="paramname">normals</td><td>Optional packed finite XYZ vertex normals matching vertices exactly. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An immutable shareable surface, or a structured failure with no publication. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StaticMeshSurface_8cpp_source.html">StaticMeshSurface.cpp</a> 第 <a class="el" href="StaticMeshSurface_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="EvpackGraphicsLoader_8cpp_source.html#l00031">indices</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="StaticMeshSurface_8h_source.html#l00027">eve::building::StaticMeshSurface::Config::leafTriangleCount</a>, <a class="el" href="EvpackGraphicsLoader_8cpp_source.html#l00029">normals</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="StaticMeshSurface_8h_source.html#l00025">eve::building::StaticMeshSurface::Config::referenceHeight</a>, <a class="el" href="StaticMeshSurface_8h_source.html#l00021">eve::building::StaticMeshSurface::Config::surfaceId</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00029">triangle</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00235">vertexCount</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00046">vertices</a>.</p>
+
+</div>
+</div>
+<a id="add852cf981bfc6ab8f305eee63d001a9" name="add852cf981bfc6ab8f305eee63d001a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add852cf981bfc6ab8f305eee63d001a9">&#9670;&#160;</a></span>nodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::building::StaticMeshSurface::nodeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of BVH nodes, including leaves. </p>
+
+<p class="definition">在文件 <a class="el" href="StaticMeshSurface_8h_source.html">StaticMeshSurface.h</a> 第 <a class="el" href="StaticMeshSurface_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a588ea0ec71bbf5cc21c37fa7eb6dcc7e" name="a588ea0ec71bbf5cc21c37fa7eb6dcc7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a588ea0ec71bbf5cc21c37fa7eb6dcc7e">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementSystem::PlacementHit</a> &gt; eve::building::StaticMeshSurface::sample </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>planeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>planeY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project one grid-plane coordinate through the BVH and sample the selected triangle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Grid-plane configuration used to choose XY or XZ projection. </td></tr>
+    <tr><td class="paramname">planeX</td><td>First coordinate on the configured grid plane. </td></tr>
+    <tr><td class="paramname">planeY</td><td>Second coordinate on the configured grid plane. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A hit with stable source triangle id, or NotFound when no projected face exists. @thread Safe to call concurrently after construction. No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StaticMeshSurface_8cpp_source.html">StaticMeshSurface.cpp</a> 第 <a class="el" href="StaticMeshSurface_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00025">inside</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00026">pending</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00080">tangent</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00029">triangle</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="PlacementSystem_8h_source.html#l00038">eve::building::PlacementSystem::PlacementHit::worldX</a> , 以及 <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::x</a>.</p>
+
+</div>
+</div>
+<a id="a0b80e932d5135d64cd0b6dfc0e5c141b" name="a0b80e932d5135d64cd0b6dfc0e5c141b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b80e932d5135d64cd0b6dfc0e5c141b">&#9670;&#160;</a></span>triangleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::building::StaticMeshSurface::triangleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of source triangles indexed by the BVH. </p>
+
+<p class="definition">在文件 <a class="el" href="StaticMeshSurface_8h_source.html">StaticMeshSurface.h</a> 第 <a class="el" href="StaticMeshSurface_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/building/<a class="el" href="StaticMeshSurface_8h_source.html">StaticMeshSurface.h</a></li>
+<li>src/modules/building/<a class="el" href="StaticMeshSurface_8cpp_source.html">StaticMeshSurface.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

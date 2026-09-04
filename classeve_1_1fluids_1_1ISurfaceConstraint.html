@@ -1,0 +1,513 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::ISurfaceConstraint类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html">ISurfaceConstraint</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1fluids_1_1ISurfaceConstraint-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::ISurfaceConstraint类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Backend-neutral contract for mesh-surface binding and traversal.  
+ <a href="classeve_1_1fluids_1_1ISurfaceConstraint.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SurfaceFluidContracts_8h_source.html">SurfaceFluidContracts.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::fluids::ISurfaceConstraint 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1fluids_1_1ISurfaceConstraint.png" usemap="#eve::fluids::ISurfaceConstraint_map" alt=""/>
+  <map id="eve::fluids::ISurfaceConstraint_map" name="eve::fluids::ISurfaceConstraint_map">
+<area href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html" title="Adapter exposing existing FluidSurfaceBinding operations as checked results." alt="eve::fluids::FluidSurfaceConstraintAdapter" shape="rect" coords="0,56,250,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a024f86e7e3482ff90ea708dbdae0893d" id="r_a024f86e7e3482ff90ea708dbdae0893d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html#a024f86e7e3482ff90ea708dbdae0893d">~ISurfaceConstraint</a> ()=default</td></tr>
+<tr class="memdesc:a024f86e7e3482ff90ea708dbdae0893d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the borrowed-constraint adapter.  <br /></td></tr>
+<tr class="separator:a024f86e7e3482ff90ea708dbdae0893d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f780f983e776809fcae57a394620e24" id="r_a6f780f983e776809fcae57a394620e24"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html#a6f780f983e776809fcae57a394620e24">build</a> (const std::vector&lt; glm::vec3 &gt; &amp;<a class="el" href="EvpackGraphicsLoader_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>, const std::vector&lt; std::uint32_t &gt; &amp;<a class="el" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, const std::vector&lt; glm::vec2 &gt; &amp;uvs={})=0</td></tr>
+<tr class="memdesc:a6f780f983e776809fcae57a394620e24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds topology and pose state from owning caller data.  <br /></td></tr>
+<tr class="separator:a6f780f983e776809fcae57a394620e24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc7c04fbd7ddb422eed220ed0655567" id="r_a8cc7c04fbd7ddb422eed220ed0655567"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html#a8cc7c04fbd7ddb422eed220ed0655567">setTransform</a> (const glm::mat4 &amp;transform)=0</td></tr>
+<tr class="memdesc:a8cc7c04fbd7ddb422eed220ed0655567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a rigid pose while preserving the previous pose.  <br /></td></tr>
+<tr class="separator:a8cc7c04fbd7ddb422eed220ed0655567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a8596946fe7650f1481297c07017036" id="r_a2a8596946fe7650f1481297c07017036"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html#a2a8596946fe7650f1481297c07017036">setDeformedPositions</a> (const std::vector&lt; glm::vec3 &gt; &amp;worldPositions)=0</td></tr>
+<tr class="memdesc:a2a8596946fe7650f1481297c07017036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a deformed pose with the existing topology.  <br /></td></tr>
+<tr class="separator:a2a8596946fe7650f1481297c07017036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f58c6adcf53b75b480cf735ee25ff9a" id="r_a2f58c6adcf53b75b480cf735ee25ff9a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html#a2f58c6adcf53b75b480cf735ee25ff9a">isValid</a> () const noexcept=0</td></tr>
+<tr class="memdesc:a2f58c6adcf53b75b480cf735ee25ff9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether topology and poses are currently valid.  <br /></td></tr>
+<tr class="separator:a2f58c6adcf53b75b480cf735ee25ff9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc7aa32f0a5ff31e20bdaff9e862feba" id="r_afc7aa32f0a5ff31e20bdaff9e862feba"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1SurfaceSample.html">SurfaceSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html#afc7aa32f0a5ff31e20bdaff9e862feba">evaluate</a> (const <a class="el" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a> &amp;location, <a class="el" href="classeve_1_1Duration.html">eve::Duration</a> poseDelta) const =0</td></tr>
+<tr class="memdesc:afc7aa32f0a5ff31e20bdaff9e862feba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates a material-space location in the current pose.  <br /></td></tr>
+<tr class="separator:afc7aa32f0a5ff31e20bdaff9e862feba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54402f20c9211982d2b28b7d96b5972d" id="r_a54402f20c9211982d2b28b7d96b5972d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html#a54402f20c9211982d2b28b7d96b5972d">project</a> (const glm::vec3 &amp;worldPosition, float maxDistance) const =0</td></tr>
+<tr class="memdesc:a54402f20c9211982d2b28b7d96b5972d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects a world point to the nearest material-space location.  <br /></td></tr>
+<tr class="separator:a54402f20c9211982d2b28b7d96b5972d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab244a381fa54301474338214560512b1" id="r_ab244a381fa54301474338214560512b1"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1SurfaceWalkResult.html">SurfaceWalkResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ISurfaceConstraint.html#ab244a381fa54301474338214560512b1">walk</a> (const <a class="el" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, const glm::vec3 &amp;displacement, int maxCrossings=16) const =0</td></tr>
+<tr class="memdesc:ab244a381fa54301474338214560512b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Walks a material-space location over triangle adjacency.  <br /></td></tr>
+<tr class="separator:ab244a381fa54301474338214560512b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Backend-neutral contract for mesh-surface binding and traversal. </p>
+
+<p class="definition">在文件 <a class="el" href="SurfaceFluidContracts_8h_source.html">SurfaceFluidContracts.h</a> 第 <a class="el" href="SurfaceFluidContracts_8h_source.html#l00050">50</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a024f86e7e3482ff90ea708dbdae0893d" name="a024f86e7e3482ff90ea708dbdae0893d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a024f86e7e3482ff90ea708dbdae0893d">&#9670;&#160;</a></span>~ISurfaceConstraint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::fluids::ISurfaceConstraint::~ISurfaceConstraint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases the borrowed-constraint adapter. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6f780f983e776809fcae57a394620e24" name="a6f780f983e776809fcae57a394620e24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f780f983e776809fcae57a394620e24">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::fluids::ISurfaceConstraint::build </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; glm::vec3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>positions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; glm::vec2 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>uvs</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Builds topology and pose state from owning caller data. </p>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html#a613ff61ca1ff0c3cdeb1cb1d546757a2">eve::fluids::FluidSurfaceConstraintAdapter</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="afc7aa32f0a5ff31e20bdaff9e862feba" name="afc7aa32f0a5ff31e20bdaff9e862feba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7aa32f0a5ff31e20bdaff9e862feba">&#9670;&#160;</a></span>evaluate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1SurfaceSample.html">SurfaceSample</a> &gt; eve::fluids::ISurfaceConstraint::evaluate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a> &amp;&#160;</td>
+          <td class="paramname"><em>location</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">eve::Duration</a>&#160;</td>
+          <td class="paramname"><em>poseDelta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Evaluates a material-space location in the current pose. </p>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html#ac7742cd1e972e584c3ab91013b3db14d">eve::fluids::FluidSurfaceConstraintAdapter</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a2f58c6adcf53b75b480cf735ee25ff9a" name="a2f58c6adcf53b75b480cf735ee25ff9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f58c6adcf53b75b480cf735ee25ff9a">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::fluids::ISurfaceConstraint::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether topology and poses are currently valid. </p>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html#a29f0d2a21af706101d03ded31f3ec0e7">eve::fluids::FluidSurfaceConstraintAdapter</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a54402f20c9211982d2b28b7d96b5972d" name="a54402f20c9211982d2b28b7d96b5972d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54402f20c9211982d2b28b7d96b5972d">&#9670;&#160;</a></span>project()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a> &gt; eve::fluids::ISurfaceConstraint::project </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>worldPosition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxDistance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Projects a world point to the nearest material-space location. </p>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html#a2ef2ad41905656ab74b1c51a3ea2e42c">eve::fluids::FluidSurfaceConstraintAdapter</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a2a8596946fe7650f1481297c07017036" name="a2a8596946fe7650f1481297c07017036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a8596946fe7650f1481297c07017036">&#9670;&#160;</a></span>setDeformedPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::fluids::ISurfaceConstraint::setDeformedPositions </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; glm::vec3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>worldPositions</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Applies a deformed pose with the existing topology. </p>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html#a3cc70e65a6ea31c37c9e888b69b25490">eve::fluids::FluidSurfaceConstraintAdapter</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a8cc7c04fbd7ddb422eed220ed0655567" name="a8cc7c04fbd7ddb422eed220ed0655567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cc7c04fbd7ddb422eed220ed0655567">&#9670;&#160;</a></span>setTransform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::fluids::ISurfaceConstraint::setTransform </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>transform</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Applies a rigid pose while preserving the previous pose. </p>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html#a429ce33b84d80aa1832f21af4de3311c">eve::fluids::FluidSurfaceConstraintAdapter</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab244a381fa54301474338214560512b1" name="ab244a381fa54301474338214560512b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab244a381fa54301474338214560512b1">&#9670;&#160;</a></span>walk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1SurfaceWalkResult.html">SurfaceWalkResult</a> &gt; eve::fluids::ISurfaceConstraint::walk </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a> &amp;&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>displacement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxCrossings</em> = <code>16</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Walks a material-space location over triangle adjacency. </p>
+
+<p>在 <a class="el" href="classeve_1_1fluids_1_1FluidSurfaceConstraintAdapter.html#a8be06622c9960423d5d3af6ff8418e07">eve::fluids::FluidSurfaceConstraintAdapter</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="SurfaceFluidContracts_8h_source.html">SurfaceFluidContracts.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/mouse/sdl/Mouse.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_f4a1d9c22e5475b742fd2e7833b0ffa9.html">mouse</a></li><li class="navelem"><a class="el" href="dir_cede60c91a1a677016c85ba325dd2618.html">sdl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Mouse.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="sdl_2Mouse_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Mouse_8h.html">mouse/Mouse.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="sdl_2Cursor_8h.html">mouse/sdl/Cursor.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1mouse_1_1sdl.html">eve::mouse::sdl</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html">   11</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html">Mouse</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1mouse_1_1Mouse.html">eve::mouse::Mouse</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#ad43178ea183b8b8dde50caca3ae7ab8a">Mouse</a>();</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a1579d6fe3cf68579aeb138fb94a7b402">~Mouse</a>();</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_class" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *<a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a51a895c853a6d503d4c194333b5b339f">newCursor</a>(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a> *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>, <span class="keywordtype">int</span> hotx, <span class="keywordtype">int</span> hoty) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_class" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *<a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a6cdaa8276208ff27855618815d583066">getSystemCursor</a>(std::string cursortype) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a5bb907c0c5814c15ebeb6b899fa0887b">setCursor</a>(<a class="code hl_class" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *<a class="code hl_variable" href="TacticsPersistence_8cpp.html#abe1c03b69a12641be752dcf349310f1c">cursor</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a5bb907c0c5814c15ebeb6b899fa0887b">setCursor</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_class" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *<a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aab0f816af7352c32f49fdb860e04cb5f">getCursor</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a0c7b394d11b20f2720644b215ba0d4a9">isCursorSupported</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a944721a6a5f9b86a150f38f3440090c9">getX</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a1fc712a1ece7254c70e15836550120c9">getY</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a73ae183ea3926fa1a874f94a6507b2f7">getPosition</a>(<span class="keywordtype">double</span> &amp;<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">double</span> &amp;<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a85522765db8bdc73ab1530c95eb58656">setX</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#ad3a5b753829a0002e52728960b63e3a6">setY</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a52409e121fa05af92f87c7e1e02f572f">setPosition</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a05ce62623afcb2b73c2423a4f06d50cb">setVisible</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">bool</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aed4fbc72d467ff2808d0a1c5b233eac0">isDown</a>(<span class="keyword">const</span> std::vector&lt;int&gt; &amp;buttons) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">bool</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a88af31663fadef0afd754de928ef8ab0">isVisible</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a704ad34306829adb16cb1116f2765991">setGrabbed</a>(<span class="keywordtype">bool</span> grab) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">bool</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a0dd94431f01e26c4066a33330bc06852">isGrabbed</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">bool</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aa82a3ee7502852f95a1ea2ece1c77c47">setRelativeMode</a>(<span class="keywordtype">bool</span> relative) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">bool</span>   <a class="code hl_function" href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a7a3cd11f9bcf98de9795520a40cffd83">getRelativeMode</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a> *            curCursor;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::map&lt;std::string, Cursor *&gt; systemCursors;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};  <span class="comment">// Mouse</span></div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace eve::mouse::sdl</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aMouse_8h_html"><div class="ttname"><a href="Mouse_8h.html">Mouse.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00192">RenderSystem.cpp:192</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_abe1c03b69a12641be752dcf349310f1c"><div class="ttname"><a href="TacticsPersistence_8cpp.html#abe1c03b69a12641be752dcf349310f1c">cursor</a></div><div class="ttdeci">std::size_t cursor</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00130">TacticsPersistence.cpp:130</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aa54a57ae048476d840caf6d4d2c47aa3"><div class="ttname"><a href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00920">TileConfig.cpp:920</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00033">ImageData.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1Cursor_html"><div class="ttname"><a href="classeve_1_1mouse_1_1Cursor.html">eve::mouse::Cursor</a></div><div class="ttdef"><b>Definition</b> <a href="Cursor_8h_source.html#l00008">Cursor.h:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1Mouse_html"><div class="ttname"><a href="classeve_1_1mouse_1_1Mouse.html">eve::mouse::Mouse</a></div><div class="ttdoc">The Mouse class provides an interface for querying and manipulating the mouse cursor....</div><div class="ttdef"><b>Definition</b> <a href="Mouse_8h_source.html#l00020">Mouse.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html">eve::mouse::sdl::Mouse</a></div><div class="ttdoc">SDL 鼠标后端实现。</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8h_source.html#l00011">Mouse.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a05ce62623afcb2b73c2423a4f06d50cb"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a05ce62623afcb2b73c2423a4f06d50cb">eve::mouse::sdl::Mouse::setVisible</a></div><div class="ttdeci">void setVisible(bool visible) override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00148">Mouse.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a0c7b394d11b20f2720644b215ba0d4a9"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a0c7b394d11b20f2720644b215ba0d4a9">eve::mouse::sdl::Mouse::isCursorSupported</a></div><div class="ttdeci">bool isCursorSupported() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00083">Mouse.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a0dd94431f01e26c4066a33330bc06852"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a0dd94431f01e26c4066a33330bc06852">eve::mouse::sdl::Mouse::isGrabbed</a></div><div class="ttdeci">bool isGrabbed() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00192">Mouse.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a1579d6fe3cf68579aeb138fb94a7b402"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a1579d6fe3cf68579aeb138fb94a7b402">eve::mouse::sdl::Mouse::~Mouse</a></div><div class="ttdeci">virtual ~Mouse()</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00033">Mouse.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a1fc712a1ece7254c70e15836550120c9"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a1fc712a1ece7254c70e15836550120c9">eve::mouse::sdl::Mouse::getY</a></div><div class="ttdeci">double getY() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00099">Mouse.cpp:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a51a895c853a6d503d4c194333b5b339f"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a51a895c853a6d503d4c194333b5b339f">eve::mouse::sdl::Mouse::newCursor</a></div><div class="ttdeci">eve::mouse::Cursor * newCursor(eve::image::ImageData *data, int hotx, int hoty) override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00044">Mouse.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a52409e121fa05af92f87c7e1e02f572f"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a52409e121fa05af92f87c7e1e02f572f">eve::mouse::sdl::Mouse::setPosition</a></div><div class="ttdeci">void setPosition(double x, double y) override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00120">Mouse.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a5bb907c0c5814c15ebeb6b899fa0887b"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a5bb907c0c5814c15ebeb6b899fa0887b">eve::mouse::sdl::Mouse::setCursor</a></div><div class="ttdeci">void setCursor() override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00071">Mouse.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a6cdaa8276208ff27855618815d583066"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a6cdaa8276208ff27855618815d583066">eve::mouse::sdl::Mouse::getSystemCursor</a></div><div class="ttdeci">eve::mouse::Cursor * getSystemCursor(std::string cursortype) override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00049">Mouse.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a704ad34306829adb16cb1116f2765991"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a704ad34306829adb16cb1116f2765991">eve::mouse::sdl::Mouse::setGrabbed</a></div><div class="ttdeci">void setGrabbed(bool grab) override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00186">Mouse.cpp:186</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a73ae183ea3926fa1a874f94a6507b2f7"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a73ae183ea3926fa1a874f94a6507b2f7">eve::mouse::sdl::Mouse::getPosition</a></div><div class="ttdeci">void getPosition(double &amp;x, double &amp;y) const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00110">Mouse.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a7a3cd11f9bcf98de9795520a40cffd83"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a7a3cd11f9bcf98de9795520a40cffd83">eve::mouse::sdl::Mouse::getRelativeMode</a></div><div class="ttdeci">bool getRelativeMode() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00205">Mouse.cpp:205</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a85522765db8bdc73ab1530c95eb58656"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a85522765db8bdc73ab1530c95eb58656">eve::mouse::sdl::Mouse::setX</a></div><div class="ttdeci">void setX(double x) override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00138">Mouse.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a88af31663fadef0afd754de928ef8ab0"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a88af31663fadef0afd754de928ef8ab0">eve::mouse::sdl::Mouse::isVisible</a></div><div class="ttdeci">bool isVisible() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00181">Mouse.cpp:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_a944721a6a5f9b86a150f38f3440090c9"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#a944721a6a5f9b86a150f38f3440090c9">eve::mouse::sdl::Mouse::getX</a></div><div class="ttdeci">double getX() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00088">Mouse.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_aa82a3ee7502852f95a1ea2ece1c77c47"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aa82a3ee7502852f95a1ea2ece1c77c47">eve::mouse::sdl::Mouse::setRelativeMode</a></div><div class="ttdeci">bool setRelativeMode(bool relative) override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00200">Mouse.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_aab0f816af7352c32f49fdb860e04cb5f"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aab0f816af7352c32f49fdb860e04cb5f">eve::mouse::sdl::Mouse::getCursor</a></div><div class="ttdeci">eve::mouse::Cursor * getCursor() const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00077">Mouse.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_ad3a5b753829a0002e52728960b63e3a6"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#ad3a5b753829a0002e52728960b63e3a6">eve::mouse::sdl::Mouse::setY</a></div><div class="ttdeci">void setY(double y) override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00143">Mouse.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_ad43178ea183b8b8dde50caca3ae7ab8a"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#ad43178ea183b8b8dde50caca3ae7ab8a">eve::mouse::sdl::Mouse::Mouse</a></div><div class="ttdeci">Mouse()</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00025">Mouse.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1mouse_1_1sdl_1_1Mouse_html_aed4fbc72d467ff2808d0a1c5b233eac0"><div class="ttname"><a href="classeve_1_1mouse_1_1sdl_1_1Mouse.html#aed4fbc72d467ff2808d0a1c5b233eac0">eve::mouse::sdl::Mouse::isDown</a></div><div class="ttdeci">bool isDown(const std::vector&lt; int &gt; &amp;buttons) const override</div><div class="ttdef"><b>Definition</b> <a href="sdl_2Mouse_8cpp_source.html#l00153">Mouse.cpp:153</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1mouse_1_1sdl_html"><div class="ttname"><a href="namespaceeve_1_1mouse_1_1sdl.html">eve::mouse::sdl</a></div><div class="ttdef"><b>Definition</b> <a href="sdl_2Cursor_8cpp_source.html#l00006">Cursor.cpp:7</a></div></div>
+<div class="ttc" id="asdl_2Cursor_8h_html"><div class="ttname"><a href="sdl_2Cursor_8h.html">Cursor.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

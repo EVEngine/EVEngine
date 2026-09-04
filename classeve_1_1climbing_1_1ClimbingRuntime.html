@@ -1,0 +1,1811 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::climbing::ClimbingRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1climbing.html">climbing</a></li><li class="navelem"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1climbing_1_1ClimbingRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::climbing::ClimbingRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread climbing planner and executor for one character.  
+ <a href="classeve_1_1climbing_1_1ClimbingRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Climbing_8h_source.html">Climbing.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a71f99fc1e8dcfd2ad8b9925391684ff4" id="r_a71f99fc1e8dcfd2ad8b9925391684ff4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a71f99fc1e8dcfd2ad8b9925391684ff4">ClimbingRuntime</a> ()=default</td></tr>
+<tr class="separator:a71f99fc1e8dcfd2ad8b9925391684ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58b3f3129d753fea64dce1a77a87f26f" id="r_a58b3f3129d753fea64dce1a77a87f26f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a58b3f3129d753fea64dce1a77a87f26f">ClimbingRuntime</a> (const <a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a58b3f3129d753fea64dce1a77a87f26f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1019ae3bd92c89d4d0f7fb432362e353" id="r_a1019ae3bd92c89d4d0f7fb432362e353"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a1019ae3bd92c89d4d0f7fb432362e353">operator=</a> (const <a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a1019ae3bd92c89d4d0f7fb432362e353"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd7298328d6e527deb76641dcd2be97f" id="r_acd7298328d6e527deb76641dcd2be97f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#acd7298328d6e527deb76641dcd2be97f">ClimbingRuntime</a> (<a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:acd7298328d6e527deb76641dcd2be97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affb2be9da09765e0d2a9a994c46b8554" id="r_affb2be9da09765e0d2a9a994c46b8554"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#affb2be9da09765e0d2a9a994c46b8554">operator=</a> (<a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:affb2be9da09765e0d2a9a994c46b8554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5467444e3aa6f8fee38cfb0ad1609b4a" id="r_a5467444e3aa6f8fee38cfb0ad1609b4a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a5467444e3aa6f8fee38cfb0ad1609b4a">~ClimbingRuntime</a> () noexcept</td></tr>
+<tr class="memdesc:a5467444e3aa6f8fee38cfb0ad1609b4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases any live anchor reservation before runtime storage is destroyed.  <br /></td></tr>
+<tr class="separator:a5467444e3aa6f8fee38cfb0ad1609b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a236187d335f3c4b648454900cab06905" id="r_a236187d335f3c4b648454900cab06905"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a236187d335f3c4b648454900cab06905">setProfile</a> (<a class="el" href="namespaceeve_1_1climbing.html#ad26c4f1f3b3fc84908059aed55a60acf">ClimbingProfile</a> profile)</td></tr>
+<tr class="memdesc:a236187d335f3c4b648454900cab06905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the runtime profile after validating all dimensions and action definitions.  <br /></td></tr>
+<tr class="separator:a236187d335f3c4b648454900cab06905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98a935f03536575d75555269f0fe48f9" id="r_a98a935f03536575d75555269f0fe48f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a98a935f03536575d75555269f0fe48f9">reloadProfile</a> (<a class="el" href="namespaceeve_1_1climbing.html#ad26c4f1f3b3fc84908059aed55a60acf">ClimbingProfile</a> profile)</td></tr>
+<tr class="memdesc:a98a935f03536575d75555269f0fe48f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publishes a validated profile while pinning any active execution to its old snapshot.  <br /></td></tr>
+<tr class="separator:a98a935f03536575d75555269f0fe48f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9303168cc199764f92f95b7ef26d4d76" id="r_a9303168cc199764f92f95b7ef26d4d76"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a9303168cc199764f92f95b7ef26d4d76">setProfileJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a9303168cc199764f92f95b7ef26d4d76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and installs a canonical profile JSON document transactionally.  <br /></td></tr>
+<tr class="separator:a9303168cc199764f92f95b7ef26d4d76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d380ab4988bbf29601bbd63a8e63c8c" id="r_a1d380ab4988bbf29601bbd63a8e63c8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a1d380ab4988bbf29601bbd63a8e63c8c">reloadProfileJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a1d380ab4988bbf29601bbd63a8e63c8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and hot-reloads a canonical profile JSON document transactionally.  <br /></td></tr>
+<tr class="separator:a1d380ab4988bbf29601bbd63a8e63c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9afe9fc1cd1148ce56551f4bbdbde85" id="r_ad9afe9fc1cd1148ce56551f4bbdbde85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#ad9afe9fc1cd1148ce56551f4bbdbde85">upsertAction</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingActionDefinition.html">ClimbingActionDefinition</a> action)</td></tr>
+<tr class="memdesc:ad9afe9fc1cd1148ce56551f4bbdbde85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds or replaces one action definition by stable id.  <br /></td></tr>
+<tr class="separator:ad9afe9fc1cd1148ce56551f4bbdbde85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab552149f828b81c2d095d1a2542298be" id="r_ab552149f828b81c2d095d1a2542298be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#ab552149f828b81c2d095d1a2542298be">validateAnimationBinding</a> (std::string_view actionId, const <a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> &amp;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</td></tr>
+<tr class="memdesc:ab552149f828b81c2d095d1a2542298be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates and records an action's clip notify contract without retaining the clip.  <br /></td></tr>
+<tr class="separator:ab552149f828b81c2d095d1a2542298be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2d8d480dccbf3746fc24216166a8add" id="r_aa2d8d480dccbf3746fc24216166a8add"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1climbing_1_1ClimbingCandidateSet.html">ClimbingCandidateSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#aa2d8d480dccbf3746fc24216166a8add">probe</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;pose) const</td></tr>
+<tr class="memdesc:aa2d8d480dccbf3746fc24216166a8add"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probes, validates, and deterministically sorts all matching candidates.  <br /></td></tr>
+<tr class="separator:aa2d8d480dccbf3746fc24216166a8add"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3598ccdc4c05d75a7ff6d62fa00142a" id="r_aa3598ccdc4c05d75a7ff6d62fa00142a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#aa3598ccdc4c05d75a7ff6d62fa00142a">probeInto</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;pose, <a class="el" href="classeve_1_1climbing_1_1ClimbingCandidateSet.html">ClimbingCandidateSet</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>=<a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()) const</td></tr>
+<tr class="memdesc:aa3598ccdc4c05d75a7ff6d62fa00142a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probe into caller-retained fixed storage; successful calls atomically replace output.  <br /></td></tr>
+<tr class="separator:aa3598ccdc4c05d75a7ff6d62fa00142a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adffd1488ddfa8e74ee022bf2cb6cbd67" id="r_adffd1488ddfa8e74ee022bf2cb6cbd67"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingCandidate.html">ClimbingCandidate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#adffd1488ddfa8e74ee022bf2cb6cbd67">tryBegin</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;pose, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:adffd1488ddfa8e74ee022bf2cb6cbd67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begins the best current candidate atomically, or returns NotFound without mutation.  <br /></td></tr>
+<tr class="separator:adffd1488ddfa8e74ee022bf2cb6cbd67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf0f8ecd6ea47fd6942c3f606d90e9a4" id="r_acf0f8ecd6ea47fd6942c3f606d90e9a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html">ClimbingPredictionDecision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#acf0f8ecd6ea47fd6942c3f606d90e9a4">tryBeginPredicted</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;pose, const <a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionRequest.html">ClimbingPredictionRequest</a> &amp;request, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> serverTick, std::uint64_t maxClientTickLead)</td></tr>
+<tr class="memdesc:acf0f8ecd6ea47fd6942c3f606d90e9a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-probes authoritative state and commits only the exact server-matched predicted candidate.  <br /></td></tr>
+<tr class="separator:acf0f8ecd6ea47fd6942c3f606d90e9a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62277560b5cedff4db28dbe424d9a894" id="r_a62277560b5cedff4db28dbe424d9a894"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingCandidate.html">ClimbingCandidate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a62277560b5cedff4db28dbe424d9a894">tryBeginAnchor</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="namespaceeve_1_1climbing.html#aa46e3edff6f2c3012e65b65a7fa78d5b">ClimbingAnchorGraphHandleRef</a> <a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;node, <a class="el" href="namespaceeve_1_1climbing.html#abb4cc5e9595447bc9f8d8b2112df9a8f">ClimbingAnchorAgentId</a> agentId, std::string_view actionId, const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;pose, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a62277560b5cedff4db28dbe424d9a894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begins an authored graph anchor using the same authoritative execution lifecycle.  <br /></td></tr>
+<tr class="separator:a62277560b5cedff4db28dbe424d9a894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a2cb3416e332b9f59d5fc12b214b6d2" id="r_a0a2cb3416e332b9f59d5fc12b214b6d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a0a2cb3416e332b9f59d5fc12b214b6d2">transitionAnchor</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8">ClimbingAnchorEdgeKind</a> edgeKind, std::string_view actionId, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a0a2cb3416e332b9f59d5fc12b214b6d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically moves a hanging graph execution to a reserved adjacent node.  <br /></td></tr>
+<tr class="separator:a0a2cb3416e332b9f59d5fc12b214b6d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a814b967b1e17ecc3c3e33673bc5280cc" id="r_a814b967b1e17ecc3c3e33673bc5280cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html">ClimbingAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a814b967b1e17ecc3c3e33673bc5280cc">advance</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> <a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a814b967b1e17ecc3c3e33673bc5280cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances the active trajectory through the world's capsule mover.  <br /></td></tr>
+<tr class="separator:a814b967b1e17ecc3c3e33673bc5280cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e19c1a5d0a6742eaa5b688854a1073d" id="r_a3e19c1a5d0a6742eaa5b688854a1073d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html">ClimbingAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a3e19c1a5d0a6742eaa5b688854a1073d">advance</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> <a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingMotionInput.html">ClimbingMotionInput</a> &amp;motion)</td></tr>
+<tr class="memdesc:a3e19c1a5d0a6742eaa5b688854a1073d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances with an authored root-motion delta before warp and capsule collision.  <br /></td></tr>
+<tr class="separator:a3e19c1a5d0a6742eaa5b688854a1073d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23c98be5811bb082ff6703b663cb1f24" id="r_a23c98be5811bb082ff6703b663cb1f24"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a23c98be5811bb082ff6703b663cb1f24">drop</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a23c98be5811bb082ff6703b663cb1f24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enters an explicit physics-constrained drop from a hanging pose.  <br /></td></tr>
+<tr class="separator:a23c98be5811bb082ff6703b663cb1f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acebb00d8ae8c137af0cf139d833ac1ab" id="r_acebb00d8ae8c137af0cf139d833ac1ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#acebb00d8ae8c137af0cf139d833ac1ab">climbUp</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:acebb00d8ae8c137af0cf139d833ac1ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Branches from hanging into the best compatible mantle/climb-up definition.  <br /></td></tr>
+<tr class="separator:acebb00d8ae8c137af0cf139d833ac1ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9305013bdecd908c2acfa17d73d5406" id="r_ab9305013bdecd908c2acfa17d73d5406"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#ab9305013bdecd908c2acfa17d73d5406">cancel</a> (<a class="el" href="namespaceeve_1_1climbing.html#a80317f0d52e26e9cd002325f87fdd88c">ClimbingCancelReason</a> reason, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:ab9305013bdecd908c2acfa17d73d5406"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels an active execution with an injected tick and stable, strongly typed reason.  <br /></td></tr>
+<tr class="separator:ab9305013bdecd908c2acfa17d73d5406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9be9652b2a5ea03d9895df6fc4d9ddd9" id="r_a9be9652b2a5ea03d9895df6fc4d9ddd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingEvent.html">ClimbingEvent</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a9be9652b2a5ea03d9895df6fc4d9ddd9">drainEvents</a> ()</td></tr>
+<tr class="memdesc:a9be9652b2a5ea03d9895df6fc4d9ddd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically takes all events queued by simulation operations in stable production order.  <br /></td></tr>
+<tr class="separator:a9be9652b2a5ea03d9895df6fc4d9ddd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa436317ad87d0e4ef8bcfc651b07e7cf" id="r_aa436317ad87d0e4ef8bcfc651b07e7cf"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#aa436317ad87d0e4ef8bcfc651b07e7cf">pendingEventCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aa436317ad87d0e4ef8bcfc651b07e7cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of undelivered events currently owned by this runtime.  <br /></td></tr>
+<tr class="separator:aa436317ad87d0e4ef8bcfc651b07e7cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12203fa5f42daf2598b0a48215653d3a" id="r_a12203fa5f42daf2598b0a48215653d3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1ClimbingDebugSnapshot.html">ClimbingDebugSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a12203fa5f42daf2598b0a48215653d3a">inspect</a> () const</td></tr>
+<tr class="memdesc:a12203fa5f42daf2598b0a48215653d3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the latest bounded owning diagnostics without querying Physics.  <br /></td></tr>
+<tr class="separator:a12203fa5f42daf2598b0a48215653d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fd23939f37413f96dcf81485f667b01" id="r_a2fd23939f37413f96dcf81485f667b01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">ClimbingRuntimeCounters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a2fd23939f37413f96dcf81485f667b01">counters</a> () const noexcept</td></tr>
+<tr class="memdesc:a2fd23939f37413f96dcf81485f667b01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return allocation-free counters for the latest probe or active execution workload.  <br /></td></tr>
+<tr class="separator:a2fd23939f37413f96dcf81485f667b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35b64484b9e3a8144ab675e523d48715" id="r_a35b64484b9e3a8144ab675e523d48715"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html">ClimbingTelemetryBuffer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a35b64484b9e3a8144ab675e523d48715">telemetry</a> () const noexcept</td></tr>
+<tr class="memdesc:a35b64484b9e3a8144ab675e523d48715"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the runtime-owned fixed profiler ring.  <br /></td></tr>
+<tr class="separator:a35b64484b9e3a8144ab675e523d48715"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ce9e60ea0fcde0c2963a328c2029f70" id="r_a5ce9e60ea0fcde0c2963a328c2029f70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1ClimbingLocomotionPolicy.html">ClimbingLocomotionPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a5ce9e60ea0fcde0c2963a328c2029f70">locomotionPolicy</a> () const noexcept</td></tr>
+<tr class="memdesc:a5ce9e60ea0fcde0c2963a328c2029f70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning ordinary-locomotion policy snapshot safe across later profile reloads.  <br /></td></tr>
+<tr class="separator:a5ce9e60ea0fcde0c2963a328c2029f70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58b3ea4d13bc9a12ca981c4afe18fb45" id="r_a58b3ea4d13bc9a12ca981c4afe18fb45"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a58b3ea4d13bc9a12ca981c4afe18fb45">clearTelemetry</a> () noexcept</td></tr>
+<tr class="memdesc:a58b3ea4d13bc9a12ca981c4afe18fb45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear profiler samples without affecting simulation state or diagnostic evidence.  <br /></td></tr>
+<tr class="separator:a58b3ea4d13bc9a12ca981c4afe18fb45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3db08ed9f6d9fd0cfad33fbee4366466" id="r_a3db08ed9f6d9fd0cfad33fbee4366466"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a3db08ed9f6d9fd0cfad33fbee4366466">recordOrdinaryTick</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, std::uint32_t queryCount=0, std::uint32_t moverIterations=0, std::uint64_t elapsedNanoseconds=0) noexcept</td></tr>
+<tr class="memdesc:a3db08ed9f6d9fd0cfad33fbee4366466"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record one ordinary locomotion tick and its bounded Physics mover work.  <br /></td></tr>
+<tr class="separator:a3db08ed9f6d9fd0cfad33fbee4366466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee136cbee4b2c04978bf1b5099332f91" id="r_aee136cbee4b2c04978bf1b5099332f91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#aee136cbee4b2c04978bf1b5099332f91">setDebugCapture</a> (<a class="el" href="namespaceeve_1_1climbing.html#a9219bcfc0a080e08eb1aa552a761efc6">ClimbingDebugCapture</a> capture) noexcept</td></tr>
+<tr class="memdesc:aee136cbee4b2c04978bf1b5099332f91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables bounded diagnostic capture; disabling immediately releases captured data.  <br /></td></tr>
+<tr class="separator:aee136cbee4b2c04978bf1b5099332f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a925798fe8dc241c04de4f38d05e1c238" id="r_a925798fe8dc241c04de4f38d05e1c238"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a925798fe8dc241c04de4f38d05e1c238">snapshot</a> () const</td></tr>
+<tr class="memdesc:a925798fe8dc241c04de4f38d05e1c238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures deterministic runtime state; debug candidates and final bone poses are excluded.  <br /></td></tr>
+<tr class="separator:a925798fe8dc241c04de4f38d05e1c238"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04b13b3301b263914776bb5ef1858acd" id="r_a04b13b3301b263914776bb5ef1858acd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a04b13b3301b263914776bb5ef1858acd">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a04b13b3301b263914776bb5ef1858acd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the canonical runtime snapshot as JSON.  <br /></td></tr>
+<tr class="separator:a04b13b3301b263914776bb5ef1858acd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbd32a7427d69e05b2bf4ce201d59191" id="r_abbd32a7427d69e05b2bf4ce201d59191"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#abbd32a7427d69e05b2bf4ce201d59191">restore</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:abbd32a7427d69e05b2bf4ce201d59191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a fully parsed candidate atomically after revalidating all process-local Physics links.  <br /></td></tr>
+<tr class="separator:abbd32a7427d69e05b2bf4ce201d59191"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e6b0ab2b9e20be8c2fc874c84353539" id="r_a7e6b0ab2b9e20be8c2fc874c84353539"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a7e6b0ab2b9e20be8c2fc874c84353539">restoreJson</a> (std::string_view json, <a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a7e6b0ab2b9e20be8c2fc874c84353539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and atomically restores a canonical runtime snapshot JSON document.  <br /></td></tr>
+<tr class="separator:a7e6b0ab2b9e20be8c2fc874c84353539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad665ad2af1a31d2efba777b8c1b5f168" id="r_ad665ad2af1a31d2efba777b8c1b5f168"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfc">ClimbingPhase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#ad665ad2af1a31d2efba777b8c1b5f168">phase</a> () const noexcept</td></tr>
+<tr class="memdesc:ad665ad2af1a31d2efba777b8c1b5f168"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current lifecycle phase.  <br /></td></tr>
+<tr class="separator:ad665ad2af1a31d2efba777b8c1b5f168"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2095c44baa3ecae251e525322cbbc92" id="r_ad2095c44baa3ecae251e525322cbbc92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1climbing.html#a0c90e23dd460d557efb3ac463500332f">ClimbingExecutionId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#ad2095c44baa3ecae251e525322cbbc92">executionId</a> () const noexcept</td></tr>
+<tr class="memdesc:ad2095c44baa3ecae251e525322cbbc92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current execution identity, or zero when no execution is active or retained.  <br /></td></tr>
+<tr class="separator:ad2095c44baa3ecae251e525322cbbc92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8e19d478f1dab144a05c9d72b0d0bc4" id="r_ab8e19d478f1dab144a05c9d72b0d0bc4"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#ab8e19d478f1dab144a05c9d72b0d0bc4">definitionGeneration</a> () const noexcept</td></tr>
+<tr class="memdesc:ab8e19d478f1dab144a05c9d72b0d0bc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current monotonically increasing profile/action definition generation.  <br /></td></tr>
+<tr class="separator:ab8e19d478f1dab144a05c9d72b0d0bc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac378174c7d0689dca11aa4ab919257f0" id="r_ac378174c7d0689dca11aa4ab919257f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#ac378174c7d0689dca11aa4ab919257f0">currentAnchor</a> () const</td></tr>
+<tr class="memdesc:ac378174c7d0689dca11aa4ab919257f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current graph node reference, or NotFound when execution is probe-only.  <br /></td></tr>
+<tr class="separator:ac378174c7d0689dca11aa4ab919257f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:adf67967a1654e5a33b8a508d063c7dc8" id="r_adf67967a1654e5a33b8a508d063c7dc8"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#adf67967a1654e5a33b8a508d063c7dc8">SnapshotSchemaId</a> = &quot;evengine.climbing-runtime&quot;</td></tr>
+<tr class="memdesc:adf67967a1654e5a33b8a508d063c7dc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable schema id for owning runtime snapshots.  <br /></td></tr>
+<tr class="separator:adf67967a1654e5a33b8a508d063c7dc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7641673c0873c00b8822c4e81641f9ae" id="r_a7641673c0873c00b8822c4e81641f9ae"><td class="memItemLeft" align="right" valign="top">static constexpr std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a7641673c0873c00b8822c4e81641f9ae">SnapshotSchemaVersion</a> = 4</td></tr>
+<tr class="memdesc:a7641673c0873c00b8822c4e81641f9ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current runtime snapshot version; v3 is N-1 and historical v2/v1/v0 remain migratable.  <br /></td></tr>
+<tr class="separator:a7641673c0873c00b8822c4e81641f9ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2cfe718afe014bcbfde94d2031f340e" id="r_ae2cfe718afe014bcbfde94d2031f340e"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#ae2cfe718afe014bcbfde94d2031f340e">PendingEventCapacity</a> = 64</td></tr>
+<tr class="memdesc:ae2cfe718afe014bcbfde94d2031f340e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hard bound for undelivered post-simulation events owned by one runtime.  <br /></td></tr>
+<tr class="separator:ae2cfe718afe014bcbfde94d2031f340e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a805cbf8617a473bf416b1bc4f6ef9f28" id="r_a805cbf8617a473bf416b1bc4f6ef9f28"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a805cbf8617a473bf416b1bc4f6ef9f28">ClimbingSelectionSystem</a></td></tr>
+<tr class="separator:a805cbf8617a473bf416b1bc4f6ef9f28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8295bcc2f65d32097b951074055e5526" id="r_a8295bcc2f65d32097b951074055e5526"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html#a8295bcc2f65d32097b951074055e5526">ClimbingServiceSelectionSystem</a></td></tr>
+<tr class="separator:a8295bcc2f65d32097b951074055e5526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread climbing planner and executor for one character. </p>
+<p>The runtime owns definitions and execution state, but never retains a World3D pointer. Every physics call accepts a borrowed world for that synchronous call and validates its runtime handle. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00624">624</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a71f99fc1e8dcfd2ad8b9925391684ff4" name="a71f99fc1e8dcfd2ad8b9925391684ff4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71f99fc1e8dcfd2ad8b9925391684ff4">&#9670;&#160;</a></span>ClimbingRuntime() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::climbing::ClimbingRuntime::ClimbingRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a58b3f3129d753fea64dce1a77a87f26f" name="a58b3f3129d753fea64dce1a77a87f26f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58b3f3129d753fea64dce1a77a87f26f">&#9670;&#160;</a></span>ClimbingRuntime() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::climbing::ClimbingRuntime::ClimbingRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acd7298328d6e527deb76641dcd2be97f" name="acd7298328d6e527deb76641dcd2be97f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd7298328d6e527deb76641dcd2be97f">&#9670;&#160;</a></span>ClimbingRuntime() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::climbing::ClimbingRuntime::ClimbingRuntime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5467444e3aa6f8fee38cfb0ad1609b4a" name="a5467444e3aa6f8fee38cfb0ad1609b4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5467444e3aa6f8fee38cfb0ad1609b4a">&#9670;&#160;</a></span>~ClimbingRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::climbing::ClimbingRuntime::~ClimbingRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases any live anchor reservation before runtime storage is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html">ClimbingAnchorExecution.cpp</a> 第 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a814b967b1e17ecc3c3e33673bc5280cc" name="a814b967b1e17ecc3c3e33673bc5280cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a814b967b1e17ecc3c3e33673bc5280cc">&#9670;&#160;</a></span>advance() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html">ClimbingAdvance</a> &gt; eve::climbing::ClimbingRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances the active trajectory through the world's capsule mover. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Borrowed for this synchronous owner-thread call only; never retained. </td></tr>
+    <tr><td class="paramname">step</td><td>Injected deterministic simulation step; duplicate/non-increasing ticks are rejected. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00915">915</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Climbing_8cpp_source.html#l00915">advance()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00915">advance()</a>.</p>
+
+</div>
+</div>
+<a id="a3e19c1a5d0a6742eaa5b688854a1073d" name="a3e19c1a5d0a6742eaa5b688854a1073d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e19c1a5d0a6742eaa5b688854a1073d">&#9670;&#160;</a></span>advance() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAdvance.html">ClimbingAdvance</a> &gt; eve::climbing::ClimbingRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingMotionInput.html">ClimbingMotionInput</a> &amp;&#160;</td>
+          <td class="paramname"><em>motion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances with an authored root-motion delta before warp and capsule collision. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00919">919</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Climbing_8h_source.html#l00526">eve::climbing::ClimbingAdvance::actionId</a>, <a class="el" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a4d3d769b812b6faa6b76e1a8abaece2d">eve::climbing::Active</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00028">eve::climbing::ClimbingQueryBudgets::Active</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfca8c5da05f74ecb045d6ca746373aec07d">eve::climbing::Aligning</a>, <a class="el" href="namespaceeve_1_1climbing.html#aa7e99cef33504bc2287efe51bed3be8ba9db7b285728a77f5ea1664c15a724c65">eve::climbing::AnchorReached</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcac6589f5236c0c434d0c63dc5f9a856f2">eve::climbing::Balanced</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aacd573af471053ed1f0c5e6cf50dad9fd">eve::climbing::BarSwing</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aac5fdb127957dcc109df3543a3285fdfd">eve::climbing::BeamBalance</a>, <a class="el" href="namespaceeve_1_1climbing.html#a94db2eacfda20c9ee85f665159f3171ba95153bdd2e430b982f508517df268cf1">eve::climbing::BranchClose</a>, <a class="el" href="namespaceeve_1_1climbing.html#a94db2eacfda20c9ee85f665159f3171bacfcf20a1744200df775ab8f9b482d823">eve::climbing::BranchOpen</a>, <a class="el" href="Climbing_8h_source.html#l00252">eve::climbing::ClimbingProfileDefinition::cameraCueProfile</a>, <a class="el" href="namespaceeve_1_1climbing.html#aa7e99cef33504bc2287efe51bed3be8baa149e85a44aeec9140e92733d9ed694e">eve::climbing::Cancelled</a>, <a class="el" href="Climbing_8h_source.html#l00224">eve::climbing::ClimbingProfileDefinition::capsuleHeight</a>, <a class="el" href="Climbing_8h_source.html#l00223">eve::climbing::ClimbingProfileDefinition::capsuleRadius</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcaaebc7dfafde486758efb13d78f7219fd">eve::climbing::Climbing</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aafd6e10603101ddbb236462573eb15721">eve::climbing::ClimbUp</a>, <a class="el" href="namespaceeve_1_1climbing.html#a94db2eacfda20c9ee85f665159f3171ba9aa7eadf5fcf0a5f5d5c99a4264d3c53">eve::climbing::CollisionCompact</a>, <a class="el" href="Climbing_8h_source.html#l00225">eve::climbing::ClimbingProfileDefinition::compactCapsuleHeight</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfca07ca5050e697392c9ed47e6453f1453f">eve::climbing::Completed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00078">eve::physics::CapsuleMove3D::constrained</a>, <a class="el" href="namespaceeve_1_1climbing.html#a94db2eacfda20c9ee85f665159f3171bad92613c19ff43fde11e48d1e4cd33c1f">eve::climbing::ContactLeftHand</a>, <a class="el" href="namespaceeve_1_1climbing.html#a94db2eacfda20c9ee85f665159f3171bab89daa0526a76a6f78cbcff8253a11a7">eve::climbing::ContactRightHand</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00080">eve::physics::CapsuleMove3D::deltaX</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00080">eve::physics::CapsuleMove3D::deltaY</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00080">eve::physics::CapsuleMove3D::deltaZ</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcae454078fd0dc337cdec22fed9a407ee5">eve::climbing::Dropping</a>, <a class="el" href="namespaceeve_1_1climbing.html#a9219bcfc0a080e08eb1aa552a761efc6a00d23a76e43b46dae9ec7aa9dcbebb32">eve::climbing::Enabled</a>, <a class="el" href="Climbing_8h_source.html#l00515">eve::climbing::ClimbingMotionInput::facing</a>, <a class="el" href="namespaceeve_1_1climbing.html#aa7e99cef33504bc2287efe51bed3be8bad7c8c85bf79bbe1b7188497c32c3b0ca">eve::climbing::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00184">filter</a>, <a class="el" href="Body3D_8cpp_source.html#l00322">eve::physics::Body3D::getLinearVelocityX()</a>, <a class="el" href="Body3D_8cpp_source.html#l00327">eve::physics::Body3D::getLinearVelocityY()</a>, <a class="el" href="Body3D_8cpp_source.html#l00332">eve::physics::Body3D::getLinearVelocityZ()</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00079">eve::physics::CapsuleMove3D::grounded</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcaaefea37c8d478f0968d6606e6095beb7">eve::climbing::Hanging</a>, <a class="el" href="Climbing_8h_source.html#l00518">eve::climbing::ClimbingMotionInput::hasRootMotion</a>, <a class="el" href="Climbing_8cpp_source.html#l00077">horizontal</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00025">eve::physics::QueryFilter3D::ignoredBodyId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00083">eve::physics::CapsuleMove3D::iterations</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aa8cb6f7f8073766e8b8e9085233186446">eve::climbing::LadderDismount</a>, <a class="el" href="namespaceeve_1_1climbing.html#a94db2eacfda20c9ee85f665159f3171ba512ef7c688a2c8572d5e16f44e17e869">eve::climbing::Land</a>, <a class="el" href="namespaceeve_1_1climbing.html#aa7e99cef33504bc2287efe51bed3be8bad686e9ef2eb30c76874d445ae35bccc2">eve::climbing::Landed</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfca41bd61e268fedccfb0d91dd571dd28b2">eve::climbing::Landing</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcae22c7feec7213c222a1620424621a830">eve::climbing::Launching</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aa372b60ab76d177fdafe91c490484a293">eve::climbing::LedgeGrab</a>, <a class="el" href="namespaceeve_1_1climbing.html#a42055de14c851e78e6b609668dc412f4ae81960506fa9c17a1fa39c529ae1bf50">eve::climbing::LeftFoot</a>, <a class="el" href="namespaceeve_1_1climbing.html#a42055de14c851e78e6b609668dc412f4a03f7bbbc02c9006ea393ec4ef5843d7b">eve::climbing::LeftHand</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="Body3D_8cpp_source.html#l00370">eve::physics::Body3D::localToWorldPointOwned()</a>, <a class="el" href="Climbing_8h_source.html#l00236">eve::climbing::ClimbingProfileDefinition::maxPelvisDeviation</a>, <a class="el" href="Climbing_8h_source.html#l00231">eve::climbing::ClimbingProfileDefinition::maxPlatformSpeed</a>, <a class="el" href="Climbing_8h_source.html#l00246">eve::climbing::ClimbingProfileDefinition::maxTotalWarpBudget</a>, <a class="el" href="Climbing_8h_source.html#l00230">eve::climbing::ClimbingProfileDefinition::maxWarpResidual</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00050">eve::climbing::ClimbingRuntimeCounters::moverIterations</a>, <a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590fa6adf97f83acf6453d4a6a4b1070f3754">eve::climbing::None</a>, <a class="el" href="Climbing_8h_source.html#l00520">eve::climbing::ClimbingMotionInput::notifies</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="namespaceeve_1_1climbing.html#a42055de14c851e78e6b609668dc412f4ad34d4761444db085a989bca5da9be02b">eve::climbing::Pelvis</a>, <a class="el" href="Climbing_8h_source.html#l00516">eve::climbing::ClimbingMotionInput::pelvisOffset</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aa7b6f9830793b0667b570be37f3a4b67a">eve::climbing::PoleSwing</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00051">eve::climbing::ClimbingRuntimeCounters::queryBudget</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00046">eve::climbing::ClimbingRuntimeCounters::queryCount</a>, <a class="el" href="Climbing_8h_source.html#l00253">eve::climbing::ClimbingProfileDefinition::queryFilter</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfca74e9d494d732494a8362f360203bbb68">eve::climbing::Recovering</a>, <a class="el" href="ClimbingRegistry_8cpp_source.html#l00045">eve::climbing::Climbing::resolveAnchorGraph()</a>, <a class="el" href="namespaceeve_1_1climbing.html#a42055de14c851e78e6b609668dc412f4ac901c64cc70540fbd6d7f6c71b047a6a">eve::climbing::RightFoot</a>, <a class="el" href="namespaceeve_1_1climbing.html#a42055de14c851e78e6b609668dc412f4aa51983e0f69f76a68e55efe2e7b700b5">eve::climbing::RightHand</a>, <a class="el" href="Climbing_8h_source.html#l00514">eve::climbing::ClimbingMotionInput::rootTranslation</a>, <a class="el" href="Climbing_8h_source.html#l00517">eve::climbing::ClimbingMotionInput::rootYawRadians</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00048">eve::climbing::ClimbingRuntimeCounters::selectedCost</a>, <a class="el" href="Climbing_8h_source.html#l00226">eve::climbing::ClimbingProfileDefinition::skin</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfca79fd76949ebabad26838892208db69a2">eve::climbing::Swinging</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="Climbing_8h_source.html#l00595">eve::climbing::ClimbingMotionEvidence::tick</a>, <a class="el" href="ClimbingTrajectory_8h_source.html#l00023">eve::climbing::detail::trajectoryPoint()</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aa48d2a5428e415790306fd6b13dd7213a">eve::climbing::WallRun</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00049">eve::climbing::ClimbingRuntimeCounters::warpResidual</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00043">eve::climbing::ClimbingRuntimeCounters::workload</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="ClimbingPrimitives_8h_source.html#l00018">eve::climbing::Vec3::x</a>, <a class="el" href="ClimbingPrimitives_8h_source.html#l00019">eve::climbing::Vec3::y</a> , 以及 <a class="el" href="ClimbingPrimitives_8h_source.html#l00020">eve::climbing::Vec3::z</a>.</p>
+
+</div>
+</div>
+<a id="ab9305013bdecd908c2acfa17d73d5406" name="ab9305013bdecd908c2acfa17d73d5406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9305013bdecd908c2acfa17d73d5406">&#9670;&#160;</a></span>cancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::cancel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#a80317f0d52e26e9cd002325f87fdd88c">ClimbingCancelReason</a>&#160;</td>
+          <td class="paramname"><em>reason</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels an active execution with an injected tick and stable, strongly typed reason. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reason</td><td>Authoritative terminal reason. </td></tr>
+    <tr><td class="paramname">tick</td><td>Simulation tick recorded on the queued cancellation event. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l01442">1442</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1climbing.html#a80317f0d52e26e9cd002325f87fdd88ca2edec7ea439acedb4bbac83f2c0d7175">eve::climbing::AnchorStale</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1climbing.html#aa7e99cef33504bc2287efe51bed3be8baa149e85a44aeec9140e92733d9ed694e">eve::climbing::Cancelled</a>, <a class="el" href="Climbing_8h_source.html#l00178">eve::climbing::ClimbingActionDefinition::cancelWindowEnd</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcae454078fd0dc337cdec22fed9a407ee5">eve::climbing::Dropping</a>, <a class="el" href="Climbing_8h_source.html#l00169">eve::climbing::ClimbingActionDefinition::duration</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcaaefea37c8d478f0968d6606e6095beb7">eve::climbing::Hanging</a>, <a class="el" href="namespaceeve_1_1climbing.html#a80317f0d52e26e9cd002325f87fdd88caf23ac7727f42cd9c2b039f6d13b98a85">eve::climbing::LinkStale</a>, <a class="el" href="namespaceeve_1_1climbing.html#a80317f0d52e26e9cd002325f87fdd88ca0972d23b0d50b6280ffeb9a7012ee653">eve::climbing::MotionBlocked</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Time_8cpp_source.html#l00028">eve::Duration::seconds()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="namespaceeve_1_1climbing.html#a80317f0d52e26e9cd002325f87fdd88caa29570606eb3fd761021a7001418a59a">eve::climbing::WarpBudgetExceeded</a>.</p>
+
+</div>
+</div>
+<a id="a58b3ea4d13bc9a12ca981c4afe18fb45" name="a58b3ea4d13bc9a12ca981c4afe18fb45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58b3ea4d13bc9a12ca981c4afe18fb45">&#9670;&#160;</a></span>clearTelemetry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::climbing::ClimbingRuntime::clearTelemetry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear profiler samples without affecting simulation state or diagnostic evidence. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00751">751</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingTelemetry_8h_source.html#l00095">eve::climbing::ClimbingTelemetryBuffer::clear()</a>.</p>
+
+</div>
+</div>
+<a id="acebb00d8ae8c137af0cf139d833ac1ab" name="acebb00d8ae8c137af0cf139d833ac1ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acebb00d8ae8c137af0cf139d833ac1ab">&#9670;&#160;</a></span>climbUp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::climbUp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Branches from hanging into the best compatible mantle/climb-up definition. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l01399">1399</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Climbing_8h_source.html#l00254">eve::climbing::ClimbingProfileDefinition::actions</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aafd6e10603101ddbb236462573eb15721">eve::climbing::ClimbUp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcaaefea37c8d478f0968d6606e6095beb7">eve::climbing::Hanging</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcae22c7feec7213c222a1620424621a830">eve::climbing::Launching</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a2fd23939f37413f96dcf81485f667b01" name="a2fd23939f37413f96dcf81485f667b01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fd23939f37413f96dcf81485f667b01">&#9670;&#160;</a></span>counters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">ClimbingRuntimeCounters</a> eve::climbing::ClimbingRuntime::counters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return allocation-free counters for the latest probe or active execution workload. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00745">745</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac378174c7d0689dca11aa4ab919257f0" name="ac378174c7d0689dca11aa4ab919257f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac378174c7d0689dca11aa4ab919257f0">&#9670;&#160;</a></span>currentAnchor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &gt; eve::climbing::ClimbingRuntime::currentAnchor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the current graph node reference, or NotFound when execution is probe-only. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html">ClimbingAnchorExecution.cpp</a> 第 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab8e19d478f1dab144a05c9d72b0d0bc4" name="ab8e19d478f1dab144a05c9d72b0d0bc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8e19d478f1dab144a05c9d72b0d0bc4">&#9670;&#160;</a></span>definitionGeneration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::climbing::ClimbingRuntime::definitionGeneration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current monotonically increasing profile/action definition generation. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00777">777</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9be9652b2a5ea03d9895df6fc4d9ddd9" name="a9be9652b2a5ea03d9895df6fc4d9ddd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9be9652b2a5ea03d9895df6fc4d9ddd9">&#9670;&#160;</a></span>drainEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingEvent.html">ClimbingEvent</a> &gt; &gt; eve::climbing::ClimbingRuntime::drainEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically takes all events queued by simulation operations in stable production order. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning event batch; callbacks and scripts may be invoked only after this method returns. @thread Call on the runtime owner thread after the simulation phase. @reentrancy The returned batch is detached before user code can run; events produced reentrantly remain queued. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00356">356</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00135">events</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a> , 以及 <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>.</p>
+
+</div>
+</div>
+<a id="a23c98be5811bb082ff6703b663cb1f24" name="a23c98be5811bb082ff6703b663cb1f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23c98be5811bb082ff6703b663cb1f24">&#9670;&#160;</a></span>drop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::drop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enters an explicit physics-constrained drop from a hanging pose. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l01373">1373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Climbing_8h_source.html#l00232">eve::climbing::ClimbingProfileDefinition::dropInitialSpeed</a>, <a class="el" href="namespaceeve_1_1climbing.html#aa7e99cef33504bc2287efe51bed3be8ba74339e8d9916761b9b69183a081076c6">eve::climbing::Dropped</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcae454078fd0dc337cdec22fed9a407ee5">eve::climbing::Dropping</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcaaefea37c8d478f0968d6606e6095beb7">eve::climbing::Hanging</a>, <a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590fa6adf97f83acf6453d4a6a4b1070f3754">eve::climbing::None</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="ad2095c44baa3ecae251e525322cbbc92" name="ad2095c44baa3ecae251e525322cbbc92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2095c44baa3ecae251e525322cbbc92">&#9670;&#160;</a></span>executionId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a0c90e23dd460d557efb3ac463500332f">ClimbingExecutionId</a> eve::climbing::ClimbingRuntime::executionId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current execution identity, or zero when no execution is active or retained. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00773">773</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::ClimbingExecutionIdTag &gt;::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00442">restore()</a> , 以及 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00185">tryBeginAnchor()</a>.</p>
+
+</div>
+</div>
+<a id="a12203fa5f42daf2598b0a48215653d3a" name="a12203fa5f42daf2598b0a48215653d3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12203fa5f42daf2598b0a48215653d3a">&#9670;&#160;</a></span>inspect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1ClimbingDebugSnapshot.html">ClimbingDebugSnapshot</a> eve::climbing::ClimbingRuntime::inspect </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures the latest bounded owning diagnostics without querying Physics. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l01478">1478</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingTelemetry_8h_source.html#l00045">eve::climbing::ClimbingRuntimeCounters::broadPhaseHitCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00044">eve::climbing::ClimbingRuntimeCounters::broadPhaseQueryCount</a>, <a class="el" href="Climbing_8h_source.html#l00605">eve::climbing::ClimbingDebugSnapshot::phase</a> , 以及 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00396">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a5ce9e60ea0fcde0c2963a328c2029f70" name="a5ce9e60ea0fcde0c2963a328c2029f70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ce9e60ea0fcde0c2963a328c2029f70">&#9670;&#160;</a></span>locomotionPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1ClimbingLocomotionPolicy.html">ClimbingLocomotionPolicy</a> eve::climbing::ClimbingRuntime::locomotionPolicy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return an owning ordinary-locomotion policy snapshot safe across later profile reloads. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00367">367</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Climbing_8h_source.html#l00239">eve::climbing::ClimbingProfileDefinition::airControl</a>, <a class="el" href="Climbing_8h_source.html#l00234">eve::climbing::ClimbingProfileDefinition::coyoteTicks</a>, <a class="el" href="Climbing_8h_source.html#l00240">eve::climbing::ClimbingProfileDefinition::gravity</a>, <a class="el" href="Climbing_8h_source.html#l00237">eve::climbing::ClimbingProfileDefinition::groundAcceleration</a>, <a class="el" href="Climbing_8h_source.html#l00238">eve::climbing::ClimbingProfileDefinition::groundBraking</a>, <a class="el" href="Climbing_8h_source.html#l00241">eve::climbing::ClimbingProfileDefinition::jumpSpeed</a> , 以及 <a class="el" href="Climbing_8h_source.html#l00253">eve::climbing::ClimbingProfileDefinition::queryFilter</a>.</p>
+
+</div>
+</div>
+<a id="affb2be9da09765e0d2a9a994c46b8554" name="affb2be9da09765e0d2a9a994c46b8554"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affb2be9da09765e0d2a9a994c46b8554">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp; eve::climbing::ClimbingRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1019ae3bd92c89d4d0f7fb432362e353" name="a1019ae3bd92c89d4d0f7fb432362e353"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1019ae3bd92c89d4d0f7fb432362e353">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp; eve::climbing::ClimbingRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa436317ad87d0e4ef8bcfc651b07e7cf" name="aa436317ad87d0e4ef8bcfc651b07e7cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa436317ad87d0e4ef8bcfc651b07e7cf">&#9670;&#160;</a></span>pendingEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::climbing::ClimbingRuntime::pendingEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of undelivered events currently owned by this runtime. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00741">741</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad665ad2af1a31d2efba777b8c1b5f168" name="ad665ad2af1a31d2efba777b8c1b5f168"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad665ad2af1a31d2efba777b8c1b5f168">&#9670;&#160;</a></span>phase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfc">ClimbingPhase</a> eve::climbing::ClimbingRuntime::phase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current lifecycle phase. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00771">771</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingControl_8cpp_source.html#l00115">eve::climbing::ClimbingControl::availableGameplayActions()</a> , 以及 <a class="el" href="ClimbingControl_8cpp_source.html#l00091">eve::climbing::ClimbingControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="aa2d8d480dccbf3746fc24216166a8add" name="aa2d8d480dccbf3746fc24216166a8add"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2d8d480dccbf3746fc24216166a8add">&#9670;&#160;</a></span>probe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1climbing_1_1ClimbingCandidateSet.html">ClimbingCandidateSet</a> &gt; eve::climbing::ClimbingRuntime::probe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Probes, validates, and deterministically sorts all matching candidates. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Borrowed for this synchronous owner-thread call only; never retained. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate vector sorted by score and stable action id. @thread Call on the runtime and physics world's shared simulation thread. @reentrancy Does not invoke callbacks or scripts. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="Climbing_8cpp_source.html#l00438">probeInto()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">tryBeginPredicted()</a>.</p>
+
+</div>
+</div>
+<a id="aa3598ccdc4c05d75a7ff6d62fa00142a" name="aa3598ccdc4c05d75a7ff6d62fa00142a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3598ccdc4c05d75a7ff6d62fa00142a">&#9670;&#160;</a></span>probeInto()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::probeInto </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1climbing_1_1ClimbingCandidateSet.html">ClimbingCandidateSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em> = <code><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Probe into caller-retained fixed storage; successful calls atomically replace output. </p>
+<dl class="section remark"><dt>备注</dt><dd>Reusing output avoids candidate-container and action-id allocation after warmup. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00438">438</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Climbing_8h_source.html#l00254">eve::climbing::ClimbingProfileDefinition::actions</a>, <a class="el" href="Climbing_8h_source.html#l00356">eve::climbing::ClimbingCandidateSet::begin()</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00226">body</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00057">eve::physics::RayHit3D::body</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00059">eve::physics::RayHit3D::bodyId</a>, <a class="el" href="Climbing_8h_source.html#l00307">eve::climbing::ClimbingCandidate::bodyLocalLanding</a>, <a class="el" href="Climbing_8h_source.html#l00306">eve::climbing::ClimbingCandidate::bodyLocalTop</a>, <a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590fac1ec82ca840b1b398b6091e79638d5e9">eve::climbing::Braced</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00045">eve::climbing::ClimbingRuntimeCounters::broadPhaseHitCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00044">eve::climbing::ClimbingRuntimeCounters::broadPhaseQueryCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00052">eve::climbing::ClimbingRuntimeCounters::budgetState</a>, <a class="el" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701ada0af61b22c8af030769e080c376024c">eve::climbing::CandidateProbe</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00027">eve::climbing::ClimbingQueryBudgets::CandidateProbe</a>, <a class="el" href="Climbing_8h_source.html#l00224">eve::climbing::ClimbingProfileDefinition::capsuleHeight</a>, <a class="el" href="Climbing_8h_source.html#l00223">eve::climbing::ClimbingProfileDefinition::capsuleRadius</a>, <a class="el" href="Climbing_8h_source.html#l00333">eve::climbing::ClimbingCandidateSet::clear()</a>, <a class="el" href="Climbing_8h_source.html#l00311">eve::climbing::ClimbingCandidate::clearanceHeight</a>, <a class="el" href="Climbing_8h_source.html#l00225">eve::climbing::ClimbingProfileDefinition::compactCapsuleHeight</a>, <a class="el" href="Climbing_8cpp_source.html#l00299">eve::climbing::ClimbingCandidateSet::considerWithActionId()</a>, <a class="el" href="Climbing_8h_source.html#l00313">eve::climbing::ClimbingCandidate::curvature</a>, <a class="el" href="Climbing_8h_source.html#l00292">eve::climbing::ClimbingCandidate::definitionGeneration</a>, <a class="el" href="Climbing_8h_source.html#l00345">eve::climbing::ClimbingCandidateSet::empty()</a>, <a class="el" href="namespaceeve_1_1climbing.html#a9219bcfc0a080e08eb1aa552a761efc6a00d23a76e43b46dae9ec7aa9dcbebb32">eve::climbing::Enabled</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="Climbing_8h_source.html#l00362">eve::climbing::ClimbingCandidateSet::end()</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799">eve::climbing::Exceeded</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Climbing_8h_source.html#l00275">eve::climbing::ClimbingPose::feet</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00184">filter</a>, <a class="el" href="Climbing_8h_source.html#l00276">eve::climbing::ClimbingPose::forward</a>, <a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590fab24ce0cd392a5b0b8dedc66c25213594">eve::climbing::Free</a>, <a class="el" href="Climbing_8h_source.html#l00347">eve::climbing::ClimbingCandidateSet::front()</a>, <a class="el" href="Climbing_8h_source.html#l00299">eve::climbing::ClimbingCandidate::frontPoint</a>, <a class="el" href="Climbing_8h_source.html#l00310">eve::climbing::ClimbingCandidate::gapDistance</a>, <a class="el" href="Climbing_8h_source.html#l00280">eve::climbing::ClimbingPose::grounded</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00055">eve::physics::RayHit3D::hit</a>, <a class="el" href="Climbing_8h_source.html#l00278">eve::climbing::ClimbingPose::ignoredBodyId</a>, <a class="el" href="Climbing_8h_source.html#l00298">eve::climbing::ClimbingCandidate::ignoredBodyId</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00025">eve::physics::QueryFilter3D::ignoredBodyId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Climbing_8h_source.html#l00318">eve::climbing::ClimbingCandidate::kind</a>, <a class="el" href="Climbing_8h_source.html#l00301">eve::climbing::ClimbingCandidate::landingFeet</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aa372b60ab76d177fdafe91c490484a293">eve::climbing::LedgeGrab</a>, <a class="el" href="Climbing_8h_source.html#l00304">eve::climbing::ClimbingCandidate::leftHandAnchor</a>, <a class="el" href="Climbing_8h_source.html#l00284">eve::climbing::ClimbingPose::lookIntent</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00062">eve::physics::RayHit3D::materialId</a>, <a class="el" href="Climbing_8h_source.html#l00243">eve::climbing::ClimbingProfileDefinition::maxCandidates</a>, <a class="el" href="Climbing_8h_source.html#l00228">eve::climbing::ClimbingProfileDefinition::maxObstacleHeight</a>, <a class="el" href="Climbing_8h_source.html#l00227">eve::climbing::ClimbingProfileDefinition::maxProbeDistance</a>, <a class="el" href="Climbing_8h_source.html#l00229">eve::climbing::ClimbingProfileDefinition::minTopNormalY</a>, <a class="el" href="Climbing_8h_source.html#l00282">eve::climbing::ClimbingPose::moveIntent</a>, <a class="el" href="namespaceeve_1_1climbing.html#a994006b3ffa55e2113e3c949a674590fa6adf97f83acf6453d4a6a4b1070f3754">eve::climbing::None</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00065">eve::physics::RayHit3D::normalX</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00065">eve::physics::RayHit3D::normalY</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00065">eve::physics::RayHit3D::normalZ</a>, <a class="el" href="Climbing_8h_source.html#l00294">eve::climbing::ClimbingCandidate::obstacleBody</a>, <a class="el" href="Climbing_8h_source.html#l00296">eve::climbing::ClimbingCandidate::obstacleBodyId</a>, <a class="el" href="Climbing_8h_source.html#l00309">eve::climbing::ClimbingCandidate::obstacleDepth</a>, <a class="el" href="Climbing_8h_source.html#l00308">eve::climbing::ClimbingCandidate::obstacleHeight</a>, <a class="el" href="Climbing_8h_source.html#l00295">eve::climbing::ClimbingCandidate::obstacleShape</a>, <a class="el" href="Climbing_8h_source.html#l00297">eve::climbing::ClimbingCandidate::obstacleShapeId</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="Climbing_8h_source.html#l00316">eve::climbing::ClimbingCandidate::probeRecipe</a>, <a class="el" href="Climbing_8h_source.html#l00242">eve::climbing::ClimbingProfileDefinition::probeSectors</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00051">eve::climbing::ClimbingRuntimeCounters::queryBudget</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00046">eve::climbing::ClimbingRuntimeCounters::queryCount</a>, <a class="el" href="Climbing_8h_source.html#l00253">eve::climbing::ClimbingProfileDefinition::queryFilter</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00047">eve::climbing::ClimbingRuntimeCounters::rejectCount</a>, <a class="el" href="Climbing_8h_source.html#l00305">eve::climbing::ClimbingCandidate::rightHandAnchor</a>, <a class="el" href="Climbing_8h_source.html#l00317">eve::climbing::ClimbingCandidate::score</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00048">eve::climbing::ClimbingRuntimeCounters::selectedCost</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00058">eve::physics::RayHit3D::shape</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00060">eve::physics::RayHit3D::shapeId</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00061">eve::physics::RayHit3D::shapeTag</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00204">sides</a>, <a class="el" href="Climbing_8h_source.html#l00226">eve::climbing::ClimbingProfileDefinition::skin</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aa6160a53ece50ce6d4f5ef4452549835e">eve::climbing::Slide</a>, <a class="el" href="Climbing_8h_source.html#l00312">eve::climbing::ClimbingCandidate::slopeRadians</a>, <a class="el" href="Climbing_8cpp_source.html#l00325">eve::climbing::ClimbingCandidateSet::sortAndLimit()</a>, <a class="el" href="Climbing_8h_source.html#l00277">eve::climbing::ClimbingPose::speed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Climbing_8h_source.html#l00319">eve::climbing::ClimbingCandidate::support</a>, <a class="el" href="Climbing_8h_source.html#l00315">eve::climbing::ClimbingCandidate::supportMaterialId</a>, <a class="el" href="Climbing_8h_source.html#l00314">eve::climbing::ClimbingCandidate::supportShapeTag</a>, <a class="el" href="Climbing_8h_source.html#l00302">eve::climbing::ClimbingCandidate::surfaceNormal</a>, <a class="el" href="Climbing_8h_source.html#l00303">eve::climbing::ClimbingCandidate::surfaceTangent</a>, <a class="el" href="Climbing_8cpp_source.html#l00330">eve::climbing::ClimbingCandidateSet::swap()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00080">tangent</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="Climbing_8h_source.html#l00300">eve::climbing::ClimbingCandidate::topPoint</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="ClimbingCodec_8cpp_source.html#l00382">eve::climbing::validateClimbingProfileDefinition()</a>, <a class="el" href="Climbing_8h_source.html#l00279">eve::climbing::ClimbingPose::verticalSpeed</a>, <a class="el" href="namespaceeve_1_1climbing.html#aacb744d21984866a964734aa39b6507aa48d2a5428e415790306fd6b13dd7213a">eve::climbing::WallRun</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00043">eve::climbing::ClimbingRuntimeCounters::workload</a>, <a class="el" href="Climbing_8h_source.html#l00293">eve::climbing::ClimbingCandidate::world</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="ClimbingPrimitives_8h_source.html#l00018">eve::climbing::Vec3::x</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00064">eve::physics::RayHit3D::x</a>, <a class="el" href="ClimbingPrimitives_8h_source.html#l00019">eve::climbing::Vec3::y</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00064">eve::physics::RayHit3D::y</a>, <a class="el" href="ClimbingPrimitives_8h_source.html#l00020">eve::climbing::Vec3::z</a> , 以及 <a class="el" href="OwnedQuery3D_8h_source.html#l00064">eve::physics::RayHit3D::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l00430">probe()</a>.</p>
+
+</div>
+</div>
+<a id="a3db08ed9f6d9fd0cfad33fbee4366466" name="a3db08ed9f6d9fd0cfad33fbee4366466"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3db08ed9f6d9fd0cfad33fbee4366466">&#9670;&#160;</a></span>recordOrdinaryTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::climbing::ClimbingRuntime::recordOrdinaryTick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>queryCount</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>moverIterations</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>elapsedNanoseconds</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Record one ordinary locomotion tick and its bounded Physics mover work. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l01506">1506</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799">eve::climbing::Exceeded</a>, <a class="el" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a5681660b68aa20365a8e3279790ea419">eve::climbing::Ordinary</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00026">eve::climbing::ClimbingQueryBudgets::Ordinary</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="a98a935f03536575d75555269f0fe48f9" name="a98a935f03536575d75555269f0fe48f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98a935f03536575d75555269f0fe48f9">&#9670;&#160;</a></span>reloadProfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::reloadProfile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#ad26c4f1f3b3fc84908059aed55a60acf">ClimbingProfile</a>&#160;</td>
+          <td class="paramname"><em>profile</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically publishes a validated profile while pinning any active execution to its old snapshot. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on publication; failure leaves both the active execution and current profile unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingPersistence_8cpp_source.html">ClimbingPersistence.cpp</a> 第 <a class="el" href="ClimbingPersistence_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPersistence_8cpp_source.html#l00023">reloadProfileJson()</a>.</p>
+
+</div>
+</div>
+<a id="a1d380ab4988bbf29601bbd63a8e63c8c" name="a1d380ab4988bbf29601bbd63a8e63c8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d380ab4988bbf29601bbd63a8e63c8c">&#9670;&#160;</a></span>reloadProfileJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::reloadProfileJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses and hot-reloads a canonical profile JSON document transactionally. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingPersistence_8cpp_source.html">ClimbingPersistence.cpp</a> 第 <a class="el" href="ClimbingPersistence_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingCodec_8cpp_source.html#l00707">eve::climbing::decodeClimbingProfileDefinition()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="ClimbingPersistence_8cpp_source.html#l00011">reloadProfile()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="abbd32a7427d69e05b2bf4ce201d59191" name="abbd32a7427d69e05b2bf4ce201d59191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbd32a7427d69e05b2bf4ce201d59191">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restores a fully parsed candidate atomically after revalidating all process-local Physics links. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>Owning schema v4, N-1 v3, or migratable historical v2/v1/v0 snapshot payload. </td></tr>
+    <tr><td class="paramname">world</td><td>Borrowed synchronously for link validation and never retained. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingSnapshot_8cpp_source.html">ClimbingSnapshot.cpp</a> 第 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00090">anchor</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="ClimbingCodec_8cpp_source.html#l00457">eve::climbing::decodeClimbingActionDefinition()</a>, <a class="el" href="ClimbingCodec_8cpp_source.html#l00707">eve::climbing::decodeClimbingProfileDefinition()</a>, <a class="el" href="Climbing_8h_source.html#l00773">executionId()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00115">eve::RuntimeHandle&lt; Tag &gt;::fromPacked()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Value_8h_source.html#l00087">eve::Value::isNull()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="ClimbingRegistry_8cpp_source.html#l00045">eve::climbing::Climbing::resolveAnchorGraph()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Climbing_8h_source.html#l00627">SnapshotSchemaId</a>, <a class="el" href="Climbing_8h_source.html#l00629">SnapshotSchemaVersion</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>, <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPersistence_8cpp_source.html#l00037">restoreJson()</a>.</p>
+
+</div>
+</div>
+<a id="a7e6b0ab2b9e20be8c2fc874c84353539" name="a7e6b0ab2b9e20be8c2fc874c84353539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e6b0ab2b9e20be8c2fc874c84353539">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses and atomically restores a canonical runtime snapshot JSON document. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingPersistence_8cpp_source.html">ClimbingPersistence.cpp</a> 第 <a class="el" href="ClimbingPersistence_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00442">restore()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="aee136cbee4b2c04978bf1b5099332f91" name="aee136cbee4b2c04978bf1b5099332f91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee136cbee4b2c04978bf1b5099332f91">&#9670;&#160;</a></span>setDebugCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::climbing::ClimbingRuntime::setDebugCapture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#a9219bcfc0a080e08eb1aa552a761efc6">ClimbingDebugCapture</a>&#160;</td>
+          <td class="paramname"><em>capture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enables or disables bounded diagnostic capture; disabling immediately releases captured data. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l01496">1496</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1climbing.html#a9219bcfc0a080e08eb1aa552a761efc6ab9f5c797ebbf55adccdd8539a65a0241">eve::climbing::Disabled</a>.</p>
+
+</div>
+</div>
+<a id="a236187d335f3c4b648454900cab06905" name="a236187d335f3c4b648454900cab06905"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a236187d335f3c4b648454900cab06905">&#9670;&#160;</a></span>setProfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::setProfile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#ad26c4f1f3b3fc84908059aed55a60acf">ClimbingProfile</a>&#160;</td>
+          <td class="paramname"><em>profile</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the runtime profile after validating all dimensions and action definitions. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingPersistence_8cpp_source.html#l00015">setProfileJson()</a>.</p>
+
+</div>
+</div>
+<a id="a9303168cc199764f92f95b7ef26d4d76" name="a9303168cc199764f92f95b7ef26d4d76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9303168cc199764f92f95b7ef26d4d76">&#9670;&#160;</a></span>setProfileJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::setProfileJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses and installs a canonical profile JSON document transactionally. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingPersistence_8cpp_source.html">ClimbingPersistence.cpp</a> 第 <a class="el" href="ClimbingPersistence_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingCodec_8cpp_source.html#l00707">eve::climbing::decodeClimbingProfileDefinition()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Climbing_8cpp_source.html#l00363">setProfile()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a925798fe8dc241c04de4f38d05e1c238" name="a925798fe8dc241c04de4f38d05e1c238"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a925798fe8dc241c04de4f38d05e1c238">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::climbing::ClimbingRuntime::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures deterministic runtime state; debug candidates and final bone poses are excluded. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingSnapshot_8cpp_source.html">ClimbingSnapshot.cpp</a> 第 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00396">396</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingCodec_8cpp_source.html#l00449">eve::climbing::encodeClimbingActionDefinition()</a>, <a class="el" href="ClimbingCodec_8cpp_source.html#l00649">eve::climbing::encodeClimbingProfileDefinition()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Climbing_8h_source.html#l00627">SnapshotSchemaId</a>, <a class="el" href="Climbing_8h_source.html#l00629">SnapshotSchemaVersion</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8cpp_source.html#l01478">inspect()</a>, <a class="el" href="ClimbingControl_8cpp_source.html#l00091">eve::climbing::ClimbingControl::observeGameplay()</a>, <a class="el" href="ClimbingPersistence_8cpp_source.html#l00031">snapshotJson()</a> , 以及 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">tryBeginPredicted()</a>.</p>
+
+</div>
+</div>
+<a id="a04b13b3301b263914776bb5ef1858acd" name="a04b13b3301b263914776bb5ef1858acd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04b13b3301b263914776bb5ef1858acd">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::climbing::ClimbingRuntime::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes the canonical runtime snapshot as JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingPersistence_8cpp_source.html">ClimbingPersistence.cpp</a> 第 <a class="el" href="ClimbingPersistence_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00396">snapshot()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a35b64484b9e3a8144ab675e523d48715" name="a35b64484b9e3a8144ab675e523d48715"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35b64484b9e3a8144ab675e523d48715">&#9670;&#160;</a></span>telemetry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html">ClimbingTelemetryBuffer</a> &amp; eve::climbing::ClimbingRuntime::telemetry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the runtime-owned fixed profiler ring. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00747">747</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a2cb3416e332b9f59d5fc12b214b6d2" name="a0a2cb3416e332b9f59d5fc12b214b6d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2cb3416e332b9f59d5fc12b214b6d2">&#9670;&#160;</a></span>transitionAnchor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::transitionAnchor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#a2fc9253074969249a1158e7fdfcf75d8">ClimbingAnchorEdgeKind</a>&#160;</td>
+          <td class="paramname"><em>edgeKind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>actionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically moves a hanging graph execution to a reserved adjacent node. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Borrowed synchronously for target resolution and capsule clearance. </td></tr>
+    <tr><td class="paramname">target</td><td>Current-generation destination reference from the same graph. </td></tr>
+    <tr><td class="paramname">edgeKind</td><td>Required authored edge semantic. </td></tr>
+    <tr><td class="paramname">actionId</td><td>Registered graph-only action definition matching the edge. </td></tr>
+    <tr><td class="paramname">tick</td><td>New simulation tick for the branch commit. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html">ClimbingAnchorExecution.cpp</a> 第 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1climbing.html#aa7e99cef33504bc2287efe51bed3be8bab03f3d8fbee331eee16d6901258d9d9d">eve::climbing::AnchorTransitionStarted</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcac6589f5236c0c434d0c63dc5f9a856f2">eve::climbing::Balanced</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Climbing_8h_source.html#l00169">eve::climbing::ClimbingActionDefinition::duration</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00210">edges</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Climbing_8h_source.html#l00275">eve::climbing::ClimbingPose::feet</a>, <a class="el" href="Climbing_8h_source.html#l00276">eve::climbing::ClimbingPose::forward</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="Climbing_8h_source.html#l00280">eve::climbing::ClimbingPose::grounded</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcaaefea37c8d478f0968d6606e6095beb7">eve::climbing::Hanging</a>, <a class="el" href="Climbing_8h_source.html#l00165">eve::climbing::ClimbingActionDefinition::id</a>, <a class="el" href="Climbing_8h_source.html#l00278">eve::climbing::ClimbingPose::ignoredBodyId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Climbing_8h_source.html#l00173">eve::climbing::ClimbingActionDefinition::kind</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcae22c7feec7213c222a1620424621a830">eve::climbing::Launching</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="Climbing_8h_source.html#l00167">eve::climbing::ClimbingActionDefinition::maxHeight</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Climbing_8h_source.html#l00187">eve::climbing::ClimbingActionDefinition::requiredNotifies</a>, <a class="el" href="ClimbingRegistry_8cpp_source.html#l00045">eve::climbing::Climbing::resolveAnchorGraph()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfca79fd76949ebabad26838892208db69a2">eve::climbing::Swinging</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="adffd1488ddfa8e74ee022bf2cb6cbd67" name="adffd1488ddfa8e74ee022bf2cb6cbd67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adffd1488ddfa8e74ee022bf2cb6cbd67">&#9670;&#160;</a></span>tryBegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingCandidate.html">ClimbingCandidate</a> &gt; eve::climbing::ClimbingRuntime::tryBegin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begins the best current candidate atomically, or returns NotFound without mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingSelection_8cpp_source.html">ClimbingSelection.cpp</a> 第 <a class="el" href="ClimbingSelection_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a62277560b5cedff4db28dbe424d9a894" name="a62277560b5cedff4db28dbe424d9a894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62277560b5cedff4db28dbe424d9a894">&#9670;&#160;</a></span>tryBeginAnchor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingCandidate.html">ClimbingCandidate</a> &gt; eve::climbing::ClimbingRuntime::tryBeginAnchor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#aa46e3edff6f2c3012e65b65a7fa78d5b">ClimbingAnchorGraphHandleRef</a>&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingAnchorNodeRef.html">ClimbingAnchorNodeRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#abb4cc5e9595447bc9f8d8b2112df9a8f">ClimbingAnchorAgentId</a>&#160;</td>
+          <td class="paramname"><em>agentId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>actionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begins an authored graph anchor using the same authoritative execution lifecycle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">graph</td><td>Module-owned generation-qualified graph instance. </td></tr>
+    <tr><td class="paramname">node</td><td>Current-generation anchor node reference. </td></tr>
+    <tr><td class="paramname">agentId</td><td>Stable non-zero character identity used for occupancy arbitration. </td></tr>
+    <tr><td class="paramname">actionId</td><td>Registered ledge-grab or ladder-mount definition used to approach the anchor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html">ClimbingAnchorExecution.cpp</a> 第 <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Climbing_8h_source.html#l00773">executionId()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Climbing_8h_source.html#l00275">eve::climbing::ClimbingPose::feet</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="Climbing_8h_source.html#l00165">eve::climbing::ClimbingActionDefinition::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="Climbing_8h_source.html#l00173">eve::climbing::ClimbingActionDefinition::kind</a>, <a class="el" href="Climbing_8h_source.html#l00167">eve::climbing::ClimbingActionDefinition::maxHeight</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Climbing_8h_source.html#l00208">eve::climbing::ClimbingActionDefinition::requiredConditionTags</a>, <a class="el" href="Climbing_8h_source.html#l00187">eve::climbing::ClimbingActionDefinition::requiredNotifies</a>, <a class="el" href="ClimbingRegistry_8cpp_source.html#l00045">eve::climbing::Climbing::resolveAnchorGraph()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="acf0f8ecd6ea47fd6942c3f606d90e9a4" name="acf0f8ecd6ea47fd6942c3f606d90e9a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf0f8ecd6ea47fd6942c3f606d90e9a4">&#9670;&#160;</a></span>tryBeginPredicted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionDecision.html">ClimbingPredictionDecision</a> &gt; eve::climbing::ClimbingRuntime::tryBeginPredicted </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingPredictionRequest.html">ClimbingPredictionRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>serverTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>maxClientTickLead</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-probes authoritative state and commits only the exact server-matched predicted candidate. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pose</td><td>Server-owned character pose; no pose or target position is read from the request. </td></tr>
+    <tr><td class="paramname">serverTick</td><td>Authoritative execution tick used for commit and snapshot. </td></tr>
+    <tr><td class="paramname">maxClientTickLead</td><td>Maximum accepted positive client tick lead. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A protocol decision with an authoritative snapshot; transport/probe/serialization faults fail <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingPrediction_8cpp_source.html">ClimbingPrediction.cpp</a> 第 <a class="el" href="ClimbingPrediction_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1climbing.html#a6f53518f1d079c5fea52da3e927ac3b3a382ab522931673c11e398ead1b7b1678">eve::climbing::Accepted</a>, <a class="el" href="Climbing_8h_source.html#l00437">eve::climbing::ClimbingPredictionDecision::authoritativeCandidate</a>, <a class="el" href="Climbing_8h_source.html#l00406">eve::climbing::ClimbingPredictionRequest::candidate</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6ac6d7ac16ed87e2b783bd269e8477d9a6">eve::climbing::CandidateMismatch</a>, <a class="el" href="Climbing_8h_source.html#l00405">eve::climbing::ClimbingPredictionRequest::clientTick</a>, <a class="el" href="Climbing_8h_source.html#l00432">eve::climbing::ClimbingPredictionDecision::clientTick</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6f53518f1d079c5fea52da3e927ac3b3aed192e05ddebca335f87c3da697fb10e">eve::climbing::Corrected</a>, <a class="el" href="Climbing_8h_source.html#l00434">eve::climbing::ClimbingPredictionDecision::disposition</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6ad544eb3da2f68d24cf92a8519ed53a31">eve::climbing::InvalidRequest</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="ClimbingPrediction_8cpp_source.html#l00229">eve::climbing::makeClimbingCandidateKey()</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6aef8672fc16fc4a85aef4eeb8d94b3182">eve::climbing::NoCandidate</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6a6adf97f83acf6453d4a6a4b1070f3754">eve::climbing::None</a>, <a class="el" href="Climbing_8cpp_source.html#l00430">probe()</a>, <a class="el" href="Climbing_8h_source.html#l00435">eve::climbing::ClimbingPredictionDecision::reason</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6f53518f1d079c5fea52da3e927ac3b3ad37b1f6c0512e2118cee17fea015b699">eve::climbing::Rejected</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6a06f5939c9b4311e383665d32e4f5657c">eve::climbing::RuntimeBusy</a>, <a class="el" href="Climbing_8h_source.html#l00404">eve::climbing::ClimbingPredictionRequest::sequence</a>, <a class="el" href="Climbing_8h_source.html#l00431">eve::climbing::ClimbingPredictionDecision::sequence</a>, <a class="el" href="Climbing_8h_source.html#l00433">eve::climbing::ClimbingPredictionDecision::serverTick</a>, <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00396">snapshot()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6517d0f3b9480ad0471f5e9341cccbd6ac8b84c4dc64324c6e677cbf2dd3acbaa">eve::climbing::TickTooFarAhead</a>, <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="ad9afe9fc1cd1148ce56551f4bbdbde85" name="ad9afe9fc1cd1148ce56551f4bbdbde85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9afe9fc1cd1148ce56551f4bbdbde85">&#9670;&#160;</a></span>upsertAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::upsertAction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingActionDefinition.html">ClimbingActionDefinition</a>&#160;</td>
+          <td class="paramname"><em>action</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds or replaces one action definition by stable id. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Climbing_8h_source.html#l00254">eve::climbing::ClimbingProfileDefinition::actions</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Climbing_8h_source.html#l00165">eve::climbing::ClimbingActionDefinition::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="ClimbingCodec_8cpp_source.html#l00294">eve::climbing::validateClimbingActionDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="ab552149f828b81c2d095d1a2542298be" name="ab552149f828b81c2d095d1a2542298be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab552149f828b81c2d095d1a2542298be">&#9670;&#160;</a></span>validateAnimationBinding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::climbing::ClimbingRuntime::validateAnimationBinding </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>actionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> &amp;&#160;</td>
+          <td class="paramname"><em>clip</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates and records an action's clip notify contract without retaining the clip. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">actionId</td><td>Registered stable definition id. </td></tr>
+    <tr><td class="paramname">clip</td><td>Borrowed synchronously; the runtime stores only validation evidence. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a> 第 <a class="el" href="Climbing_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Climbing_8h_source.html#l00201">eve::climbing::ClimbingActionDefinition::animation</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="Climbing_8h_source.html#l00100">eve::climbing::ClimbingAnimationBinding::clipId</a>, <a class="el" href="Climbing_8h_source.html#l00165">eve::climbing::ClimbingActionDefinition::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Climbing_8h_source.html#l00187">eve::climbing::ClimbingActionDefinition::requiredNotifies</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a805cbf8617a473bf416b1bc4f6ef9f28" name="a805cbf8617a473bf416b1bc4f6ef9f28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a805cbf8617a473bf416b1bc4f6ef9f28">&#9670;&#160;</a></span>ClimbingSelectionSystem</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1climbing_1_1ClimbingSelectionSystem.html">ClimbingSelectionSystem</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00782">782</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8295bcc2f65d32097b951074055e5526" name="a8295bcc2f65d32097b951074055e5526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8295bcc2f65d32097b951074055e5526">&#9670;&#160;</a></span>ClimbingServiceSelectionSystem</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1climbing_1_1ClimbingServiceSelectionSystem.html">ClimbingServiceSelectionSystem</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00783">783</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ae2cfe718afe014bcbfde94d2031f340e" name="ae2cfe718afe014bcbfde94d2031f340e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2cfe718afe014bcbfde94d2031f340e">&#9670;&#160;</a></span>PendingEventCapacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t eve::climbing::ClimbingRuntime::PendingEventCapacity = 64</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hard bound for undelivered post-simulation events owned by one runtime. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00631">631</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf67967a1654e5a33b8a508d063c7dc8" name="adf67967a1654e5a33b8a508d063c7dc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf67967a1654e5a33b8a508d063c7dc8">&#9670;&#160;</a></span>SnapshotSchemaId</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::climbing::ClimbingRuntime::SnapshotSchemaId = &quot;evengine.climbing-runtime&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable schema id for owning runtime snapshots. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00627">627</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00442">restore()</a> , 以及 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00396">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a7641673c0873c00b8822c4e81641f9ae" name="a7641673c0873c00b8822c4e81641f9ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7641673c0873c00b8822c4e81641f9ae">&#9670;&#160;</a></span>SnapshotSchemaVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int64_t eve::climbing::ClimbingRuntime::SnapshotSchemaVersion = 4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current runtime snapshot version; v3 is N-1 and historical v2/v1/v0 remain migratable. </p>
+
+<p class="definition">在文件 <a class="el" href="Climbing_8h_source.html">Climbing.h</a> 第 <a class="el" href="Climbing_8h_source.html#l00629">629</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00442">restore()</a> , 以及 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00396">snapshot()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/climbing/<a class="el" href="Climbing_8h_source.html">Climbing.h</a></li>
+<li>src/modules/climbing/<a class="el" href="Climbing_8cpp_source.html">Climbing.cpp</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingAnchorExecution_8cpp_source.html">ClimbingAnchorExecution.cpp</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingPersistence_8cpp_source.html">ClimbingPersistence.cpp</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingPrediction_8cpp_source.html">ClimbingPrediction.cpp</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingSelection_8cpp_source.html">ClimbingSelection.cpp</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingSnapshot_8cpp_source.html">ClimbingSnapshot.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/Diagnostic.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Diagnostic.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Diagnostic_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;ostream&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a> : uint8_t {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a4059b0251f66a18cb56f544728796875">Info</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a0eaadb4fcb48a0a0ed7bc9868be9fbaa">Warning</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a902b0d55fddef6f8d651fe1035b7d4bd">Error</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a882384ec38ce8d9582b57e70861730e4">Fatal</a>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceeve.html#a1458a37ac5088f18eeee15d5ecf7b10f">   28</a></span>[[nodiscard]] <span class="keyword">constexpr</span> std::string_view <a class="code hl_function" href="namespaceeve.html#a1458a37ac5088f18eeee15d5ecf7b10f">severityName</a>(<a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a> severity) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">switch</span> (severity) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a4059b0251f66a18cb56f544728796875">Severity::Info</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;info&quot;</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a0eaadb4fcb48a0a0ed7bc9868be9fbaa">Severity::Warning</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;warning&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a902b0d55fddef6f8d651fe1035b7d4bd">Severity::Error</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;error&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a882384ec38ce8d9582b57e70861730e4">Severity::Fatal</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;fatal&quot;</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeve.html#a1015537ba9a7c49a74a0c5749d424eb7">   39</a></span><span class="keyword">inline</span> std::ostream&amp; <a class="code hl_function" href="namespaceeve.html#a1015537ba9a7c49a74a0c5749d424eb7">operator&lt;&lt;</a>(std::ostream&amp; stream, <a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a> severity) { <span class="keywordflow">return</span> stream &lt;&lt; <a class="code hl_function" href="namespaceeve.html#a1458a37ac5088f18eeee15d5ecf7b10f">severityName</a>(severity); }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">   47</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> : uint32_t {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">None</a>                  = 0,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">InvalidArgument</a>       = 1,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">PreconditionViolation</a> = 2,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">NotFound</a>              = 3,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">AlreadyExists</a>         = 4,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">Conflict</a>              = 5,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">Unsupported</a>           = 6,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e">Cancelled</a>             = 7,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">StaleHandle</a>           = 8,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">ParseError</a>            = 9,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a64353c9071b50ec2fe6b90ed122471a8">SerializationError</a>    = 10,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">InvariantViolation</a>    = 11,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>                = 12,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2212711f2a9b639465a69644e985391b">HashMismatch</a>          = 13,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">UnknownVersion</a>        = 14,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6cd8f0c56bd79a702aaf9aded4aaebb9">CallbackFailure</a>       = 15,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a560adc8ea3b75cfd5de32b95562b67d0">DialogueNotWaitingForChoice</a> = 16,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a9aeb01d4bd882eaacf3ce24f3094350c">DialogueNotWaitingForCommand</a> = 17,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a738d3ced3166c554f8530906f955e0c5">DialogueConditionRejected</a> = 18,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a3202e27a23b96088506b96cfe804c2b0">DialogueRouteNotFound</a> = 19,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a192ddb25abdf71c676423c55b6f94dca">ProcgenGroupDataInvalid</a> = 20,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">TypeMismatch</a> = 21,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="namespaceeve.html#a4c4e69fbfb532ef592808d726b7d380f">   85</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve.html#a4c4e69fbfb532ef592808d726b7d380f">DiagnosticDetail</a> = std::pair&lt;std::string, std::string&gt;;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="namespaceeve.html#a063953fffc899d742dae885c45136131">   88</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> = std::vector&lt;DiagnosticDetail&gt;;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="};">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html">   94</a></span><span class="keyword">class </span>[[nodiscard(<span class="stringliteral">&quot;Diagnostic should be inspected or passed to a Result&quot;</span>)]] <a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a> {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#a2171433ac8bc5364df4250a631c72e31">   97</a></span>    <a class="code hl_function" href="classeve_1_1Diagnostic.html#a2171433ac8bc5364df4250a631c72e31">Diagnostic</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="foldopen" id="foldopen00109" data-start="{" data-end="}">
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#a73b83f031f163dd5300665f92a39ef19">  109</a></span>    <a class="code hl_function" href="classeve_1_1Diagnostic.html#a73b83f031f163dd5300665f92a39ef19">Diagnostic</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> code, <a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a> severity, std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {},</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>               <a class="code hl_typedef" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> details = {}, std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a> = {})</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        : code_(code),</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>          severity_(severity),</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>          message_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(message)),</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>          path_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)),</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>          details_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(details)),</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>          source_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)) {}</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="foldopen" id="foldopen00119" data-start="{" data-end="}">
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">  119</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a> <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">error</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> code, std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {},</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                            <a class="code hl_typedef" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> details = {}, std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a> = {}) {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a>(code, <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a902b0d55fddef6f8d651fe1035b7d4bd">Severity::Error</a>, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), std::move(details),</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                          std::move(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>));</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
+</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#a7b4610a567bbc009a968d67196f29910">  126</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Diagnostic.html">Diagnostic</a> <a class="code hl_function" href="classeve_1_1Diagnostic.html#a7b4610a567bbc009a968d67196f29910">warning</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> code, std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {},</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                              <a class="code hl_typedef" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> details = {}, std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a> = {}) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a>(code, <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a0eaadb4fcb48a0a0ed7bc9868be9fbaa">Severity::Warning</a>, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), std::move(details),</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                          std::move(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>));</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    }</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#a0b7d32cb3608edde1eeff7c201399fe8">  133</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_function" href="classeve_1_1Diagnostic.html#a0b7d32cb3608edde1eeff7c201399fe8">code</a>() const noexcept { <span class="keywordflow">return</span> code_; }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#a83c09f6eb8b755ef85b2998e26bd50c8">  135</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a> <a class="code hl_function" href="classeve_1_1Diagnostic.html#a83c09f6eb8b755ef85b2998e26bd50c8">severity</a>() const noexcept { <span class="keywordflow">return</span> severity_; }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#ae9eb3925b86e9a38a392bcdfad0a87db">  137</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1Diagnostic.html#ae9eb3925b86e9a38a392bcdfad0a87db">message</a>() const noexcept { <span class="keywordflow">return</span> message_; }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#a0dfaad3a9bf406b6a3279a1edacff294">  139</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1Diagnostic.html#a0dfaad3a9bf406b6a3279a1edacff294">path</a>() const noexcept { <span class="keywordflow">return</span> path_; }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#afc2fb300fe13485ccd6e85e5e8280e9a">  141</a></span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a>&amp; <a class="code hl_function" href="classeve_1_1Diagnostic.html#afc2fb300fe13485ccd6e85e5e8280e9a">details</a>() const noexcept { <span class="keywordflow">return</span> details_; }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#afc7a97ca9c7c84edbd431f7a6aec3b68">  143</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1Diagnostic.html#afc7a97ca9c7c84edbd431f7a6aec3b68">source</a>() const noexcept { <span class="keywordflow">return</span> source_; }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#a69813397fe26670ad22c8602daf1b6d3">  146</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1Diagnostic.html#a69813397fe26670ad22c8602daf1b6d3">addDetail</a>(std::string <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { details_.emplace_back(std::move(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>), std::move(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)); }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1Diagnostic.html#a802af510c8e74f2c5d1167783daa5584">  149</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1Diagnostic.html#a802af510c8e74f2c5d1167783daa5584">isError</a>() const noexcept { <span class="keywordflow">return</span> severity_ == <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a902b0d55fddef6f8d651fe1035b7d4bd">Severity::Error</a> || severity_ == <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a882384ec38ce8d9582b57e70861730e4">Severity::Fatal</a>; }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>    code_     = <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">DiagnosticCode::None</a>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">Severity</a>          severity_ = <a class="code hl_enumvalue" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a4059b0251f66a18cb56f544728796875">Severity::Info</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    std::string       message_;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    std::string       path_;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <a class="code hl_typedef" href="namespaceeve.html#a063953fffc899d742dae885c45136131">DiagnosticDetails</a> details_;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    std::string       source_;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>};</div>
+</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="foldopen" id="foldopen00166" data-start="{" data-end="}">
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="namespaceeve.html#affbb83337f449260bc1a741e85878ff5">  166</a></span>[[nodiscard]] <span class="keyword">constexpr</span> std::string_view <a class="code hl_function" href="namespaceeve.html#affbb83337f449260bc1a741e85878ff5">diagnosticCodeName</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> code) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">switch</span> (code) {</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">DiagnosticCode::None</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;none&quot;</span>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;invalid_argument&quot;</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;precondition_violation&quot;</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;not_found&quot;</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">DiagnosticCode::AlreadyExists</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;already_exists&quot;</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;conflict&quot;</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;unsupported&quot;</span>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e">DiagnosticCode::Cancelled</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;cancelled&quot;</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;stale_handle&quot;</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">DiagnosticCode::ParseError</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;parse_error&quot;</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a64353c9071b50ec2fe6b90ed122471a8">DiagnosticCode::SerializationError</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;serialization_error&quot;</span>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">DiagnosticCode::InvariantViolation</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;invariant_violation&quot;</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;failed&quot;</span>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2212711f2a9b639465a69644e985391b">DiagnosticCode::HashMismatch</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;hash_mismatch&quot;</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">DiagnosticCode::UnknownVersion</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown_version&quot;</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6cd8f0c56bd79a702aaf9aded4aaebb9">DiagnosticCode::CallbackFailure</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;callback_failure&quot;</span>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a560adc8ea3b75cfd5de32b95562b67d0">DiagnosticCode::DialogueNotWaitingForChoice</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;dialogue_not_waiting_for_choice&quot;</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a9aeb01d4bd882eaacf3ce24f3094350c">DiagnosticCode::DialogueNotWaitingForCommand</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;dialogue_not_waiting_for_command&quot;</span>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a738d3ced3166c554f8530906f955e0c5">DiagnosticCode::DialogueConditionRejected</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;dialogue_condition_rejected&quot;</span>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a3202e27a23b96088506b96cfe804c2b0">DiagnosticCode::DialogueRouteNotFound</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;dialogue_route_not_found&quot;</span>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a192ddb25abdf71c676423c55b6f94dca">DiagnosticCode::ProcgenGroupDataInvalid</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;procgen_group_data_invalid&quot;</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">DiagnosticCode::TypeMismatch</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;type_mismatch&quot;</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>}</div>
+</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="foldopen" id="foldopen00195" data-start="{" data-end="}">
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="namespaceeve.html#a102a9c1fb1e321805a9d795223d1c1d2">  195</a></span><span class="keyword">inline</span> std::ostream&amp; <a class="code hl_function" href="namespaceeve.html#a1015537ba9a7c49a74a0c5749d424eb7">operator&lt;&lt;</a>(std::ostream&amp; stream, <a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> code) {</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">return</span> stream &lt;&lt; <a class="code hl_function" href="namespaceeve.html#affbb83337f449260bc1a741e85878ff5">diagnosticCodeName</a>(code);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>}</div>
+</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a0b7d32cb3608edde1eeff7c201399fe8"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a0b7d32cb3608edde1eeff7c201399fe8">eve::Diagnostic::code</a></div><div class="ttdeci">DiagnosticCode code() const noexcept</div><div class="ttdoc">Stable machine-readable code.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00133">Diagnostic.h:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a0dfaad3a9bf406b6a3279a1edacff294"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a0dfaad3a9bf406b6a3279a1edacff294">eve::Diagnostic::path</a></div><div class="ttdeci">const std::string &amp; path() const noexcept</div><div class="ttdoc">Optional field, property, URI, or logical path.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00139">Diagnostic.h:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a2171433ac8bc5364df4250a631c72e31"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a2171433ac8bc5364df4250a631c72e31">eve::Diagnostic::Diagnostic</a></div><div class="ttdeci">Diagnostic()=default</div><div class="ttdoc">Construct an empty informational diagnostic.</div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a69813397fe26670ad22c8602daf1b6d3"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a69813397fe26670ad22c8602daf1b6d3">eve::Diagnostic::addDetail</a></div><div class="ttdeci">void addDetail(std::string key, std::string value)</div><div class="ttdoc">Add structured context without changing the stable code.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00146">Diagnostic.h:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a73b83f031f163dd5300665f92a39ef19"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a73b83f031f163dd5300665f92a39ef19">eve::Diagnostic::Diagnostic</a></div><div class="ttdeci">Diagnostic(DiagnosticCode code, Severity severity, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct a diagnostic with its stable code and human text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00109">Diagnostic.h:109</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a7b4610a567bbc009a968d67196f29910"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a7b4610a567bbc009a968d67196f29910">eve::Diagnostic::warning</a></div><div class="ttdeci">static Diagnostic warning(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct a warning diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00126">Diagnostic.h:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a802af510c8e74f2c5d1167783daa5584"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a802af510c8e74f2c5d1167783daa5584">eve::Diagnostic::isError</a></div><div class="ttdeci">bool isError() const noexcept</div><div class="ttdoc">Whether the diagnostic represents an error or fatal condition.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00149">Diagnostic.h:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a83c09f6eb8b755ef85b2998e26bd50c8"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a83c09f6eb8b755ef85b2998e26bd50c8">eve::Diagnostic::severity</a></div><div class="ttdeci">Severity severity() const noexcept</div><div class="ttdoc">Severity for logging and presentation.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00135">Diagnostic.h:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_ae9eb3925b86e9a38a392bcdfad0a87db"><div class="ttname"><a href="classeve_1_1Diagnostic.html#ae9eb3925b86e9a38a392bcdfad0a87db">eve::Diagnostic::message</a></div><div class="ttdeci">const std::string &amp; message() const noexcept</div><div class="ttdoc">Human-readable explanation.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00137">Diagnostic.h:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_afc2fb300fe13485ccd6e85e5e8280e9a"><div class="ttname"><a href="classeve_1_1Diagnostic.html#afc2fb300fe13485ccd6e85e5e8280e9a">eve::Diagnostic::details</a></div><div class="ttdeci">const DiagnosticDetails &amp; details() const noexcept</div><div class="ttdoc">Structured context in insertion order.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00141">Diagnostic.h:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_afc7a97ca9c7c84edbd431f7a6aec3b68"><div class="ttname"><a href="classeve_1_1Diagnostic.html#afc7a97ca9c7c84edbd431f7a6aec3b68">eve::Diagnostic::source</a></div><div class="ttdeci">const std::string &amp; source() const noexcept</div><div class="ttdoc">Optional producer or subsystem that emitted the diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00143">Diagnostic.h:143</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a063953fffc899d742dae885c45136131"><div class="ttname"><a href="namespaceeve.html#a063953fffc899d742dae885c45136131">eve::DiagnosticDetails</a></div><div class="ttdeci">std::vector&lt; DiagnosticDetail &gt; DiagnosticDetails</div><div class="ttdoc">Owning collection of diagnostic details with stable insertion order.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00088">Diagnostic.h:88</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a192ddb25abdf71c676423c55b6f94dca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a192ddb25abdf71c676423c55b6f94dca">eve::DiagnosticCode::ProcgenGroupDataInvalid</a></div><div class="ttdeci">@ ProcgenGroupDataInvalid</div><div class="ttdoc">Mesh group sidecar data is inconsistent with its dense streams.</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a2212711f2a9b639465a69644e985391b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2212711f2a9b639465a69644e985391b">eve::DiagnosticCode::HashMismatch</a></div><div class="ttdeci">@ HashMismatch</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::DiagnosticCode::TypeMismatch</a></div><div class="ttdeci">@ TypeMismatch</div><div class="ttdoc">A stable reference resolved to a different canonical domain type.</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a3202e27a23b96088506b96cfe804c2b0"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a3202e27a23b96088506b96cfe804c2b0">eve::DiagnosticCode::DialogueRouteNotFound</a></div><div class="ttdeci">@ DialogueRouteNotFound</div><div class="ttdoc">A requested dialogue route does not exist on the current node.</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::DiagnosticCode::UnknownVersion</a></div><div class="ttdeci">@ UnknownVersion</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a560adc8ea3b75cfd5de32b95562b67d0"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a560adc8ea3b75cfd5de32b95562b67d0">eve::DiagnosticCode::DialogueNotWaitingForChoice</a></div><div class="ttdeci">@ DialogueNotWaitingForChoice</div><div class="ttdoc">Dialogue runner is not positioned at a choice suspension point.</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a64353c9071b50ec2fe6b90ed122471a8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a64353c9071b50ec2fe6b90ed122471a8">eve::DiagnosticCode::SerializationError</a></div><div class="ttdeci">@ SerializationError</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">eve::DiagnosticCode::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a6cd8f0c56bd79a702aaf9aded4aaebb9"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6cd8f0c56bd79a702aaf9aded4aaebb9">eve::DiagnosticCode::CallbackFailure</a></div><div class="ttdeci">@ CallbackFailure</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a738d3ced3166c554f8530906f955e0c5"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a738d3ced3166c554f8530906f955e0c5">eve::DiagnosticCode::DialogueConditionRejected</a></div><div class="ttdeci">@ DialogueConditionRejected</div><div class="ttdoc">A dialogue condition rejected the requested route.</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::DiagnosticCode::AlreadyExists</a></div><div class="ttdeci">@ AlreadyExists</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a9aeb01d4bd882eaacf3ce24f3094350c"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a9aeb01d4bd882eaacf3ce24f3094350c">eve::DiagnosticCode::DialogueNotWaitingForCommand</a></div><div class="ttdeci">@ DialogueNotWaitingForCommand</div><div class="ttdoc">Dialogue runner is not positioned at an asynchronous command.</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e">eve::DiagnosticCode::Cancelled</a></div><div class="ttdeci">@ Cancelled</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a></div><div class="ttdeci">@ InvariantViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::DiagnosticCode::ParseError</a></div><div class="ttdeci">@ ParseError</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_html_a1015537ba9a7c49a74a0c5749d424eb7"><div class="ttname"><a href="namespaceeve.html#a1015537ba9a7c49a74a0c5749d424eb7">eve::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, Severity severity)</div><div class="ttdoc">Writes a severity for diagnostics and test output.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00039">Diagnostic.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a1458a37ac5088f18eeee15d5ecf7b10f"><div class="ttname"><a href="namespaceeve.html#a1458a37ac5088f18eeee15d5ecf7b10f">eve::severityName</a></div><div class="ttdeci">constexpr std::string_view severityName(Severity severity) noexcept</div><div class="ttdoc">Returns the stable lowercase severity spelling.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00028">Diagnostic.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a4c4e69fbfb532ef592808d726b7d380f"><div class="ttname"><a href="namespaceeve.html#a4c4e69fbfb532ef592808d726b7d380f">eve::DiagnosticDetail</a></div><div class="ttdeci">std::pair&lt; std::string, std::string &gt; DiagnosticDetail</div><div class="ttdoc">A structured detail attached to a Diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00085">Diagnostic.h:85</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Stable severity of a diagnostic, independent of its display text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00020">Diagnostic.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7a0eaadb4fcb48a0a0ed7bc9868be9fbaa"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a0eaadb4fcb48a0a0ed7bc9868be9fbaa">eve::Severity::Warning</a></div><div class="ttdeci">@ Warning</div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7a4059b0251f66a18cb56f544728796875"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a4059b0251f66a18cb56f544728796875">eve::Severity::Info</a></div><div class="ttdeci">@ Info</div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7a882384ec38ce8d9582b57e70861730e4"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a882384ec38ce8d9582b57e70861730e4">eve::Severity::Fatal</a></div><div class="ttdeci">@ Fatal</div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7a902b0d55fddef6f8d651fe1035b7d4bd"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7a902b0d55fddef6f8d651fe1035b7d4bd">eve::Severity::Error</a></div><div class="ttdeci">@ Error</div></div>
+<div class="ttc" id="anamespaceeve_html_affbb83337f449260bc1a741e85878ff5"><div class="ttname"><a href="namespaceeve.html#affbb83337f449260bc1a741e85878ff5">eve::diagnosticCodeName</a></div><div class="ttdeci">constexpr std::string_view diagnosticCodeName(DiagnosticCode code) noexcept</div><div class="ttdoc">Return a stable, compact spelling useful for logs and diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00166">Diagnostic.h:166</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

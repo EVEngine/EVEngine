@@ -1,0 +1,607 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditorTargetCoordinator类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1editor_1_1EditorTargetCoordinator-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditorTargetCoordinator类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Coordinates editable targets, per-target histories and domain commands.  
+ <a href="classeve_1_1editor_1_1EditorTargetCoordinator.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorTargetCoordinator_8h_source.html">EditorTargetCoordinator.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::editor::EditorTargetCoordinator 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1editor_1_1EditorTargetCoordinator.png" usemap="#eve::editor::EditorTargetCoordinator_map" alt=""/>
+  <map id="eve::editor::EditorTargetCoordinator_map" name="eve::editor::EditorTargetCoordinator_map">
+<area href="classeve_1_1editing_1_1IEditingCommandRegistry.html" title="Lower-layer registration boundary implemented by an editor or runtime editing host." alt="eve::editing::IEditingCommandRegistry" shape="rect" coords="0,0,224,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTargetCoordinator_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aab9d626c29994054d4002f2a5f27b021" id="r_aab9d626c29994054d4002f2a5f27b021"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#aab9d626c29994054d4002f2a5f27b021">EditorTargetCoordinator</a> (<a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp;<a class="el" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>)</td></tr>
+<tr class="separator:aab9d626c29994054d4002f2a5f27b021"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a300a16454ff9246d2e4b6091448739ab" id="r_a300a16454ff9246d2e4b6091448739ab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#a300a16454ff9246d2e4b6091448739ab">~EditorTargetCoordinator</a> ()</td></tr>
+<tr class="separator:a300a16454ff9246d2e4b6091448739ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2edd81d2d5d6b0ee732a4fa1735dee5f" id="r_a2edd81d2d5d6b0ee732a4fa1735dee5f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#a2edd81d2d5d6b0ee732a4fa1735dee5f">EditorTargetCoordinator</a> (const <a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a> &amp;)=delete</td></tr>
+<tr class="separator:a2edd81d2d5d6b0ee732a4fa1735dee5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a4b26672c3d4f4a726d225679a436b6" id="r_a4a4b26672c3d4f4a726d225679a436b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#a4a4b26672c3d4f4a726d225679a436b6">operator=</a> (const <a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a> &amp;)=delete</td></tr>
+<tr class="separator:a4a4b26672c3d4f4a726d225679a436b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a8b3791847271fe834e3379b7e04055" id="r_a3a8b3791847271fe834e3379b7e04055"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">eve::editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#a3a8b3791847271fe834e3379b7e04055">registerPlannedCommand</a> (<a class="el" href="structeve_1_1editing_1_1EditingCommandDescriptor.html">eve::editing::EditingCommandDescriptor</a> <a class="el" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, <a class="el" href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">eve::editing::EditingCommandPlanner</a> planner) override</td></tr>
+<tr class="memdesc:a3a8b3791847271fe834e3379b7e04055"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register or replace one domain-owned planned command.  <br /></td></tr>
+<tr class="separator:a3a8b3791847271fe834e3379b7e04055"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a762ccf63cfba85bc103d077c0185bee4" id="r_a762ccf63cfba85bc103d077c0185bee4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">eve::editing::Result</a>&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#a762ccf63cfba85bc103d077c0185bee4">unregisterOwner</a> (const std::string &amp;ownerModule) override</td></tr>
+<tr class="memdesc:a762ccf63cfba85bc103d077c0185bee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove every command registered by one domain module.  <br /></td></tr>
+<tr class="separator:a762ccf63cfba85bc103d077c0185bee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf007bbf03ef417ef7405e5385fbb8e0" id="r_acf007bbf03ef417ef7405e5385fbb8e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#acf007bbf03ef417ef7405e5385fbb8e0">registerTarget</a> (<a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="separator:acf007bbf03ef417ef7405e5385fbb8e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b8d149f85420db08e6de5a0cd0977f" id="r_ad2b8d149f85420db08e6de5a0cd0977f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#ad2b8d149f85420db08e6de5a0cd0977f">unregisterTarget</a> (const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="separator:ad2b8d149f85420db08e6de5a0cd0977f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad57369322442904510116b22681ce06f" id="r_ad57369322442904510116b22681ce06f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#ad57369322442904510116b22681ce06f">bind</a> (<a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;session, const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="separator:ad57369322442904510116b22681ce06f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa0231e59d83b11eb452143b86afc78" id="r_aafa0231e59d83b11eb452143b86afc78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#aafa0231e59d83b11eb452143b86afc78">inspect</a> (const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) const</td></tr>
+<tr class="separator:aafa0231e59d83b11eb452143b86afc78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1ba786f1f206dfbc75be29433275bd4" id="r_af1ba786f1f206dfbc75be29433275bd4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#af1ba786f1f206dfbc75be29433275bd4">undo</a> (const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="separator:af1ba786f1f206dfbc75be29433275bd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1acde94cb302d8fc628b608b9b0febe9" id="r_a1acde94cb302d8fc628b608b9b0febe9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#a1acde94cb302d8fc628b608b9b0febe9">redo</a> (const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="separator:a1acde94cb302d8fc628b608b9b0febe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditingCommandRegistry"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditingCommandRegistry')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">eve::editing::IEditingCommandRegistry</a></td></tr>
+<tr class="memitem:a5f2cd6a1f195802764b1eb83f35c2101 inherit pub_methods_classeve_1_1editing_1_1IEditingCommandRegistry" id="r_a5f2cd6a1f195802764b1eb83f35c2101"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a5f2cd6a1f195802764b1eb83f35c2101">~IEditingCommandRegistry</a> ()=default</td></tr>
+<tr class="separator:a5f2cd6a1f195802764b1eb83f35c2101 inherit pub_methods_classeve_1_1editing_1_1IEditingCommandRegistry"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a18fcd985eb6f5a5f6a4b593eed811d54" id="r_a18fcd985eb6f5a5f6a4b593eed811d54"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html#a18fcd985eb6f5a5f6a4b593eed811d54">EditorSession</a></td></tr>
+<tr class="separator:a18fcd985eb6f5a5f6a4b593eed811d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1editing_1_1IEditingCommandRegistry"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1editing_1_1IEditingCommandRegistry')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">eve::editing::IEditingCommandRegistry</a></td></tr>
+<tr class="memitem:a4801b26f173500b13edd92d77e37aedf inherit pub_static_attribs_classeve_1_1editing_1_1IEditingCommandRegistry" id="r_a4801b26f173500b13edd92d77e37aedf"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a4801b26f173500b13edd92d77e37aedf">capabilityName</a> = &quot;IEditingCommandRegistry&quot;</td></tr>
+<tr class="separator:a4801b26f173500b13edd92d77e37aedf inherit pub_static_attribs_classeve_1_1editing_1_1IEditingCommandRegistry"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Coordinates editable targets, per-target histories and domain commands. </p>
+<p>The coordinator knows no concrete domain target. Domain satellites register planners through IEditingCommandRegistry; targets remain borrowed. @thread Owner-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8h_source.html">EditorTargetCoordinator.h</a> 第 <a class="el" href="EditorTargetCoordinator_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aab9d626c29994054d4002f2a5f27b021" name="aab9d626c29994054d4002f2a5f27b021"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab9d626c29994054d4002f2a5f27b021">&#9670;&#160;</a></span>EditorTargetCoordinator() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorTargetCoordinator::EditorTargetCoordinator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp;&#160;</td>
+          <td class="paramname"><em>commands</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a300a16454ff9246d2e4b6091448739ab" name="a300a16454ff9246d2e4b6091448739ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a300a16454ff9246d2e4b6091448739ab">&#9670;&#160;</a></span>~EditorTargetCoordinator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorTargetCoordinator::~EditorTargetCoordinator </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2edd81d2d5d6b0ee732a4fa1735dee5f" name="a2edd81d2d5d6b0ee732a4fa1735dee5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2edd81d2d5d6b0ee732a4fa1735dee5f">&#9670;&#160;</a></span>EditorTargetCoordinator() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorTargetCoordinator::EditorTargetCoordinator </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad57369322442904510116b22681ce06f" name="ad57369322442904510116b22681ce06f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad57369322442904510116b22681ce06f">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditorTargetCoordinator::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00040">eve::editor::EditorTargetCoordinator::Impl::TargetEntry::generation</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00039">eve::editor::EditorTargetCoordinator::Impl::TargetEntry::lifetime</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00038">eve::editor::EditorTargetCoordinator::Impl::TargetEntry::target</a>.</p>
+
+</div>
+</div>
+<a id="aafa0231e59d83b11eb452143b86afc78" name="aafa0231e59d83b11eb452143b86afc78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa0231e59d83b11eb452143b86afc78">&#9670;&#160;</a></span>inspect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &gt; eve::editor::EditorTargetCoordinator::inspect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00068">eve::editing::IEditableTarget::capability()</a>, <a class="el" href="EditableTarget_8h_source.html#l00048">eve::editing::IEditableTarget::describe()</a>, <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a91414d122d58ade824a03fe4e8578a55">eve::editing::IEditingSnapshotProvider::snapshotValue()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00038">eve::editor::EditorTargetCoordinator::Impl::TargetEntry::target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="a4a4b26672c3d4f4a726d225679a436b6" name="a4a4b26672c3d4f4a726d225679a436b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a4b26672c3d4f4a726d225679a436b6">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a> &amp; eve::editor::EditorTargetCoordinator::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1acde94cb302d8fc628b608b9b0febe9" name="a1acde94cb302d8fc628b608b9b0febe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1acde94cb302d8fc628b608b9b0febe9">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::EditorTargetCoordinator::redo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">eve::editor::LocalTransactionBackend::redo()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00042">eve::editor::EditorTargetCoordinator::Impl::TargetEntry::transactions</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="a3a8b3791847271fe834e3379b7e04055" name="a3a8b3791847271fe834e3379b7e04055"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a8b3791847271fe834e3379b7e04055">&#9670;&#160;</a></span>registerPlannedCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">eve::editing::Result</a>&lt; void &gt; eve::editor::EditorTargetCoordinator::registerPlannedCommand </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1editing_1_1EditingCommandDescriptor.html">eve::editing::EditingCommandDescriptor</a>&#160;</td>
+          <td class="paramname"><em>descriptor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a3b5cef655231a09cdf9a90d51fd9345e">eve::editing::EditingCommandPlanner</a>&#160;</td>
+          <td class="paramname"><em>planner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register or replace one domain-owned planned command. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#a65f0d15ca87a6458217c81455433d8a5">eve::editing::IEditingCommandRegistry</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorCommandService_8h_source.html#l00034">eve::editor::CommandDescriptor::automationAllowed</a>, <a class="el" href="EditorCommandService_8h_source.html#l00031">eve::editor::CommandDescriptor::category</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="EditorCommandService_8h_source.html#l00030">eve::editor::CommandDescriptor::displayName</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditorCommandService_8h_source.html#l00028">eve::editor::CommandDescriptor::id</a>, <a class="el" href="EditorCommandService_8h_source.html#l00029">eve::editor::CommandDescriptor::ownerModule</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>.</p>
+
+</div>
+</div>
+<a id="acf007bbf03ef417ef7405e5385fbb8e0" name="acf007bbf03ef417ef7405e5385fbb8e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf007bbf03ef417ef7405e5385fbb8e0">&#9670;&#160;</a></span>registerTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditorTargetCoordinator::registerTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="EditingResult_8h_source.html#l00053">eve::editing::noOp()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="af1ba786f1f206dfbc75be29433275bd4" name="af1ba786f1f206dfbc75be29433275bd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1ba786f1f206dfbc75be29433275bd4">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::EditorTargetCoordinator::undo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00042">eve::editor::EditorTargetCoordinator::Impl::TargetEntry::transactions</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">eve::editor::LocalTransactionBackend::undo()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="a762ccf63cfba85bc103d077c0185bee4" name="a762ccf63cfba85bc103d077c0185bee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a762ccf63cfba85bc103d077c0185bee4">&#9670;&#160;</a></span>unregisterOwner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">eve::editing::Result</a>&lt; std::size_t &gt; eve::editor::EditorTargetCoordinator::unregisterOwner </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>ownerModule</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove every command registered by one domain module. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ownerModule</td><td>Stable owner name used in command descriptors. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied with the number removed, or a structured failure. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html#ac71def4c7cfd22e505036eb316589893">eve::editing::IEditingCommandRegistry</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a>.</p>
+
+</div>
+</div>
+<a id="ad2b8d149f85420db08e6de5a0cd0977f" name="ad2b8d149f85420db08e6de5a0cd0977f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2b8d149f85420db08e6de5a0cd0977f">&#9670;&#160;</a></span>unregisterTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditorTargetCoordinator::unregisterTarget </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a> 第 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00040">eve::editor::EditorTargetCoordinator::Impl::TargetEntry::generation</a>, <a class="el" href="EditingResult_8h_source.html#l00053">eve::editing::noOp()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a18fcd985eb6f5a5f6a4b593eed811d54" name="a18fcd985eb6f5a5f6a4b593eed811d54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18fcd985eb6f5a5f6a4b593eed811d54">&#9670;&#160;</a></span>EditorSession</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTargetCoordinator_8h_source.html">EditorTargetCoordinator.h</a> 第 <a class="el" href="EditorTargetCoordinator_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorTargetCoordinator_8h_source.html">EditorTargetCoordinator.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorTargetCoordinator_8cpp_source.html">EditorTargetCoordinator.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

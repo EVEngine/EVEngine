@@ -1,0 +1,288 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/card/CardDefinitionRuntime.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b6d14880155a7b1832962a5fc46a0e3c.html">card</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CardDefinitionRuntime.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CardDefinitionRuntime_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="CardTypes_8h.html">card/CardTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Snapshot_8h.html">common/Snapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="DefinitionRuntime_8h.html">common/definitions/DefinitionRuntime.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeSnapshot_8h.html">common/definitions/RuntimeSnapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Definitions_8h.html">definitions/Definitions.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1card.html">eve::card</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1card_1_1CardRuntimeState.html">CardRuntimeState</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html#a91878cf9896614194bd6e7cc46182377">   27</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1card_1_1CardRuntimeState.html#a91878cf9896614194bd6e7cc46182377">name</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html#a87f3059498634cd1a789deec185028c9">   28</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1card_1_1CardRuntimeState.html#a87f3059498634cd1a789deec185028c9">kind</a>          = <span class="stringliteral">&quot;creature&quot;</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html#a4fb6bd34eabc558d8cca0c6af2d3d08a">   29</a></span>    <span class="keywordtype">int</span>                      <a class="code hl_variable" href="structeve_1_1card_1_1CardRuntimeState.html#a4fb6bd34eabc558d8cca0c6af2d3d08a">cost</a>          = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html#a1cccfb597a968a47bf31a57208541060">   30</a></span>    <span class="keywordtype">int</span>                      <a class="code hl_variable" href="structeve_1_1card_1_1CardRuntimeState.html#a1cccfb597a968a47bf31a57208541060">attack</a>        = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html#ad172088b9c019fff396fa4e3ce3a5c75">   31</a></span>    <span class="keywordtype">int</span>                      <a class="code hl_variable" href="structeve_1_1card_1_1CardRuntimeState.html#ad172088b9c019fff396fa4e3ce3a5c75">maxHealth</a>     = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html#aa71ffa501e70b852d463d0aefab040d0">   32</a></span>    <span class="keywordtype">int</span>                      <a class="code hl_variable" href="structeve_1_1card_1_1CardRuntimeState.html#aa71ffa501e70b852d463d0aefab040d0">currentHealth</a> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html#a068678edbad55b8913d85370c4321c3e">   33</a></span>    glm::vec3                <a class="code hl_variable" href="structeve_1_1card_1_1CardRuntimeState.html#a068678edbad55b8913d85370c4321c3e">tint</a>{0.62f, 0.50f, 0.40f};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1card_1_1CardRuntimeState.html#a17804cd2edba6f074dae4c5f656e35e8">   34</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1card_1_1CardRuntimeState.html#a17804cd2edba6f074dae4c5f656e35e8">tags</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardDefinitionRuntime.html">   46</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a> final {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CardDefinitionRuntime&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a7546e308d2fa29c2109994742c69b0fe">create</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>&amp; registry, <a class="code hl_class" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a> definition, <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> instanceId,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a862e16815563d4e853edd7ddf215ec06">   60</a></span>    <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a862e16815563d4e853edd7ddf215ec06">CardDefinitionRuntime</a>(<a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>&amp;&amp;) noexcept = default;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardDefinitionRuntime.html#aff84c2143a94ea2bdb194154e19aa411">   62</a></span>    <a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>&amp;&amp;) noexcept = default;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardDefinitionRuntime.html#afc6f83436c46b7a38c7ccd0637cf1066">   64</a></span>    <a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>(const <a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>&amp;) = delete;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a3eb53a370e80dc9f6767a457d17edd54">   66</a></span>    <a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>&amp; operator=(const <a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>&amp;) = delete;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a15f22bcfafb181f3a0c8f4e7434f3f3c">   68</a></span>    ~<a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>() = default;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::InstanceIdentity&amp; <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a32cb411c70ed865c5185e60f9ea9c874">identity</a>() const noexcept;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    [[nodiscard]] const <a class="code hl_struct" href="structeve_1_1card_1_1CardRuntimeState.html">CardRuntimeState</a>&amp; <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a30bba1ed6cb29c5bbfd5dd8f490afdf1">state</a>() const noexcept;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1card_1_1CardRuntimeState.html">CardRuntimeState</a>&amp; <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a30bba1ed6cb29c5bbfd5dd8f490afdf1">state</a>() noexcept;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::DefinitionHandle <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#ad80fae1e905a02cdcdf4d0e76c789f4e">definitionHandle</a>() const noexcept;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a3a985d44db6e1b17e60895397b1ca2cc">   79</a></span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::ReloadPolicy <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a3a985d44db6e1b17e60895397b1ca2cc">reloadPolicy</a>() const noexcept { <span class="keywordflow">return</span> policy_; }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a9049ebf64c5ba78f8e6d7a08586fe5e1">setActive</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a67671b75c46a01114044482d90e54005">isActive</a>() const noexcept;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a63f091ca5666f73cb0202c2ea19a8f39">applyTo</a>(<a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>* card) const;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::ReloadOutcome&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a148a5baf8bf7fa533fb049655b1bb317">reload</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::ReloadPolicy <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_struct" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a>&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#acf21f2f988eb17b5b864d171b1134f81">snapshot</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a> <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                                                              const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider) const;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#a5f7df1bc8b4980ce7053f3491c32c7f9">snapshotJson</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a> <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                                                        const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider) const;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#afdd6afd85e1c9f4c9cfcf33c1a77937f">restore</a>(const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_struct" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a>&amp;     <a class="code hl_function" href="classeve_1_1card_1_1CardDefinitionRuntime.html#acf21f2f988eb17b5b864d171b1134f81">snapshot</a>,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                                            const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>private:</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <a class="code hl_class" href="classeve_1_1card_1_1CardDefinitionRuntime.html">CardDefinitionRuntime</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::definitions::DefinitionRegistry&amp;              registry,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                          <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::RuntimeInstance&lt;<a class="code hl_struct" href="structeve_1_1card_1_1CardRuntimeState.html">CardRuntimeState</a>&gt; runtime,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                          <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::ReloadPolicy                      <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        : registry_(&amp;registry), runtime_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(runtime)), policy_(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>) {}</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>*              registry_ = <span class="keyword">nullptr</span>;  <span class="comment">// borrowed</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_class" href="classeve_1_1definition_1_1RuntimeInstance.html">eve::definition::RuntimeInstance&lt;CardRuntimeState&gt;</a> runtime_;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>                      policy_;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>};</div>
+</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}  <span class="comment">// namespace eve::card</span></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a03c996f9fcf0e10baeb3e700be0c409a"><div class="ttname"><a href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00036">CardTypes.cpp:36</a></div></div>
+<div class="ttc" id="aCardTypes_8h_html"><div class="ttname"><a href="CardTypes_8h.html">CardTypes.h</a></div></div>
+<div class="ttc" id="aDefinitionRuntime_8h_html"><div class="ttname"><a href="DefinitionRuntime_8h.html">DefinitionRuntime.h</a></div><div class="ttdoc">Common identity and hot-reload contract for typed runtime instances.</div></div>
+<div class="ttc" id="aDefinitions_8h_html"><div class="ttname"><a href="Definitions_8h.html">Definitions.h</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aRuntimeSnapshot_8h_html"><div class="ttname"><a href="RuntimeSnapshot_8h.html">RuntimeSnapshot.h</a></div><div class="ttdoc">Shared SnapshotEnvelope codec for typed definition runtime instances.</div></div>
+<div class="ttc" id="aSnapshot_8h_html"><div class="ttname"><a href="Snapshot_8h.html">Snapshot.h</a></div><div class="ttdoc">Versioned, integrity-checked persistence envelopes.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html"><div class="ttname"><a href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a></div><div class="ttdoc">Stable definition reference backed by LogicalId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00083">ResourceRef.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardData_html"><div class="ttname"><a href="classeve_1_1card_1_1CardData.html">eve::card::CardData</a></div><div class="ttdoc">单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8h_source.html#l00092">CardTypes.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html">eve::card::CardDefinitionRuntime</a></div><div class="ttdoc">Binds a typed card runtime to one Definitions registry incarnation.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00046">CardDefinitionRuntime.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a148a5baf8bf7fa533fb049655b1bb317"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a148a5baf8bf7fa533fb049655b1bb317">eve::card::CardDefinitionRuntime::reload</a></div><div class="ttdeci">eve::Result&lt; eve::definition::ReloadOutcome &gt; reload(eve::definition::ReloadPolicy policy)</div><div class="ttdoc">Reload from the registry's current generation and execute policy.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00246">CardDefinitionRuntime.cpp:246</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a30bba1ed6cb29c5bbfd5dd8f490afdf1"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a30bba1ed6cb29c5bbfd5dd8f490afdf1">eve::card::CardDefinitionRuntime::state</a></div><div class="ttdeci">const CardRuntimeState &amp; state() const noexcept</div><div class="ttdoc">Borrow the strongly typed card runtime state.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00204">CardDefinitionRuntime.cpp:204</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a32cb411c70ed865c5185e60f9ea9c874"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a32cb411c70ed865c5185e60f9ea9c874">eve::card::CardDefinitionRuntime::identity</a></div><div class="ttdeci">const eve::definition::InstanceIdentity &amp; identity() const noexcept</div><div class="ttdoc">Borrow the unified instance identity.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00200">CardDefinitionRuntime.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a3a985d44db6e1b17e60895397b1ca2cc"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a3a985d44db6e1b17e60895397b1ca2cc">eve::card::CardDefinitionRuntime::reloadPolicy</a></div><div class="ttdeci">eve::definition::ReloadPolicy reloadPolicy() const noexcept</div><div class="ttdoc">Return the policy used by the next reload call.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00079">CardDefinitionRuntime.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a5f7df1bc8b4980ce7053f3491c32c7f9"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a5f7df1bc8b4980ce7053f3491c32c7f9">eve::card::CardDefinitionRuntime::snapshotJson</a></div><div class="ttdeci">eve::Result&lt; std::string &gt; snapshotJson(eve::Revision revision, eve::SimulationTick tick, const eve::SnapshotHashProvider &amp;hashProvider) const</div><div class="ttdoc">Serialize snapshot() as canonical JSON.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00274">CardDefinitionRuntime.cpp:274</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a63f091ca5666f73cb0202c2ea19a8f39"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a63f091ca5666f73cb0202c2ea19a8f39">eve::card::CardDefinitionRuntime::applyTo</a></div><div class="ttdeci">eve::Result&lt; void &gt; applyTo(CardData *card) const</div><div class="ttdoc">Apply the typed state and common identity to an ECS CardData.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00216">CardDefinitionRuntime.cpp:216</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a67671b75c46a01114044482d90e54005"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a67671b75c46a01114044482d90e54005">eve::card::CardDefinitionRuntime::isActive</a></div><div class="ttdeci">bool isActive() const noexcept</div><div class="ttdoc">Return whether RejectWhileActive currently treats the instance as active.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00214">CardDefinitionRuntime.cpp:214</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a7546e308d2fa29c2109994742c69b0fe"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a7546e308d2fa29c2109994742c69b0fe">eve::card::CardDefinitionRuntime::create</a></div><div class="ttdeci">static eve::Result&lt; CardDefinitionRuntime &gt; create(eve::definitions::DefinitionRegistry &amp;registry, eve::DefinitionRef definition, eve::PersistentId instanceId, eve::definition::ReloadPolicy policy=eve::definition::ReloadPolicy::KeepInstanceValues)</div><div class="ttdoc">Create a card runtime from the current typed definition.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00184">CardDefinitionRuntime.cpp:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a862e16815563d4e853edd7ddf215ec06"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a862e16815563d4e853edd7ddf215ec06">eve::card::CardDefinitionRuntime::CardDefinitionRuntime</a></div><div class="ttdeci">CardDefinitionRuntime(CardDefinitionRuntime &amp;&amp;) noexcept=default</div><div class="ttdoc">Move a card runtime while retaining its borrowed registry binding.</div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_a9049ebf64c5ba78f8e6d7a08586fe5e1"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#a9049ebf64c5ba78f8e6d7a08586fe5e1">eve::card::CardDefinitionRuntime::setActive</a></div><div class="ttdeci">void setActive(bool active) noexcept</div><div class="ttdoc">Mark the instance active/inactive for RejectWhileActive.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00212">CardDefinitionRuntime.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_acf21f2f988eb17b5b864d171b1134f81"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#acf21f2f988eb17b5b864d171b1134f81">eve::card::CardDefinitionRuntime::snapshot</a></div><div class="ttdeci">eve::Result&lt; eve::SnapshotEnvelope &gt; snapshot(eve::Revision revision, eve::SimulationTick tick, const eve::SnapshotHashProvider &amp;hashProvider) const</div><div class="ttdoc">Capture card instance state in the common SnapshotEnvelope.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00265">CardDefinitionRuntime.cpp:265</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_ad80fae1e905a02cdcdf4d0e76c789f4e"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#ad80fae1e905a02cdcdf4d0e76c789f4e">eve::card::CardDefinitionRuntime::definitionHandle</a></div><div class="ttdeci">eve::definition::DefinitionHandle definitionHandle() const noexcept</div><div class="ttdoc">Borrow the exact generation-qualified definition handle.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00208">CardDefinitionRuntime.cpp:208</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardDefinitionRuntime_html_afdd6afd85e1c9f4c9cfcf33c1a77937f"><div class="ttname"><a href="classeve_1_1card_1_1CardDefinitionRuntime.html#afdd6afd85e1c9f4c9cfcf33c1a77937f">eve::card::CardDefinitionRuntime::restore</a></div><div class="ttdeci">eve::Result&lt; void &gt; restore(const eve::SnapshotEnvelope &amp;snapshot, const eve::SnapshotHashProvider &amp;hashProvider)</div><div class="ttdoc">Verify and atomically restore a same-generation card snapshot.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8cpp_source.html#l00282">CardDefinitionRuntime.cpp:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1definition_1_1RuntimeInstance_html"><div class="ttname"><a href="classeve_1_1definition_1_1RuntimeInstance.html">eve::definition::RuntimeInstance</a></div><div class="ttdoc">Owns one strongly typed runtime state and its definition identity.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8h_source.html#l00163">DefinitionRuntime.h:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions_1_1DefinitionRegistry_html"><div class="ttname"><a href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a></div><div class="ttdoc">Deterministic registry of topic-neutral, versioned JSON definitions.</div><div class="ttdef"><b>Definition</b> <a href="Definitions_8h_source.html#l00056">Definitions.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html"><div class="ttname"><a href="namespaceeve_1_1card.html">eve::card</a></div><div class="ttdef"><b>Definition</b> <a href="Card_8cpp_source.html#l00016">Card.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definition_html_a3d64f47e218ceb4a83d17f201372b9a8"><div class="ttname"><a href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a></div><div class="ttdeci">ReloadPolicy</div><div class="ttdoc">Policy used when a live definition is replaced.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8h_source.html#l00029">DefinitionRuntime.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definition_html_a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020"><div class="ttname"><a href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a></div><div class="ttdeci">@ KeepInstanceValues</div><div class="ttdoc">Replace the definition generation and preserve all instance values.</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_af5cd4beecd29f95341ebc417b792f16c"><div class="ttname"><a href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a></div><div class="ttdeci">std::function&lt; Result&lt; ContentId &gt;(std::string_view canonicalInput)&gt; SnapshotHashProvider</div><div class="ttdoc">Injected content-digest implementation used by snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00036">Snapshot.h:36</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1SnapshotEnvelope_html"><div class="ttname"><a href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a></div><div class="ttdoc">Stable outer format shared by persistence and cross-process snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00046">Snapshot.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html">eve::card::CardRuntimeState</a></div><div class="ttdoc">Typed mutable values owned by one card definition instance.</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00026">CardDefinitionRuntime.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html_a068678edbad55b8913d85370c4321c3e"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html#a068678edbad55b8913d85370c4321c3e">eve::card::CardRuntimeState::tint</a></div><div class="ttdeci">glm::vec3 tint</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00033">CardDefinitionRuntime.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html_a17804cd2edba6f074dae4c5f656e35e8"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html#a17804cd2edba6f074dae4c5f656e35e8">eve::card::CardRuntimeState::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00034">CardDefinitionRuntime.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html_a1cccfb597a968a47bf31a57208541060"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html#a1cccfb597a968a47bf31a57208541060">eve::card::CardRuntimeState::attack</a></div><div class="ttdeci">int attack</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00030">CardDefinitionRuntime.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html_a4fb6bd34eabc558d8cca0c6af2d3d08a"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html#a4fb6bd34eabc558d8cca0c6af2d3d08a">eve::card::CardRuntimeState::cost</a></div><div class="ttdeci">int cost</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00029">CardDefinitionRuntime.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html_a87f3059498634cd1a789deec185028c9"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html#a87f3059498634cd1a789deec185028c9">eve::card::CardRuntimeState::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00028">CardDefinitionRuntime.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html_a91878cf9896614194bd6e7cc46182377"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html#a91878cf9896614194bd6e7cc46182377">eve::card::CardRuntimeState::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00027">CardDefinitionRuntime.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html_aa71ffa501e70b852d463d0aefab040d0"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html#aa71ffa501e70b852d463d0aefab040d0">eve::card::CardRuntimeState::currentHealth</a></div><div class="ttdeci">int currentHealth</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00032">CardDefinitionRuntime.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1card_1_1CardRuntimeState_html_ad172088b9c019fff396fa4e3ce3a5c75"><div class="ttname"><a href="structeve_1_1card_1_1CardRuntimeState.html#ad172088b9c019fff396fa4e3ce3a5c75">eve::card::CardRuntimeState::maxHealth</a></div><div class="ttdeci">int maxHealth</div><div class="ttdef"><b>Definition</b> <a href="CardDefinitionRuntime_8h_source.html#l00031">CardDefinitionRuntime.h:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

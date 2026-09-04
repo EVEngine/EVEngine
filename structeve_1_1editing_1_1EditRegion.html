@@ -1,0 +1,412 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editing::EditRegion结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editing.html">editing</a></li><li class="navelem"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1editing_1_1EditRegion-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editing::EditRegion结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6b09d7271e267b1f5ebac45ef378678d" id="r_a6b09d7271e267b1f5ebac45ef378678d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html#a6b09d7271e267b1f5ebac45ef378678d">empty</a> () const</td></tr>
+<tr class="separator:a6b09d7271e267b1f5ebac45ef378678d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc33c22f9fc876d717944a1fe94a932c" id="r_acc33c22f9fc876d717944a1fe94a932c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">clear</a> ()</td></tr>
+<tr class="separator:acc33c22f9fc876d717944a1fe94a932c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d2752bc34216dcca944fba17340ad68" id="r_a9d2752bc34216dcca944fba17340ad68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html#a9d2752bc34216dcca944fba17340ad68">include</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a9d2752bc34216dcca944fba17340ad68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1a7d59fed0d72752a100d12b0b48961" id="r_ab1a7d59fed0d72752a100d12b0b48961"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html#ab1a7d59fed0d72752a100d12b0b48961">include</a> (const <a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> &amp;o)</td></tr>
+<tr class="separator:ab1a7d59fed0d72752a100d12b0b48961"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ae8ea46e3d0fd7dd01509b2238d8d1260" id="r_ae8ea46e3d0fd7dd01509b2238d8d1260"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html#ae8ea46e3d0fd7dd01509b2238d8d1260">minX</a> = 0</td></tr>
+<tr class="separator:ae8ea46e3d0fd7dd01509b2238d8d1260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb0d7edc601b6beeaafbe4ebefa06e95" id="r_afb0d7edc601b6beeaafbe4ebefa06e95"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html#afb0d7edc601b6beeaafbe4ebefa06e95">minY</a> = 0</td></tr>
+<tr class="separator:afb0d7edc601b6beeaafbe4ebefa06e95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0280c13ddf337a454a7cdf83b07cd3fc" id="r_a0280c13ddf337a454a7cdf83b07cd3fc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html#a0280c13ddf337a454a7cdf83b07cd3fc">maxX</a> = -1</td></tr>
+<tr class="separator:a0280c13ddf337a454a7cdf83b07cd3fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6450c7d013112463d7bc3fea91b5f944" id="r_a6450c7d013112463d7bc3fea91b5f944"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1EditRegion.html#a6450c7d013112463d7bc3fea91b5f944">maxY</a> = -1</td></tr>
+<tr class="separator:a6450c7d013112463d7bc3fea91b5f944"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00008">8</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="acc33c22f9fc876d717944a1fe94a932c" name="acc33c22f9fc876d717944a1fe94a932c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc33c22f9fc876d717944a1fe94a932c">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editing::EditRegion::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8h_source.html#l00108">eve::animation_editing::AnimationClipDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="AudioEffects_8h_source.html#l00030">eve::audio_editing::AudioEffectChainTarget::clearDirtyRegion()</a>, <a class="el" href="AudioTarget_8h_source.html#l00026">eve::audio_editing::AudioSourceTarget::clearDirtyRegion()</a>, <a class="el" href="AudioTarget_8h_source.html#l00131">eve::audio_editing::AudioMixerTarget::clearDirtyRegion()</a>, <a class="el" href="AvatarTarget_8h_source.html#l00083">eve::avatar_editing::AvatarDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="BiomeTarget_8h_source.html#l00072">eve::biome_editing::BiomeDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="BuildingTarget_8h_source.html#l00165">eve::building_editing::BuildingPlacementTarget::clearDirtyRegion()</a>, <a class="el" href="CameraTarget_8h_source.html#l00074">eve::camera_editing::CameraDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="CrowdDocument_8h_source.html#l00088">eve::crowd_editing::CrowdDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="DecalTarget_8h_source.html#l00038">eve::decal_editing::DecalDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="DefinitionTarget_8h_source.html#l00044">eve::definitions_editing::DefinitionDocument::clearDirtyRegion()</a>, <a class="el" href="EditorCurveDocument_8h_source.html#l00065">eve::editor::EditorCurveDocument::clearDirtyRegion()</a>, <a class="el" href="EditorPluginPermissions_8h_source.html#l00031">eve::editor::PluginPermissionTarget::clearDirtyRegion()</a>, <a class="el" href="EditorProjectSettings_8h_source.html#l00037">eve::editor::ProjectSettingsTarget::clearDirtyRegion()</a>, <a class="el" href="FluidTarget_8h_source.html#l00081">eve::fluids_editing::FluidSimulationTarget::clearDirtyRegion()</a>, <a class="el" href="SurfaceFluidTarget_8h_source.html#l00072">eve::fluids_editing::SurfaceFluidTarget::clearDirtyRegion()</a>, <a class="el" href="Hd2dTarget_8h_source.html#l00068">eve::hd2d_editing::Hd2dDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="HouseGenTarget_8h_source.html#l00067">eve::housegen_editing::HouseGenDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="FieldTargets_8h_source.html#l00026">eve::level_editing::TileBufferTarget::clearDirtyRegion()</a>, <a class="el" href="LightingTarget_8h_source.html#l00059">eve::lighting_editing::LightingPropertyTargetBase::clearDirtyRegion()</a>, <a class="el" href="MapDocument_8h_source.html#l00134">eve::map_editing::MapDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="TileLayerTarget_8h_source.html#l00022">eve::map_editing::TileLayerTarget::clearDirtyRegion()</a>, <a class="el" href="MaterialTarget_8h_source.html#l00036">eve::material_editing::MaterialDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="PhysicsTarget_8h_source.html#l00058">eve::physics_editing::PhysicsColliderTarget::clearDirtyRegion()</a>, <a class="el" href="PhysicsTarget_8h_source.html#l00137">eve::physics_editing::PhysicsJointTarget::clearDirtyRegion()</a>, <a class="el" href="HeightmapTarget_8h_source.html#l00021">eve::procgen_editing::HeightmapTarget::clearDirtyRegion()</a>, <a class="el" href="TextureRecipeTarget_8h_source.html#l00024">eve::procgen_editing::TextureRecipeTarget::clearDirtyRegion()</a>, <a class="el" href="SceneTarget_8h_source.html#l00088">eve::scene_editing::SceneTargetBase::clearDirtyRegion()</a>, <a class="el" href="SceneImportTarget_8h_source.html#l00033">eve::sceneloader_editing::SceneImportTarget::clearDirtyRegion()</a>, <a class="el" href="snow__editing_2SnowFieldTarget_8h_source.html#l00021">eve::snow_editing::SnowFieldTarget::clearDirtyRegion()</a>, <a class="el" href="SocialDocument_8h_source.html#l00061">eve::social_editing::SocialDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="SpriteStackTarget_8h_source.html#l00078">eve::spritestack_editing::SpriteStackDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="MeshVfxTarget_8h_source.html#l00057">eve::stylize_editing::MeshVfxAssetTarget::clearDirtyRegion()</a>, <a class="el" href="StylizeTarget_8h_source.html#l00071">eve::stylize_editing::StylizeRecipeTarget::clearDirtyRegion()</a>, <a class="el" href="UiDocument_8h_source.html#l00142">eve::ui_editing::UiDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="VirtualGeometryTarget_8h_source.html#l00070">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget::clearDirtyRegion()</a>, <a class="el" href="VoxelPaletteTarget_8h_source.html#l00062">eve::voxel_editing::VoxelPaletteTarget::clearDirtyRegion()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00484">eve::avatar_editing::AvatarDocumentTarget::loadSnapshot()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00387">eve::biome_editing::BiomeDocumentTarget::loadSnapshot()</a>, <a class="el" href="Hd2dTarget_8cpp_source.html#l00291">eve::hd2d_editing::Hd2dDocumentTarget::loadSnapshot()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00208">eve::procgen_editing::TextureRecipeTarget::loadSnapshot()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00197">eve::sceneloader_editing::SceneImportTarget::loadSnapshot()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00273">eve::voxel_editing::VoxelPaletteTarget::loadSnapshot()</a>, <a class="el" href="AudioSerialization_8cpp_source.html#l00032">eve::audio_editing::AudioSourceTarget::loadSnapshot()</a>, <a class="el" href="AudioMixerTarget_8cpp_source.html#l00203">eve::audio_editing::AudioMixerTarget::loadSnapshot()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00047">eve::camera_editing::CameraDocumentTarget::loadSnapshot()</a>, <a class="el" href="DecalTarget_8cpp_source.html#l00041">eve::decal_editing::DecalDocumentTarget::loadSnapshot()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00193">eve::editor::EditorCurveDocument::loadSnapshot()</a>, <a class="el" href="FluidTarget_8cpp_source.html#l00247">eve::fluids_editing::FluidSimulationTarget::loadSnapshot()</a>, <a class="el" href="SurfaceFluidTarget_8cpp_source.html#l00264">eve::fluids_editing::SurfaceFluidTarget::loadSnapshot()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00534">eve::housegen_editing::HouseGenDocumentTarget::loadSnapshot()</a>, <a class="el" href="LightingTarget_8cpp_source.html#l00210">eve::lighting_editing::LightingPropertyTargetBase::loadSnapshot()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00629">eve::map_editing::MapDocumentTarget::loadSnapshot()</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00170">eve::material_editing::MaterialDocumentTarget::loadSnapshot()</a>, <a class="el" href="PhysicsSerialization_8cpp_source.html#l00032">eve::physics_editing::PhysicsColliderTarget::loadSnapshot()</a>, <a class="el" href="SpriteStackTarget_8cpp_source.html#l00326">eve::spritestack_editing::SpriteStackDocumentTarget::loadSnapshot()</a>, <a class="el" href="MeshVfxTarget_8cpp_source.html#l00167">eve::stylize_editing::MeshVfxAssetTarget::loadSnapshot()</a>, <a class="el" href="StylizeTarget_8cpp_source.html#l00295">eve::stylize_editing::StylizeRecipeTarget::loadSnapshot()</a>, <a class="el" href="UiDocumentSerialization_8cpp_source.html#l00234">eve::ui_editing::UiDocumentTarget::loadSnapshot()</a> , 以及 <a class="el" href="VirtualGeometryTarget_8cpp_source.html#l00266">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget::loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a6b09d7271e267b1f5ebac45ef378678d" name="a6b09d7271e267b1f5ebac45ef378678d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b09d7271e267b1f5ebac45ef378678d">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editing::EditRegion::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00009">maxX</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">maxY</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">minX</a> , 以及 <a class="el" href="EditableTarget_8h_source.html#l00009">minY</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditableTarget_8h_source.html#l00023">include()</a> , 以及 <a class="el" href="EditableTarget_8h_source.html#l00012">include()</a>.</p>
+
+</div>
+</div>
+<a id="ab1a7d59fed0d72752a100d12b0b48961" name="ab1a7d59fed0d72752a100d12b0b48961"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1a7d59fed0d72752a100d12b0b48961">&#9670;&#160;</a></span>include() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editing::EditRegion::include </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> &amp;&#160;</td>
+          <td class="paramname"><em>o</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00010">empty()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">include()</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">maxX</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">maxY</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">minX</a> , 以及 <a class="el" href="EditableTarget_8h_source.html#l00009">minY</a>.</p>
+
+</div>
+</div>
+<a id="a9d2752bc34216dcca944fba17340ad68" name="a9d2752bc34216dcca944fba17340ad68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d2752bc34216dcca944fba17340ad68">&#9670;&#160;</a></span>include() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editing::EditRegion::include </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00010">empty()</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">maxX</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">maxY</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">minX</a>, <a class="el" href="EditableTarget_8h_source.html#l00009">minY</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00424">eve::avatar_editing::AvatarDocumentTarget::applyDomainOperation()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00345">eve::biome_editing::BiomeDocumentTarget::applyDomainOperation()</a>, <a class="el" href="Hd2dTarget_8cpp_source.html#l00229">eve::hd2d_editing::Hd2dDocumentTarget::applyDomainOperation()</a>, <a class="el" href="TextureRecipeTarget_8cpp_source.html#l00175">eve::procgen_editing::TextureRecipeTarget::applyDomainOperation()</a>, <a class="el" href="SceneImportTarget_8cpp_source.html#l00151">eve::sceneloader_editing::SceneImportTarget::applyDomainOperation()</a>, <a class="el" href="VoxelPaletteTarget_8cpp_source.html#l00237">eve::voxel_editing::VoxelPaletteTarget::applyDomainOperation()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00168">eve::animation_editing::AnimationClipDocumentTarget::applyDomainOperation()</a>, <a class="el" href="AudioEffects_8cpp_source.html#l00101">eve::audio_editing::AudioEffectChainTarget::applyDomainOperation()</a>, <a class="el" href="AudioTarget_8cpp_source.html#l00049">eve::audio_editing::AudioSourceTarget::applyDomainOperation()</a>, <a class="el" href="AudioMixerTarget_8cpp_source.html#l00035">eve::audio_editing::AudioMixerTarget::applyDomainOperation()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00043">eve::camera_editing::CameraDocumentTarget::applyDomainOperation()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00165">eve::crowd_editing::CrowdDocumentTarget::applyDomainOperation()</a>, <a class="el" href="DecalTarget_8cpp_source.html#l00036">eve::decal_editing::DecalDocumentTarget::applyDomainOperation()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00044">eve::definitions_editing::DefinitionDocument::applyDomainOperation()</a>, <a class="el" href="EditorCurveDocument_8cpp_source.html#l00096">eve::editor::EditorCurveDocument::applyDomainOperation()</a>, <a class="el" href="EditorPluginPermissions_8cpp_source.html#l00057">eve::editor::PluginPermissionTarget::applyDomainOperation()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00073">eve::editor::ProjectSettingsTarget::applyDomainOperation()</a>, <a class="el" href="FluidTarget_8cpp_source.html#l00125">eve::fluids_editing::FluidSimulationTarget::applyDomainOperation()</a>, <a class="el" href="SurfaceFluidTarget_8cpp_source.html#l00250">eve::fluids_editing::SurfaceFluidTarget::applyDomainOperation()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00492">eve::housegen_editing::HouseGenDocumentTarget::applyDomainOperation()</a>, <a class="el" href="LightingTarget_8cpp_source.html#l00125">eve::lighting_editing::LightingPropertyTargetBase::applyDomainOperation()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00200">eve::map_editing::MapDocumentTarget::applyDomainOperation()</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00057">eve::material_editing::MaterialDocumentTarget::applyDomainOperation()</a>, <a class="el" href="PhysicsTarget_8cpp_source.html#l00050">eve::physics_editing::PhysicsColliderTarget::applyDomainOperation()</a>, <a class="el" href="PhysicsJointTarget_8cpp_source.html#l00047">eve::physics_editing::PhysicsJointTarget::applyDomainOperation()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00050">eve::scene_editing::SceneTargetBase::applyDomainOperation()</a>, <a class="el" href="SocialDocument_8cpp_source.html#l00087">eve::social_editing::SocialDocumentTarget::applyDomainOperation()</a>, <a class="el" href="SpriteStackTarget_8cpp_source.html#l00246">eve::spritestack_editing::SpriteStackDocumentTarget::applyDomainOperation()</a>, <a class="el" href="MeshVfxTarget_8cpp_source.html#l00129">eve::stylize_editing::MeshVfxAssetTarget::applyDomainOperation()</a>, <a class="el" href="StylizeTarget_8cpp_source.html#l00222">eve::stylize_editing::StylizeRecipeTarget::applyDomainOperation()</a>, <a class="el" href="UiDocument_8cpp_source.html#l00040">eve::ui_editing::UiDocumentTarget::applyDomainOperation()</a>, <a class="el" href="VirtualGeometryTarget_8cpp_source.html#l00205">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget::applyDomainOperation()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l01429">eve::building_editing::BuildingPlacementTarget::commitDomainState()</a>, <a class="el" href="EditableTarget_8h_source.html#l00023">include()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00322">eve::animation_editing::AnimationClipDocumentTarget::loadSnapshot()</a>, <a class="el" href="AudioEffects_8cpp_source.html#l00196">eve::audio_editing::AudioEffectChainTarget::loadSnapshot()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00226">eve::crowd_editing::CrowdDocumentTarget::loadSnapshot()</a>, <a class="el" href="EditorPluginPermissions_8cpp_source.html#l00133">eve::editor::PluginPermissionTarget::loadSnapshot()</a>, <a class="el" href="EditorProjectSettings_8cpp_source.html#l00187">eve::editor::ProjectSettingsTarget::loadSnapshot()</a>, <a class="el" href="SocialDocument_8cpp_source.html#l00217">eve::social_editing::SocialDocumentTarget::loadSnapshot()</a>, <a class="el" href="EditCommand_8cpp_source.html#l00043">eve::editor::IntFieldEditCommand::mergeWith()</a>, <a class="el" href="EditCommand_8cpp_source.html#l00098">eve::editor::ScalarFieldEditCommand::mergeWith()</a>, <a class="el" href="EditCommand_8cpp_source.html#l00063">eve::editor::ScalarFieldEditCommand::record()</a>, <a class="el" href="EditCommand_8cpp_source.html#l00009">eve::editor::IntFieldEditCommand::record()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00066">eve::definitions_editing::DefinitionDocument::setJson()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00086">eve::definitions_editing::DefinitionDocument::setReferences()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00076">eve::definitions_editing::DefinitionDocument::setVersion()</a>, <a class="el" href="FieldTargets_8cpp_source.html#l00014">eve::level_editing::TileBufferTarget::writeInt()</a>, <a class="el" href="TileLayerTarget_8cpp_source.html#l00019">eve::map_editing::TileLayerTarget::writeInt()</a>, <a class="el" href="HeightmapTarget_8cpp_source.html#l00019">eve::procgen_editing::HeightmapTarget::writeScalar()</a>, <a class="el" href="SnowFieldTarget_8cpp_source.html#l00019">eve::snow_editing::SnowFieldTarget::writeScalar()</a> , 以及 <a class="el" href="EditingVolume_8cpp_source.html#l00026">eve::editing::EditVolume::xzRegion()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a0280c13ddf337a454a7cdf83b07cd3fc" name="a0280c13ddf337a454a7cdf83b07cd3fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0280c13ddf337a454a7cdf83b07cd3fc">&#9670;&#160;</a></span>maxX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editing::EditRegion::maxX = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditableTarget_8h_source.html#l00010">empty()</a>, <a class="el" href="EditableTarget_8h_source.html#l00023">include()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">include()</a>, <a class="el" href="BrushKernel_8cpp_source.html#l00038">eve::editor::CircleBrushKernel::sample()</a> , 以及 <a class="el" href="BrushKernel_8cpp_source.html#l00054">eve::editor::BoxBrushKernel::sample()</a>.</p>
+
+</div>
+</div>
+<a id="a6450c7d013112463d7bc3fea91b5f944" name="a6450c7d013112463d7bc3fea91b5f944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6450c7d013112463d7bc3fea91b5f944">&#9670;&#160;</a></span>maxY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editing::EditRegion::maxY = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditableTarget_8h_source.html#l00010">empty()</a>, <a class="el" href="EditableTarget_8h_source.html#l00023">include()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">include()</a>, <a class="el" href="BrushKernel_8cpp_source.html#l00038">eve::editor::CircleBrushKernel::sample()</a> , 以及 <a class="el" href="BrushKernel_8cpp_source.html#l00054">eve::editor::BoxBrushKernel::sample()</a>.</p>
+
+</div>
+</div>
+<a id="ae8ea46e3d0fd7dd01509b2238d8d1260" name="ae8ea46e3d0fd7dd01509b2238d8d1260"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8ea46e3d0fd7dd01509b2238d8d1260">&#9670;&#160;</a></span>minX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editing::EditRegion::minX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditableTarget_8h_source.html#l00010">empty()</a>, <a class="el" href="EditableTarget_8h_source.html#l00023">include()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">include()</a>, <a class="el" href="BrushKernel_8cpp_source.html#l00038">eve::editor::CircleBrushKernel::sample()</a> , 以及 <a class="el" href="BrushKernel_8cpp_source.html#l00054">eve::editor::BoxBrushKernel::sample()</a>.</p>
+
+</div>
+</div>
+<a id="afb0d7edc601b6beeaafbe4ebefa06e95" name="afb0d7edc601b6beeaafbe4ebefa06e95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb0d7edc601b6beeaafbe4ebefa06e95">&#9670;&#160;</a></span>minY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editing::EditRegion::minY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a> 第 <a class="el" href="EditableTarget_8h_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditableTarget_8h_source.html#l00010">empty()</a>, <a class="el" href="EditableTarget_8h_source.html#l00023">include()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">include()</a>, <a class="el" href="BrushKernel_8cpp_source.html#l00038">eve::editor::CircleBrushKernel::sample()</a> , 以及 <a class="el" href="BrushKernel_8cpp_source.html#l00054">eve::editor::BoxBrushKernel::sample()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/editing/<a class="el" href="EditableTarget_8h_source.html">EditableTarget.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

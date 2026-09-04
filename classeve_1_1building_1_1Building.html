@@ -1,0 +1,1368 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::Building类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="classeve_1_1building_1_1Building.html">Building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1building_1_1Building-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::Building类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>建筑放置模块（eve.Building）。  
+ <a href="classeve_1_1building_1_1Building.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Building_8h_source.html">Building.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::building::Building 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1building_1_1Building.png" usemap="#eve::building::Building_map" alt=""/>
+  <map id="eve::building::Building_map" name="eve::building::Building_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,134,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8666bbb41f7acc9c84e4de0bd6bf1c4a" id="r_a8666bbb41f7acc9c84e4de0bd6bf1c4a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a8666bbb41f7acc9c84e4de0bd6bf1c4a">Module_REG</a> (<a class="el" href="classeve_1_1building_1_1Building.html">Building</a>)</td></tr>
+<tr class="separator:a8666bbb41f7acc9c84e4de0bd6bf1c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5115b5989d8f0b76b07214fb8361431" id="r_ac5115b5989d8f0b76b07214fb8361431"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#ac5115b5989d8f0b76b07214fb8361431">Building</a> ()=default</td></tr>
+<tr class="separator:ac5115b5989d8f0b76b07214fb8361431"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28bb20ef875e1d91f2cbe1fb388487a4" id="r_a28bb20ef875e1d91f2cbe1fb388487a4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a28bb20ef875e1d91f2cbe1fb388487a4">~Building</a> () override=default</td></tr>
+<tr class="separator:a28bb20ef875e1d91f2cbe1fb388487a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0160aa11be14dfb5f31a329245e0a97c" id="r_a0160aa11be14dfb5f31a329245e0a97c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a0160aa11be14dfb5f31a329245e0a97c">registerBuildingsFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a0160aa11be14dfb5f31a329245e0a97c"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 JSON 注册建筑模板；返回成功注册数量。  <br /></td></tr>
+<tr class="separator:a0160aa11be14dfb5f31a329245e0a97c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70bcb79e725821e56a94ff2ff5839c65" id="r_a70bcb79e725821e56a94ff2ff5839c65"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a70bcb79e725821e56a94ff2ff5839c65">clearBuildingDefinitions</a> ()</td></tr>
+<tr class="memdesc:a70bcb79e725821e56a94ff2ff5839c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空全部建筑模板。  <br /></td></tr>
+<tr class="separator:a70bcb79e725821e56a94ff2ff5839c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adef4c6a7204dc842bf0cdf256e5b5fa8" id="r_adef4c6a7204dc842bf0cdf256e5b5fa8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#adef4c6a7204dc842bf0cdf256e5b5fa8">getBuildingDefinitionCount</a> ()</td></tr>
+<tr class="memdesc:adef4c6a7204dc842bf0cdf256e5b5fa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">已注册建筑模板数量。  <br /></td></tr>
+<tr class="separator:adef4c6a7204dc842bf0cdf256e5b5fa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9e2e94960ad5009cc037e0f210987a2" id="r_ad9e2e94960ad5009cc037e0f210987a2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#ad9e2e94960ad5009cc037e0f210987a2">hasBuildingDefinition</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="memdesc:ad9e2e94960ad5009cc037e0f210987a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">建筑模板查询（显示名/类别/占地/规则/标签/额外属性/成本）。  <br /></td></tr>
+<tr class="separator:ad9e2e94960ad5009cc037e0f210987a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0da683e6303b84840643ec5fec97e750" id="r_a0da683e6303b84840643ec5fec97e750"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a0da683e6303b84840643ec5fec97e750">getBuildingDisplayName</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:a0da683e6303b84840643ec5fec97e750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8443cd762d61efe9a47cccfc3dcfc364" id="r_a8443cd762d61efe9a47cccfc3dcfc364"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a8443cd762d61efe9a47cccfc3dcfc364">getBuildingCategory</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:a8443cd762d61efe9a47cccfc3dcfc364"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ce7c4c6ad864502f2ca9ee650a77eca" id="r_a4ce7c4c6ad864502f2ca9ee650a77eca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a4ce7c4c6ad864502f2ca9ee650a77eca">getBuildingFootprintW</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:a4ce7c4c6ad864502f2ca9ee650a77eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98ba04c2232c3f676f2b522ccc00dee3" id="r_a98ba04c2232c3f676f2b522ccc00dee3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a98ba04c2232c3f676f2b522ccc00dee3">getBuildingFootprintH</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:a98ba04c2232c3f676f2b522ccc00dee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7399ae0f7c17affc9e6648031defba58" id="r_a7399ae0f7c17affc9e6648031defba58"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a7399ae0f7c17affc9e6648031defba58">getBuildingSnapMode</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:a7399ae0f7c17affc9e6648031defba58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00a940b11e8f28ac932b95df9db2cd52" id="r_a00a940b11e8f28ac932b95df9db2cd52"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a00a940b11e8f28ac932b95df9db2cd52">getBuildingRotationMode</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:a00a940b11e8f28ac932b95df9db2cd52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accc841e15b452407afc2a98e9fc5855d" id="r_accc841e15b452407afc2a98e9fc5855d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#accc841e15b452407afc2a98e9fc5855d">getBuildingValidateRule</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:accc841e15b452407afc2a98e9fc5855d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8be1335858661df1812dd70539ddf2fe" id="r_a8be1335858661df1812dd70539ddf2fe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a8be1335858661df1812dd70539ddf2fe">getBuildingChannel</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:a8be1335858661df1812dd70539ddf2fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaff7abf75bcc51f452d30caaa3422c8c" id="r_aaff7abf75bcc51f452d30caaa3422c8c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#aaff7abf75bcc51f452d30caaa3422c8c">getBuildingRenderMode</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="separator:aaff7abf75bcc51f452d30caaa3422c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf2b9e0962312c7fe829a49b5b93c118" id="r_adf2b9e0962312c7fe829a49b5b93c118"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#adf2b9e0962312c7fe829a49b5b93c118">getBuildingPlacementKind</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="memdesc:adf2b9e0962312c7fe829a49b5b93c118"><td class="mdescLeft">&#160;</td><td class="mdescRight">Definition placement domain (<code>cell</code> or <code>edge</code>).  <br /></td></tr>
+<tr class="separator:adf2b9e0962312c7fe829a49b5b93c118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a133913d6bb22b5945fc6e370311bfb8b" id="r_a133913d6bb22b5945fc6e370311bfb8b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a133913d6bb22b5945fc6e370311bfb8b">getBuildingConnectionGroup</a> (const std::string &amp;buildingId)</td></tr>
+<tr class="memdesc:a133913d6bb22b5945fc6e370311bfb8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Definition edge connection group, or empty when it falls back to id.  <br /></td></tr>
+<tr class="separator:a133913d6bb22b5945fc6e370311bfb8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99a6e751b724bdaf713953687ac544ba" id="r_a99a6e751b724bdaf713953687ac544ba"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a99a6e751b724bdaf713953687ac544ba">getBuildingVisual2d</a> (const std::string &amp;buildingId, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;fallback={})</td></tr>
+<tr class="separator:a99a6e751b724bdaf713953687ac544ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f50558beaf659626f9fb60a93c0d1bc" id="r_a1f50558beaf659626f9fb60a93c0d1bc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a1f50558beaf659626f9fb60a93c0d1bc">getBuildingVisual3d</a> (const std::string &amp;buildingId, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;fallback={})</td></tr>
+<tr class="separator:a1f50558beaf659626f9fb60a93c0d1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76d11f97f4118498cef7c7aa4ac92b21" id="r_a76d11f97f4118498cef7c7aa4ac92b21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a76d11f97f4118498cef7c7aa4ac92b21">buildingHasTag</a> (const std::string &amp;buildingId, const std::string &amp;tag)</td></tr>
+<tr class="separator:a76d11f97f4118498cef7c7aa4ac92b21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a761ea1e96eb9ad6b5f40970bd47289d0" id="r_a761ea1e96eb9ad6b5f40970bd47289d0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a761ea1e96eb9ad6b5f40970bd47289d0">getBuildingExtra</a> (const std::string &amp;buildingId, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;fallback={})</td></tr>
+<tr class="separator:a761ea1e96eb9ad6b5f40970bd47289d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a8d396e842ba21058b9c87c4bd5030b" id="r_a7a8d396e842ba21058b9c87c4bd5030b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a7a8d396e842ba21058b9c87c4bd5030b">getBuildingCost</a> (const std::string &amp;buildingId, const std::string &amp;resource)</td></tr>
+<tr class="separator:a7a8d396e842ba21058b9c87c4bd5030b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8564385fec1f8c5359d4e81afe693c8" id="r_af8564385fec1f8c5359d4e81afe693c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#af8564385fec1f8c5359d4e81afe693c8">newWorld</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float cellSize=32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:af8564385fec1f8c5359d4e81afe693c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">工厂：创建放置世界 / 鬼影。  <br /></td></tr>
+<tr class="separator:af8564385fec1f8c5359d4e81afe693c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af077a2937d519372a3216d0063c34e4a" id="r_af077a2937d519372a3216d0063c34e4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1building_1_1Ghost.html">Ghost</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#af077a2937d519372a3216d0063c34e4a">newGhost</a> ()</td></tr>
+<tr class="separator:af077a2937d519372a3216d0063c34e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e3dba2c447b7c3840c9fa35a0ed5c05" id="r_a8e3dba2c447b7c3840c9fa35a0ed5c05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a8e3dba2c447b7c3840c9fa35a0ed5c05">newSession</a> ()</td></tr>
+<tr class="separator:a8e3dba2c447b7c3840c9fa35a0ed5c05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31a29aaa7a203826cb4afbbc0d128b88" id="r_a31a29aaa7a203826cb4afbbc0d128b88"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a31a29aaa7a203826cb4afbbc0d128b88">hasValidateRule</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a31a29aaa7a203826cb4afbbc0d128b88"><td class="mdescLeft">&#160;</td><td class="mdescRight">扩展规则是否存在（校验/吸附）。  <br /></td></tr>
+<tr class="separator:a31a29aaa7a203826cb4afbbc0d128b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a018338514b353623a21e360e7a661d2c" id="r_a018338514b353623a21e360e7a661d2c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a018338514b353623a21e360e7a661d2c">hasSnapRule</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a018338514b353623a21e360e7a661d2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac89c53c385d045c1ff7fdba97eb5381b" id="r_ac89c53c385d045c1ff7fdba97eb5381b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#ac89c53c385d045c1ff7fdba97eb5381b">hasSurface</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:ac89c53c385d045c1ff7fdba97eb5381b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cc7c8daa9f21bff2c903c5d2a531737" id="r_a6cc7c8daa9f21bff2c903c5d2a531737"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a6cc7c8daa9f21bff2c903c5d2a531737">getSurfaceCount</a> ()</td></tr>
+<tr class="separator:a6cc7c8daa9f21bff2c903c5d2a531737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb00dc158e08e945a27860519ee3f626" id="r_abb00dc158e08e945a27860519ee3f626"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#abb00dc158e08e945a27860519ee3f626">getSurfaceName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:abb00dc158e08e945a27860519ee3f626"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12c8bf9d3b7debc8530c26450bcb57ef" id="r_a12c8bf9d3b7debc8530c26450bcb57ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a12c8bf9d3b7debc8530c26450bcb57ef">setPlaneSurfaceHeight</a> (float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:a12c8bf9d3b7debc8530c26450bcb57ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77469918770817f8551c0392b185110c" id="r_a77469918770817f8551c0392b185110c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a77469918770817f8551c0392b185110c">getPlaneSurfaceHeight</a> ()</td></tr>
+<tr class="separator:a77469918770817f8551c0392b185110c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e4808a2b0d928a133f2761d3f290746" id="r_a9e4808a2b0d928a133f2761d3f290746"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a9e4808a2b0d928a133f2761d3f290746">clearChangeEvents</a> ()</td></tr>
+<tr class="memdesc:a9e4808a2b0d928a133f2761d3f290746"><td class="mdescLeft">&#160;</td><td class="mdescRight">变更事件队列（放置/移除/移动）。  <br /></td></tr>
+<tr class="separator:a9e4808a2b0d928a133f2761d3f290746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe1f0814cc5422cf1ec221534c7b0c5b" id="r_abe1f0814cc5422cf1ec221534c7b0c5b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#abe1f0814cc5422cf1ec221534c7b0c5b">getChangeEventCount</a> () const</td></tr>
+<tr class="separator:abe1f0814cc5422cf1ec221534c7b0c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9643e85d482fa04df3ba350afae0de3c" id="r_a9643e85d482fa04df3ba350afae0de3c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a9643e85d482fa04df3ba350afae0de3c">getChangeEventAction</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a9643e85d482fa04df3ba350afae0de3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9811bdccffef3090fab6dac053f03b2b" id="r_a9811bdccffef3090fab6dac053f03b2b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a9811bdccffef3090fab6dac053f03b2b">getChangeEventWorldId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a9811bdccffef3090fab6dac053f03b2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e72ef7e12e3d67de26e2b2dda459df7" id="r_a1e72ef7e12e3d67de26e2b2dda459df7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a1e72ef7e12e3d67de26e2b2dda459df7">getChangeEventBuildingId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a1e72ef7e12e3d67de26e2b2dda459df7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0720d1a6864b6b43b748cae1a4321013" id="r_a0720d1a6864b6b43b748cae1a4321013"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a0720d1a6864b6b43b748cae1a4321013">getChangeEventInstanceId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a0720d1a6864b6b43b748cae1a4321013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97774dee5f9a29cd4d2674a964030d65" id="r_a97774dee5f9a29cd4d2674a964030d65"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a97774dee5f9a29cd4d2674a964030d65">getChangeEventCellX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a97774dee5f9a29cd4d2674a964030d65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7836e85a9b734a9479bbc5de20bd3deb" id="r_a7836e85a9b734a9479bbc5de20bd3deb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a7836e85a9b734a9479bbc5de20bd3deb">getChangeEventCellY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a7836e85a9b734a9479bbc5de20bd3deb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb4ba20fde4ed3bdc37ff5e600e2b88c" id="r_aeb4ba20fde4ed3bdc37ff5e600e2b88c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#aeb4ba20fde4ed3bdc37ff5e600e2b88c">getChangeEventOtherCellX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aeb4ba20fde4ed3bdc37ff5e600e2b88c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab91234a3b4f62969731dada15eac5b42" id="r_ab91234a3b4f62969731dada15eac5b42"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#ab91234a3b4f62969731dada15eac5b42">getChangeEventOtherCellY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab91234a3b4f62969731dada15eac5b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c514f8021d80182a3a1dbe1d08a58bc" id="r_a3c514f8021d80182a3a1dbe1d08a58bc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1building_1_1Building.html#a3c514f8021d80182a3a1dbe1d08a58bc">getChangeEventRotation</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a3c514f8021d80182a3a1dbe1d08a58bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>建筑放置模块（eve.Building）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8h_source.html">Building.h</a> 第 <a class="el" href="Building_8h_source.html#l00018">18</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac5115b5989d8f0b76b07214fb8361431" name="ac5115b5989d8f0b76b07214fb8361431"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5115b5989d8f0b76b07214fb8361431">&#9670;&#160;</a></span>Building()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::building::Building::Building </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a28bb20ef875e1d91f2cbe1fb388487a4" name="a28bb20ef875e1d91f2cbe1fb388487a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28bb20ef875e1d91f2cbe1fb388487a4">&#9670;&#160;</a></span>~Building()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::building::Building::~Building </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a76d11f97f4118498cef7c7aa4ac92b21" name="a76d11f97f4118498cef7c7aa4ac92b21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76d11f97f4118498cef7c7aa4ac92b21">&#9670;&#160;</a></span>buildingHasTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::Building::buildingHasTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a70bcb79e725821e56a94ff2ff5839c65" name="a70bcb79e725821e56a94ff2ff5839c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70bcb79e725821e56a94ff2ff5839c65">&#9670;&#160;</a></span>clearBuildingDefinitions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::Building::clearBuildingDefinitions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清空全部建筑模板。 </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00107">eve::building::BuildingRegistry::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a9e4808a2b0d928a133f2761d3f290746" name="a9e4808a2b0d928a133f2761d3f290746"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e4808a2b0d928a133f2761d3f290746">&#9670;&#160;</a></span>clearChangeEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::Building::clearChangeEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>变更事件队列（放置/移除/移动）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00649">eve::building::PlacementSystem::clearEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a8443cd762d61efe9a47cccfc3dcfc364" name="a8443cd762d61efe9a47cccfc3dcfc364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8443cd762d61efe9a47cccfc3dcfc364">&#9670;&#160;</a></span>getBuildingCategory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingCategory </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a8be1335858661df1812dd70539ddf2fe" name="a8be1335858661df1812dd70539ddf2fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8be1335858661df1812dd70539ddf2fe">&#9670;&#160;</a></span>getBuildingChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingChannel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a133913d6bb22b5945fc6e370311bfb8b" name="a133913d6bb22b5945fc6e370311bfb8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a133913d6bb22b5945fc6e370311bfb8b">&#9670;&#160;</a></span>getBuildingConnectionGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingConnectionGroup </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition edge connection group, or empty when it falls back to id. </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a7a8d396e842ba21058b9c87c4bd5030b" name="a7a8d396e842ba21058b9c87c4bd5030b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a8d396e842ba21058b9c87c4bd5030b">&#9670;&#160;</a></span>getBuildingCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getBuildingCost </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="adef4c6a7204dc842bf0cdf256e5b5fa8" name="adef4c6a7204dc842bf0cdf256e5b5fa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adef4c6a7204dc842bf0cdf256e5b5fa8">&#9670;&#160;</a></span>getBuildingDefinitionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getBuildingDefinitionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>已注册建筑模板数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00109">eve::building::BuildingRegistry::count()</a>.</p>
+
+</div>
+</div>
+<a id="a0da683e6303b84840643ec5fec97e750" name="a0da683e6303b84840643ec5fec97e750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0da683e6303b84840643ec5fec97e750">&#9670;&#160;</a></span>getBuildingDisplayName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingDisplayName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a761ea1e96eb9ad6b5f40970bd47289d0" name="a761ea1e96eb9ad6b5f40970bd47289d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a761ea1e96eb9ad6b5f40970bd47289d0">&#9670;&#160;</a></span>getBuildingExtra()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingExtra </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a98ba04c2232c3f676f2b522ccc00dee3" name="a98ba04c2232c3f676f2b522ccc00dee3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98ba04c2232c3f676f2b522ccc00dee3">&#9670;&#160;</a></span>getBuildingFootprintH()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getBuildingFootprintH </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a4ce7c4c6ad864502f2ca9ee650a77eca" name="a4ce7c4c6ad864502f2ca9ee650a77eca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ce7c4c6ad864502f2ca9ee650a77eca">&#9670;&#160;</a></span>getBuildingFootprintW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getBuildingFootprintW </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="adf2b9e0962312c7fe829a49b5b93c118" name="adf2b9e0962312c7fe829a49b5b93c118"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf2b9e0962312c7fe829a49b5b93c118">&#9670;&#160;</a></span>getBuildingPlacementKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingPlacementKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition placement domain (<code>cell</code> or <code>edge</code>). </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="aaff7abf75bcc51f452d30caaa3422c8c" name="aaff7abf75bcc51f452d30caaa3422c8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaff7abf75bcc51f452d30caaa3422c8c">&#9670;&#160;</a></span>getBuildingRenderMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingRenderMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a00a940b11e8f28ac932b95df9db2cd52" name="a00a940b11e8f28ac932b95df9db2cd52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00a940b11e8f28ac932b95df9db2cd52">&#9670;&#160;</a></span>getBuildingRotationMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingRotationMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a7399ae0f7c17affc9e6648031defba58" name="a7399ae0f7c17affc9e6648031defba58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7399ae0f7c17affc9e6648031defba58">&#9670;&#160;</a></span>getBuildingSnapMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingSnapMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="accc841e15b452407afc2a98e9fc5855d" name="accc841e15b452407afc2a98e9fc5855d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc841e15b452407afc2a98e9fc5855d">&#9670;&#160;</a></span>getBuildingValidateRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingValidateRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a99a6e751b724bdaf713953687ac544ba" name="a99a6e751b724bdaf713953687ac544ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99a6e751b724bdaf713953687ac544ba">&#9670;&#160;</a></span>getBuildingVisual2d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingVisual2d </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a1f50558beaf659626f9fb60a93c0d1bc" name="a1f50558beaf659626f9fb60a93c0d1bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f50558beaf659626f9fb60a93c0d1bc">&#9670;&#160;</a></span>getBuildingVisual3d()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getBuildingVisual3d </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a9643e85d482fa04df3ba350afae0de3c" name="a9643e85d482fa04df3ba350afae0de3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9643e85d482fa04df3ba350afae0de3c">&#9670;&#160;</a></span>getChangeEventAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getChangeEventAction </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1e72ef7e12e3d67de26e2b2dda459df7" name="a1e72ef7e12e3d67de26e2b2dda459df7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e72ef7e12e3d67de26e2b2dda459df7">&#9670;&#160;</a></span>getChangeEventBuildingId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getChangeEventBuildingId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a97774dee5f9a29cd4d2674a964030d65" name="a97774dee5f9a29cd4d2674a964030d65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97774dee5f9a29cd4d2674a964030d65">&#9670;&#160;</a></span>getChangeEventCellX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getChangeEventCellX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7836e85a9b734a9479bbc5de20bd3deb" name="a7836e85a9b734a9479bbc5de20bd3deb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7836e85a9b734a9479bbc5de20bd3deb">&#9670;&#160;</a></span>getChangeEventCellY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getChangeEventCellY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="abe1f0814cc5422cf1ec221534c7b0c5b" name="abe1f0814cc5422cf1ec221534c7b0c5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe1f0814cc5422cf1ec221534c7b0c5b">&#9670;&#160;</a></span>getChangeEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getChangeEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a>.</p>
+
+</div>
+</div>
+<a id="a0720d1a6864b6b43b748cae1a4321013" name="a0720d1a6864b6b43b748cae1a4321013"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0720d1a6864b6b43b748cae1a4321013">&#9670;&#160;</a></span>getChangeEventInstanceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getChangeEventInstanceId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aeb4ba20fde4ed3bdc37ff5e600e2b88c" name="aeb4ba20fde4ed3bdc37ff5e600e2b88c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb4ba20fde4ed3bdc37ff5e600e2b88c">&#9670;&#160;</a></span>getChangeEventOtherCellX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getChangeEventOtherCellX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ab91234a3b4f62969731dada15eac5b42" name="ab91234a3b4f62969731dada15eac5b42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab91234a3b4f62969731dada15eac5b42">&#9670;&#160;</a></span>getChangeEventOtherCellY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getChangeEventOtherCellY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a3c514f8021d80182a3a1dbe1d08a58bc" name="a3c514f8021d80182a3a1dbe1d08a58bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c514f8021d80182a3a1dbe1d08a58bc">&#9670;&#160;</a></span>getChangeEventRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::Building::getChangeEventRotation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a9811bdccffef3090fab6dac053f03b2b" name="a9811bdccffef3090fab6dac053f03b2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9811bdccffef3090fab6dac053f03b2b">&#9670;&#160;</a></span>getChangeEventWorldId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getChangeEventWorldId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00651">eve::building::PlacementSystem::events()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a77469918770817f8551c0392b185110c" name="a77469918770817f8551c0392b185110c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77469918770817f8551c0392b185110c">&#9670;&#160;</a></span>getPlaneSurfaceHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::Building::getPlaneSurfaceHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00539">eve::building::PlacementSystem::getPlaneSurfaceHeight()</a>.</p>
+
+</div>
+</div>
+<a id="a6cc7c8daa9f21bff2c903c5d2a531737" name="a6cc7c8daa9f21bff2c903c5d2a531737"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cc7c8daa9f21bff2c903c5d2a531737">&#9670;&#160;</a></span>getSurfaceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::getSurfaceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00529">eve::building::PlacementSystem::surfaceNames()</a>.</p>
+
+</div>
+</div>
+<a id="abb00dc158e08e945a27860519ee3f626" name="abb00dc158e08e945a27860519ee3f626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb00dc158e08e945a27860519ee3f626">&#9670;&#160;</a></span>getSurfaceName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::Building::getSurfaceName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00529">eve::building::PlacementSystem::surfaceNames()</a>.</p>
+
+</div>
+</div>
+<a id="ad9e2e94960ad5009cc037e0f210987a2" name="ad9e2e94960ad5009cc037e0f210987a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9e2e94960ad5009cc037e0f210987a2">&#9670;&#160;</a></span>hasBuildingDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::Building::hasBuildingDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>建筑模板查询（显示名/类别/占地/规则/标签/额外属性/成本）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingDef_8cpp_source.html#l00099">eve::building::BuildingRegistry::find()</a>.</p>
+
+</div>
+</div>
+<a id="a018338514b353623a21e360e7a661d2c" name="a018338514b353623a21e360e7a661d2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a018338514b353623a21e360e7a661d2c">&#9670;&#160;</a></span>hasSnapRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::Building::hasSnapRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00321">eve::building::PlacementSystem::hasSnapRule()</a>.</p>
+
+</div>
+</div>
+<a id="ac89c53c385d045c1ff7fdba97eb5381b" name="ac89c53c385d045c1ff7fdba97eb5381b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac89c53c385d045c1ff7fdba97eb5381b">&#9670;&#160;</a></span>hasSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::Building::hasSurface </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00392">eve::building::PlacementSystem::hasSurface()</a>.</p>
+
+</div>
+</div>
+<a id="a31a29aaa7a203826cb4afbbc0d128b88" name="a31a29aaa7a203826cb4afbbc0d128b88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31a29aaa7a203826cb4afbbc0d128b88">&#9670;&#160;</a></span>hasValidateRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::Building::hasValidateRule </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>扩展规则是否存在（校验/吸附）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00309">eve::building::PlacementSystem::hasValidateRule()</a>.</p>
+
+</div>
+</div>
+<a id="a8666bbb41f7acc9c84e4de0bd6bf1c4a" name="a8666bbb41f7acc9c84e4de0bd6bf1c4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8666bbb41f7acc9c84e4de0bd6bf1c4a">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::building::Building::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1building_1_1Building.html">Building</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af077a2937d519372a3216d0063c34e4a" name="af077a2937d519372a3216d0063c34e4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af077a2937d519372a3216d0063c34e4a">&#9670;&#160;</a></span>newGhost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1building_1_1Ghost.html">Ghost</a> * eve::building::Building::newGhost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00545">eve::building::PlacementSystem::ensureBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a8e3dba2c447b7c3840c9fa35a0ed5c05" name="a8e3dba2c447b7c3840c9fa35a0ed5c05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e3dba2c447b7c3840c9fa35a0ed5c05">&#9670;&#160;</a></span>newSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1building_1_1PlacementSession.html">PlacementSession</a> * eve::building::Building::newSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00545">eve::building::PlacementSystem::ensureBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="af8564385fec1f8c5359d4e81afe693c8" name="af8564385fec1f8c5359d4e81afe693c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8564385fec1f8c5359d4e81afe693c8">&#9670;&#160;</a></span>newWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> * eve::building::Building::newWorld </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em> = <code>32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>工厂：创建放置世界 / 鬼影。 </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00545">eve::building::PlacementSystem::ensureBuiltins()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="a0160aa11be14dfb5f31a329245e0a97c" name="a0160aa11be14dfb5f31a329245e0a97c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0160aa11be14dfb5f31a329245e0a97c">&#9670;&#160;</a></span>registerBuildingsFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::Building::registerBuildingsFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>从 JSON 注册建筑模板；返回成功注册数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00545">eve::building::PlacementSystem::ensureBuiltins()</a> , 以及 <a class="el" href="BuildingDef_8cpp_source.html#l00178">eve::building::BuildingRegistry::loadFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a12c8bf9d3b7debc8530c26450bcb57ef" name="a12c8bf9d3b7debc8530c26450bcb57ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12c8bf9d3b7debc8530c26450bcb57ef">&#9670;&#160;</a></span>setPlaneSurfaceHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::Building::setPlaneSurfaceHeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Building_8cpp_source.html">Building.cpp</a> 第 <a class="el" href="Building_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00537">eve::building::PlacementSystem::setPlaneSurfaceHeight()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/building/<a class="el" href="Building_8h_source.html">Building.h</a></li>
+<li>src/modules/building/<a class="el" href="Building_8cpp_source.html">Building.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/shaders/PostProcessWgsl.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_c23ab40dcfc29266ef065bfa8ca0e572.html">shaders</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PostProcessWgsl.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PostProcessWgsl_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1shaders.html">eve::graphics::shaders</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a5a87e44df5de06ff0e3adf232080ea4b">    6</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a5a87e44df5de06ff0e3adf232080ea4b">kPostCommon</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="stringliteral">struct FSIn { @location(0) color: vec4f, @location(1) uv: vec2f };</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="stringliteral">struct Externals { data: array&lt;vec4f, 8&gt; };</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="stringliteral">@group(0) @binding(0) var mainTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="stringliteral">@group(0) @binding(1) var auxTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="stringliteral">@group(0) @binding(2) var samp: sampler;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="stringliteral">@group(0) @binding(4) var&lt;uniform&gt; u: Externals;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="stringliteral">@group(0) @binding(5) var motionTex: texture_2d&lt;f32&gt;;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="stringliteral">@group(0) @binding(6) var motionSamp: sampler;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="stringliteral">fn p(i:u32)-&gt;f32{return u.data[i/4u][i%4u];}</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="stringliteral">fn tex(uv:vec2f)-&gt;vec4f{return textureSampleLevel(mainTex,samp,clamp(uv,vec2f(0),vec2f(1)),0);}</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="stringliteral">fn luma(c:vec3f)-&gt;f32{return dot(c,vec3f(.299,.587,.114));}</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="stringliteral">fn aux_load(uv:vec2f)-&gt;vec4f{let d=textureDimensions(auxTex);let q=vec2i(clamp(uv,vec2f(0),vec2f(1))*vec2f(d));return textureLoad(auxTex,clamp(q,vec2i(0),vec2i(d)-1),0);}</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="stringliteral">fn motion_load(uv:vec2f)-&gt;vec4f{return textureSampleLevel(motionTex,motionSamp,clamp(uv,vec2f(0),vec2f(1)),0);}</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="stringliteral">fn cubic_weights(t:f32)-&gt;vec4f{let t2=t*t;let t3=t2*t;return vec4f(-.5*t+t2-.5*t3,1-2.5*t2+1.5*t3,.5*t+2*t2-1.5*t3,-.5*t2+.5*t3);}</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="stringliteral">fn aux_cubic(uv:vec2f)-&gt;vec4f{let size=vec2f(textureDimensions(auxTex));let position=uv*size-.5;let base=floor(position);let f=fract(position);let wx=cubic_weights(f.x);let wy=cubic_weights(f.y);var result=vec4f(0);for(var y=0;y&lt;4;y++){for(var x=0;x&lt;4;x++){let suv=(base+vec2f(f32(x-1),f32(y-1))+.5)/size;result+=textureSampleLevel(auxTex,samp,clamp(suv,vec2f(0),vec2f(1)),0)*wx[x]*wy[y];}}return result;}</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="stringliteral">fn rgb_to_ycocg(c:vec3f)-&gt;vec3f{return vec3f(c.r*.25+c.g*.5+c.b*.25,c.r*.5-c.b*.5,-c.r*.25+c.g*.5-c.b*.25);}</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="stringliteral">fn ycocg_to_rgb(c:vec3f)-&gt;vec3f{return vec3f(c.x+c.y-c.z,c.x+c.z,c.x-c.y-c.z);}</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="stringliteral">fn hdr_ycocg(c:vec3f)-&gt;vec3f{let q=rgb_to_ycocg(max(c,vec3f(0)));let r=1+max(q.x,0);return vec3f(log2(r),q.yz/r);}</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="stringliteral">fn hdr_rgb(c:vec3f)-&gt;vec3f{let y=max(exp2(c.x)-1,0);let r=1+y;return max(ycocg_to_rgb(vec3f(y,c.yz*r)),vec3f(0));}</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a0e88e3b0592509e279ee8795819a5d92">   29</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a0e88e3b0592509e279ee8795819a5d92">kBloomDownsample</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="stringliteral">fn bloom_luma(c:vec3f)-&gt;f32{return dot(c,vec3f(.2126,.7152,.0722));}</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="stringliteral">fn bloom_prefilter(c0:vec3f)-&gt;vec3f{let c=max(c0,vec3f(0));let threshold=max(p(3),0);let knee=max(p(4),.0001);let brightness=max(c.r,max(c.g,c.b));let soft=clamp((brightness-threshold+knee)/(2*knee),0,1);let contribution=max(brightness-threshold,0)+soft*soft*knee;return c*(contribution/max(brightness,.0001));}</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="stringliteral">fn bloom_sample(uv:vec2f)-&gt;vec3f{let c=tex(uv).rgb;return select(c,bloom_prefilter(c),p(2)&gt;.5);}</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="stringliteral">fn bloom_karis(a:vec3f,b:vec3f,c:vec3f,d:vec3f)-&gt;vec3f{let w=vec4f(1/(1+bloom_luma(a)),1/(1+bloom_luma(b)),1/(1+bloom_luma(c)),1/(1+bloom_luma(d)));return (a*w.x+b*w.y+c*w.z+d*w.w)/max(dot(w,vec4f(1)),.0001);}</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let center=bloom_sample(i.uv);let inner=bloom_karis(bloom_sample(i.uv+t*vec2f(-1,-1)),bloom_sample(i.uv+t*vec2f(1,-1)),bloom_sample(i.uv+t*vec2f(-1,1)),bloom_sample(i.uv+t*vec2f(1,1)));let outer=bloom_karis(bloom_sample(i.uv+t*vec2f(-2,-2)),bloom_sample(i.uv+t*vec2f(2,-2)),bloom_sample(i.uv+t*vec2f(-2,2)),bloom_sample(i.uv+t*vec2f(2,2)));let axial=bloom_karis(bloom_sample(i.uv+t*vec2f(-2,0)),bloom_sample(i.uv+t*vec2f(2,0)),bloom_sample(i.uv+t*vec2f(0,-2)),bloom_sample(i.uv+t*vec2f(0,2)));return vec4f((center*.25+inner*.5+(outer+axial)*.125)*i.color.rgb,1);}</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a1ec546775e3f211ba56f19855b16aa4e">   38</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a1ec546775e3f211ba56f19855b16aa4e">kBloomUpsample</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1))*max(p(2),.5);var c=tex(i.uv).rgb*4;c+=tex(i.uv+vec2f(-t.x,0)).rgb*2;c+=tex(i.uv+vec2f(t.x,0)).rgb*2;c+=tex(i.uv+vec2f(0,-t.y)).rgb*2;c+=tex(i.uv+vec2f(0,t.y)).rgb*2;c+=tex(i.uv+vec2f(-t.x,-t.y)).rgb;c+=tex(i.uv+vec2f(t.x,-t.y)).rgb;c+=tex(i.uv+vec2f(-t.x,t.y)).rgb;c+=tex(i.uv+vec2f(t.x,t.y)).rgb;return vec4f(c*(1.0/16.0)*i.color.rgb,1);}</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a3daba0218612110801a339aebf74e712">   43</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a3daba0218612110801a339aebf74e712">kExposureMeter</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="stringliteral">fn exposure_luma(c:vec3f)-&gt;f32{return max(dot(max(c,vec3f(0)),vec3f(.2126,.7152,.0722)),.00001);}</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{var v:array&lt;f32,16&gt;;var n=0;for(var y=0;y&lt;4;y++){for(var x=0;x&lt;4;x++){let uv=(vec2f(f32(x),f32(y))+.5)*.25;v[n]=log2(exposure_luma(tex(uv).rgb));n++;}}for(var a=1;a&lt;16;a++){let value=v[a];var b=a-1;loop{if b&lt;0||v[b]&lt;=value{break;}v[b+1]=v[b];b--;}v[b+1]=value;}var average=0.0;for(var q=2;q&lt;14;q++){average+=v[q];}average/=12;let ev=clamp(log2(.18)-average,p(0),p(1));return vec4f(exp2(ev),ev,0,1);}</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a69c42e0740c6c8357e77345a45034ec8">   49</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a69c42e0740c6c8357e77345a45034ec8">kExposureAdapt</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let target=max(tex(vec2f(.5)).r,.00001);let previous=max(aux_load(vec2f(.5)).r,.00001);let speed=select(max(p(2),0),max(p(1),0),target&gt;previous);let blend=select(1-exp(-speed*max(p(0),0)),1.0,p(3)&gt;.5);let exposure=mix(previous,target,clamp(blend,0,1));return vec4f(exposure,log2(exposure),0,1);}</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a6ec2703e5074098e97e7ef3535dcd5c0">   54</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a6ec2703e5074098e97e7ef3535dcd5c0">kExposureApply</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let hdr=tex(i.uv);let automatic=select(1.0,aux_load(vec2f(.5)).r,p(1)&gt;.5);return vec4f(hdr.rgb*max(p(0),0)*automatic,hdr.a);}</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#af76c1c22b1d9e4505f29acb1032278e8">   59</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#af76c1c22b1d9e4505f29acb1032278e8">kDepthPyramidDownsample</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="stringliteral">fn depth_range(uv:vec2f)-&gt;vec2f{let v=tex(uv);return select(v.rg,vec2f(v.r),p(2)&gt;.5);}</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let a=depth_range(i.uv+t*vec2f(-.5,-.5));let b=depth_range(i.uv+t*vec2f(.5,-.5));let c=depth_range(i.uv+t*vec2f(-.5,.5));let d=depth_range(i.uv+t*vec2f(.5,.5));return vec4f(min(min(a.x,b.x),min(c.x,d.x)),max(max(a.y,b.y),max(c.y,d.y)),0,1);}</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c">   64</a></span><span class="stringliteral"></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c">kFxaa</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="stringliteral"> let t=vec2f(p(0),p(1));let c=tex(i.uv);let lm=luma(c.rgb);let n=luma(tex(i.uv-vec2f(0,t.y)).rgb);let s=luma(tex(i.uv+vec2f(0,t.y)).rgb);</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="stringliteral"> let e=luma(tex(i.uv+vec2f(t.x,0)).rgb);let w=luma(tex(i.uv-vec2f(t.x,0)).rgb);let lo=min(lm,min(min(n,s),min(e,w)));let hi=max(lm,max(max(n,s),max(e,w)));</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="stringliteral"> let range=hi-lo;if range&lt;max(max(p(3),0),hi*max(p(2),.0001)){return vec4f(c.rgb*i.color.rgb,1);}</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="stringliteral"> let gx=e-w;let gy=s-n;let tangent=normalize(vec2f(-gy,gx)+vec2f(.000001));let amount=clamp(range/max(hi,.00001)*clamp(p(4),0,1),0,.75);</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="stringliteral"> let a=tex(i.uv-tangent*t*.75).rgb;let b=tex(i.uv+tangent*t*.75).rgb;return vec4f(mix(c.rgb,(a+b)*.5,amount)*i.color.rgb,1);</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#aa9c607b715d26413492406ecdcfc4911">   74</a></span><span class="stringliteral"></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#aa9c607b715d26413492406ecdcfc4911">kNfaa</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let c=tex(i.uv).rgb;</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="stringliteral"> let g=vec2f(luma(tex(i.uv+vec2f(t.x,0)).rgb)-luma(tex(i.uv-vec2f(t.x,0)).rgb),luma(tex(i.uv+vec2f(0,t.y)).rgb)-luma(tex(i.uv-vec2f(0,t.y)).rgb));</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="stringliteral"> let gl=length(g);if gl&lt;.00001{return vec4f(c*i.color.rgb,1);}let tangent=vec2f(-g.y,g.x)/gl;let amt=clamp(p(2),0,2)*pow(clamp(gl*4,0,1),max(p(3),.1));let o=tangent*t*clamp(p(4),.5,2.5)*amt;</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="stringliteral"> let f=(tex(i.uv-o*1.5).rgb+2*tex(i.uv-o*.5).rgb+2*c+2*tex(i.uv+o*.5).rgb+tex(i.uv+o*1.5).rgb)/8;</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="stringliteral"> return vec4f(mix(c,f,clamp(amt,0,1))*i.color.rgb,1);}</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a829ab257b90632a3ce2daec1bfad48a6">   83</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a829ab257b90632a3ce2daec1bfad48a6">kTaa</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="stringliteral">fn taa_reprojection()-&gt;mat4x4f{return mat4x4f(</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="stringliteral"> vec4f(p(7),p(8),p(9),p(10)),vec4f(p(11),p(12),p(13),p(14)),</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="stringliteral"> vec4f(p(15),p(16),p(17),p(18)),vec4f(p(19),p(20),p(21),p(22)));}</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="stringliteral"> let t=vec2f(p(0),p(1));let currentSample=tex(i.uv);let current=currentSample.rgb;let linearDepth=select(currentSample.a,motion_load(i.uv).r,p(26)&gt;.5);if p(4)&lt;.5{return vec4f(current*i.color.rgb,linearDepth);}</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="stringliteral"> let currentY=hdr_ycocg(current);var lo=currentY;var hi=currentY;var sum=vec3f(0);var sumSq=vec3f(0);</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="stringliteral"> for(var y=-1;y&lt;=1;y++){for(var x=-1;x&lt;=1;x++){let c=hdr_ycocg(tex(i.uv+vec2f(f32(x)*t.x,f32(y)*t.y)).rgb);lo=min(lo,c);hi=max(hi,c);sum+=c;sumSq+=c*c;}}</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="stringliteral"> let mean=sum/9;let sigma=sqrt(max(sumSq/9-mean*mean,vec3f(0)));lo=max(lo,mean-sigma*1.25);hi=min(hi,mean+sigma*1.25);</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="stringliteral"> var historyUV=i.uv+vec2f(p(5),p(6));</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="stringliteral"> if p(25)&gt;.5&amp;&amp;linearDepth&gt;.00001&amp;&amp;linearDepth&lt;.9999{let n=max(p(23),.0001);let f=max(p(24),n+.001);let vd=mix(n,f,linearDepth);let z=(f-n*f/max(vd,n))/(f-n);let pc=taa_reprojection()*vec4f(i.uv*2-1,z,1);if abs(pc.w)&gt;.000001{historyUV=pc.xy/pc.w*.5+.5;}}</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="stringliteral"> var objectMotion=vec2f(0);if p(26)&gt;.5&amp;&amp;linearDepth&gt;.00001&amp;&amp;linearDepth&lt;.9999{var nearest=motion_load(i.uv);for(var my=-1;my&lt;=1;my++){for(var mx=-1;mx&lt;=1;mx++){let candidate=motion_load(i.uv+vec2f(f32(mx)*t.x,f32(my)*t.y));if candidate.r&lt;nearest.r{nearest=candidate;}}}objectMotion=(nearest.gb-vec2f(.5))*2;historyUV+=objectMotion;}</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="stringliteral"> let inBounds=all(historyUV&gt;=vec2f(0))&amp;&amp;all(historyUV&lt;=vec2f(1));let hs=aux_cubic(clamp(historyUV,vec2f(0),vec2f(1)));let history=hs.rgb;let historyY=hdr_ycocg(history);let clippedY=mix(historyY,clamp(historyY,lo,hi),clamp(p(3),0,1));let clipped=hdr_rgb(clippedY);</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="stringliteral"> let encodedDelta=abs(currentY-clippedY);let delta=max(encodedDelta.x,max(encodedDelta.y,encodedDelta.z));let colorReject=smoothstep(.03,.15,delta);let dt=.006+linearDepth*.02;let depthReject=smoothstep(dt,dt*4,abs(linearDepth-hs.a));let velocityReactive=smoothstep(.002,.04,length(objectMotion));var surfaceReactive=0.0;if p(26)&gt;.5&amp;&amp;linearDepth&gt;.00001&amp;&amp;linearDepth&lt;.9999{surfaceReactive=smoothstep(.01,.08,abs(linearDepth-motion_load(i.uv).r));}var reject=max(max(colorReject,depthReject),max(velocityReactive*.65,surfaceReactive));if !inBounds{reject=1;}</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="stringliteral"> let currentWeight=mix(clamp(p(2),0,1),1.0,reject);</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="stringliteral"> var resolved=mix(clipped,current,currentWeight);let crossAverage=(hdr_ycocg(tex(i.uv+vec2f(t.x,0)).rgb)+hdr_ycocg(tex(i.uv-vec2f(t.x,0)).rgb)+hdr_ycocg(tex(i.uv+vec2f(0,t.y)).rgb)+hdr_ycocg(tex(i.uv-vec2f(0,t.y)).rgb))*.25;let sharpenStrength=.12*(1-reject)*(1-velocityReactive);let sharpened=hdr_ycocg(resolved)+(currentY-crossAverage)*sharpenStrength;resolved=hdr_rgb(clamp(sharpened,lo,hi));</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="stringliteral"> return vec4f(resolved*i.color.rgb,linearDepth);</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#a290c0f6523bc0b3fd8870380ab4fb63c">  103</a></span><span class="stringliteral"></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a290c0f6523bc0b3fd8870380ab4fb63c">kSmaa</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let c=tex(i.uv).rgb;let m=luma(c);</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="stringliteral"> let dl=abs(m-luma(tex(i.uv-vec2f(t.x,0)).rgb));let dt=abs(m-luma(tex(i.uv-vec2f(0,t.y)).rgb));let dr=abs(m-luma(tex(i.uv+vec2f(t.x,0)).rgb));let db=abs(m-luma(tex(i.uv+vec2f(0,t.y)).rgb));</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="stringliteral"> let threshold=max(p(2),.0001);let mx=max(max(dl,dt),max(dr,db));var rgb=c;if dl&gt;=threshold&amp;&amp;dl&gt;=mx*max(p(3),0){rgb=(c+tex(i.uv-vec2f(t.x,0)).rgb)*.5;}</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="stringliteral"> if dt&gt;=threshold&amp;&amp;dt&gt;=mx*max(p(3),0){rgb=(rgb+tex(i.uv-vec2f(0,t.y)).rgb)*.5;}return vec4f(rgb*i.color.rgb,1);}</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#ae5e1ff1bcb27f1299557a1c696709e46">  110</a></span><span class="stringliteral"></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#ae5e1ff1bcb27f1299557a1c696709e46">kSsaa</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let t=vec2f(p(0),p(1));let radius=clamp(p(4),.5,3);let kind=i32(clamp(p(3),0,2));var sum=vec3f(0);var ws=0.0;</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="stringliteral"> for(var y=-3;y&lt;=3;y++){for(var x=-3;x&lt;=3;x++){if abs(f32(x))&gt;radius||abs(f32(y))&gt;radius{continue;}let d2=f32(x*x+y*y);var w=1.0;if kind==1{w=max(1-abs(f32(x))/(radius+.0001),0)*max(1-abs(f32(y))/(radius+.0001),0);}if kind==2{let s=max(radius*.5,.35);w=exp(-d2/(2*s*s));}sum+=tex(i.uv+vec2f(f32(x)*t.x,f32(y)*t.y)).rgb*w;ws+=w;}}</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="stringliteral"> return vec4f(sum/max(ws,.0001)*i.color.rgb,1);}</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1shaders.html#af12682c96b4cefb7b791aa21a4ddac3a">  116</a></span><span class="stringliteral"></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#af12682c96b4cefb7b791aa21a4ddac3a">kOutline</a> = R<span class="stringliteral">&quot;wgsl(</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="stringliteral">fn aux(uv:vec2f)-&gt;vec3f{let n=aux_load(uv).xyz*2-1;return select(vec3f(0,0,1),normalize(n),length(n)&gt;.001);}</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="stringliteral">fn viewz(z:f32)-&gt;f32{let n=max(p(10),.0001);let f=max(p(11),n+.001);return n*f/max(f-z*(f-n),.000001);}</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="stringliteral">@fragment fn fs_main(i:FSIn)-&gt;@location(0) vec4f{let color=vec3f(p(5),p(6),p(7));let z=tex(i.uv).r;if z&gt;=.9999{return vec4f(color,0);}let t=vec2f(max(p(8),.00001),max(p(9),.00001))*max(p(0),.5);let nc=aux(i.uv);let dc=viewz(z);var de=0.0;var ne=0.0;</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="stringliteral"> let offsets=array&lt;vec2f,8&gt;(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1),vec2f(.707,.707),vec2f(-.707,-.707),vec2f(-.707,.707),vec2f(.707,-.707));</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="stringliteral"> for(var q=0;q&lt;8;q++){let uv=i.uv+offsets[q]*t;let cut=max(p(1),0)+dc*max(p(2),0);let dd=abs(dc-viewz(tex(uv).r));let soft=clamp(p(4),0,1);de=max(de,smoothstep(cut*(1-soft),cut,dd));ne=max(ne,1-clamp(dot(nc,aux(uv)),-1,1));}</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="stringliteral"> let nt=clamp(p(3),0,2);let edge=max(de,smoothstep(nt*(1-clamp(p(4),0,1)),nt+clamp(p(4),0,1),ne));return vec4f(color,clamp(edge,0,1))*i.color;}</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="stringliteral">)wgsl&quot;;</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="stringliteral">}  </span><span class="comment">// namespace eve::graphics::shaders</span></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html">eve::graphics::shaders</a></div><div class="ttdef"><b>Definition</b> <a href="AmbientOcclusionWgsl_8h_source.html#l00003">AmbientOcclusionWgsl.h:3</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a0e88e3b0592509e279ee8795819a5d92"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a0e88e3b0592509e279ee8795819a5d92">eve::graphics::shaders::kBloomDownsample</a></div><div class="ttdeci">constexpr const char * kBloomDownsample</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00029">PostProcessWgsl.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a1ec546775e3f211ba56f19855b16aa4e"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a1ec546775e3f211ba56f19855b16aa4e">eve::graphics::shaders::kBloomUpsample</a></div><div class="ttdeci">constexpr const char * kBloomUpsample</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00038">PostProcessWgsl.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a290c0f6523bc0b3fd8870380ab4fb63c"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a290c0f6523bc0b3fd8870380ab4fb63c">eve::graphics::shaders::kSmaa</a></div><div class="ttdeci">constexpr const char * kSmaa</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00103">PostProcessWgsl.h:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a3daba0218612110801a339aebf74e712"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a3daba0218612110801a339aebf74e712">eve::graphics::shaders::kExposureMeter</a></div><div class="ttdeci">constexpr const char * kExposureMeter</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00043">PostProcessWgsl.h:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a5a87e44df5de06ff0e3adf232080ea4b"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a5a87e44df5de06ff0e3adf232080ea4b">eve::graphics::shaders::kPostCommon</a></div><div class="ttdeci">constexpr const char * kPostCommon</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00006">PostProcessWgsl.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a69c42e0740c6c8357e77345a45034ec8"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a69c42e0740c6c8357e77345a45034ec8">eve::graphics::shaders::kExposureAdapt</a></div><div class="ttdeci">constexpr const char * kExposureAdapt</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00049">PostProcessWgsl.h:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a6ec2703e5074098e97e7ef3535dcd5c0"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a6ec2703e5074098e97e7ef3535dcd5c0">eve::graphics::shaders::kExposureApply</a></div><div class="ttdeci">constexpr const char * kExposureApply</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00054">PostProcessWgsl.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a829ab257b90632a3ce2daec1bfad48a6"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a829ab257b90632a3ce2daec1bfad48a6">eve::graphics::shaders::kTaa</a></div><div class="ttdeci">constexpr const char * kTaa</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00083">PostProcessWgsl.h:83</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c">eve::graphics::shaders::kFxaa</a></div><div class="ttdeci">constexpr const char * kFxaa</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00064">PostProcessWgsl.h:64</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_aa9c607b715d26413492406ecdcfc4911"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#aa9c607b715d26413492406ecdcfc4911">eve::graphics::shaders::kNfaa</a></div><div class="ttdeci">constexpr const char * kNfaa</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00074">PostProcessWgsl.h:74</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_ae5e1ff1bcb27f1299557a1c696709e46"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#ae5e1ff1bcb27f1299557a1c696709e46">eve::graphics::shaders::kSsaa</a></div><div class="ttdeci">constexpr const char * kSsaa</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00110">PostProcessWgsl.h:110</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_af12682c96b4cefb7b791aa21a4ddac3a"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#af12682c96b4cefb7b791aa21a4ddac3a">eve::graphics::shaders::kOutline</a></div><div class="ttdeci">constexpr const char * kOutline</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00116">PostProcessWgsl.h:116</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_af76c1c22b1d9e4505f29acb1032278e8"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#af76c1c22b1d9e4505f29acb1032278e8">eve::graphics::shaders::kDepthPyramidDownsample</a></div><div class="ttdeci">constexpr const char * kDepthPyramidDownsample</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00059">PostProcessWgsl.h:59</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

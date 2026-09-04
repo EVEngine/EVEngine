@@ -1,0 +1,533 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::webgpu::Mesh3DClusteredUBO结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html">webgpu</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html">Mesh3DClusteredUBO</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::webgpu::Mesh3DClusteredUBO结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Clustered-forward mesh UBO (matches the Vulkan <a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html" title="Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and the WGSL clustered Frame block)...">Mesh3DClusteredUBO</a> and the WGSL clustered Frame block).  
+ <a href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8461833f80f69fc45b8eea43fdad04b0" id="r_a8461833f80f69fc45b8eea43fdad04b0"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a8461833f80f69fc45b8eea43fdad04b0">mvp</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a8461833f80f69fc45b8eea43fdad04b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e0c88f0c64012e31a861bb506b2a5c6" id="r_a5e0c88f0c64012e31a861bb506b2a5c6"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a5e0c88f0c64012e31a861bb506b2a5c6">model</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a5e0c88f0c64012e31a861bb506b2a5c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e3a258d87675ce3fff11ad9945cedeb" id="r_a9e3a258d87675ce3fff11ad9945cedeb"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a9e3a258d87675ce3fff11ad9945cedeb">view</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a9e3a258d87675ce3fff11ad9945cedeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cc7f7f22d84d5db6a2bcc4b389cf22d" id="r_a5cc7f7f22d84d5db6a2bcc4b389cf22d"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a5cc7f7f22d84d5db6a2bcc4b389cf22d">lightDir</a> {0.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a5cc7f7f22d84d5db6a2bcc4b389cf22d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6706a96f0d66dfaabd89a888d385d533" id="r_a6706a96f0d66dfaabd89a888d385d533"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a6706a96f0d66dfaabd89a888d385d533">lightColor</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a6706a96f0d66dfaabd89a888d385d533"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecfbc98f5c23a0ded82b289ebc334bff" id="r_aecfbc98f5c23a0ded82b289ebc334bff"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#aecfbc98f5c23a0ded82b289ebc334bff">tint</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:aecfbc98f5c23a0ded82b289ebc334bff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affec543c2839c4473beb9de86ede659c" id="r_affec543c2839c4473beb9de86ede659c"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#affec543c2839c4473beb9de86ede659c">cameraPos</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:affec543c2839c4473beb9de86ede659c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba81fb109a9b361532484881249db96f" id="r_aba81fb109a9b361532484881249db96f"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#aba81fb109a9b361532484881249db96f">ambient</a> {0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:aba81fb109a9b361532484881249db96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01a478aa6781c9573d3543765ad2d348" id="r_a01a478aa6781c9573d3543765ad2d348"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a01a478aa6781c9573d3543765ad2d348">gridInfo</a> {16.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 9.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 24.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a01a478aa6781c9573d3543765ad2d348"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adafe0e768f0814ce9cb90419e83297f2" id="r_adafe0e768f0814ce9cb90419e83297f2"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#adafe0e768f0814ce9cb90419e83297f2">clipInfo</a> {0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:adafe0e768f0814ce9cb90419e83297f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c596cdf745954c83871f9bb7169cafe" id="r_a9c596cdf745954c83871f9bb7169cafe"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a9c596cdf745954c83871f9bb7169cafe">texBomb</a> {4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a9c596cdf745954c83871f9bb7169cafe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a696e0306447f50f3484b57d62cc56c44" id="r_a696e0306447f50f3484b57d62cc56c44"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a696e0306447f50f3484b57d62cc56c44">parallax</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a696e0306447f50f3484b57d62cc56c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb607be6fe4603c2736c7670023b9284" id="r_acb607be6fe4603c2736c7670023b9284"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#acb607be6fe4603c2736c7670023b9284">surface</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:acb607be6fe4603c2736c7670023b9284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd80f4659432aa9dc0308fc14f56b5ba" id="r_acd80f4659432aa9dc0308fc14f56b5ba"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#acd80f4659432aa9dc0308fc14f56b5ba">virtualTexture</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:acd80f4659432aa9dc0308fc14f56b5ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a943deb3780a5b61ecfa3c94edfcc0d1d" id="r_a943deb3780a5b61ecfa3c94edfcc0d1d"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a943deb3780a5b61ecfa3c94edfcc0d1d">virtualAtlas</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a943deb3780a5b61ecfa3c94edfcc0d1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bd745ddff42b843fb7c682ceb877f43" id="r_a7bd745ddff42b843fb7c682ceb877f43"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a7bd745ddff42b843fb7c682ceb877f43">envProbeCenter</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a7bd745ddff42b843fb7c682ceb877f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64637a375d5eb74324d765c46ce04dc9" id="r_a64637a375d5eb74324d765c46ce04dc9"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a64637a375d5eb74324d765c46ce04dc9">envProbeExtent</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a64637a375d5eb74324d765c46ce04dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a505a40260d764282c7a692f7a4369899" id="r_a505a40260d764282c7a692f7a4369899"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a505a40260d764282c7a692f7a4369899">reflectionProbeCenter</a> [<a class="el" href="structeve_1_1graphics_1_1ReflectionProbeUpload.html#af721557f7e29299e63f36a6b3c5f58f5">ReflectionProbeUpload::kMaxProbes</a>] {}</td></tr>
+<tr class="separator:a505a40260d764282c7a692f7a4369899"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d26273881651af8064c9a74197e0e82" id="r_a7d26273881651af8064c9a74197e0e82"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html#a7d26273881651af8064c9a74197e0e82">reflectionProbeExtent</a> [<a class="el" href="structeve_1_1graphics_1_1ReflectionProbeUpload.html#af721557f7e29299e63f36a6b3c5f58f5">ReflectionProbeUpload::kMaxProbes</a>] {}</td></tr>
+<tr class="separator:a7d26273881651af8064c9a74197e0e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Clustered-forward mesh UBO (matches the Vulkan <a class="el" href="structeve_1_1graphics_1_1webgpu_1_1Mesh3DClusteredUBO.html" title="Clustered-forward mesh UBO (matches the Vulkan Mesh3DClusteredUBO and the WGSL clustered Frame block)...">Mesh3DClusteredUBO</a> and the WGSL clustered Frame block). </p>
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00093">93</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aba81fb109a9b361532484881249db96f" name="aba81fb109a9b361532484881249db96f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba81fb109a9b361532484881249db96f">&#9670;&#160;</a></span>ambient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::ambient {0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="affec543c2839c4473beb9de86ede659c" name="affec543c2839c4473beb9de86ede659c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affec543c2839c4473beb9de86ede659c">&#9670;&#160;</a></span>cameraPos</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::cameraPos {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adafe0e768f0814ce9cb90419e83297f2" name="adafe0e768f0814ce9cb90419e83297f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adafe0e768f0814ce9cb90419e83297f2">&#9670;&#160;</a></span>clipInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::clipInfo {0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7bd745ddff42b843fb7c682ceb877f43" name="a7bd745ddff42b843fb7c682ceb877f43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bd745ddff42b843fb7c682ceb877f43">&#9670;&#160;</a></span>envProbeCenter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::envProbeCenter {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a64637a375d5eb74324d765c46ce04dc9" name="a64637a375d5eb74324d765c46ce04dc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64637a375d5eb74324d765c46ce04dc9">&#9670;&#160;</a></span>envProbeExtent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::envProbeExtent {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01a478aa6781c9573d3543765ad2d348" name="a01a478aa6781c9573d3543765ad2d348"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01a478aa6781c9573d3543765ad2d348">&#9670;&#160;</a></span>gridInfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::gridInfo {16.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 9.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 24.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6706a96f0d66dfaabd89a888d385d533" name="a6706a96f0d66dfaabd89a888d385d533"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6706a96f0d66dfaabd89a888d385d533">&#9670;&#160;</a></span>lightColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::lightColor {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5cc7f7f22d84d5db6a2bcc4b389cf22d" name="a5cc7f7f22d84d5db6a2bcc4b389cf22d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cc7f7f22d84d5db6a2bcc4b389cf22d">&#9670;&#160;</a></span>lightDir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::lightDir {0.4<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e0c88f0c64012e31a861bb506b2a5c6" name="a5e0c88f0c64012e31a861bb506b2a5c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e0c88f0c64012e31a861bb506b2a5c6">&#9670;&#160;</a></span>model</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::webgpu::Mesh3DClusteredUBO::model {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8461833f80f69fc45b8eea43fdad04b0" name="a8461833f80f69fc45b8eea43fdad04b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8461833f80f69fc45b8eea43fdad04b0">&#9670;&#160;</a></span>mvp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::webgpu::Mesh3DClusteredUBO::mvp {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a696e0306447f50f3484b57d62cc56c44" name="a696e0306447f50f3484b57d62cc56c44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a696e0306447f50f3484b57d62cc56c44">&#9670;&#160;</a></span>parallax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::parallax {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a505a40260d764282c7a692f7a4369899" name="a505a40260d764282c7a692f7a4369899"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a505a40260d764282c7a692f7a4369899">&#9670;&#160;</a></span>reflectionProbeCenter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::reflectionProbeCenter[<a class="el" href="structeve_1_1graphics_1_1ReflectionProbeUpload.html#af721557f7e29299e63f36a6b3c5f58f5">ReflectionProbeUpload::kMaxProbes</a>] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d26273881651af8064c9a74197e0e82" name="a7d26273881651af8064c9a74197e0e82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d26273881651af8064c9a74197e0e82">&#9670;&#160;</a></span>reflectionProbeExtent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::reflectionProbeExtent[<a class="el" href="structeve_1_1graphics_1_1ReflectionProbeUpload.html#af721557f7e29299e63f36a6b3c5f58f5">ReflectionProbeUpload::kMaxProbes</a>] {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb607be6fe4603c2736c7670023b9284" name="acb607be6fe4603c2736c7670023b9284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb607be6fe4603c2736c7670023b9284">&#9670;&#160;</a></span>surface</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::surface {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c596cdf745954c83871f9bb7169cafe" name="a9c596cdf745954c83871f9bb7169cafe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c596cdf745954c83871f9bb7169cafe">&#9670;&#160;</a></span>texBomb</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::texBomb {4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aecfbc98f5c23a0ded82b289ebc334bff" name="aecfbc98f5c23a0ded82b289ebc334bff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecfbc98f5c23a0ded82b289ebc334bff">&#9670;&#160;</a></span>tint</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::tint {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e3a258d87675ce3fff11ad9945cedeb" name="a9e3a258d87675ce3fff11ad9945cedeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e3a258d87675ce3fff11ad9945cedeb">&#9670;&#160;</a></span>view</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 eve::graphics::webgpu::Mesh3DClusteredUBO::view {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a943deb3780a5b61ecfa3c94edfcc0d1d" name="a943deb3780a5b61ecfa3c94edfcc0d1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a943deb3780a5b61ecfa3c94edfcc0d1d">&#9670;&#160;</a></span>virtualAtlas</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::virtualAtlas {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd80f4659432aa9dc0308fc14f56b5ba" name="acd80f4659432aa9dc0308fc14f56b5ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd80f4659432aa9dc0308fc14f56b5ba">&#9670;&#160;</a></span>virtualTexture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::webgpu::Mesh3DClusteredUBO::virtualTexture {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="webgpu_2Graphics_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/webgpu/<a class="el" href="webgpu_2Graphics_8h_source.html">Graphics.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

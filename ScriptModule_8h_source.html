@@ -1,0 +1,278 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/ScriptModule.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ScriptModule.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ScriptModule_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">struct </span>SQVM;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1script.html">eve::script</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323">   17</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323">ScriptModuleStatus</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323ab4a799eb3d473a6887d3b19f15c193ca">NotHandled</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323a5d695cc28c6a7ea955162fbdd0ae42b9">Found</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1script.html#a9c8636baedd3d9b12d8c3964874cf91ca902b0d55fddef6f8d651fe1035b7d4bd">Error</a> };</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptModuleRequest.html">   20</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1script_1_1ScriptModuleRequest.html">ScriptModuleRequest</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptModuleRequest.html#a79b80789e022cd6bb4211292a2236140">   21</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptModuleRequest.html#a79b80789e022cd6bb4211292a2236140">importerUri</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptModuleRequest.html#a70cfc992eafeeeb895ce83ee841317a3">   22</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptModuleRequest.html#a70cfc992eafeeeb895ce83ee841317a3">specifier</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptModuleSource.html">   26</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1script_1_1ScriptModuleSource.html">ScriptModuleSource</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptModuleSource.html#a929d9bd108770cebc71fe09b0101e2b1">   27</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptModuleSource.html#a929d9bd108770cebc71fe09b0101e2b1">canonicalUri</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptModuleSource.html#af82e7f10737bd2c32bcff8c62405bdde">   28</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptModuleSource.html#af82e7f10737bd2c32bcff8c62405bdde">utf8Source</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptModuleSource.html#ac8ee75c8a5f0f36e30ed6852fc62daef">   29</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptModuleSource.html#ac8ee75c8a5f0f36e30ed6852fc62daef">contentHash</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1ScriptModuleSource.html#a8a83ac1d6859461ac6d53b7a4d14e358">   30</a></span>    std::string <a class="code hl_variable" href="structeve_1_1script_1_1ScriptModuleSource.html#a8a83ac1d6859461ac6d53b7a4d14e358">debugOrigin</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1IScriptModuleProvider.html">   34</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1script_1_1IScriptModuleProvider.html">IScriptModuleProvider</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1IScriptModuleProvider.html#a1310abbe5632d7bebe4efdd5b42afe07">   36</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1script_1_1IScriptModuleProvider.html#a1310abbe5632d7bebe4efdd5b42afe07">~IScriptModuleProvider</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1IScriptModuleProvider.html#ac76b7caedd1187e70b9f44f2366eb92d">   39</a></span>    <span class="keyword">virtual</span> <a class="code hl_enumeration" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323">ScriptModuleStatus</a> <a class="code hl_function" href="classeve_1_1script_1_1IScriptModuleProvider.html#ac76b7caedd1187e70b9f44f2366eb92d">resolve</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1script_1_1ScriptModuleRequest.html">ScriptModuleRequest</a>&amp; request, std::string&amp; canonicalUri,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                       std::string&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1IScriptModuleProvider.html#ab3ef872e3b9340b95c0c59057d470931">   42</a></span>    <span class="keyword">virtual</span> <a class="code hl_enumeration" href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323">ScriptModuleStatus</a> <a class="code hl_function" href="classeve_1_1script_1_1IScriptModuleProvider.html#ab3ef872e3b9340b95c0c59057d470931">load</a>(std::string_view canonicalUri, <a class="code hl_struct" href="structeve_1_1script_1_1ScriptModuleSource.html">ScriptModuleSource</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::string&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1ScriptModuleResolver.html">   51</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">   53</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">ProviderId</a> = uint64_t;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a>(SQVM* <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1ScriptModuleResolver.html#ac12fe3d74aebe0c16ff1cfb9c17b4b5f">   56</a></span>    <a class="code hl_function" href="classeve_1_1script_1_1ScriptModuleResolver.html#ac12fe3d74aebe0c16ff1cfb9c17b4b5f">~ScriptModuleResolver</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1ScriptModuleResolver.html#adaa4872f83c66c564a07e94890649516">   57</a></span>    <a class="code hl_function" href="classeve_1_1script_1_1ScriptModuleResolver.html#adaa4872f83c66c564a07e94890649516">ScriptModuleResolver</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1script_1_1ScriptModuleResolver.html#a950a4a94098e42bf5924e84605533b26">   58</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a>&amp; <a class="code hl_function" href="classeve_1_1script_1_1ScriptModuleResolver.html#a950a4a94098e42bf5924e84605533b26">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_typedef" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">ProviderId</a> registerProvider(std::shared_ptr&lt;IScriptModuleProvider&gt; provider, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">bool</span> unregisterProvider(<a class="code hl_typedef" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">ProviderId</a> <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span> registerDefaultProviders();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> beginCompilation(std::string_view importerUri);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] std::optional&lt;std::string&gt; takeCompilationFailure();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> prepareDependencies(std::string_view importerUri);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span> instantiateDependencies(std::string_view importerUri);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> invalidate(std::string_view canonicalUri);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">void</span> reload(std::string_view canonicalUri);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::vector&lt;std::string&gt; reloadAffected(std::string_view canonicalUri);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::vector&lt;std::string&gt; dependencies(std::string_view importerUri) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::vector&lt;std::string&gt; reverseDependencies(std::string_view canonicalUri) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> canonicalize(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1script_1_1ScriptModuleRequest.html">ScriptModuleRequest</a>&amp; request, std::string&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, std::string&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1script_1_1ScriptModuleResolver_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    std::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>};</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}  <span class="comment">// namespace eve::script</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a69da28b7f372dd6b6fffa28d0214e4de"><div class="ttname"><a href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1IScriptModuleProvider_html"><div class="ttname"><a href="classeve_1_1script_1_1IScriptModuleProvider.html">eve::script::IScriptModuleProvider</a></div><div class="ttdoc">Pluggable script source backend for directories, archives, plugins, or memory.</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00034">ScriptModule.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1IScriptModuleProvider_html_a1310abbe5632d7bebe4efdd5b42afe07"><div class="ttname"><a href="classeve_1_1script_1_1IScriptModuleProvider.html#a1310abbe5632d7bebe4efdd5b42afe07">eve::script::IScriptModuleProvider::~IScriptModuleProvider</a></div><div class="ttdeci">virtual ~IScriptModuleProvider()=default</div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1IScriptModuleProvider_html_ab3ef872e3b9340b95c0c59057d470931"><div class="ttname"><a href="classeve_1_1script_1_1IScriptModuleProvider.html#ab3ef872e3b9340b95c0c59057d470931">eve::script::IScriptModuleProvider::load</a></div><div class="ttdeci">virtual ScriptModuleStatus load(std::string_view canonicalUri, ScriptModuleSource &amp;source, std::string &amp;error)=0</div><div class="ttdoc">Loads UTF-8 source for a canonical URI.</div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1IScriptModuleProvider_html_ac76b7caedd1187e70b9f44f2366eb92d"><div class="ttname"><a href="classeve_1_1script_1_1IScriptModuleProvider.html#ac76b7caedd1187e70b9f44f2366eb92d">eve::script::IScriptModuleProvider::resolve</a></div><div class="ttdeci">virtual ScriptModuleStatus resolve(const ScriptModuleRequest &amp;request, std::string &amp;canonicalUri, std::string &amp;error)=0</div><div class="ttdoc">Resolves a specifier to a canonical URI.</div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1ScriptModuleResolver_html"><div class="ttname"><a href="classeve_1_1script_1_1ScriptModuleResolver.html">eve::script::ScriptModuleResolver</a></div><div class="ttdoc">Owns providers, the static dependency graph, compiled closures, and module instances.</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00051">ScriptModule.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1ScriptModuleResolver_html_a2b9feb1959968143d351602fd0c7ccb7"><div class="ttname"><a href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">eve::script::ScriptModuleResolver::ProviderId</a></div><div class="ttdeci">uint64_t ProviderId</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00053">ScriptModule.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1ScriptModuleResolver_html_a950a4a94098e42bf5924e84605533b26"><div class="ttname"><a href="classeve_1_1script_1_1ScriptModuleResolver.html#a950a4a94098e42bf5924e84605533b26">eve::script::ScriptModuleResolver::operator=</a></div><div class="ttdeci">ScriptModuleResolver &amp; operator=(const ScriptModuleResolver &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1ScriptModuleResolver_html_ac12fe3d74aebe0c16ff1cfb9c17b4b5f"><div class="ttname"><a href="classeve_1_1script_1_1ScriptModuleResolver.html#ac12fe3d74aebe0c16ff1cfb9c17b4b5f">eve::script::ScriptModuleResolver::~ScriptModuleResolver</a></div><div class="ttdeci">~ScriptModuleResolver()</div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1ScriptModuleResolver_html_adaa4872f83c66c564a07e94890649516"><div class="ttname"><a href="classeve_1_1script_1_1ScriptModuleResolver.html#adaa4872f83c66c564a07e94890649516">eve::script::ScriptModuleResolver::ScriptModuleResolver</a></div><div class="ttdeci">ScriptModuleResolver(const ScriptModuleResolver &amp;)=delete</div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html"><div class="ttname"><a href="namespaceeve_1_1script.html">eve::script</a></div><div class="ttdef"><b>Definition</b> <a href="BindingContracts_8h_source.html#l00005">BindingContracts.h:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a6d25965ef955921758b7d857beb61323"><div class="ttname"><a href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323">eve::script::ScriptModuleStatus</a></div><div class="ttdeci">ScriptModuleStatus</div><div class="ttdoc">Result of asking a provider to resolve or load a script module.</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00017">ScriptModule.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a6d25965ef955921758b7d857beb61323a5d695cc28c6a7ea955162fbdd0ae42b9"><div class="ttname"><a href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323a5d695cc28c6a7ea955162fbdd0ae42b9">eve::script::ScriptModuleStatus::Found</a></div><div class="ttdeci">@ Found</div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a6d25965ef955921758b7d857beb61323ab4a799eb3d473a6887d3b19f15c193ca"><div class="ttname"><a href="namespaceeve_1_1script.html#a6d25965ef955921758b7d857beb61323ab4a799eb3d473a6887d3b19f15c193ca">eve::script::ScriptModuleStatus::NotHandled</a></div><div class="ttdeci">@ NotHandled</div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a9c8636baedd3d9b12d8c3964874cf91ca902b0d55fddef6f8d651fe1035b7d4bd"><div class="ttname"><a href="namespaceeve_1_1script.html#a9c8636baedd3d9b12d8c3964874cf91ca902b0d55fddef6f8d651fe1035b7d4bd">eve::script::ScriptDiagnosticSeverity::Error</a></div><div class="ttdeci">@ Error</div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleRequest_html"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleRequest.html">eve::script::ScriptModuleRequest</a></div><div class="ttdoc">Logical module request emitted by an EveScript import declaration.</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00020">ScriptModule.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleRequest_html_a70cfc992eafeeeb895ce83ee841317a3"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleRequest.html#a70cfc992eafeeeb895ce83ee841317a3">eve::script::ScriptModuleRequest::specifier</a></div><div class="ttdeci">std::string specifier</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00022">ScriptModule.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleRequest_html_a79b80789e022cd6bb4211292a2236140"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleRequest.html#a79b80789e022cd6bb4211292a2236140">eve::script::ScriptModuleRequest::importerUri</a></div><div class="ttdeci">std::string importerUri</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00021">ScriptModule.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleResolver_1_1Impl_html"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleResolver_1_1Impl.html">eve::script::ScriptModuleResolver::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8cpp_source.html#l00090">ScriptModule.cpp:90</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleSource_html"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleSource.html">eve::script::ScriptModuleSource</a></div><div class="ttdoc">UTF-8 source and stable identity returned by a module provider.</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00026">ScriptModule.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleSource_html_a8a83ac1d6859461ac6d53b7a4d14e358"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleSource.html#a8a83ac1d6859461ac6d53b7a4d14e358">eve::script::ScriptModuleSource::debugOrigin</a></div><div class="ttdeci">std::string debugOrigin</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00030">ScriptModule.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleSource_html_a929d9bd108770cebc71fe09b0101e2b1"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleSource.html#a929d9bd108770cebc71fe09b0101e2b1">eve::script::ScriptModuleSource::canonicalUri</a></div><div class="ttdeci">std::string canonicalUri</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00027">ScriptModule.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleSource_html_ac8ee75c8a5f0f36e30ed6852fc62daef"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleSource.html#ac8ee75c8a5f0f36e30ed6852fc62daef">eve::script::ScriptModuleSource::contentHash</a></div><div class="ttdeci">std::string contentHash</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00029">ScriptModule.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptModuleSource_html_af82e7f10737bd2c32bcff8c62405bdde"><div class="ttname"><a href="structeve_1_1script_1_1ScriptModuleSource.html#af82e7f10737bd2c32bcff8c62405bdde">eve::script::ScriptModuleSource::utf8Source</a></div><div class="ttdeci">std::string utf8Source</div><div class="ttdef"><b>Definition</b> <a href="ScriptModule_8h_source.html#l00028">ScriptModule.h:28</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

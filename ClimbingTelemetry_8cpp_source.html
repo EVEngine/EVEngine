@@ -1,0 +1,264 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/climbing/ClimbingTelemetry.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_137dcb18b75f9f57b9200faf376b7e13.html">climbing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ClimbingTelemetry.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ClimbingTelemetry_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ClimbingTelemetry_8h.html">climbing/ClimbingTelemetry.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1climbing.html">eve::climbing</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>T nearestRank(<span class="keyword">const</span> std::array&lt;T, ClimbingTelemetryBuffer::Capacity&gt;&amp; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>, std::size_t <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>,</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>              std::size_t percentile) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a> == 0) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">const</span> std::size_t rank = std::min(<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a> - 1, (<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a> * percentile + 99) / 100 - 1);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[rank];</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#ac9db159c7d608b76af804b71b7e76868">   18</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#ac9db159c7d608b76af804b71b7e76868">ClimbingTelemetryBuffer::record</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">ClimbingTelemetrySample</a> sample) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    samples_[next_] = sample;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    next_ = (next_ + 1) % Capacity;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    size_ = std::min(size_ + 1, Capacity);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a2087c8be59a2b909f3e54b6f457bf9eb">   24</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a2087c8be59a2b909f3e54b6f457bf9eb">ClimbingTelemetryBuffer::updateLatestCounters</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">ClimbingRuntimeCounters</a> counters) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (size_ == 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> std::size_t latest = next_ == 0 ? Capacity - 1 : next_ - 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    samples_[latest].counters = counters;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#adf8b14949ffb76433efa523530c7ac7f">   30</a></span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">ClimbingTelemetrySummary</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#adf8b14949ffb76433efa523530c7ac7f">ClimbingTelemetryBuffer::summarize</a>(<a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">ClimbingWorkload</a> workload) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    std::array&lt;std::uint64_t, Capacity&gt; durations{};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::array&lt;std::uint32_t, Capacity&gt; queries{};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::size_t                        <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a> = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::uint32_t                      exceeded = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::uint32_t                      <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a> = 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> = 0; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; size_; ++<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">ClimbingTelemetrySample</a>&amp; sample = samples_[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>];</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">if</span> (sample.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#af1be14d4a4e80b2ab072271f48d30ec3">counters</a>.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a817b556001947d887ac84f5904b882a4">workload</a> != workload) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        durations[<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>] = sample.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#a80595546d08f06ec1ad88fcd4ae20d79">elapsedNanoseconds</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        queries[<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>] = sample.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#af1be14d4a4e80b2ab072271f48d30ec3">counters</a>.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#af9e65c959496fc6515b57ed204af7666">queryCount</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a> = std::max(<a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>, sample.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#af1be14d4a4e80b2ab072271f48d30ec3">counters</a>.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#af9e65c959496fc6515b57ed204af7666">queryCount</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> (sample.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#af1be14d4a4e80b2ab072271f48d30ec3">counters</a>.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a92212e80ab7a20ed71d45f17f33d80b1">budgetState</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799">ClimbingQueryBudgetState::Exceeded</a>) ++exceeded;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        ++<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::sort(durations.begin(), durations.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>));</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::sort(queries.begin(), queries.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">ClimbingTelemetrySummary</a> summary;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    summary.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a8f8525c8470881adc9ddd768cde8a8df">workload</a> = workload;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    summary.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#acd431709cb2645eb53b1c535e8d57e11">sampleCount</a> = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    summary.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a2c9489bc4210c33f59b5eacffad7291a">p50Nanoseconds</a> = nearestRank(durations, <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, 50);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    summary.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ac12df2b858c315945631868733c09dd2">p95Nanoseconds</a> = nearestRank(durations, <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, 95);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    summary.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a1f962e701edfe1faa752f8155c1e2fa3">p50QueryCount</a> = nearestRank(queries, <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, 50);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    summary.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ab9555215568390d9208fe8686f1db18f">p95QueryCount</a> = nearestRank(queries, <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, 95);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    summary.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a46744a8e2fdfeec075c80acbdea1d205">maxQueryCount</a> = <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    summary.<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#aae87e85b069bc9adb7bc97bb5d95c90b">budgetExceededCount</a> = exceeded;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">return</span> summary;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}  <span class="comment">// namespace eve::climbing</span></div>
+<div class="ttc" id="aClimbingTelemetry_8h_html"><div class="ttname"><a href="ClimbingTelemetry_8h.html">ClimbingTelemetry.h</a></div><div class="ttdoc">Fixed-capacity, allocation-free performance telemetry for climbing workloads.</div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a127467c202a16db28ed73fe86239cfd3"><div class="ttname"><a href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a></div><div class="ttdeci">std::map&lt; std::string, Var &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00459">EditorHost.cpp:459</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7fbb9ce939bb5d02a2225567b999402c"><div class="ttname"><a href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a></div><div class="ttdeci">float maximum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00240">GltfImporter.cpp:240</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_a2087c8be59a2b909f3e54b6f457bf9eb"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a2087c8be59a2b909f3e54b6f457bf9eb">eve::climbing::ClimbingTelemetryBuffer::updateLatestCounters</a></div><div class="ttdeci">void updateLatestCounters(ClimbingRuntimeCounters counters) noexcept</div><div class="ttdoc">Replace counters on the most recent sample after a caller completes deferred hard validation.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8cpp_source.html#l00024">ClimbingTelemetry.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_ac9db159c7d608b76af804b71b7e76868"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#ac9db159c7d608b76af804b71b7e76868">eve::climbing::ClimbingTelemetryBuffer::record</a></div><div class="ttdeci">void record(ClimbingTelemetrySample sample) noexcept</div><div class="ttdoc">Append one sample, overwriting the oldest sample when full.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8cpp_source.html#l00018">ClimbingTelemetry.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_adf8b14949ffb76433efa523530c7ac7f"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#adf8b14949ffb76433efa523530c7ac7f">eve::climbing::ClimbingTelemetryBuffer::summarize</a></div><div class="ttdeci">ClimbingTelemetrySummary summarize(ClimbingWorkload workload) const noexcept</div><div class="ttdoc">Compute exact nearest-rank p50/p95 values for one workload.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8cpp_source.html#l00030">ClimbingTelemetry.cpp:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html"><div class="ttname"><a href="namespaceeve_1_1climbing.html">eve::climbing</a></div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00018">Climbing.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799">eve::climbing::ClimbingQueryBudgetState::Exceeded</a></div><div class="ttdeci">@ Exceeded</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_aca2871b7d813a9d98fd9beeeb761c701"><div class="ttname"><a href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">eve::climbing::ClimbingWorkload</a></div><div class="ttdeci">ClimbingWorkload</div><div class="ttdoc">Stable workload classes used by the climbing performance budgets.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00019">ClimbingTelemetry.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">eve::climbing::ClimbingRuntimeCounters</a></div><div class="ttdoc">Allocation-free counters produced by the latest runtime workload.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00042">ClimbingTelemetry.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a817b556001947d887ac84f5904b882a4"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a817b556001947d887ac84f5904b882a4">eve::climbing::ClimbingRuntimeCounters::workload</a></div><div class="ttdeci">ClimbingWorkload workload</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00043">ClimbingTelemetry.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a92212e80ab7a20ed71d45f17f33d80b1"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a92212e80ab7a20ed71d45f17f33d80b1">eve::climbing::ClimbingRuntimeCounters::budgetState</a></div><div class="ttdeci">ClimbingQueryBudgetState budgetState</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00052">ClimbingTelemetry.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_af9e65c959496fc6515b57ed204af7666"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#af9e65c959496fc6515b57ed204af7666">eve::climbing::ClimbingRuntimeCounters::queryCount</a></div><div class="ttdeci">std::uint32_t queryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00046">ClimbingTelemetry.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySample_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">eve::climbing::ClimbingTelemetrySample</a></div><div class="ttdoc">One profiler sample; elapsed time is observational and never feeds simulation state.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00056">ClimbingTelemetry.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySample_html_a80595546d08f06ec1ad88fcd4ae20d79"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#a80595546d08f06ec1ad88fcd4ae20d79">eve::climbing::ClimbingTelemetrySample::elapsedNanoseconds</a></div><div class="ttdeci">std::uint64_t elapsedNanoseconds</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00058">ClimbingTelemetry.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySample_html_af1be14d4a4e80b2ab072271f48d30ec3"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#af1be14d4a4e80b2ab072271f48d30ec3">eve::climbing::ClimbingTelemetrySample::counters</a></div><div class="ttdeci">ClimbingRuntimeCounters counters</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00059">ClimbingTelemetry.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">eve::climbing::ClimbingTelemetrySummary</a></div><div class="ttdoc">Fixed percentile summary for one workload without retaining dynamic storage.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00063">ClimbingTelemetry.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_a1f962e701edfe1faa752f8155c1e2fa3"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a1f962e701edfe1faa752f8155c1e2fa3">eve::climbing::ClimbingTelemetrySummary::p50QueryCount</a></div><div class="ttdeci">std::uint32_t p50QueryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00068">ClimbingTelemetry.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_a2c9489bc4210c33f59b5eacffad7291a"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a2c9489bc4210c33f59b5eacffad7291a">eve::climbing::ClimbingTelemetrySummary::p50Nanoseconds</a></div><div class="ttdeci">std::uint64_t p50Nanoseconds</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00066">ClimbingTelemetry.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_a46744a8e2fdfeec075c80acbdea1d205"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a46744a8e2fdfeec075c80acbdea1d205">eve::climbing::ClimbingTelemetrySummary::maxQueryCount</a></div><div class="ttdeci">std::uint32_t maxQueryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00070">ClimbingTelemetry.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_a8f8525c8470881adc9ddd768cde8a8df"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a8f8525c8470881adc9ddd768cde8a8df">eve::climbing::ClimbingTelemetrySummary::workload</a></div><div class="ttdeci">ClimbingWorkload workload</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00064">ClimbingTelemetry.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_aae87e85b069bc9adb7bc97bb5d95c90b"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#aae87e85b069bc9adb7bc97bb5d95c90b">eve::climbing::ClimbingTelemetrySummary::budgetExceededCount</a></div><div class="ttdeci">std::uint32_t budgetExceededCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00071">ClimbingTelemetry.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_ab9555215568390d9208fe8686f1db18f"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ab9555215568390d9208fe8686f1db18f">eve::climbing::ClimbingTelemetrySummary::p95QueryCount</a></div><div class="ttdeci">std::uint32_t p95QueryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00069">ClimbingTelemetry.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_ac12df2b858c315945631868733c09dd2"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ac12df2b858c315945631868733c09dd2">eve::climbing::ClimbingTelemetrySummary::p95Nanoseconds</a></div><div class="ttdeci">std::uint64_t p95Nanoseconds</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00067">ClimbingTelemetry.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_acd431709cb2645eb53b1c535e8d57e11"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#acd431709cb2645eb53b1c535e8d57e11">eve::climbing::ClimbingTelemetrySummary::sampleCount</a></div><div class="ttdeci">std::uint32_t sampleCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00065">ClimbingTelemetry.h:65</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

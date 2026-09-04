@@ -1,0 +1,1083 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::game_event::GameEventLog类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1game__event.html">game_event</a></li><li class="navelem"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html">GameEventLog</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1game__event_1_1GameEventLog-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::game_event::GameEventLog类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic in-memory stream of topic-neutral event envelopes.  
+ <a href="classeve_1_1game__event_1_1GameEventLog.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GameEvent_8h_source.html">GameEvent.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a468fd0978d594368a9c92827e8bdc016" id="r_a468fd0978d594368a9c92827e8bdc016"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a468fd0978d594368a9c92827e8bdc016">GameEventLog</a> ()=default</td></tr>
+<tr class="memdesc:a468fd0978d594368a9c92827e8bdc016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a stream without an implicit entropy source.  <br /></td></tr>
+<tr class="separator:a468fd0978d594368a9c92827e8bdc016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54f505e74e09d15a02d3bcc50f248844" id="r_a54f505e74e09d15a02d3bcc50f248844"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a54f505e74e09d15a02d3bcc50f248844">GameEventLog</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId)</td></tr>
+<tr class="memdesc:a54f505e74e09d15a02d3bcc50f248844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a stream with a persistent snapshot identity.  <br /></td></tr>
+<tr class="separator:a54f505e74e09d15a02d3bcc50f248844"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1565fd1538f9160ab15258311bffe61" id="r_ad1565fd1538f9160ab15258311bffe61"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#ad1565fd1538f9160ab15258311bffe61">GameEventLog</a> (<a class="el" href="namespaceeve.html#aa4bdb66d9fd10b7e35d2e17e0f637b8d">eve::UuidEntropySource</a> entropy, <a class="el" href="namespaceeve.html#a5642ef25c9d9b43e265f5d2db7a4c580">eve::UuidClock</a> clock={})</td></tr>
+<tr class="memdesc:ad1565fd1538f9160ab15258311bffe61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a stream with an injected UUIDv7 event identity source.  <br /></td></tr>
+<tr class="separator:ad1565fd1538f9160ab15258311bffe61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69b438fb6fd349d328d294158f167d60" id="r_a69b438fb6fd349d328d294158f167d60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a69b438fb6fd349d328d294158f167d60">append</a> (<a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> envelope)</td></tr>
+<tr class="memdesc:a69b438fb6fd349d328d294158f167d60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a typed-metadata envelope and assigns stream-local order.  <br /></td></tr>
+<tr class="separator:a69b438fb6fd349d328d294158f167d60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d7f7e1d71d99cb0fe3683b831f8f194" id="r_a7d7f7e1d71d99cb0fe3683b831f8f194"><td class="memTemplParams" colspan="2">template&lt;class Payload &gt; </td></tr>
+<tr class="memitem:a7d7f7e1d71d99cb0fe3683b831f8f194"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a7d7f7e1d71d99cb0fe3683b831f8f194">appendTyped</a> (<a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> envelope, const Payload &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>, const std::function&lt; <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;(const Payload &amp;)&gt; &amp;encode)</td></tr>
+<tr class="memdesc:a7d7f7e1d71d99cb0fe3683b831f8f194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes a strongly typed domain payload and appends its envelope.  <br /></td></tr>
+<tr class="separator:a7d7f7e1d71d99cb0fe3683b831f8f194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cdc18175a839834b6ad9ebfcf59aadb" id="r_a6cdc18175a839834b6ad9ebfcf59aadb"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a6cdc18175a839834b6ad9ebfcf59aadb">find</a> (<a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> sequence) const</td></tr>
+<tr class="memdesc:a6cdc18175a839834b6ad9ebfcf59aadb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an event by exact sequence, or nullptr. @ownership Borrowed from this stream; callers must not delete or retain it. @nullable Null when the sequence is not retained. @lifetime Until stream clear/reset/restore removes the event; a query does not invalidate this exact-sequence view. @thread GameEventLog-owner thread unless externally synchronized. @reentrancy No callbacks are made.  <br /></td></tr>
+<tr class="separator:a6cdc18175a839834b6ad9ebfcf59aadb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab180832af9ccc68200cc671153a9a026" id="r_ab180832af9ccc68200cc671153a9a026"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#ab180832af9ccc68200cc671153a9a026">find</a> (uint64_t sequence) const</td></tr>
+<tr class="memdesc:ab180832af9ccc68200cc671153a9a026"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade accepting the old untyped sequence value. @ownership Borrowed view with the same lifetime as the typed <code>find</code> overload. @nullable Null when the sequence is not retained. @lifetime Until stream clear/reset/restore removes the event. @thread GameEventLog-owner thread; no callback or re-entry is performed.  <br /></td></tr>
+<tr class="separator:ab180832af9ccc68200cc671153a9a026"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a305ec8649cdddf3d8eb6ef6ef4eb4e69" id="r_a305ec8649cdddf3d8eb6ef6ef4eb4e69"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a305ec8649cdddf3d8eb6ef6ef4eb4e69">queryType</a> (const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="memdesc:a305ec8649cdddf3d8eb6ef6ef4eb4e69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries all retained events of a type in sequence order.  <br /></td></tr>
+<tr class="separator:a305ec8649cdddf3d8eb6ef6ef4eb4e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d4dbf5b4a5be2fc3636c3b5abb9363d" id="r_a7d4dbf5b4a5be2fc3636c3b5abb9363d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a7d4dbf5b4a5be2fc3636c3b5abb9363d">querySource</a> (const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="memdesc:a7d4dbf5b4a5be2fc3636c3b5abb9363d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries all retained events from a source in sequence order.  <br /></td></tr>
+<tr class="separator:a7d4dbf5b4a5be2fc3636c3b5abb9363d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa022f48b154b2e7630d13d97dedb0626" id="r_aa022f48b154b2e7630d13d97dedb0626"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#aa022f48b154b2e7630d13d97dedb0626">querySubject</a> (const std::string &amp;subject)</td></tr>
+<tr class="memdesc:aa022f48b154b2e7630d13d97dedb0626"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries all retained events concerning a subject in sequence order.  <br /></td></tr>
+<tr class="separator:aa022f48b154b2e7630d13d97dedb0626"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabeb132dbb9191ae404d23dc3153f8f3" id="r_aabeb132dbb9191ae404d23dc3153f8f3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#aabeb132dbb9191ae404d23dc3153f8f3">querySequence</a> (<a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> firstSequence)</td></tr>
+<tr class="memdesc:aabeb132dbb9191ae404d23dc3153f8f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries retained events whose sequence is at least firstSequence.  <br /></td></tr>
+<tr class="separator:aabeb132dbb9191ae404d23dc3153f8f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0649e1a45f2baf027915f854a4c4708" id="r_aa0649e1a45f2baf027915f854a4c4708"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#aa0649e1a45f2baf027915f854a4c4708">querySequence</a> (uint64_t firstSequence)</td></tr>
+<tr class="memdesc:aa0649e1a45f2baf027915f854a4c4708"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade accepting the old untyped sequence value.  <br /></td></tr>
+<tr class="separator:aa0649e1a45f2baf027915f854a4c4708"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a077cb9094ad7656d55289b5b565e40a4" id="r_a077cb9094ad7656d55289b5b565e40a4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a077cb9094ad7656d55289b5b565e40a4">queryAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a077cb9094ad7656d55289b5b565e40a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns one result from the latest query, or nullptr.  <br /></td></tr>
+<tr class="separator:a077cb9094ad7656d55289b5b565e40a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59a2f5a663deae08b4dabcc658df03cf" id="r_a59a2f5a663deae08b4dabcc658df03cf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a59a2f5a663deae08b4dabcc658df03cf">size</a> () const</td></tr>
+<tr class="memdesc:a59a2f5a663deae08b4dabcc658df03cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of retained events.  <br /></td></tr>
+<tr class="separator:a59a2f5a663deae08b4dabcc658df03cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34a4e269292c5495a284586079b1b4f7" id="r_a34a4e269292c5495a284586079b1b4f7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a34a4e269292c5495a284586079b1b4f7">at</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a34a4e269292c5495a284586079b1b4f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a retained event by stream order, or nullptr.  <br /></td></tr>
+<tr class="separator:a34a4e269292c5495a284586079b1b4f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e12150ff93357af053912ff85651e47" id="r_a6e12150ff93357af053912ff85651e47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1game__event_1_1EventConsumer.html">EventConsumer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a6e12150ff93357af053912ff85651e47">newConsumer</a> (<a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> firstSequence=<a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a>(1))</td></tr>
+<tr class="memdesc:a6e12150ff93357af053912ff85651e47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an independently positioned consumer cursor.  <br /></td></tr>
+<tr class="separator:a6e12150ff93357af053912ff85651e47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2e008080cc7f7b40a651ed87a6f3e3f" id="r_ae2e008080cc7f7b40a651ed87a6f3e3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1game__event_1_1EventConsumer.html">EventConsumer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#ae2e008080cc7f7b40a651ed87a6f3e3f">newConsumer</a> (uint64_t firstSequence)</td></tr>
+<tr class="memdesc:ae2e008080cc7f7b40a651ed87a6f3e3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade accepting the old untyped sequence value.  <br /></td></tr>
+<tr class="separator:ae2e008080cc7f7b40a651ed87a6f3e3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57cdd5a3ece69dc1f1e6d78ec435dba9" id="r_a57cdd5a3ece69dc1f1e6d78ec435dba9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a57cdd5a3ece69dc1f1e6d78ec435dba9">clearBefore</a> (<a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> firstSequence)</td></tr>
+<tr class="memdesc:a57cdd5a3ece69dc1f1e6d78ec435dba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes retained events with sequence lower than firstSequence.  <br /></td></tr>
+<tr class="separator:a57cdd5a3ece69dc1f1e6d78ec435dba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab446786dfcdf2cb670e110a77bef407a" id="r_ab446786dfcdf2cb670e110a77bef407a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#ab446786dfcdf2cb670e110a77bef407a">clearBefore</a> (uint64_t firstSequence)</td></tr>
+<tr class="memdesc:ab446786dfcdf2cb670e110a77bef407a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade accepting the old untyped sequence value.  <br /></td></tr>
+<tr class="separator:ab446786dfcdf2cb670e110a77bef407a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72c96dbd0bd5f42dbd9823b1e5d149b8" id="r_a72c96dbd0bd5f42dbd9823b1e5d149b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a72c96dbd0bd5f42dbd9823b1e5d149b8">clear</a> ()</td></tr>
+<tr class="memdesc:a72c96dbd0bd5f42dbd9823b1e5d149b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes retained events while preserving the next sequence number.  <br /></td></tr>
+<tr class="separator:a72c96dbd0bd5f42dbd9823b1e5d149b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec271e0e28e42e0d694dd83c0650e7a6" id="r_aec271e0e28e42e0d694dd83c0650e7a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#aec271e0e28e42e0d694dd83c0650e7a6">reset</a> ()</td></tr>
+<tr class="memdesc:aec271e0e28e42e0d694dd83c0650e7a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all state and restarts sequence allocation at one.  <br /></td></tr>
+<tr class="separator:aec271e0e28e42e0d694dd83c0650e7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d0a61733ff5d5d2a4747a0b1f8a55c6" id="r_a7d0a61733ff5d5d2a4747a0b1f8a55c6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a7d0a61733ff5d5d2a4747a0b1f8a55c6">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a7d0a61733ff5d5d2a4747a0b1f8a55c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exports stream state as deterministic compact JSON.  <br /></td></tr>
+<tr class="separator:a7d0a61733ff5d5d2a4747a0b1f8a55c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe4b747cdf3a202f1daf75e72d7207d7" id="r_abe4b747cdf3a202f1daf75e72d7207d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#abe4b747cdf3a202f1daf75e72d7207d7">restore</a> (std::string_view json)</td></tr>
+<tr class="memdesc:abe4b747cdf3a202f1daf75e72d7207d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally restores stream state from a snapshot.  <br /></td></tr>
+<tr class="separator:abe4b747cdf3a202f1daf75e72d7207d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a7c8120517a7ca2b0ff662582543270" id="r_a4a7c8120517a7ca2b0ff662582543270"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a4a7c8120517a7ca2b0ff662582543270">snapshot</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a4a7c8120517a7ca2b0ff662582543270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the stream payload in the common snapshot envelope.  <br /></td></tr>
+<tr class="separator:a4a7c8120517a7ca2b0ff662582543270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa02bcfccd13a69df83f965a28a8532b1" id="r_aa02bcfccd13a69df83f965a28a8532b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#aa02bcfccd13a69df83f965a28a8532b1">restoreSnapshot</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a4a7c8120517a7ca2b0ff662582543270">snapshot</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:aa02bcfccd13a69df83f965a28a8532b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a verified or migrated stream envelope atomically.  <br /></td></tr>
+<tr class="separator:aa02bcfccd13a69df83f965a28a8532b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b5bac213faee87ef9d1e15fd19ee439" id="r_a5b5bac213faee87ef9d1e15fd19ee439"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a5b5bac213faee87ef9d1e15fd19ee439">snapshotEnvelopeJson</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a5b5bac213faee87ef9d1e15fd19ee439"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the common event-stream snapshot envelope.  <br /></td></tr>
+<tr class="separator:a5b5bac213faee87ef9d1e15fd19ee439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8453533d11249521f41b47d020fdd326" id="r_a8453533d11249521f41b47d020fdd326"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a8453533d11249521f41b47d020fdd326">restoreSnapshotJson</a> (std::string_view json, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a8453533d11249521f41b47d020fdd326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and transactionally restores a common event-stream envelope.  <br /></td></tr>
+<tr class="separator:a8453533d11249521f41b47d020fdd326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a1267d53ae947792829a0db311573ae18" id="r_a1267d53ae947792829a0db311573ae18"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a1267d53ae947792829a0db311573ae18">EventConsumer</a></td></tr>
+<tr class="separator:a1267d53ae947792829a0db311573ae18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic in-memory stream of topic-neutral event envelopes. </p>
+<p>Borrowed event views remain valid until the pointed event is removed by a clear, clear-before, reset, or restore operation. Query results remain available until the next query on the same stream. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00256">256</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a468fd0978d594368a9c92827e8bdc016" name="a468fd0978d594368a9c92827e8bdc016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a468fd0978d594368a9c92827e8bdc016">&#9670;&#160;</a></span>GameEventLog() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::game_event::GameEventLog::GameEventLog </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a stream without an implicit entropy source. </p>
+
+</div>
+</div>
+<a id="a54f505e74e09d15a02d3bcc50f248844" name="a54f505e74e09d15a02d3bcc50f248844"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f505e74e09d15a02d3bcc50f248844">&#9670;&#160;</a></span>GameEventLog() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::game_event::GameEventLog::GameEventLog </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a stream with a persistent snapshot identity. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00262">262</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1565fd1538f9160ab15258311bffe61" name="ad1565fd1538f9160ab15258311bffe61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1565fd1538f9160ab15258311bffe61">&#9670;&#160;</a></span>GameEventLog() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::game_event::GameEventLog::GameEventLog </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#aa4bdb66d9fd10b7e35d2e17e0f637b8d">eve::UuidEntropySource</a>&#160;</td>
+          <td class="paramname"><em>entropy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a5642ef25c9d9b43e265f5d2db7a4c580">eve::UuidClock</a>&#160;</td>
+          <td class="paramname"><em>clock</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a stream with an injected UUIDv7 event identity source. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entropy</td><td>Entropy callback used only when an appended envelope has a nil ID. </td></tr>
+    <tr><td class="paramname">clock</td><td>Optional clock for UUIDv7 timestamps. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a69b438fb6fd349d328d294158f167d60" name="a69b438fb6fd349d328d294158f167d60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69b438fb6fd349d328d294158f167d60">&#9670;&#160;</a></span>append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> &gt; eve::game_event::GameEventLog::append </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a>&#160;</td>
+          <td class="paramname"><em>envelope</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Appends a typed-metadata envelope and assigns stream-local order. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">envelope</td><td>Envelope metadata and canonical serialized payload. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The assigned stream-local sequence, or structured validation failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>A non-nil EventId and valid schema id/version are required. If EventId is nil and this stream has an injected generator, it is generated before the event becomes observable. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="GameEvent_8h_source.html#l00181">eve::game_event::GameEvent::eventId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Identity_8h_source.html#l00066">eve::detail::Id128&lt; Tag &gt;::fromUuid()</a>, <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="Identity_8h_source.html#l00435">eve::LogicalId::isValid()</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="GameEvent_8h_source.html#l00203">eve::game_event::GameEvent::payload</a>, <a class="el" href="GameEvent_8h_source.html#l00195">eve::game_event::GameEvent::schemaId</a>, <a class="el" href="GameEvent_8h_source.html#l00197">eve::game_event::GameEvent::schemaVersion</a>, <a class="el" href="GameEvent_8h_source.html#l00183">eve::game_event::GameEvent::sequence</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="GameEvent_8h_source.html#l00185">eve::game_event::GameEvent::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8h_source.html#l00290">appendTyped()</a>.</p>
+
+</div>
+</div>
+<a id="a7d7f7e1d71d99cb0fe3683b831f8f194" name="a7d7f7e1d71d99cb0fe3683b831f8f194"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d7f7e1d71d99cb0fe3683b831f8f194">&#9670;&#160;</a></span>appendTyped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Payload &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a> &gt; eve::game_event::GameEventLog::appendTyped </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a>&#160;</td>
+          <td class="paramname"><em>envelope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Payload &amp;&#160;</td>
+          <td class="paramname"><em>payload</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;(const Payload &amp;)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>encode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Encodes a strongly typed domain payload and appends its envelope. </p>
+<dl class="tparams"><dt>模板参数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Payload</td><td>Domain payload type owned by the caller/domain module. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">envelope</td><td>Envelope metadata; its payload field is replaced by the codec output. </td></tr>
+    <tr><td class="paramname">payload</td><td>Strongly typed domain payload; the stream does not inspect its fields. </td></tr>
+    <tr><td class="paramname">encode</td><td>Caller-owned canonical wire encoder returning valid JSON for stream snapshots. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The assigned stream-local sequence, or the encoder/append failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameEvent_8cpp_source.html#l00260">append()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a> , 以及 <a class="el" href="GameEvent_8h_source.html#l00203">eve::game_event::GameEvent::payload</a>.</p>
+
+</div>
+</div>
+<a id="a34a4e269292c5495a284586079b1b4f7" name="a34a4e269292c5495a284586079b1b4f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34a4e269292c5495a284586079b1b4f7">&#9670;&#160;</a></span>at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> * eve::game_event::GameEventLog::at </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a retained event by stream order, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a72c96dbd0bd5f42dbd9823b1e5d149b8" name="a72c96dbd0bd5f42dbd9823b1e5d149b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72c96dbd0bd5f42dbd9823b1e5d149b8">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::game_event::GameEventLog::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes retained events while preserving the next sequence number. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00371">reset()</a>.</p>
+
+</div>
+</div>
+<a id="a57cdd5a3ece69dc1f1e6d78ec435dba9" name="a57cdd5a3ece69dc1f1e6d78ec435dba9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57cdd5a3ece69dc1f1e6d78ec435dba9">&#9670;&#160;</a></span>clearBefore() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::game_event::GameEventLog::clearBefore </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a>&#160;</td>
+          <td class="paramname"><em>firstSequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes retained events with sequence lower than firstSequence. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00363">clearBefore()</a>.</p>
+
+</div>
+</div>
+<a id="ab446786dfcdf2cb670e110a77bef407a" name="ab446786dfcdf2cb670e110a77bef407a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab446786dfcdf2cb670e110a77bef407a">&#9670;&#160;</a></span>clearBefore() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::game_event::GameEventLog::clearBefore </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>firstSequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade accepting the old untyped sequence value. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameEvent_8cpp_source.html#l00357">clearBefore()</a>.</p>
+
+</div>
+</div>
+<a id="a6cdc18175a839834b6ad9ebfcf59aadb" name="a6cdc18175a839834b6ad9ebfcf59aadb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cdc18175a839834b6ad9ebfcf59aadb">&#9670;&#160;</a></span>find() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> * eve::game_event::GameEventLog::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a>&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an event by exact sequence, or nullptr. @ownership Borrowed from this stream; callers must not delete or retain it. @nullable Null when the sequence is not retained. @lifetime Until stream clear/reset/restore removes the event; a query does not invalidate this exact-sequence view. @thread GameEventLog-owner thread unless externally synchronized. @reentrancy No callbacks are made. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00301">301</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00308">find()</a>.</p>
+
+</div>
+</div>
+<a id="ab180832af9ccc68200cc671153a9a026" name="ab180832af9ccc68200cc671153a9a026"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab180832af9ccc68200cc671153a9a026">&#9670;&#160;</a></span>find() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> * eve::game_event::GameEventLog::find </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade accepting the old untyped sequence value. @ownership Borrowed view with the same lifetime as the typed <code>find</code> overload. @nullable Null when the sequence is not retained. @lifetime Until stream clear/reset/restore removes the event. @thread GameEventLog-owner thread; no callback or re-entry is performed. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameEvent_8cpp_source.html#l00301">find()</a>.</p>
+
+</div>
+</div>
+<a id="a6e12150ff93357af053912ff85651e47" name="a6e12150ff93357af053912ff85651e47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e12150ff93357af053912ff85651e47">&#9670;&#160;</a></span>newConsumer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1game__event_1_1EventConsumer.html">EventConsumer</a> * eve::game_event::GameEventLog::newConsumer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a>&#160;</td>
+          <td class="paramname"><em>firstSequence</em> = <code><a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a>(1)</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates an independently positioned consumer cursor. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameEvent_8h_source.html#l00376">EventConsumer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00355">newConsumer()</a>.</p>
+
+</div>
+</div>
+<a id="ae2e008080cc7f7b40a651ed87a6f3e3f" name="ae2e008080cc7f7b40a651ed87a6f3e3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2e008080cc7f7b40a651ed87a6f3e3f">&#9670;&#160;</a></span>newConsumer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1game__event_1_1EventConsumer.html">EventConsumer</a> * eve::game_event::GameEventLog::newConsumer </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>firstSequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade accepting the old untyped sequence value. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameEvent_8cpp_source.html#l00350">newConsumer()</a>.</p>
+
+</div>
+</div>
+<a id="a077cb9094ad7656d55289b5b565e40a4" name="a077cb9094ad7656d55289b5b565e40a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a077cb9094ad7656d55289b5b565e40a4">&#9670;&#160;</a></span>queryAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">GameEvent</a> * eve::game_event::GameEventLog::queryAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns one result from the latest query, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aabeb132dbb9191ae404d23dc3153f8f3" name="aabeb132dbb9191ae404d23dc3153f8f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabeb132dbb9191ae404d23dc3153f8f3">&#9670;&#160;</a></span>querySequence() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::game_event::GameEventLog::querySequence </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1game__event.html#a63214e0d85de6a64ff6054eec6847fdd">EventSequence</a>&#160;</td>
+          <td class="paramname"><em>firstSequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries retained events whose sequence is at least firstSequence. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00338">querySequence()</a>.</p>
+
+</div>
+</div>
+<a id="aa0649e1a45f2baf027915f854a4c4708" name="aa0649e1a45f2baf027915f854a4c4708"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0649e1a45f2baf027915f854a4c4708">&#9670;&#160;</a></span>querySequence() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::game_event::GameEventLog::querySequence </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>firstSequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade accepting the old untyped sequence value. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameEvent_8cpp_source.html#l00331">querySequence()</a>.</p>
+
+</div>
+</div>
+<a id="a7d4dbf5b4a5be2fc3636c3b5abb9363d" name="a7d4dbf5b4a5be2fc3636c3b5abb9363d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d4dbf5b4a5be2fc3636c3b5abb9363d">&#9670;&#160;</a></span>querySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::game_event::GameEventLog::querySource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries all retained events from a source in sequence order. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="aa022f48b154b2e7630d13d97dedb0626" name="aa022f48b154b2e7630d13d97dedb0626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa022f48b154b2e7630d13d97dedb0626">&#9670;&#160;</a></span>querySubject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::game_event::GameEventLog::querySubject </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries all retained events concerning a subject in sequence order. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a305ec8649cdddf3d8eb6ef6ef4eb4e69" name="a305ec8649cdddf3d8eb6ef6ef4eb4e69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a305ec8649cdddf3d8eb6ef6ef4eb4e69">&#9670;&#160;</a></span>queryType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::game_event::GameEventLog::queryType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries all retained events of a type in sequence order. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+</div>
+</div>
+<a id="aec271e0e28e42e0d694dd83c0650e7a6" name="aec271e0e28e42e0d694dd83c0650e7a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec271e0e28e42e0d694dd83c0650e7a6">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::game_event::GameEventLog::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes all state and restarts sequence allocation at one. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00371">371</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameEvent_8cpp_source.html#l00365">clear()</a>, <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;::zero()</a>.</p>
+
+</div>
+</div>
+<a id="abe4b747cdf3a202f1daf75e72d7207d7" name="abe4b747cdf3a202f1daf75e72d7207d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4b747cdf3a202f1daf75e72d7207d7">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::game_event::GameEventLog::restore </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally restores stream state from a snapshot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Snapshot produced by <a class="el" href="classeve_1_1game__event_1_1GameEventLog.html#a7d0a61733ff5d5d2a4747a0b1f8a55c6" title="Exports stream state as deterministic compact JSON.">snapshotJson()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or structured parse/validation failure; failure leaves all retained events, consumers and sequence allocation unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00402">402</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameEvent_8h_source.html#l00191">eve::game_event::GameEvent::causation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="GameEvent_8h_source.html#l00193">eve::game_event::GameEvent::correlation</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="GameEvent_8h_source.html#l00181">eve::game_event::GameEvent::eventId</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Identity_8cpp_source.html#l00048">eve::LogicalId::fromParts()</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="GameEvent_8h_source.html#l00071">eve::game_event::CorrelationId::kind()</a>, <a class="el" href="GameEvent_8h_source.html#l00129">eve::game_event::CausationRef::kind()</a>, <a class="el" href="Identity_8h_source.html#l00071">eve::detail::Id128&lt; Tag &gt;::nil()</a>, <a class="el" href="classeve_1_1game__event_1_1CorrelationId.html#a0ddf2d1381c485f3241dedcda0994b99a6adf97f83acf6453d4a6a4b1070f3754">eve::game_event::CorrelationId::None</a>, <a class="el" href="classeve_1_1game__event_1_1CausationRef.html#a8f46e6cc82c0c06fae1eddd049006453a6adf97f83acf6453d4a6a4b1070f3754">eve::game_event::CausationRef::None</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="Identity_8h_source.html#l00080">eve::detail::Id128&lt; Tag &gt;::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="GameEvent_8h_source.html#l00185">eve::game_event::GameEvent::type</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00535">restoreSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="aa02bcfccd13a69df83f965a28a8532b1" name="aa02bcfccd13a69df83f965a28a8532b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa02bcfccd13a69df83f965a28a8532b1">&#9670;&#160;</a></span>restoreSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::game_event::GameEventLog::restoreSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restores a verified or migrated stream envelope atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">snapshot</td><td>Source envelope with schema <code><a class="el" href="namespaceeve_1_1game__event.html">game_event</a>:stream</code>. </td></tr>
+    <tr><td class="paramname">hashProvider</td><td>Explicit content-digest provider. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a failure leaving retained events and cursors intact. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00535">535</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="GameEvent_8cpp_source.html#l00402">restore()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00081">eve::validateSnapshotPayloadMetadata()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00581">restoreSnapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a8453533d11249521f41b47d020fdd326" name="a8453533d11249521f41b47d020fdd326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8453533d11249521f41b47d020fdd326">&#9670;&#160;</a></span>restoreSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::game_event::GameEventLog::restoreSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses and transactionally restores a common event-stream envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00581">581</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00189">eve::parseSnapshotEnvelope()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00535">restoreSnapshot()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a59a2f5a663deae08b4dabcc658df03cf" name="a59a2f5a663deae08b4dabcc658df03cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59a2f5a663deae08b4dabcc658df03cf">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::game_event::GameEventLog::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of retained events. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4a7c8120517a7ca2b0ff662582543270" name="a4a7c8120517a7ca2b0ff662582543270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a7c8120517a7ca2b0ff662582543270">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt; eve::game_event::GameEventLog::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures the stream payload in the common snapshot envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00528">528</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00104">eve::makeSnapshotEnvelope()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a> , 以及 <a class="el" href="GameEvent_8cpp_source.html#l00379">snapshotJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00574">snapshotEnvelopeJson()</a>.</p>
+
+</div>
+</div>
+<a id="a5b5bac213faee87ef9d1e15fd19ee439" name="a5b5bac213faee87ef9d1e15fd19ee439"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b5bac213faee87ef9d1e15fd19ee439">&#9670;&#160;</a></span>snapshotEnvelopeJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::game_event::GameEventLog::snapshotEnvelopeJson </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes the common event-stream snapshot envelope. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00574">574</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a>, <a class="el" href="GameEvent_8cpp_source.html#l00528">snapshot()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a7d0a61733ff5d5d2a4747a0b1f8a55c6" name="a7d0a61733ff5d5d2a4747a0b1f8a55c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d0a61733ff5d5d2a4747a0b1f8a55c6">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::game_event::GameEventLog::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exports stream state as deterministic compact JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a> 第 <a class="el" href="GameEvent_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="LanguageText_8cpp_source.html#l00015">quote</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00528">snapshot()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a1267d53ae947792829a0db311573ae18" name="a1267d53ae947792829a0db311573ae18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1267d53ae947792829a0db311573ae18">&#9670;&#160;</a></span>EventConsumer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1game__event_1_1EventConsumer.html">EventConsumer</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GameEvent_8h_source.html">GameEvent.h</a> 第 <a class="el" href="GameEvent_8h_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameEvent_8cpp_source.html#l00350">newConsumer()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/game_event/<a class="el" href="GameEvent_8h_source.html">GameEvent.h</a></li>
+<li>src/modules/game_event/<a class="el" href="GameEvent_8cpp_source.html">GameEvent.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

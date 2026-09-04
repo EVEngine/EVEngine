@@ -1,0 +1,238 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/filesystem/ResourceReader.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_afee26140d46546965aad89686474471.html">filesystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ResourceReader.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ResourceReader_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ResourceReader_8h.html">filesystem/ResourceReader.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1filesystem.html">eve::filesystem</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>[[nodiscard]] Result&lt;std::vector&lt;std::uint8_t&gt;&gt; unsupported(<span class="keyword">const</span> ResourceUri&amp; uri) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> Result&lt;std::vector&lt;std::uint8_t&gt;&gt;::failure(</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>,</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>                          <span class="stringliteral">&quot;filesystem ResourceReader has no provider for this resource namespace&quot;</span>, uri.format()));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>[[nodiscard]] Result&lt;std::vector&lt;std::uint8_t&gt;&gt; readFailure(<span class="keyword">const</span> ResourceUri&amp; uri) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> Result&lt;std::vector&lt;std::uint8_t&gt;&gt;::failure(</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;filesystem provider could not read resource&quot;</span>, uri.format()));</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>[[nodiscard]] Result&lt;T&gt; propagate(<span class="keyword">const</span> Status&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1ResourceReader.html#aa94a55db4748ee0cfa9703301be4f947">   27</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;std::uint8_t&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1filesystem_1_1ResourceReader.html#aa94a55db4748ee0cfa9703301be4f947">ResourceReader::read</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ResourceUri.html">ResourceUri</a>&amp; uri)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (uri.<a class="code hl_function" href="classeve_1_1ResourceUri.html#ae62d38fd83ccf1bd3632c573c5105fce">scheme</a>() != <a class="code hl_enumvalue" href="namespaceeve.html#a46de51bc98b116b6a5be7f8edc19eb5da9e727fdd3aec8274f46685441900280d">UriScheme::Project</a>) <span class="keywordflow">return</span> unsupported(uri);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    std::vector&lt;std::uint8_t&gt; bytes;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (!filesystem_.<a class="code hl_function" href="classeve_1_1service_1_1IFileSystem.html#a5321ceb1c4e6d4cd8389c4584e80575e">readFile</a>(std::string(uri.<a class="code hl_function" href="classeve_1_1ResourceUri.html#a0a4bfb430d5c8202215250da62e93b2c">path</a>()), bytes)) <span class="keywordflow">return</span> readFailure(uri);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;std::uint8_t&gt;</a>&gt;::success(std::move(bytes));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1ResourceReader.html#a6589c0c17726b32aeab5bbd224afbc22">   35</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;std::uint8_t&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1filesystem_1_1ResourceReader.html#aa94a55db4748ee0cfa9703301be4f947">ResourceReader::read</a>(std::string_view legacyPathOrUri)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (legacyPathOrUri.find(<span class="stringliteral">&quot;://&quot;</span>) != std::string_view::npos) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">auto</span> parsed = <a class="code hl_function" href="classeve_1_1ResourceUri.html#aee13ddaff0f3071f7eae8c3d526cdb31">ResourceUri::parse</a>(legacyPathOrUri);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">if</span> (!parsed.ok()) <span class="keywordflow">return</span> propagate&lt;std::vector&lt;std::uint8_t&gt;&gt;(parsed.status());</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1ResourceReader.html#aa94a55db4748ee0cfa9703301be4f947">read</a>(std::move(parsed).takeValue());</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">auto</span> converted = <a class="code hl_function" href="classeve_1_1ResourceUri.html#ae2235d955e2cb1bc30c724086bb9cfdc">ResourceUri::fromLegacyProjectPath</a>(legacyPathOrUri);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (!converted.ok()) <span class="keywordflow">return</span> propagate&lt;std::vector&lt;std::uint8_t&gt;&gt;(converted.status());</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1ResourceReader.html#aa94a55db4748ee0cfa9703301be4f947">read</a>(std::move(converted).takeValue());</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}  <span class="comment">// namespace eve::filesystem</span></div>
+<div class="ttc" id="aResourceReader_8h_html"><div class="ttname"><a href="ResourceReader_8h.html">ResourceReader.h</a></div><div class="ttdoc">Filesystem consumer for strongly typed resource locators.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceUri_html"><div class="ttname"><a href="classeve_1_1ResourceUri.html">eve::ResourceUri</a></div><div class="ttdoc">A semantically named resource locator.</div><div class="ttdef"><b>Definition</b> <a href="Uri_8h_source.html#l00101">Uri.h:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceUri_html_a0a4bfb430d5c8202215250da62e93b2c"><div class="ttname"><a href="classeve_1_1ResourceUri.html#a0a4bfb430d5c8202215250da62e93b2c">eve::ResourceUri::path</a></div><div class="ttdeci">std::string_view path() const noexcept</div><div class="ttdoc">Return the relative virtual path, borrowed from this value.</div><div class="ttdef"><b>Definition</b> <a href="Uri_8h_source.html#l00133">Uri.h:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceUri_html_ae2235d955e2cb1bc30c724086bb9cfdc"><div class="ttname"><a href="classeve_1_1ResourceUri.html#ae2235d955e2cb1bc30c724086bb9cfdc">eve::ResourceUri::fromLegacyProjectPath</a></div><div class="ttdeci">static Result&lt; ResourceUri &gt; fromLegacyProjectPath(std::string_view path)</div><div class="ttdoc">Explicitly convert a legacy project-relative path.</div><div class="ttdef"><b>Definition</b> <a href="Uri_8cpp_source.html#l00187">Uri.cpp:187</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceUri_html_ae62d38fd83ccf1bd3632c573c5105fce"><div class="ttname"><a href="classeve_1_1ResourceUri.html#ae62d38fd83ccf1bd3632c573c5105fce">eve::ResourceUri::scheme</a></div><div class="ttdeci">UriScheme scheme() const noexcept</div><div class="ttdoc">Return the resource namespace.</div><div class="ttdef"><b>Definition</b> <a href="Uri_8h_source.html#l00130">Uri.h:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1ResourceUri_html_aee13ddaff0f3071f7eae8c3d526cdb31"><div class="ttname"><a href="classeve_1_1ResourceUri.html#aee13ddaff0f3071f7eae8c3d526cdb31">eve::ResourceUri::parse</a></div><div class="ttdeci">static Result&lt; ResourceUri &gt; parse(std::string_view text)</div><div class="ttdoc">Parse a supported resource URI.</div><div class="ttdef"><b>Definition</b> <a href="Uri_8cpp_source.html#l00168">Uri.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1ResourceReader_html_aa94a55db4748ee0cfa9703301be4f947"><div class="ttname"><a href="classeve_1_1filesystem_1_1ResourceReader.html#aa94a55db4748ee0cfa9703301be4f947">eve::filesystem::ResourceReader::read</a></div><div class="ttdeci">Result&lt; std::vector&lt; std::uint8_t &gt; &gt; read(const ResourceUri &amp;uri) const</div><div class="ttdoc">Read a supported project resource by typed URI.</div><div class="ttdef"><b>Definition</b> <a href="ResourceReader_8cpp_source.html#l00027">ResourceReader.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1IFileSystem_html_a5321ceb1c4e6d4cd8389c4584e80575e"><div class="ttname"><a href="classeve_1_1service_1_1IFileSystem.html#a5321ceb1c4e6d4cd8389c4584e80575e">eve::service::IFileSystem::readFile</a></div><div class="ttdeci">virtual bool readFile(const std::string &amp;path, std::vector&lt; uint8_t &gt; &amp;out)=0</div><div class="ttdoc">Reads an entire file.</div></div>
+<div class="ttc" id="anamespaceeve_1_1filesystem_html"><div class="ttname"><a href="namespaceeve_1_1filesystem.html">eve::filesystem</a></div><div class="ttdef"><b>Definition</b> <a href="cppfs_2File_8cpp_source.html#l00017">File.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a46de51bc98b116b6a5be7f8edc19eb5da9e727fdd3aec8274f46685441900280d"><div class="ttname"><a href="namespaceeve.html#a46de51bc98b116b6a5be7f8edc19eb5da9e727fdd3aec8274f46685441900280d">eve::UriScheme::Project</a></div><div class="ttdeci">@ Project</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,2202 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::Joint3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1physics_1_1Joint3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::Joint3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script-facing Box3D joint owned by a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>.  
+ <a href="classeve_1_1physics_1_1Joint3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Joint3D_8h_source.html">Joint3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a2fb8ffc34426662d8e061da1659507c0" id="r_a2fb8ffc34426662d8e061da1659507c0"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0">Kind</a> { <br />
+&#160;&#160;<a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98">Distance</a>
+, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e">Revolute</a>
+, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>
+, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947">Spherical</a>
+, <br />
+&#160;&#160;<a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a2fb8ffc34426662d8e061da1659507c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported joint geometry.  <a href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0">更多...</a><br /></td></tr>
+<tr class="separator:a2fb8ffc34426662d8e061da1659507c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a22643eec6ee151ddaaedbe14f2d11156" id="r_a22643eec6ee151ddaaedbe14f2d11156"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a22643eec6ee151ddaaedbe14f2d11156">Joint3D</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *bodyA, <a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *bodyB, b3JointId jointId, <a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a> <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a4e0f405b0d3fc705a3907cac83ab1f7b">runtimeHandle</a>, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0">Kind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a22643eec6ee151ddaaedbe14f2d11156"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal wrapper constructor; use World3D::new*Joint.  <br /></td></tr>
+<tr class="separator:a22643eec6ee151ddaaedbe14f2d11156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a646fca89f9b100c5d712658259ab7ebc" id="r_a646fca89f9b100c5d712658259ab7ebc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a646fca89f9b100c5d712658259ab7ebc">~Joint3D</a> ()</td></tr>
+<tr class="separator:a646fca89f9b100c5d712658259ab7ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a2766aa14e9cedcfc3b67e6c2eda177" id="r_a3a2766aa14e9cedcfc3b67e6c2eda177"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a3a2766aa14e9cedcfc3b67e6c2eda177">Joint3D</a> (const <a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> &amp;)=delete</td></tr>
+<tr class="separator:a3a2766aa14e9cedcfc3b67e6c2eda177"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8b73681bd008d35682d099cf31d8ef3" id="r_af8b73681bd008d35682d099cf31d8ef3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#af8b73681bd008d35682d099cf31d8ef3">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> &amp;)=delete</td></tr>
+<tr class="separator:af8b73681bd008d35682d099cf31d8ef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7706a05dafdb64ab3fe077ee2c4711c5" id="r_a7706a05dafdb64ab3fe077ee2c4711c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a7706a05dafdb64ab3fe077ee2c4711c5">getId</a> () const</td></tr>
+<tr class="memdesc:a7706a05dafdb64ab3fe077ee2c4711c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable world-local identifier.  <br /></td></tr>
+<tr class="separator:a7706a05dafdb64ab3fe077ee2c4711c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e0f405b0d3fc705a3907cac83ab1f7b" id="r_a4e0f405b0d3fc705a3907cac83ab1f7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a4e0f405b0d3fc705a3907cac83ab1f7b">runtimeHandle</a> () const noexcept</td></tr>
+<tr class="memdesc:a4e0f405b0d3fc705a3907cac83ab1f7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process-local generation-qualified handle owned by <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>.  <br /></td></tr>
+<tr class="separator:a4e0f405b0d3fc705a3907cac83ab1f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82f7e2eceee76d878acbbf99f1624d92" id="r_a82f7e2eceee76d878acbbf99f1624d92"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a82f7e2eceee76d878acbbf99f1624d92">getKind</a> () const</td></tr>
+<tr class="memdesc:a82f7e2eceee76d878acbbf99f1624d92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Joint kind: "distance", "revolute", "prismatic", "spherical", or "wheel".  <br /></td></tr>
+<tr class="separator:a82f7e2eceee76d878acbbf99f1624d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb7830d895111718f267ff220650bccd" id="r_abb7830d895111718f267ff220650bccd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#abb7830d895111718f267ff220650bccd">getBodyAId</a> () const</td></tr>
+<tr class="memdesc:abb7830d895111718f267ff220650bccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable ID of attached body A, or -1 after invalidation.  <br /></td></tr>
+<tr class="separator:abb7830d895111718f267ff220650bccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcd3d9a22c6ad4eb9f4d32e704b06ded" id="r_adcd3d9a22c6ad4eb9f4d32e704b06ded"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#adcd3d9a22c6ad4eb9f4d32e704b06ded">getBodyBId</a> () const</td></tr>
+<tr class="memdesc:adcd3d9a22c6ad4eb9f4d32e704b06ded"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable ID of attached body B, or -1 after invalidation.  <br /></td></tr>
+<tr class="separator:adcd3d9a22c6ad4eb9f4d32e704b06ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee6357e559a8a653a2ee63908a73a7e5" id="r_aee6357e559a8a653a2ee63908a73a7e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#aee6357e559a8a653a2ee63908a73a7e5">getWorld</a> () const noexcept</td></tr>
+<tr class="memdesc:aee6357e559a8a653a2ee63908a73a7e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning world, or null after joint destruction.  <br /></td></tr>
+<tr class="separator:aee6357e559a8a653a2ee63908a73a7e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea91ba87ec41ee0f5e83124387728bdf" id="r_aea91ba87ec41ee0f5e83124387728bdf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#aea91ba87ec41ee0f5e83124387728bdf">setCollideConnected</a> (bool collide)</td></tr>
+<tr class="memdesc:aea91ba87ec41ee0f5e83124387728bdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables collision between the attached bodies.  <br /></td></tr>
+<tr class="separator:aea91ba87ec41ee0f5e83124387728bdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe9bf5d20ef429f709ffcad40ef5755f" id="r_abe9bf5d20ef429f709ffcad40ef5755f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#abe9bf5d20ef429f709ffcad40ef5755f">getCollideConnected</a> () const</td></tr>
+<tr class="memdesc:abe9bf5d20ef429f709ffcad40ef5755f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether attached bodies may collide.  <br /></td></tr>
+<tr class="separator:abe9bf5d20ef429f709ffcad40ef5755f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11c29f97d357be2e6cc902838c5ec6af" id="r_a11c29f97d357be2e6cc902838c5ec6af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a11c29f97d357be2e6cc902838c5ec6af">setForceThreshold</a> (float threshold)</td></tr>
+<tr class="memdesc:a11c29f97d357be2e6cc902838c5ec6af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the force threshold that emits a joint-stress event, in newtons.  <br /></td></tr>
+<tr class="separator:a11c29f97d357be2e6cc902838c5ec6af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dac8ad94d01e4fcb40d76a38fbfa481" id="r_a4dac8ad94d01e4fcb40d76a38fbfa481"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a4dac8ad94d01e4fcb40d76a38fbfa481">getForceThreshold</a> () const</td></tr>
+<tr class="memdesc:a4dac8ad94d01e4fcb40d76a38fbfa481"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current force event threshold in newtons.  <br /></td></tr>
+<tr class="separator:a4dac8ad94d01e4fcb40d76a38fbfa481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65c5f65afb9058788ff6b97c41b15b07" id="r_a65c5f65afb9058788ff6b97c41b15b07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a65c5f65afb9058788ff6b97c41b15b07">setTorqueThreshold</a> (float threshold)</td></tr>
+<tr class="memdesc:a65c5f65afb9058788ff6b97c41b15b07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the torque threshold that emits a joint-stress event, in newton-metres.  <br /></td></tr>
+<tr class="separator:a65c5f65afb9058788ff6b97c41b15b07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b4a1646a08975e69bbee0909006430f" id="r_a3b4a1646a08975e69bbee0909006430f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a3b4a1646a08975e69bbee0909006430f">getTorqueThreshold</a> () const</td></tr>
+<tr class="memdesc:a3b4a1646a08975e69bbee0909006430f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current torque event threshold in newton-metres.  <br /></td></tr>
+<tr class="separator:a3b4a1646a08975e69bbee0909006430f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a021aa4fb2c48a0e6bc304666dd9db374" id="r_a021aa4fb2c48a0e6bc304666dd9db374"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a021aa4fb2c48a0e6bc304666dd9db374">getConstraintForceX</a> () const</td></tr>
+<tr class="memdesc:a021aa4fb2c48a0e6bc304666dd9db374"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current world-space constraint force X in newtons.  <br /></td></tr>
+<tr class="separator:a021aa4fb2c48a0e6bc304666dd9db374"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a932db80c6727e3bd6497f76bec328c" id="r_a0a932db80c6727e3bd6497f76bec328c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a0a932db80c6727e3bd6497f76bec328c">getConstraintForceY</a> () const</td></tr>
+<tr class="memdesc:a0a932db80c6727e3bd6497f76bec328c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current world-space constraint force Y in newtons.  <br /></td></tr>
+<tr class="separator:a0a932db80c6727e3bd6497f76bec328c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6917c6ac7405f61f1a3411d2ca9b68b" id="r_aa6917c6ac7405f61f1a3411d2ca9b68b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#aa6917c6ac7405f61f1a3411d2ca9b68b">getConstraintForceZ</a> () const</td></tr>
+<tr class="memdesc:aa6917c6ac7405f61f1a3411d2ca9b68b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current world-space constraint force Z in newtons.  <br /></td></tr>
+<tr class="separator:aa6917c6ac7405f61f1a3411d2ca9b68b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa55f7ab16ba625a2017f1769398f7257" id="r_aa55f7ab16ba625a2017f1769398f7257"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#aa55f7ab16ba625a2017f1769398f7257">getConstraintTorqueX</a> () const</td></tr>
+<tr class="memdesc:aa55f7ab16ba625a2017f1769398f7257"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current world-space constraint torque X in newton-metres.  <br /></td></tr>
+<tr class="separator:aa55f7ab16ba625a2017f1769398f7257"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5ceb50db771341b24b7d175ee2a7221" id="r_ae5ceb50db771341b24b7d175ee2a7221"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#ae5ceb50db771341b24b7d175ee2a7221">getConstraintTorqueY</a> () const</td></tr>
+<tr class="memdesc:ae5ceb50db771341b24b7d175ee2a7221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current world-space constraint torque Y in newton-metres.  <br /></td></tr>
+<tr class="separator:ae5ceb50db771341b24b7d175ee2a7221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d2030115e039d082d0940c336d74396" id="r_a6d2030115e039d082d0940c336d74396"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a6d2030115e039d082d0940c336d74396">getConstraintTorqueZ</a> () const</td></tr>
+<tr class="memdesc:a6d2030115e039d082d0940c336d74396"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current world-space constraint torque Z in newton-metres.  <br /></td></tr>
+<tr class="separator:a6d2030115e039d082d0940c336d74396"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9398cefe27ec1196bb391c1a1b3f82be" id="r_a9398cefe27ec1196bb391c1a1b3f82be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a9398cefe27ec1196bb391c1a1b3f82be">getLinearSeparation</a> () const</td></tr>
+<tr class="memdesc:a9398cefe27ec1196bb391c1a1b3f82be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current inadmissible linear separation error in metres.  <br /></td></tr>
+<tr class="separator:a9398cefe27ec1196bb391c1a1b3f82be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7104922f6d119873ca327885d5af0ef" id="r_aa7104922f6d119873ca327885d5af0ef"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#aa7104922f6d119873ca327885d5af0ef">getAngularSeparation</a> () const</td></tr>
+<tr class="memdesc:aa7104922f6d119873ca327885d5af0ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current inadmissible angular separation error in radians.  <br /></td></tr>
+<tr class="separator:aa7104922f6d119873ca327885d5af0ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a2aef268e47554e3172a4031b304f4a" id="r_a0a2aef268e47554e3172a4031b304f4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a0a2aef268e47554e3172a4031b304f4a">setDistanceLength</a> (float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>)</td></tr>
+<tr class="memdesc:a0a2aef268e47554e3172a4031b304f4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes distance-joint rest length in metres.  <br /></td></tr>
+<tr class="separator:a0a2aef268e47554e3172a4031b304f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11dff7adb01c3206d719aa6857f9a4fb" id="r_a11dff7adb01c3206d719aa6857f9a4fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a11dff7adb01c3206d719aa6857f9a4fb">getDistanceLength</a> () const</td></tr>
+<tr class="memdesc:a11dff7adb01c3206d719aa6857f9a4fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance-joint rest length in metres.  <br /></td></tr>
+<tr class="separator:a11dff7adb01c3206d719aa6857f9a4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a697f9d8e707a2861265372dde7da43ae" id="r_a697f9d8e707a2861265372dde7da43ae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a697f9d8e707a2861265372dde7da43ae">getDistanceCurrentLength</a> () const</td></tr>
+<tr class="memdesc:a697f9d8e707a2861265372dde7da43ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current anchor-to-anchor distance in metres.  <br /></td></tr>
+<tr class="separator:a697f9d8e707a2861265372dde7da43ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4675c2637c533a760955a2862fb9dea" id="r_ab4675c2637c533a760955a2862fb9dea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#ab4675c2637c533a760955a2862fb9dea">setDistanceSpring</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float hertz, float dampingRatio)</td></tr>
+<tr class="memdesc:ab4675c2637c533a760955a2862fb9dea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures a distance spring; hertz and damping must be non-negative.  <br /></td></tr>
+<tr class="separator:ab4675c2637c533a760955a2862fb9dea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c72286fa63dddffd923e3f70ac91450" id="r_a6c72286fa63dddffd923e3f70ac91450"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a6c72286fa63dddffd923e3f70ac91450">setDistanceLimits</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float <a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>, float <a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>)</td></tr>
+<tr class="memdesc:a6c72286fa63dddffd923e3f70ac91450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures optional distance limits in metres.  <br /></td></tr>
+<tr class="separator:a6c72286fa63dddffd923e3f70ac91450"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47bbc1ec2b017ce6c800ad76d262a3e1" id="r_a47bbc1ec2b017ce6c800ad76d262a3e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a47bbc1ec2b017ce6c800ad76d262a3e1">setDistanceMotor</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float speed, float maxForce)</td></tr>
+<tr class="memdesc:a47bbc1ec2b017ce6c800ad76d262a3e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the distance motor in metres/second and newtons.  <br /></td></tr>
+<tr class="separator:a47bbc1ec2b017ce6c800ad76d262a3e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8219c43a6e8a79d1dbe95e8f1fc950b8" id="r_a8219c43a6e8a79d1dbe95e8f1fc950b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a8219c43a6e8a79d1dbe95e8f1fc950b8">setRevoluteSpring</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float targetAngle, float hertz, float dampingRatio)</td></tr>
+<tr class="memdesc:a8219c43a6e8a79d1dbe95e8f1fc950b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures a revolute angular spring in radians.  <br /></td></tr>
+<tr class="separator:a8219c43a6e8a79d1dbe95e8f1fc950b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4507c7dab7ec7f7154552f42893427b2" id="r_a4507c7dab7ec7f7154552f42893427b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a4507c7dab7ec7f7154552f42893427b2">setRevoluteLimits</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float lower, float upper)</td></tr>
+<tr class="memdesc:a4507c7dab7ec7f7154552f42893427b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures revolute angular limits in radians.  <br /></td></tr>
+<tr class="separator:a4507c7dab7ec7f7154552f42893427b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab749beb911719996afb09514f6a9239e" id="r_ab749beb911719996afb09514f6a9239e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#ab749beb911719996afb09514f6a9239e">setRevoluteMotor</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float speed, float maxTorque)</td></tr>
+<tr class="memdesc:ab749beb911719996afb09514f6a9239e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures the revolute motor in radians/second and newton-metres.  <br /></td></tr>
+<tr class="separator:ab749beb911719996afb09514f6a9239e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ac1396f967e11784b1b22e23a4b07a0" id="r_a6ac1396f967e11784b1b22e23a4b07a0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a6ac1396f967e11784b1b22e23a4b07a0">getRevoluteAngle</a> () const</td></tr>
+<tr class="memdesc:a6ac1396f967e11784b1b22e23a4b07a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current revolute angle in radians.  <br /></td></tr>
+<tr class="separator:a6ac1396f967e11784b1b22e23a4b07a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a487c997a1d600f9b822685e24ae959be" id="r_a487c997a1d600f9b822685e24ae959be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a487c997a1d600f9b822685e24ae959be">getRevoluteMotorTorque</a> () const</td></tr>
+<tr class="memdesc:a487c997a1d600f9b822685e24ae959be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current revolute motor torque in newton-metres.  <br /></td></tr>
+<tr class="separator:a487c997a1d600f9b822685e24ae959be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfb03a9375ff6d39f3408767c5e79f7a" id="r_adfb03a9375ff6d39f3408767c5e79f7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#adfb03a9375ff6d39f3408767c5e79f7a">setPrismaticSpring</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float targetTranslation, float hertz, float dampingRatio)</td></tr>
+<tr class="memdesc:adfb03a9375ff6d39f3408767c5e79f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures a prismatic linear spring and target translation.  <br /></td></tr>
+<tr class="separator:adfb03a9375ff6d39f3408767c5e79f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a829a7ae227b1e17e47fb99263caf5cb7" id="r_a829a7ae227b1e17e47fb99263caf5cb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a829a7ae227b1e17e47fb99263caf5cb7">setPrismaticLimits</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float lower, float upper)</td></tr>
+<tr class="memdesc:a829a7ae227b1e17e47fb99263caf5cb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures prismatic translation limits in metres.  <br /></td></tr>
+<tr class="separator:a829a7ae227b1e17e47fb99263caf5cb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad98701840747326251cb056b88c939cc" id="r_ad98701840747326251cb056b88c939cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#ad98701840747326251cb056b88c939cc">setPrismaticMotor</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float speed, float maxForce)</td></tr>
+<tr class="memdesc:ad98701840747326251cb056b88c939cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures a prismatic motor in metres/second and newtons.  <br /></td></tr>
+<tr class="separator:ad98701840747326251cb056b88c939cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6abd5e4354ed824eb0431c88b54c3140" id="r_a6abd5e4354ed824eb0431c88b54c3140"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a6abd5e4354ed824eb0431c88b54c3140">getPrismaticTranslation</a> () const</td></tr>
+<tr class="memdesc:a6abd5e4354ed824eb0431c88b54c3140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current prismatic translation in metres.  <br /></td></tr>
+<tr class="separator:a6abd5e4354ed824eb0431c88b54c3140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe6e1c6ddd33fc9d8123b75151613df4" id="r_abe6e1c6ddd33fc9d8123b75151613df4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#abe6e1c6ddd33fc9d8123b75151613df4">getPrismaticSpeed</a> () const</td></tr>
+<tr class="memdesc:abe6e1c6ddd33fc9d8123b75151613df4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current prismatic translation speed in metres/second.  <br /></td></tr>
+<tr class="separator:abe6e1c6ddd33fc9d8123b75151613df4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b8218a1c514252489196dfc77ff4888" id="r_a7b8218a1c514252489196dfc77ff4888"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a7b8218a1c514252489196dfc77ff4888">getPrismaticMotorForce</a> () const</td></tr>
+<tr class="memdesc:a7b8218a1c514252489196dfc77ff4888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current prismatic motor force in newtons.  <br /></td></tr>
+<tr class="separator:a7b8218a1c514252489196dfc77ff4888"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb5ef6e782da28fd6ae64f52cbad906f" id="r_adb5ef6e782da28fd6ae64f52cbad906f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#adb5ef6e782da28fd6ae64f52cbad906f">setSphericalConeLimit</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float <a class="el" href="WorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a>)</td></tr>
+<tr class="memdesc:adb5ef6e782da28fd6ae64f52cbad906f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables a spherical cone limit in radians, within [0, pi].  <br /></td></tr>
+<tr class="separator:adb5ef6e782da28fd6ae64f52cbad906f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39d0d18cf17a607e76190b17c2f69b60" id="r_a39d0d18cf17a607e76190b17c2f69b60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a39d0d18cf17a607e76190b17c2f69b60">setSphericalTwistLimits</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float lower, float upper)</td></tr>
+<tr class="memdesc:a39d0d18cf17a607e76190b17c2f69b60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables spherical twist limits in radians.  <br /></td></tr>
+<tr class="separator:a39d0d18cf17a607e76190b17c2f69b60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58e1b0af0288a8a14bef7a7c9ad028bc" id="r_a58e1b0af0288a8a14bef7a7c9ad028bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a58e1b0af0288a8a14bef7a7c9ad028bc">setSphericalMotor</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float velocityX, float velocityY, float velocityZ, float maxTorque)</td></tr>
+<tr class="memdesc:a58e1b0af0288a8a14bef7a7c9ad028bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures spherical motor velocity and maximum torque.  <br /></td></tr>
+<tr class="separator:a58e1b0af0288a8a14bef7a7c9ad028bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8d6d3b8994661472c4a37375ec5d086" id="r_ad8d6d3b8994661472c4a37375ec5d086"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#ad8d6d3b8994661472c4a37375ec5d086">getSphericalConeAngle</a> () const</td></tr>
+<tr class="memdesc:ad8d6d3b8994661472c4a37375ec5d086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current spherical cone angle in radians.  <br /></td></tr>
+<tr class="separator:ad8d6d3b8994661472c4a37375ec5d086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae98a15c351fc6fa0baea9fff02911224" id="r_ae98a15c351fc6fa0baea9fff02911224"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#ae98a15c351fc6fa0baea9fff02911224">getSphericalTwistAngle</a> () const</td></tr>
+<tr class="memdesc:ae98a15c351fc6fa0baea9fff02911224"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current spherical twist angle in radians.  <br /></td></tr>
+<tr class="separator:ae98a15c351fc6fa0baea9fff02911224"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf64b75e45d059cb674835449aa834ec" id="r_adf64b75e45d059cb674835449aa834ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#adf64b75e45d059cb674835449aa834ec">setWheelSuspension</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float hertz, float dampingRatio)</td></tr>
+<tr class="memdesc:adf64b75e45d059cb674835449aa834ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures wheel suspension spring stiffness and damping.  <br /></td></tr>
+<tr class="separator:adf64b75e45d059cb674835449aa834ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7c00f68cdf334b39d0172bc67f8b62" id="r_abc7c00f68cdf334b39d0172bc67f8b62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#abc7c00f68cdf334b39d0172bc67f8b62">setWheelSuspensionLimits</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float lower, float upper)</td></tr>
+<tr class="memdesc:abc7c00f68cdf334b39d0172bc67f8b62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures wheel suspension travel limits in metres.  <br /></td></tr>
+<tr class="separator:abc7c00f68cdf334b39d0172bc67f8b62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32dc00f880c3bf68abadcbb685632892" id="r_a32dc00f880c3bf68abadcbb685632892"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a32dc00f880c3bf68abadcbb685632892">setWheelSpinMotor</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float speed, float maxTorque)</td></tr>
+<tr class="memdesc:a32dc00f880c3bf68abadcbb685632892"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures wheel spin motor speed and maximum torque.  <br /></td></tr>
+<tr class="separator:a32dc00f880c3bf68abadcbb685632892"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a177d3d2c8150444e8eaca429483eac6d" id="r_a177d3d2c8150444e8eaca429483eac6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a177d3d2c8150444e8eaca429483eac6d">setWheelSteering</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float targetAngle, float hertz, float dampingRatio, float maxTorque)</td></tr>
+<tr class="memdesc:a177d3d2c8150444e8eaca429483eac6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures steering target, stiffness, damping and maximum torque.  <br /></td></tr>
+<tr class="separator:a177d3d2c8150444e8eaca429483eac6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79a3d2e363bb288d5c57df3403555125" id="r_a79a3d2e363bb288d5c57df3403555125"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a79a3d2e363bb288d5c57df3403555125">setWheelSteeringLimits</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float lower, float upper)</td></tr>
+<tr class="memdesc:a79a3d2e363bb288d5c57df3403555125"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures steering angular limits in radians.  <br /></td></tr>
+<tr class="separator:a79a3d2e363bb288d5c57df3403555125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fd362d61889f42e5b214465575fb552" id="r_a6fd362d61889f42e5b214465575fb552"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a6fd362d61889f42e5b214465575fb552">getWheelSpinSpeed</a> () const</td></tr>
+<tr class="memdesc:a6fd362d61889f42e5b214465575fb552"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current wheel spin speed in radians/second.  <br /></td></tr>
+<tr class="separator:a6fd362d61889f42e5b214465575fb552"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a411d638d6925cda0d26ff2b4a74157fb" id="r_a411d638d6925cda0d26ff2b4a74157fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a411d638d6925cda0d26ff2b4a74157fb">getWheelSpinTorque</a> () const</td></tr>
+<tr class="memdesc:a411d638d6925cda0d26ff2b4a74157fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current wheel spin motor torque in newton-metres.  <br /></td></tr>
+<tr class="separator:a411d638d6925cda0d26ff2b4a74157fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad54b7b724e7b6547678458dcf93fd39" id="r_aad54b7b724e7b6547678458dcf93fd39"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#aad54b7b724e7b6547678458dcf93fd39">getWheelSteeringAngle</a> () const</td></tr>
+<tr class="memdesc:aad54b7b724e7b6547678458dcf93fd39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current wheel steering angle in radians.  <br /></td></tr>
+<tr class="separator:aad54b7b724e7b6547678458dcf93fd39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa19a83c0aedfb7458939560503303894" id="r_aa19a83c0aedfb7458939560503303894"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#aa19a83c0aedfb7458939560503303894">getWheelSteeringTorque</a> () const</td></tr>
+<tr class="memdesc:aa19a83c0aedfb7458939560503303894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current steering torque in newton-metres.  <br /></td></tr>
+<tr class="separator:aa19a83c0aedfb7458939560503303894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f8497f666f0cde64af90dcbbf6eb8a8" id="r_a0f8497f666f0cde64af90dcbbf6eb8a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a0f8497f666f0cde64af90dcbbf6eb8a8">destroy</a> ()</td></tr>
+<tr class="memdesc:a0f8497f666f0cde64af90dcbbf6eb8a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the backend joint and invalidates this wrapper.  <br /></td></tr>
+<tr class="separator:a0f8497f666f0cde64af90dcbbf6eb8a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c97b7248682d605603a76bca2e65083" id="r_a9c97b7248682d605603a76bca2e65083"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a9c97b7248682d605603a76bca2e65083">isValid</a> () const</td></tr>
+<tr class="memdesc:a9c97b7248682d605603a76bca2e65083"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the backend joint still exists.  <br /></td></tr>
+<tr class="separator:a9c97b7248682d605603a76bca2e65083"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38a1c24731c1578abda7c81167dca906" id="r_a38a1c24731c1578abda7c81167dca906"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a38a1c24731c1578abda7c81167dca906">invalidate</a> ()</td></tr>
+<tr class="memdesc:a38a1c24731c1578abda7c81167dca906"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal invalidation used by body/world destruction.  <br /></td></tr>
+<tr class="separator:a38a1c24731c1578abda7c81167dca906"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c25f0aa455fb7a2e2c94917759a713" id="r_a71c25f0aa455fb7a2e2c94917759a713"><td class="memItemLeft" align="right" valign="top">b3JointId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a71c25f0aa455fb7a2e2c94917759a713">raw</a> () const</td></tr>
+<tr class="memdesc:a71c25f0aa455fb7a2e2c94917759a713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal raw Box3D identifier.  <br /></td></tr>
+<tr class="separator:a71c25f0aa455fb7a2e2c94917759a713"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a75a7b4360539d56559cea72b031c19b0" id="r_a75a7b4360539d56559cea72b031c19b0"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a75a7b4360539d56559cea72b031c19b0">Body3D</a></td></tr>
+<tr class="separator:a75a7b4360539d56559cea72b031c19b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e149544dc4d48fbdfe8b8a6efc1fb9b" id="r_a8e149544dc4d48fbdfe8b8a6efc1fb9b"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a8e149544dc4d48fbdfe8b8a6efc1fb9b">World3D</a></td></tr>
+<tr class="separator:a8e149544dc4d48fbdfe8b8a6efc1fb9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script-facing Box3D joint owned by a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8h_source.html">Joint3D.h</a> 第 <a class="el" href="Joint3D_8h_source.html#l00015">15</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a2fb8ffc34426662d8e061da1659507c0" name="a2fb8ffc34426662d8e061da1659507c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fb8ffc34426662d8e061da1659507c0">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0">eve::physics::Joint3D::Kind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Supported joint geometry. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98" name="a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98"></a>Distance&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e" name="a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e"></a>Revolute&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c" name="a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c"></a>Prismatic&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947" name="a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947"></a>Spherical&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229" name="a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229"></a>Wheel&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8h_source.html">Joint3D.h</a> 第 <a class="el" href="Joint3D_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a22643eec6ee151ddaaedbe14f2d11156" name="a22643eec6ee151ddaaedbe14f2d11156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22643eec6ee151ddaaedbe14f2d11156">&#9670;&#160;</a></span>Joint3D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Joint3D::Joint3D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *&#160;</td>
+          <td class="paramname"><em>bodyA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *&#160;</td>
+          <td class="paramname"><em>bodyB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">b3JointId&#160;</td>
+          <td class="paramname"><em>jointId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a>&#160;</td>
+          <td class="paramname"><em>runtimeHandle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0">Kind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal wrapper constructor; use World3D::new*Joint. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a646fca89f9b100c5d712658259ab7ebc" name="a646fca89f9b100c5d712658259ab7ebc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a646fca89f9b100c5d712658259ab7ebc">&#9670;&#160;</a></span>~Joint3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Joint3D::~Joint3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00048">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="a3a2766aa14e9cedcfc3b67e6c2eda177" name="a3a2766aa14e9cedcfc3b67e6c2eda177"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a2766aa14e9cedcfc3b67e6c2eda177">&#9670;&#160;</a></span>Joint3D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Joint3D::Joint3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0f8497f666f0cde64af90dcbbf6eb8a8" name="a0f8497f666f0cde64af90dcbbf6eb8a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f8497f666f0cde64af90dcbbf6eb8a8">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destroys the backend joint and invalidates this wrapper. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World3D_8cpp_source.html#l00644">eve::physics::World3D::forgetJoint()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00039">invalidate()</a> , 以及 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Joint3D_8cpp_source.html#l00035">~Joint3D()</a>.</p>
+
+</div>
+</div>
+<a id="aa7104922f6d119873ca327885d5af0ef" name="aa7104922f6d119873ca327885d5af0ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7104922f6d119873ca327885d5af0ef">&#9670;&#160;</a></span>getAngularSeparation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getAngularSeparation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current inadmissible angular separation error in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="abb7830d895111718f267ff220650bccd" name="abb7830d895111718f267ff220650bccd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb7830d895111718f267ff220650bccd">&#9670;&#160;</a></span>getBodyAId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Joint3D::getBodyAId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable ID of attached body A, or -1 after invalidation. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Body3D_8h_source.html#l00032">eve::physics::Body3D::getId()</a>.</p>
+
+</div>
+</div>
+<a id="adcd3d9a22c6ad4eb9f4d32e704b06ded" name="adcd3d9a22c6ad4eb9f4d32e704b06ded"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcd3d9a22c6ad4eb9f4d32e704b06ded">&#9670;&#160;</a></span>getBodyBId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Joint3D::getBodyBId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable ID of attached body B, or -1 after invalidation. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Body3D_8h_source.html#l00032">eve::physics::Body3D::getId()</a>.</p>
+
+</div>
+</div>
+<a id="abe9bf5d20ef429f709ffcad40ef5755f" name="abe9bf5d20ef429f709ffcad40ef5755f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe9bf5d20ef429f709ffcad40ef5755f">&#9670;&#160;</a></span>getCollideConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Joint3D::getCollideConnected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether attached bodies may collide. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a021aa4fb2c48a0e6bc304666dd9db374" name="a021aa4fb2c48a0e6bc304666dd9db374"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a021aa4fb2c48a0e6bc304666dd9db374">&#9670;&#160;</a></span>getConstraintForceX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getConstraintForceX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current world-space constraint force X in newtons. </p>
+
+</div>
+</div>
+<a id="a0a932db80c6727e3bd6497f76bec328c" name="a0a932db80c6727e3bd6497f76bec328c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a932db80c6727e3bd6497f76bec328c">&#9670;&#160;</a></span>getConstraintForceY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getConstraintForceY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current world-space constraint force Y in newtons. </p>
+
+</div>
+</div>
+<a id="aa6917c6ac7405f61f1a3411d2ca9b68b" name="aa6917c6ac7405f61f1a3411d2ca9b68b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6917c6ac7405f61f1a3411d2ca9b68b">&#9670;&#160;</a></span>getConstraintForceZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getConstraintForceZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current world-space constraint force Z in newtons. </p>
+
+</div>
+</div>
+<a id="aa55f7ab16ba625a2017f1769398f7257" name="aa55f7ab16ba625a2017f1769398f7257"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa55f7ab16ba625a2017f1769398f7257">&#9670;&#160;</a></span>getConstraintTorqueX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getConstraintTorqueX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current world-space constraint torque X in newton-metres. </p>
+
+</div>
+</div>
+<a id="ae5ceb50db771341b24b7d175ee2a7221" name="ae5ceb50db771341b24b7d175ee2a7221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5ceb50db771341b24b7d175ee2a7221">&#9670;&#160;</a></span>getConstraintTorqueY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getConstraintTorqueY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current world-space constraint torque Y in newton-metres. </p>
+
+</div>
+</div>
+<a id="a6d2030115e039d082d0940c336d74396" name="a6d2030115e039d082d0940c336d74396"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d2030115e039d082d0940c336d74396">&#9670;&#160;</a></span>getConstraintTorqueZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getConstraintTorqueZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current world-space constraint torque Z in newton-metres. </p>
+
+</div>
+</div>
+<a id="a697f9d8e707a2861265372dde7da43ae" name="a697f9d8e707a2861265372dde7da43ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a697f9d8e707a2861265372dde7da43ae">&#9670;&#160;</a></span>getDistanceCurrentLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getDistanceCurrentLength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current anchor-to-anchor distance in metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98">Distance</a>.</p>
+
+</div>
+</div>
+<a id="a11dff7adb01c3206d719aa6857f9a4fb" name="a11dff7adb01c3206d719aa6857f9a4fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11dff7adb01c3206d719aa6857f9a4fb">&#9670;&#160;</a></span>getDistanceLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getDistanceLength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distance-joint rest length in metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98">Distance</a>.</p>
+
+</div>
+</div>
+<a id="a4dac8ad94d01e4fcb40d76a38fbfa481" name="a4dac8ad94d01e4fcb40d76a38fbfa481"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dac8ad94d01e4fcb40d76a38fbfa481">&#9670;&#160;</a></span>getForceThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getForceThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current force event threshold in newtons. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a7706a05dafdb64ab3fe077ee2c4711c5" name="a7706a05dafdb64ab3fe077ee2c4711c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7706a05dafdb64ab3fe077ee2c4711c5">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::Joint3D::getId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable world-local identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8h_source.html">Joint3D.h</a> 第 <a class="el" href="Joint3D_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a82f7e2eceee76d878acbbf99f1624d92" name="a82f7e2eceee76d878acbbf99f1624d92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82f7e2eceee76d878acbbf99f1624d92">&#9670;&#160;</a></span>getKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::Joint3D::getKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Joint kind: "distance", "revolute", "prismatic", "spherical", or "wheel". </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98">Distance</a>, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e">Revolute</a>, <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947">Spherical</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="a9398cefe27ec1196bb391c1a1b3f82be" name="a9398cefe27ec1196bb391c1a1b3f82be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9398cefe27ec1196bb391c1a1b3f82be">&#9670;&#160;</a></span>getLinearSeparation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getLinearSeparation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current inadmissible linear separation error in metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a7b8218a1c514252489196dfc77ff4888" name="a7b8218a1c514252489196dfc77ff4888"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b8218a1c514252489196dfc77ff4888">&#9670;&#160;</a></span>getPrismaticMotorForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getPrismaticMotorForce </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current prismatic motor force in newtons. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>.</p>
+
+</div>
+</div>
+<a id="abe6e1c6ddd33fc9d8123b75151613df4" name="abe6e1c6ddd33fc9d8123b75151613df4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe6e1c6ddd33fc9d8123b75151613df4">&#9670;&#160;</a></span>getPrismaticSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getPrismaticSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current prismatic translation speed in metres/second. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>.</p>
+
+</div>
+</div>
+<a id="a6abd5e4354ed824eb0431c88b54c3140" name="a6abd5e4354ed824eb0431c88b54c3140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6abd5e4354ed824eb0431c88b54c3140">&#9670;&#160;</a></span>getPrismaticTranslation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getPrismaticTranslation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current prismatic translation in metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>.</p>
+
+</div>
+</div>
+<a id="a6ac1396f967e11784b1b22e23a4b07a0" name="a6ac1396f967e11784b1b22e23a4b07a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ac1396f967e11784b1b22e23a4b07a0">&#9670;&#160;</a></span>getRevoluteAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getRevoluteAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current revolute angle in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="a487c997a1d600f9b822685e24ae959be" name="a487c997a1d600f9b822685e24ae959be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a487c997a1d600f9b822685e24ae959be">&#9670;&#160;</a></span>getRevoluteMotorTorque()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getRevoluteMotorTorque </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current revolute motor torque in newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="ad8d6d3b8994661472c4a37375ec5d086" name="ad8d6d3b8994661472c4a37375ec5d086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8d6d3b8994661472c4a37375ec5d086">&#9670;&#160;</a></span>getSphericalConeAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getSphericalConeAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current spherical cone angle in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00261">261</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947">Spherical</a>.</p>
+
+</div>
+</div>
+<a id="ae98a15c351fc6fa0baea9fff02911224" name="ae98a15c351fc6fa0baea9fff02911224"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae98a15c351fc6fa0baea9fff02911224">&#9670;&#160;</a></span>getSphericalTwistAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getSphericalTwistAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current spherical twist angle in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947">Spherical</a>.</p>
+
+</div>
+</div>
+<a id="a3b4a1646a08975e69bbee0909006430f" name="a3b4a1646a08975e69bbee0909006430f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b4a1646a08975e69bbee0909006430f">&#9670;&#160;</a></span>getTorqueThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getTorqueThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current torque event threshold in newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a6fd362d61889f42e5b214465575fb552" name="a6fd362d61889f42e5b214465575fb552"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fd362d61889f42e5b214465575fb552">&#9670;&#160;</a></span>getWheelSpinSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getWheelSpinSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current wheel spin speed in radians/second. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="a411d638d6925cda0d26ff2b4a74157fb" name="a411d638d6925cda0d26ff2b4a74157fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411d638d6925cda0d26ff2b4a74157fb">&#9670;&#160;</a></span>getWheelSpinTorque()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getWheelSpinTorque </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current wheel spin motor torque in newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="aad54b7b724e7b6547678458dcf93fd39" name="aad54b7b724e7b6547678458dcf93fd39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad54b7b724e7b6547678458dcf93fd39">&#9670;&#160;</a></span>getWheelSteeringAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getWheelSteeringAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current wheel steering angle in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="aa19a83c0aedfb7458939560503303894" name="aa19a83c0aedfb7458939560503303894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa19a83c0aedfb7458939560503303894">&#9670;&#160;</a></span>getWheelSteeringTorque()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::Joint3D::getWheelSteeringTorque </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current steering torque in newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="aee6357e559a8a653a2ee63908a73a7e5" name="aee6357e559a8a653a2ee63908a73a7e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee6357e559a8a653a2ee63908a73a7e5">&#9670;&#160;</a></span>getWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> * eve::physics::Joint3D::getWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owning world, or null after joint destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8h_source.html">Joint3D.h</a> 第 <a class="el" href="Joint3D_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38a1c24731c1578abda7c81167dca906" name="a38a1c24731c1578abda7c81167dca906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38a1c24731c1578abda7c81167dca906">&#9670;&#160;</a></span>invalidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::invalidate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal invalidation used by body/world destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="World3D_8cpp_source.html#l00644">eve::physics::World3D::forgetJoint()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00064">eve::RuntimeHandle&lt; PhysicsJointHandleTag &gt;::invalid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Joint3D_8cpp_source.html#l00048">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="a9c97b7248682d605603a76bca2e65083" name="a9c97b7248682d605603a76bca2e65083"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c97b7248682d605603a76bca2e65083">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::Joint3D::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether the backend joint still exists. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Joint3D_8cpp_source.html#l00048">destroy()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00106">getAngularSeparation()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00072">getCollideConnected()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00081">getForceThreshold()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00103">getLinearSeparation()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00089">getTorqueThreshold()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00068">setCollideConnected()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00076">setForceThreshold()</a> , 以及 <a class="el" href="Joint3D_8cpp_source.html#l00084">setTorqueThreshold()</a>.</p>
+
+</div>
+</div>
+<a id="af8b73681bd008d35682d099cf31d8ef3" name="af8b73681bd008d35682d099cf31d8ef3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8b73681bd008d35682d099cf31d8ef3">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> &amp; eve::physics::Joint3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a71c25f0aa455fb7a2e2c94917759a713" name="a71c25f0aa455fb7a2e2c94917759a713"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c25f0aa455fb7a2e2c94917759a713">&#9670;&#160;</a></span>raw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">b3JointId eve::physics::Joint3D::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Internal raw Box3D identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8h_source.html">Joint3D.h</a> 第 <a class="el" href="Joint3D_8h_source.html#l00147">147</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4e0f405b0d3fc705a3907cac83ab1f7b" name="a4e0f405b0d3fc705a3907cac83ab1f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e0f405b0d3fc705a3907cac83ab1f7b">&#9670;&#160;</a></span>runtimeHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a> eve::physics::Joint3D::runtimeHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Process-local generation-qualified handle owned by <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8h_source.html">Joint3D.h</a> 第 <a class="el" href="Joint3D_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3D_8cpp_source.html#l00644">eve::physics::World3D::forgetJoint()</a>.</p>
+
+</div>
+</div>
+<a id="aea91ba87ec41ee0f5e83124387728bdf" name="aea91ba87ec41ee0f5e83124387728bdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea91ba87ec41ee0f5e83124387728bdf">&#9670;&#160;</a></span>setCollideConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setCollideConnected </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>collide</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables or disables collision between the attached bodies. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a0a2aef268e47554e3172a4031b304f4a" name="a0a2aef268e47554e3172a4031b304f4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2aef268e47554e3172a4031b304f4a">&#9670;&#160;</a></span>setDistanceLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setDistanceLength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes distance-joint rest length in metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98">Distance</a> , 以及 <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>.</p>
+
+</div>
+</div>
+<a id="a6c72286fa63dddffd923e3f70ac91450" name="a6c72286fa63dddffd923e3f70ac91450"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c72286fa63dddffd923e3f70ac91450">&#9670;&#160;</a></span>setDistanceLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setDistanceLimits </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minimum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maximum</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures optional distance limits in metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98">Distance</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>.</p>
+
+</div>
+</div>
+<a id="a47bbc1ec2b017ce6c800ad76d262a3e1" name="a47bbc1ec2b017ce6c800ad76d262a3e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47bbc1ec2b017ce6c800ad76d262a3e1">&#9670;&#160;</a></span>setDistanceMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setDistanceMotor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxForce</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures the distance motor in metres/second and newtons. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98">Distance</a> , 以及 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="ab4675c2637c533a760955a2862fb9dea" name="ab4675c2637c533a760955a2862fb9dea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4675c2637c533a760955a2862fb9dea">&#9670;&#160;</a></span>setDistanceSpring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setDistanceSpring </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hertz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingRatio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures a distance spring; hertz and damping must be non-negative. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a0aa6f4210bf373c95eda00232e93cd98">Distance</a> , 以及 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a11c29f97d357be2e6cc902838c5ec6af" name="a11c29f97d357be2e6cc902838c5ec6af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11c29f97d357be2e6cc902838c5ec6af">&#9670;&#160;</a></span>setForceThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setForceThreshold </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>threshold</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the force threshold that emits a joint-stress event, in newtons. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a829a7ae227b1e17e47fb99263caf5cb7" name="a829a7ae227b1e17e47fb99263caf5cb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a829a7ae227b1e17e47fb99263caf5cb7">&#9670;&#160;</a></span>setPrismaticLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setPrismaticLimits </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upper</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures prismatic translation limits in metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>.</p>
+
+</div>
+</div>
+<a id="ad98701840747326251cb056b88c939cc" name="ad98701840747326251cb056b88c939cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad98701840747326251cb056b88c939cc">&#9670;&#160;</a></span>setPrismaticMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setPrismaticMotor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxForce</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures a prismatic motor in metres/second and newtons. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>.</p>
+
+</div>
+</div>
+<a id="adfb03a9375ff6d39f3408767c5e79f7a" name="adfb03a9375ff6d39f3408767c5e79f7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfb03a9375ff6d39f3408767c5e79f7a">&#9670;&#160;</a></span>setPrismaticSpring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setPrismaticSpring </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetTranslation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hertz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingRatio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures a prismatic linear spring and target translation. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a35fa8acd1b8b1beb23e6c2e24313570c">Prismatic</a>.</p>
+
+</div>
+</div>
+<a id="a4507c7dab7ec7f7154552f42893427b2" name="a4507c7dab7ec7f7154552f42893427b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4507c7dab7ec7f7154552f42893427b2">&#9670;&#160;</a></span>setRevoluteLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setRevoluteLimits </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upper</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures revolute angular limits in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="ab749beb911719996afb09514f6a9239e" name="ab749beb911719996afb09514f6a9239e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab749beb911719996afb09514f6a9239e">&#9670;&#160;</a></span>setRevoluteMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setRevoluteMotor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxTorque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures the revolute motor in radians/second and newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="a8219c43a6e8a79d1dbe95e8f1fc950b8" name="a8219c43a6e8a79d1dbe95e8f1fc950b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8219c43a6e8a79d1dbe95e8f1fc950b8">&#9670;&#160;</a></span>setRevoluteSpring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setRevoluteSpring </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetAngle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hertz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingRatio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures a revolute angular spring in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a358561ac4d41f41d479b7c54b19b639e">Revolute</a>.</p>
+
+</div>
+</div>
+<a id="adb5ef6e782da28fd6ae64f52cbad906f" name="adb5ef6e782da28fd6ae64f52cbad906f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb5ef6e782da28fd6ae64f52cbad906f">&#9670;&#160;</a></span>setSphericalConeLimit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setSphericalConeLimit </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>angle</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables a spherical cone limit in radians, within [0, pi]. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00164">angle</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947">Spherical</a>.</p>
+
+</div>
+</div>
+<a id="a58e1b0af0288a8a14bef7a7c9ad028bc" name="a58e1b0af0288a8a14bef7a7c9ad028bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58e1b0af0288a8a14bef7a7c9ad028bc">&#9670;&#160;</a></span>setSphericalMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setSphericalMotor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>velocityX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>velocityY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>velocityZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxTorque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures spherical motor velocity and maximum torque. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947">Spherical</a>.</p>
+
+</div>
+</div>
+<a id="a39d0d18cf17a607e76190b17c2f69b60" name="a39d0d18cf17a607e76190b17c2f69b60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39d0d18cf17a607e76190b17c2f69b60">&#9670;&#160;</a></span>setSphericalTwistLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setSphericalTwistLimits </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upper</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables spherical twist limits in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0a24e5c24fabd1c081d4c729094df0b947">Spherical</a>.</p>
+
+</div>
+</div>
+<a id="a65c5f65afb9058788ff6b97c41b15b07" name="a65c5f65afb9058788ff6b97c41b15b07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65c5f65afb9058788ff6b97c41b15b07">&#9670;&#160;</a></span>setTorqueThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setTorqueThreshold </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>threshold</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the torque threshold that emits a joint-stress event, in newton-metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3D_8cpp_source.html#l00037">isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a32dc00f880c3bf68abadcbb685632892" name="a32dc00f880c3bf68abadcbb685632892"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32dc00f880c3bf68abadcbb685632892">&#9670;&#160;</a></span>setWheelSpinMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setWheelSpinMotor </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxTorque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures wheel spin motor speed and maximum torque. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00287">287</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="a177d3d2c8150444e8eaca429483eac6d" name="a177d3d2c8150444e8eaca429483eac6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a177d3d2c8150444e8eaca429483eac6d">&#9670;&#160;</a></span>setWheelSteering()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setWheelSteering </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetAngle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hertz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingRatio</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxTorque</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures steering target, stiffness, damping and maximum torque. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="a79a3d2e363bb288d5c57df3403555125" name="a79a3d2e363bb288d5c57df3403555125"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79a3d2e363bb288d5c57df3403555125">&#9670;&#160;</a></span>setWheelSteeringLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setWheelSteeringLimits </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upper</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures steering angular limits in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="adf64b75e45d059cb674835449aa834ec" name="adf64b75e45d059cb674835449aa834ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf64b75e45d059cb674835449aa834ec">&#9670;&#160;</a></span>setWheelSuspension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setWheelSuspension </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hertz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingRatio</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures wheel suspension spring stiffness and damping. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<a id="abc7c00f68cdf334b39d0172bc67f8b62" name="abc7c00f68cdf334b39d0172bc67f8b62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc7c00f68cdf334b39d0172bc67f8b62">&#9670;&#160;</a></span>setWheelSuspensionLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::Joint3D::setWheelSuspensionLimits </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lower</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upper</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures wheel suspension travel limits in metres. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a> 第 <a class="el" href="Joint3D_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="classeve_1_1physics_1_1Joint3D.html#a2fb8ffc34426662d8e061da1659507c0aa5df60ef4fc4447353769d66661d2229">Wheel</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a75a7b4360539d56559cea72b031c19b0" name="a75a7b4360539d56559cea72b031c19b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75a7b4360539d56559cea72b031c19b0">&#9670;&#160;</a></span>Body3D</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8h_source.html">Joint3D.h</a> 第 <a class="el" href="Joint3D_8h_source.html#l00150">150</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e149544dc4d48fbdfe8b8a6efc1fb9b" name="a8e149544dc4d48fbdfe8b8a6efc1fb9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e149544dc4d48fbdfe8b8a6efc1fb9b">&#9670;&#160;</a></span>World3D</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint3D_8h_source.html">Joint3D.h</a> 第 <a class="el" href="Joint3D_8h_source.html#l00151">151</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="Joint3D_8h_source.html">Joint3D.h</a></li>
+<li>src/modules/physics/<a class="el" href="Joint3D_8cpp_source.html">Joint3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

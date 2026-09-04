@@ -1,0 +1,279 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/StateValue.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">StateValue.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="StateValue_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html">   20</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">   22</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">Kind</a> { Null, Int, <a class="code hl_enumvalue" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b">Float</a>, <a class="code hl_enumvalue" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2bac26f15e86e3de4c398a8273272aba034">Bool</a>, <a class="code hl_enumvalue" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba27118326006d3829667a400ad23d5d98">String</a>, <a class="code hl_enumvalue" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17">Array</a>, <a class="code hl_class" href="classeve_1_1Object.html">Object</a> };</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#ad6031296d131b44e4ca2dc740ff1a8bf">   25</a></span>    <a class="code hl_function" href="classeve_1_1StateValue.html#ad6031296d131b44e4ca2dc740ff1a8bf">StateValue</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#ad482878f4c8c4634a5b4d8dae7c1bb3f">   27</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> <a class="code hl_function" href="classeve_1_1StateValue.html#ad482878f4c8c4634a5b4d8dae7c1bb3f">null</a>() { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>(); }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> integer(int64_t <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> number(<span class="keywordtype">double</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> boolean(<span class="keywordtype">bool</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> string(std::string <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a2ac75fdd66a0636ac8aae5afaf7c1134">   37</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> <a class="code hl_function" href="classeve_1_1StateValue.html#a2ac75fdd66a0636ac8aae5afaf7c1134">array</a>() { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>(Kind::Array); }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">   39</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> <a class="code hl_function" href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">object</a>() { <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>(Kind::Object); }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a19d94198021f2a5884636161f7daa6da">   42</a></span>    <a class="code hl_enumeration" href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">Kind</a> <a class="code hl_function" href="classeve_1_1StateValue.html#a19d94198021f2a5884636161f7daa6da">kind</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a733c9a14cd992e8d9b8ce01092ea504f">   44</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#a733c9a14cd992e8d9b8ce01092ea504f">isNull</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_ == Kind::Null; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#ae8e18b7b4439151dd818e53212a56200">   45</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#ae8e18b7b4439151dd818e53212a56200">isInt</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_ == Kind::Int; }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a03d2eeb3641117d4fb03f4de3c3e18b7">   46</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#a03d2eeb3641117d4fb03f4de3c3e18b7">isFloat</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_ == Kind::Float; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">   47</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">isBool</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_ == Kind::Bool; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">   48</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">isString</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_ == Kind::String; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">   49</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">isObject</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_ == Kind::Object; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#aabb639ea8a63e067ce9bfc23e956972d">   50</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#aabb639ea8a63e067ce9bfc23e956972d">isArray</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> kind_ == Kind::Array; }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a415747f7f02bed1a9ee2471cec80182e">   53</a></span>    int64_t <a class="code hl_function" href="classeve_1_1StateValue.html#a415747f7f02bed1a9ee2471cec80182e">asInt</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> i_; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#aab697179d1ee57b6b7932114b07c6699">   55</a></span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1StateValue.html#aab697179d1ee57b6b7932114b07c6699">asDouble</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> f_; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a56863251ea1f5e05109805d402b2d7ad">   57</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#a56863251ea1f5e05109805d402b2d7ad">asBool</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> b_; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#aae4e15ee11a3a558911c373a06d309f7">   59</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1StateValue.html#aae4e15ee11a3a558911c373a06d309f7">asString</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> s_; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> pushBack(<a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a8443baddb044ef74393c0a8904206067">   64</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1StateValue.html#a8443baddb044ef74393c0a8904206067">arraySize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> arr_.size(); }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#adc80fbebba17fac5fffd6be7a24912c2">   66</a></span>    <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp;       <a class="code hl_function" href="classeve_1_1StateValue.html#adc80fbebba17fac5fffd6be7a24912c2">at</a>(<span class="keywordtype">size_t</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) { <span class="keywordflow">return</span> arr_.<a class="code hl_function" href="classeve_1_1StateValue.html#adc80fbebba17fac5fffd6be7a24912c2">at</a>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>); }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#ac7fde0ba1f1734c06caea9e4129f7930">   67</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; <a class="code hl_function" href="classeve_1_1StateValue.html#ac7fde0ba1f1734c06caea9e4129f7930">at</a>(<span class="keywordtype">size_t</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> arr_.<a class="code hl_function" href="classeve_1_1StateValue.html#adc80fbebba17fac5fffd6be7a24912c2">at</a>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>); }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> set(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* find(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>*       find(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::vector&lt;std::string&gt; keys() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>* get(<span class="keyword">const</span> std::string&amp; dottedPath) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>*       get(<span class="keyword">const</span> std::string&amp; dottedPath);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">bool</span> setPath(<span class="keyword">const</span> std::string&amp; dottedPath, <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">bool</span> mergeDefaults(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; defaults);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; o) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1StateValue.html#a1c334806cdd3864bc0cfd4437a1435fd">  100</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1StateValue.html#a1c334806cdd3864bc0cfd4437a1435fd">operator!=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>&amp; o)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !(*<span class="keyword">this</span> == o); }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a>(Kind <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) : kind_(<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {}</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    Kind                                            kind_ = Kind::Null;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    int64_t                                         i_    = 0;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">double</span>                                          f_    = 0.0;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">bool</span>                                            b_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::string                                     s_;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::vector&lt;StateValue&gt;                         arr_;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    std::vector&lt;std::pair&lt;std::string, StateValue&gt;&gt; obj_;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>};</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1Object_html"><div class="ttname"><a href="classeve_1_1Object.html">eve::Object</a></div><div class="ttdoc">Object is the base class for all game objects. It provides reference counting and dirty flag for upda...</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00018">Object.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html"><div class="ttname"><a href="classeve_1_1StateValue.html">eve::StateValue</a></div><div class="ttdoc">JSON-compatible state value tree used by state hot reload.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00020">StateValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a03d2eeb3641117d4fb03f4de3c3e18b7"><div class="ttname"><a href="classeve_1_1StateValue.html#a03d2eeb3641117d4fb03f4de3c3e18b7">eve::StateValue::isFloat</a></div><div class="ttdeci">bool isFloat() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00046">StateValue.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a06f7509e63bac0703ab2b1e0df06e26c"><div class="ttname"><a href="classeve_1_1StateValue.html#a06f7509e63bac0703ab2b1e0df06e26c">eve::StateValue::object</a></div><div class="ttdeci">static StateValue object()</div><div class="ttdoc">Empty object.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00039">StateValue.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a19d94198021f2a5884636161f7daa6da"><div class="ttname"><a href="classeve_1_1StateValue.html#a19d94198021f2a5884636161f7daa6da">eve::StateValue::kind</a></div><div class="ttdeci">Kind kind() const</div><div class="ttdoc">The kind of the stored value.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00042">StateValue.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a1c334806cdd3864bc0cfd4437a1435fd"><div class="ttname"><a href="classeve_1_1StateValue.html#a1c334806cdd3864bc0cfd4437a1435fd">eve::StateValue::operator!=</a></div><div class="ttdeci">bool operator!=(const StateValue &amp;o) const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00100">StateValue.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a2ac75fdd66a0636ac8aae5afaf7c1134"><div class="ttname"><a href="classeve_1_1StateValue.html#a2ac75fdd66a0636ac8aae5afaf7c1134">eve::StateValue::array</a></div><div class="ttdeci">static StateValue array()</div><div class="ttdoc">Empty array.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00037">StateValue.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a415747f7f02bed1a9ee2471cec80182e"><div class="ttname"><a href="classeve_1_1StateValue.html#a415747f7f02bed1a9ee2471cec80182e">eve::StateValue::asInt</a></div><div class="ttdeci">int64_t asInt() const</div><div class="ttdoc">Integer payload; only valid when kind() == Kind::Int.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00053">StateValue.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a56863251ea1f5e05109805d402b2d7ad"><div class="ttname"><a href="classeve_1_1StateValue.html#a56863251ea1f5e05109805d402b2d7ad">eve::StateValue::asBool</a></div><div class="ttdeci">bool asBool() const</div><div class="ttdoc">Boolean payload; only valid when kind() == Kind::Bool.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00057">StateValue.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a733c9a14cd992e8d9b8ce01092ea504f"><div class="ttname"><a href="classeve_1_1StateValue.html#a733c9a14cd992e8d9b8ce01092ea504f">eve::StateValue::isNull</a></div><div class="ttdeci">bool isNull() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00044">StateValue.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_a8443baddb044ef74393c0a8904206067"><div class="ttname"><a href="classeve_1_1StateValue.html#a8443baddb044ef74393c0a8904206067">eve::StateValue::arraySize</a></div><div class="ttdeci">size_t arraySize() const</div><div class="ttdoc">Element count; only valid on arrays.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00064">StateValue.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aa46ea8b85932e3ccd7896af61146b693"><div class="ttname"><a href="classeve_1_1StateValue.html#aa46ea8b85932e3ccd7896af61146b693">eve::StateValue::isString</a></div><div class="ttdeci">bool isString() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00048">StateValue.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aa94170547efc6b539cee34060e7963cb"><div class="ttname"><a href="classeve_1_1StateValue.html#aa94170547efc6b539cee34060e7963cb">eve::StateValue::isBool</a></div><div class="ttdeci">bool isBool() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00047">StateValue.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aaa1c0a5376ba31980868ca5230d99780"><div class="ttname"><a href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">eve::StateValue::isObject</a></div><div class="ttdeci">bool isObject() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00049">StateValue.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aab697179d1ee57b6b7932114b07c6699"><div class="ttname"><a href="classeve_1_1StateValue.html#aab697179d1ee57b6b7932114b07c6699">eve::StateValue::asDouble</a></div><div class="ttdeci">double asDouble() const</div><div class="ttdoc">Floating-point payload; only valid when kind() == Kind::Float.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00055">StateValue.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aabb639ea8a63e067ce9bfc23e956972d"><div class="ttname"><a href="classeve_1_1StateValue.html#aabb639ea8a63e067ce9bfc23e956972d">eve::StateValue::isArray</a></div><div class="ttdeci">bool isArray() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00050">StateValue.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aae4e15ee11a3a558911c373a06d309f7"><div class="ttname"><a href="classeve_1_1StateValue.html#aae4e15ee11a3a558911c373a06d309f7">eve::StateValue::asString</a></div><div class="ttdeci">const std::string &amp; asString() const</div><div class="ttdoc">String payload; only valid when kind() == Kind::String.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00059">StateValue.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_ab0922d5d43322780bc24887579f16759"><div class="ttname"><a href="classeve_1_1StateValue.html#ab0922d5d43322780bc24887579f16759">eve::StateValue::Kind</a></div><div class="ttdeci">Kind</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00022">StateValue.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_ac7fde0ba1f1734c06caea9e4129f7930"><div class="ttname"><a href="classeve_1_1StateValue.html#ac7fde0ba1f1734c06caea9e4129f7930">eve::StateValue::at</a></div><div class="ttdeci">const StateValue &amp; at(size_t index) const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00067">StateValue.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_ad482878f4c8c4634a5b4d8dae7c1bb3f"><div class="ttname"><a href="classeve_1_1StateValue.html#ad482878f4c8c4634a5b4d8dae7c1bb3f">eve::StateValue::null</a></div><div class="ttdeci">static StateValue null()</div><div class="ttdoc">Null value.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00027">StateValue.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_ad6031296d131b44e4ca2dc740ff1a8bf"><div class="ttname"><a href="classeve_1_1StateValue.html#ad6031296d131b44e4ca2dc740ff1a8bf">eve::StateValue::StateValue</a></div><div class="ttdeci">StateValue()=default</div><div class="ttdoc">Null value.</div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_adc80fbebba17fac5fffd6be7a24912c2"><div class="ttname"><a href="classeve_1_1StateValue.html#adc80fbebba17fac5fffd6be7a24912c2">eve::StateValue::at</a></div><div class="ttdeci">StateValue &amp; at(size_t index)</div><div class="ttdoc">Indexed element (bounds-checked); only valid on arrays.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00066">StateValue.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_ae8e18b7b4439151dd818e53212a56200"><div class="ttname"><a href="classeve_1_1StateValue.html#ae8e18b7b4439151dd818e53212a56200">eve::StateValue::isInt</a></div><div class="ttdeci">bool isInt() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00045">StateValue.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b"><div class="ttname"><a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b">eve::ReflectedValueKind::Float</a></div><div class="ttdeci">@ Float</div><div class="ttdoc">OT_FLOAT.</div></div>
+<div class="ttc" id="anamespaceeve_html_ac05a2d9228e0b283897b75b4c5cdaf2ba27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba27118326006d3829667a400ad23d5d98">eve::ReflectedValueKind::String</a></div><div class="ttdeci">@ String</div><div class="ttdoc">OT_STRING.</div></div>
+<div class="ttc" id="anamespaceeve_html_ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17"><div class="ttname"><a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba4410ec34d9e6c1a68100ca0ce033fb17">eve::ReflectedValueKind::Array</a></div><div class="ttdeci">@ Array</div><div class="ttdoc">OT_ARRAY (not yet editable).</div></div>
+<div class="ttc" id="anamespaceeve_html_ac05a2d9228e0b283897b75b4c5cdaf2bac26f15e86e3de4c398a8273272aba034"><div class="ttname"><a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2bac26f15e86e3de4c398a8273272aba034">eve::ReflectedValueKind::Bool</a></div><div class="ttdeci">@ Bool</div><div class="ttdoc">OT_BOOL.</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

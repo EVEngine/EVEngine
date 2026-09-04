@@ -1,0 +1,591 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::pixelworld_physics::PixelFragmentBody类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1pixelworld__physics.html">pixelworld_physics</a></li><li class="navelem"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::pixelworld_physics::PixelFragmentBody类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning detached bitmap plus a non-owning, stale-safe dynamic body link.  
+ <a href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PixelWorldPhysics_8h_source.html">PixelWorldPhysics.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae6b00ef7636e960668e4aed270027c14" id="r_ae6b00ef7636e960668e4aed270027c14"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#ae6b00ef7636e960668e4aed270027c14">~PixelFragmentBody</a> ()=default</td></tr>
+<tr class="separator:ae6b00ef7636e960668e4aed270027c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a529fd40f5331b39d4c268b07710aa6a3" id="r_a529fd40f5331b39d4c268b07710aa6a3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#a529fd40f5331b39d4c268b07710aa6a3">PixelFragmentBody</a> (<a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:a529fd40f5331b39d4c268b07710aa6a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac50a09ef03994f7ca754ed207664e66e" id="r_ac50a09ef03994f7ca754ed207664e66e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#ac50a09ef03994f7ca754ed207664e66e">operator=</a> (<a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;&amp;) noexcept=default</td></tr>
+<tr class="separator:ac50a09ef03994f7ca754ed207664e66e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac55c8b6482f660ee87dc8ff8053bf07b" id="r_ac55c8b6482f660ee87dc8ff8053bf07b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#ac55c8b6482f660ee87dc8ff8053bf07b">PixelFragmentBody</a> (const <a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;)=delete</td></tr>
+<tr class="separator:ac55c8b6482f660ee87dc8ff8053bf07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b3f11db02480dfab4cab4695f501a06" id="r_a1b3f11db02480dfab4cab4695f501a06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#a1b3f11db02480dfab4cab4695f501a06">operator=</a> (const <a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;)=delete</td></tr>
+<tr class="separator:a1b3f11db02480dfab4cab4695f501a06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a532f2dd91989e0955906ccbc021afec0" id="r_a532f2dd91989e0955906ccbc021afec0"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1pixelworld__physics_1_1FragmentCollisionRect.html">FragmentCollisionRect</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#a532f2dd91989e0955906ccbc021afec0">collisionRects</a> () const noexcept</td></tr>
+<tr class="memdesc:a532f2dd91989e0955906ccbc021afec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow deterministic collision rectangles for diagnostics until adapter mutation/destruction.  <br /></td></tr>
+<tr class="separator:a532f2dd91989e0955906ccbc021afec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b1aa8f10435df58a3dcd3a320c636b4" id="r_a9b1aa8f10435df58a3dcd3a320c636b4"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#a9b1aa8f10435df58a3dcd3a320c636b4">fragmentId</a> () const noexcept</td></tr>
+<tr class="memdesc:a9b1aa8f10435df58a3dcd3a320c636b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detached bitmap id retained by this adapter.  <br /></td></tr>
+<tr class="separator:a9b1aa8f10435df58a3dcd3a320c636b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26fd647f0bb7eb8d0f52fdd96e140219" id="r_a26fd647f0bb7eb8d0f52fdd96e140219"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1PhysicsLink.html">eve::physics::PhysicsLink</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#a26fd647f0bb7eb8d0f52fdd96e140219">physicsLink</a> () const noexcept</td></tr>
+<tr class="memdesc:a26fd647f0bb7eb8d0f52fdd96e140219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process-local physics relationship; resolve it before every use.  <br /></td></tr>
+<tr class="separator:a26fd647f0bb7eb8d0f52fdd96e140219"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a636641547bdabd529d87eb5b401572d4" id="r_a636641547bdabd529d87eb5b401572d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#a636641547bdabd529d87eb5b401572d4">isRasterized</a> () const noexcept</td></tr>
+<tr class="memdesc:a636641547bdabd529d87eb5b401572d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the bitmap has already returned to authoritative terrain.  <br /></td></tr>
+<tr class="separator:a636641547bdabd529d87eb5b401572d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a729e6d58c7b8f8c0e34af62b0044b1bc" id="r_a729e6d58c7b8f8c0e34af62b0044b1bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__physics_1_1FragmentSettleReceipt.html">FragmentSettleReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#a729e6d58c7b8f8c0e34af62b0044b1bc">settleIfSleeping</a> (<a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a> &amp;physicsWorld, <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a> &amp;pixelWorld)</td></tr>
+<tr class="memdesc:a729e6d58c7b8f8c0e34af62b0044b1bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the body sleeps, snap its bitmap to the nearest quarter turn and rasterize it.  <br /></td></tr>
+<tr class="separator:a729e6d58c7b8f8c0e34af62b0044b1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad74a1344e9313e7bf9b7b3d5d3ca8454" id="r_ad74a1344e9313e7bf9b7b3d5d3ca8454"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#ad74a1344e9313e7bf9b7b3d5d3ca8454">releasePhysics</a> (<a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a> &amp;physicsWorld)</td></tr>
+<tr class="memdesc:ad74a1344e9313e7bf9b7b3d5d3ca8454"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicitly destroy a still-live physics body without rasterizing its bitmap.  <br /></td></tr>
+<tr class="separator:ad74a1344e9313e7bf9b7b3d5d3ca8454"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a318e6cb2e87c550dabc2b73d28d07d00" id="r_a318e6cb2e87c550dabc2b73d28d07d00"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html#a318e6cb2e87c550dabc2b73d28d07d00">create</a> (<a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="structeve_1_1pixelworld_1_1PixelFragment.html">eve::pixelworld::PixelFragment</a> fragment, <a class="el" href="structeve_1_1pixelworld__physics_1_1FragmentBodyConfig.html">FragmentBodyConfig</a> config={})</td></tr>
+<tr class="memdesc:a318e6cb2e87c550dabc2b73d28d07d00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create one dynamic Box2D body using deterministic greedy rectangle decomposition.  <br /></td></tr>
+<tr class="separator:a318e6cb2e87c550dabc2b73d28d07d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning detached bitmap plus a non-owning, stale-safe dynamic body link. </p>
+<p>PixelWorld remains the only owner of live terrain. This adapter owns the detached bitmap while Physics World owns the body and fixtures. It stores no World/Body raw pointer across calls; every operation resolves <code>PhysicsLink</code> against a caller-borrowed world on the owning simulation thread. No method invokes scripts or unknown callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldPhysics_8h_source.html">PixelWorldPhysics.h</a> 第 <a class="el" href="PixelWorldPhysics_8h_source.html#l00109">109</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae6b00ef7636e960668e4aed270027c14" name="ae6b00ef7636e960668e4aed270027c14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6b00ef7636e960668e4aed270027c14">&#9670;&#160;</a></span>~PixelFragmentBody()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_physics::PixelFragmentBody::~PixelFragmentBody </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a529fd40f5331b39d4c268b07710aa6a3" name="a529fd40f5331b39d4c268b07710aa6a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a529fd40f5331b39d4c268b07710aa6a3">&#9670;&#160;</a></span>PixelFragmentBody() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_physics::PixelFragmentBody::PixelFragmentBody </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac55c8b6482f660ee87dc8ff8053bf07b" name="ac55c8b6482f660ee87dc8ff8053bf07b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac55c8b6482f660ee87dc8ff8053bf07b">&#9670;&#160;</a></span>PixelFragmentBody() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_physics::PixelFragmentBody::PixelFragmentBody </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a532f2dd91989e0955906ccbc021afec0" name="a532f2dd91989e0955906ccbc021afec0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a532f2dd91989e0955906ccbc021afec0">&#9670;&#160;</a></span>collisionRects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1pixelworld__physics_1_1FragmentCollisionRect.html">FragmentCollisionRect</a> &gt; &amp; eve::pixelworld_physics::PixelFragmentBody::collisionRects </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow deterministic collision rectangles for diagnostics until adapter mutation/destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldPhysics_8cpp_source.html">PixelWorldPhysics.cpp</a> 第 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00441">441</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a318e6cb2e87c550dabc2b73d28d07d00" name="a318e6cb2e87c550dabc2b73d28d07d00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a318e6cb2e87c550dabc2b73d28d07d00">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &gt; &gt; eve::pixelworld_physics::PixelFragmentBody::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld_1_1PixelFragment.html">eve::pixelworld::PixelFragment</a>&#160;</td>
+          <td class="paramname"><em>fragment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld__physics_1_1FragmentBodyConfig.html">FragmentBodyConfig</a>&#160;</td>
+          <td class="paramname"><em>config</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create one dynamic Box2D body using deterministic greedy rectangle decomposition. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Borrowed Physics world; it owns the created body and fixtures. </td></tr>
+    <tr><td class="paramname">fragment</td><td>Owning detached bitmap transferred into the adapter on success. </td></tr>
+    <tr><td class="paramname">config</td><td>Finite fixture properties and a positive fixture budget. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning adapter; failure destroys any partially created body. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldPhysics_8cpp_source.html">PixelWorldPhysics.cpp</a> 第 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00226">body</a>, <a class="el" href="PixelWorld_8h_source.html#l00197">eve::pixelworld::PixelFragment::cells</a>, <a class="el" href="PixelWorldPhysics_8h_source.html#l00027">eve::pixelworld_physics::FragmentBodyConfig::density</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="PixelWorldPhysics_8h_source.html#l00028">eve::pixelworld_physics::FragmentBodyConfig::friction</a>, <a class="el" href="PhysicsLink_8cpp_source.html#l00039">eve::physics::PhysicsLink::fromBody()</a>, <a class="el" href="PixelWorld_8h_source.html#l00195">eve::pixelworld::PixelFragment::height</a>, <a class="el" href="PixelWorld_8h_source.html#l00191">eve::pixelworld::PixelFragment::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PixelWorldPhysics_8h_source.html#l00030">eve::pixelworld_physics::FragmentBodyConfig::maximumFixtures</a>, <a class="el" href="Body_8cpp_source.html#l00222">eve::physics::Body::newRectangleFixtureAt()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00917">offsetX</a>, <a class="el" href="TileConfig_8cpp_source.html#l00918">offsetY</a>, <a class="el" href="PixelWorld_8h_source.html#l00192">eve::pixelworld::PixelFragment::originX</a>, <a class="el" href="PixelWorld_8h_source.html#l00193">eve::pixelworld::PixelFragment::originY</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorldPhysics_8h_source.html#l00029">eve::pixelworld_physics::FragmentBodyConfig::restitution</a>, <a class="el" href="PixelWorld_8h_source.html#l00194">eve::pixelworld::PixelFragment::width</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a9b1aa8f10435df58a3dcd3a320c636b4" name="a9b1aa8f10435df58a3dcd3a320c636b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b1aa8f10435df58a3dcd3a320c636b4">&#9670;&#160;</a></span>fragmentId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::pixelworld_physics::PixelFragmentBody::fragmentId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Detached bitmap id retained by this adapter. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldPhysics_8cpp_source.html">PixelWorldPhysics.cpp</a> 第 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00445">445</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a636641547bdabd529d87eb5b401572d4" name="a636641547bdabd529d87eb5b401572d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a636641547bdabd529d87eb5b401572d4">&#9670;&#160;</a></span>isRasterized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::pixelworld_physics::PixelFragmentBody::isRasterized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the bitmap has already returned to authoritative terrain. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldPhysics_8cpp_source.html">PixelWorldPhysics.cpp</a> 第 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00447">447</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b3f11db02480dfab4cab4695f501a06" name="a1b3f11db02480dfab4cab4695f501a06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b3f11db02480dfab4cab4695f501a06">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp; eve::pixelworld_physics::PixelFragmentBody::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac50a09ef03994f7ca754ed207664e66e" name="ac50a09ef03994f7ca754ed207664e66e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac50a09ef03994f7ca754ed207664e66e">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp; eve::pixelworld_physics::PixelFragmentBody::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld__physics_1_1PixelFragmentBody.html">PixelFragmentBody</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a26fd647f0bb7eb8d0f52fdd96e140219" name="a26fd647f0bb7eb8d0f52fdd96e140219"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26fd647f0bb7eb8d0f52fdd96e140219">&#9670;&#160;</a></span>physicsLink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1PhysicsLink.html">eve::physics::PhysicsLink</a> eve::pixelworld_physics::PixelFragmentBody::physicsLink </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Process-local physics relationship; resolve it before every use. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldPhysics_8cpp_source.html">PixelWorldPhysics.cpp</a> 第 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00446">446</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad74a1344e9313e7bf9b7b3d5d3ca8454" name="ad74a1344e9313e7bf9b7b3d5d3ca8454"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad74a1344e9313e7bf9b7b3d5d3ca8454">&#9670;&#160;</a></span>releasePhysics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::pixelworld_physics::PixelFragmentBody::releasePhysics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a> &amp;&#160;</td>
+          <td class="paramname"><em>physicsWorld</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicitly destroy a still-live physics body without rasterizing its bitmap. </p>
+<dl class="section return"><dt>返回</dt><dd>Success if already released; stale/foreign world links are reported. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldPhysics_8cpp_source.html">PixelWorldPhysics.cpp</a> 第 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00476">476</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a729e6d58c7b8f8c0e34af62b0044b1bc" name="a729e6d58c7b8f8c0e34af62b0044b1bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a729e6d58c7b8f8c0e34af62b0044b1bc">&#9670;&#160;</a></span>settleIfSleeping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__physics_1_1FragmentSettleReceipt.html">FragmentSettleReceipt</a> &gt; eve::pixelworld_physics::PixelFragmentBody::settleIfSleeping </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a> &amp;&#160;</td>
+          <td class="paramname"><em>physicsWorld</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>pixelWorld</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>If the body sleeps, snap its bitmap to the nearest quarter turn and rasterize it. </p>
+<dl class="section remark"><dt>备注</dt><dd>Physics body destruction occurs only after PixelWorld accepts the entire bitmap. A stale physics/world link or terrain conflict returns failure without changing ownership. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldPhysics_8cpp_source.html">PixelWorldPhysics.cpp</a> 第 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00449">449</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00226">body</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00704">eve::pixelworld::PixelWorld::rasterizeFragment()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="UrbanGenerator_8cpp_source.html#l00212">turns</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/pixelworld_physics/<a class="el" href="PixelWorldPhysics_8h_source.html">PixelWorldPhysics.h</a></li>
+<li>src/modules/pixelworld_physics/<a class="el" href="PixelWorldPhysics_8cpp_source.html">PixelWorldPhysics.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

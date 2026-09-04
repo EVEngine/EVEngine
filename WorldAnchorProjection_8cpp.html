@@ -1,0 +1,273 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/WorldAnchorProjection.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">WorldAnchorProjection.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="WorldAnchorProjection_8h_source.html">ui/WorldAnchorProjection.h</a>&quot;</code><br />
+<code>#include &lt;glm/geometric.hpp&gt;</code><br />
+<code>#include &lt;glm/vec3.hpp&gt;</code><br />
+<code>#include &lt;glm/vec4.hpp&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+</div>
+<p><a href="WorldAnchorProjection_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1ui" id="r_namespaceeve_1_1ui"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html">eve::ui</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a117bf628e11ebefbe7c285da33ced59f" id="r_a117bf628e11ebefbe7c285da33ced59f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WorldAnchorProjection.html">WorldAnchorProjection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a117bf628e11ebefbe7c285da33ced59f">eve::ui::projectWorldAnchor</a> (const <a class="el" href="structeve_1_1ui_1_1UIHost_1_1WorldAnchor.html">UIHost::WorldAnchor</a> &amp;<a class="el" href="CaveMesh_8cpp.html#a73678de7ce7832a14cff787d84f286fb">anchor</a>, const glm::mat4 &amp;viewProjection, float cameraX, float cameraY, float cameraZ, float viewportWidth, float viewportHeight)</td></tr>
+<tr class="memdesc:a117bf628e11ebefbe7c285da33ced59f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects one world-space <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> anchor using a Vulkan RH-ZO view-projection matrix.  <br /></td></tr>
+<tr class="separator:a117bf628e11ebefbe7c285da33ced59f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa08a6c6840bba5f2b25841bb2679a7ae" id="r_aa08a6c6840bba5f2b25841bb2679a7ae"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html">WorldAnchorLayoutResult</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#aa08a6c6840bba5f2b25841bb2679a7ae">eve::ui::resolveWorldAnchorOverlaps</a> (std::vector&lt; <a class="el" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html">WorldAnchorLayoutItem</a> &gt; items, float viewportWidth, float viewportHeight)</td></tr>
+<tr class="memdesc:aa08a6c6840bba5f2b25841bb2679a7ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves projected host overlap with bounded deterministic vertical displacement.  <br /></td></tr>
+<tr class="separator:aa08a6c6840bba5f2b25841bb2679a7ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a37c03c265e1d827465e655cfcc52976b" name="a37c03c265e1d827465e655cfcc52976b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37c03c265e1d827465e655cfcc52976b">&#9670;&#160;</a></span>bottom</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float bottom</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldAnchorProjection_8cpp_source.html">WorldAnchorProjection.cpp</a> 第 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrototypeKitPrimitives_8cpp_source.html#l00120">eve::procgen::prototype_detail::addCylinder()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00118">eve::editor::ActionTimelineWidget::draw()</a>, <a class="el" href="EditorDock_8cpp_source.html#l00029">eve::editor::EditorDock::layout()</a>, <a class="el" href="ClipSpace_8h_source.html#l00029">eve::graphics::orthoVulkanRH_ZO()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00222">eve::pixelworld_physics::probeTerrainCircle()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00163">eve::procgen::TerrainStreamingCache::sampleHeight()</a>, <a class="el" href="SnowFieldTarget_8cpp_source.html#l00028">eve::snow_editing::SnowFieldTarget::sampleScalar()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00447">eve::graphics::Volumetric::setCloudLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a7d10b0c779bad3aabf067d52035f7052" name="a7d10b0c779bad3aabf067d52035f7052"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d10b0c779bad3aabf067d52035f7052">&#9670;&#160;</a></span>left</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float left</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldAnchorProjection_8cpp_source.html">WorldAnchorProjection.cpp</a> 第 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingFx_8cpp_source.html#l00155">eve::buildingfx::BuildingFx::buildEdgeCurveMesh()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00414">eve::asset::buildEvaArchive()</a>, <a class="el" href="Evpack_8cpp_source.html#l00253">eve::asset::buildEvpack()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00309">eve::buildingfx::BuildingFx::buildSurfaceCurveMesh()</a>, <a class="el" href="HouseComponentLibrary_8cpp_source.html#l00195">eve::housegen::HouseComponentLibrary::byCategory()</a>, <a class="el" href="RTSSnapshot_8cpp_source.html#l00313">eve::rts::RTS::canonicalStateJson()</a>, <a class="el" href="PixelWorldStreaming_8cpp_source.html#l00021">eve::pixelworld_streaming::PixelChunkStreamCursor::capture()</a>, <a class="el" href="SceneComponentPayload_8cpp_source.html#l00168">eve::scene_editing::SceneComponentPayloadRegistry::componentPayloads()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00100">eve::attributes::computeAttributeValue()</a>, <a class="el" href="ResourceAccount_8cpp_source.html#l00074">eve::resource::CostSpec::create()</a>, <a class="el" href="Procgen_8cpp_source.html#l01213">eve::procgen::Procgen::differenceSpatialHandle()</a>, <a class="el" href="AssetDiff_8cpp_source.html#l00029">eve::asset::diffEvaManifests()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00132">eve::editor::DocumentService::documents()</a>, <a class="el" href="RTS_8cpp_source.html#l01214">eve::rts::RTS::escortUnits()</a>, <a class="el" href="MeshVfxAsset_8cpp_source.html#l00449">eve::stylize::MeshVfxFloatCurve::evaluate()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00504">eve::rts::CommandFanOutSystem::fanOut()</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="FontData_8cpp_source.html#l00167">eve::font::FontData::getKerning()</a>, <a class="el" href="Pad_8cpp_source.html#l00322">eve::joystick::sdl::Pad::getVibration()</a>, <a class="el" href="RTS_8cpp_source.html#l01417">eve::rts::RTS::inspectFrameEvents()</a>, <a class="el" href="Procgen_8cpp_source.html#l01203">eve::procgen::Procgen::intersectSpatialHandle()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00279">eve::rts::FactionRelationSystem::isAllied()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00260">eve::rts::FactionRelationSystem::isAllied()</a>, <a class="el" href="EditorDock_8cpp_source.html#l00029">eve::editor::EditorDock::layout()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00331">eve::map_editing::MapDocumentTarget::mapLayers()</a>, <a class="el" href="ProfilerModel_8cpp_source.html#l00092">eve::profiler_editing::EditorProfilerModel::moduleSummary()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00551">eve::tactics::BattleSystem::openReaction()</a>, <a class="el" href="EditorExtension_8h_source.html#l00024">eve::editor::operator&amp;()</a>, <a class="el" href="EditorHostProfile_8h_source.html#l00032">eve::editor::operator&amp;()</a>, <a class="el" href="EditingProperty_8h_source.html#l00053">eve::editing::operator&amp;()</a>, <a class="el" href="PropertyAccess_8h_source.html#l00054">eve::property_access::operator&amp;()</a>, <a class="el" href="EditorExtension_8h_source.html#l00021">eve::editor::operator|()</a>, <a class="el" href="EditorHostProfile_8h_source.html#l00029">eve::editor::operator|()</a>, <a class="el" href="EditingProperty_8h_source.html#l00050">eve::editing::operator|()</a>, <a class="el" href="PropertyAccess_8h_source.html#l00051">eve::property_access::operator|()</a>, <a class="el" href="EditorHostProfile_8h_source.html#l00035">eve::editor::operator|=()</a>, <a class="el" href="ClipSpace_8h_source.html#l00029">eve::graphics::orthoVulkanRH_ZO()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00509">eve::asset::parseEvaArchive()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00222">eve::pixelworld_physics::probeTerrainCircle()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00416">eve::procgen::SpatialData::project()</a>, <a class="el" href="PointSetHeightmapAdapter_8cpp_source.html#l00008">eve::procgen::projectPointsToHeightmap()</a>, <a class="el" href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">eve::editor::publishEvaAssetProjection()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00113">eve::editor::MemoryAssetDatabase::query()</a>, <a class="el" href="ProfilerModel_8cpp_source.html#l00064">eve::profiler_editing::EditorProfilerModel::query()</a>, <a class="el" href="EvpackResourceReader_8cpp_source.html#l00015">eve::asset::EvpackResourceReader::read()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03957">eve::rts::FireSupportSystem::request()</a>, <a class="el" href="Crowd_8cpp_source.html#l00339">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>, <a class="el" href="AttributeProjection_8cpp_source.html#l00142">eve::attributes::AttributeProjection::restore()</a>, <a class="el" href="CaveObstacleScour_8cpp_source.html#l00096">eve::procgen::sampleCaveObstacleScour()</a>, <a class="el" href="UI_8cpp_source.html#l00824">eve::ui::UI::setItemFocusNeighbors()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>, <a class="el" href="Pad_8cpp_source.html#l00253">eve::joystick::sdl::Pad::setVibration()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00386">eve::card::Hand::slotTransform()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02078">eve::rts::WorkerAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02268">eve::rts::WorkforceAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02559">eve::rts::ContainmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03217">eve::rts::SupplyConvoySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00607">eve::rts::TacticsSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01688">eve::rts::TrafficReservationSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02783">eve::rts::SupplySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02402">eve::rts::CaptureSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02492">eve::rts::InfrastructureSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l05238">eve::rts::ReinforcementProductionPolicySystem::step()</a>, <a class="el" href="Procgen_8cpp_source.html#l01193">eve::procgen::Procgen::unionSpatialHandle()</a> , 以及 <a class="el" href="Widget_8h_source.html#l00153">eve::ui::WidgetDesc::withFocusNeighbors()</a>.</p>
+
+</div>
+</div>
+<a id="a6202f38a97a1c9eb0142baeb338cf1f1" name="a6202f38a97a1c9eb0142baeb338cf1f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6202f38a97a1c9eb0142baeb338cf1f1">&#9670;&#160;</a></span>right</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float right</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldAnchorProjection_8cpp_source.html">WorldAnchorProjection.cpp</a> 第 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingFx_8cpp_source.html#l00155">eve::buildingfx::BuildingFx::buildEdgeCurveMesh()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00414">eve::asset::buildEvaArchive()</a>, <a class="el" href="Evpack_8cpp_source.html#l00253">eve::asset::buildEvpack()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00309">eve::buildingfx::BuildingFx::buildSurfaceCurveMesh()</a>, <a class="el" href="HouseComponentLibrary_8cpp_source.html#l00195">eve::housegen::HouseComponentLibrary::byCategory()</a>, <a class="el" href="RTSSnapshot_8cpp_source.html#l00313">eve::rts::RTS::canonicalStateJson()</a>, <a class="el" href="PixelWorldStreaming_8cpp_source.html#l00021">eve::pixelworld_streaming::PixelChunkStreamCursor::capture()</a>, <a class="el" href="SceneComponentPayload_8cpp_source.html#l00168">eve::scene_editing::SceneComponentPayloadRegistry::componentPayloads()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00100">eve::attributes::computeAttributeValue()</a>, <a class="el" href="ResourceAccount_8cpp_source.html#l00074">eve::resource::CostSpec::create()</a>, <a class="el" href="Procgen_8cpp_source.html#l01213">eve::procgen::Procgen::differenceSpatialHandle()</a>, <a class="el" href="AssetDiff_8cpp_source.html#l00029">eve::asset::diffEvaManifests()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00132">eve::editor::DocumentService::documents()</a>, <a class="el" href="RTS_8cpp_source.html#l01214">eve::rts::RTS::escortUnits()</a>, <a class="el" href="MeshVfxAsset_8cpp_source.html#l00449">eve::stylize::MeshVfxFloatCurve::evaluate()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00504">eve::rts::CommandFanOutSystem::fanOut()</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="FontData_8cpp_source.html#l00167">eve::font::FontData::getKerning()</a>, <a class="el" href="Pad_8cpp_source.html#l00322">eve::joystick::sdl::Pad::getVibration()</a>, <a class="el" href="RTS_8cpp_source.html#l01417">eve::rts::RTS::inspectFrameEvents()</a>, <a class="el" href="Procgen_8cpp_source.html#l01203">eve::procgen::Procgen::intersectSpatialHandle()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00279">eve::rts::FactionRelationSystem::isAllied()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00260">eve::rts::FactionRelationSystem::isAllied()</a>, <a class="el" href="EditorDock_8cpp_source.html#l00029">eve::editor::EditorDock::layout()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00331">eve::map_editing::MapDocumentTarget::mapLayers()</a>, <a class="el" href="ProfilerModel_8cpp_source.html#l00092">eve::profiler_editing::EditorProfilerModel::moduleSummary()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00551">eve::tactics::BattleSystem::openReaction()</a>, <a class="el" href="EditorExtension_8h_source.html#l00024">eve::editor::operator&amp;()</a>, <a class="el" href="EditorHostProfile_8h_source.html#l00032">eve::editor::operator&amp;()</a>, <a class="el" href="EditingProperty_8h_source.html#l00053">eve::editing::operator&amp;()</a>, <a class="el" href="PropertyAccess_8h_source.html#l00054">eve::property_access::operator&amp;()</a>, <a class="el" href="EditorExtension_8h_source.html#l00021">eve::editor::operator|()</a>, <a class="el" href="EditorHostProfile_8h_source.html#l00029">eve::editor::operator|()</a>, <a class="el" href="EditingProperty_8h_source.html#l00050">eve::editing::operator|()</a>, <a class="el" href="PropertyAccess_8h_source.html#l00051">eve::property_access::operator|()</a>, <a class="el" href="EditorHostProfile_8h_source.html#l00035">eve::editor::operator|=()</a>, <a class="el" href="ClipSpace_8h_source.html#l00029">eve::graphics::orthoVulkanRH_ZO()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00509">eve::asset::parseEvaArchive()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00222">eve::pixelworld_physics::probeTerrainCircle()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00416">eve::procgen::SpatialData::project()</a>, <a class="el" href="PointSetHeightmapAdapter_8cpp_source.html#l00008">eve::procgen::projectPointsToHeightmap()</a>, <a class="el" href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">eve::editor::publishEvaAssetProjection()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00113">eve::editor::MemoryAssetDatabase::query()</a>, <a class="el" href="ProfilerModel_8cpp_source.html#l00064">eve::profiler_editing::EditorProfilerModel::query()</a>, <a class="el" href="EvpackResourceReader_8cpp_source.html#l00015">eve::asset::EvpackResourceReader::read()</a>, <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00054">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03957">eve::rts::FireSupportSystem::request()</a>, <a class="el" href="Crowd_8cpp_source.html#l00339">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>, <a class="el" href="AttributeProjection_8cpp_source.html#l00142">eve::attributes::AttributeProjection::restore()</a>, <a class="el" href="CaveObstacleScour_8cpp_source.html#l00096">eve::procgen::sampleCaveObstacleScour()</a>, <a class="el" href="UI_8cpp_source.html#l00824">eve::ui::UI::setItemFocusNeighbors()</a>, <a class="el" href="SceneNodes_8cpp_source.html#l00314">eve::scene::Scene::setNodeLookAtAt()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>, <a class="el" href="Pad_8cpp_source.html#l00253">eve::joystick::sdl::Pad::setVibration()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02078">eve::rts::WorkerAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02268">eve::rts::WorkforceAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02559">eve::rts::ContainmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03217">eve::rts::SupplyConvoySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00607">eve::rts::TacticsSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01688">eve::rts::TrafficReservationSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02783">eve::rts::SupplySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02402">eve::rts::CaptureSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02492">eve::rts::InfrastructureSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l05238">eve::rts::ReinforcementProductionPolicySystem::step()</a>, <a class="el" href="Procgen_8cpp_source.html#l01193">eve::procgen::Procgen::unionSpatialHandle()</a> , 以及 <a class="el" href="Widget_8h_source.html#l00153">eve::ui::WidgetDesc::withFocusNeighbors()</a>.</p>
+
+</div>
+</div>
+<a id="aec3f3270b9c9a786c01326e81db15681" name="aec3f3270b9c9a786c01326e81db15681"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec3f3270b9c9a786c01326e81db15681">&#9670;&#160;</a></span>top</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float top</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldAnchorProjection_8cpp_source.html">WorldAnchorProjection.cpp</a> 第 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrototypeKitPrimitives_8cpp_source.html#l00120">eve::procgen::prototype_detail::addCylinder()</a>, <a class="el" href="ClimbingAnchorAuthoring_8cpp_source.html#l00352">eve::climbing::bakeClimbingAnchorGraph()</a>, <a class="el" href="TileMap3D_8cpp_source.html#l00081">eve::hd2d::TileMap3D::buildMesh()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00379">eve::dev::Snapshot::captureState()</a>, <a class="el" href="Runtime_8cpp_source.html#l01144">eve::Runtime::classNameOf()</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00548">eve::script::ScriptCompiler::compileBuffer()</a>, <a class="el" href="Debugger_8cpp_source.html#l01074">eve::dev::Debugger::containerChildren()</a>, <a class="el" href="Runtime_8cpp_source.html#l00610">eve::Runtime::createInstance()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00144">eve::card::Deck::draw()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00118">eve::editor::ActionTimelineWidget::draw()</a>, <a class="el" href="ScriptModule_8cpp_source.html#l00180">eve::script::ScriptModuleResolver::Impl::ensureCompiled()</a>, <a class="el" href="ConsolePanel_8cpp_source.html#l00218">eve::dev::ConsolePanel::eval()</a>, <a class="el" href="Debugger_8cpp_source.html#l01093">eve::dev::Debugger::evaluate()</a>, <a class="el" href="Debugger_8cpp_source.html#l01022">eve::dev::Debugger::globals()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00444">eve::script::ignoreResult()</a>, <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>, <a class="el" href="UI_8cpp_source.html#l01765">eve::ui::UI::inspectSetPickHandler()</a>, <a class="el" href="FileApi_8cpp_source.html#l00177">eve::filesystem::physfs::installScriptFileApi()</a>, <a class="el" href="ScriptModule_8cpp_source.html#l00220">eve::script::ScriptModuleResolver::Impl::instantiateModule()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00082">eve::editor::ActionTimelineWidget::layout()</a>, <a class="el" href="EditorDock_8cpp_source.html#l00029">eve::editor::EditorDock::layout()</a>, <a class="el" href="Debugger_8cpp_source.html#l01002">eve::dev::Debugger::locals()</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00493">eve::script::makeOwnedSquirrelInstance()</a>, <a class="el" href="ClipSpace_8h_source.html#l00029">eve::graphics::orthoVulkanRH_ZO()</a>, <a class="el" href="EcsScriptPack_8cpp_source.html#l00127">eve::gpgpu::packScriptEntityFloatsRange()</a>, <a class="el" href="Climbing_8cpp_source.html#l00438">eve::climbing::ClimbingRuntime::probeInto()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00222">eve::pixelworld_physics::probeTerrainCircle()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00369">eve::script::pushValue()</a>, <a class="el" href="Runtime_8cpp_source.html#l00650">eve::Runtime::reflectInstance()</a>, <a class="el" href="Schema_8cpp_source.html#l00196">eve::schema::Schema::registerFromClass()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00451">eve::dev::Snapshot::restoreState()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00037">eve::procgen::Heightmap::sampleBilinear()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00052">eve::procgen::Heightmap::sampleBilinearSeamless()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00163">eve::procgen::TerrainStreamingCache::sampleHeight()</a>, <a class="el" href="SnowFieldTarget_8cpp_source.html#l00028">eve::snow_editing::SnowFieldTarget::sampleScalar()</a>, <a class="el" href="UI_8cpp_source.html#l01922">eve::ui::UI::sceneSetPickHandler()</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00310">eve::script::ScriptCompiler::ScriptCompiler()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00447">eve::graphics::Volumetric::setCloudLayer()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00022">eve::voxel::VoxelWorld::setTerrainParams()</a>, <a class="el" href="Dialogue_8cpp_source.html#l00198">eve::dialogue::Dialogue::setVar()</a>, <a class="el" href="DialogueFlow_8cpp_source.html#l00536">eve::dialogue::DialogueFlow::startChecked()</a>, <a class="el" href="EcsScriptPack_8cpp_source.html#l00199">eve::gpgpu::unpackScriptEntityFloatsRange()</a>, <a class="el" href="EditorHost_8cpp_source.html#l01288">eve::ui::EditorHost::unregisterVM()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00356">eve::script::valueFromSquirrel()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00342">eve::script::valueFromSquirrel()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

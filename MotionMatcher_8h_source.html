@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/MotionMatcher.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MotionMatcher.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MotionMatcher_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimPose_8h.html">animation/AnimPose.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>MotionDatabase;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_class" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a>* skeleton, <a class="code hl_class" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a>* database);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#ada0f457403f4d81cc1cddf7c09a8daa4">   21</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#ada0f457403f4d81cc1cddf7c09a8daa4">~MotionMatcher</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#afed4410bd9280d88adbe10a722fba4f7">   23</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#afed4410bd9280d88adbe10a722fba4f7">MotionMatcher</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a9e9974311b9c496d8baef2b9f2334698">   24</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a>&amp; <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a9e9974311b9c496d8baef2b9f2334698">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1MotionMatcher.html">MotionMatcher</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a0f039a607d2b75ff9765917c0e389510">   26</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a>*   <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a0f039a607d2b75ff9765917c0e389510">getSkeleton</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> skeleton_; }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a7e413c76e5dc0f581390c6f513d901f1">   27</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a>* <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a7e413c76e5dc0f581390c6f513d901f1">getDatabase</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> database_; }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a572bf274332e84fd2239c95fafbe6680">setDesiredVelocity</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a554526603eb9c464031c14f4a35a66d4">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a554526603eb9c464031c14f4a35a66d4">getDesiredVelocityX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> desiredVelX_; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#ae51a4425fd527e742784a4478173122f">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#ae51a4425fd527e742784a4478173122f">getDesiredVelocityZ</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> desiredVelZ_; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a31d343a3070abf13a388e00ffa00b677">setDesiredYaw</a>(<span class="keywordtype">float</span> yaw);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a9e9c6cc6ccc6c91a3343b8c6746f0cab">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a9e9c6cc6ccc6c91a3343b8c6746f0cab">getDesiredYaw</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> desiredYaw_; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#ad8d1c23c3df02433a2e73cf1d0e22bd6">setSearchInterval</a>(<span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a902b7ba81acf32cb5af30140030a407f">   39</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a902b7ba81acf32cb5af30140030a407f">getSearchInterval</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> searchInterval_; }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a0e7e9d60208ee8a469e217b1fafb3028">setBlendTime</a>(<span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#aace1dc58db0dfab7ab41d8f9ecd8f114">   41</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#aace1dc58db0dfab7ab41d8f9ecd8f114">getBlendTime</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> blendTime_; }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a7f56c468ce4389b81961ce48e6fc4f5b">setTrajectoryWeight</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#ad909c1316085606ceb72b2124c82ad0c">   43</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#ad909c1316085606ceb72b2124c82ad0c">getTrajectoryWeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> trajWeight_; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a7b7fb260bb67c033977b6a0ca06caa4c">setPoseWeight</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#ac22bac223297fef3f33ff158863fd758">   45</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#ac22bac223297fef3f33ff158863fd758">getPoseWeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> poseWeight_; }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a60ec266eb995ff3e48b9764b8e33a062">setVelocityWeight</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a9f9b4f74595d78af3796c40fd2b47948">   47</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a9f9b4f74595d78af3796c40fd2b47948">getVelocityWeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> velWeight_; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a919097e9714d533b424789b43cada617">setIgnoreRadius</a>(<span class="keywordtype">int</span> frames);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#aa7f26b68c39602ab6ac41deb8147847e">   51</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#aa7f26b68c39602ab6ac41deb8147847e">getIgnoreRadius</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ignoreRadius_; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a4ed5c8312c20cf53e00408de7570aba2">   53</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a4ed5c8312c20cf53e00408de7570aba2">getMatchedFrame</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matchedFrame_; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#aafb0f592d8a42f1493e9581fabbbd801">getMatchedClipIndex</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#a29ffc4923ea5e05bbeeea452454512ed">   55</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a29ffc4923ea5e05bbeeea452454512ed">getMatchedTime</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> matchedTime_; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionMatcher.html#abaa5b59085d7a03a8cfd6249cbd56f49">   56</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#abaa5b59085d7a03a8cfd6249cbd56f49">getLastSearchCost</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastCost_; }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>* <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a8aee63a9342240b046e94de03ab51c97">getPose</a>();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a02924aa1d6fc0be68d1e400cdc64fe38">search</a>();</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#ae9effc0028c03baa6f4140b0d106b754">advance</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionMatcher.html#a0e284c9c8691f8d81a6999f2b5581cbb">update</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span>  buildQuery(std::vector&lt;float&gt;&amp; query) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>(<span class="keyword">const</span> std::vector&lt;float&gt;&amp; query, <span class="keyword">const</span> std::vector&lt;float&gt;&amp; cand, <span class="keywordtype">float</span> upperBound) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span>  sampleMatched(<a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>* out) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a>*   skeleton_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_class" href="classeve_1_1animation_1_1MotionDatabase.html">MotionDatabase</a>* database_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>        pose_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>        fromPose_;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>        matchedPose_;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">float</span> desiredVelX_ = 0.f;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">float</span> desiredVelZ_ = 0.f;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">float</span> desiredYaw_  = 0.f;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">float</span> searchInterval_ = 0.1f;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">float</span> searchTimer_    = 0.f;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">float</span> blendTime_      = 0.15f;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">float</span> blendElapsed_   = 0.f;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">bool</span>  blending_       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">float</span> trajWeight_   = 1.f;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">float</span> poseWeight_   = 1.f;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">float</span> velWeight_    = 1.f;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">int</span>   ignoreRadius_ = 2;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">int</span>   matchedFrame_ = -1;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">float</span> matchedTime_  = 0.f;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">float</span> lastCost_     = 0.f;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">bool</span>  playing_      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> lastTick_     = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">bool</span>                hasLastTick_  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">void</span> updateUnchecked(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>};</div>
+</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimPose_8h_html"><div class="ttname"><a href="AnimPose_8h.html">AnimPose.h</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00037">DialoguePayment.cpp:37</a></div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionDatabase_html"><div class="ttname"><a href="classeve_1_1animation_1_1MotionDatabase.html">eve::animation::MotionDatabase</a></div><div class="ttdoc">Baked motion-matching feature database from one or more AnimClips. Feature layout per frame: [0....</div><div class="ttdef"><b>Definition</b> <a href="MotionDatabase_8h_source.html#l00022">MotionDatabase.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html">eve::animation::MotionMatcher</a></div><div class="ttdoc">Runtime motion matching player: builds a query feature from current pose + desired trajectory,...</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00018">MotionMatcher.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a02924aa1d6fc0be68d1e400cdc64fe38"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a02924aa1d6fc0be68d1e400cdc64fe38">eve::animation::MotionMatcher::search</a></div><div class="ttdeci">void search()</div><div class="ttdoc">Force an immediate search (also called periodically from update).</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00150">MotionMatcher.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a0e284c9c8691f8d81a6999f2b5581cbb"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a0e284c9c8691f8d81a6999f2b5581cbb">eve::animation::MotionMatcher::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Legacy seconds facade; explicitly forwards to advance().</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00249">MotionMatcher.cpp:249</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a0e7e9d60208ee8a469e217b1fafb3028"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a0e7e9d60208ee8a469e217b1fafb3028">eve::animation::MotionMatcher::setBlendTime</a></div><div class="ttdeci">void setBlendTime(float seconds)</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00040">MotionMatcher.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a0f039a607d2b75ff9765917c0e389510"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a0f039a607d2b75ff9765917c0e389510">eve::animation::MotionMatcher::getSkeleton</a></div><div class="ttdeci">AnimSkeleton * getSkeleton() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00026">MotionMatcher.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a29ffc4923ea5e05bbeeea452454512ed"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a29ffc4923ea5e05bbeeea452454512ed">eve::animation::MotionMatcher::getMatchedTime</a></div><div class="ttdeci">float getMatchedTime() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00055">MotionMatcher.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a31d343a3070abf13a388e00ffa00b677"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a31d343a3070abf13a388e00ffa00b677">eve::animation::MotionMatcher::setDesiredYaw</a></div><div class="ttdeci">void setDesiredYaw(float yaw)</div><div class="ttdoc">Desired facing yaw (radians, Y-up).</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00033">MotionMatcher.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a4ed5c8312c20cf53e00408de7570aba2"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a4ed5c8312c20cf53e00408de7570aba2">eve::animation::MotionMatcher::getMatchedFrame</a></div><div class="ttdeci">int getMatchedFrame() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00053">MotionMatcher.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a554526603eb9c464031c14f4a35a66d4"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a554526603eb9c464031c14f4a35a66d4">eve::animation::MotionMatcher::getDesiredVelocityX</a></div><div class="ttdeci">float getDesiredVelocityX() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00031">MotionMatcher.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a572bf274332e84fd2239c95fafbe6680"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a572bf274332e84fd2239c95fafbe6680">eve::animation::MotionMatcher::setDesiredVelocity</a></div><div class="ttdeci">void setDesiredVelocity(float x, float z)</div><div class="ttdoc">Desired planar velocity in character/world XZ (units/sec).</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00028">MotionMatcher.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a60ec266eb995ff3e48b9764b8e33a062"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a60ec266eb995ff3e48b9764b8e33a062">eve::animation::MotionMatcher::setVelocityWeight</a></div><div class="ttdeci">void setVelocityWeight(float w)</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00055">MotionMatcher.cpp:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a7b7fb260bb67c033977b6a0ca06caa4c"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a7b7fb260bb67c033977b6a0ca06caa4c">eve::animation::MotionMatcher::setPoseWeight</a></div><div class="ttdeci">void setPoseWeight(float w)</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00050">MotionMatcher.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a7e413c76e5dc0f581390c6f513d901f1"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a7e413c76e5dc0f581390c6f513d901f1">eve::animation::MotionMatcher::getDatabase</a></div><div class="ttdeci">MotionDatabase * getDatabase() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00027">MotionMatcher.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a7f56c468ce4389b81961ce48e6fc4f5b"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a7f56c468ce4389b81961ce48e6fc4f5b">eve::animation::MotionMatcher::setTrajectoryWeight</a></div><div class="ttdeci">void setTrajectoryWeight(float w)</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00045">MotionMatcher.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a8aee63a9342240b046e94de03ab51c97"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a8aee63a9342240b046e94de03ab51c97">eve::animation::MotionMatcher::getPose</a></div><div class="ttdeci">AnimPose * getPose()</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00070">MotionMatcher.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a902b7ba81acf32cb5af30140030a407f"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a902b7ba81acf32cb5af30140030a407f">eve::animation::MotionMatcher::getSearchInterval</a></div><div class="ttdeci">float getSearchInterval() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00039">MotionMatcher.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a919097e9714d533b424789b43cada617"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a919097e9714d533b424789b43cada617">eve::animation::MotionMatcher::setIgnoreRadius</a></div><div class="ttdeci">void setIgnoreRadius(int frames)</div><div class="ttdoc">Skip rematching the same frame / nearby frames to reduce jitter.</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00060">MotionMatcher.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a9e9974311b9c496d8baef2b9f2334698"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a9e9974311b9c496d8baef2b9f2334698">eve::animation::MotionMatcher::operator=</a></div><div class="ttdeci">MotionMatcher &amp; operator=(const MotionMatcher &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a9e9c6cc6ccc6c91a3343b8c6746f0cab"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a9e9c6cc6ccc6c91a3343b8c6746f0cab">eve::animation::MotionMatcher::getDesiredYaw</a></div><div class="ttdeci">float getDesiredYaw() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00036">MotionMatcher.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_a9f9b4f74595d78af3796c40fd2b47948"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#a9f9b4f74595d78af3796c40fd2b47948">eve::animation::MotionMatcher::getVelocityWeight</a></div><div class="ttdeci">float getVelocityWeight() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00047">MotionMatcher.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_aa7f26b68c39602ab6ac41deb8147847e"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#aa7f26b68c39602ab6ac41deb8147847e">eve::animation::MotionMatcher::getIgnoreRadius</a></div><div class="ttdeci">int getIgnoreRadius() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00051">MotionMatcher.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_aace1dc58db0dfab7ab41d8f9ecd8f114"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#aace1dc58db0dfab7ab41d8f9ecd8f114">eve::animation::MotionMatcher::getBlendTime</a></div><div class="ttdeci">float getBlendTime() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00041">MotionMatcher.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_aafb0f592d8a42f1493e9581fabbbd801"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#aafb0f592d8a42f1493e9581fabbbd801">eve::animation::MotionMatcher::getMatchedClipIndex</a></div><div class="ttdeci">int getMatchedClipIndex() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00065">MotionMatcher.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_abaa5b59085d7a03a8cfd6249cbd56f49"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#abaa5b59085d7a03a8cfd6249cbd56f49">eve::animation::MotionMatcher::getLastSearchCost</a></div><div class="ttdeci">float getLastSearchCost() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00056">MotionMatcher.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_ac22bac223297fef3f33ff158863fd758"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#ac22bac223297fef3f33ff158863fd758">eve::animation::MotionMatcher::getPoseWeight</a></div><div class="ttdeci">float getPoseWeight() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00045">MotionMatcher.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_ad8d1c23c3df02433a2e73cf1d0e22bd6"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#ad8d1c23c3df02433a2e73cf1d0e22bd6">eve::animation::MotionMatcher::setSearchInterval</a></div><div class="ttdeci">void setSearchInterval(float seconds)</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00035">MotionMatcher.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_ad909c1316085606ceb72b2124c82ad0c"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#ad909c1316085606ceb72b2124c82ad0c">eve::animation::MotionMatcher::getTrajectoryWeight</a></div><div class="ttdeci">float getTrajectoryWeight() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00043">MotionMatcher.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_ada0f457403f4d81cc1cddf7c09a8daa4"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#ada0f457403f4d81cc1cddf7c09a8daa4">eve::animation::MotionMatcher::~MotionMatcher</a></div><div class="ttdeci">~MotionMatcher()=default</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_ae51a4425fd527e742784a4478173122f"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#ae51a4425fd527e742784a4478173122f">eve::animation::MotionMatcher::getDesiredVelocityZ</a></div><div class="ttdeci">float getDesiredVelocityZ() const</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8h_source.html#l00032">MotionMatcher.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_ae9effc0028c03baa6f4140b0d106b754"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#ae9effc0028c03baa6f4140b0d106b754">eve::animation::MotionMatcher::advance</a></div><div class="ttdeci">eve::Result&lt; void &gt; advance(const eve::SimulationStep &amp;step)</div><div class="ttdoc">Advance matching and pose blending by one scheduler step.</div><div class="ttdef"><b>Definition</b> <a href="MotionMatcher_8cpp_source.html#l00240">MotionMatcher.cpp:240</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionMatcher_html_afed4410bd9280d88adbe10a722fba4f7"><div class="ttname"><a href="classeve_1_1animation_1_1MotionMatcher.html#afed4410bd9280d88adbe10a722fba4f7">eve::animation::MotionMatcher::MotionMatcher</a></div><div class="ttdeci">MotionMatcher(const MotionMatcher &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00051">Animation.cpp:51</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::json::Node结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1json.html">json</a></li><li class="navelem"><a class="el" href="structeve_1_1json_1_1Node.html">Node</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1json_1_1Node-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::json::Node结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a966a36204593b740b188b7fced1c0c8e" id="r_a966a36204593b740b188b7fced1c0c8e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8e">Kind</a> { <br />
+&#160;&#160;<a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eabbb93ef26e3c101ff11cdd21cab08a94">Null</a>
+, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eac26f15e86e3de4c398a8273272aba034">Bool</a>
+, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eab2ee912b91d69b435159c7c3f6df7f5f">Number</a>
+, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea27118326006d3829667a400ad23d5d98">String</a>
+, <br />
+&#160;&#160;<a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea497031794414a552435f90151ac3b54b">Object</a>
+, <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8ea4410ec34d9e6c1a68100ca0ce033fb17">Array</a>
+<br />
+ }</td></tr>
+<tr class="separator:a966a36204593b740b188b7fced1c0c8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ace6ef4916310c0321a59bc38fdc34f0d" id="r_ace6ef4916310c0321a59bc38fdc34f0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8e">Kind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#ace6ef4916310c0321a59bc38fdc34f0d">kind</a> = <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eabbb93ef26e3c101ff11cdd21cab08a94">Kind::Null</a></td></tr>
+<tr class="separator:ace6ef4916310c0321a59bc38fdc34f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a0a4da9c330e4e2f30b917b3c175967" id="r_a2a0a4da9c330e4e2f30b917b3c175967"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#a2a0a4da9c330e4e2f30b917b3c175967">boolVal</a> = false</td></tr>
+<tr class="separator:a2a0a4da9c330e4e2f30b917b3c175967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add8d14d51f315a58c22918db823fab6e" id="r_add8d14d51f315a58c22918db823fab6e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#add8d14d51f315a58c22918db823fab6e">numberVal</a> = 0.0</td></tr>
+<tr class="separator:add8d14d51f315a58c22918db823fab6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcf0d99b9b0c0cbe5fbdacdb7e91e778" id="r_afcf0d99b9b0c0cbe5fbdacdb7e91e778"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#afcf0d99b9b0c0cbe5fbdacdb7e91e778">integerLiteral</a> = false</td></tr>
+<tr class="separator:afcf0d99b9b0c0cbe5fbdacdb7e91e778"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae70d056ebb59f0c729870466ec5f23fb" id="r_ae70d056ebb59f0c729870466ec5f23fb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#ae70d056ebb59f0c729870466ec5f23fb">hasInt64</a> = false</td></tr>
+<tr class="separator:ae70d056ebb59f0c729870466ec5f23fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bea8ebcd016d1c023624fce15827e33" id="r_a1bea8ebcd016d1c023624fce15827e33"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#a1bea8ebcd016d1c023624fce15827e33">intVal</a> = 0</td></tr>
+<tr class="separator:a1bea8ebcd016d1c023624fce15827e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34aeb04fcce6b8bf112d99d647705c2f" id="r_a34aeb04fcce6b8bf112d99d647705c2f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#a34aeb04fcce6b8bf112d99d647705c2f">stringVal</a></td></tr>
+<tr class="separator:a34aeb04fcce6b8bf112d99d647705c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae05978de47d8ced492aeb47fefed11d8" id="r_ae05978de47d8ced492aeb47fefed11d8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#ae05978de47d8ced492aeb47fefed11d8">memberNames</a></td></tr>
+<tr class="separator:ae05978de47d8ced492aeb47fefed11d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7e33f8c217a7714134175205bd344c5" id="r_af7e33f8c217a7714134175205bd344c5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1json_1_1Node.html">Node</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#af7e33f8c217a7714134175205bd344c5">memberValues</a></td></tr>
+<tr class="separator:af7e33f8c217a7714134175205bd344c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4b179c6d5e8a22c044f25f1867d922" id="r_aaf4b179c6d5e8a22c044f25f1867d922"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1json_1_1Node.html">Node</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1json_1_1Node.html#aaf4b179c6d5e8a22c044f25f1867d922">elements</a></td></tr>
+<tr class="separator:aaf4b179c6d5e8a22c044f25f1867d922"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a966a36204593b740b188b7fced1c0c8e" name="a966a36204593b740b188b7fced1c0c8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a966a36204593b740b188b7fced1c0c8e">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8e">eve::json::Node::Kind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a966a36204593b740b188b7fced1c0c8eabbb93ef26e3c101ff11cdd21cab08a94" name="a966a36204593b740b188b7fced1c0c8eabbb93ef26e3c101ff11cdd21cab08a94"></a>Null&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a966a36204593b740b188b7fced1c0c8eac26f15e86e3de4c398a8273272aba034" name="a966a36204593b740b188b7fced1c0c8eac26f15e86e3de4c398a8273272aba034"></a>Bool&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a966a36204593b740b188b7fced1c0c8eab2ee912b91d69b435159c7c3f6df7f5f" name="a966a36204593b740b188b7fced1c0c8eab2ee912b91d69b435159c7c3f6df7f5f"></a>Number&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a966a36204593b740b188b7fced1c0c8ea27118326006d3829667a400ad23d5d98" name="a966a36204593b740b188b7fced1c0c8ea27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a966a36204593b740b188b7fced1c0c8ea497031794414a552435f90151ac3b54b" name="a966a36204593b740b188b7fced1c0c8ea497031794414a552435f90151ac3b54b"></a>Object&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a966a36204593b740b188b7fced1c0c8ea4410ec34d9e6c1a68100ca0ce033fb17" name="a966a36204593b740b188b7fced1c0c8ea4410ec34d9e6c1a68100ca0ce033fb17"></a>Array&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a2a0a4da9c330e4e2f30b917b3c175967" name="a2a0a4da9c330e4e2f30b917b3c175967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a0a4da9c330e4e2f30b917b3c175967">&#9670;&#160;</a></span>boolVal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Node::boolVal = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00364">eve::json::Value::asBool()</a>, <a class="el" href="Json_8cpp_source.html#l00377">eve::json::Value::asDouble()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00411">eve::json::Value::asString()</a>.</p>
+
+</div>
+</div>
+<a id="aaf4b179c6d5e8a22c044f25f1867d922" name="aaf4b179c6d5e8a22c044f25f1867d922"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4b179c6d5e8a22c044f25f1867d922">&#9670;&#160;</a></span>elements</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1json_1_1Node.html">Node</a>&gt; eve::json::Node::elements</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00358">eve::json::Value::at()</a>, <a class="el" href="Json_8cpp_source.html#l00351">eve::json::Value::size()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00431">eve::json::Value::toStringArray()</a>.</p>
+
+</div>
+</div>
+<a id="ae70d056ebb59f0c729870466ec5f23fb" name="ae70d056ebb59f0c729870466ec5f23fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae70d056ebb59f0c729870466ec5f23fb">&#9670;&#160;</a></span>hasInt64</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Node::hasInt64 = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set when the integer literal fits the canonical Int64 range. </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00392">eve::json::Value::asInt()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00328">eve::json::Value::isInt64()</a>.</p>
+
+</div>
+</div>
+<a id="afcf0d99b9b0c0cbe5fbdacdb7e91e778" name="afcf0d99b9b0c0cbe5fbdacdb7e91e778"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcf0d99b9b0c0cbe5fbdacdb7e91e778">&#9670;&#160;</a></span>integerLiteral</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::json::Node::integerLiteral = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set when the literal had no fraction or exponent. </p>
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00329">eve::json::Value::isIntegerLiteral()</a>.</p>
+
+</div>
+</div>
+<a id="a1bea8ebcd016d1c023624fce15827e33" name="a1bea8ebcd016d1c023624fce15827e33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bea8ebcd016d1c023624fce15827e33">&#9670;&#160;</a></span>intVal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::json::Node::intVal = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00392">eve::json::Value::asInt()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00390">eve::json::Value::asInt64()</a>.</p>
+
+</div>
+</div>
+<a id="ace6ef4916310c0321a59bc38fdc34f0d" name="ace6ef4916310c0321a59bc38fdc34f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace6ef4916310c0321a59bc38fdc34f0d">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8e">Kind</a> eve::json::Node::kind = <a class="el" href="structeve_1_1json_1_1Node.html#a966a36204593b740b188b7fced1c0c8eabbb93ef26e3c101ff11cdd21cab08a94">Kind::Null</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00364">eve::json::Value::asBool()</a>, <a class="el" href="Json_8cpp_source.html#l00377">eve::json::Value::asDouble()</a>, <a class="el" href="Json_8cpp_source.html#l00392">eve::json::Value::asInt()</a>, <a class="el" href="Json_8cpp_source.html#l00411">eve::json::Value::asString()</a>, <a class="el" href="Json_8cpp_source.html#l00358">eve::json::Value::at()</a>, <a class="el" href="Json_8cpp_source.html#l00336">eve::json::Value::get()</a>, <a class="el" href="Json_8cpp_source.html#l00332">eve::json::Value::isArray()</a>, <a class="el" href="Json_8cpp_source.html#l00326">eve::json::Value::isBool()</a>, <a class="el" href="Json_8cpp_source.html#l00328">eve::json::Value::isInt64()</a>, <a class="el" href="Json_8cpp_source.html#l00329">eve::json::Value::isIntegerLiteral()</a>, <a class="el" href="Json_8cpp_source.html#l00325">eve::json::Value::isNull()</a>, <a class="el" href="Json_8cpp_source.html#l00327">eve::json::Value::isNumber()</a>, <a class="el" href="Json_8cpp_source.html#l00331">eve::json::Value::isObject()</a>, <a class="el" href="Json_8cpp_source.html#l00330">eve::json::Value::isString()</a>, <a class="el" href="Json_8cpp_source.html#l00343">eve::json::Value::keys()</a>, <a class="el" href="Json_8cpp_source.html#l00351">eve::json::Value::size()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00431">eve::json::Value::toStringArray()</a>.</p>
+
+</div>
+</div>
+<a id="ae05978de47d8ced492aeb47fefed11d8" name="ae05978de47d8ced492aeb47fefed11d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae05978de47d8ced492aeb47fefed11d8">&#9670;&#160;</a></span>memberNames</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::json::Node::memberNames</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00336">eve::json::Value::get()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00343">eve::json::Value::keys()</a>.</p>
+
+</div>
+</div>
+<a id="af7e33f8c217a7714134175205bd344c5" name="af7e33f8c217a7714134175205bd344c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7e33f8c217a7714134175205bd344c5">&#9670;&#160;</a></span>memberValues</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1json_1_1Node.html">Node</a>&gt; eve::json::Node::memberValues</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00336">eve::json::Value::get()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00351">eve::json::Value::size()</a>.</p>
+
+</div>
+</div>
+<a id="add8d14d51f315a58c22918db823fab6e" name="add8d14d51f315a58c22918db823fab6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add8d14d51f315a58c22918db823fab6e">&#9670;&#160;</a></span>numberVal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::json::Node::numberVal = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00364">eve::json::Value::asBool()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00377">eve::json::Value::asDouble()</a>.</p>
+
+</div>
+</div>
+<a id="a34aeb04fcce6b8bf112d99d647705c2f" name="a34aeb04fcce6b8bf112d99d647705c2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34aeb04fcce6b8bf112d99d647705c2f">&#9670;&#160;</a></span>stringVal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::json::Node::stringVal</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Json_8cpp_source.html">Json.cpp</a> 第 <a class="el" href="Json_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Json_8cpp_source.html#l00364">eve::json::Value::asBool()</a>, <a class="el" href="Json_8cpp_source.html#l00377">eve::json::Value::asDouble()</a> , 以及 <a class="el" href="Json_8cpp_source.html#l00411">eve::json::Value::asString()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Json_8cpp_source.html">Json.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

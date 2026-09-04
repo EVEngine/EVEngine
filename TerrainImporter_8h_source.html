@@ -1,0 +1,266 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset_import/TerrainImporter.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6ac030dd4f922b09e58d423fadfe8305.html">asset_import</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainImporter.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainImporter_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="AssetImporter_8h.html">asset_import/AssetImporter.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__import.html">eve::asset_import</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html">CanonicalTerrainLayer</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ad9c63cd4116939b473ac7ead2b23db6c">   14</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ad9c63cd4116939b473ac7ead2b23db6c">name</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#aebd0fe8d5b8f2c1b1de131fe50daef67">   15</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#aebd0fe8d5b8f2c1b1de131fe50daef67">diffuseSource</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ac0601a004aae78c44a3f3e6f274090c5">   16</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ac0601a004aae78c44a3f3e6f274090c5">normalSource</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ae28efadbd201f3b0eaf4e57d41652cf3">   17</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ae28efadbd201f3b0eaf4e57d41652cf3">weightSource</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ae4fc9691aabaa4bbb307bab60e9dc9fd">   18</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ae4fc9691aabaa4bbb307bab60e9dc9fd">normalConvention</a> = <span class="stringliteral">&quot;opengl&quot;</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#aec2db468f39043afa733ce4e4d1b0fc9">   19</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#aec2db468f39043afa733ce4e4d1b0fc9">tileSizeMeters</a> = 1.0f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html">CanonicalScatterRule</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#ab79d6c6041eb2abf07f736f4c3ae3e74">   24</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#ab79d6c6041eb2abf07f736f4c3ae3e74">id</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#aa1efd556a024a27ea627be245c297b7d">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#aa1efd556a024a27ea627be245c297b7d">prototype</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a320fb235df7dbb68209aeec7a75584d4">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a320fb235df7dbb68209aeec7a75584d4">layer</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a4c87d4c7cb8995987da8933e4f93939d">   27</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a4c87d4c7cb8995987da8933e4f93939d">densityPerSquareMeter</a> = 0.0f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#ac7cc3fbaf229c7305bc313727bb4d56e">   28</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#ac7cc3fbaf229c7305bc313727bb4d56e">minimumSlopeRadians</a> = 0.0f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a7ac1624a9f00c204f36c85a48a5adfe1">   29</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a7ac1624a9f00c204f36c85a48a5adfe1">maximumSlopeRadians</a> = 1.57079632679f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#abbf42fc919516d8bcb08d963fec39261">   30</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#abbf42fc919516d8bcb08d963fec39261">seed</a> = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html">   34</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html">CanonicalTerrainInstance</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#aa7295f58db88640c9697cf6ad7f3db9c">   35</a></span>    std::string <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#aa7295f58db88640c9697cf6ad7f3db9c">prototype</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a540e35aa77adae368d1456bf6a0d8999">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a540e35aa77adae368d1456bf6a0d8999">position</a>[3] = {};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a393d63e4af6c27b91f4cf40afcc51a28">   37</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a393d63e4af6c27b91f4cf40afcc51a28">rotation</a>[4] = {0, 0, 0, 1};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a912e10003aff992b6c247c5552b1fd4c">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a912e10003aff992b6c247c5552b1fd4c">scale</a>[3] = {1, 1, 1};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html">   42</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html">CanonicalTerrainInput</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#afe78b02dfed028e1d36235fbded4f577">   43</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#afe78b02dfed028e1d36235fbded4f577">width</a> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ab1e538c77b5d9826d5f7bed8984c674a">   44</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ab1e538c77b5d9826d5f7bed8984c674a">height</a> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a0bc00989df73134f2e032f7b59a184cb">   45</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a0bc00989df73134f2e032f7b59a184cb">spacingX</a> = 1.0f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a2b5349c8e12db69b22b3ecf592e50a3d">   46</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a2b5349c8e12db69b22b3ecf592e50a3d">spacingZ</a> = 1.0f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a26c552a33a864c799e017b93ef7c3dd1">   47</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a26c552a33a864c799e017b93ef7c3dd1">heightsMeters</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ab9ed47e7e9d07faf8b17bff78b5b22b9">   48</a></span>    std::vector&lt;CanonicalTerrainLayer&gt; <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ab9ed47e7e9d07faf8b17bff78b5b22b9">layers</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a90c6403f90ad5abe115932fb1416d467">   49</a></span>    std::vector&lt;CanonicalScatterRule&gt; <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a90c6403f90ad5abe115932fb1416d467">scatterRules</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a6327782f918cba65359bf51e3d052247">   50</a></span>    std::vector&lt;CanonicalTerrainInstance&gt; <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a6327782f918cba65359bf51e3d052247">instances</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ad90c3f4685c3a6d442b05a154c1528e0">   51</a></span>    <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> <a class="code hl_variable" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ad90c3f4685c3a6d442b05a154c1528e0">sourceTransform</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>};</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import.html#a18451bf0d41f432041055984176a7804">prepareCanonicalTerrainImport</a>(</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">ImportPackageIdentity</a>&amp; package, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html">CanonicalTerrainInput</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::string_view importer, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1AssetImportLimits.html">AssetImportLimits</a>&amp; limits = {});</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}  <span class="comment">// namespace eve::asset_import</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ab2a3d0d88ca0598e78bd62e7d03ca6a1"><div class="ttname"><a href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a></div><div class="ttdeci">std::string terrain</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aAssetImporter_8h_html"><div class="ttname"><a href="AssetImporter_8h.html">AssetImporter.h</a></div><div class="ttdoc">Tool-side image and glTF importers producing canonical .eva candidates.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html"><div class="ttname"><a href="namespaceeve_1_1asset__import.html">eve::asset_import</a></div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00012">AssetImporter.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a18451bf0d41f432041055984176a7804"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a18451bf0d41f432041055984176a7804">eve::asset_import::prepareCanonicalTerrainImport</a></div><div class="ttdeci">Result&lt; PreparedAssetImport &gt; prepareCanonicalTerrainImport(const ImportPackageIdentity &amp;package, const CanonicalTerrainInput &amp;terrain, std::string_view importer, const AssetImportLimits &amp;limits)</div><div class="ttdoc">Build eve.terrain, terrain material, PCG and instance assets from canonical input.</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8cpp_source.html#l00049">TerrainImporter.cpp:49</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1AssetImportLimits_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1AssetImportLimits.html">eve::asset_import::AssetImportLimits</a></div><div class="ttdoc">Parser and allocation budgets applied to untrusted importer inputs.</div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00015">AssetImporter.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalScatterRule_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html">eve::asset_import::CanonicalScatterRule</a></div><div class="ttdoc">One deterministic terrain scatter rule, independent of source engine nodes.</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00023">TerrainImporter.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalScatterRule_html_a320fb235df7dbb68209aeec7a75584d4"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a320fb235df7dbb68209aeec7a75584d4">eve::asset_import::CanonicalScatterRule::layer</a></div><div class="ttdeci">std::string layer</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00026">TerrainImporter.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalScatterRule_html_a4c87d4c7cb8995987da8933e4f93939d"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a4c87d4c7cb8995987da8933e4f93939d">eve::asset_import::CanonicalScatterRule::densityPerSquareMeter</a></div><div class="ttdeci">float densityPerSquareMeter</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00027">TerrainImporter.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalScatterRule_html_a7ac1624a9f00c204f36c85a48a5adfe1"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#a7ac1624a9f00c204f36c85a48a5adfe1">eve::asset_import::CanonicalScatterRule::maximumSlopeRadians</a></div><div class="ttdeci">float maximumSlopeRadians</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00029">TerrainImporter.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalScatterRule_html_aa1efd556a024a27ea627be245c297b7d"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#aa1efd556a024a27ea627be245c297b7d">eve::asset_import::CanonicalScatterRule::prototype</a></div><div class="ttdeci">std::string prototype</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00025">TerrainImporter.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalScatterRule_html_ab79d6c6041eb2abf07f736f4c3ae3e74"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#ab79d6c6041eb2abf07f736f4c3ae3e74">eve::asset_import::CanonicalScatterRule::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00024">TerrainImporter.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalScatterRule_html_abbf42fc919516d8bcb08d963fec39261"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#abbf42fc919516d8bcb08d963fec39261">eve::asset_import::CanonicalScatterRule::seed</a></div><div class="ttdeci">std::uint64_t seed</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00030">TerrainImporter.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalScatterRule_html_ac7cc3fbaf229c7305bc313727bb4d56e"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalScatterRule.html#ac7cc3fbaf229c7305bc313727bb4d56e">eve::asset_import::CanonicalScatterRule::minimumSlopeRadians</a></div><div class="ttdeci">float minimumSlopeRadians</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00028">TerrainImporter.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html">eve::asset_import::CanonicalTerrainInput</a></div><div class="ttdoc">Fully parsed source terrain ready for canonical archive construction.</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00042">TerrainImporter.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_a0bc00989df73134f2e032f7b59a184cb"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a0bc00989df73134f2e032f7b59a184cb">eve::asset_import::CanonicalTerrainInput::spacingX</a></div><div class="ttdeci">float spacingX</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00045">TerrainImporter.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_a26c552a33a864c799e017b93ef7c3dd1"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a26c552a33a864c799e017b93ef7c3dd1">eve::asset_import::CanonicalTerrainInput::heightsMeters</a></div><div class="ttdeci">std::vector&lt; float &gt; heightsMeters</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00047">TerrainImporter.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_a2b5349c8e12db69b22b3ecf592e50a3d"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a2b5349c8e12db69b22b3ecf592e50a3d">eve::asset_import::CanonicalTerrainInput::spacingZ</a></div><div class="ttdeci">float spacingZ</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00046">TerrainImporter.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_a6327782f918cba65359bf51e3d052247"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a6327782f918cba65359bf51e3d052247">eve::asset_import::CanonicalTerrainInput::instances</a></div><div class="ttdeci">std::vector&lt; CanonicalTerrainInstance &gt; instances</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00050">TerrainImporter.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_a90c6403f90ad5abe115932fb1416d467"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#a90c6403f90ad5abe115932fb1416d467">eve::asset_import::CanonicalTerrainInput::scatterRules</a></div><div class="ttdeci">std::vector&lt; CanonicalScatterRule &gt; scatterRules</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00049">TerrainImporter.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_ab1e538c77b5d9826d5f7bed8984c674a"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ab1e538c77b5d9826d5f7bed8984c674a">eve::asset_import::CanonicalTerrainInput::height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00044">TerrainImporter.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_ab9ed47e7e9d07faf8b17bff78b5b22b9"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ab9ed47e7e9d07faf8b17bff78b5b22b9">eve::asset_import::CanonicalTerrainInput::layers</a></div><div class="ttdeci">std::vector&lt; CanonicalTerrainLayer &gt; layers</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00048">TerrainImporter.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_ad90c3f4685c3a6d442b05a154c1528e0"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#ad90c3f4685c3a6d442b05a154c1528e0">eve::asset_import::CanonicalTerrainInput::sourceTransform</a></div><div class="ttdeci">Value::Object sourceTransform</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00051">TerrainImporter.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInput_html_afe78b02dfed028e1d36235fbded4f577"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInput.html#afe78b02dfed028e1d36235fbded4f577">eve::asset_import::CanonicalTerrainInput::width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00043">TerrainImporter.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInstance_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html">eve::asset_import::CanonicalTerrainInstance</a></div><div class="ttdoc">One baked instance in canonical right-handed metre coordinates.</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00034">TerrainImporter.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInstance_html_a393d63e4af6c27b91f4cf40afcc51a28"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a393d63e4af6c27b91f4cf40afcc51a28">eve::asset_import::CanonicalTerrainInstance::rotation</a></div><div class="ttdeci">float rotation[4]</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00037">TerrainImporter.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInstance_html_a540e35aa77adae368d1456bf6a0d8999"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a540e35aa77adae368d1456bf6a0d8999">eve::asset_import::CanonicalTerrainInstance::position</a></div><div class="ttdeci">float position[3]</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00036">TerrainImporter.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInstance_html_a912e10003aff992b6c247c5552b1fd4c"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#a912e10003aff992b6c247c5552b1fd4c">eve::asset_import::CanonicalTerrainInstance::scale</a></div><div class="ttdeci">float scale[3]</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00038">TerrainImporter.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainInstance_html_aa7295f58db88640c9697cf6ad7f3db9c"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainInstance.html#aa7295f58db88640c9697cf6ad7f3db9c">eve::asset_import::CanonicalTerrainInstance::prototype</a></div><div class="ttdeci">std::string prototype</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00035">TerrainImporter.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainLayer_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html">eve::asset_import::CanonicalTerrainLayer</a></div><div class="ttdoc">One canonical terrain material layer after source-engine mapping.</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00013">TerrainImporter.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainLayer_html_ac0601a004aae78c44a3f3e6f274090c5"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ac0601a004aae78c44a3f3e6f274090c5">eve::asset_import::CanonicalTerrainLayer::normalSource</a></div><div class="ttdeci">std::string normalSource</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00016">TerrainImporter.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainLayer_html_ad9c63cd4116939b473ac7ead2b23db6c"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ad9c63cd4116939b473ac7ead2b23db6c">eve::asset_import::CanonicalTerrainLayer::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00014">TerrainImporter.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainLayer_html_ae28efadbd201f3b0eaf4e57d41652cf3"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ae28efadbd201f3b0eaf4e57d41652cf3">eve::asset_import::CanonicalTerrainLayer::weightSource</a></div><div class="ttdeci">std::string weightSource</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00017">TerrainImporter.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainLayer_html_ae4fc9691aabaa4bbb307bab60e9dc9fd"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#ae4fc9691aabaa4bbb307bab60e9dc9fd">eve::asset_import::CanonicalTerrainLayer::normalConvention</a></div><div class="ttdeci">std::string normalConvention</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00018">TerrainImporter.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainLayer_html_aebd0fe8d5b8f2c1b1de131fe50daef67"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#aebd0fe8d5b8f2c1b1de131fe50daef67">eve::asset_import::CanonicalTerrainLayer::diffuseSource</a></div><div class="ttdeci">std::string diffuseSource</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00015">TerrainImporter.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1CanonicalTerrainLayer_html_aec2db468f39043afa733ce4e4d1b0fc9"><div class="ttname"><a href="structeve_1_1asset__import_1_1CanonicalTerrainLayer.html#aec2db468f39043afa733ce4e4d1b0fc9">eve::asset_import::CanonicalTerrainLayer::tileSizeMeters</a></div><div class="ttdeci">float tileSizeMeters</div><div class="ttdef"><b>Definition</b> <a href="TerrainImporter_8h_source.html#l00019">TerrainImporter.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1ImportPackageIdentity_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">eve::asset_import::ImportPackageIdentity</a></div><div class="ttdoc">Common stable package metadata supplied by an import transaction.</div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00031">AssetImporter.h:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

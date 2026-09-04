@@ -1,0 +1,893 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Camera3D::Data结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html">Data</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1Camera3D_1_1Data-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Camera3D::Data结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data_1_1ReflectionProbe.html">ReflectionProbe</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a691a71da971daba92856ec843bb45de7" id="r_a691a71da971daba92856ec843bb45de7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a691a71da971daba92856ec843bb45de7">eyeX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a691a71da971daba92856ec843bb45de7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecfac2014108bcc9cdef326ef03553c0" id="r_aecfac2014108bcc9cdef326ef03553c0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#aecfac2014108bcc9cdef326ef03553c0">eyeY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aecfac2014108bcc9cdef326ef03553c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2996f4909ab15efeb18b4de5577a6b1" id="r_ae2996f4909ab15efeb18b4de5577a6b1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#ae2996f4909ab15efeb18b4de5577a6b1">eyeZ</a> = 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae2996f4909ab15efeb18b4de5577a6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af14b0ad9cc79e7895fbb52596a4ea869" id="r_af14b0ad9cc79e7895fbb52596a4ea869"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#af14b0ad9cc79e7895fbb52596a4ea869">targetX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af14b0ad9cc79e7895fbb52596a4ea869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66893497acc68b01d6600c5405836e5d" id="r_a66893497acc68b01d6600c5405836e5d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a66893497acc68b01d6600c5405836e5d">targetY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a66893497acc68b01d6600c5405836e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58b1b668013a635fec88a9e4956b25f1" id="r_a58b1b668013a635fec88a9e4956b25f1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a58b1b668013a635fec88a9e4956b25f1">targetZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a58b1b668013a635fec88a9e4956b25f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76df2fe4ae8f4abbdafe9a1220429e65" id="r_a76df2fe4ae8f4abbdafe9a1220429e65"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a76df2fe4ae8f4abbdafe9a1220429e65">upX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a76df2fe4ae8f4abbdafe9a1220429e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a319d65da505487da937414a6e524cb7c" id="r_a319d65da505487da937414a6e524cb7c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a319d65da505487da937414a6e524cb7c">upY</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a319d65da505487da937414a6e524cb7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac817eefa36df980313d1fe08813fa2" id="r_a4ac817eefa36df980313d1fe08813fa2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a4ac817eefa36df980313d1fe08813fa2">upZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4ac817eefa36df980313d1fe08813fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80264905c1a156db8d0e9c2c98731f33" id="r_a80264905c1a156db8d0e9c2c98731f33"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a80264905c1a156db8d0e9c2c98731f33">fovYDeg</a> = 60.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a80264905c1a156db8d0e9c2c98731f33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0c64ab70bd351a201730375f1bcab81" id="r_ae0c64ab70bd351a201730375f1bcab81"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#ae0c64ab70bd351a201730375f1bcab81">nearZ</a> = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae0c64ab70bd351a201730375f1bcab81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e8e639fd458a045c9e1e8605ee79dfb" id="r_a1e8e639fd458a045c9e1e8605ee79dfb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a1e8e639fd458a045c9e1e8605ee79dfb">farZ</a> = 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1e8e639fd458a045c9e1e8605ee79dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae07b20e1762c64b119df8784d155f246" id="r_ae07b20e1762c64b119df8784d155f246"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#ae07b20e1762c64b119df8784d155f246">orthographic</a> = false</td></tr>
+<tr class="separator:ae07b20e1762c64b119df8784d155f246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1cdf1a369605ddb4850ac83ddaa25b2" id="r_ad1cdf1a369605ddb4850ac83ddaa25b2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#ad1cdf1a369605ddb4850ac83ddaa25b2">orthoHeight</a> = 20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad1cdf1a369605ddb4850ac83ddaa25b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad578cb983a22ecf8eeb13908a3e6a89e" id="r_ad578cb983a22ecf8eeb13908a3e6a89e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#ad578cb983a22ecf8eeb13908a3e6a89e">ambientR</a> = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad578cb983a22ecf8eeb13908a3e6a89e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e27422382bd37a83cb556660a63c045" id="r_a2e27422382bd37a83cb556660a63c045"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a2e27422382bd37a83cb556660a63c045">ambientG</a> = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2e27422382bd37a83cb556660a63c045"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aded6815c432b29a8eeddc5088c7466dc" id="r_aded6815c432b29a8eeddc5088c7466dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#aded6815c432b29a8eeddc5088c7466dc">ambientB</a> = 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aded6815c432b29a8eeddc5088c7466dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3299274988761fb1f2359bddbe9b9dd9" id="r_a3299274988761fb1f2359bddbe9b9dd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a3299274988761fb1f2359bddbe9b9dd9">envMap</a> = nullptr</td></tr>
+<tr class="separator:a3299274988761fb1f2359bddbe9b9dd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8fd56b01113260ac20676efa23039d6" id="r_ae8fd56b01113260ac20676efa23039d6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#ae8fd56b01113260ac20676efa23039d6">envIntensity</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae8fd56b01113260ac20676efa23039d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1c2d5504b4190d6f1d3911d679f24c4" id="r_aa1c2d5504b4190d6f1d3911d679f24c4"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#aa1c2d5504b4190d6f1d3911d679f24c4">envProbeCenter</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:aa1c2d5504b4190d6f1d3911d679f24c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e90e3d748648b13793cd563f06e1d34" id="r_a7e90e3d748648b13793cd563f06e1d34"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a7e90e3d748648b13793cd563f06e1d34">envProbeExtent</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a7e90e3d748648b13793cd563f06e1d34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27b61fb583a7895f85744b28cdfc0c26" id="r_a27b61fb583a7895f85744b28cdfc0c26"><td class="memItemLeft" align="right" valign="top">std::array&lt; <a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data_1_1ReflectionProbe.html">ReflectionProbe</a>, <a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#af0bcda16e70810fa5046fa157ccfe77c">kMaxReflectionProbes</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a27b61fb583a7895f85744b28cdfc0c26">reflectionProbes</a> {}</td></tr>
+<tr class="separator:a27b61fb583a7895f85744b28cdfc0c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a584285ffb53d9ee3429a0fb3698d30f9" id="r_a584285ffb53d9ee3429a0fb3698d30f9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a584285ffb53d9ee3429a0fb3698d30f9">exposureEV</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a584285ffb53d9ee3429a0fb3698d30f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bacb73f4c97fba998319526383e0210" id="r_a7bacb73f4c97fba998319526383e0210"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a7bacb73f4c97fba998319526383e0210">autoExposure</a> = false</td></tr>
+<tr class="separator:a7bacb73f4c97fba998319526383e0210"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a994a39ead6f9cb25adc7fb42b4053404" id="r_a994a39ead6f9cb25adc7fb42b4053404"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a994a39ead6f9cb25adc7fb42b4053404">autoExposureMinEV</a> = -8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a994a39ead6f9cb25adc7fb42b4053404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a243046361756f959ef1bb8dc6073ba88" id="r_a243046361756f959ef1bb8dc6073ba88"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a243046361756f959ef1bb8dc6073ba88">autoExposureMaxEV</a> = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a243046361756f959ef1bb8dc6073ba88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a942986044c652395ef37acb6ba6177" id="r_a4a942986044c652395ef37acb6ba6177"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a4a942986044c652395ef37acb6ba6177">bloomIntensity</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4a942986044c652395ef37acb6ba6177"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aec6f92524cdc5fa9994da8b2a1b440" id="r_a2aec6f92524cdc5fa9994da8b2a1b440"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a2aec6f92524cdc5fa9994da8b2a1b440">bloomThreshold</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2aec6f92524cdc5fa9994da8b2a1b440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae17c90c4c469a36c694f5458b92fb164" id="r_ae17c90c4c469a36c694f5458b92fb164"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#ae17c90c4c469a36c694f5458b92fb164">active</a> = false</td></tr>
+<tr class="separator:ae17c90c4c469a36c694f5458b92fb164"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa42fcda9c2ebec12099351571a9996a6" id="r_aa42fcda9c2ebec12099351571a9996a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#aa42fcda9c2ebec12099351571a9996a6">entity</a> = nullptr</td></tr>
+<tr class="separator:aa42fcda9c2ebec12099351571a9996a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f9b034f3e74a6357ea5f5c9b6bfc8ea" id="r_a3f9b034f3e74a6357ea5f5c9b6bfc8ea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a3f9b034f3e74a6357ea5f5c9b6bfc8ea">screenRayOx</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3f9b034f3e74a6357ea5f5c9b6bfc8ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d97697d2e7de5fda72c5bba98c64711" id="r_a7d97697d2e7de5fda72c5bba98c64711"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a7d97697d2e7de5fda72c5bba98c64711">screenRayOy</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a7d97697d2e7de5fda72c5bba98c64711"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a736c5bef04b147127fe65fdac0847ad3" id="r_a736c5bef04b147127fe65fdac0847ad3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a736c5bef04b147127fe65fdac0847ad3">screenRayOz</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a736c5bef04b147127fe65fdac0847ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f6dff7c9bcf249f2c9ad1c78222a3b9" id="r_a8f6dff7c9bcf249f2c9ad1c78222a3b9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a8f6dff7c9bcf249f2c9ad1c78222a3b9">screenRayDx</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8f6dff7c9bcf249f2c9ad1c78222a3b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7bd396296447d98a12fafc95a7b216f" id="r_ac7bd396296447d98a12fafc95a7b216f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#ac7bd396296447d98a12fafc95a7b216f">screenRayDy</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac7bd396296447d98a12fafc95a7b216f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91ed504bc6196c987d85173f86a127d4" id="r_a91ed504bc6196c987d85173f86a127d4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#a91ed504bc6196c987d85173f86a127d4">screenRayDz</a> = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a91ed504bc6196c987d85173f86a127d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:af0bcda16e70810fa5046fa157ccfe77c" id="r_af0bcda16e70810fa5046fa157ccfe77c"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#af0bcda16e70810fa5046fa157ccfe77c">kMaxReflectionProbes</a> = 8</td></tr>
+<tr class="separator:af0bcda16e70810fa5046fa157ccfe77c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ae17c90c4c469a36c694f5458b92fb164" name="ae17c90c4c469a36c694f5458b92fb164"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae17c90c4c469a36c694f5458b92fb164">&#9670;&#160;</a></span>active</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Camera3D::Data::active = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aded6815c432b29a8eeddc5088c7466dc" name="aded6815c432b29a8eeddc5088c7466dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aded6815c432b29a8eeddc5088c7466dc">&#9670;&#160;</a></span>ambientB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::ambientB = 0.14<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2e27422382bd37a83cb556660a63c045" name="a2e27422382bd37a83cb556660a63c045"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e27422382bd37a83cb556660a63c045">&#9670;&#160;</a></span>ambientG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::ambientG = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad578cb983a22ecf8eeb13908a3e6a89e" name="ad578cb983a22ecf8eeb13908a3e6a89e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad578cb983a22ecf8eeb13908a3e6a89e">&#9670;&#160;</a></span>ambientR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::ambientR = 0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7bacb73f4c97fba998319526383e0210" name="a7bacb73f4c97fba998319526383e0210"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bacb73f4c97fba998319526383e0210">&#9670;&#160;</a></span>autoExposure</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Camera3D::Data::autoExposure = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a243046361756f959ef1bb8dc6073ba88" name="a243046361756f959ef1bb8dc6073ba88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a243046361756f959ef1bb8dc6073ba88">&#9670;&#160;</a></span>autoExposureMaxEV</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::autoExposureMaxEV = 8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a994a39ead6f9cb25adc7fb42b4053404" name="a994a39ead6f9cb25adc7fb42b4053404"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a994a39ead6f9cb25adc7fb42b4053404">&#9670;&#160;</a></span>autoExposureMinEV</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::autoExposureMinEV = -8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4a942986044c652395ef37acb6ba6177" name="a4a942986044c652395ef37acb6ba6177"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a942986044c652395ef37acb6ba6177">&#9670;&#160;</a></span>bloomIntensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::bloomIntensity = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2aec6f92524cdc5fa9994da8b2a1b440" name="a2aec6f92524cdc5fa9994da8b2a1b440"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aec6f92524cdc5fa9994da8b2a1b440">&#9670;&#160;</a></span>bloomThreshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::bloomThreshold = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa42fcda9c2ebec12099351571a9996a6" name="aa42fcda9c2ebec12099351571a9996a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa42fcda9c2ebec12099351571a9996a6">&#9670;&#160;</a></span>entity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a>* eve::graphics::Camera3D::Data::entity = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8fd56b01113260ac20676efa23039d6" name="ae8fd56b01113260ac20676efa23039d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8fd56b01113260ac20676efa23039d6">&#9670;&#160;</a></span>envIntensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::envIntensity = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a3299274988761fb1f2359bddbe9b9dd9" name="a3299274988761fb1f2359bddbe9b9dd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3299274988761fb1f2359bddbe9b9dd9">&#9670;&#160;</a></span>envMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* eve::graphics::Camera3D::Data::envMap = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="aa1c2d5504b4190d6f1d3911d679f24c4" name="aa1c2d5504b4190d6f1d3911d679f24c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1c2d5504b4190d6f1d3911d679f24c4">&#9670;&#160;</a></span>envProbeCenter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::Camera3D::Data::envProbeCenter {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a7e90e3d748648b13793cd563f06e1d34" name="a7e90e3d748648b13793cd563f06e1d34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e90e3d748648b13793cd563f06e1d34">&#9670;&#160;</a></span>envProbeExtent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::Camera3D::Data::envProbeExtent {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a584285ffb53d9ee3429a0fb3698d30f9" name="a584285ffb53d9ee3429a0fb3698d30f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a584285ffb53d9ee3429a0fb3698d30f9">&#9670;&#160;</a></span>exposureEV</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::exposureEV = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a691a71da971daba92856ec843bb45de7" name="a691a71da971daba92856ec843bb45de7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a691a71da971daba92856ec843bb45de7">&#9670;&#160;</a></span>eyeX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::eyeX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00015">eve::decal::Decal::Decal()</a>.</p>
+
+</div>
+</div>
+<a id="aecfac2014108bcc9cdef326ef03553c0" name="aecfac2014108bcc9cdef326ef03553c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecfac2014108bcc9cdef326ef03553c0">&#9670;&#160;</a></span>eyeY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::eyeY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00015">eve::decal::Decal::Decal()</a>.</p>
+
+</div>
+</div>
+<a id="ae2996f4909ab15efeb18b4de5577a6b1" name="ae2996f4909ab15efeb18b4de5577a6b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2996f4909ab15efeb18b4de5577a6b1">&#9670;&#160;</a></span>eyeZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::eyeZ = 3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00015">eve::decal::Decal::Decal()</a>.</p>
+
+</div>
+</div>
+<a id="a1e8e639fd458a045c9e1e8605ee79dfb" name="a1e8e639fd458a045c9e1e8605ee79dfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e8e639fd458a045c9e1e8605ee79dfb">&#9670;&#160;</a></span>farZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::farZ = 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a80264905c1a156db8d0e9c2c98731f33" name="a80264905c1a156db8d0e9c2c98731f33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80264905c1a156db8d0e9c2c98731f33">&#9670;&#160;</a></span>fovYDeg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::fovYDeg = 60.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="af0bcda16e70810fa5046fa157ccfe77c" name="af0bcda16e70810fa5046fa157ccfe77c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0bcda16e70810fa5046fa157ccfe77c">&#9670;&#160;</a></span>kMaxReflectionProbes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::graphics::Camera3D::Data::kMaxReflectionProbes = 8</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00258">eve::graphics::Camera3D::clearReflectionProbe()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00243">eve::graphics::Camera3D::setReflectionProbe()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="ae0c64ab70bd351a201730375f1bcab81" name="ae0c64ab70bd351a201730375f1bcab81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c64ab70bd351a201730375f1bcab81">&#9670;&#160;</a></span>nearZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::nearZ = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ae07b20e1762c64b119df8784d155f246" name="ae07b20e1762c64b119df8784d155f246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae07b20e1762c64b119df8784d155f246">&#9670;&#160;</a></span>orthographic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Camera3D::Data::orthographic = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1cdf1a369605ddb4850ac83ddaa25b2" name="ad1cdf1a369605ddb4850ac83ddaa25b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1cdf1a369605ddb4850ac83ddaa25b2">&#9670;&#160;</a></span>orthoHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::orthoHeight = 20.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a27b61fb583a7895f85744b28cdfc0c26" name="a27b61fb583a7895f85744b28cdfc0c26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27b61fb583a7895f85744b28cdfc0c26">&#9670;&#160;</a></span>reflectionProbes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;<a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data_1_1ReflectionProbe.html">ReflectionProbe</a>, <a class="el" href="structeve_1_1graphics_1_1Camera3D_1_1Data.html#af0bcda16e70810fa5046fa157ccfe77c">kMaxReflectionProbes</a>&gt; eve::graphics::Camera3D::Data::reflectionProbes {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f6dff7c9bcf249f2c9ad1c78222a3b9" name="a8f6dff7c9bcf249f2c9ad1c78222a3b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f6dff7c9bcf249f2c9ad1c78222a3b9">&#9670;&#160;</a></span>screenRayDx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::screenRayDx = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac7bd396296447d98a12fafc95a7b216f" name="ac7bd396296447d98a12fafc95a7b216f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7bd396296447d98a12fafc95a7b216f">&#9670;&#160;</a></span>screenRayDy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::screenRayDy = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91ed504bc6196c987d85173f86a127d4" name="a91ed504bc6196c987d85173f86a127d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91ed504bc6196c987d85173f86a127d4">&#9670;&#160;</a></span>screenRayDz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::screenRayDz = -1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f9b034f3e74a6357ea5f5c9b6bfc8ea" name="a3f9b034f3e74a6357ea5f5c9b6bfc8ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f9b034f3e74a6357ea5f5c9b6bfc8ea">&#9670;&#160;</a></span>screenRayOx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::screenRayOx = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d97697d2e7de5fda72c5bba98c64711" name="a7d97697d2e7de5fda72c5bba98c64711"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d97697d2e7de5fda72c5bba98c64711">&#9670;&#160;</a></span>screenRayOy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::screenRayOy = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a736c5bef04b147127fe65fdac0847ad3" name="a736c5bef04b147127fe65fdac0847ad3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a736c5bef04b147127fe65fdac0847ad3">&#9670;&#160;</a></span>screenRayOz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::screenRayOz = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af14b0ad9cc79e7895fbb52596a4ea869" name="af14b0ad9cc79e7895fbb52596a4ea869"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af14b0ad9cc79e7895fbb52596a4ea869">&#9670;&#160;</a></span>targetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::targetX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66893497acc68b01d6600c5405836e5d" name="a66893497acc68b01d6600c5405836e5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66893497acc68b01d6600c5405836e5d">&#9670;&#160;</a></span>targetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::targetY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58b1b668013a635fec88a9e4956b25f1" name="a58b1b668013a635fec88a9e4956b25f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58b1b668013a635fec88a9e4956b25f1">&#9670;&#160;</a></span>targetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::targetZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a76df2fe4ae8f4abbdafe9a1220429e65" name="a76df2fe4ae8f4abbdafe9a1220429e65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76df2fe4ae8f4abbdafe9a1220429e65">&#9670;&#160;</a></span>upX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::upX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a319d65da505487da937414a6e524cb7c" name="a319d65da505487da937414a6e524cb7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a319d65da505487da937414a6e524cb7c">&#9670;&#160;</a></span>upY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::upY = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ac817eefa36df980313d1fe08813fa2" name="a4ac817eefa36df980313d1fe08813fa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac817eefa36df980313d1fe08813fa2">&#9670;&#160;</a></span>upZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Camera3D::Data::upZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a> 第 <a class="el" href="RenderSystem3D_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="RenderSystem3D_8h_source.html">RenderSystem3D.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

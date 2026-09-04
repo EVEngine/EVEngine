@@ -1,0 +1,782 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::npc_ai::NpcAiWorld类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1npc__ai.html">npc_ai</a></li><li class="navelem"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html">NpcAiWorld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1npc__ai_1_1NpcAiWorld-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::npc_ai::NpcAiWorld类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoritative owner and deterministic scheduler for NPC AI agents.  
+ <a href="classeve_1_1npc__ai_1_1NpcAiWorld.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="NpcAi_8h_source.html">NpcAi.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acef46104dbd2d5ccf78d2fb7efd10ae6" id="r_acef46104dbd2d5ccf78d2fb7efd10ae6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#acef46104dbd2d5ccf78d2fb7efd10ae6">NpcAiWorld</a> (<a class="el" href="structeve_1_1npc__ai_1_1NpcAiWorldConfig.html">NpcAiWorldConfig</a> config={})</td></tr>
+<tr class="separator:acef46104dbd2d5ccf78d2fb7efd10ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed50d2540052e66f2257ea46f10fde90" id="r_aed50d2540052e66f2257ea46f10fde90"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#aed50d2540052e66f2257ea46f10fde90">NpcAiWorld</a> (const <a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html">NpcAiWorld</a> &amp;)=delete</td></tr>
+<tr class="separator:aed50d2540052e66f2257ea46f10fde90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0ebbfb584284dbdfce48a4db41af865" id="r_ae0ebbfb584284dbdfce48a4db41af865"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html">NpcAiWorld</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#ae0ebbfb584284dbdfce48a4db41af865">operator=</a> (const <a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html">NpcAiWorld</a> &amp;)=delete</td></tr>
+<tr class="separator:ae0ebbfb584284dbdfce48a4db41af865"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad169e96ff55a82e3834fad64fff95471" id="r_ad169e96ff55a82e3834fad64fff95471"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#ad169e96ff55a82e3834fad64fff95471">registerBehavior</a> (<a class="el" href="structeve_1_1npc__ai_1_1BehaviorDefinition.html">BehaviorDefinition</a> definition)</td></tr>
+<tr class="memdesc:ad169e96ff55a82e3834fad64fff95471"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates and atomically publishes a behavior definition.  <br /></td></tr>
+<tr class="separator:ad169e96ff55a82e3834fad64fff95471"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad63f435d90c09f06281a6ed1e888f39b" id="r_ad63f435d90c09f06281a6ed1e888f39b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#ad63f435d90c09f06281a6ed1e888f39b">registerTaskService</a> (std::string <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, std::unique_ptr&lt; <a class="el" href="classeve_1_1npc__ai_1_1ITaskService.html">ITaskService</a> &gt; service)</td></tr>
+<tr class="memdesc:ad63f435d90c09f06281a6ed1e888f39b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfers ownership of a task provider into this world.  <br /></td></tr>
+<tr class="separator:ad63f435d90c09f06281a6ed1e888f39b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d6c551314da9d0cdb7c8e98513f0856" id="r_a0d6c551314da9d0cdb7c8e98513f0856"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a0d6c551314da9d0cdb7c8e98513f0856">createAgent</a> (std::string_view behaviorId)</td></tr>
+<tr class="memdesc:a0d6c551314da9d0cdb7c8e98513f0856"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an agent bound to an existing behavior definition.  <br /></td></tr>
+<tr class="separator:a0d6c551314da9d0cdb7c8e98513f0856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf3ab43fb930356498bdfa4b5f94ea93" id="r_adf3ab43fb930356498bdfa4b5f94ea93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#adf3ab43fb930356498bdfa4b5f94ea93">destroyAgent</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:adf3ab43fb930356498bdfa4b5f94ea93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops active tasks and invalidates the agent handle.  <br /></td></tr>
+<tr class="separator:adf3ab43fb930356498bdfa4b5f94ea93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8ab8d07c88657887eb0c48f1980dbb5" id="r_aa8ab8d07c88657887eb0c48f1980dbb5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#aa8ab8d07c88657887eb0c48f1980dbb5">setBlackboard</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="namespaceeve_1_1npc__ai.html#a992dff770820bd475b18837f49511434">BlackboardValue</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:aa8ab8d07c88657887eb0c48f1980dbb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes one authoritative blackboard value.  <br /></td></tr>
+<tr class="separator:aa8ab8d07c88657887eb0c48f1980dbb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7df75f923e8f02389d37bd412091dc8" id="r_ac7df75f923e8f02389d37bd412091dc8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#ac7df75f923e8f02389d37bd412091dc8">signal</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string signalName)</td></tr>
+<tr class="memdesc:ac7df75f923e8f02389d37bd412091dc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queues a named wake-up signal for evaluation on the next tick.  <br /></td></tr>
+<tr class="separator:ac7df75f923e8f02389d37bd412091dc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16595e7ecfe9960e9f75693873e3d18e" id="r_a16595e7ecfe9960e9f75693873e3d18e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a16595e7ecfe9960e9f75693873e3d18e">remember</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <a class="el" href="structeve_1_1npc__ai_1_1PerceptionMemory.html">PerceptionMemory</a> memory)</td></tr>
+<tr class="memdesc:a16595e7ecfe9960e9f75693873e3d18e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upserts one bounded memory and queues a sense-specific wake-up signal.  <br /></td></tr>
+<tr class="separator:a16595e7ecfe9960e9f75693873e3d18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40a8f10c02d2fd78191d4a2ed58cb7d6" id="r_a40a8f10c02d2fd78191d4a2ed58cb7d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a40a8f10c02d2fd78191d4a2ed58cb7d6">forget</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view subject, std::string_view sense)</td></tr>
+<tr class="memdesc:a40a8f10c02d2fd78191d4a2ed58cb7d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicitly forgets one subject/sense pair.  <br /></td></tr>
+<tr class="separator:a40a8f10c02d2fd78191d4a2ed58cb7d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b03962e3ffbb78a1fb37b7c9c0c4738" id="r_a6b03962e3ffbb78a1fb37b7c9c0c4738"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1TickReport.html">TickReport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a6b03962e3ffbb78a1fb37b7c9c0c4738">tick</a> (const <a class="el" href="structeve_1_1npc__ai_1_1TickContext.html">TickContext</a> &amp;context)</td></tr>
+<tr class="memdesc:a6b03962e3ffbb78a1fb37b7c9c0c4738"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances agents in stable handle order within the explicit budget.  <br /></td></tr>
+<tr class="separator:a6b03962e3ffbb78a1fb37b7c9c0c4738"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8494e816e210bfcd48f4f53fc5219c16" id="r_a8494e816e210bfcd48f4f53fc5219c16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1AgentSnapshot.html">AgentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a8494e816e210bfcd48f4f53fc5219c16">snapshot</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:a8494e816e210bfcd48f4f53fc5219c16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an owning diagnostic snapshot, or StaleHandle.  <br /></td></tr>
+<tr class="separator:a8494e816e210bfcd48f4f53fc5219c16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16db09b2c5fff872d5d5d4b4f0d845f9" id="r_a16db09b2c5fff872d5d5d4b4f0d845f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1AgentArchive.html">AgentArchive</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a16db09b2c5fff872d5d5d4b4f0d845f9">archive</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:a16db09b2c5fff872d5d5d4b4f0d845f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures a versioned owning archive without invoking task providers.  <br /></td></tr>
+<tr class="separator:a16db09b2c5fff872d5d5d4b4f0d845f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbbf0b80e37524a28f41400e35d5ab49" id="r_afbbf0b80e37524a28f41400e35d5ab49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#afbbf0b80e37524a28f41400e35d5ab49">restoreAgent</a> (const <a class="el" href="structeve_1_1npc__ai_1_1AgentArchive.html">AgentArchive</a> &amp;<a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a16db09b2c5fff872d5d5d4b4f0d845f9">archive</a>)</td></tr>
+<tr class="memdesc:afbbf0b80e37524a28f41400e35d5ab49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates a complete candidate and atomically publishes a restored agent.  <br /></td></tr>
+<tr class="separator:afbbf0b80e37524a28f41400e35d5ab49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62b198b7911a50354a13e9222240e389" id="r_a62b198b7911a50354a13e9222240e389"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a62b198b7911a50354a13e9222240e389">isStale</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const noexcept</td></tr>
+<tr class="memdesc:a62b198b7911a50354a13e9222240e389"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports whether a process-local agent handle no longer resolves.  <br /></td></tr>
+<tr class="separator:a62b198b7911a50354a13e9222240e389"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41e228a30fa62d1d666f62021e7f234f" id="r_a41e228a30fa62d1d666f62021e7f234f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1npc__ai_1_1TraceEvent.html">TraceEvent</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#a41e228a30fa62d1d666f62021e7f234f">trace</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::uint64_t fromTick=0) const</td></tr>
+<tr class="memdesc:a41e228a30fa62d1d666f62021e7f234f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns owning trace records for one agent at or after a tick.  <br /></td></tr>
+<tr class="separator:a41e228a30fa62d1d666f62021e7f234f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ab70e49e97a70d7e7cb9e09939767d375" id="r_ab70e49e97a70d7e7cb9e09939767d375"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html#ab70e49e97a70d7e7cb9e09939767d375">validate</a> (const <a class="el" href="structeve_1_1npc__ai_1_1BehaviorDefinition.html">BehaviorDefinition</a> &amp;definition)</td></tr>
+<tr class="memdesc:ab70e49e97a70d7e7cb9e09939767d375"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates definition shape without publishing it.  <br /></td></tr>
+<tr class="separator:ab70e49e97a70d7e7cb9e09939767d375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoritative owner and deterministic scheduler for NPC AI agents. </p>
+<dl class="section remark"><dt>备注</dt><dd>Definitions are validated and copied on registration. Agent handles are process-local and become stale after destruction. The world owns task services and must be used only on its simulation thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8h_source.html">NpcAi.h</a> 第 <a class="el" href="NpcAi_8h_source.html#l00194">194</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="acef46104dbd2d5ccf78d2fb7efd10ae6" name="acef46104dbd2d5ccf78d2fb7efd10ae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acef46104dbd2d5ccf78d2fb7efd10ae6">&#9670;&#160;</a></span>NpcAiWorld() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::npc_ai::NpcAiWorld::NpcAiWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1npc__ai_1_1NpcAiWorldConfig.html">NpcAiWorldConfig</a>&#160;</td>
+          <td class="paramname"><em>config</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed50d2540052e66f2257ea46f10fde90" name="aed50d2540052e66f2257ea46f10fde90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed50d2540052e66f2257ea46f10fde90">&#9670;&#160;</a></span>NpcAiWorld() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::npc_ai::NpcAiWorld::NpcAiWorld </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html">NpcAiWorld</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a16db09b2c5fff872d5d5d4b4f0d845f9" name="a16db09b2c5fff872d5d5d4b4f0d845f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16db09b2c5fff872d5d5d4b4f0d845f9">&#9670;&#160;</a></span>archive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1AgentArchive.html">AgentArchive</a> &gt; eve::npc_ai::NpcAiWorld::archive </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures a versioned owning archive without invoking task providers. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00502">502</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NpcAi_8h_source.html#l00155">eve::npc_ai::AgentArchive::activeState</a>, <a class="el" href="NpcAi_8h_source.html#l00154">eve::npc_ai::AgentArchive::behaviorId</a>, <a class="el" href="NpcAi_8h_source.html#l00156">eve::npc_ai::AgentArchive::blackboard</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="NpcAi_8h_source.html#l00160">eve::npc_ai::AgentArchive::lastTick</a>, <a class="el" href="NpcAi_8h_source.html#l00157">eve::npc_ai::AgentArchive::pendingSignals</a>, <a class="el" href="NpcAi_8h_source.html#l00158">eve::npc_ai::AgentArchive::perception</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="NpcAi_8h_source.html#l00159">eve::npc_ai::AgentArchive::tasks</a>.</p>
+
+</div>
+</div>
+<a id="a0d6c551314da9d0cdb7c8e98513f0856" name="a0d6c551314da9d0cdb7c8e98513f0856"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d6c551314da9d0cdb7c8e98513f0856">&#9670;&#160;</a></span>createAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> &gt; eve::npc_ai::NpcAiWorld::createAgent </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>behaviorId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates an agent bound to an existing behavior definition. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a0ca5d69cbd8183f68a392bec45974fdc">eve::npc_ai::AgentCreated</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="adf3ab43fb930356498bdfa4b5f94ea93" name="adf3ab43fb930356498bdfa4b5f94ea93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf3ab43fb930356498bdfa4b5f94ea93">&#9670;&#160;</a></span>destroyAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::NpcAiWorld::destroyAgent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stops active tasks and invalidates the agent handle. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1npc__ai.html#ace18a9a34cea42d09fb9e7372ce79039acbde989c08b28c4fbbf992b884434043">eve::npc_ai::AgentDestroyed</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00094">eve::RuntimeHandle&lt; AgentHandleTag &gt;::nextGeneration()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a40a8f10c02d2fd78191d4a2ed58cb7d6" name="a40a8f10c02d2fd78191d4a2ed58cb7d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40a8f10c02d2fd78191d4a2ed58cb7d6">&#9670;&#160;</a></span>forget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::NpcAiWorld::forget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>sense</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicitly forgets one subject/sense pair. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a62b198b7911a50354a13e9222240e389" name="a62b198b7911a50354a13e9222240e389"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62b198b7911a50354a13e9222240e389">&#9670;&#160;</a></span>isStale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::npc_ai::NpcAiWorld::isStale </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reports whether a process-local agent handle no longer resolves. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00607">607</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>.</p>
+
+</div>
+</div>
+<a id="ae0ebbfb584284dbdfce48a4db41af865" name="ae0ebbfb584284dbdfce48a4db41af865"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0ebbfb584284dbdfce48a4db41af865">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html">NpcAiWorld</a> &amp; eve::npc_ai::NpcAiWorld::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1npc__ai_1_1NpcAiWorld.html">NpcAiWorld</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00178">started</a>.</p>
+
+</div>
+</div>
+<a id="ad169e96ff55a82e3834fad64fff95471" name="ad169e96ff55a82e3834fad64fff95471"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad169e96ff55a82e3834fad64fff95471">&#9670;&#160;</a></span>registerBehavior()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::NpcAiWorld::registerBehavior </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1npc__ai_1_1BehaviorDefinition.html">BehaviorDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates and atomically publishes a behavior definition. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="NpcAi_8cpp_source.html#l00053">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ad63f435d90c09f06281a6ed1e888f39b" name="ad63f435d90c09f06281a6ed1e888f39b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad63f435d90c09f06281a6ed1e888f39b">&#9670;&#160;</a></span>registerTaskService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::NpcAiWorld::registerTaskService </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1npc__ai_1_1ITaskService.html">ITaskService</a> &gt;&#160;</td>
+          <td class="paramname"><em>service</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transfers ownership of a task provider into this world. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Capability_8cpp_source.html#l00019">service</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+</div>
+</div>
+<a id="a16595e7ecfe9960e9f75693873e3d18e" name="a16595e7ecfe9960e9f75693873e3d18e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16595e7ecfe9960e9f75693873e3d18e">&#9670;&#160;</a></span>remember()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::NpcAiWorld::remember </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1npc__ai_1_1PerceptionMemory.html">PerceptionMemory</a>&#160;</td>
+          <td class="paramname"><em>memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upserts one bounded memory and queues a sense-specific wake-up signal. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="NpcAi_8h_source.html#l00090">eve::npc_ai::PerceptionMemory::confidence</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="NpcAi_8h_source.html#l00092">eve::npc_ai::PerceptionMemory::forgetAfterTicks</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="NpcAi_8h_source.html#l00106">eve::npc_ai::NpcAiWorldConfig::maxMemoriesPerAgent</a>, <a class="el" href="NpcAi_8h_source.html#l00091">eve::npc_ai::PerceptionMemory::observedTick</a>, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a63a90f02bd88510b21e0df0e0d0bb943">eve::npc_ai::PerceptionForgotten</a>, <a class="el" href="NpcAi_8h_source.html#l00089">eve::npc_ai::PerceptionMemory::sense</a>, <a class="el" href="NpcAi_8h_source.html#l00088">eve::npc_ai::PerceptionMemory::subject</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="afbbf0b80e37524a28f41400e35d5ab49" name="afbbf0b80e37524a28f41400e35d5ab49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbbf0b80e37524a28f41400e35d5ab49">&#9670;&#160;</a></span>restoreAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> &gt; eve::npc_ai::NpcAiWorld::restoreAgent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1npc__ai_1_1AgentArchive.html">AgentArchive</a> &amp;&#160;</td>
+          <td class="paramname"><em>archive</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates a complete candidate and atomically publishes a restored agent. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00524">524</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="NpcAi_8h_source.html#l00155">eve::npc_ai::AgentArchive::activeState</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="NpcAi_8h_source.html#l00154">eve::npc_ai::AgentArchive::behaviorId</a>, <a class="el" href="NpcAi_8h_source.html#l00156">eve::npc_ai::AgentArchive::blackboard</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="NpcAi_8h_source.html#l00160">eve::npc_ai::AgentArchive::lastTick</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="NpcAi_8h_source.html#l00157">eve::npc_ai::AgentArchive::pendingSignals</a>, <a class="el" href="NpcAi_8h_source.html#l00158">eve::npc_ai::AgentArchive::perception</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="NpcAi_8h_source.html#l00152">eve::npc_ai::AgentArchive::schemaId</a>, <a class="el" href="NpcAi_8h_source.html#l00153">eve::npc_ai::AgentArchive::schemaVersion</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="NpcAi_8h_source.html#l00159">eve::npc_ai::AgentArchive::tasks</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa8ab8d07c88657887eb0c48f1980dbb5" name="aa8ab8d07c88657887eb0c48f1980dbb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8ab8d07c88657887eb0c48f1980dbb5">&#9670;&#160;</a></span>setBlackboard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::NpcAiWorld::setBlackboard </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a992dff770820bd475b18837f49511434">BlackboardValue</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes one authoritative blackboard value. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a9d51adbeb5e7f53102690a4806f80187">eve::npc_ai::BlackboardChanged</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ac7df75f923e8f02389d37bd412091dc8" name="ac7df75f923e8f02389d37bd412091dc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7df75f923e8f02389d37bd412091dc8">&#9670;&#160;</a></span>signal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::NpcAiWorld::signal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>signalName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queues a named wake-up signal for evaluation on the next tick. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1npc__ai.html#a135665d4667db817432c708230ae3a08a643256d53ecd5012c6a864a4a4b39dc4">eve::npc_ai::SignalQueued</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a8494e816e210bfcd48f4f53fc5219c16" name="a8494e816e210bfcd48f4f53fc5219c16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8494e816e210bfcd48f4f53fc5219c16">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1AgentSnapshot.html">AgentSnapshot</a> &gt; eve::npc_ai::NpcAiWorld::snapshot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an owning diagnostic snapshot, or StaleHandle. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00491">491</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a6b03962e3ffbb78a1fb37b7c9c0c4738" name="a6b03962e3ffbb78a1fb37b7c9c0c4738"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b03962e3ffbb78a1fb37b7c9c0c4738">&#9670;&#160;</a></span>tick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1TickReport.html">TickReport</a> &gt; eve::npc_ai::NpcAiWorld::tick </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1npc__ai_1_1TickContext.html">TickContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances agents in stable handle order within the explicit budget. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>, <a class="el" href="NpcAi_8h_source.html#l00119">eve::npc_ai::TickReport::agentsDeferred</a>, <a class="el" href="NpcAi_8h_source.html#l00118">eve::npc_ai::TickReport::agentsUpdated</a>, <a class="el" href="NpcAi_8h_source.html#l00112">eve::npc_ai::TickContext::deltaSeconds</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="NpcAi_8h_source.html#l00113">eve::npc_ai::TickContext::maxAgents</a>, <a class="el" href="NpcAi_8h_source.html#l00114">eve::npc_ai::TickContext::maxTransitionsPerAgent</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="NpcAi_8h_source.html#l00063">eve::npc_ai::Transition::priority</a>, <a class="el" href="Capability_8cpp_source.html#l00019">service</a>, <a class="el" href="NpcAi_8h_source.html#l00061">eve::npc_ai::Transition::signal</a>, <a class="el" href="NpcAi_8h_source.html#l00111">eve::npc_ai::TickContext::simulationTick</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00178">started</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="NpcAi_8h_source.html#l00060">eve::npc_ai::Transition::targetState</a>, <a class="el" href="NpcAi_8h_source.html#l00122">eve::npc_ai::TickReport::tasksTicked</a>, <a class="el" href="NpcAi_8h_source.html#l00121">eve::npc_ai::TickReport::transitionBudgetsExhausted</a> , 以及 <a class="el" href="NpcAi_8h_source.html#l00120">eve::npc_ai::TickReport::transitionsApplied</a>.</p>
+
+</div>
+</div>
+<a id="a41e228a30fa62d1d666f62021e7f234f" name="a41e228a30fa62d1d666f62021e7f234f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41e228a30fa62d1d666f62021e7f234f">&#9670;&#160;</a></span>trace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1npc__ai_1_1TraceEvent.html">TraceEvent</a> &gt; &gt; eve::npc_ai::NpcAiWorld::trace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>fromTick</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns owning trace records for one agent at or after a tick. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00613">613</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>.</p>
+
+</div>
+</div>
+<a id="ab70e49e97a70d7e7cb9e09939767d375" name="ab70e49e97a70d7e7cb9e09939767d375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab70e49e97a70d7e7cb9e09939767d375">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::NpcAiWorld::validate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1npc__ai_1_1BehaviorDefinition.html">BehaviorDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validates definition shape without publishing it. </p>
+
+<p class="definition">在文件 <a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a> 第 <a class="el" href="NpcAi_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NpcAi_8h_source.html#l00067">eve::npc_ai::StateDefinition::id</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="NpcAi_8h_source.html#l00068">eve::npc_ai::StateDefinition::parent</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NpcAi_8cpp_source.html#l00113">registerBehavior()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/npc_ai/<a class="el" href="NpcAi_8h_source.html">NpcAi.h</a></li>
+<li>src/modules/npc_ai/<a class="el" href="NpcAi_8cpp_source.html">NpcAi.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

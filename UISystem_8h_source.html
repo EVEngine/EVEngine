@@ -1,0 +1,378 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/UISystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UISystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UISystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BorrowedRef_8h.html">common/BorrowedRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="UIHost_8h.html">ui/UIHost.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Canvas;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>UIBackend;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html">   21</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1UIEvent.html">UIEvent</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#a4842f6a61545748cd9d18a98a6c84dd8">   22</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#a4842f6a61545748cd9d18a98a6c84dd8">host</a>{};</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#a9485e7b323459bb0748e48017c06e718">   23</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#a9485e7b323459bb0748e48017c06e718">hostName</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#a750579d00602537a957d1f34fb5f0704">   24</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#a750579d00602537a957d1f34fb5f0704">nodeId</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#ab48bdde5630fad87ace9e70d36c47f83">   25</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#ab48bdde5630fad87ace9e70d36c47f83">nodeIndex</a> = -1;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#a6254d544285b8d70a6432da218975271">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#a6254d544285b8d70a6432da218975271">kind</a>;  <span class="comment">// &quot;click&quot; | &quot;toggle&quot; | &quot;value&quot; | &quot;text&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#a828645c4cda3441633d53cc83e33422f">   27</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#a828645c4cda3441633d53cc83e33422f">handlerIndex</a> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#a94da7a62124d13e363f086dbe346742b">   28</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#a94da7a62124d13e363f086dbe346742b">toggleValue</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#a6ac3085a5a61b73e2fa2648d3cb26810">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#a6ac3085a5a61b73e2fa2648d3cb26810">floatValue</a> = 0.f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIEvent.html#a3733b74ecb9ed29c20aeb6de872c243c">   30</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIEvent.html#a3733b74ecb9ed29c20aeb6de872c243c">textValue</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIClick.html">   34</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1UIClick.html">UIClick</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIClick.html#a979c7d33dc346e0fcaf4cad128934c5c">   35</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIClick.html#a979c7d33dc346e0fcaf4cad128934c5c">hostName</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIClick.html#ab175e346247682345c0e7d9418678019">   36</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIClick.html#ab175e346247682345c0e7d9418678019">nodeId</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIChange.html">   40</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1UIChange.html">UIChange</a> {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIChange.html#a7998aadfe16ba88350141ccfc99793f9">   41</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIChange.html#a7998aadfe16ba88350141ccfc99793f9">hostName</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIChange.html#a2e52b6d7808ccf8f60bb9b8f66f3c953">   42</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIChange.html#a2e52b6d7808ccf8f60bb9b8f66f3c953">nodeId</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIChange.html#a17b838fd9d38b3c13a8e22da2fc320b3">   43</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIChange.html#a17b838fd9d38b3c13a8e22da2fc320b3">kind</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745a">   47</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745a">DragDropOrigin</a> : uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745aaafbf0897a5a83fdd873dfb032ec695d3">Internal</a> = 0, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745aa28f541c26e658cdf414d73771a1a3ce4">OperatingSystemFile</a> };</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41">   50</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41">DragDropSupport</a> : uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41aeaa4dc5078017a5c5bebf383ab6f5124">Supported</a> = 0, <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41a32466f12a7ca314bff55d8bf6361f416">UnsupportedPlatform</a> };</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIDrop.html">   53</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1UIDrop.html">UIDrop</a> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIDrop.html#a566ff3a9cd36fb6688869fe56a6dc942">   54</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745a">DragDropOrigin</a> <a class="code hl_variable" href="structeve_1_1ui_1_1UIDrop.html#a566ff3a9cd36fb6688869fe56a6dc942">origin</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745aaafbf0897a5a83fdd873dfb032ec695d3">DragDropOrigin::Internal</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIDrop.html#acdf55fb76b753a12cb0a5bffd75782be">   55</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIDrop.html#acdf55fb76b753a12cb0a5bffd75782be">sourceHostName</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIDrop.html#af39e347b75f019717c38815c46e2b7e3">   56</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIDrop.html#af39e347b75f019717c38815c46e2b7e3">sourceNodeId</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIDrop.html#a2df18a6a694d9903c5eec9bf16f377a2">   57</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIDrop.html#a2df18a6a694d9903c5eec9bf16f377a2">targetHostName</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIDrop.html#aec89f63b8a8ab3385bf4039726a041fd">   58</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIDrop.html#aec89f63b8a8ab3385bf4039726a041fd">targetNodeId</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIDrop.html#a4b3aac65a677fdc054ca98ba2921233f">   59</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIDrop.html#a4b3aac65a677fdc054ca98ba2921233f">payloadType</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIDrop.html#ab56c966d3413e58acd1d4f47311d5dad">   60</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1UIDrop.html#ab56c966d3413e58acd1d4f47311d5dad">payloadText</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>};</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="};">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIStats.html">   64</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1UIStats.html">UIStats</a> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIStats.html#ac5c6f95af79374d114462e018f2fef57">   65</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1ui_1_1UIStats.html#ac5c6f95af79374d114462e018f2fef57">hostCount</a> = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIStats.html#aa4f624292cc72c57f8a89bf7a6866be1">   66</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1ui_1_1UIStats.html#aa4f624292cc72c57f8a89bf7a6866be1">nodeCount</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIStats.html#a477f51a1fae90fac27df132a8771250c">   67</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1ui_1_1UIStats.html#a477f51a1fae90fac27df132a8771250c">measureMs</a> = 0.0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1UIStats.html#a84cc0b0b4e37bc43fdaf0cf8487c2b47">   68</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1ui_1_1UIStats.html#a84cc0b0b4e37bc43fdaf0cf8487c2b47">walkMs</a> = 0.0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="};">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html">   76</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1ViewportState.html">ViewportState</a> {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#afb4221d0a3363b15e93de43a5e3627f6">   77</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#afb4221d0a3363b15e93de43a5e3627f6">key</a>;                 <span class="comment">// &quot;hostName/nodeId&quot;</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#aeff06993ab685e44e41db2c4adfe96c2">   78</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *<a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#aeff06993ab685e44e41db2c4adfe96c2">canvas</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#a1fb134d1f586a68d99d0bfaa5225e697">   79</a></span>    uint64_t <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#a1fb134d1f586a68d99d0bfaa5225e697">textureId</a> = 0;          <span class="comment">// registered via UIBackend::registerTexture</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#aaee08f24e159b798861ee060372203d8">   80</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#aaee08f24e159b798861ee060372203d8">width</a> = 0;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#aa1f8bfb77b6d29fc95aec50c1ab17423">   81</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#aa1f8bfb77b6d29fc95aec50c1ab17423">height</a> = 0;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#a6e46a8cad1aaccb9dc400244d0961a4b">   82</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#a6e46a8cad1aaccb9dc400244d0961a4b">hovered</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#a56202808d06deedf6e81cabd054d43b7">   83</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#a56202808d06deedf6e81cabd054d43b7">active</a> = <span class="keyword">false</span>;             <span class="comment">// mouse button held inside the viewport</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#a799fc7ae80588fc40c683991a609e78f">   84</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#a799fc7ae80588fc40c683991a609e78f">mouseX</a> = 0.f;              <span class="comment">// widget-local</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#aa31d498c01138045ef38ff68a72389a1">   85</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#aa31d498c01138045ef38ff68a72389a1">mouseY</a> = 0.f;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#afce7bbcf3252adcf0f3a4c64aa44baa2">   86</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#afce7bbcf3252adcf0f3a4c64aa44baa2">dragDX</a> = 0.f;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#aa759e67eb3e7baa7ba313ae58db7510d">   87</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#aa759e67eb3e7baa7ba313ae58db7510d">dragDY</a> = 0.f;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1ViewportState.html#a339aa517e4d8aeecbe70e5f1825ca093">   88</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1ViewportState.html#a339aa517e4d8aeecbe70e5f1825ca093">wheel</a> = 0.f;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>};</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="};">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1UISystem.html">   91</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1ui_1_1UISystem.html">UISystem</a> {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a3d3385f763cf488fe41fe304a29024ef">setBackend</a>(<a class="code hl_class" href="classeve_1_1ui_1_1UIBackend.html">UIBackend</a> &amp;<a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a6ee2fc0239bd71d57ec7831f512c3539">backend</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a3e67f9046492fecc2a833091c740cc0a">clearBackend</a>() <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef&lt;UIBackend&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a6ee2fc0239bd71d57ec7831f512c3539">backend</a>();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1UIStats.html">UIStats</a> &amp;<a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a261a3800309764919bcce95d65d2b605">stats</a>();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef&lt;ViewportState&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a4aae9387f3c84a54ac9ed68dcd93069c">viewportState</a>(<span class="keyword">const</span> std::string &amp;hostName,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                                                                       <span class="keyword">const</span> std::string &amp;nodeId);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::ResultRef&lt;ViewportState&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a8d01d6896e0485f1c7a5284b7ac3e90b">ensureViewport</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#ab98285115d2481a48184050e9fc6562a">render</a>();</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keyword">static</span> std::vector&lt;UIEvent&gt; &amp;<a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#af82c880de0e84c6d42c58f55cb555492">pendingEvents</a>();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a8b72d22309f6e7dc3c6bd4997d113bd1">dispatchEvents</a>();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a73f95ddb771380476327f9776c18e8e1">findHost</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#abe08afccb5516de2a10bc79dddf1dc4b">findHostByOwner</a>(uint32_t ownerId);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">static</span> std::vector&lt;UIClick&gt; &amp;<a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a5f9464bfa0c18d0d247a9c9f6e3dc811">clickQueue</a>();</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keyword">static</span> std::vector&lt;UIChange&gt; &amp;<a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a75ec77e190abda700ec3ac3fc1b18c81">changeQueue</a>();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41">DragDropSupport</a> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a9df98b134c3445651476e6ac3256a7b7">dragDropSupport</a>() <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a5997ce399afb992f24e0e6c4c1f06f77">enqueuePlatformFileDrop</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keyword">static</span> std::vector&lt;UIDrop&gt; &amp;<a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a071e6be10b22e8f4b0851a3ad9008558">dropQueue</a>();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    [[nodiscard]] <span class="keyword">static</span> std::optional&lt;UIDrop&gt; <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#ade250088d326c4ac35bb9a84fb672ee8">consumeDrop</a>();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#aa3fff66d42cc880f060c0c26675db6dc">consumeClick</a>();</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#ae87e76fde0b03e8a0767aff92d3c0ed5">consumeClickFor</a>(<span class="keyword">const</span> std::string &amp;hostName);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a6dd948239b6a886e244d74058ecf0c0f">consumeChange</a>();</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>};</div>
+</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>}  <span class="comment">// namespace eve::ui</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aBorrowedRef_8h_html"><div class="ttname"><a href="BorrowedRef_8h.html">BorrowedRef.h</a></div><div class="ttdoc">Vocabulary aliases for nullable and checked borrowed references.</div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aUIHost_8h_html"><div class="ttname"><a href="UIHost_8h.html">UIHost.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UIBackend_html"><div class="ttname"><a href="classeve_1_1ui_1_1UIBackend.html">eve::ui::UIBackend</a></div><div class="ttdoc">Platform / renderer backend for declarative UI. Concrete implementations live under ui/&lt;backend&gt;/ (e....</div><div class="ttdef"><b>Definition</b> <a href="UIBackend_8h_source.html#l00018">UIBackend.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html">eve::ui::UISystem</a></div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00091">UISystem.h:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a071e6be10b22e8f4b0851a3ad9008558"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a071e6be10b22e8f4b0851a3ad9008558">eve::ui::UISystem::dropQueue</a></div><div class="ttdeci">static std::vector&lt; UIDrop &gt; &amp; dropQueue()</div><div class="ttdoc">Returns the owning completed-drop queue.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01271">UISystem.cpp:1271</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a261a3800309764919bcce95d65d2b605"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a261a3800309764919bcce95d65d2b605">eve::ui::UISystem::stats</a></div><div class="ttdeci">static const UIStats &amp; stats()</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01300">UISystem.cpp:1300</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a3d3385f763cf488fe41fe304a29024ef"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a3d3385f763cf488fe41fe304a29024ef">eve::ui::UISystem::setBackend</a></div><div class="ttdeci">static void setBackend(UIBackend &amp;backend)</div><div class="ttdoc">Sets the borrowed backend used for the current UI/render lifetime.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01294">UISystem.cpp:1294</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a3e67f9046492fecc2a833091c740cc0a"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a3e67f9046492fecc2a833091c740cc0a">eve::ui::UISystem::clearBackend</a></div><div class="ttdeci">static void clearBackend() noexcept</div><div class="ttdoc">Clears the backend association before the backend is shut down.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01295">UISystem.cpp:1295</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a4aae9387f3c84a54ac9ed68dcd93069c"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a4aae9387f3c84a54ac9ed68dcd93069c">eve::ui::UISystem::viewportState</a></div><div class="ttdeci">static eve::OptionalRef&lt; ViewportState &gt; viewportState(const std::string &amp;hostName, const std::string &amp;nodeId)</div><div class="ttdoc">Returns viewport state for a host/node key when it exists.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01335">UISystem.cpp:1335</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a5997ce399afb992f24e0e6c4c1f06f77"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a5997ce399afb992f24e0e6c4c1f06f77">eve::ui::UISystem::enqueuePlatformFileDrop</a></div><div class="ttdeci">static void enqueuePlatformFileDrop(const std::string &amp;path)</div><div class="ttdoc">Copies an OS file-drop path into UI-owned pending state.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01282">UISystem.cpp:1282</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a5f9464bfa0c18d0d247a9c9f6e3dc811"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a5f9464bfa0c18d0d247a9c9f6e3dc811">eve::ui::UISystem::clickQueue</a></div><div class="ttdeci">static std::vector&lt; UIClick &gt; &amp; clickQueue()</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01269">UISystem.cpp:1269</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a6dd948239b6a886e244d74058ecf0c0f"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a6dd948239b6a886e244d74058ecf0c0f">eve::ui::UISystem::consumeChange</a></div><div class="ttdeci">static std::string consumeChange()</div><div class="ttdoc">Pop next change as &quot;name/node&quot;; empty if none.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01555">UISystem.cpp:1555</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a6ee2fc0239bd71d57ec7831f512c3539"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a6ee2fc0239bd71d57ec7831f512c3539">eve::ui::UISystem::backend</a></div><div class="ttdeci">static eve::OptionalRef&lt; UIBackend &gt; backend()</div><div class="ttdoc">Returns the configured backend for the current synchronous operation.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01296">UISystem.cpp:1296</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a73f95ddb771380476327f9776c18e8e1"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a73f95ddb771380476327f9776c18e8e1">eve::ui::UISystem::findHost</a></div><div class="ttdeci">static UIHostHandle findHost(const std::string &amp;name)</div><div class="ttdoc">Lookup by Meta.name across the UIHost View.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01342">UISystem.cpp:1342</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a75ec77e190abda700ec3ac3fc1b18c81"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a75ec77e190abda700ec3ac3fc1b18c81">eve::ui::UISystem::changeQueue</a></div><div class="ttdeci">static std::vector&lt; UIChange &gt; &amp; changeQueue()</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01270">UISystem.cpp:1270</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a8b72d22309f6e7dc3c6bd4997d113bd1"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a8b72d22309f6e7dc3c6bd4997d113bd1">eve::ui::UISystem::dispatchEvents</a></div><div class="ttdeci">static void dispatchEvents()</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01463">UISystem.cpp:1463</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a8d01d6896e0485f1c7a5284b7ac3e90b"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a8d01d6896e0485f1c7a5284b7ac3e90b">eve::ui::UISystem::ensureViewport</a></div><div class="ttdeci">static eve::ResultRef&lt; ViewportState &gt; ensureViewport(const std::string &amp;key, int w, int h)</div><div class="ttdoc">Creates or refreshes offscreen state for a viewport key.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01302">UISystem.cpp:1302</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a9df98b134c3445651476e6ac3256a7b7"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a9df98b134c3445651476e6ac3256a7b7">eve::ui::UISystem::dragDropSupport</a></div><div class="ttdeci">static DragDropSupport dragDropSupport() noexcept</div><div class="ttdoc">Returns retained drag-and-drop availability for this build target.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01273">UISystem.cpp:1273</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_aa3fff66d42cc880f060c0c26675db6dc"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#aa3fff66d42cc880f060c0c26675db6dc">eve::ui::UISystem::consumeClick</a></div><div class="ttdeci">static std::string consumeClick()</div><div class="ttdoc">Pop next click as &quot;name/node&quot;; empty if none.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01537">UISystem.cpp:1537</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_ab98285115d2481a48184050e9fc6562a"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#ab98285115d2481a48184050e9fc6562a">eve::ui::UISystem::render</a></div><div class="ttdeci">static void render()</div><div class="ttdoc">Walk all UIHost (+ subclasses) via ECS View.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01366">UISystem.cpp:1366</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_abe08afccb5516de2a10bc79dddf1dc4b"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#abe08afccb5516de2a10bc79dddf1dc4b">eve::ui::UISystem::findHostByOwner</a></div><div class="ttdeci">static UIHostHandle findHostByOwner(uint32_t ownerId)</div><div class="ttdoc">Find the first host with Meta.ownerId equal to ownerId, or null.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01354">UISystem.cpp:1354</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_ade250088d326c4ac35bb9a84fb672ee8"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#ade250088d326c4ac35bb9a84fb672ee8">eve::ui::UISystem::consumeDrop</a></div><div class="ttdeci">static std::optional&lt; UIDrop &gt; consumeDrop()</div><div class="ttdoc">Pops the oldest completed drop, or returns empty when none exists.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01287">UISystem.cpp:1287</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_ae87e76fde0b03e8a0767aff92d3c0ed5"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#ae87e76fde0b03e8a0767aff92d3c0ed5">eve::ui::UISystem::consumeClickFor</a></div><div class="ttdeci">static std::string consumeClickFor(const std::string &amp;hostName)</div><div class="ttdoc">Pop next click for a specific host; returns node id only (or &quot;&quot;).</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01545">UISystem.cpp:1545</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_af82c880de0e84c6d42c58f55cb555492"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#af82c880de0e84c6d42c58f55cb555492">eve::ui::UISystem::pendingEvents</a></div><div class="ttdeci">static std::vector&lt; UIEvent &gt; &amp; pendingEvents()</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01268">UISystem.cpp:1268</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a1ce54cf5913cf632e279b116739f745a"><div class="ttname"><a href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745a">eve::ui::DragDropOrigin</a></div><div class="ttdeci">DragDropOrigin</div><div class="ttdoc">Origin of an owning desktop drag-and-drop payload snapshot.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00047">UISystem.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a1ce54cf5913cf632e279b116739f745aa28f541c26e658cdf414d73771a1a3ce4"><div class="ttname"><a href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745aa28f541c26e658cdf414d73771a1a3ce4">eve::ui::DragDropOrigin::OperatingSystemFile</a></div><div class="ttdeci">@ OperatingSystemFile</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a1ce54cf5913cf632e279b116739f745aaafbf0897a5a83fdd873dfb032ec695d3"><div class="ttname"><a href="namespaceeve_1_1ui.html#a1ce54cf5913cf632e279b116739f745aaafbf0897a5a83fdd873dfb032ec695d3">eve::ui::DragDropOrigin::Internal</a></div><div class="ttdeci">@ Internal</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a1eeef64f6c4befe57127203cee419b41"><div class="ttname"><a href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41">eve::ui::DragDropSupport</a></div><div class="ttdeci">DragDropSupport</div><div class="ttdoc">Build-target availability of retained drag-and-drop.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00050">UISystem.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a1eeef64f6c4befe57127203cee419b41a32466f12a7ca314bff55d8bf6361f416"><div class="ttname"><a href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41a32466f12a7ca314bff55d8bf6361f416">eve::ui::DragDropSupport::UnsupportedPlatform</a></div><div class="ttdeci">@ UnsupportedPlatform</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a1eeef64f6c4befe57127203cee419b41aeaa4dc5078017a5c5bebf383ab6f5124"><div class="ttname"><a href="namespaceeve_1_1ui.html#a1eeef64f6c4befe57127203cee419b41aeaa4dc5078017a5c5bebf383ab6f5124">eve::ui::DragDropSupport::Supported</a></div><div class="ttdeci">@ Supported</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_aba4a8024550f0736974b6ffbf2b3ecc7"><div class="ttname"><a href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">eve::ui::UIHostHandle</a></div><div class="ttdeci">ecs::EntityHandle UIHostHandle</div><div class="ttdef"><b>Definition</b> <a href="UIHost_8h_source.html#l00013">UIHost.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a503b0fa2c99caf9c2f8d2144f64c683f"><div class="ttname"><a href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a></div><div class="ttdeci">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt; OptionalRef</div><div class="ttdoc">Optional borrowed reference; it does not extend T's lifetime.</div><div class="ttdef"><b>Definition</b> <a href="BorrowedRef_8h_source.html#l00024">BorrowedRef.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIChange_html"><div class="ttname"><a href="structeve_1_1ui_1_1UIChange.html">eve::ui::UIChange</a></div><div class="ttdoc">Value/text/toggle change for script: &quot;hostName/nodeId&quot;.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00040">UISystem.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIChange_html_a17b838fd9d38b3c13a8e22da2fc320b3"><div class="ttname"><a href="structeve_1_1ui_1_1UIChange.html#a17b838fd9d38b3c13a8e22da2fc320b3">eve::ui::UIChange::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00043">UISystem.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIChange_html_a2e52b6d7808ccf8f60bb9b8f66f3c953"><div class="ttname"><a href="structeve_1_1ui_1_1UIChange.html#a2e52b6d7808ccf8f60bb9b8f66f3c953">eve::ui::UIChange::nodeId</a></div><div class="ttdeci">std::string nodeId</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00042">UISystem.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIChange_html_a7998aadfe16ba88350141ccfc99793f9"><div class="ttname"><a href="structeve_1_1ui_1_1UIChange.html#a7998aadfe16ba88350141ccfc99793f9">eve::ui::UIChange::hostName</a></div><div class="ttdeci">std::string hostName</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00041">UISystem.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIClick_html"><div class="ttname"><a href="structeve_1_1ui_1_1UIClick.html">eve::ui::UIClick</a></div><div class="ttdoc">One script-facing click: &quot;hostName/nodeId&quot;.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00034">UISystem.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIClick_html_a979c7d33dc346e0fcaf4cad128934c5c"><div class="ttname"><a href="structeve_1_1ui_1_1UIClick.html#a979c7d33dc346e0fcaf4cad128934c5c">eve::ui::UIClick::hostName</a></div><div class="ttdeci">std::string hostName</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00035">UISystem.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIClick_html_ab175e346247682345c0e7d9418678019"><div class="ttname"><a href="structeve_1_1ui_1_1UIClick.html#ab175e346247682345c0e7d9418678019">eve::ui::UIClick::nodeId</a></div><div class="ttdeci">std::string nodeId</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00036">UISystem.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIDrop_html"><div class="ttname"><a href="structeve_1_1ui_1_1UIDrop.html">eve::ui::UIDrop</a></div><div class="ttdoc">One completed desktop drop with no borrowed node or platform pointers.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00053">UISystem.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIDrop_html_a2df18a6a694d9903c5eec9bf16f377a2"><div class="ttname"><a href="structeve_1_1ui_1_1UIDrop.html#a2df18a6a694d9903c5eec9bf16f377a2">eve::ui::UIDrop::targetHostName</a></div><div class="ttdeci">std::string targetHostName</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00057">UISystem.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIDrop_html_a4b3aac65a677fdc054ca98ba2921233f"><div class="ttname"><a href="structeve_1_1ui_1_1UIDrop.html#a4b3aac65a677fdc054ca98ba2921233f">eve::ui::UIDrop::payloadType</a></div><div class="ttdeci">std::string payloadType</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00059">UISystem.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIDrop_html_a566ff3a9cd36fb6688869fe56a6dc942"><div class="ttname"><a href="structeve_1_1ui_1_1UIDrop.html#a566ff3a9cd36fb6688869fe56a6dc942">eve::ui::UIDrop::origin</a></div><div class="ttdeci">DragDropOrigin origin</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00054">UISystem.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIDrop_html_ab56c966d3413e58acd1d4f47311d5dad"><div class="ttname"><a href="structeve_1_1ui_1_1UIDrop.html#ab56c966d3413e58acd1d4f47311d5dad">eve::ui::UIDrop::payloadText</a></div><div class="ttdeci">std::string payloadText</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00060">UISystem.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIDrop_html_acdf55fb76b753a12cb0a5bffd75782be"><div class="ttname"><a href="structeve_1_1ui_1_1UIDrop.html#acdf55fb76b753a12cb0a5bffd75782be">eve::ui::UIDrop::sourceHostName</a></div><div class="ttdeci">std::string sourceHostName</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00055">UISystem.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIDrop_html_aec89f63b8a8ab3385bf4039726a041fd"><div class="ttname"><a href="structeve_1_1ui_1_1UIDrop.html#aec89f63b8a8ab3385bf4039726a041fd">eve::ui::UIDrop::targetNodeId</a></div><div class="ttdeci">std::string targetNodeId</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00058">UISystem.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIDrop_html_af39e347b75f019717c38815c46e2b7e3"><div class="ttname"><a href="structeve_1_1ui_1_1UIDrop.html#af39e347b75f019717c38815c46e2b7e3">eve::ui::UIDrop::sourceNodeId</a></div><div class="ttdeci">std::string sourceNodeId</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00056">UISystem.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html">eve::ui::UIEvent</a></div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00021">UISystem.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_a3733b74ecb9ed29c20aeb6de872c243c"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#a3733b74ecb9ed29c20aeb6de872c243c">eve::ui::UIEvent::textValue</a></div><div class="ttdeci">std::string textValue</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00030">UISystem.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_a4842f6a61545748cd9d18a98a6c84dd8"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#a4842f6a61545748cd9d18a98a6c84dd8">eve::ui::UIEvent::host</a></div><div class="ttdeci">UIHostHandle host</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00022">UISystem.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_a6254d544285b8d70a6432da218975271"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#a6254d544285b8d70a6432da218975271">eve::ui::UIEvent::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00026">UISystem.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_a6ac3085a5a61b73e2fa2648d3cb26810"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#a6ac3085a5a61b73e2fa2648d3cb26810">eve::ui::UIEvent::floatValue</a></div><div class="ttdeci">float floatValue</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00029">UISystem.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_a750579d00602537a957d1f34fb5f0704"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#a750579d00602537a957d1f34fb5f0704">eve::ui::UIEvent::nodeId</a></div><div class="ttdeci">std::string nodeId</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00024">UISystem.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_a828645c4cda3441633d53cc83e33422f"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#a828645c4cda3441633d53cc83e33422f">eve::ui::UIEvent::handlerIndex</a></div><div class="ttdeci">uint32_t handlerIndex</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00027">UISystem.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_a9485e7b323459bb0748e48017c06e718"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#a9485e7b323459bb0748e48017c06e718">eve::ui::UIEvent::hostName</a></div><div class="ttdeci">std::string hostName</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00023">UISystem.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_a94da7a62124d13e363f086dbe346742b"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#a94da7a62124d13e363f086dbe346742b">eve::ui::UIEvent::toggleValue</a></div><div class="ttdeci">bool toggleValue</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00028">UISystem.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIEvent_html_ab48bdde5630fad87ace9e70d36c47f83"><div class="ttname"><a href="structeve_1_1ui_1_1UIEvent.html#ab48bdde5630fad87ace9e70d36c47f83">eve::ui::UIEvent::nodeIndex</a></div><div class="ttdeci">int nodeIndex</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00025">UISystem.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIStats_html"><div class="ttname"><a href="structeve_1_1ui_1_1UIStats.html">eve::ui::UIStats</a></div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00064">UISystem.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIStats_html_a477f51a1fae90fac27df132a8771250c"><div class="ttname"><a href="structeve_1_1ui_1_1UIStats.html#a477f51a1fae90fac27df132a8771250c">eve::ui::UIStats::measureMs</a></div><div class="ttdeci">double measureMs</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00067">UISystem.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIStats_html_a84cc0b0b4e37bc43fdaf0cf8487c2b47"><div class="ttname"><a href="structeve_1_1ui_1_1UIStats.html#a84cc0b0b4e37bc43fdaf0cf8487c2b47">eve::ui::UIStats::walkMs</a></div><div class="ttdeci">double walkMs</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00068">UISystem.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIStats_html_aa4f624292cc72c57f8a89bf7a6866be1"><div class="ttname"><a href="structeve_1_1ui_1_1UIStats.html#aa4f624292cc72c57f8a89bf7a6866be1">eve::ui::UIStats::nodeCount</a></div><div class="ttdeci">int nodeCount</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00066">UISystem.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIStats_html_ac5c6f95af79374d114462e018f2fef57"><div class="ttname"><a href="structeve_1_1ui_1_1UIStats.html#ac5c6f95af79374d114462e018f2fef57">eve::ui::UIStats::hostCount</a></div><div class="ttdeci">int hostCount</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00065">UISystem.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html">eve::ui::ViewportState</a></div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00076">UISystem.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_a1fb134d1f586a68d99d0bfaa5225e697"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#a1fb134d1f586a68d99d0bfaa5225e697">eve::ui::ViewportState::textureId</a></div><div class="ttdeci">uint64_t textureId</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00079">UISystem.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_a339aa517e4d8aeecbe70e5f1825ca093"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#a339aa517e4d8aeecbe70e5f1825ca093">eve::ui::ViewportState::wheel</a></div><div class="ttdeci">float wheel</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00088">UISystem.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_a56202808d06deedf6e81cabd054d43b7"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#a56202808d06deedf6e81cabd054d43b7">eve::ui::ViewportState::active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00083">UISystem.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_a6e46a8cad1aaccb9dc400244d0961a4b"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#a6e46a8cad1aaccb9dc400244d0961a4b">eve::ui::ViewportState::hovered</a></div><div class="ttdeci">bool hovered</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00082">UISystem.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_a799fc7ae80588fc40c683991a609e78f"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#a799fc7ae80588fc40c683991a609e78f">eve::ui::ViewportState::mouseX</a></div><div class="ttdeci">float mouseX</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00084">UISystem.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_aa1f8bfb77b6d29fc95aec50c1ab17423"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#aa1f8bfb77b6d29fc95aec50c1ab17423">eve::ui::ViewportState::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00081">UISystem.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_aa31d498c01138045ef38ff68a72389a1"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#aa31d498c01138045ef38ff68a72389a1">eve::ui::ViewportState::mouseY</a></div><div class="ttdeci">float mouseY</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00085">UISystem.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_aa759e67eb3e7baa7ba313ae58db7510d"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#aa759e67eb3e7baa7ba313ae58db7510d">eve::ui::ViewportState::dragDY</a></div><div class="ttdeci">float dragDY</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00087">UISystem.h:87</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_aaee08f24e159b798861ee060372203d8"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#aaee08f24e159b798861ee060372203d8">eve::ui::ViewportState::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00080">UISystem.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_aeff06993ab685e44e41db2c4adfe96c2"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#aeff06993ab685e44e41db2c4adfe96c2">eve::ui::ViewportState::canvas</a></div><div class="ttdeci">graphics::Canvas * canvas</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00078">UISystem.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_afb4221d0a3363b15e93de43a5e3627f6"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#afb4221d0a3363b15e93de43a5e3627f6">eve::ui::ViewportState::key</a></div><div class="ttdeci">std::string key</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00077">UISystem.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1ViewportState_html_afce7bbcf3252adcf0f3a4c64aa44baa2"><div class="ttname"><a href="structeve_1_1ui_1_1ViewportState.html#afce7bbcf3252adcf0f3a4c64aa44baa2">eve::ui::ViewportState::dragDX</a></div><div class="ttdeci">float dragDX</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8h_source.html#l00086">UISystem.h:86</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

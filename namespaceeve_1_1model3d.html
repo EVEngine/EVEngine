@@ -1,0 +1,478 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::model3d 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1model3d.html">model3d</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::model3d 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1model3d_1_1EveFileSystem.html">EveFileSystem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">medialoader::FileSystem adapter over <a class="el" href="namespaceeve_1_1filesystem.html">eve::filesystem</a> (physfs / VFS).  <a href="classeve_1_1model3d_1_1EveFileSystem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1model3d_1_1Model3D.html">Model3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Resource.html" title="Resource is a game object that is managed by the ResourceManager. It can be loaded from a file or gen...">Resource</a> module for decoding 3D models via medialoader (Assimp). Produces <a class="el" href="classeve_1_1model3d_1_1ModelData.html" title="CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene). Does not upload to GPU — ...">ModelData</a>; GPU upload is graphics' responsibility.  <a href="classeve_1_1model3d_1_1Model3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-side decoded 3D model (Assimp scene owned via medialoader::ModelScene). Does not upload to GPU — use <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a51209192a922894d3e1c02b1d4233c9e">graphics::Graphics::newMeshFromAssimp</a> on <a class="el" href="classeve_1_1model3d_1_1ModelData.html#aee8f2dca9d0921ad1b1f6029a8750f4c" title="Raw Assimp mesh at meshIndex; returns nullptr when out of range.">getMesh()</a>.  <a href="classeve_1_1model3d_1_1ModelData.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1model3d_1_1ModelLoadOptions.html">ModelLoadOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles for the Assimp post-processing steps applied by medialoader on decode. All default to on (matches the historical behavior); disabling a step changes vertex/triangle layout (e.g. joinIdenticalVertices=false keeps per-face vertices for hard-edged flat shading). Normals are generated with aiProcess_GenSmoothNormals when a mesh lacks them (see the configure-time medialoader patch in CMakeLists.txt), keeping hard seams beyond the 80-degree smoothing angle.  <a href="structeve_1_1model3d_1_1ModelLoadOptions.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1model3d_1_1SurfaceUv.html">SurfaceUv</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result of mapping a triangle-local surface point to one UV channel.  <a href="structeve_1_1model3d_1_1SurfaceUv.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a77e7674c7ab5a52794fad31576ee6369" id="r_a77e7674c7ab5a52794fad31576ee6369"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1model3d.html#a77e7674c7ab5a52794fad31576ee6369">Module_IMPL</a> (<a class="el" href="classeve_1_1model3d_1_1Model3D.html">Model3D</a>, new <a class="el" href="classeve_1_1model3d_1_1Model3D.html">Model3D</a>())</td></tr>
+<tr class="separator:a77e7674c7ab5a52794fad31576ee6369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72b4da604c4093bf8d407f31e1d7a23d" id="r_a72b4da604c4093bf8d407f31e1d7a23d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1model3d.html#a72b4da604c4093bf8d407f31e1d7a23d">modelCacheKey</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="structeve_1_1model3d_1_1ModelLoadOptions.html">ModelLoadOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</td></tr>
+<tr class="memdesc:a72b4da604c4093bf8d407f31e1d7a23d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a deterministic <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> cache key for <code>path</code> + <code>options</code>.  <br /></td></tr>
+<tr class="separator:a72b4da604c4093bf8d407f31e1d7a23d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae98b3b11e8f599aa0fc2cd02a105a6c7" id="r_ae98b3b11e8f599aa0fc2cd02a105a6c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1model3d_1_1ModelLoadOptions.html">ModelLoadOptions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1model3d.html#ae98b3b11e8f599aa0fc2cd02a105a6c7">modelOptionsFromKey</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="memdesc:ae98b3b11e8f599aa0fc2cd02a105a6c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse the options back out of a model cache key (inverse of modelCacheKey).  <br /></td></tr>
+<tr class="separator:ae98b3b11e8f599aa0fc2cd02a105a6c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae430b7b65b7d4b946b86c5399f9f6445" id="r_ae430b7b65b7d4b946b86c5399f9f6445"><td class="memItemLeft" align="right" valign="top">Renderable3D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1model3d.html#ae430b7b65b7d4b946b86c5399f9f6445">buildRenderable</a> (IResourceFactory &amp;gfx, <a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, int meshIndex, const <a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</td></tr>
+<tr class="separator:ae430b7b65b7d4b946b86c5399f9f6445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af450611dfc21bbf86a73c3e90e43cd3c" id="r_af450611dfc21bbf86a73c3e90e43cd3c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Renderable3D * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1model3d.html#af450611dfc21bbf86a73c3e90e43cd3c">buildRenderables</a> (IResourceFactory &amp;gfx, <a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, const <a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</td></tr>
+<tr class="separator:af450611dfc21bbf86a73c3e90e43cd3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cdc71293677147497e146d97a7d023d" id="r_a6cdc71293677147497e146d97a7d023d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1model3d.html#a6cdc71293677147497e146d97a7d023d">buildRenderable</a> (<a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">graphics::IResourceFactory</a> &amp;gfx, <a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, int meshIndex, const <a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="separator:a6cdc71293677147497e146d97a7d023d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71d50d898d35fd8ffad22efd6d42462b" id="r_a71d50d898d35fd8ffad22efd6d42462b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1model3d.html#a71d50d898d35fd8ffad22efd6d42462b">buildRenderables</a> (<a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">graphics::IResourceFactory</a> &amp;gfx, <a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> *<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, const <a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>={})</td></tr>
+<tr class="separator:a71d50d898d35fd8ffad22efd6d42462b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a6cdc71293677147497e146d97a7d023d" name="a6cdc71293677147497e146d97a7d023d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cdc71293677147497e146d97a7d023d">&#9670;&#160;</a></span>buildRenderable() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> * eve::model3d::buildRenderable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">graphics::IResourceFactory</a> &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Build a Renderable3D for one Assimp mesh. The mesh index is looked up in the scene graph to bake its node world transform (when bakeWorldTransform is on); if several nodes reference the mesh, the first is used. Returns nullptr for invalid/empty meshes. The entity is registered in the current ECS; the caller keeps it alive by owning a reference in script state. </p>
+
+</div>
+</div>
+<a id="ae430b7b65b7d4b946b86c5399f9f6445" name="ae430b7b65b7d4b946b86c5399f9f6445"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae430b7b65b7d4b946b86c5399f9f6445">&#9670;&#160;</a></span>buildRenderable() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Renderable3D * eve::model3d::buildRenderable </td>
+          <td>(</td>
+          <td class="paramtype">IResourceFactory &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ModelRenderer_8cpp_source.html">ModelRenderer.cpp</a> 第 <a class="el" href="ModelRenderer_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00734">model</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a>, <a class="el" href="Graphics_8cpp_source.html#l00078">scene</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Model3D_8cpp_source.html#l00150">eve::model3d::Model3D::createRenderable()</a>.</p>
+
+</div>
+</div>
+<a id="a71d50d898d35fd8ffad22efd6d42462b" name="a71d50d898d35fd8ffad22efd6d42462b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71d50d898d35fd8ffad22efd6d42462b">&#9670;&#160;</a></span>buildRenderables() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> * &gt; eve::model3d::buildRenderables </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1IResourceFactory.html">graphics::IResourceFactory</a> &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Build one Renderable3D per mesh referenced by the scene graph. </p>
+
+</div>
+</div>
+<a id="af450611dfc21bbf86a73c3e90e43cd3c" name="af450611dfc21bbf86a73c3e90e43cd3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af450611dfc21bbf86a73c3e90e43cd3c">&#9670;&#160;</a></span>buildRenderables() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; Renderable3D * &gt; eve::model3d::buildRenderables </td>
+          <td>(</td>
+          <td class="paramtype">IResourceFactory &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1model3d_1_1ModelData.html">ModelData</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1model3d_1_1ModelRenderOptions.html">ModelRenderOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ModelRenderer_8cpp_source.html">ModelRenderer.cpp</a> 第 <a class="el" href="ModelRenderer_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00734">model</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00078">scene</a>.</p>
+
+</div>
+</div>
+<a id="a72b4da604c4093bf8d407f31e1d7a23d" name="a72b4da604c4093bf8d407f31e1d7a23d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72b4da604c4093bf8d407f31e1d7a23d">&#9670;&#160;</a></span>modelCacheKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::model3d::modelCacheKey </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1model3d_1_1ModelLoadOptions.html">ModelLoadOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a deterministic <a class="el" href="classeve_1_1ResourceManager.html" title="ResourceManager is a singleton that manages all resources in the game. It provides a way to load,...">ResourceManager</a> cache key for <code>path</code> + <code>options</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>VFS path of the model file. </td></tr>
+    <tr><td class="paramname">options</td><td>Decode options; each flag becomes a <code>?param=0|1</code> entry. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The cache key, e.g. "sofa.obj?triangulate=1&amp;normals=1&amp;...". </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ModelLoader_8cpp_source.html">ModelLoader.cpp</a> 第 <a class="el" href="ModelLoader_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Resource_8cpp_source.html#l00037">eve::ResourceManager::makeKey()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Model3D_8cpp_source.html#l00137">eve::model3d::Model3D::newModelDataFromFile()</a>.</p>
+
+</div>
+</div>
+<a id="ae98b3b11e8f599aa0fc2cd02a105a6c7" name="ae98b3b11e8f599aa0fc2cd02a105a6c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae98b3b11e8f599aa0fc2cd02a105a6c7">&#9670;&#160;</a></span>modelOptionsFromKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1model3d_1_1ModelLoadOptions.html">ModelLoadOptions</a> eve::model3d::modelOptionsFromKey </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse the options back out of a model cache key (inverse of modelCacheKey). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>A key produced by modelCacheKey. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The decoded options (defaults for missing parameters). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ModelLoader_8cpp_source.html">ModelLoader.cpp</a> 第 <a class="el" href="ModelLoader_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a77e7674c7ab5a52794fad31576ee6369" name="a77e7674c7ab5a52794fad31576ee6369"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77e7674c7ab5a52794fad31576ee6369">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::model3d::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1model3d_1_1Model3D.html">Model3D</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Model3D</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

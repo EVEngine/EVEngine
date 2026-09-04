@@ -1,0 +1,241 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/UIAutomationCapabilities.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">UIAutomationCapabilities.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="UIAutomationCapabilities_8h_source.html">ui/UIAutomationCapabilities.h</a>&quot;</code><br />
+<code>#include &quot;common/config.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="Capability_8h_source.html">common/Capability.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ECS_8h_source.html">common/ECS.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="UIAutomation_8h_source.html">common/UIAutomation.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="UIHost_8h_source.html">ui/UIHost.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="UISystem_8h_source.html">ui/UISystem.h</a>&quot;</code><br />
+<code>#include &lt;Poco/Dynamic/Var.h&gt;</code><br />
+<code>#include &lt;Poco/JSON/Array.h&gt;</code><br />
+<code>#include &lt;Poco/JSON/Object.h&gt;</code><br />
+<code>#include &lt;Poco/JSON/Stringifier.h&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="UIAutomationCapabilities_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1ui" id="r_namespaceeve_1_1ui"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html">eve::ui</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aefe9b8b34bfe62435fe85a29a15c290b" id="r_aefe9b8b34bfe62435fe85a29a15c290b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#aefe9b8b34bfe62435fe85a29a15c290b">eve::ui::registerUIAutomationCapabilities</a> ()</td></tr>
+<tr class="separator:aefe9b8b34bfe62435fe85a29a15c290b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a746317fdab8614a8048746f94bdacdab" name="a746317fdab8614a8048746f94bdacdab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a746317fdab8614a8048746f94bdacdab">&#9670;&#160;</a></span>host</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">UIHostHandle host {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIAutomationCapabilities_8cpp_source.html">UIAutomationCapabilities.cpp</a> 第 <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UI_8cpp_source.html#l01229">eve::ui::UI::animateHostPos()</a>, <a class="el" href="NodeDesc_8cpp_source.html#l00243">eve::scene::applyTree()</a>, <a class="el" href="Widget_8cpp_source.html#l00683">eve::ui::applyTree()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00701">eve::sceneloader::SceneLoader::applyTreeDiff()</a>, <a class="el" href="NodeDesc_8cpp_source.html#l00323">eve::scene::applyTreeReconcile()</a>, <a class="el" href="Widget_8cpp_source.html#l00696">eve::ui::applyTreeReconcile()</a>, <a class="el" href="UI_8cpp_source.html#l00332">eve::ui::UI::bindOwner()</a>, <a class="el" href="UI_8cpp_source.html#l01144">eve::ui::UI::clearHostWorldAnchor()</a>, <a class="el" href="TcpSocket_8cpp_source.html#l00056">eve::network::TcpSocket::connect()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00047">eve::network::UdpSocket::connect()</a>, <a class="el" href="SceneEditorModule_8cpp_source.html#l00031">eve::scene_editor::SceneEditorModule::TargetFactory::create()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00667">eve::sceneloader::SceneLoader::diffTree()</a>, <a class="el" href="UISystem_8cpp_source.html#l01463">eve::ui::UISystem::dispatchEvents()</a>, <a class="el" href="EditorHost_8cpp_source.html#l01451">eve::ui::EditorHost::exposeScriptApi()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00815">eve::sceneloader::SceneLoader::fillSceneBounds()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00551">eve::scene::SceneHost::filterFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00564">eve::scene::SceneHost::filterIndicesFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00537">eve::scene::SceneHost::findIfFrom()</a>, <a class="el" href="UI_8cpp_source.html#l01011">eve::ui::UI::getChecked()</a>, <a class="el" href="UI_8cpp_source.html#l01096">eve::ui::UI::getFocusedId()</a>, <a class="el" href="UI_8cpp_source.html#l01194">eve::ui::UI::getHostWorldScreenX()</a>, <a class="el" href="UI_8cpp_source.html#l01199">eve::ui::UI::getHostWorldScreenY()</a>, <a class="el" href="UI_8cpp_source.html#l01180">eve::ui::UI::getHostWorldState()</a>, <a class="el" href="UI_8cpp_source.html#l00997">eve::ui::UI::getValue()</a>, <a class="el" href="UI_8cpp_source.html#l01004">eve::ui::UI::getValueText()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00966">eve::sceneloader::SceneLoader::load()</a>, <a class="el" href="UI_8cpp_source.html#l01328">eve::ui::UI::loadTreeJson()</a>, <a class="el" href="Mcp_8cpp_source.html#l00083">eve::cmd::Cmdline::McpHost()</a>, <a class="el" href="UI_8cpp_source.html#l00367">eve::ui::UI::mount()</a>, <a class="el" href="UI_8cpp_source.html#l00352">eve::ui::UI::mountAs()</a>, <a class="el" href="UI_8cpp_source.html#l01089">eve::ui::UI::moveFocus()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01106">eve::sceneloader::SceneLoader::nodeCount()</a>, <a class="el" href="UI_8cpp_source.html#l00305">eve::ui::UI::onChange()</a>, <a class="el" href="UI_8cpp_source.html#l00299">eve::ui::UI::onClick()</a>, <a class="el" href="UiRuntime_8cpp_source.html#l00079">eve::ui_editing::UiDocumentRuntimeBridge::publish()</a>, <a class="el" href="UI_8cpp_source.html#l00375">eve::ui::UI::remount()</a>, <a class="el" href="UI_8cpp_source.html#l00883">eve::ui::UI::remountBuildAs()</a>, <a class="el" href="UI_8cpp_source.html#l00381">eve::ui::UI::remountReconcile()</a>, <a class="el" href="UISystem_8cpp_source.html#l01366">eve::ui::UISystem::render()</a>, <a class="el" href="UI_8cpp_source.html#l01084">eve::ui::UI::requestFocus()</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>, <a class="el" href="UI_8cpp_source.html#l01316">eve::ui::UI::saveTreeJson()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00070">eve::network::UdpSocket::sendTo()</a>, <a class="el" href="UdpSocket_8cpp_source.html#l00095">eve::network::UdpSocket::sendToString()</a>, <a class="el" href="UI_8cpp_source.html#l00929">eve::ui::UI::setChecked()</a>, <a class="el" href="UI_8cpp_source.html#l00925">eve::ui::UI::setEnabled()</a>, <a class="el" href="UI_8cpp_source.html#l01204">eve::ui::UI::setHostAnchor()</a>, <a class="el" href="UI_8cpp_source.html#l01105">eve::ui::UI::setHostLayer()</a>, <a class="el" href="UI_8cpp_source.html#l01109">eve::ui::UI::setHostModal()</a>, <a class="el" href="UI_8cpp_source.html#l01121">eve::ui::UI::setHostMovable()</a>, <a class="el" href="UI_8cpp_source.html#l01113">eve::ui::UI::setHostOverlay()</a>, <a class="el" href="UI_8cpp_source.html#l01117">eve::ui::UI::setHostOverlayAlpha()</a>, <a class="el" href="UI_8cpp_source.html#l01221">eve::ui::UI::setHostPercent()</a>, <a class="el" href="UI_8cpp_source.html#l01129">eve::ui::UI::setHostPos()</a>, <a class="el" href="UI_8cpp_source.html#l01125">eve::ui::UI::setHostResizable()</a>, <a class="el" href="UI_8cpp_source.html#l01212">eve::ui::UI::setHostSize()</a>, <a class="el" href="UI_8cpp_source.html#l01101">eve::ui::UI::setHostVisible()</a>, <a class="el" href="UI_8cpp_source.html#l01140">eve::ui::UI::setHostWorldAnchor()</a>, <a class="el" href="UI_8cpp_source.html#l01157">eve::ui::UI::setHostWorldDistanceScale()</a>, <a class="el" href="UI_8cpp_source.html#l01148">eve::ui::UI::setHostWorldEdgePolicy()</a>, <a class="el" href="UI_8cpp_source.html#l01168">eve::ui::UI::setHostWorldOverlap()</a>, <a class="el" href="UI_8cpp_source.html#l00974">eve::ui::UI::setImageCornerRadius()</a>, <a class="el" href="UI_8cpp_source.html#l00963">eve::ui::UI::setImageNinePatch()</a>, <a class="el" href="UI_8cpp_source.html#l01018">eve::ui::UI::setImageNinePatchFile()</a>, <a class="el" href="UI_8cpp_source.html#l00980">eve::ui::UI::setImageTextureId()</a>, <a class="el" href="UI_8cpp_source.html#l00941">eve::ui::UI::setImageTint()</a>, <a class="el" href="UI_8cpp_source.html#l00952">eve::ui::UI::setImageUv()</a>, <a class="el" href="UI_8cpp_source.html#l00896">eve::ui::UI::setListItems()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l01239">eve::sceneloader::SceneLoader::setLod()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00133">eve::network::UdpLink::setRemote()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00142">eve::network::UdpLink::setRemoteString()</a>, <a class="el" href="UI_8cpp_source.html#l00911">eve::ui::UI::setText()</a>, <a class="el" href="UI_8cpp_source.html#l00915">eve::ui::UI::setTextWrap()</a>, <a class="el" href="UI_8cpp_source.html#l00933">eve::ui::UI::setValue()</a>, <a class="el" href="UI_8cpp_source.html#l00937">eve::ui::UI::setValueText()</a>, <a class="el" href="UI_8cpp_source.html#l00921">eve::ui::UI::setVisible()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00300">eve::ui::DatabasePanel::sync()</a>, <a class="el" href="Inspector_8cpp_source.html#l00503">eve::ui::Inspector::sync()</a>, <a class="el" href="PropertyView_8cpp_source.html#l00223">eve::ui::syncPropertyView()</a>, <a class="el" href="TransformSystem_8cpp_source.html#l00116">eve::scene::TransformSystem::updateHost()</a>, <a class="el" href="UI_8cpp_source.html#l01366">eve::ui::UI::viewportActive()</a>, <a class="el" href="UI_8cpp_source.html#l01349">eve::ui::UI::viewportCanvas()</a>, <a class="el" href="UI_8cpp_source.html#l01387">eve::ui::UI::viewportDragDX()</a>, <a class="el" href="UI_8cpp_source.html#l01394">eve::ui::UI::viewportDragDY()</a>, <a class="el" href="UI_8cpp_source.html#l01359">eve::ui::UI::viewportHovered()</a>, <a class="el" href="UI_8cpp_source.html#l01373">eve::ui::UI::viewportMouseX()</a>, <a class="el" href="UI_8cpp_source.html#l01380">eve::ui::UI::viewportMouseY()</a> , 以及 <a class="el" href="UI_8cpp_source.html#l01401">eve::ui::UI::viewportWheel()</a>.</p>
+
+</div>
+</div>
+<a id="aff0d62fe47891e971ee7161fb743726a" name="aff0d62fe47891e971ee7161fb743726a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff0d62fe47891e971ee7161fb743726a">&#9670;&#160;</a></span>nodeIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int nodeIndex = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UIAutomationCapabilities_8cpp_source.html">UIAutomationCapabilities.cpp</a> 第 <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneHost_8cpp_source.html#l00597">eve::scene::SceneHost::collectIdsFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00551">eve::scene::SceneHost::filterFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00564">eve::scene::SceneHost::filterIndicesFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00537">eve::scene::SceneHost::findIfFrom()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00501">eve::scene::SceneHost::forEachDepthFirst()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00358">eve::scene::SceneHost::getChildCount()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00392">eve::scene::SceneHost::getChildIndices()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00403">eve::scene::SceneHost::getChildren()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00354">eve::scene::SceneHost::getParent()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00348">eve::scene::SceneHost::getParentIndex()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00417">eve::scene::SceneHost::getPath()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00434">eve::scene::SceneHost::isAncestorOf()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00445">eve::scene::SceneHost::isDescendantOf()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00489">eve::scene::SceneHost::markSubtreeDirty()</a>, <a class="el" href="VolumeDensityGraph_8cpp_source.html#l00040">eve::graphics::VolumeDensityGraph::setOutput()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00526">eve::scene::SceneHost::walkAncestors()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00515">eve::scene::SceneHost::walkBreadthFirstFrom()</a> , 以及 <a class="el" href="SceneHost_8cpp_source.html#l00507">eve::scene::SceneHost::walkDepthFirstFrom()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

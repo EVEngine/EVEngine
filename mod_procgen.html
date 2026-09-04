@@ -1,0 +1,716 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 程序化生成模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">程序化生成模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>程序化生成模块</h1>
+<p><b>脚本入口：</b> <code>eve.Procgen()</code></p>
+<p>按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。</p>
+<h2>Result 投影约定</h2>
+<p>Procgen 的创建、生成、输出和事务提交 API 都返回统一的 Squirrel Result 表： <code>{ ok, code, hasValue, status, diagnostics, value }</code>。调用方必须先读取 <code>ok</code>；只有 <code>ok == true</code> 时才读取 <code>value</code>。失败信息使用 <code>status.summary</code> 或结构化 <code>diagnostics</code>，不再通过空值和全局错误字符串拼接错误协议。Graphics 上传属于 C++ render bridge 的 borrowed 边界，不是 Squirrel 的第二套生成入口。</p>
+<p>这里的 <code>newParams</code>、<code>generate</code>、<code>buildMesh</code> 等是当前 canonical Squirrel 方法名； Procgen 不提供 <code>lastError()</code>、<code>*Owned</code> 或 <code>*Checked</code> 的兼容命名。Result 的 <code>value</code> 可以是由 generation handle 支持的 owned proxy，释放和 stale 检查遵循该 proxy 的 公共方法。 </p><h2>UE PCG 对标范围</h2>
+<p>本模块对标的是 UE PCG 的核心工作流，而不是复制 UE 类型或资产格式：统一 Spatial Data、 带属性 Point Data、可缓存 Point Graph/子图、分区与 Hierarchical Generation、多 Generation Source、视锥与时间预算、Biome Rules、Shape Grammar，以及到 Scene 的可撤销实例批次均有 对应实现。编辑器侧使用通用 <code>GraphDocument</code> 的 <code>procgen.point</code> domain，编译为版本化运行时 PointGraph 定义。</p>
+<p>当前执行器是确定性的 CPU 实现；没有照搬 UE 的 GPU PCG Compute Graph。Scene sink 发布 稳定节点与资产 tag，具体模型加载/渲染仍由项目的 scene/graphics 资产系统消费。PointGraph 保持无环数据流，迭代算法应封装为一个 operation 或子图，而不是创建反馈边。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local gen = eve.Procgen();</div>
+<div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setSeed(42); p.setSize(64, 40);</div>
+<div class="line">local gridResult = gen.generate(&quot;dungeon.bsp&quot;, p);</div>
+<div class="line">if (!gridResult.ok) throw gridResult.status.summary;</div>
+<div class="line">local grid = gridResult.value;</div>
+</div><!-- fragment --><p><code>Grid2D</code> 的资产对象接口用于把生成布局与任意项目资产包解耦： <code>addAssetObject(name, role, asset, x, y, width, height, rotation, flags)</code> 添加带语义角色、 资产标识、占地、旋转和标志位的对象；读取时使用 <code>getObjectAsset(index)</code>、 <code>getObjectRotation(index)</code> 与 <code>getObjectFlags(index)</code>。资产标识只是调用方配置的字符串， 具体 prefab、模型或精灵由渲染适配器解析。</p>
+<h3>受检 artifact API</h3>
+<p>跨存档、跨进程或需要发布到可选后端时，使用 <code>buildArtifact()</code> 与 <code>publishArtifact()</code>。两个方法都返回公共 Result 投影表；脚本必须检查 <code>result.ok</code>，或用 <code>eve.result.ignore(result, "明确原因")</code> 记录有意忽略。artifact 身份必须是非 nil 的规范 UUID 文本，发布选项依次为 scene、graphics、physics、map：</p>
+<div class="fragment"><div class="line">local artifactResult = gen.buildArtifact(&quot;mesh.castle&quot;, p,</div>
+<div class="line">                                         &quot;11111111-1111-4111-8111-111111111111&quot;);</div>
+<div class="line">if (!artifactResult.ok) throw artifactResult.status.summary;</div>
+<div class="line">local artifact = artifactResult.value;</div>
+<div class="line">local receiptResult = gen.publishArtifact(&quot;mesh.castle&quot;, p,</div>
+<div class="line">    &quot;11111111-1111-4111-8111-111111111111&quot;, false, true, false, false);</div>
+<div class="line">if (!receiptResult.ok) throw receiptResult.status.summary;</div>
+<div class="line">local receipt = receiptResult.value;</div>
+</div><!-- fragment --><p>所有可能失败的 Procgen 创建、生成、上传、输出和提交操作都返回同一套 Result 投影；成功后才读取 <code>value</code>，失败时使用 <code>status.summary</code> 或 <code>diagnostics</code>。 不要用空值与另一个错误字符串拼接成错误协议。</p>
+<h2>参数 schema 与动态编辑 UI</h2>
+<p>每个内置 Grid 生成器在注册执行函数时同时注册 UI 无关的参数 schema。项目不需要在 编辑器脚本里重复维护字段类型、默认值、范围或 choice 列表；开发者工具、游戏内建造器 和自动化都枚举同一份元数据，再选择自己的呈现方式：</p>
+<div class="fragment"><div class="line">local algorithm = &quot;cave.cellular&quot;;</div>
+<div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local params = paramsResult.value;</div>
+<div class="line">local defaultsResult = gen.applyAlgorithmDefaults(algorithm, params);</div>
+<div class="line">if (!defaultsResult.ok) throw defaultsResult.status.summary;</div>
+<div class="line"> </div>
+<div class="line">for (local i = 0; i &lt; gen.getAlgorithmParamCount(algorithm); ++i) {</div>
+<div class="line">    local key = gen.getAlgorithmParamKey(algorithm, i);</div>
+<div class="line">    local label = gen.getAlgorithmParamLabel(algorithm, i);</div>
+<div class="line">    local kind = gen.getAlgorithmParamKind(algorithm, i); // int|float|bool|string|choice</div>
+<div class="line">    local defaultText = gen.getAlgorithmParamDefault(algorithm, i);</div>
+<div class="line">    local advanced = gen.isAlgorithmParamAdvanced(algorithm, i);</div>
+<div class="line">    if (gen.algorithmParamHasMinimum(algorithm, i)) {</div>
+<div class="line">        local minValue = gen.getAlgorithmParamMinimum(algorithm, i);</div>
+<div class="line">        local maxValue = gen.getAlgorithmParamMaximum(algorithm, i);</div>
+<div class="line">        local step = gen.getAlgorithmParamStep(algorithm, i);</div>
+<div class="line">        // 用项目自己的 MVVM/UI 组件生成 slider 或 number field。</div>
+<div class="line">    }</div>
+<div class="line">    for (local c = 0; c &lt; gen.getAlgorithmParamChoiceCount(algorithm, i); ++c)</div>
+<div class="line">        print(gen.getAlgorithmParamChoice(algorithm, i, c) + &quot;\n&quot;);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>算法级信息由 <code>getAlgorithmDisplayName</code>、<code>getAlgorithmCategory</code>、 <code>getAlgorithmCount</code>、<code>getAlgorithmId</code> 和 <code>hasAlgorithm</code> 提供；字段还可读取 <code>getAlgorithmParamLabel</code>、<code>getAlgorithmParamDescription</code>、 <code>getAlgorithmParamCategory</code>、<code>algorithmParamHasMaximum</code>。<code>Params.setInt</code> / <code>getInt</code> 也统一识别 <code>seed</code>、<code>width</code>、<code>height</code>，所以反射生成的控件不需要为这三个 公共字段编写旁路逻辑。<code>examples/composable-editor</code> 在项目脚本中把 schema 映射为 普通 <code>ui.slider</code> / <code>ui.checkbox</code> / <code>ui.combo</code>，C++ 没有固定 Procgen 面板。</p>
+<p><code>getAlgorithmSchema</code> 返回通用 <code>ProcgenRecipeSchema</code>。同一个对象模型也由 <code>getTextureRecipeSchema</code>、<code>getPbrRecipeSchema</code> 和 <code>getMeshRecipeSchema</code> 返回，因此项目只需要一个字段组件： <code>getId</code>、<code>getDisplayName</code>、<code>getCategory</code>、<code>getParamCount</code>、<code>getParamKey</code>、 <code>getParamLabel</code>、<code>getParamDescription</code>、<code>getParamCategory</code>、<code>getParamKind</code>、 <code>getParamDefault</code>、<code>paramHasMinimum</code>、<code>paramHasMaximum</code>、<code>getParamMinimum</code>、 <code>getParamMaximum</code>、<code>getParamStep</code>、<code>isParamAdvanced</code>、<code>getParamChoiceCount</code> 和 <code>getParamChoice</code>。<code>applyTextureRecipeDefaults</code> / <code>applyPbrRecipeDefaults</code> / <code>applyMeshRecipeDefaults</code> 把缺失值写入 <code>Params</code>，已有的项目覆盖值保持不变。</p>
+<p><code>generateTexture(recipeId, params, graphics)</code> 直接把纹理配方生成的临时 <code>ImageData</code> 上传到传入的 <code>Graphics</code>，返回统一 Result。成功时 <code>value</code> 是由该 <code>Graphics</code> 资源系统拥有的 borrowed <code>Texture</code>；调用方不得销毁它，也不得跨 Graphics 关闭、资源重建或后端切换保存引用。参数、Graphics 或生成结果无效时， 调用方必须检查失败 Result。</p>
+<h2>内置原型建造套件（纯程序化）</h2>
+<p>模型分类和视觉语言参考 <a href="https://rgsdev.itch.io/free-3d-modular-low-poly-assets-for-prototyping-by-rgsdev">RGSDev Free 3D Modular Low Poly Assets</a>，纹理方向参考 <a href="https://kenney-assets.itch.io/prototype-textures">Kenney Prototype Textures</a>。实现只生成新的顶点、索引和 RGBA8 像素数据，不复制、打包或运行时加载参考资源中的模型与图片文件。</p>
+<p><code>prototype.*</code> 提供 75 个基础 3D 原型模块，覆盖方块、锥体、圆柱、门窗、墙角、 楼梯、坡道、围栏、栏杆、柱子、梯子、地面、机关和标记物。它们不是内置 FBX， 也不会从项目目录读取模型；每次生成都由 CPU 几何函数直接写入 <code>MeshBuild</code>。 所有网格使用 Y-up、XZ 居中占地、Y=0 落地的统一原点，避免导入资源中常见的 偏移和旋转修正。</p>
+<div class="fragment"><div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">local defaultsResult = gen.applyMeshRecipeDefaults(&quot;prototype.stairs-corner&quot;, p);</div>
+<div class="line">if (!defaultsResult.ok) throw defaultsResult.status.summary;</div>
+<div class="line">p.setFloat(&quot;width&quot;, 4.0);</div>
+<div class="line">p.setFloat(&quot;height&quot;, 2.0);</div>
+<div class="line">p.setFloat(&quot;depth&quot;, 4.0);</div>
+<div class="line">p.setFloat(&quot;thickness&quot;, 0.16);</div>
+<div class="line">p.setInt(&quot;steps&quot;, 8);</div>
+<div class="line">local meshResult = gen.buildMesh(&quot;prototype.stairs-corner&quot;, p);</div>
+<div class="line">if (!meshResult.ok) throw meshResult.status.summary;</div>
+<div class="line">local mesh = meshResult.value;</div>
+</div><!-- fragment --><p>通用参数为 <code>scale</code>、<code>width</code>、<code>height</code>、<code>depth</code>、<code>thickness</code>、<code>detail</code>、 <code>steps</code> 和 <code>uvScale</code>（每世界单位的纹理重复次数）。<code>detail</code> 控制圆柱、球体和圆环等的 径向细分，<code>steps</code> 控制楼梯和梯级数量； 每个 recipe 的尺寸默认值来自同一份 <code>RecipeDescriptor</code>。C++ 可用 <code>prototypePieceDescriptors()</code> 枚举，或调用 <code>generatePrototypePiece()</code> 获得带结构化 诊断的 owning <code>MeshBuild</code>。</p>
+<p><code>tex.prototype.*</code> 提供 13 种原型图案：标注/象限/细分/面板网格、两种斜线网格、 两种棋盘格、弱网格、楼梯/门洞/窗洞尺寸引导和十字定位点。每种图案通过 <code>palette</code> 参数选择 <code>dark</code>、<code>light</code>、<code>purple</code>、<code>orange</code>、<code>green</code>、<code>red</code>，因此同一套 13 个函数可产生 78 个标准组合；<code>custom</code> 还允许自定义背景与线色。纹理像素由 CPU 直接绘制，不嵌入 PNG/SVG。</p>
+<div class="fragment"><div class="line">local textureParamsResult = gen.newParams();</div>
+<div class="line">if (!textureParamsResult.ok) throw textureParamsResult.status.summary;</div>
+<div class="line">local tp = textureParamsResult.value;</div>
+<div class="line">tp.setSize(1024, 1024);</div>
+<div class="line">tp.setString(&quot;palette&quot;, &quot;orange&quot;);</div>
+<div class="line">tp.setInt(&quot;cellSize&quot;, 128);</div>
+<div class="line">tp.setInt(&quot;lineWidth&quot;, 2);</div>
+<div class="line">tp.setFloat(&quot;minorAlpha&quot;, 0.10);</div>
+<div class="line">tp.setFloat(&quot;majorAlpha&quot;, 0.45);</div>
+<div class="line">local textureResult = gen.generateTexture(&quot;tex.prototype.diagonal-grid&quot;, tp, gfx);</div>
+<div class="line">if (!textureResult.ok) throw textureResult.status.summary;</div>
+<div class="line">local texture = textureResult.value;</div>
+</div><!-- fragment --><p>纹理参数还包括 <code>guideSteps</code>、<code>backgroundR/G/B</code> 与 <code>lineR/G/B</code>。C++ 可用 <code>prototypeTextureDescriptors()</code> 枚举，并以 <code>generatePrototypeTexture()</code> 生成 owning RGBA8 <code>ImageData</code>。相同参数逐字节确定；生成结果应按参数 build key 缓存，不能每帧重建。</p>
+<h3>Params 的类型与尺寸语义</h3>
+<p><code>Params</code> 的算法私有值由 owning 的 <code>Value::Object</code> 保存。<code>setInt</code>、<code>setFloat</code>、 <code>setBool</code>、<code>setString</code> 分别保留整数、浮点数、布尔值和字符串类型；getter 不会把 字符串解析成数字/布尔，也不会把数字 stringify 成字符串。<code>getInt</code> 支持范围内的 整数、有限整数浮点数和 <code>bool -&gt; 0/1</code>；<code>getFloat</code> 支持可表示的整数/浮点数和 <code>bool -&gt; 0/1</code>；<code>getBool</code> 只接受布尔值或精确数值 <code>0/1</code>；不匹配时返回默认值。</p>
+<p><code>seed</code>、<code>width</code>、<code>height</code> 的 <code>setSeed</code>/<code>setSize</code> 和 <code>setInt</code> 路径属于独立的生成 维度域。浮点、布尔或字符串 setter 使用同名 key 时属于算法私有域，不会修改 <code>getSeed</code>/<code>getWidth</code>/<code>getHeight</code>。<code>canonicalString()</code> 稳定排序并带类型标签， 因此同一组参数在不同插入顺序下相同，而 <code>1</code>、<code>1.0</code>、<code>true</code>、<code>"1"</code> 不会碰撞。</p>
+<div class="fragment"><div class="line">local recipe = &quot;pbr.rock&quot;;</div>
+<div class="line">local valuesResult = gen.newParams();</div>
+<div class="line">if (!valuesResult.ok) throw valuesResult.status.summary;</div>
+<div class="line">local values = valuesResult.value;</div>
+<div class="line">values.setSize(128, 128);</div>
+<div class="line">local defaultsResult = gen.applyPbrRecipeDefaults(recipe, values);</div>
+<div class="line">if (!defaultsResult.ok) throw defaultsResult.status.summary;</div>
+<div class="line">local schemaResult = gen.getPbrRecipeSchema(recipe);</div>
+<div class="line">if (!schemaResult.ok) throw schemaResult.status.summary;</div>
+<div class="line">local schema = schemaResult.value;</div>
+<div class="line">for (local i = 0; i &lt; schema.getParamCount(); ++i)</div>
+<div class="line">    buildProjectField(schema, values, i);</div>
+<div class="line">local mapsResult = gen.generatePbrMaterial(recipe, values);</div>
+<div class="line">if (!mapsResult.ok) throw mapsResult.status.summary;</div>
+<div class="line">local maps = mapsResult.value;</div>
+<div class="line">local albedo = maps.getAlbedo();</div>
+<div class="line">local normal = maps.getNormal();</div>
+<div class="line">local roughness = maps.getRoughness();</div>
+<div class="line">local metallic = maps.getMetallic();</div>
+<div class="line">local height = maps.getHeight();</div>
+<div class="line">local ao = maps.getAo();</div>
+<div class="line">maps.destroy();</div>
+</div><!-- fragment --><p>当前 <code>Material</code> 可直接使用 albedo、normal、height 纹理以及 scalar roughness / metallic。 roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材质还没有对应纹理槽。</p>
+<h2>对象关系与调用时机</h2>
+<p><code>Params</code> 描述 seed、尺寸和算法参数；<code>Grid2D</code> 是结果；<code>OutputSpec</code> 决定写入 TileLayer、Image 或 Texture；<code>Procgen</code> 按注册算法名执行。</p>
+<h2>PointSet 管线</h2>
+<p>空间运算、分区、发布、图资产、GPU compute、hot reload 与增量重建见 PointSet 管线。</p>
+<h3>脚本基础 API 索引</h3>
+<p><code>PointSet</code> 的生产语义包括局部包围盒 <code>getBoundsMinX</code>、<code>getBoundsMinY</code>、 <code>getBoundsMinZ</code>、<code>getBoundsMaxX</code>、<code>getBoundsMaxY</code>、<code>getBoundsMaxZ</code>，线性色彩 <code>getColorR</code>、<code>getColorG</code>、<code>getColorB</code>、<code>getColorA</code>，以及归一化坡度 <code>getSteepness</code>。</p>
+<p>每个新采样点都有稳定的非零身份。脚本使用 <code>getPointId(index)</code> 读取十进制字符串， 避免 64 位身份在 Squirrel 数值转换中丢失精度。旧缓存或手工构造的点可能返回 <code>"0"</code>； 可调用 <code>assignPointIds(namespace)</code>，其中 <code>namespace</code> 是非零十进制字符串，为缺失身份的点 确定性补齐 ID。已有重复 ID 时操作会失败且不会部分修改集合。过滤和变换保留身份， <code>copyPoints</code> 为每个 source/target 组合派生新的稳定身份。</p>
+<p>点元数据支持 <code>setIntAttribute</code>、<code>getIntAttribute</code>、<code>hasIntAttribute</code>， <code>setBoolAttribute</code>、<code>getBoolAttribute</code>、<code>hasBoolAttribute</code>，以及 <code>setVectorAttribute</code>、<code>getVectorAttributeX</code>、<code>getVectorAttributeY</code>、 <code>getVectorAttributeZ</code>、<code>hasVectorAttribute</code>；<code>getAttributeType</code> 返回 <code>float</code>、<code>int</code>、<code>bool</code>、<code>vector</code>、<code>string</code> 或空字符串。</p>
+<p>点集合组合使用 <code>unionPoints</code>、<code>intersectPoints</code>、<code>differencePoints</code>； <code>copyPoints</code> 按 target-major 顺序复制源点，<code>transformPoints3D</code> 应用完整 pitch/yaw/roll、平移和非均匀缩放。<code>remapDensity</code> 重映射密度， <code>mathFloatAttribute</code> 对浮点元数据执行受检的标量运算。</p>
+<p>运行时 cell 热重载使用 <code>applyCellUpdate(level, x, z, revision, points)</code>；<code>revision</code> 以非零十进制字符串传入，返回的 Result <code>value</code> 也是字符串。提交成功后可通过 <code>getCellDelta()</code> 获取 <code>ProcgenPointDelta</code>，并用 <code>getAdded()</code>、<code>getUpdated()</code>、 <code>getAddedCount()</code>、<code>getUpdatedCount()</code>、<code>getRemovedCount()</code>、<code>getRemovedId()</code>、 <code>getTargetCount()</code>、<code>getTargetId()</code>、<code>getBaseFingerprint()</code> 和 <code>getTargetFingerprint()</code> 驱动局部场景更新。旧 cell 可先调用 <code>migrateCellPointIds()</code>；过期 revision、重复/缺失 ID、schema 冲突或点预算超限均返回 失败 Result，且不会修改 cell 快照或递增 revision。</p>
+<p>首次把 cell 发布到 Scene 时调用 <code>publishCellInstances(prefix, request, points, assetAttribute, defaultAsset)</code>；Scene batch 从 revision 1 开始。后续 <code>applyCellUpdate</code> 成功并取得 <code>getCellDelta()</code> 后，调用 <code>publishCellInstanceDelta(prefix, request, delta, targetRevision, assetAttribute, defaultAsset)</code>，其中 <code>targetRevision</code> 使用 <code>applyCellUpdate</code> 返回的十进制字符串。该调用按 PointId 原子处理新增、更新、 删除和精确顺序；即使 <code>instanceId</code> 属性发生改名，也仍以 PointId 找到原实例。Scene revision 过期、PointId 缺失或重复、目标顺序不完整、实例 ID 冲突时返回失败 Result，原 Scene batch 保持不变。增量路径要求所有参与点具有非零稳定 ID；旧数据应先完成 <code>migrateCellPointIds()</code>。</p>
+<p>Scene 漏掉一个或多个中间 revision 后，不应继续重放不完整的最后一个 delta。改用 <code>publishCellSnapshot(prefix, request, points, targetRevision, assetAttribute, defaultAsset)</code> 将 <code>getCellOutput()</code> 返回的完整有序快照原子发布到明确的 RuntimeGeneration revision。该入口允许 从较旧 Scene revision 直接前进到较新的 cell revision，同时拒绝相同或更旧 revision；因此可用于 provider 暂时失败后的追赶、存档恢复和 Scene 重建，而不会通过反复整批发布猜测 revision。</p>
+<p>常规 streaming 循环优先调用 <code>synchronizeCellInstances(prefix, runtime, request, assetAttribute, defaultAsset)</code>。它把 <code>RuntimeGeneration</code> 视为 authoritative owner：Scene revision 已相同时幂等成功，恰好落后一个且存在 最新 delta 时走增量，首次发布、漏掉多个 revision、迁移后没有 delta 时自动走完整快照；如果 Scene revision 反而更高则返回冲突，不会用旧 RuntimeGeneration 状态覆盖新场景。返回的成功值是已同步的 十进制 revision，可用于日志和监控，不再要求脚本复制 revision 分支策略。</p>
+<p>相邻 cell 必须作为同一可见更新提交时，使用 <code>synchronizeCellInstancesAtomic(prefix, runtimes, requests, assetAttribute, defaultAsset)</code>。 <code>runtimes[i]</code> 与 <code>requests[i]</code> 一一对应；函数先从每个 <code>RuntimeGeneration</code> 取得当前完整快照， 再通过 Scene capability 离线准备全部目标树。只有所有 cell 的 PointId、batch id 和 revision 都通过校验后才统一提交。返回值是实际更新的 cell 数；返回失败时没有任何参与 batch 被修改。 这一入口刻意使用脚本数组表达事务集合，不引入 UE 风格的公开 PCG 图 DSL。</p>
+<p>cleanup 边界同时退出多个 cell 时，先调用 <code>completeCellCleanupAtomic(prefix, runtimes, requests)</code>。它先验证所有 Scene batch 和 scheduler ticket， 再在 Scene 尚未切换可见状态的 prepare 窗口内一次提交各 RuntimeGeneration，最后以不可失败步骤 切换 Scene 并发送生命周期回调。任一 Scene 准备、stale ticket、重复 cell、错误 scheduler 或 provider 失败都会使 Scene 与全部 runtime 保持原状。<code>removeCellInstancesAtomic</code> 和 <code>RuntimeGeneration.completeCleanupsAtomic</code> 仍可用于只管理单一 owner 的底层流程。</p>
+<p>大半径、多 level 或多个 source 不应让 <code>refreshGenerationSources()</code> 一次扫描完整覆盖区域。 设置 <code>setRefreshWorkBudget(candidateCells)</code> 后，source 更新会启动稳定快照规划；脚本逐帧调用 <code>continueGenerationRefresh()</code>，并用 <code>isRefreshPending()</code> 与 <code>getCommittedRefreshRevision()</code> 观察进度。 规划完成前生成/清理队列保持旧快照，完成后统一切换；规划期间的新 source 更新合并到下一快照， 不会不断重启当前工作。预算 0 保留原同步语义。</p>
+<p>异步或分阶段生成取得 <code>nextGenerate()</code> request 后，应在昂贵阶段之间调用 <code>isRequestCurrent(request)</code>。视点、frustum 或 source 集合变化使 cell 不再需要时，scheduler 会立即 换发 ticket；查询随即返回 false，worker 可停止后续噪声、网格或资产构建。即使 worker 未配合，最终 <code>completeGeneration()</code> 仍会拒绝过时 ticket。<code>getCancelledGenerationCount()</code> 和 <code>debugReport()</code> 中的 <code>cancelledGeneration</code> 用于观察这类被提前淘汰的在途工作。</p>
+<p>空间数据构造器包括 <code>polygonVolume</code>、<code>textureMaskData</code> 和 <code>meshSurfaceData</code>。 它们可继续传给统一的 spatial union/intersection/difference、采样、过滤和投射 API。 <code>projectToWorld</code> 通过可选 <code>IProcgenWorldQuery</code> capability 做垂直世界表面查询； provider 缺失或执行失败返回失败 Result，正常未命中则遵循 <code>keepUnmatched</code>。</p>
+<h2>目标导向指南</h2>
+<h3>生成可玩的地牢层</h3>
+<p>创建 Params，设置 seed 和尺寸，按需添加算法参数；用 <code>generate("dungeon.bsp", p)</code> 先检查 Grid，也可配置 Output 将结果直接写入 TileLayer。保存 seed 可复现关卡。也可用 <code>generate("wfc.simple", p)</code>（<code>preset</code>=<code>dungeon</code>|<code>cave</code>|<code>terrain</code>）做约束驱动铺贴。</p>
+<h3>生成等值面网格（Marching Cubes）</h3>
+<div class="fragment"><div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setSeed(1);</div>
+<div class="line">p.setInt(&quot;resolution&quot;, 32);</div>
+<div class="line">p.setString(&quot;field&quot;, &quot;sphere&quot;); // sphere | torus | noise | terrain</div>
+<div class="line">local cpuResult = gen.buildMesh(&quot;mesh.marchingcubes&quot;, p);</div>
+<div class="line">if (!cpuResult.ok) throw cpuResult.status.summary;</div>
+<div class="line">local cpu = cpuResult.value;</div>
+<div class="line">// Graphics 上传由 C++ render bridge 的 generateMeshBorrowed 完成；</div>
+<div class="line">// 当前 Squirrel facade 只返回 handle-backed CPU MeshBuild。</div>
+</div><!-- fragment --><h3>生成、侵蚀并分析 3D 地形</h3>
+<p>高度场生成后可串联热力侵蚀、水力侵蚀、D8 水文分析与生态群落分类。所有阶段均为 确定性 CPU 算法，适合在关卡烘焙、编辑器修改或世界创建时运行；不要逐帧重新侵蚀。</p>
+<div class="fragment"><div class="line">local p = gen.newParams();</div>
+<div class="line">p.setSeed(20260826);</div>
+<div class="line">p.setSize(512, 512);</div>
+<div class="line">p.setFloat(&quot;frequency&quot;, 1.0 / 96.0);</div>
+<div class="line">p.setInt(&quot;octaves&quot;, 6);</div>
+<div class="line"> </div>
+<div class="line">local hm = gen.generateHeightmap(p);</div>
+<div class="line">gen.erodeTerrainThermal(hm, 20, 0.018, 0.32);</div>
+<div class="line">gen.erodeTerrainHydraulic(hm, 60, 0.012, 0.08, 2.0, 0.18, 0.12);</div>
+<div class="line">// Priority-Flood 排水 + 沟头起蚀 + stream-power 下切；闭合盆地会在允许的</div>
+<div class="line">// maxDepth 内切穿溢流坎，随后反复汇流俘获并扩宽为 V 形河谷。</div>
+<div class="line">gen.erodeTerrainFluvial(hm, 8, 0.006, 0.0075, 0.12, 1.8);</div>
+<div class="line"> </div>
+<div class="line">// Production terrain should normally separate ordinary river-bed incision</div>
+<div class="line">// from the much more destructive act of cutting through a watershed sill.</div>
+<div class="line">// The last value is maxBreachDepth; a connected lake deeper than this remains</div>
+<div class="line">// endorheic even when maxDepth allows deeper channel beds elsewhere.</div>
+<div class="line">gen.erodeTerrainFluvialAdvanced(hm, 12, 0.008, 0.02, 0.14, 4.0, 0.025);</div>
+<div class="line"> </div>
+<div class="line">// For a heightfield sampled at twice the reference resolution, scale routing</div>
+<div class="line">// coordinates and per-cell grades while keeping thresholds area-relative.</div>
+<div class="line">gen.erodeTerrainFluvialScaled(hm2x, 12, 0.008, 0.02, 0.14, 8.0, 0.025, 2.0);</div>
+<div class="line">local layers2x = gen.analyzeTerrainScaled(hm2x, 400.0, 0.22, 0.42, 2.0);</div>
+<div class="line"> </div>
+<div class="line">// Detailed mode performs the same scaled erosion but also returns persistent</div>
+<div class="line">// process diagnostics, analogous to erosion tools&#39; Wear / Deposit outputs.</div>
+<div class="line">// Values use heightmap units; deposition - wear always equals heightDelta.</div>
+<div class="line">local erosion = gen.erodeTerrainFluvialDetailed(</div>
+<div class="line">    hm, 12, 0.008, 0.02, 0.14, 4.0, 0.025, 1.0);</div>
+<div class="line">local removed = erosion.getWear(100, 80);</div>
+<div class="line">local deposited = erosion.getDeposition(100, 80);</div>
+<div class="line">local netChange = erosion.getHeightDelta(100, 80);</div>
+<div class="line">// exposure &lt;= 0 selects a robust 99th-percentile auto exposure. Combined maps</div>
+<div class="line">// encode wear as orange and deposition as cyan; separate maps are also exposed.</div>
+<div class="line">local processMap = gen.generateTerrainErosionMap(erosion, 0.0);</div>
+<div class="line">local wearMap = gen.generateTerrainWearMap(erosion, 0.0);</div>
+<div class="line">local depositMap = gen.generateTerrainDepositionMap(erosion, 0.0);</div>
+<div class="line"> </div>
+<div class="line">// River surfaces can be split by world-space longitudinal grade. This allows</div>
+<div class="line">// calm water and cascades to use different shaders/tints while sharing the</div>
+<div class="line">// same drainage graph and hydraulic-geometry width calculation.</div>
+<div class="line">local calm = gen.generateTerrainRiverMeshAdvanced(</div>
+<div class="line">    hm, layers, gfx, ox, oy, 64, 64, cellSize, heightScale,</div>
+<div class="line">    0.04, 0.24, 0.035, 0.0, 0.12);</div>
+<div class="line">local cascades = gen.generateTerrainRiverMeshAdvanced(</div>
+<div class="line">    hm, layers, gfx, ox, oy, 64, 64, cellSize, heightScale,</div>
+<div class="line">    0.035, 0.20, 0.030, 0.12, 1.6);</div>
+<div class="line"> </div>
+<div class="line">// riverThreshold &lt;= 1 时表示占地图格数的比例；&gt; 1 时表示汇流格数阈值。</div>
+<div class="line">local layers = gen.analyzeTerrain(hm, 0.025, 0.25, 0.65);</div>
+<div class="line">local biome = layers.getBiomeName(100, 80);</div>
+<div class="line">local river = layers.isRiver(100, 80);</div>
+<div class="line">local lakeDepth = layers.getLakeDepth(100, 80);</div>
+<div class="line">local moisture = layers.getMoisture(100, 80);</div>
+<div class="line"> </div>
+<div class="line">// 每块 64x64，返回可写入文件或直接交给 VoxelWorld 的 ByteData。</div>
+<div class="line">local terrainAsset = gen.bakeTerrainAsset(hm, layers, 64);</div>
+<div class="line"> </div>
+<div class="line">// 构建 64x64 单元的 LOD1 渲染块；边裙深度 2 世界单位。</div>
+<div class="line">local chunk = gen.buildTerrainChunk(hm, layers, 0, 0, 64, 64, 1, 1.0, 24.0, 2.0);</div>
+<div class="line">local gpuMesh = gen.generateTerrainChunkMesh(chunk, gfx);</div>
+<div class="line">local splat = gen.generateTerrainSplatMap(chunk); // RGBA = 沙地、植被、岩石、积雪</div>
+<div class="line">local splatTexture = gfx.newTexture(splat, false, false);</div>
+<div class="line">local terrainShader = gen.createTerrainMaterialShader(gfx);</div>
+<div class="line">// entity.setTexture(splatTexture); entity.setShader(terrainShader);</div>
+<div class="line">// splat 的 Alpha 是积雪权重，不能直接作为普通透明材质显示。</div>
+<div class="line">local albedo = gen.generateTerrainAlbedoMap(chunk); // 不透明生态诊断色，河流/海洋单独着色</div>
+<div class="line">local albedoTexture = gfx.newTexture(albedo, false, false);</div>
+<div class="line">// 独立水面：宽度随汇流量增长，沿 D8 下游接收格连续连接。</div>
+<div class="line">local riverMesh = gen.generateTerrainRiverMesh(hm, layers, gfx, 0, 0, 64, 64,</div>
+<div class="line">                                                1.0, 24.0, 0.15, 0.8, 0.04);</div>
+<div class="line">// Priority-Flood 保留的深洼地生成独立湖面；岸线按深度等值线在格内插值。</div>
+<div class="line">local lakeMesh = gen.generateTerrainLakeMesh(hm, layers, gfx, 0, 0, 64, 64,</div>
+<div class="line">                                              1.0, 24.0, 0.004, 0.04);</div>
+<div class="line">local waterShader = gen.createTerrainWaterShader(gfx); // 微法线、Fresnel 与太阳高光</div>
+</div><!-- fragment --><p><code>ProcgenTerrainLayers</code> 提供 <code>getFlowAccumulation</code>、<code>isRiver</code>、<code>getLakeDepth</code>、<code>isLake</code>、<code>getTemperature</code>、 <code>getMoisture</code>、<code>getBiome</code> 和 <code>getBiomeName</code>。群落名称包括 <code>ocean</code>、<code>beach</code>、 <code>desert</code>、<code>grassland</code>、<code>forest</code>、<code>rainforest</code>、<code>tundra</code>、<code>taiga</code>、<code>alpine</code>、 <code>river</code>、<code>lake</code>、<code>wetland</code>。湖岸和低坡河岸会依据淡水邻域、湿度与坡度形成 湿地过渡。可运行的交互流程见 <a href="../../../examples/terrain-editor/"><code>examples/terrain-editor</code></a>。</p>
+<p>河流显示阈值和沟头起蚀阈值彼此独立：低阶细沟可以先以较弱速率侵蚀并竞争径流， 但只有达到 <code>riverThreshold</code> 的通道才进入最终河流层。<code>flowAccumulation</code> 采用 Freeman 多流向权重分配以削弱 D8 栅格偏置，同时保存一条主接收器保证阈值河网 可追踪；连续流向向量用于平滑河面中心线。 当溢流坎所需切深超过 <code>maxDepth</code> 时，系统保留闭合盆地，而不会无界削平山脊。</p>
+<p>C++ 烘焙工具还提供版本化 <code>EVTR</code> v5 分块资产：每块独立压缩和校验，高度使用 UNORM16，汇流/湖深/温湿度使用 UNORM8，连续流向使用两个 SNORM8 分量，D8 流向、Strahler 河序、河流和群落保留精确字节。河序用于稳定地区分沟头、支谷和 冲积主谷。旧版 v1/v2/v3/v4 仍可读取，并从旧 D8 方向重建兼容流向。 加载后的块无需重新分析高度场即可追踪下游、重建河面或执行水文查询。<code>TerrainAsset</code> 只解析目录并按块解码；<code>TerrainStreamingCache</code> 支持观察点半径、每帧加载预算、 淘汰、整数层采样和跨块双线性高度采样。运行时水文不再止于块内查询： <code>getReceiver()</code> 使用全局格坐标跨越 EVTR 块边界解析 D8 下游格，<code>traceFlow()</code> 可沿 已驻留块连续追踪整条河道；<code>buildWindow()</code> 将任意矩形及其一格 halo 拼成完整的 高度、水文和气候窗口。河面网格、岸线和法线构建应读取该 halo，从而让汇流量、 连续流向与 Strahler 河序在块接缝两侧保持一致。若相邻块尚未驻留，这些接口明确 返回失败，调用方可遵守加载预算延后构网，而不会把缺失邻块误判为河流出口。</p>
+<p><code>ProcgenTerrainMeshChunk</code> 的基础网格按 <code>2^lod</code> 采样，高度法线始终从原始全分辨率 高度场求导，因此同边相邻块不会出现光照法线断层。块四周生成可配置深度的边裙， 用于遮盖不同 LOD 之间的 T 型接缝。每个顶点另有四个归一化材质权重，可通过 <code>getMaterialWeight(vertex, channel)</code> 读取；通道依次为沙地、植被、岩石、积雪， 由群落、坡度、高程和湿度共同计算。<code>generateTerrainSplatMap()</code> 会生成标准 RGBA8 splat 纹理，每个像素四通道之和严格为 255，适合跨 Vulkan/WebGPU 上传及离线保存。 <code>generateTerrainAlbedoMap()</code> 则将四种权重混合为不透明预览颜色，并用块内保存的 群落 ID 区分海洋、海滩和河流；它适合编辑器诊断，不能替代运行时多层 PBR shader。 <code>createTerrainMaterialShader()</code> 创建运行时四层地形 shader：直接采样 splat，混合各层 Albedo 与粗糙度，并用世界坐标平滑噪声增加宏观/细节变化。shader 接入 Mesh3D 三级级联阴影，并用连续噪声梯度产生轻微微表面法线。它与普通 Mesh3D ABI兼容， 不需要给地形顶点增加私有属性。 <code>generateTerrainRiverMesh()</code> 为河道格生成从当前格到下游接收格的水面带，最小/最大 宽度按对数汇流量插值。水面按地形块分别构建，可使用低粗糙度蓝色材质独立渲染。 标准 Mesh 仍上传几何、法线和 UV，避免改变通用网格 ABI。</p>
+<h3>生成六边形网格星球</h3>
+<p><code>mesh.hexplanet</code> 生成细分二十面体的对偶网格。星球表面以六边形单元为主， 并包含球面拓扑必需的 12 个五边形单元。所有顶点都位于指定半径的球面上， 可直接交给 3D 渲染系统使用。</p>
+<div class="fragment"><div class="line">local gen = eve.Procgen();</div>
+<div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setFloat(&quot;radius&quot;, 1.0);</div>
+<div class="line">p.setInt(&quot;subdivisions&quot;, 3);</div>
+<div class="line">p.setFloat(&quot;tileInset&quot;, 0.12);</div>
+<div class="line"> </div>
+<div class="line">local cpuResult = gen.buildMesh(&quot;mesh.hexplanet&quot;, p);</div>
+<div class="line">if (!cpuResult.ok) throw cpuResult.status.summary;</div>
+<div class="line">local cpu = cpuResult.value;</div>
+<div class="line">// Graphics 上传由 C++ render bridge 的 generateMeshBorrowed 完成。</div>
+</div><!-- fragment --><p>参数：</p>
+<ul>
+<li><code>radius</code>：星球半径，必须大于 <code>0</code>，默认 <code>1.0</code>。</li>
+<li><code>subdivisions</code>：二十面体细分次数，范围 <code>[0, 7]</code>，默认 <code>2</code>。单元总数为 <code>10 * 4^subdivisions + 2</code>；每增加一级，网格规模约增至四倍。</li>
+<li><code>tileInset</code>：每个单元向自身中心收缩的比例，范围 <code>[0, 0.5)</code>，默认 <code>0.06</code>。设为 <code>0</code> 时单元无缝相接；增大该值可形成清晰的网格间隙。</li>
+</ul>
+<p>生成结果的 metadata 包含 <code>algorithm</code>、<code>cells</code>、<code>pentagons</code>、<code>hexagons</code> 和 <code>subdivisions</code>。网格始终含 12 个五边形，其余单元均为六边形；这些五边形 是用多边形铺满球面时无法消除的拓扑要求。</p>
+<p>建议在创建关卡或切换星球时生成一次并缓存 GPU Mesh，不要逐帧重新生成。 </p><h3>生成可玩地牢（<code>level.roguelike</code>，Roguelike 风格）</h3>
+<p><code>level.roguelike</code> 是种子驱动的房间-走廊地牢生成器，在墙/地板网格之上 再叠一层**细节**（<code>Grid2D.detail</code>）与**对象**，适合快速搭建 2D / 2.5D 关卡：</p>
+<ul>
+<li>墙格 <code>getDetail</code> = 8 位邻接掩码（哪些方向是可行走地板），即瓦片方向， 可驱动方向感知的自动拼墙。</li>
+<li>地板格 <code>getDetail</code> = 地板图案变体（<code>1..N</code>）；<code>&gt;= 100</code> 表示随机散落的装饰瓦片。</li>
+<li><code>getObjectType</code> 提供 <code>spawn</code> / <code>stairs</code> 以及 <code>pillar</code> / <code>chest</code> 道具。</li>
+<li><code>getMeta</code> 记录 <code>seed</code> / <code>rooms</code> / <code>floorPattern</code> / <code>decorTiles</code> / <code>corridorStyle</code>， 便于复现或存档关卡。</li>
+</ul>
+<div class="fragment"><div class="line">local paramsResult = procgen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setSeed(42);</div>
+<div class="line">p.setSize(48, 32);</div>
+<div class="line">p.setInt(&quot;roomCount&quot;, 12);</div>
+<div class="line">p.setString(&quot;layoutStyle&quot;, &quot;clustered&quot;);       // grid | clustered</div>
+<div class="line">p.setString(&quot;connectionStyle&quot;, &quot;nearest&quot;);    // sequential | nearest</div>
+<div class="line">p.setString(&quot;corridorStyle&quot;, &quot;l&quot;);   // l | straight | diagonal</div>
+<div class="line">p.setString(&quot;floorPattern&quot;, &quot;brick&quot;);// brick | checker | plank | cobble | plain</div>
+<div class="line">p.setFloat(&quot;decorDensity&quot;, 0.06);</div>
+<div class="line">p.setString(&quot;decorSet&quot;, &quot;mixed&quot;);    // none | pillars | treasure | mixed</div>
+<div class="line">p.setFloat(&quot;propDensity&quot;, 0.16);     // themed room-edge prop dressing</div>
+<div class="line">p.setFloat(&quot;corridorLightDensity&quot;, 0.035); // semantic wall lights on corridors</div>
+<div class="line">// Optional, asset-pack-neutral pools (model/prefab ids, comma separated):</div>
+<div class="line">p.setString(&quot;assetPack&quot;, &quot;my-dungeon-pack&quot;);</div>
+<div class="line">p.setString(&quot;assets.container&quot;, &quot;crate,barrel,chest&quot;);</div>
+<div class="line">p.setString(&quot;assets.light&quot;, &quot;torch,candle&quot;);</div>
+<div class="line">local gridResult = procgen.generate(&quot;level.roguelike&quot;, p);</div>
+<div class="line">if (!gridResult.ok) throw gridResult.status.summary;</div>
+<div class="line">local grid = gridResult.value;</div>
+</div><!-- fragment --><p>常用规则：<code>roomCount</code> / <code>roomMin</code> / <code>roomMax</code>（房间预算与尺寸）、 <code>corridorWidth</code>（走廊宽）、<code>padding</code>（外框墙厚）、<code>spacing</code>（房间间距）、 <code>floorVariants</code>（地板变体数）、<code>autotile</code>（是否写入墙方向掩码）。<code>clustered</code> 布局从中心房间向四周生长，配合 <code>nearest</code> 连接可得到短走廊和分叉拓扑；默认值仍为 <code>grid</code> / <code>sequential</code>，以保持既有调用结果。</p>
+<p>配套工具：</p>
+<ul>
+<li><code>procgen.autotileGrid(grid)</code>：对**任意**已生成网格的墙格补写 8 位方向掩码， 为其它算法生成的关卡也加上“瓦片方向”细节。</li>
+<li><code>procgen.randomSeed()</code>：产生一个非 0 的随机种子，用于再掷一局。</li>
+<li>自动布景会给房间选择储藏、寝室、餐厅、军械、宝库、祭坛或酒馆主题。 每个房间还会输出带主题资产名与矩形范围的 <code>room</code> 区域对象；楼梯对象带朝向与 边界开口标记，3D 渲染器可据此替换对应墙段并生成向外下行的入口。 对象通过 <code>getObjectType/Asset/Rotation/Flags</code> 暴露语义角色、可替换资产、朝向和 放置属性；<code>assets.&lt;role&gt;</code> 池可映射任意 3D 资产包，无需修改生成器。</li>
+</ul>
+<p>可运行脚本与快捷键见 `examples/roguelike-generator`。</p>
+<h3>生成城区布局（<code>urban.parcels</code> / <code>mesh.urban</code>）</h3>
+<p><code>urban.parcels</code> 与 <code>mesh.urban</code> 是基于 Eurographics 2024 论文 <em>Hierarchical Co-generation of Parcels and Streets in Urban Modeling</em> （Chen/Song/Ortner，CGF 43(2)）的引擎移植：从输入地块多边形层级化二分生成 <b>地块（parcels）与街道（streets）</b> 协同的城区布局。核心流程：</p>
+<ol type="1">
+<li>每层对每个可分割地块计算 ~20 条流线候选（交叉场 + 超流线追踪，必要时回退 直线弦），用论文式 2 质量分 <code>Q = λ1·Qsize + λ2·Qregu + λ3·Qacce</code> 选最优分割线；</li>
+<li>消除地块网格中的短边；</li>
+<li>对不可达地块分组，生成 I 形/L 形街道入口，并用转角感知 Dijkstra 接入既有 街道网络，保证每个地块可达、网络连通；</li>
+<li>全局几何优化（规则角、边/街平滑、交叉口直角、贴近初始），带“变差回滚”保护。</li>
+</ol>
+<div class="fragment"><div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setSeed(20260823);</div>
+<div class="line">p.setString(&quot;land&quot;, &quot;rect&quot;);          // rect | triangle | ellipse | l | hexagon</div>
+<div class="line">p.setFloat(&quot;landWidth&quot;, 100);</div>
+<div class="line">p.setFloat(&quot;landHeight&quot;, 60);</div>
+<div class="line">p.setFloat(&quot;minParcelArea&quot;, 4.0);</div>
+<div class="line">p.setInt(&quot;targetParcels&quot;, 120);</div>
+<div class="line">p.setString(&quot;streetPattern&quot;, &quot;default&quot;); // default | loop | culdesac | tree</div>
+<div class="line">p.setInt(&quot;optimize&quot;, 1);</div>
+<div class="line"> </div>
+<div class="line">// 1) 语义地图：路 = Semantic::Road(11)，地块 = Floor(2)，detail = 地块 id(1..N)</div>
+<div class="line">local gridResult = gen.generate(&quot;urban.parcels&quot;, p);</div>
+<div class="line">if (!gridResult.ok) throw gridResult.status.summary;</div>
+<div class="line">local grid = gridResult.value;</div>
+<div class="line"> </div>
+<div class="line">// 2) 城区网格的 CPU 表示：地块块 + 街道带（extrude&gt;0 时挤压成体块）</div>
+<div class="line">p.setFloat(&quot;extrude&quot;, 6.0);</div>
+<div class="line">local meshResult = gen.buildMesh(&quot;mesh.urban&quot;, p);</div>
+<div class="line">if (!meshResult.ok) throw meshResult.status.summary;</div>
+<div class="line">local mesh = meshResult.value;</div>
+</div><!-- fragment --><p>常用参数：<code>land</code> 也支持显式多边形（<code>"0,0;100,0;100,60;0,60"</code>）； <code>lambdaSize/lambdaRegu/lambdaAcce</code> 控制地块形状偏好（论文式 2 权重）； <code>orientation</code> 设为 <code>east-west</code> / <code>north-south</code> 可控制地块长边朝向； <code>boundaryStreet</code> 设为 <code>none</code> / <code>random</code> 可关闭或随机化地块边界街道； <code>cellSize</code>（栅格分辨率）、<code>extrude</code>（网格块高）。网格与地图的 metadata 记录 <code>parcels</code> / <code>streets</code> / <code>junctions</code> / <code>streetLength</code> / <code>avgIrregularity</code>。 交互示例与完整参数见 `examples/urban-generator`。</p>
+<h3>生成三维随机溶洞（<code>mesh.cave</code>）</h3>
+<p><code>mesh.cave</code> 在实体体积中刻蚀一条保证连通的主通道，再加入分支与椭球洞室，最后 通过 Marching Cubes 提取朝向洞内的岩壁。全部随机性只来自显式 seed；相同参数在 CPU 后端得到 bit-exact 网格，适合存档复现、离线烘焙碰撞或按命名组 <code>caveWalls</code> 分配材质。</p>
+<div class="fragment"><div class="line">local paramsResult = procgen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setSeed(20260830);</div>
+<div class="line">p.setString(&quot;style&quot;, &quot;mixed&quot;); // cavern | tunnels | vertical | labyrinth | mixed</div>
+<div class="line">p.setString(&quot;genesis&quot;, &quot;mixed&quot;); // epigene | hypogene | mixed</div>
+<div class="line">p.setInt(&quot;resolution&quot;, 56);</div>
+<div class="line">p.setFloat(&quot;width&quot;, 32.0);</div>
+<div class="line">p.setFloat(&quot;height&quot;, 13.0);</div>
+<div class="line">p.setFloat(&quot;depth&quot;, 25.0);</div>
+<div class="line">p.setInt(&quot;chambers&quot;, 8);</div>
+<div class="line">p.setInt(&quot;branches&quot;, 5);</div>
+<div class="line">p.setFloat(&quot;tunnelRadius&quot;, 0.16);</div>
+<div class="line">p.setFloat(&quot;chamberScale&quot;, 1.05);</div>
+<div class="line">p.setFloat(&quot;roughness&quot;, 0.14);</div>
+<div class="line">p.setFloat(&quot;multiscaleRoughness&quot;, 0.88); // 带限的宏观/中观/细观洞壁起伏谱</div>
+<div class="line">p.setFloat(&quot;roughnessFlowCoupling&quot;, 0.72); // 凸起暴露增强、凹窝遮蔽抑制局部溶蚀传质</div>
+<div class="line">p.setFloat(&quot;surfaceSlopeReactivity&quot;, 0.74); // 由最终壁面法线离散度增强棱边与角点反应率</div>
+<div class="line">p.setFloat(&quot;reactivePatchiness&quot;, 0.68); // 用多尺度空间相关反应斑替代逐体素白噪声</div>
+<div class="line">p.setFloat(&quot;erosion&quot;, 0.72);             // 总溶蚀强度</div>
+<div class="line">p.setFloat(&quot;bedding&quot;, 0.68);             // 层理面凹槽与壁龛</div>
+<div class="line">p.setFloat(&quot;fractureDissolution&quot;, 0.62); // 节理裂隙导流溶蚀</div>
+<div class="line">p.setFloat(&quot;fractureApertureVariability&quot;, 0.76); // 空间相关的裂隙孔径非均质</div>
+<div class="line">p.setFloat(&quot;fractureStressControl&quot;, 0.82); // 应力诱发的溶蚀前缘分裂与分支通道</div>
+<div class="line">p.setFloat(&quot;fractureFlowFeedback&quot;, 0.74); // 孔径立方导流与反应物更新驱动的优势通道</div>
+<div class="line">p.setFloat(&quot;vadoseIncision&quot;, 0.48);      // 排水后溪流向下切割</div>
+<div class="line">p.setFloat(&quot;waterTableCorrosion&quot;, 0.72); // 地下水位附近的侧向腐蚀带</div>
+<div class="line">p.setFloat(&quot;waterTableLevel&quot;, 0.26);     // 最高历史水位（归一化高度）</div>
+<div class="line">p.setInt(&quot;waterTableStages&quot;, 3);         // 基准面下降留下的水位级数</div>
+<div class="line">p.setFloat(&quot;waterTableDrop&quot;, 0.19);      // 相邻历史水位的垂直间距</div>
+<div class="line">p.setFloat(&quot;waterTableFluctuation&quot;, 0.42); // 每级水位带厚度/波动范围</div>
+<div class="line">p.setFloat(&quot;scallopErosion&quot;, 0.72);      // 湍流边界层形成贝壳状溶蚀窝</div>
+<div class="line">p.setFloat(&quot;scallopScale&quot;, 0.11);        // 沿通道流向的无量纲波长</div>
+<div class="line">p.setFloat(&quot;scallopHydraulicScaling&quot;, 1.0); // 让高速段形成更短、更浅的 scallop</div>
+<div class="line">p.setFloat(&quot;scallopMaturity&quot;, 0.68);        // 细胞合并、宽凹窝与窄尖脊的成熟度</div>
+<div class="line">p.setFloat(&quot;scallopScaleVariability&quot;, 0.72); // 空间相关的近似对数正态波长分布</div>
+<div class="line">p.setFloat(&quot;scallopFlowSeparation&quot;, 0.78);   // 上游陡面与下游缓面的非对称行进波</div>
+<div class="line">p.setFloat(&quot;scallopFlowHistory&quot;, 0.68);      // 分区保存的基流/洪水多期 scallop 与局部流向反转</div>
+<div class="line">p.setFloat(&quot;bendUndercut&quot;, 0.72);          // 弯道外侧流动分离与反应物聚焦淘蚀</div>
+<div class="line">p.setFloat(&quot;fragmentDetachment&quot;, 1.0);     // 清除已完全脱离母岩的侵蚀残片</div>
+<div class="line">p.setFloat(&quot;curvatureDissolution&quot;, 0.72);  // 优先退蚀暴露凸部并圆化人工棱角</div>
+<div class="line">p.setFloat(&quot;reactiveSurfaceCoupling&quot;, 0.88); // 岩性可达表面积与水力暴露共同调制退蚀</div>
+<div class="line">p.setFloat(&quot;hydraulicErosion&quot;, 0.86);   // 流量—溶蚀反馈强度；0 保持旧行为</div>
+<div class="line">p.setFloat(&quot;mixingCorrosion&quot;, 0.76);    // 支洞—主洞汇流处的混合腐蚀扩腔</div>
+<div class="line">p.setFloat(&quot;lithologicHeterogeneity&quot;, 0.82); // 异质层组与缝合线选择性溶蚀</div>
+<div class="line">p.setFloat(&quot;floodAbrasion&quot;, 0.78);      // 含砂洪水在近床区形成冲槽和涡蚀坑</div>
+<div class="line">p.setFloat(&quot;sedimentLoad&quot;, 0.48);       // 搬运中的磨蚀工具量；过高时覆盖会保护床面</div>
+<div class="line">p.setFloat(&quot;floodPlucking&quot;, 0.66);      // 强流从裂隙预制区拔出块体</div>
+<div class="line">p.setFloat(&quot;pluckingBlockScale&quot;, 0.12); // 归一化块体尺度</div>
+<div class="line">p.setFloat(&quot;hydraulicGradient&quot;, 0.52);  // 水力坡降代理量</div>
+<div class="line">p.setFloat(&quot;recharge&quot;, 0.78);           // 补给/输运能力</div>
+<div class="line">p.setFloat(&quot;flowFocusing&quot;, 0.82);       // 优势通道溶蚀集中度</div>
+<div class="line">p.setFloat(&quot;damkohler&quot;, 0.0035);        // 有效 Da：均匀溶蚀/通道化/虫孔化分区</div>
+<div class="line">p.setFloat(&quot;transportG&quot;, 1.6);          // 横向扩散限制；高值保留更多细长通道</div>
+<div class="line">p.setFloat(&quot;microstructure&quot;, 0.78);     // 多尺度岩性非均质强度；0 保持旧行为</div>
+<div class="line">p.setFloat(&quot;microporosityAccess&quot;, 0.42); // 可接触微孔表面积；高值偏分布式退缩</div>
+<div class="line">p.setFloat(&quot;permeabilityContrast&quot;, 0.72); // 孔渗对比；高值强化局部优势通道</div>
+<div class="line">p.setFloat(&quot;condensationCorrosion&quot;, 0.72); // 潮湿、低流速顶板的凝结腐蚀浅蚀坑</div>
+<div class="line">p.setFloat(&quot;condensationFaceting&quot;, 0.62); // 局部对流凝结/蒸发形成的平面腐蚀面</div>
+<div class="line">p.setFloat(&quot;differentialVeinErosion&quot;, 0.58); // 抗蚀矿脉周围母岩退缩形成 boxwork 凸脊</div>
+<div class="line">p.setFloat(&quot;breakdown&quot;, 0.68); // 溶蚀削弱后的顶板剥落与配对崩积块</div>
+<div class="line">p.setInt(&quot;breakdownEvents&quot;, 5); // 确定性剥落事件数量</div>
+<div class="line">p.setFloat(&quot;sedimentDeposition&quot;, 0.64); // 流向控制的洞底沉积坝与叠瓦砾石</div>
+<div class="line">p.setFloat(&quot;paragenesis&quot;, 0.70); // 沉积充填约束下的向上顶板溶蚀槽</div>
+<div class="line">p.setInt(&quot;sedimentBars&quot;, 5); // 低起伏纵向沉积坝数量</div>
+<div class="line">p.setFloat(&quot;biogenicCorrosion&quot;, 0.68); // 有鸟蝠粪、湿壁和气流时的硝化生物腐蚀</div>
+<div class="line">p.setFloat(&quot;mineralArmoring&quot;, 0.52); // 次生矿物覆盖抑制化学退缩，强水流可部分清除</div>
+<div class="line">p.setInt(&quot;fractureCount&quot;, 7);            // 高级参数：节理面数量</div>
+<div class="line">p.setInt(&quot;cupolas&quot;, 7);                  // 上升流顶板穹穴</div>
+<div class="line">p.setInt(&quot;feeders&quot;, 4);                  // 深部补给管及相连顶板半管</div>
+<div class="line">p.setInt(&quot;dripstones&quot;, 16);              // 滴水点对数</div>
+<div class="line">p.setFloat(&quot;dripstoneScale&quot;, 0.75);      // 沉积体长度尺度</div>
+<div class="line">p.setString(&quot;stalagmiteShape&quot;, &quot;mixed&quot;); // conical | columnar | flatTop | mixed</div>
+<div class="line">p.setFloat(&quot;normalSmoothing&quot;, 0.86);     // 0 保留三角面，1 完全共享顶点法线</div>
+<div class="line">p.setString(&quot;surfaceNormalMode&quot;, &quot;densityGradient&quot;); // 以连续密度场梯度重建法线</div>
+<div class="line">p.setInt(&quot;wetnessRefinement&quot;, 1);        // 沿连续排水湿润场零线细分材质边界</div>
+<div class="line">p.setFloat(&quot;boundaryClosure&quot;, 1.0);      // 用起伏宿岩包络封闭有限采样域</div>
+<div class="line">p.setInt(&quot;isosurfaceSampling&quot;, 2);       // 以两倍采样重建连续等值面轮廓</div>
+<div class="line">p.setInt(&quot;surfaceRefinement&quot;, 2);        // 曲率误差驱动的共形自适应细分</div>
+<div class="line">p.setFloat(&quot;refinementThreshold&quot;, 0.0015); // 越小细分越密</div>
+<div class="line">p.setInt(&quot;flowstones&quot;, 9);               // 贴壁流石薄层</div>
+<div class="line">p.setInt(&quot;curtains&quot;, 7);                 // 波状洞帘</div>
+<div class="line">p.setFloat(&quot;flowstoneScale&quot;, 0.85);      // 二次沉积整体尺度</div>
+<div class="line">local caveResult = procgen.buildMesh(&quot;mesh.cave&quot;, p);</div>
+<div class="line">if (!caveResult.ok) throw caveResult.status.summary;</div>
+<div class="line">local cave = caveResult.value;</div>
+</div><!-- fragment --><p><code>resolution</code> 是三个轴的默认采样精度，也可用高级参数 <code>nx/ny/nz</code> 分别覆盖；每轴 限制为 <code>8..128</code>。世界尺寸只缩放最终网格，不改变洞穴拓扑。<code>cavern</code> 强调宽阔洞室， <code>tunnels</code> 强调狭长通道，<code>vertical</code> 增加竖井高差，<code>labyrinth</code> 增加水平曲折， <code>mixed</code> 适合作为通用默认值。</p>
+<p><code>multiscaleRoughness&gt;0</code> 把旧的单频洞壁噪声渐变为三个带限空间频段：大尺度起伏控制 整体壁面轮廓，中尺度起伏表达成片溶蚀差异，细尺度只保留当前体素分辨率能够稳定重建的 部分。频段幅度随频率衰减，并降低垂直频率以反映层状碳酸盐岩的各向异性；它不会把 晶体微米地形直接放大为米级尖刺。Zhou 与 Fischer（2025，DOI <code>10.1021/acsearthspacechem.5c00161</code>）对 80 帧连续方解石表面地形的 PSD 分析说明，局部 微地形及空间频率高度非均质，而总体溶蚀仍保持有界；Racine 等（2025，DOI <code>10.5194/essd-17-4671-2025</code>）发布的 16 个洞穴 LiDAR 数据则同时提供 2 mm 与 5 cm 点云、 网格及洞底/顶板粗糙度栅格，强调真实洞道几何的跨尺度性质。当前实现只采用这些统计约束， 不把三个频段解释成特定绝对岩石粒径或年代。默认值为 <code>0</code>，保持旧单频密度场逐顶点一致； <code>wallRoughnessSpectrum</code>、<code>minimumWallRelief</code> 和 <code>maximumWallRelief</code> 公开实际生成状态。</p>
+<p><code>roughnessFlowCoupling&gt;0</code> 进一步把上述有符号壁面起伏反馈到化学退缩：凸出的脊面更直接 接触持续补给的欠饱和水，局部传质率提高；凹入窝穴代表回流、低速或停滞区，传质率降低， 强水力暴露只会部分冲洗这种遮蔽。乘数严格限制在 <code>0.60..1.45</code>，只作用于化学溶蚀，不会 放大洪水磨蚀、拔蚀或石块冲刷。2026 年粗糙溶蚀裂隙研究（DOI <code>10.1016/j.rineng.2026.110345</code>）报告粗糙壁面中的回流、低速区和通道化；2026 年碳酸盐岩 物理非均质模拟（DOI <code>10.3390/min16010110</code>）则显式分析粗糙度对局部 Darcy 速度、反应率和 有效溶蚀率的控制。这里采用的是有界亚网格代理，不是 CFD、边界层或浓度场求解。默认值为 <code>0</code>，保持旧密度场逐体素一致；元数据公开实际状态、影响体素数、最小/最大传质乘数以及最大 凸脊暴露和凹窝遮蔽。</p>
+<p><code>surfaceSlopeReactivity&gt;0</code> 在初始洞腔和化学退缩完成后，从最终密度场重建局部表面法线， 用相邻法线的旋转不变离散度识别实际存在的棱边、角点和粗糙斜坡。离散度高且反应流体 可达的部位发生额外退缩；平整表面不受影响。每轮退缩后重新计算法线，因此几何变化会反馈 到下一轮反应，而不是只读取生成前的噪声标签。InterPore 2026 的粗糙度反应率参数化研究 提出用局部点云协方差的最小特征值构造旋转不变 <code>Rq</code>，并在二维粗糙通道、三维大理石表面 和方解石晶体上区分高反应性棱角与低反应性平面。当前实现采用适合体素 SDF 的法线离散度 近似，不等同于论文的协方差特征值，也不解析微米级晶体缺陷。默认值为 <code>0</code>；影响体素数、 最大退缩、总退缩和最大法线离散度均写入元数据。</p>
+<p><code>reactivePatchiness&gt;0</code> 为最终壁面引入确定性的双频空间相关反应率场，使相邻表面点共享 连续的溶蚀前缘，而不是各体素独立闪烁。反应场复用最近洞道水文帧的归一化切向量：沿流向 压缩频谱坐标，使主要蚀坑和残留台面的相关长度大于横向，并在弯曲洞道与支路处随局部流向 旋转。较小尺度只调制边缘；两轮退缩均读取当前零等值面，因此优先斑块会形成受控的扩宽 正反馈。Zhou 与 Fischer（2025，DOI <code>10.1021/acsearthspacechem.5c00161</code>）对 80 期方解石表面地形的功率谱 密度分析表明，反应输运参数化既需要局部反应率范围，也需要表面空间频率的统计分布。 Ma 等（2026，DOI <code>10.1016/j.advwatres.2025.105202</code>）的时序微 CT 与孔隙尺度模拟进一步 观察到孔隙结构和流体可达性控制溶蚀图样，并形成通道扩宽的正反馈。这里用两个带限值噪声 频带近似这种统计相关性，不是时变浓度、两相流或晶体台阶动力学求解；其频率代表洞穴网格 可解析的上尺度形态，不能解释为微米尺度实测波长。默认 <code>0</code> 保持旧几何逐体素一致；元数据 公开斑块速率范围、沿流/横向相干度、通道各向异性、影响体素数和退缩量。Hyman 等（2026， DOI <code>10.1029/2025JB033004</code>）的三维裂隙网络模型进一步给出均匀、通道化和虫洞化三种溶蚀 状态，并显示主通道会在低传质限制下继续扩宽；本实现只借用其方向性和正反馈约束，不求解 Reynolds 流、粒子轨迹或突破曲线。</p>
+<p><code>waterTableCorrosion&gt;0</code> 在 <code>epigene</code> 与 <code>mixed</code> 成因中生成地下水位附近的侧壁浅层腐蚀带。 每一级以 <code>waterTableLevel - stage * waterTableDrop</code> 排列，较老的低位带逐级减弱；沿洞道的 长波小幅摆动避免把整座洞穴切成数学平面，环向侧壁遮罩则保护洞顶与洞底。Gabrovšek 等 （2025，DOI <code>10.5194/hess-29-6685-2025</code>）的分布式补给离散裂隙网络模型显示，最高溶蚀率 形成于地下水位附近；随着水位下降，该高溶蚀带向下迁移并提高经过区域的水力传导率。 Acqua Fitusa 洞穴研究记录的不同高度平顶硫酸腐蚀 notch，则把多级侧向腐蚀与历史基准面 下降直接联系起来。实现只表达这种水文—形态关系，不模拟地下水面求解、真实化学浓度、 硫化氢氧化或地质年代。纯 <code>hypogene</code> 成因下状态为 <code>inactive-hypogene</code>，密度场完全不变。 该机制与 <code>paragenesis</code> 分开拥有事实来源：前者由水位附近侵蚀控制，后者必须由实际沉积坝 遮蔽洞底后才会发生。默认值为 <code>0</code>；影响体素数和最大退缩通过元数据公开。</p>
+<p><code>genesis</code> 控制水文成因，并与外观 <code>style</code> 正交：<code>epigene</code> 保留地表补给、潜水通道和 包气带溪流下切；<code>hypogene</code> 关闭溪流下切，从深部 <code>feeders</code> 经上升壁槽/顶板半管连接 到 <code>cupolas</code>，形成受隔层控制的上升流形态套系；<code>mixed</code> 表示多期叠加，同时保留两类 特征。该套系依据 Roded 等（2024）的 confined-cooling-flow 案例与模型（DOI <code>10.5038/1827-806X.53.2.2505</code>）：富 CO2 热液上升并冷却后增强碳酸盐溶蚀，能够形成 远离补给口的大洞室和复杂迷宫。<code>epigene</code> 仍是默认值，因此既有调用不会改变拓扑。</p>
+<p><code>surfaceRefinement=1</code> 将每个 Marching Cubes 三角形统一细分为四个；模式 <code>2</code> 比较 线性边中点和投影后等值面中点的距离，只拆分超过 <code>refinementThreshold</code> 的高曲率边。 相邻三角形通过量化共享边键复用同一决定，避免不同细分层级产生裂缝。两种模式都用 原始密度场的三线性采样与 Newton 投影把新增顶点拉回零等值面，不重新计算更高分辨率 体素场；模式 <code>2</code> 对三条边的八种拆分组合使用显式共形模板，避免 fan 三角化在非共面 边界产生长对角折痕。因此密度内存保持不变。默认值为 <code>0</code>，以保持既有调用的网格规模 和拓扑。</p>
+<p><code>isosurfaceSampling=2</code> 在侵蚀、沉积和碎块脱落全部结束后，把最终密度场按每轴 <code>(n-1)*2+1</code> 三线性重采样，再执行 Marching Cubes。所有原始体素样本都会在偶数格点原样 保留，新样本近似同一连续三线性场，因此比仅拆分已有三角形更能减少零等值面轮廓锯齿； 后续 Newton 投影也改用该高采样场。该方法会让体素内存最多增至约 8 倍、三角形数量通常 增至约 4 倍，所以只提供 <code>1|2</code>，默认 <code>1</code> 保持原性能和 bit-exact 输出。设计参考 Wang 等 （2025，arXiv <code>2506.09579</code>）以网格—连续 SDF 偏差驱动增采样的自适应提取思路，以及 Stahl 与 Grosso（2025，DOI <code>10.5220/0013309800003912</code>）对三线性插值面、单元歧义和拓扑正确性 的分析。当前实现提高几何采样精度，但仍使用经典查表 Marching Cubes，不宣称解决论文中的 全部鞍点和奇异拓扑案例。</p>
+<p>侵蚀模型采用适合实时程序生成的现象学近似：只在连通洞腔表面附近扩大岩体， <code>bedding</code> 形成受层理控制的水平溶蚀带，<code>fractureDissolution</code> 沿随机节理面形成高窄 槽和分叉，细尺度正向噪声形成溶孔；<code>scallopErosion</code> 沿主通道流向生成交错的圆弧凹窝， 并用非对称相位近似湍流剪切峰值向上游偏移；<code>scallopScale</code> 控制基准波长。 <code>scallopHydraulicScaling&gt;0</code> 将相邻水力段先转换成节点强度并沿通道连续插值，再按 <code>1/sqrt(flowWeight)</code> 缩放局部波长和凹窝深度：高流量区形成密集、较浅的小 scallop， 低流量支洞形成更长、更深的凹窝，且不会在汇流段产生频率硬接缝。关闭水力侵蚀时全部 权重为 1，因此该参数不会改变网格；其默认值为 <code>0</code>，保持既有输出。 <code>scallopMaturity&gt;0</code> 表示持续法向退蚀后的形态年龄：细尺度胞元逐渐减弱，带固定相位关系的 较大胞元接管壁面，凹窝展宽并合并，而余弦胞元边界的幂指数降低，使分隔凹窝的脊线变窄。 这近似 Chaigne 等（2023，DOI <code>10.1073/pnas.2310206120</code>）实验与几何模型观察到的胞元 粗化、连通尖脊网络及高波数 <code>k^-4</code> 特征；Fowler（2025）则为成熟尖脊所需的非线性 流动分离提供了水动力解释。它不是时间积分器，参数只表示归一化成熟阶段；默认值为 <code>0</code>， 此时严格使用原单尺度波形。 <code>scallopScaleVariability&gt;0</code> 不再令整条洞道使用单一波长，而以洞道距离和环向角生成低频、 空间相关的指数尺度场；其几何标准差由 <code>scallopGeometricStdDev</code> 公开。这个分布是对 Springer 与 Hall（2020，DOI <code>10.5038/1827-806X.49.1.2292</code>）100 个实测 scallop 呈 对数正态分布结论的形态代理，不用于反演精确流量。<code>scallopFlowSeparation&gt;0</code> 对流向相位 施加非线性偏斜，使上游侧更陡、下游侧更缓，并随成熟度强化尖脊；它对应 Fowler（2025， DOI <code>10.1098/rspa.2025.0033</code>）模型中湍流边界层剪切峰值上游偏移、坡度依赖传质与流动 分离产生行进波及 cusp 的机制。两项默认均为 <code>0</code>，显式设为 <code>0</code> 与省略参数逐顶点一致； 它们是受约束的统计/形态近似，不宣称求解瞬态湍流。 <code>scallopFlowHistory&gt;0</code> 在旧 scallop 之上加入第二期、空间受限的流水退缩。低频洞段窗口和 环向水位带共同决定后期形态保存位置；较高水力对应更短的第二期波长，只有连续洞段尺度的 掩码才允许相位/不对称方向反转，用于表达排水捕获或回水洪泛。第二期只继续移除岩石，绝不 把第一期凹窝“长回”，因此壁面保留可读的交切层序。2025 National Cave and Karst Management Symposium 的 Black Canyon 现场研究在同一洞段测得高流与基流、上下层位的多个 scallop 速度群，并将其与层位滞水和排水方向迁移联系；该资料目前是会议研究，证据等级不同于正式 期刊论文。Beus 等（2025，Scientific Reports，DOI <code>10.1038/s41598-025-17472-6</code>）以超过 10 km、厘米级洞穴 LiDAR 证明跨洞段的节理组和层理倾向持续组织地下水路径，为采用连续 洞段而非逐体素反转提供结构约束。更早的 Agen Allwedd 研究则直接以 scallop 记录确认冰期 洪泛、蓄水和流向反转的现场先例。当前参数不表示洪水次数、年代或真实流量过程；默认 <code>0</code> 逐顶点保持旧输出，后期影响体素、覆盖率、反转掩码和尺度比均通过元数据公开。 <code>fractureApertureVariability&gt;0</code> 把原本沿整张节理面恒定的孔径替换为空间相关的指数场， 让开放斑块在米级尺度连续扩缩；<code>fractureApertureGeometricStdDev</code> 公开其几何离散程度。 <code>fractureStressControl&gt;0</code> 进一步把均匀溶蚀前缘限制在随纵向推进而分裂、弯曲并重新汇合的 开放窗口内，使节理槽从整齐直切面变为多条竞争性虫孔/分支通道。该约束来自 Jiang 等 （2025，DOI <code>10.1029/2024JB029901</code>）的场尺度耦合水力—力学—化学模型：应力重分布会 加剧溶蚀前缘不稳定性，使均匀溶蚀转向前缘分裂、持久分支和虫孔化；孔径与局部刚度的 演化决定接触斑块何时转为开放斑块。当前实现是这种拓扑趋势的确定性形态代理，不求解 真实应力张量、接触力学、反应输运或年代。两项默认均为 <code>0</code>，省略参数与显式零值逐顶点 一致，并分别通过 <code>fractureApertureDistribution</code> 和 <code>fractureDissolutionFront</code> 元数据 显式区分。 <code>fractureFlowFeedback&gt;0</code> 把上述孔径非均质从被动纹理提升为导流—溶蚀正反馈。实现采用 平行板裂隙的孔径立方导流近似，只计算相对于均匀孔径的额外流量集中；优势孔径沿既有 水力场获得更强退缩，两组开放裂隙重叠处因多一个对流补给面形成有界交汇溶蚀窗。同时 复用 <code>CaveHydrologyWeights::reactantPenetration</code>，让较高有效 Damköhler 数下的反应物供应 随入口距离衰减，避免整张裂隙面等强扩宽。Xu 等（2025，DOI <code>10.3389/feart.2025.1701477</code>）的动态石灰岩裂隙实验观察到“孔径扩大—流量上升—溶蚀增强” 的非线性反馈；Aliouache 与 Jourde（2025，DOI <code>10.1016/j.jhydrol.2024.131684</code>）的离散 裂隙反应运移模型进一步表明连通性、交汇类型、各向异性和水力边界共同决定初生岩溶 优势通道。当前实现只复现这些因果关系的介观形态，不求解瞬态压力、应力闭合或 Ca²⁺ 输运。该参数默认 <code>0</code>；没有孔径对比时状态为 <code>inactive-no-aperture-contrast</code>，保持密度场 不变，并通过影响体素、最大退缩、最大流量集中、交汇增幅和最小反应物可达性元数据公开。 <code>fragmentDetachment&gt;0</code> 在化学侵蚀和碳酸盐沉积完成后，从体素域六个外边界出发，用 26 邻域标记仍与母岩相连的固体。只有完全失去母岩连接的组件才继续退蚀；与顶板、地板 或洞壁保持哪怕斜向连接的石柱、钟乳石和残丘都会保留。强度 <code>1</code> 完全移除悬浮残片， 较小值只让其继续收缩。该步骤近似溶蚀暴露颗粒后由水流剪切触发的机械脱落，不把一般 凸面一概删除。依据 real-rock microfluidic 实验（2025）观察到的流动控制化学溶蚀—颗粒 脱落转变，以及 Noiriel 等（2023，DOI <code>10.3389/frwa.2023.1185608</code>）4D X-ray 结果： 凸角/高曲率区退蚀更快，非反应矿物暴露后逐渐脱落并使粗糙度趋稳。默认值为 <code>0</code>，保持 既有网格 bit-exact。 <code>curvatureDissolution&gt;0</code> 在洞腔主体形成后、钟乳石等二次沉积出现前，对零等值面附近计算 各向异性体素间距下的梯度、Hessian 与平均曲率速度。它只沿法向退蚀面向洞腔的暴露凸部， 让钻孔状尖角、方块状突出和高反应曲率区逐步圆化；受遮蔽的凹部不进行反向平滑，因此不会 抹掉已经由定向水流形成的 scallop 尖脊网络。该近似参考 Rodrigues 等（2024，DOI <code>10.1016/j.gca.2024.05.028</code>）观察到矿物孔壁在饱和度梯度下由表面台阶传播控制、初始尖角 迅速接近圆形的结果，以及 Briolet 等（2025，DOI <code>10.1016/j.gca.2025.03.019</code>）证明岩石 微结构决定局部化或分布式碳酸盐溶蚀的对比实验。演化采用两次 Jacobi 更新并记录受影响 体素数和最大单步退缩；默认值为 <code>0</code>，所以原有配方仍保持 bit-exact。 <code>reactiveSurfaceCoupling&gt;0</code> 复用同一微结构样本，把可接触反应表面积、局部渗透率和通道 水力强度组合成 <code>0.25..2.5</code> 的有界速率乘子，再调制曲率法向退缩。它不会新增无方向噪声： 同一水文网络中，高可达且持续得到新鲜欠饱和水的表面退缩更快，低渗或输运受阻区保留更久。 范围有意远小于真实纳米尺度局部速率的 2–3 个数量级，避免把不可解析的晶体台阶错误放大成 米级尖刺。该设计参考 Zhou 与 Fischer（2025，DOI <code>10.1021/acsearthspacechem.5c00161</code>）对 80 帧方解石表面地形的 PSD/速率谱分析，以及 Ma 等 （2026，DOI <code>10.1016/j.advwatres.2025.105202</code>）关于孔隙结构、流体分布和反应表面可达性 共同控制碳酸盐溶蚀的时序 micro-CT 研究。默认值为 <code>0</code>，保持均匀曲率速率。 <code>condensationCorrosion&gt;0</code> 是独立于主水流 scallop 的晚期微气候改造阶段。它从密度梯度 识别朝上的顶板/上壁，仅在零等值面浅壳层内作用，并用局部水力暴露抑制持续冲刷的通道； 带 seed 的低频湿度斑块和高频蚀坑载波形成不均匀、浅而有界的凹蚀。该设计依据 Šebela 等 （2024，DOI <code>10.1007/s12665-024-11449-w</code>）对冷岩面凝结、相对湿度、壁面温差与富 CO2 欠饱和水侵蚀性的总结，以及 Domínguez-Villar 等（2021，DOI <code>10.1016/j.ringeo.2021.100008</code>）观察到的表面微蚀坑和约 50 微米影响层。实现将长期累计的 微米过程放大为当前网格可解析的形态代理，最大单次归一化退缩限制为 <code>0.032</code>；它不是逐微米 水膜、热传导或 CO2 扩散模拟。默认值为 <code>0</code>，因此既有配方 bit-exact 不变，并通过 <code>condensationAffectedVoxels</code>、<code>maximumCondensationRetreat</code> 等元数据显式记录影响。 <code>condensationFaceting&gt;0</code> 在通道局部坐标中构造 5&ndash;7 个平面支撑包络，再以沿程缓变的 湿度/对流斑块仅混合到部分侧壁和顶板浅壳层，使圆滑断面出现成组的真实平面腐蚀面， 而不是把整条洞道硬切成规则多边形。Audra 等在 Geomorphology 492（2026，article 110054）的凝结腐蚀综述将这类地貌明确归为 corrosion planes / facets，并报告一处壁面 约 15 cm 的退缩；实现只把该观察作为定性尺度依据，单次归一化退缩有界于 <code>0.055</code>， 不求解洞内热对流、相变或瞬态 CFD。默认值为 <code>0</code>，影响体素、最大退缩与平面数量通过 <code>facetAffectedVoxels</code>、<code>maximumFacetRetreat</code>、<code>condensationFacetCount</code> 元数据可观测。 <code>differentialVeinErosion&gt;0</code> 生成两组轻微弯曲、相交的抗蚀矿脉，只退缩其周围的母岩， 使窄脉芯相对凸起为断续 boxwork，而不是向表面额外粘贴装饰几何。低频地质斑块限制它 只出现在局部壁面；单次母岩归一化退缩上限为 <code>0.04</code>。Audra 等（2026，DOI <code>10.1016/j.geomorph.2025.110054</code>）在 Morgana Cave 记录了含 Mn/Fe 氧化物的深色矿脉， 其周围大理岩差异侵蚀后凸出数厘米，并同时观察到小裂隙优先溶解的 grooved surfaces。 本参数表示已经存在抗蚀脉体时的长期形态结果，不模拟矿物沉淀、氧化反应或岩石力学； 默认值为 <code>0</code>。<code>differentialVeinAffectedVoxels</code>、<code>maximumDifferentialVeinRetreat</code> 与 <code>maximumVeinProtection</code> 分别记录影响范围、最大母岩退缩和最大脉芯保护权重。 <code>breakdown&gt;0</code> 把化学退缩后的结构失稳表示为成对事件：每次事件在选定洞室顶板切出一个 浅薄、带方位的椭圆剥落疤痕，并由同一尺寸来源在正下方洞底生成 2&ndash;4 个板状或近块状 崩积体。块体与洞底轻微咬合，所以既不会悬空，也不会被 <code>fragmentDetachment</code> 的宿岩 连通性清理误删；它们进入独立 <code>breakdown</code> 三角组。Konsolaki 等（2026，DOI <code>10.1016/j.geomorph.2026.110280</code>）将高分辨率洞穴裂隙测绘与 3DEC 稳定性分析结合，说明 结构裂隙是潜在失稳机制的必要输入；溶蚀诱发剥落的 DDA 研究（2026，DOI <code>10.3390/app16125900</code>）则显示水岩化学退化会降低断裂韧度和强度，推动裂纹萌生、贯通及 最终块体脱离。实现据此保证疤痕—落块因果配对，但不宣称求解应力、瞬态裂纹或真实落体 动力学。默认 <code>0</code>；事件数、块数及近似剥落/堆积体积通过元数据显式记录。 <code>sedimentDeposition&gt;0</code> 将侵蚀产物的水力搬运结果并回洞穴形态：低起伏细料坝沿现有 主干水流切向延伸，坝面扁平砾石的长轴横跨流向，并以约 9&ndash;28 度向上游倾斜形成叠瓦。 Sevil-Aguareles 等（2025，DOI <code>10.1016/j.geomorph.2024.109576</code>）用 TLS、洞图与沉积 观测联合重建古流向，并证明壁面 notch 与河流砾石叠瓦给出一致方向；Miklavc 等（2025） 则把低起伏纵向坝、叠瓦和正粒序归入高能洞穴通道沉积相。2026 年砾石床表面研究（DOI <code>10.1080/00221686.2025.2606942</code>）进一步量化了砾石长轴主要垂直于流向、粗化表面具有 更大倾角和粗糙度。实现只表达这些形态约束，不求解颗粒碰撞、瞬态洪水或粒径输运方程； 默认 <code>0</code>。独立 <code>sediment</code> 三角组及坝数、砾石数、体积、平均倾角元数据可用于材质和 QA。 <code>paragenesis&gt;0</code> 只在上述沉积坝实际存在时产生反馈：沉积充填遮蔽洞底后，通道只能向上 扩展，于沉积坝上方沿同一古流向切出浅长的反重力顶板槽。Holzer 等（2025，DOI <code>10.1002/dep2.70028</code>）在 Dachstein 洞穴沉积层序研究中将“底部沉积迫使通道剖面仅向上 扩展”明确归为 paragenesis；Sevil-Aguareles 等（2025，DOI <code>10.1016/j.geomorph.2024.109576</code>）也把 antigravitative ceiling channels 用作古水流 方向指标。实现因此复用沉积坝的位置与流向，而不创建第二套随机方向场；关闭 <code>sedimentDeposition</code> 时状态为 <code>inactive-no-sediment</code>，密度场完全不变。该效果是层序约束的 形态代理。槽体使用带圆滑渐缩端部的连续半管，并在古流向上加入低幅度摆动，而不是单个 椭圆蚀坑。宽度以原通道半径作为流量代理，并遵循 Cooper 与 Covington（2020，DOI <code>10.1002/esp.4915</code>）所得“约随流量平方根增宽、随沉积供给略微收窄”的平衡尺度关系； 沉积供给增加时，受保护洞底上方的抬升量则增加。实现不求解沉积充填历史、地下水位变化 或反应输运；默认 <code>0</code>。槽数、状态、平均宽度与最大顶板抬升量通过元数据可观测。 为了保留沉积充填—搬空的层序证据，实现还从当前残余坝推导历史最高填充面：供给较高时 古填充面更接近顶板，并在该固定高度切出窄而横向连续的侧壁 alluvial notch；槽与半管 之间未溶解的宿岩自然保留为 pendant，而不是额外添加石柱。Farrant 与 Smart（2011，DOI <code>10.1016/j.geomorph.2011.06.006</code>）区分了沉积覆盖下包气带水流造成的侧向腐蚀/notch 与 潜水带向上溶蚀；Sevil-Aguareles 等（2025）则使用壁面 notch、顶板通道和砾石叠瓦的 组合证据重建古流向。2026 年 Sa Gleda 洞穴腐蚀速率研究（DOI <code>10.3390/jmse14050469</code>）记录了固定高度、宽约 0.3&ndash;1 m、深约 0.5&ndash;3 m 且可沿洞道连续 超过 150 m 的腐蚀 notch，支持用低纵向变化、强横向连续性表达长期稳定界面。生成器只 采用这种形态关系；<code>meanPalaeofillRatio</code>、<code>maximumAlluvialNotchRetreat</code> 与 <code>meanAlluvialNotchThickness</code> 公开推导尺度， 不把归一化参数解释为真实年代或绝对侵蚀速率。 <code>biogenicCorrosion&gt;0</code> 模拟含鸟蝠粪的暖湿洞穴中，氨气沿洞道输运、在潮湿洞壁微生物膜 中硝化并生成侵蚀性含氮酸的后成洞改造。它会有方向地削弱较老的小型流水 scallop，叠加 尺度更大的 <code>megascallop</code>、顺气流槽纹和局部蜂窝状退蚀；高水力暴露区通过水膜保护项保留 更多原始 scallop，因为快速水膜会带走氨和壁面微生物群落。实现参考 Farrant 等（2025， DOI <code>10.1016/j.geomorph.2025.109822</code>）在 Mulu 洞穴记录的 1&ndash;2 米 megascallop、气流槽纹、 残脊/pendant、蜂窝状壁面，以及高位老通道中至少约 10 mm 的二次退蚀足以抹除原有流水 scallop 的观察。该参数只表示已满足粪源、暖湿微气候和通风条件后的归一化长期强度，不 模拟单只动物、真实氨浓度或瞬态洞内 CFD；没有这些生态条件时应保持默认 <code>0</code>。输出通过 <code>biogenicAffectedVoxels</code>、<code>minimumFluvialScallopRetention</code> 和侵蚀强度统计显式可观测。 <code>mineralArmoring&gt;0</code> 在主要化学退缩阶段加入次生矿物沉淀形成的负反馈。覆盖斑块沿洞道 连续，而不是逐体素白噪声；<code>genesis</code> 只提供有界的成矿供给权重，低水力暴露区保留较厚 覆盖，快速水流则剥离大部分保护层。致密覆盖的溶蚀速率下限约为未覆盖面的十分之一， 对应 Zhang 等（2025，DOI <code>10.1016/j.bgtech.2025.100186</code>）石灰岩微流控实验中高硫酸盐 触发沉淀主导状态、致密石膏层完全遮蔽反应表面并使 CaCO3 平均溶蚀率降低一个数量级的 结果。Adedipe 等（2026，DOI <code>10.1029/2025WR042362</code>）结合流动实验、微 CT 和孔隙尺度 模拟进一步表明，多矿物空间排列及其与快速流道的距离会改变有效反应率，强流异质性可 增加传质限制。实现据此只衰减碳酸盐化学退缩，不保护床载磨蚀、拔蚀、跌坎或崩块冲刷； 它不把归一化强度解释为真实硫酸盐浓度，也不求解成核、晶体生长或瞬态水化学。默认 <code>0</code> 保持旧网格逐顶点一致；没有化学退缩时状态为 <code>inactive-no-chemical-retreat</code>，覆盖率、水力 保留率和最小剩余溶蚀率均通过元数据公开。 <code>bendUndercut&gt;0</code> 从通道中心线相邻切向量计算连续曲率向量，并在曲率指向的反侧施加宽缓 余弦形退蚀增益，形成弯道外侧淘蚀、局部回流壁龛和不对称断面；直道及中心线端点的增益 自然归零。它与 scallop 的尖脊/凹窝尺度相乘，而不会额外叠加无方向噪声。该近似参考 Fowler（2025，DOI <code>10.1098/rspa.2025.0033</code>）对洞穴 scallop 非线性阶段中坡面相关流动 分离和尖脊形成的模型，以及 Hyman 等（2026）关于初始结构异质性持续控制反应输运 聚焦的结果。它是用于形态生成的曲率代理，不求解弯管二次流或瞬态 CFD；默认值为 <code>0</code>。 <code>vadoseIncision</code> 在潜水期圆形通道底部 叠加一条保持连通的包气带溪流峡谷。<code>erosion=0</code> 可关闭前三种表面溶蚀；溪流切割 由 <code>vadoseIncision</code> 独立控制。该模型复现可见形态与结构控制，不宣称替代完整的 水流—溶质输运—化学反应模拟。</p>
+<p><code>hydraulicErosion&gt;0</code> 会进一步建立沿主通道的确定性相对流量场：局部速度按 Manning–Strickler 的 <code>R^(2/3) * sqrt(S)</code> 关系由水力半径 <code>R</code> 与坡降 <code>S</code> 估算， 再叠加沿程汇流。每条支洞都记录它在主洞的汇入口：远端分散补给沿支洞向汇入口累积， 再加入主洞汇入口下游的流量；因此主干、支洞和交汇段共用同一归一化网络，而低流量 支洞远端会保留更窄的断面。<code>flowFocusing</code> 控制溶蚀是否集中到高流量段，最终同时调制 溪流下切宽度和岩壁退缩。<code>hydraulicGradient</code> 与 <code>recharge</code> 提高整体输运能力，较高值 更容易产生扩大的优势通道。<code>damkohler</code> 是有效反应/对流比：低于 <code>8e-4</code> 时将低流量 通道抬升为较均匀的壁面退缩，<code>8e-4..8e-3</code> 形成多条竞争性优势通道，更高值强化为 入口控制的虫孔化；反应物穿透长度按 <code>Da^-1</code> 缩放。<code>transportG</code> 表示反应相对横向 扩散的限制，高值会增加穿透距离并削弱单一路径聚焦，留下更多细长通道。阈值采用 Hyman 等（2026）在三维裂隙网络中使用的 <code>2e-4 / 2e-3 / 2e-2</code> 三组数量级，并结合 Szawełło 等（2024）对低 Da 均匀溶蚀、中 Da 通道化和高 Da 虫孔化的空间聚焦测量； 这些量仍是用于形态生成的无量纲代理，而不是完整地球化学求解。默认 <code>hydraulicErosion=0</code>，保证旧参数输出 bit-exact 不变。此反馈关系参考 Aliouache 与 Jourde（2024）的裂隙网络反应输运结果（DOI <code>10.1016/j.jhydrol.2024.131684</code>），以及 Xu 等（2025）关于流量、裂隙宽度和石灰岩动态溶蚀速率耦合的实验模型（DOI <code>10.3389/feart.2025.1701477</code>）、Szawełło 等（2024，DOI <code>10.1029/2024GL109940</code>）， 以及 Hyman 等（2026，DOI <code>10.1029/2025JB033004</code>）的图反应输运模型：不同溶蚀 机制下，初始裂隙非均质性持续控制流路重组和突破行为（DOI <code>10.1029/2025JB033004</code>）。</p>
+<p><code>mixingCorrosion&gt;0</code> 复用每条 <code>CaveHydrologyBranch</code> 的 <code>trunkAnchor</code>，只在真实支洞—主洞 交汇点附近扩大既有洞壁。位点长轴沿主洞切向，尺度来自主支通道半径；主支流截面积比例 形成有界混合权重，seed 只决定各水体之间的化学差异，不改变汇流位置。Ma 等（2025， DOI <code>10.1016/j.marpetgeo.2025.107465</code>）的水热化学模型表明，不同 CO2 含量与温度的地下水 混合会通过 mixing corrosion 和 retrograde solubility 改变优势路径及洞隙网络架构； 2024 年实测/化学模型也指出不同 pCO2 下分别达到方解石饱和的水体混合后可重新欠饱和。 实现有意只生成局部汇流壁龛和扩大段：Gabrovšek 与 Dreybrodt 的汇流裂隙模型表明，混合 腐蚀本身不足以生成大型主洞，因此它不会新增独立巨型洞室，也不宣称求解 PHREEQC、温度 传输或真实 CaCO3 平衡。没有支洞时状态为 <code>inactive-no-confluence</code> 且密度场不变；默认值 为 <code>0</code>，位点数、影响体素和最大退缩通过元数据公开。</p>
+<p><code>lithologicHeterogeneity&gt;0</code> 将旧的等强度周期性层理扩展为连续但不均一的岩性层组。每个 层组拥有 seed 稳定的相对抗蚀性；少数层间接触面形成毫米至厘米级缝合线簇的介观代理， 只有具备横向连续性且能被当前通道水流接触的部分才会扩大为薄凹槽。该项仍受 <code>bedding</code> 总强度约束：<code>bedding=0</code> 时状态为 <code>disabled</code> 且密度场完全不变。它不会用三维白噪声替代 地层，也不会把每条层界都刻成等宽环带；受影响体素、缝合线体素、最小层组抗力和最大 退缩均写入元数据。默认 <code>0</code> 保持原网格 bit-exact。</p>
+<p>现场依据来自 Dutra 等对巴西 Salitre 组异质碳酸盐洞穴的 LiDAR、地层、强度和孔隙率 联合研究（2023，DOI <code>10.1016/j.marpetgeo.2022.106029</code>）：高达约 20% 孔隙率的层理平行 缝合线及其厚度、间距控制了选择性溶蚀和洞穴几何。Kanavas 等汇总 29 组碳酸盐三维 实验与反应运移模拟（2025，DOI <code>10.1029/2024GL114369</code>），进一步表明初始流动非均质 会限制可接触反应表面并决定反应热点；因此实现把层组信号与权威水力暴露场相乘，而不是 只增加视觉条纹。700 余天野外浸泡试验（2025，DOI <code>10.16030/j.cnki.issn.1000-3665.202405005</code>）观察到石灰岩偏向细裂纹、白云岩偏向明显 选择性孔蚀，支持保留层组抗性差异，但当前参数仍是介观形态代理，不求解具体矿物组成、 水化学或地质时间。</p>
+<p><code>floodAbrasion&gt;0</code> 增加独立于碳酸盐化学反应的含砂洪水机械磨蚀。它复用主、支洞的水力 强度和局部弯曲方向，把退缩限制在底床及近床侧壁；沿程连续的低频涡胞决定壶穴/冲槽 候选区，较细的顺流波形形成磨蚀沟纹。<code>sedimentLoad</code> 同时表示可移动磨蚀工具和覆盖层： 从零升高时磨蚀迅速增强，但高含砂量会因床面覆盖而削弱增幅，避免“泥沙越多、无限切深” 的错误单调关系。纯 <code>hypogene</code> 洞穴不具备地表含砂洪水，状态为 <code>inactive-hypogene</code>； <code>sedimentLoad=0</code> 时状态为 <code>inactive-no-tools</code> 且密度场不变。默认 <code>floodAbrasion=0</code>。</p>
+<p>2024 年 Höllental 石灰岩峡谷单次超浓流前后 LiDAR 研究（DOI <code>10.1038/s43247-024-01353-3</code>）量化到全段平均 3.41 mm、局部 10 m 段最高约 43 mm 的侧蚀，并总结近床磨蚀随高度快速减弱、中等活动床载受“工具—覆盖”平衡控制；实现 据此采用近床掩码和非单调泥沙效率，而没有把整条湿周同强度削薄。Gabel 等（2024， DOI <code>10.1002/esp.5957</code>）把移动泥沙磨蚀、岩块拔蚀、颗粒磨圆及床载输运统一到临界 砾石河床模型中，支持将水力输运与磨蚀工具量共同控制退缩。Wang（2026，DOI <code>10.1038/s41598-026-46196-4</code>）的开放水槽 CFD 与现场对照显示，壶穴内部的水平旋转和 垂向次级流共同搬运颗粒并分配底部/侧壁剪应力；当前涡胞是这一机制的介观形态代理， 不宣称求解自由表面 CFD、真实颗粒轨迹或事件持续时间。</p>
+<p><code>floodPlucking&gt;0</code> 在连续磨蚀之外增加阈值化块体拔蚀。生成器在同一体素采样中保留最强和 次强裂隙暴露，单一强节理可释放薄板，两组节理交汇会提高块体预制程度；只有局部水力 强度越过阈值、且 seed 选中的有限块体单元与洞壁相交时才退缩。块体采用不同纵横尺度的 圆角长方体包络，因此留下角状台阶和断口，而不是把全部裂隙加宽成光滑沟槽。没有至少 两条裂隙时状态为 <code>inactive-no-fracture-network</code>；纯潜成洞穴状态为 <code>inactive-hypogene</code>； 默认 <code>0</code>。<code>pluckingAffectedVoxels</code>、最大退缩和最大裂隙预制程度通过元数据公开。</p>
+<p>Fournereau 等（2025/2026，DOI <code>10.5194/egusphere-2025-1541</code>）用可控三维打印裂隙网络、 水与活动颗粒的侵蚀磨实验表明：完整基岩以磨蚀为主，裂隙基岩同时发生磨蚀、宏观撞蚀和 拔蚀；拔蚀更多改变侵蚀位置和暴露面积，不一定提高平均侵蚀率，且与裂隙间距和倾角呈 非线性关系。Chilton 等的直接水槽实验（2025，DOI <code>10.1130/G53413.1</code>）进一步显示水平 层面最易拔蚀、顺倾次之、逆倾最难。2025 年水力—断裂力学模型（Geomorphology，PII <code>S0169555X25001175</code>）则表明数米每秒流动压力可扩展既有裂纹并形成非平面块体。当前 实现据此把拔蚀限制为裂隙预制且越过流动阈值的稀疏事件，但现有 <code>CaveFracture</code> 是近竖直 节理代理，因此不声称求解完整倾角、断裂韧度、压力脉动、块体轨迹或后续碰撞。</p>
+<p><code>constrictionScour&gt;0</code> 将通道尺度的随机变化转为具有因果位置关系的“收缩—深潭—再展宽” 序列。位点只来自主洞和支洞半径的显著局部极小值；跌流冲刷中心沿水力路径移到收缩下游并 向床底偏移，出口段的横向掩码再扩大两侧壁。收缩比和权威水力权重共同控制强度，seed 不会 凭空放置深潭。纯 <code>hypogene</code> 洞穴状态为 <code>inactive-hypogene</code>，没有合格局部收缩时为 <code>inactive-no-constriction</code>；默认 <code>0</code> 保持旧网格 bit-exact。位点数、影响体素、最大退缩和 最大收缩比均写入元数据。</p>
+<p>Kusack 等（2024，DOI <code>10.1029/2024JF007808</code>）的基岩水槽实验显示，上游回水使水和颗粒 越过强制收缩后向床底俯冲，形成顺流拉长的深潭；出口沉积改变颗粒方向并增强侧向侵蚀， 随后还能向下游传播较弱的 CPW 序列。Ross 等（2026，DOI <code>10.5194/esurf-14-553-2026</code>） 综合重复测深指出，天然基岩峡谷同样在收缩内及下游形成深潭，并在展宽段变浅、储存连贯 覆盖斑块。当前实现只生成一次静态介观形态，不求解自由表面、速度反转、瞬变流量、颗粒 轨迹或沉积覆盖随洪水变化。</p>
+<p><code>knickpointErosion&gt;0</code> 从主洞溪流的真实纵剖面提取跌坎：只有相邻下游段同时满足显著陡化、 绝对坡度和相对通道半径落差阈值时，才在坎脚生成顺流拉长且向下偏移的冲潭，并对下部坎壁 施加较弱欠切。沉积物不是单调增益旋钮：低供给缺乏磨蚀工具，高供给则形成保护性覆盖； 权威水力权重再决定合格位点的侵蚀势。支洞的数组方向与实际汇流方向相反，因而本模型刻意 只读主干，避免颠倒上下游。纯 <code>hypogene</code>、无移动沉积物或无合格坡折时分别报告 <code>inactive-hypogene</code>、<code>inactive-no-tools</code>、<code>inactive-no-slope-break</code>；默认 <code>0</code> 保持旧网格 bit-exact。位点数、影响体素、最大退缩、最大坡折和最大落差均写入元数据。</p>
+<p>Davy 等（2026，DOI <code>10.5194/egusphere-2026-420</code>）的基岩切蚀—沉积动力学模型显示，低沉积 浓度下磨蚀可让跌坎在保持形状时向上游迁移，狭窄峡谷先随跌坎传播、通过后才展宽，而过高 沉积负荷会抬高并覆盖坎脚。Hiramatsu 等（2024，DOI <code>10.2208/jscejj.23-16049</code>）的缓坡水槽 实验直接观察到瀑缘上游的阶梯侵蚀与迁移。Scheingross 等（2017，DOI <code>10.1029/2016GL071730</code>）的均质岩实验及其机制模型（DOI <code>10.1002/2017JF004195</code>）进一步表明， 冲潭早期垂向钻蚀可明显强于横向扩宽，随后深潭中的沉积覆盖限制继续下切。当前实现把这些 结果转换为静态洞穴形态代理，不求解自由表面、瞬态颗粒轨迹、真实年代或瀑布迁移时间序列。</p>
+<p><code>streamBedKarren&gt;0</code> 在活动溪床而不是整圈洞壁上扩大现有节理。采样器用通道局部坐标的 重力方向限制洞床暴露，用权威水力强度激活溶蚀，并组合当前点最强的两组 <code>CaveFracture</code> 掩码：单组节理形成连续溶沟，交叉处形成更深的局部溶坑。因此纹理方向来自同一份岩体结构， 而不是额外的随机线条。少于两组裂隙时报告 <code>inactive-no-crossing-fractures</code>，纯 <code>hypogene</code> 时报告 <code>inactive-hypogene</code>；默认 <code>0</code> 保持旧网格 bit-exact。影响体素、最大退缩、最大裂隙 导向强度和交叉溶坑强度均写入元数据。</p>
+<p>Racine 等发布的 2025 年 KarstConduitCatalogue（DOI <code>10.5194/essd-17-4671-2025</code>）提供了 16 个水文一致洞段的厘米级地面/顶板栅格、点云、网格和中心线。其 Markov Spodmol 实测案例 明确记录：平滑倾斜层面下游约 20 m 出现沿两组基岩裂隙发展的 karren，随后才过渡到崩石段。 实现采用这一“暴露溪床 + 两组结构方向”的空间关系。Guérin 等的流膜溶蚀实验（2020，DOI <code>10.1103/PhysRevLett.125.194502</code>）显示，倾斜可溶表面会自发产生沿主流方向的近似平行沟槽； 实现用水力门限保留这种流动选择，但没有把盐/石膏实验的毫米尺度直接冒充为灰岩洞穴尺度， 也不求解薄膜厚度、化学饱和度或随时间增长的沟槽波长。</p>
+<p><code>eddyPotholes&gt;0</code> 进一步把溪床弱区发展为旋涡壶穴。候选点沿权威主干细分采样，但只有两条 现有 <code>CaveFracture</code> 同时张开的交汇区、具备活动水力且 <code>sedimentLoad</code> 仍有移动磨蚀工具时 才会保留；相邻候选还按通道半径去重。因此 seed 只决定已有岩体结构，不会直接撒布圆坑。 <code>potholeGravelSize</code> 控制磨蚀分区：细砾易悬移，在床底和内壁产生较宽、偏下游的磨蚀；粗砾 在相对壶穴直径更小的范围内旋转，形成偏上游的局部切蚀。侵蚀势足够高时，主坑底部还会 出现较小的复合次级坑。默认 <code>eddyPotholes=0</code> 保持旧网格 bit-exact；纯 <code>hypogene</code>、无工具、 不足两组裂隙或没有合格交汇分别公开明确的 inactive 状态。位点数、影响体素、最大退缩、 最大次级侵蚀和最大裂隙交汇强度写入元数据。</p>
+<p>Sumner 与 Inoue 的 2026 年水力模型实验（DOI <code>10.2208/jscejj.25-16064</code>）直接比较了砂砾 尺度：较小颗粒悬移后广泛侵蚀内壁和床底、下游尤强；较大颗粒局限旋转并强化上游切蚀， 实验还观察到坑底次级壶穴。2026 年三维流场研究（DOI <code>10.1038/s41598-026-46196-4</code>）指出 壶穴初始凹陷常位于直立节理交汇、强化风化区或旧侵蚀沟，并描述了外侧下沉、底部向中心 旋转、中心轴上升的次级流。实现保留这些可识别的位点与非对称形态约束，但不声称求解 自由表面、颗粒离散轨迹、真实旋涡速度场或壶穴年代。</p>
+<p><code>breakdownScour&gt;0</code> 让已经落地的 <code>CaveBreakdownBlock</code> 成为水力障碍物，而不再只是最后叠加的 静态崩石。每块石头先投影到最近的权威主干段；只有位于活动通道足迹内、具有可移动磨蚀工具 且突出高度足够时才建立位点。迎水端生成包绕石基两侧的较深双叶马蹄冲刷，下游则生成更长、 更浅的尾流槽。冲刷尺度来自石块尺寸和通道半径，方向来自主干流向；<code>multiscaleRoughness</code> 增大时会降低相干马蹄涡保留率。默认 <code>0</code> 保持旧网格 bit-exact；纯 <code>hypogene</code>、无沉积工具、 无崩块或崩块不在溪流足迹内分别公开 inactive 状态。位点数、影响体素、最大总退缩、最大 马蹄冲刷、最大尾流冲刷和最小粗糙度保留率均写入元数据。</p>
+<p>2026 年山地河流巨砾沙洲水槽实验（Water 18, 1720）观察到迎水高压下洗形成马蹄涡，并把 最深冲刷定位在巨砾迎水端；尾流再循环控制更长的下游侵蚀—输移区。2026 年 CFD–DEM 多巨砾 研究（DOI <code>10.1038/s41598-026-38978-7</code>）进一步区分了孤立尾流、尾流干涉和密集掠流状态。 2025 年高频 PIV 实验（PII <code>S1001627925000691</code>）显示床面粗糙度会破坏马蹄涡系统、降低主涡 旋转强度并增强停滞。当前洞穴实现采用这些相对形态与抑制趋势，但没有把可动砂床平衡冲刷 深度冒充为灰岩切蚀速率，也不求解水深、Froude 数、洪水历时、崩石倾倒或尾流沉积脊。</p>
+<p>2026 年大涡模拟（Samarasinghe 等，arXiv <code>2607.16908</code>）进一步约束了非线性响应：低流量 下约 35% 收缩产生最强俯冲流，高流量下最优值移向约 50；继续收窄并不会让局部床面 剪应力无限单调增加，峰值主要位于深潭入口。实现因此使用随权威水力强度从 0.35 移到 0.50 的宽峰效率曲线，并把床面退缩偏向潭口；<code>maximumPlungingEfficiency</code> 公开实际 命中的效率。它仍是静态形态代理，不把 LES 的瞬时脉动伪装成已求解的湍流时间序列。</p>
+<p><code>microstructure&gt;0</code> 在水力网络之上叠加双尺度岩性场：低频、空间连续的场表示相互连通的 粒间大孔及渗透率，高频场表示可被反应液接触、但未必形成贯通导管的粒内微孔表面积。 <code>microporosityAccess</code> 越高，溶蚀越均匀地分配到洞壁；较低值配合较高 <code>permeabilityContrast</code>，会让新鲜反应液聚焦到少量连续高渗区，形成分叉和虫孔式壁龛。 该场同时调制局部反应面积与水力强度，因此孔隙扩大后能形成正反馈，而不是在洞壁贴一层 无关流向的噪声。默认 <code>microstructure=0</code>，新增两个岩性参数不会改变既有网格。</p>
+<p>这一设计直接采用 Briolet 等（2025，DOI <code>10.1016/j.gca.2025.03.019</code>）的受控实验结论： 在相同流体条件下，两种近纯方解石灰岩仍分别产生全宽分布式溶蚀和局部虫孔，传统 Pe–Da 图无法区分，必须加入粒内微孔可接触性及比表面积。孔渗正反馈还参考了 2025 年三维 Darcy 尺度实验—模拟研究（DOI <code>10.1016/j.ijggc.2025.104452</code>）：仅使用图像派生的 渗透率非均质即可复现实验溶蚀形态，而较强孔隙率—渗透率指数是 CO2 虫孔形成的关键。 2026 年天然多矿物岩石微连续体研究（DOI <code>10.1016/j.ces.2025.122507</code>）进一步观察到 均匀、锥形虫孔和分叉虫孔三类形态，以及高反应矿物比例只在中等 Pe 下推动锥形虫孔的 阈值效应；当前生成器保留其空间异质性和竞争通道机制，但不模拟具体矿物化学。</p>
+<p>形态依据包括：Aliouache 与 Jourde（2024）关于裂隙网络各向异性、连通性和边界条件 控制早期岩溶通道的反应输运研究（DOI <code>10.1016/j.jhydrol.2024.131684</code>）；Jiang 等 （2025）关于应力、非均质裂隙与流量集中产生分叉/虫洞状溶蚀的耦合模型（DOI <code>10.1029/2024JB029901</code>）；以及 Gabrovšek 等（2025）对随机裂隙网络中水位面、流动、 输运和裂隙孔径迭代演化的模型（DOI <code>10.5194/hess-29-6685-2025</code>）。实现选择了这些 研究共同支持的介观结构特征，而非照搬其面向地学时间尺度的昂贵求解过程。 贝壳状侵蚀依据 Fowler（2025）的非线性边界层模型（DOI <code>10.1098/rspa.2025.0033</code>）：流动表面的传质相位偏移使波动失稳，随后形成圆弧凹窝、 斜率突变的尖脊和沿流向传播的形态；实现保留这些可辨识特征，但不声称执行完整 CFD。 尺度—流速关系还采用 2025 年 Mulu 洞穴形态研究对经典规律的现场总结：scallop 尺寸 与古流速成反比，陡侧位于上游（Geomorphology 483, 109822），并遵循 Springer 与 Hall 对洞穴 scallop 长度统计的提醒：尺度只作为定性水力代理，不把单一生成值解释为 精确流量测量。</p>
+<p>二次碳酸盐沉积会在洞室内部生成细长钟乳石与更粗壮的石笋。<code>stalagmiteShape</code> 的 三类轮廓来自 2025 年理想石笋解析模型所描述的不同反应—输运状态：<code>conical</code> 为 尖锥，<code>columnar</code> 保持近似柱宽，<code>flatTop</code> 形成宽顶；<code>mixed</code> 按 seed 混合，并让少量 上下沉积体接合成石柱。所有沉积面归入独立的 <code>speleothems</code> 三角形组，洞壁仍属于 <code>caveWalls</code>，便于分配湿润方解石材质。形态模型标识记录为 <code>damkohler-thin-film-ripple-v2</code>，参考 DOI <code>10.1073/pnas.2513263122</code>。</p>
+<p><code>flowstones</code> 在洞室壁面叠加贴壁椭圆薄层，并让沉积面沿重力方向出现周期脊； <code>curtains</code> 从洞顶边缘生成带横向波折的薄片。其依据是实测洞壁/活跃沉积物薄水膜和 波纹流石的水动力成因（DOI <code>10.5038/1827-806X.ijs2568</code>，以及 Bossea Cave 波纹 流石研究）。几何厚度会提升到当前体素分辨率可解析的尺度，因此表达的是长期累积 沉积层，而不是微米级瞬时水膜厚度。</p>
+<p>主排水通道下半部会根据距中心水流线的距离和低频湿度变化归入 <code>wetWalls</code>，其余基岩 仍属于 <code>caveWalls</code>。这不是第二份几何，而是确定性的三角形材质分区，模型标识为 <code>drainage-proximity-v1</code>。默认的 <code>surfaceNormalMode="faceAverage"</code> 让 <code>normalSmoothing</code> 在空间重合顶点间平均面法线，保持原有输出。高质量模式 <code>surfaceNormalMode="densityGradient"</code> 则在最终连续三线性密度场上求中心差分梯度，以 负梯度作为朝向洞腔的表面法线，再用 <code>normalSmoothing</code> 控制从面法线到场法线的混合量。 这与 2026 年 <em>Contouring Signed Distance Fields by Approximating Gradients</em> 将距离场梯度 视为表面接触方向的思路一致；这里只借用法线重建原则，不把洞穴密度值宣称为严格 SDF。 两种模式都不会改变顶点位置、索引、碰撞形状或洞穴拓扑。湿润和干燥基岩保持连续； 面平均模式下，只有作为独立沉积物的方解石保留自己的平滑岛。</p>
+<p>默认 <code>wetnessRefinement=0</code> 继续按三角形中心将主排水通道下方表面分入 <code>wetWalls</code>。 设为 <code>1</code> 后，生成器在最终自适应网格上分别计算三个顶点的连续湿润场；该场取排水通道 邻近度、重力流线以下的相对高度和低频表面可达性的最小值。跨越零线的三角形会被裁成 湿、干两个共面多边形再三角化，因此只提高材质边界分辨率，不改变洞壁形状或制造有厚度 的水层。2025 年洞穴现场测量显示洞壁水膜通常只有 25&ndash;70 微米，活动沉积物水平面约 200&ndash;300 微米；在米级洞穴网格中将其表达为表面状态而非宏观几何壳层更符合尺度。 高质量模型标识为 <code>gravity-drainage-contour-v2</code>，并记录被切分的源三角形数和新增三角形数。</p>
+<p>洞穴通道可能穿过有限密度网格边缘。默认 <code>boundaryClosure=0</code> 保持开放域，适合需要显式 入口、出口或后续拼接洞块的场景；此时元数据会报告边界上的空气样本数。设为正值后， <code>rough-host-envelope-v1</code> 在侵蚀和碎块脱落完成后、等值面重建之前，使用随 seed 轻微起伏 的宿岩包络把六个采样边界推回正密度。<code>1</code> 对应约 0.1 个归一化单位的最大封闭深度， 能够消除直视背景的有限域泄漏，同时保留内部通道。该选项解决的是域边界条件，不是 Marching Cubes 单元内的拓扑歧义；当前实现仍不宣称达到 2025 年 MCPro 对三线性等值面 的拓扑正确保证。</p>
+<p>可运行示例与换 seed/形态快捷键见 `examples/cave-generator`。生成成本随三轴 分辨率乘积增长，应在加载或参数变化时重建并缓存，而不是逐帧生成。</p>
+<h3>生成随机树木网格</h3>
+<p><code>mesh.tree</code> 生成可复现的树干、分枝和叶片网格。<code>branchAlgorithm</code> 的两个值互斥：</p>
+<ul>
+<li><code>weberPenn</code>（默认）：按层级、枝序和分枝角快速生成稳定骨架。</li>
+<li><code>spaceColonization</code>：让枝梢向树冠吸引点迭代生长，适合更不规则的冠形。</li>
+</ul>
+<div class="fragment"><div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setSeed(31415);</div>
+<div class="line">p.setString(&quot;style&quot;, &quot;lowpoly&quot;);           // lowpoly | realistic</div>
+<div class="line">p.setString(&quot;branchAlgorithm&quot;, &quot;weberPenn&quot;);</div>
+<div class="line">p.setString(&quot;leafMode&quot;, &quot;canopy&quot;);        // cards | canopy | none</div>
+<div class="line">p.setFloat(&quot;leafDensity&quot;, 0.75);</div>
+<div class="line">p.setFloat(&quot;height&quot;, 6.0);</div>
+<div class="line">p.setFloat(&quot;crownRadius&quot;, 2.0);</div>
+<div class="line"> </div>
+<div class="line">local treeResult = gen.buildMesh(&quot;mesh.tree&quot;, p);</div>
+<div class="line">if (!treeResult.ok) throw treeResult.status.summary;</div>
+<div class="line">local tree = treeResult.value;</div>
+</div><!-- fragment --><p>两种算法共享主干曲率、向性、下垂、随高度变化的枝长/枝径，以及上下层叶片覆盖参数。常用调整：</p>
+<ul>
+<li>外形与精度：<code>height</code>、<code>trunkRadius</code>、<code>crownRadius</code>、<code>radialSegments</code>、<code>curveSegments</code>。</li>
+<li>通用枝形：<code>trunkCurve</code>、<code>branchCurve</code>、<code>curveBack</code>、<code>tropism</code>、<code>droop</code>。</li>
+<li>层级生长：<code>branchLengthFalloff</code>、<code>branchRadiusFalloff</code>；默认表现为下层枝更粗更长。</li>
+<li>叶片：<code>leafSize</code>、<code>leafDensity</code>、<code>foliageStart</code>、<code>lowerLeafCoverage</code>、<code>upperLeafCoverage</code>。</li>
+<li>Weber–Penn：<code>branchLevels</code>、<code>branchCount</code>、<code>branchAngle</code>、<code>branchAngleVariation</code>、<code>phyllotaxis</code>、<code>apicalDominance</code>。</li>
+<li>空间殖民：<code>attractorCount</code>、<code>colonizationIterations</code>、<code>influenceRadius</code>、<code>killRadius</code>、<code>growthStep</code>、<code>branchInertia</code>、<code>maxTurnAngle</code>、<code>maxCumulativeAngle</code>、<code>maxChildren</code>。</li>
+</ul>
+<p>完整参数范围、交互快捷键和可运行脚本见 `examples/tree-generator`。生成网格有一定成本，应在加载、换 seed 或修改参数时重建，不要每帧调用。</p>
+<h3>生成线性可拼接结构（栅栏 / 石墙 / 桥 / 长城 / 树篱 / 拒马）</h3>
+<p>将单个可拼接单元段沿 X 轴重复 N 次生成连续结构，接缝处纹理连续平铺。</p>
+<div class="fragment"><div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setInt(&quot;segments&quot;, 8);      // 重复单元数</div>
+<div class="line">p.setFloat(&quot;segLength&quot;, 2.0); // 单元段长度</div>
+<div class="line">p.setFloat(&quot;height&quot;, 1.5);    // 高度覆盖</div>
+<div class="line">p.setFloat(&quot;uvRepeat&quot;, 2.0);  // 每世界单位的纹理重复次数</div>
+<div class="line">local meshResult = gen.buildMesh(&quot;mesh.stonewall&quot;, p); // 或 mesh.fence / mesh.bridge</div>
+<div class="line">if (!meshResult.ok) throw meshResult.status.summary;</div>
+<div class="line">local mesh = meshResult.value; // mesh.greatwall / mesh.hedge / mesh.chevaldefrise</div>
+</div><!-- fragment --><p>共享参数：<code>segments</code>、<code>segLength</code>、<code>height</code>、<code>depth</code>、<code>thickness</code>、<code>scale</code>、<code>uvRepeat</code>。</p>
+<h3>生成无缝材质</h3>
+<p>设置 texture recipe、尺寸、octaves、pixelSize 和 seamless，调用纹理或法线图生成接口；开发期切换 seed 预览，发布时缓存 Texture，不能每帧重新生成。</p>
+<h3>生成多层城堡</h3>
+<p><code>mesh.castle</code> 生成可复现的完整城堡网格：同心多层城墙、转角与区间塔楼、带真实门洞的城门楼、墙顶步道、中央多层主堡，以及通往每圈墙顶和每层主堡的实体楼梯。</p>
+<div class="fragment"><div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setSeed(20260826);</div>
+<div class="line">p.setFloat(&quot;width&quot;, 48.0);</div>
+<div class="line">p.setFloat(&quot;depth&quot;, 40.0);</div>
+<div class="line">p.setInt(&quot;rings&quot;, 2);          // 1..4 层同心城墙</div>
+<div class="line">p.setInt(&quot;keepFloors&quot;, 4);     // 1..8 层主堡</div>
+<div class="line">p.setInt(&quot;detail&quot;, 2);         // 0 主体，1 垛口，2 区间塔楼与庭院建筑</div>
+<div class="line">p.setFloat(&quot;towerSpacing&quot;, 16.0);</div>
+<div class="line">p.setFloat(&quot;stairWidth&quot;, 2.0);</div>
+<div class="line">local castleResult = gen.buildMesh(&quot;mesh.castle&quot;, p);</div>
+<div class="line">if (!castleResult.ok) throw castleResult.status.summary;</div>
+<div class="line">local castle = castleResult.value;</div>
+</div><!-- fragment --><p>主要参数还包括 <code>wallHeight</code>、<code>wallThickness</code>、<code>ringInset</code>、<code>ringHeightStep</code>、<code>towerRadius</code>、<code>towerHeight</code>、<code>towerHeightStep</code>、<code>towerSides</code>、<code>gateWidth</code>、<code>keepWidth</code>、<code>keepDepth</code>、<code>floorHeight</code>、<code>courtyardBuildings</code>、<code>stepHeight</code>、<code>merlonWidth</code>、<code>uvRepeat</code> 和 <code>scale</code>。CPU <code>buildMesh()</code> 的元数据提供 <code>rings</code>、<code>wallSections</code>、<code>towerCount</code>、<code>stairFlights</code>、<code>keepFloors</code>、<code>courtyardBuildings</code>、<code>detail</code> 与 <code>seed</code>，可用于生成图调试、预算检查和自动化验证。</p>
+<p>城堡还输出 <code>walls</code>、<code>battlements</code>、<code>towers</code>、<code>gatehouses</code>、<code>stairs</code>、<code>keep</code>、<code>courtyard</code> 命名三角形组。可用 <code>copyGroup()</code> 提取组件、<code>appendTransformed()</code> 组合多个生成结果；需要上传时由 C++ render bridge 调用 <code>uploadMeshBorrowed()</code>，因此墙体、楼梯和塔楼可以使用不同材质、碰撞或 LOD 策略，而无需重新实现 recipe。</p>
+<p><code>getMeshRecipeSchema()</code> 返回统一的 <code>RecipeDescriptor</code> 输入 schema，<code>applyMeshRecipeDefaults()</code> 可填充缺省参数。编辑器或可视化生成图可据此自动创建输入 pin、滑杆、默认值和帮助文本，不必硬编码 <code>Params</code> 字符串键。</p>
+<h2>常见问题</h2>
+<ul>
+<li>未保存 seed，无法复现玩家问题。</li>
+<li>Output palette 缺少算法输出的 tile key。</li>
+<li>在每帧 update 生成大地图或纹理。</li>
+<li>在每帧重新生成树木网格；应缓存 <code>Mesh</code>，仅在 seed 或参数变化时重建。</li>
+</ul>
+<h2>L-system 文法生成</h2>
+<p>通用随机括号 L-system 引擎(<code>procgen.newLSystem()</code>)。给定 axiom 与产生式(可带权重随机),迭代若干次后用 3D 海龟解释:绘制 <code>/</code> 折返、<code>[ ]</code> 入/弹栈产生分支,枝条粗细随深度衰减。固定 seed 结果完全可复现。除 <code>mesh.lsystem</code> 网格配方外,<code>trace()</code> 可把枝段作为样条控制点输出(道路、二维布局)。</p>
+<div class="fragment"><div class="line">local ls = procgen.newLSystem();</div>
+<div class="line">ls.setAxiom(&quot;F&quot;);</div>
+<div class="line">ls.addRule(&#39;F&#39;, &quot;F[+F]F[-F]F&quot;);          // 确定性产生式</div>
+<div class="line">// ls.addRules(&#39;A&#39;, [&quot;F[+A]A&quot;, &quot;FA&quot;], [2.0, 1.0]);  // 加权随机产生式</div>
+<div class="line">ls.setIterations(4); ls.setAngle(26.0); ls.setSeed(42);</div>
+<div class="line">local road = procgen.newPointSet(); ls.trace(road);   // 枝段 → 控制点</div>
+</div><!-- fragment --><p><code>mesh.lsystem</code> 配方内置 <code>tree</code> / <code>fern</code> / <code>plant</code> / <code>weed</code> 预置,输出锥形枝干与叶片卡。</p>
+<h2>蓝噪声撒点</h2>
+<p><code>procgen.poissonDisk(width, depth, radius, seed, maxPoints)</code> 在 XZ 平面做 Bridson 蓝色噪声撒点(任意两点间距 ≥ radius,确定性),适合均匀散布草丛、石头等。</p>
+<div class="fragment"><div class="line">local scatter = procgen.poissonDisk(100, 100, 2.5, 99, 500);  // 最多 500 点</div>
+</div><!-- fragment --><h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>abort()</code>、<code>abortSystem()</code>、<code>add()</code>、<code>addObject()</code>、<code>addObjectAt()</code>、<code>analyzeTerrain()</code>、<code>analyzeTerrainScaled()</code>、<code>appendTransformed()</code>、<code>applyToLayer()</code>、<code>autotileGrid()</code>、<code>bakeTerrainAsset()</code>、<code>beginSystem()</code>、<code>buildMesh()</code>、<code>buildTerrainChunk()</code>、<code>clear()</code>、<code>clearObjects()</code>、<code>commitSystem()</code>、<code>copyGroup()</code>、<code>createTerrainMaterialShader()</code>、<code>createTerrainWaterShader()</code>、<code>deriveSeed()</code>、<code>empty()</code>、<code>erodeTerrainFluvial()</code>、<code>erodeTerrainFluvialAdvanced()</code>、<code>erodeTerrainFluvialDetailed()</code>、<code>erodeTerrainFluvialScaled()</code>、<code>erodeTerrainHydraulic()</code>、<code>erodeTerrainThermal()</code>、<code>excludeRadius()</code>、<code>fail()</code>、<code>fill()</code>、<code>filterDensity()</code>、<code>filterHeight()</code>、<code>generate()</code>、<code>generateHeightmap()</code>、<code>generateImage()</code>、<code>generateNormalImage()</code></li>
+<li><code>generatePbrMaterial()</code>、<code>generateTerrainAlbedoMap()</code>、<code>generateTerrainChunkMesh()</code>、<code>generateTerrainDepositionMap()</code>、<code>generateTerrainErosionMap()</code>、<code>generateTerrainLakeMesh()</code>、<code>generateTerrainRiverMesh()</code>、<code>generateTerrainRiverMeshAdvanced()</code>、<code>generateTerrainSplatMap()</code>、<code>generateTerrainWearMap()</code>、<code>generateTexture()</code>、<code>generateTo()</code>、<code>getAlgorithmCount()</code>、<code>getAlgorithmId()</code>、<code>getCell()</code>、<code>getDetail()</code>、<code>getFloat()</code>、<code>getHeight()</code>、<code>getInt()</code></li>
+<li>地形层与网格查询：<code>getBaseVertexCount()</code>、<code>getFlowDirection()</code>、<code>getFlowVectorX()</code>、<code>getFlowVectorY()</code>、<code>getGeometricError()</code>、<code>getLodStep()</code>、<code>getOriginX()</code>、<code>getOriginY()</code>、<code>getSplatHeight()</code>、<code>getSplatWidth()</code>、<code>getStreamOrder()</code>、<code>selectTerrainLod()</code>。</li>
+<li><code>getGroupCount()</code>、<code>getGroupName()</code>、<code>getLayer()</code>、<code>getMeshRecipeCount()</code>、<code>getMeshRecipeId()</code>、<code>getMeshRecipeSchema()</code>、<code>getMeta()</code>、<code>getName()</code>、<code>getObjectCount()</code>、<code>getObjectGid()</code>、<code>getObjectHeight()</code>、<code>getObjectName()</code>、<code>getObjectType()</code></li>
+<li><code>getObjectWidth()</code>、<code>getObjectX()</code>、<code>getObjectY()</code>、<code>getPalette()</code>、<code>getPaletteGid()</code>、<code>getPath()</code>、<code>getSeed()</code>、<code>getString()</code></li>
+<li><code>getTarget()</code>、<code>getTextureRecipeCount()</code>、<code>getTextureRecipeId()</code>、<code>getWidth()</code>、<code>gridToJson()</code>、<code>has()</code>、<code>hasAlgorithm()</code>、<code>hasMeshRecipe()</code>、<code>hasTextureRecipe()</code>、<code>applyMeshRecipeDefaults()</code></li>
+<li><code>getDensity()</code>、<code>getError()</code>、<code>getFloatAttribute()</code>、<code>getNormalX()</code>、<code>getNormalY()</code>、<code>getNormalZ()</code>、<code>getOutput()</code>、<code>getOutputCount()</code>、<code>getOutputName()</code>、<code>getPointSeed()</code>、<code>getScaleX()</code>、<code>getScaleY()</code>、<code>getScaleZ()</code>、<code>getStringAttribute()</code>、<code>getSystemDebugReport()</code>、<code>getSystemOutput()</code>、<code>getSystemOutputCount()</code>、<code>getSystemOutputName()</code>、<code>getSystemRevision()</code>、<code>getSystemSeed()</code>、<code>getTraceCount()</code>、<code>getTraceInputCount()</code>、<code>getTraceMilliseconds()</code>、<code>getTraceName()</code>、<code>getTraceOutputCount()</code>、<code>getTriangleGroup()</code>、<code>getX()</code>、<code>getY()</code>、<code>getYaw()</code>、<code>getZ()</code>、<code>hasFailed()</code>、<code>hasFloatAttribute()</code>、<code>hasOutput()</code>、<code>hasStringAttribute()</code>、<code>hasSystem()</code>、<code>isActive()</code>、<code>jitterPoints()</code>、<code>newGrid()</code>、<code>newOutput()</code>、<code>newParams()</code>、<code>newPointSet()</code>、<code>publish()</code>、<code>randomSeed()</code>、<code>removeSystem()</code>、<code>resize()</code>、<code>sampleGrid()</code>、<code>seedFor()</code>、<code>selfPrune()</code>、<code>setCell()</code>、<code>setDensity()</code>、<code>setDetail()</code>、<code>setFloat()</code>、<code>setFloatAttribute()</code>、<code>setInt()</code></li>
+<li><code>setLayer()</code>、<code>setMeta()</code>、<code>setNormal()</code>、<code>setPalette()</code>、<code>setPaletteGid()</code>、<code>setPath()</code>、<code>setPointSeed()</code>、<code>setPosition()</code>、<code>setScale()</code>、<code>setSeed()</code>、<code>setSize()</code>、<code>setString()</code>、<code>setStringAttribute()</code>、<code>setYaw()</code>、<code>trace()</code>、<code>setActiveGroup()</code></li>
+<li>L-system 引擎(<code>ProcgenLSystem</code>)：<code>addRule()</code>、<code>addRules()</code>、<code>clearRules()</code>、<code>derive()</code>、<code>getIterations()</code>、<code>getSeed()</code>、<code>setAngle()</code>、<code>setAxiom()</code>、<code>setBranchRadius()</code>、<code>setBranchRadiusFalloff()</code>、<code>setInitialHeading()</code>、<code>setIterations()</code>、<code>setLeafSize()</code>、<code>setLeafSymbols()</code>、<code>setStep()</code>、<code>setTropism()</code>；蓝噪声撒点：<code>poissonDisk()</code>。这些创建与转换入口返回统一 Result，其 <code>value</code> 是带所有权的代理。</li>
+<li><code>setTarget()</code></li>
+<li>Handle 生命周期：<code>ownership()</code>、<code>ownerEpoch()</code>、<code>isStale()</code>、<code><a class="el" href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release()</a></code>；这些接口用于检查资源所属模块、拒绝过期引用并显式释放模块持有对象。</li>
+<li>UE PCG 扩展：<code>clearCache()</code>、<code>clearGenerationSources()</code>、<code>clearParameterOverride()</code>、<code>continueGenerationRefresh()</code>、<code>disconnect()</code>、<code>exposeParameter()</code>、<code>getActiveCellCount()</code>、<code>getAssetCount()</code>、<code>getAssetName()</code>、<code>getCacheHitCount()</code>、<code>getCellRevision()</code>、<code>getCommittedRefreshRevision()</code>、<code>getComputeBufferReuseCount()</code>、<code>getComputeDispatchCount()</code>、<code>getComputeFallbackReason()</code>、<code>getComputeMinimumPoints()</code>、<code>getComputePeakBufferBytes()</code>、<code>getComputePolicy()</code>、<code>getComputeReadbackCount()</code>、<code>getComputeUploadCount()</code>、<code>getDirectionWeight()</code>、<code>getExclusionCount()</code>、<code>getExecutionCount()</code>、<code>getExecutionNodeBudget()</code>、<code>getFailedCellCount()</code>、<code>getFrameTimeBudget()</code>、<code>getFrustumBehindRadius()</code>、<code>getFrustumHalfAngle()</code>、<code>getGeneratingCount()</code>、<code>getGenerationSourceCount()</code>、<code>getGenerationSourceId()</code>、<code>getInputNode()</code>、<code>getLastFusedTransformCount()</code>、<code>getLayerCount()</code>、<code>getLayerDensity()</code>、<code>getLayerName()</code>、<code>getLayerPriority()</code>、<code>getLevelCellSize()</code>、<code>getLevelCleanupRadius()</code>、<code>getLevelCount()</code>、<code>getLevelGenerationRadius()</code>、<code>getMaxActiveCells()</code>、<code>getMaxGenerating()</code>、<code>getMaxGenerationRetries()</code>、<code>getMaxY()</code>、<code>getMetricBackend()</code>、<code>getMetricCount()</code>、<code>getMetricMilliseconds()</code>、<code>getMetricNodeId()</code>、<code>getMetricOutputCount()</code>、<code>getMinY()</code>、<code>getModuleCount()</code>、<code>getModuleSymbol()</code>、<code>getNodeCount()</code>、<code>getNodeId()</code>、<code>getNodeOperation()</code>、<code>getOperationInputCount()</code>、<code>getOperationParamCount()</code>、<code>getOperationParamDefault()</code>、<code>getOperationParamKey()</code>、<code>getOperationParamKind()</code>、<code>getParameterCount()</code>、<code>getParameterFloat()</code>、<code>getParameterInt()</code>、<code>getParameterKind()</code>、<code>getParameterName()</code>、<code>getParameterString()</code>、<code>getPendingCleanupCount()</code>、<code>getPendingGenerateCount()</code>、<code>getRefreshWorkBudget()</code>、<code>getRevision()</code>、<code>getTicket()</code>、<code>getVariantAsset()</code>、<code>getVariantCount()</code>、<code>getVariantLength()</code>、<code>hasCell()</code>、<code>hasLayer()</code>、<code>hasModule()</code>、<code>hasNode()</code>、<code>hasParameterOverride()</code>、<code>intersectSpatial()</code>、<code>isFrustumCullingEnabled()</code>、<code>isMetricCacheHit()</code>、<code>isRefreshPending()</code>、<code>pointData()</code>、<code>refreshGenerationSources()</code>、<code>removeLayer()</code>、<code>removeModule()</code>、<code>removeNode()</code>、<code>requestCancel()</code>、<code>resetCancellation()</code>、<code>retryFailedCells()</code>、<code>setComputeMinimumPoints()</code>、<code>setComputePolicy()</code>、<code>setExecutionNodeBudget()</code>、<code>setMaxActiveCells()</code>、<code>setMaxGenerationRetries()</code>、<code>setNodeString()</code>、<code>setParameterFloat()</code>、<code>setParameterInt()</code>、<code>setParameterString()</code>、<code>setRefreshWorkBudget()</code>、<code>wasCancelled()</code>。</li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/procgen/"><code>src/modules/procgen/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>procgen</code>；跨模块 hex 关卡见 <a href="../../../test/hex_level_simulation.cpp"><code>test/hex_level_simulation.cpp</code></a>、<a href="../../../test/hex_level_data.cpp"><code>test/hex_level_data.cpp</code></a>、<a href="../../../examples/hex-levels/"><code>examples/hex-levels/</code></a>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

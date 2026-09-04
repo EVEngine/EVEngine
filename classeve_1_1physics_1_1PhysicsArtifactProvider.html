@@ -1,0 +1,835 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::PhysicsArtifactProvider类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html">PhysicsArtifactProvider</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1physics_1_1PhysicsArtifactProvider-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::PhysicsArtifactProvider类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Real physics-module provider for generated collider publication.  
+ <a href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="physics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics::PhysicsArtifactProvider 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1physics_1_1PhysicsArtifactProvider.png" usemap="#eve::physics::PhysicsArtifactProvider_map" alt=""/>
+  <map id="eve::physics::PhysicsArtifactProvider_map" name="eve::physics::PhysicsArtifactProvider_map">
+<area href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html" title="Collider publication capability, implemented by physics." alt="eve::artifact::IPhysicsArtifactAdapter" shape="rect" coords="0,56,222,80"/>
+<area href="classeve_1_1artifact_1_1ProviderContract.html" title="Base contract for a consumer-owned artifact provider." alt="eve::artifact::ProviderContract" shape="rect" coords="0,0,222,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsArtifactProvider_1_1State.html">State</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning runtime state for one published collider.  <a href="structeve_1_1physics_1_1PhysicsArtifactProvider_1_1State.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae37a5754e4b185dffb822c1d96755153" id="r_ae37a5754e4b185dffb822c1d96755153"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#ae37a5754e4b185dffb822c1d96755153">PhysicsArtifactProvider</a> ()</td></tr>
+<tr class="memdesc:ae37a5754e4b185dffb822c1d96755153"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty provider; all methods use the owner thread.  <br /></td></tr>
+<tr class="separator:ae37a5754e4b185dffb822c1d96755153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4df36fb5d737170ef17e0f1f76ee1ed2" id="r_a4df36fb5d737170ef17e0f1f76ee1ed2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a4df36fb5d737170ef17e0f1f76ee1ed2">~PhysicsArtifactProvider</a> () override</td></tr>
+<tr class="memdesc:a4df36fb5d737170ef17e0f1f76ee1ed2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release all staged/committed Box3D resources.  <br /></td></tr>
+<tr class="separator:a4df36fb5d737170ef17e0f1f76ee1ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5731e67d7203f3fdae1e8d5c40b8e62c" id="r_a5731e67d7203f3fdae1e8d5c40b8e62c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a5731e67d7203f3fdae1e8d5c40b8e62c">prepare</a> (const <a class="el" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a> &amp;publication) override</td></tr>
+<tr class="memdesc:a5731e67d7203f3fdae1e8d5c40b8e62c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stage and copy a collider leaf from a generated publication.  <br /></td></tr>
+<tr class="separator:a5731e67d7203f3fdae1e8d5c40b8e62c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f06eca1c82bf6347cae58e89f5f5874" id="r_a5f06eca1c82bf6347cae58e89f5f5874"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a5f06eca1c82bf6347cae58e89f5f5874">snapshotState</a> () const override</td></tr>
+<tr class="memdesc:a5f06eca1c82bf6347cae58e89f5f5874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export collider identity, build keys, handles and CPU geometry.  <br /></td></tr>
+<tr class="separator:a5f06eca1c82bf6347cae58e89f5f5874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f250081dec5ac78fdc755744c903b0a" id="r_a3f250081dec5ac78fdc755744c903b0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a3f250081dec5ac78fdc755744c903b0a">restoreState</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;state) override</td></tr>
+<tr class="memdesc:a3f250081dec5ac78fdc755744c903b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace colliders from validated backend-neutral CPU geometry.  <br /></td></tr>
+<tr class="separator:a3f250081dec5ac78fdc755744c903b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a204b007d361a0d94dc86bbfd2a6e8736" id="r_a204b007d361a0d94dc86bbfd2a6e8736"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a204b007d361a0d94dc86bbfd2a6e8736">emptyState</a> () const noexcept override</td></tr>
+<tr class="memdesc:a204b007d361a0d94dc86bbfd2a6e8736"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the physics registry has no committed colliders.  <br /></td></tr>
+<tr class="separator:a204b007d361a0d94dc86bbfd2a6e8736"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4b859806bde743874d5bfd225d8b29c" id="r_af4b859806bde743874d5bfd225d8b29c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#af4b859806bde743874d5bfd225d8b29c">clearState</a> () noexcept override</td></tr>
+<tr class="memdesc:af4b859806bde743874d5bfd225d8b29c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear provider state through the common restore-cleanup hook.  <br /></td></tr>
+<tr class="separator:af4b859806bde743874d5bfd225d8b29c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58ca61f48268de09f160bd25eebde36c" id="r_a58ca61f48268de09f160bd25eebde36c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1physics_1_1PhysicsArtifactCollider.html">PhysicsArtifactCollider</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a58ca61f48268de09f160bd25eebde36c">find</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const noexcept</td></tr>
+<tr class="memdesc:a58ca61f48268de09f160bd25eebde36c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find a committed collider by persistent identity.  <br /></td></tr>
+<tr class="separator:a58ca61f48268de09f160bd25eebde36c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d4efa6425eb133b3892466e19d2af32" id="r_a4d4efa6425eb133b3892466e19d2af32"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1physics_1_1PhysicsArtifactCollider.html">PhysicsArtifactCollider</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a4d4efa6425eb133b3892466e19d2af32">find</a> (<a class="el" href="namespaceeve_1_1physics.html#adaab508c1e6a7dc57ae112943b21beed">PhysicsArtifactHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const noexcept</td></tr>
+<tr class="memdesc:a4d4efa6425eb133b3892466e19d2af32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a live artifact handle.  <br /></td></tr>
+<tr class="separator:a4d4efa6425eb133b3892466e19d2af32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae29cd962d41a235a677759df0a5e586c" id="r_ae29cd962d41a235a677759df0a5e586c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#ae29cd962d41a235a677759df0a5e586c">isHandleLive</a> (<a class="el" href="namespaceeve_1_1physics.html#adaab508c1e6a7dc57ae112943b21beed">PhysicsArtifactHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const noexcept</td></tr>
+<tr class="memdesc:ae29cd962d41a235a677759df0a5e586c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a generation-qualified artifact handle is live.  <br /></td></tr>
+<tr class="separator:ae29cd962d41a235a677759df0a5e586c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12e44c6625dfe8da8866e5791182c2ae" id="r_a12e44c6625dfe8da8866e5791182c2ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1PhysicsArtifactRayHit.html">PhysicsArtifactRayHit</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a12e44c6625dfe8da8866e5791182c2ae">rayCast</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, float <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, float oz, float dx, float dy, float dz) const noexcept</td></tr>
+<tr class="memdesc:a12e44c6625dfe8da8866e5791182c2ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ray query one collider through its live Box3D world.  <br /></td></tr>
+<tr class="separator:a12e44c6625dfe8da8866e5791182c2ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3bc154fe94aa6de838cede59e0f1158" id="r_ac3bc154fe94aa6de838cede59e0f1158"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#ac3bc154fe94aa6de838cede59e0f1158">size</a> () const noexcept</td></tr>
+<tr class="memdesc:ac3bc154fe94aa6de838cede59e0f1158"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of committed physics colliders.  <br /></td></tr>
+<tr class="separator:ac3bc154fe94aa6de838cede59e0f1158"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab38e7f77f7e05744c6f9e85bdf9f4071" id="r_ab38e7f77f7e05744c6f9e85bdf9f4071"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#ab38e7f77f7e05744c6f9e85bdf9f4071">backendName</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:ab38e7f77f7e05744c6f9e85bdf9f4071"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the backend family for a committed collider, or empty.  <br /></td></tr>
+<tr class="separator:ab38e7f77f7e05744c6f9e85bdf9f4071"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af994774d9b0078ec793090a89fcee67d" id="r_af994774d9b0078ec793090a89fcee67d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#af994774d9b0078ec793090a89fcee67d">isBox3DBacked</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const noexcept</td></tr>
+<tr class="memdesc:af994774d9b0078ec793090a89fcee67d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a collider currently owns a valid Box3D shape.  <br /></td></tr>
+<tr class="separator:af994774d9b0078ec793090a89fcee67d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa215e253eb45bf8377542ffc8c6ac9ad" id="r_aa215e253eb45bf8377542ffc8c6ac9ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#aa215e253eb45bf8377542ffc8c6ac9ad">clear</a> () noexcept</td></tr>
+<tr class="memdesc:aa215e253eb45bf8377542ffc8c6ac9ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all colliders while retiring their runtime handle slots.  <br /></td></tr>
+<tr class="separator:aa215e253eb45bf8377542ffc8c6ac9ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a217f1999767af2f00b0885758c18ee66" id="r_a217f1999767af2f00b0885758c18ee66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a217f1999767af2f00b0885758c18ee66">setPrepareFailure</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) noexcept</td></tr>
+<tr class="memdesc:a217f1999767af2f00b0885758c18ee66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inject a prepare failure for composition tests.  <br /></td></tr>
+<tr class="separator:a217f1999767af2f00b0885758c18ee66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1artifact_1_1IPhysicsArtifactAdapter"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1artifact_1_1IPhysicsArtifactAdapter')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html">eve::artifact::IPhysicsArtifactAdapter</a></td></tr>
+<tr class="memitem:a81d8e85ee4ff4784b4c21af498666cd3 inherit pub_methods_classeve_1_1artifact_1_1IPhysicsArtifactAdapter" id="r_a81d8e85ee4ff4784b4c21af498666cd3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html#a81d8e85ee4ff4784b4c21af498666cd3">~IPhysicsArtifactAdapter</a> () override=default</td></tr>
+<tr class="separator:a81d8e85ee4ff4784b4c21af498666cd3 inherit pub_methods_classeve_1_1artifact_1_1IPhysicsArtifactAdapter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1artifact_1_1ProviderContract"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1artifact_1_1ProviderContract')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html">eve::artifact::ProviderContract</a></td></tr>
+<tr class="memitem:ad7e1191c0debb589a0619566c58bf8b0 inherit pub_methods_classeve_1_1artifact_1_1ProviderContract" id="r_ad7e1191c0debb589a0619566c58bf8b0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#ad7e1191c0debb589a0619566c58bf8b0">~ProviderContract</a> ()=default</td></tr>
+<tr class="separator:ad7e1191c0debb589a0619566c58bf8b0 inherit pub_methods_classeve_1_1artifact_1_1ProviderContract"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a532450233afe9fe55dae200860e448d4" id="r_a532450233afe9fe55dae200860e448d4"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a532450233afe9fe55dae200860e448d4">PhysicsArtifactStage</a></td></tr>
+<tr class="separator:a532450233afe9fe55dae200860e448d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1artifact_1_1IPhysicsArtifactAdapter"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1artifact_1_1IPhysicsArtifactAdapter')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html">eve::artifact::IPhysicsArtifactAdapter</a></td></tr>
+<tr class="memitem:ac35169b095ccd54e55f2a94780326185 inherit pub_static_attribs_classeve_1_1artifact_1_1IPhysicsArtifactAdapter" id="r_ac35169b095ccd54e55f2a94780326185"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html#ac35169b095ccd54e55f2a94780326185">capabilityName</a> = &quot;eve.procgen.IPhysicsArtifactAdapter&quot;</td></tr>
+<tr class="separator:ac35169b095ccd54e55f2a94780326185 inherit pub_static_attribs_classeve_1_1artifact_1_1IPhysicsArtifactAdapter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Real physics-module provider for generated collider publication. </p>
+<p>It owns the backend-neutral descriptor plus a real static Box3D world/body/ triangle-mesh shape for every committed collider. Procgen never includes Box3D; the backend remains an implementation detail of this module. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00060">60</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae37a5754e4b185dffb822c1d96755153" name="ae37a5754e4b185dffb822c1d96755153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae37a5754e4b185dffb822c1d96755153">&#9670;&#160;</a></span>PhysicsArtifactProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::PhysicsArtifactProvider::PhysicsArtifactProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an empty provider; all methods use the owner thread. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4df36fb5d737170ef17e0f1f76ee1ed2" name="a4df36fb5d737170ef17e0f1f76ee1ed2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4df36fb5d737170ef17e0f1f76ee1ed2">&#9670;&#160;</a></span>~PhysicsArtifactProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::PhysicsArtifactProvider::~PhysicsArtifactProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release all staged/committed Box3D resources. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00385">clear()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab38e7f77f7e05744c6f9e85bdf9f4071" name="ab38e7f77f7e05744c6f9e85bdf9f4071"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab38e7f77f7e05744c6f9e85bdf9f4071">&#9670;&#160;</a></span>backendName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::PhysicsArtifactProvider::backendName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the backend family for a committed collider, or empty. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00369">369</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00314">find()</a>.</p>
+
+</div>
+</div>
+<a id="aa215e253eb45bf8377542ffc8c6ac9ad" name="aa215e253eb45bf8377542ffc8c6ac9ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa215e253eb45bf8377542ffc8c6ac9ad">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::PhysicsArtifactProvider::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove all colliders while retiring their runtime handle slots. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00077">clearState()</a> , 以及 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00223">~PhysicsArtifactProvider()</a>.</p>
+
+</div>
+</div>
+<a id="af4b859806bde743874d5bfd225d8b29c" name="af4b859806bde743874d5bfd225d8b29c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4b859806bde743874d5bfd225d8b29c">&#9670;&#160;</a></span>clearState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::PhysicsArtifactProvider::clearState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear provider state through the common restore-cleanup hook. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a26319b92cb27e20b49b2d3e74045ec29">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00385">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a204b007d361a0d94dc86bbfd2a6e8736" name="a204b007d361a0d94dc86bbfd2a6e8736"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a204b007d361a0d94dc86bbfd2a6e8736">&#9670;&#160;</a></span>emptyState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::PhysicsArtifactProvider::emptyState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the physics registry has no committed colliders. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a6fd1f4add3a3bb104fc98f73287dc7f2">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00383">383</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58ca61f48268de09f160bd25eebde36c" name="a58ca61f48268de09f160bd25eebde36c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ca61f48268de09f160bd25eebde36c">&#9670;&#160;</a></span>find() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1physics_1_1PhysicsArtifactCollider.html">PhysicsArtifactCollider</a> * eve::physics::PhysicsArtifactProvider::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find a committed collider by persistent identity. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable collider owned by this provider. @ownership <a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html" title="Real physics-module provider for generated collider publication.">PhysicsArtifactProvider</a> owns committed collider records; callers must not delete or mutate the result. @lifetime Valid until <a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#aa215e253eb45bf8377542ffc8c6ac9ad" title="Remove all colliders while retiring their runtime handle slots.">clear()</a>, <a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#a3f250081dec5ac78fdc755744c903b0a" title="Replace colliders from validated backend-neutral CPU geometry.">restoreState()</a>, or provider destruction; retain PhysicsArtifactHandle across frames. @thread Call on the physics provider's owning thread. @reentrancy The lookup invokes no callbacks and is invalid across provider mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00369">backendName()</a> , 以及 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00225">prepare()</a>.</p>
+
+</div>
+</div>
+<a id="a4d4efa6425eb133b3892466e19d2af32" name="a4d4efa6425eb133b3892466e19d2af32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d4efa6425eb133b3892466e19d2af32">&#9670;&#160;</a></span>find() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1physics_1_1PhysicsArtifactCollider.html">PhysicsArtifactCollider</a> * eve::physics::PhysicsArtifactProvider::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#adaab508c1e6a7dc57ae112943b21beed">PhysicsArtifactHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolve a live artifact handle. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable collider owned by this provider; null denotes a stale or foreign handle. @ownership <a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html" title="Real physics-module provider for generated collider publication.">PhysicsArtifactProvider</a> owns the collider; callers must not delete or mutate the result. @lifetime Valid until provider mutation or destruction; use the handle for later resolution. @thread Call on the physics provider's owning thread. @reentrancy The lookup invokes no callbacks and is invalid across provider mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>.</p>
+
+</div>
+</div>
+<a id="af994774d9b0078ec793090a89fcee67d" name="af994774d9b0078ec793090a89fcee67d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af994774d9b0078ec793090a89fcee67d">&#9670;&#160;</a></span>isBox3DBacked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::PhysicsArtifactProvider::isBox3DBacked </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether a collider currently owns a valid Box3D shape. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae29cd962d41a235a677759df0a5e586c" name="ae29cd962d41a235a677759df0a5e586c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae29cd962d41a235a677759df0a5e586c">&#9670;&#160;</a></span>isHandleLive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::PhysicsArtifactProvider::isHandleLive </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#adaab508c1e6a7dc57ae112943b21beed">PhysicsArtifactHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether a generation-qualified artifact handle is live. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>.</p>
+
+</div>
+</div>
+<a id="a5731e67d7203f3fdae1e8d5c40b8e62c" name="a5731e67d7203f3fdae1e8d5c40b8e62c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5731e67d7203f3fdae1e8d5c40b8e62c">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a> &gt; &gt; eve::physics::PhysicsArtifactProvider::prepare </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a> &amp;&#160;</td>
+          <td class="paramname"><em>publication</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stage and copy a collider leaf from a generated publication. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a405c5379a25dab67e34ae0095a96c5ea">eve::artifact::ProviderContract</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00047">eve::physics::PhysicsArtifactCollider::backend</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00226">body</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00065">eve::artifact::PartView::bounds</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00048">eve::physics::PhysicsArtifactCollider::bounds</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00086">eve::artifact::PublicationView::buildKey</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00043">eve::physics::PhysicsArtifactCollider::buildKey</a>, <a class="el" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa39e1450275f6b9c731ff9faafab3f44c">eve::artifact::Collider</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00314">find()</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00044">eve::physics::PhysicsArtifactCollider::handle</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00084">eve::artifact::PublicationView::id</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00042">eve::physics::PhysicsArtifactCollider::id</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00069">eve::artifact::PartView::indices</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00050">eve::physics::PhysicsArtifactCollider::indices</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00045">eve::RuntimeHandle&lt; PhysicsArtifactHandleTag &gt;::invalidIndex</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00088">eve::artifact::PublicationView::parts</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00066">eve::artifact::PartView::positions</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00063">eve::artifact::PartView::schemaVersion</a>, <a class="el" href="ArtifactPublication_8h_source.html#l00085">eve::artifact::PublicationView::schemaVersion</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00045">eve::physics::PhysicsArtifactCollider::shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00049">eve::physics::PhysicsArtifactCollider::vertices</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a12e44c6625dfe8da8866e5791182c2ae" name="a12e44c6625dfe8da8866e5791182c2ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12e44c6625dfe8da8866e5791182c2ae">&#9670;&#160;</a></span>rayCast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1PhysicsArtifactRayHit.html">PhysicsArtifactRayHit</a> eve::physics::PhysicsArtifactProvider::rayCast </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ray query one collider through its live Box3D world. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00031">eve::physics::PhysicsArtifactRayHit::fraction</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00030">eve::physics::PhysicsArtifactRayHit::hit</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00035">eve::physics::PhysicsArtifactRayHit::normalX</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00036">eve::physics::PhysicsArtifactRayHit::normalY</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00037">eve::physics::PhysicsArtifactRayHit::normalZ</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00032">eve::physics::PhysicsArtifactRayHit::x</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00033">eve::physics::PhysicsArtifactRayHit::y</a> , 以及 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00034">eve::physics::PhysicsArtifactRayHit::z</a>.</p>
+
+</div>
+</div>
+<a id="a3f250081dec5ac78fdc755744c903b0a" name="a3f250081dec5ac78fdc755744c903b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f250081dec5ac78fdc755744c903b0a">&#9670;&#160;</a></span>restoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::PhysicsArtifactProvider::restoreState </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace colliders from validated backend-neutral CPU geometry. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#aa25788a7ca133370d53baa8c29b4abe0">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00047">eve::physics::PhysicsArtifactCollider::backend</a>, <a class="el" href="UnityImporter_8cpp_source.html#l00226">body</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00048">eve::physics::PhysicsArtifactCollider::bounds</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00043">eve::physics::PhysicsArtifactCollider::buildKey</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00115">eve::RuntimeHandle&lt; PhysicsArtifactHandleTag &gt;::fromPacked()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00044">eve::physics::PhysicsArtifactCollider::handle</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00042">eve::physics::PhysicsArtifactCollider::id</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00050">eve::physics::PhysicsArtifactCollider::indices</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00045">eve::RuntimeHandle&lt; PhysicsArtifactHandleTag &gt;::invalidIndex</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00731">mesh</a>, <a class="el" href="Identity_8h_source.html#l00080">eve::detail::Id128&lt; Tag &gt;::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00045">eve::physics::PhysicsArtifactCollider::shape</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00049">eve::physics::PhysicsArtifactCollider::vertices</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a217f1999767af2f00b0885758c18ee66" name="a217f1999767af2f00b0885758c18ee66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a217f1999767af2f00b0885758c18ee66">&#9670;&#160;</a></span>setPrepareFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::PhysicsArtifactProvider::setPrepareFailure </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inject a prepare failure for composition tests. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="ac3bc154fe94aa6de838cede59e0f1158" name="ac3bc154fe94aa6de838cede59e0f1158"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3bc154fe94aa6de838cede59e0f1158">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::physics::PhysicsArtifactProvider::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of committed physics colliders. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00367">367</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f06eca1c82bf6347cae58e89f5f5874" name="a5f06eca1c82bf6347cae58e89f5f5874"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f06eca1c82bf6347cae58e89f5f5874">&#9670;&#160;</a></span>snapshotState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::physics::PhysicsArtifactProvider::snapshotState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Export collider identity, build keys, handles and CPU geometry. </p>
+
+<p>重载 <a class="el" href="classeve_1_1artifact_1_1ProviderContract.html#a0e1f6eb72132331e3b684ebd8c9382ad">eve::artifact::ProviderContract</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a532450233afe9fe55dae200860e448d4" name="a532450233afe9fe55dae200860e448d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a532450233afe9fe55dae200860e448d4">&#9670;&#160;</a></span>PhysicsArtifactStage</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1physics_1_1PhysicsArtifactStage.html">PhysicsArtifactStage</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="physics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a></li>
+<li>src/modules/physics/<a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

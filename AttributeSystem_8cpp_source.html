@@ -1,0 +1,345 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/AttributeSystem.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AttributeSystem.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AttributeSystem_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="AttributeSystem_8h.html">rpg/AttributeSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="RPGActor_8h.html">rpg/RPGActor.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="foldopen" id="foldopen00006" data-start="{" data-end="}">
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg.html">    6</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><a class="code hl_class" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a> invalidArgument(std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>));</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ModifierId&gt;</a> actorRequired(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>*) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;ModifierId&gt;::failure</a>(invalidArgument(<span class="stringliteral">&quot;attribute operation requires an actor&quot;</span>, <span class="stringliteral">&quot;actor&quot;</span>));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> actorRequiredVoid(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>*) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(invalidArgument(<span class="stringliteral">&quot;attribute operation requires an actor&quot;</span>, <span class="stringliteral">&quot;actor&quot;</span>));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> actorRequiredCount(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>*) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;int&gt;::failure</a>(invalidArgument(<span class="stringliteral">&quot;attribute operation requires an actor&quot;</span>, <span class="stringliteral">&quot;actor&quot;</span>));</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#ad010e56312071ad2f9df7de04060419c">   28</a></span><a class="code hl_class" href="classeve_1_1attributes_1_1AttributeOperationRegistry.html">AttributeOpTable</a>&amp; <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ad010e56312071ad2f9df7de04060419c">AttributeSystem::customOps</a>() {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1attributes_1_1AttributeOperationRegistry.html">AttributeOpTable</a> <a class="code hl_function" href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">table</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">table</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a21578c411e87c032930fae8dc8e6d2d6">   33</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a21578c411e87c032930fae8dc8e6d2d6">AttributeSystem::setBase</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute, <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (actor) actor-&gt;attributes()-&gt;values.setBase(attribute, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a82c7d3e52f64a1a891fcc6716ab2efe1">   37</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a82c7d3e52f64a1a891fcc6716ab2efe1">AttributeSystem::getBase</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> actor ? actor-&gt;attributes()-&gt;values.getBase(attribute) : 0.0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="}">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a7c09b96e7fb8fb1a1ce28783587a60f6">   41</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a7c09b96e7fb8fb1a1ce28783587a60f6">AttributeSystem::modifyBase</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute, <span class="keywordtype">double</span> delta) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (actor) actor-&gt;attributes()-&gt;values.modifyBase(attribute, delta);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a52254caa070789bd7a126b253434ce09">   45</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a52254caa070789bd7a126b253434ce09">AttributeSystem::hasAttribute</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">return</span> actor &amp;&amp; actor-&gt;attributes()-&gt;values.has(attribute);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#ad04a4a0700a20355cef14bcc93d7724b">   49</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ModifierId&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ad04a4a0700a20355cef14bcc93d7724b">AttributeSystem::addModifier</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <a class="code hl_struct" href="structeve_1_1attributes_1_1AttributeModifier.html">AttributeModifier</a> modifier) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (!actor) <span class="keywordflow">return</span> actorRequired(actor);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> actor-&gt;attributes()-&gt;values.addModifier(std::move(modifier));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a77a4f9d9566d3e3bf9f52bace19d4555">   54</a></span>std::string <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ad04a4a0700a20355cef14bcc93d7724b">AttributeSystem::addModifier</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                         <span class="keyword">const</span> std::string&amp; operation, <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (!actor || attribute.empty()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">auto</span>              parsed = <a class="code hl_function" href="namespaceeve_1_1attributes.html#a761fb7307a6d7c35197cc7703092a4bc">::eve::attributes::parseAttributeOperation</a>(operation, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_struct" href="structeve_1_1attributes_1_1AttributeModifier.html">AttributeModifier</a> modifier;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    modifier.<a class="code hl_variable" href="structeve_1_1attributes_1_1AttributeModifier.html#a6ecc2597ca6408b773407f1343548162">attribute</a> = attribute;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    modifier.<a class="code hl_variable" href="structeve_1_1attributes_1_1AttributeModifier.html#a8f18d4c7ee6ae9ba6e43c93c46263ed6">source</a>    = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    modifier.<a class="code hl_variable" href="structeve_1_1attributes_1_1AttributeModifier.html#a300ff947c551910caa30802cb3ef13f0">priority</a>  = <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">if</span> (parsed.ok()) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        modifier.<a class="code hl_variable" href="structeve_1_1attributes_1_1AttributeModifier.html#a27cefcd1addab4fe9cfb86dcdf7fb503">operation</a> = parsed.value().operation;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        modifier.<a class="code hl_variable" href="structeve_1_1attributes_1_1AttributeModifier.html#a0a6e169d49c93d6e492bc5853bdb405c">value</a>     = parsed.value().value;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ad010e56312071ad2f9df7de04060419c">customOps</a>().has(operation)) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        parsed.ignore(<span class="stringliteral">&quot;RPG custom operation compatibility fallback&quot;</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        modifier.<a class="code hl_variable" href="structeve_1_1attributes_1_1AttributeModifier.html#a27cefcd1addab4fe9cfb86dcdf7fb503">operation</a> = AttributeOperation::Custom;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        modifier.<a class="code hl_variable" href="structeve_1_1attributes_1_1AttributeModifier.html#a5d42e9bdb964933d699df8ecf83c3e04">policyId</a>  = operation;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        modifier.<a class="code hl_variable" href="structeve_1_1attributes_1_1AttributeModifier.html#a0a6e169d49c93d6e492bc5853bdb405c">value</a>     = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        parsed.ignore(<span class="stringliteral">&quot;unknown RPG attribute operation&quot;</span>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">auto</span> result = <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ad04a4a0700a20355cef14bcc93d7724b">addModifier</a>(actor, std::move(modifier));</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (!result.ok()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> result.value();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#aebbaf98a61b7e4f789401123edcd47a3">   81</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#aebbaf98a61b7e4f789401123edcd47a3">AttributeSystem::removeModifier</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1rpg.html#a4888426f9cf19c0fa100ea736b1c7dbe">ModifierId</a>&amp; modifierId) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (!actor) <span class="keywordflow">return</span> actorRequiredVoid(actor);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> actor-&gt;attributes()-&gt;values.removeModifier(modifierId);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a3cd4b45531e633712e962347488d6094">   86</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#aebbaf98a61b7e4f789401123edcd47a3">AttributeSystem::removeModifier</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute, <span class="keyword">const</span> std::string&amp; modifierId) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (!actor) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">auto</span> result = actor-&gt;attributes()-&gt;values.removeModifier(attribute, modifierId);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">return</span> result.ok();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a7590030642c5f60baa1b472b6c9cd1c3">   92</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a7590030642c5f60baa1b472b6c9cd1c3">AttributeSystem::removeModifiersBySource</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                                                          <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (!actor) <span class="keywordflow">return</span> actorRequiredCount(actor);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> actor-&gt;attributes()-&gt;values.removeBySource(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, attribute);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="}">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a915a390fd15a11fcd9c5f37b3565ae0a">   98</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a915a390fd15a11fcd9c5f37b3565ae0a">AttributeSystem::removeAllModifiersBySource</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">auto</span> result = actor ? actor-&gt;attributes()-&gt;values.removeBySource(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>) : actorRequiredCount(actor);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">return</span> result.ok() ? result.value() : 0;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#ab5a01c83f54dde5b50a033301bbfb3e5">  103</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ab5a01c83f54dde5b50a033301bbfb3e5">AttributeSystem::getFinal</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">return</span> actor ? actor-&gt;attributes()-&gt;values.getFinal(attribute, 0.0, &amp;<a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#ad010e56312071ad2f9df7de04060419c">customOps</a>()) : 0.0;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}</div>
+</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1AttributeSystem.html#a81965ceed43cda35e7b15e26c5a979e3">  107</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1AttributeSystem.html#a81965ceed43cda35e7b15e26c5a979e3">AttributeSystem::invalidate</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* actor, <span class="keyword">const</span> std::string&amp; attribute) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">if</span> (actor) actor-&gt;attributes()-&gt;values.invalidate(attribute);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}  <span class="comment">// namespace eve::rpg</span></div>
+</div>
+<div class="ttc" id="aAttributeSystem_8h_html"><div class="ttname"><a href="AttributeSystem_8h.html">AttributeSystem.h</a></div><div class="ttdoc">RPG's thin compatibility facade over the attributes module.</div></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aRPGActor_8h_html"><div class="ttname"><a href="RPGActor_8h.html">RPGActor.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1attributes_1_1AttributeOperationRegistry_html"><div class="ttname"><a href="classeve_1_1attributes_1_1AttributeOperationRegistry.html">eve::attributes::AttributeOperationRegistry</a></div><div class="ttdoc">Registry for explicitly named custom attribute policies.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00063">AttributeSet.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a21578c411e87c032930fae8dc8e6d2d6"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a21578c411e87c032930fae8dc8e6d2d6">eve::rpg::AttributeSystem::setBase</a></div><div class="ttdeci">static void setBase(RPGActor *actor, const std::string &amp;attribute, double value)</div><div class="ttdoc">Set a base value; invalid actor or attribute is a compatibility no-op.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00033">AttributeSystem.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a52254caa070789bd7a126b253434ce09"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a52254caa070789bd7a126b253434ce09">eve::rpg::AttributeSystem::hasAttribute</a></div><div class="ttdeci">static bool hasAttribute(RPGActor *actor, const std::string &amp;attribute)</div><div class="ttdoc">Query whether an attribute exists on the actor.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00045">AttributeSystem.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a7590030642c5f60baa1b472b6c9cd1c3"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a7590030642c5f60baa1b472b6c9cd1c3">eve::rpg::AttributeSystem::removeModifiersBySource</a></div><div class="ttdeci">static eve::Result&lt; int &gt; removeModifiersBySource(RPGActor *actor, const std::string &amp;attribute, const std::string &amp;source)</div><div class="ttdoc">Remove source modifiers with a structured count result.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00092">AttributeSystem.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a7c09b96e7fb8fb1a1ce28783587a60f6"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a7c09b96e7fb8fb1a1ce28783587a60f6">eve::rpg::AttributeSystem::modifyBase</a></div><div class="ttdeci">static void modifyBase(RPGActor *actor, const std::string &amp;attribute, double delta)</div><div class="ttdoc">Add a delta to a base value.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00041">AttributeSystem.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a81965ceed43cda35e7b15e26c5a979e3"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a81965ceed43cda35e7b15e26c5a979e3">eve::rpg::AttributeSystem::invalidate</a></div><div class="ttdeci">static void invalidate(RPGActor *actor, const std::string &amp;attribute)</div><div class="ttdoc">Mark a canonical attribute value dirty for its next built-in read.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00107">AttributeSystem.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a82c7d3e52f64a1a891fcc6716ab2efe1"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a82c7d3e52f64a1a891fcc6716ab2efe1">eve::rpg::AttributeSystem::getBase</a></div><div class="ttdeci">static double getBase(RPGActor *actor, const std::string &amp;attribute)</div><div class="ttdoc">Read a base value, returning zero for a missing actor/attribute.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00037">AttributeSystem.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_a915a390fd15a11fcd9c5f37b3565ae0a"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#a915a390fd15a11fcd9c5f37b3565ae0a">eve::rpg::AttributeSystem::removeAllModifiersBySource</a></div><div class="ttdeci">static int removeAllModifiersBySource(RPGActor *actor, const std::string &amp;source)</div><div class="ttdoc">Compatibility all-attribute source removal facade.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00098">AttributeSystem.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_ab5a01c83f54dde5b50a033301bbfb3e5"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#ab5a01c83f54dde5b50a033301bbfb3e5">eve::rpg::AttributeSystem::getFinal</a></div><div class="ttdeci">static double getFinal(RPGActor *actor, const std::string &amp;attribute)</div><div class="ttdoc">Compute the final value through the canonical attributes engine.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00103">AttributeSystem.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_ad010e56312071ad2f9df7de04060419c"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#ad010e56312071ad2f9df7de04060419c">eve::rpg::AttributeSystem::customOps</a></div><div class="ttdeci">static AttributeOpTable &amp; customOps()</div><div class="ttdoc">Process-wide custom policy registry used only for Custom modifiers.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00028">AttributeSystem.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_ad04a4a0700a20355cef14bcc93d7724b"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#ad04a4a0700a20355cef14bcc93d7724b">eve::rpg::AttributeSystem::addModifier</a></div><div class="ttdeci">static eve::Result&lt; ModifierId &gt; addModifier(RPGActor *actor, AttributeModifier modifier)</div><div class="ttdoc">Add one canonical modifier to an actor.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00049">AttributeSystem.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1AttributeSystem_html_aebbaf98a61b7e4f789401123edcd47a3"><div class="ttname"><a href="classeve_1_1rpg_1_1AttributeSystem.html#aebbaf98a61b7e4f789401123edcd47a3">eve::rpg::AttributeSystem::removeModifier</a></div><div class="ttdeci">static eve::Result&lt; void &gt; removeModifier(RPGActor *actor, const ModifierId &amp;modifierId)</div><div class="ttdoc">Remove by canonical modifier id with a structured result.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00081">AttributeSystem.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1attributes_html_a761fb7307a6d7c35197cc7703092a4bc"><div class="ttname"><a href="namespaceeve_1_1attributes.html#a761fb7307a6d7c35197cc7703092a4bc">eve::attributes::parseAttributeOperation</a></div><div class="ttdeci">eve::Result&lt; ParsedAttributeOperation &gt; parseAttributeOperation(std::string_view operation, double value)</div><div class="ttdoc">Parse a built-in operation spelling used by existing data and APIs.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8cpp_source.html#l00030">AttributeSet.cpp:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a4888426f9cf19c0fa100ea736b1c7dbe"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a4888426f9cf19c0fa100ea736b1c7dbe">eve::rpg::ModifierId</a></div><div class="ttdeci">::eve::attributes::ModifierId ModifierId</div><div class="ttdef"><b>Definition</b> <a href="AttributeTypes_8h_source.html#l00018">AttributeTypes.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ae33307d84fd0b94d2d0ef89255b4405b"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ae33307d84fd0b94d2d0ef89255b4405b">eve::rpg::table</a></div><div class="ttdeci">std::unordered_map&lt; std::string, SkillDefinition &gt; &amp; table()</div><div class="ttdef"><b>Definition</b> <a href="Skill_8cpp_source.html#l00065">Skill.cpp:65</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1attributes_1_1AttributeModifier_html"><div class="ttname"><a href="structeve_1_1attributes_1_1AttributeModifier.html">eve::attributes::AttributeModifier</a></div><div class="ttdoc">One canonical runtime modifier applied to one named attribute.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00092">AttributeSet.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1attributes_1_1AttributeModifier_html_a0a6e169d49c93d6e492bc5853bdb405c"><div class="ttname"><a href="structeve_1_1attributes_1_1AttributeModifier.html#a0a6e169d49c93d6e492bc5853bdb405c">eve::attributes::AttributeModifier::value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00097">AttributeSet.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1attributes_1_1AttributeModifier_html_a27cefcd1addab4fe9cfb86dcdf7fb503"><div class="ttname"><a href="structeve_1_1attributes_1_1AttributeModifier.html#a27cefcd1addab4fe9cfb86dcdf7fb503">eve::attributes::AttributeModifier::operation</a></div><div class="ttdeci">AttributeOperation operation</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00096">AttributeSet.h:96</a></div></div>
+<div class="ttc" id="astructeve_1_1attributes_1_1AttributeModifier_html_a300ff947c551910caa30802cb3ef13f0"><div class="ttname"><a href="structeve_1_1attributes_1_1AttributeModifier.html#a300ff947c551910caa30802cb3ef13f0">eve::attributes::AttributeModifier::priority</a></div><div class="ttdeci">ModifierPriority priority</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00098">AttributeSet.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1attributes_1_1AttributeModifier_html_a5d42e9bdb964933d699df8ecf83c3e04"><div class="ttname"><a href="structeve_1_1attributes_1_1AttributeModifier.html#a5d42e9bdb964933d699df8ecf83c3e04">eve::attributes::AttributeModifier::policyId</a></div><div class="ttdeci">std::string policyId</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00100">AttributeSet.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1attributes_1_1AttributeModifier_html_a6ecc2597ca6408b773407f1343548162"><div class="ttname"><a href="structeve_1_1attributes_1_1AttributeModifier.html#a6ecc2597ca6408b773407f1343548162">eve::attributes::AttributeModifier::attribute</a></div><div class="ttdeci">AttributeId attribute</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00094">AttributeSet.h:94</a></div></div>
+<div class="ttc" id="astructeve_1_1attributes_1_1AttributeModifier_html_a8f18d4c7ee6ae9ba6e43c93c46263ed6"><div class="ttname"><a href="structeve_1_1attributes_1_1AttributeModifier.html#a8f18d4c7ee6ae9ba6e43c93c46263ed6">eve::attributes::AttributeModifier::source</a></div><div class="ttdeci">SourceId source</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00095">AttributeSet.h:95</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

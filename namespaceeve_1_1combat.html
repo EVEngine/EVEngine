@@ -1,0 +1,366 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::combat 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1combat.html">combat</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::combat 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatAttributeAdvance.html">CombatAttributeAdvance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result of a deterministic regeneration step.  <a href="structeve_1_1combat_1_1CombatAttributeAdvance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatAttributeDefinition.html">CombatAttributeDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data-driven bounds and deterministic regeneration for one combat attribute.  <a href="structeve_1_1combat_1_1CombatAttributeDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatAttributeEvent.html">CombatAttributeEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning event emitted after one attribute mutation commits.  <a href="structeve_1_1combat_1_1CombatAttributeEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1CombatAttributeRuntime.html">CombatAttributeRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner-thread authoritative combat attribute coordinator.  <a href="classeve_1_1combat_1_1CombatAttributeRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutable combat state owned by the gameplay domain for one subject.  <a href="structeve_1_1combat_1_1CombatState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1DamageAmounts.html">DamageAmounts</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provider result prepared before the authoritative state is mutated.  <a href="structeve_1_1combat_1_1DamageAmounts.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1DamageOutcome.html">DamageOutcome</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete owning audit result of one committed damage transaction.  <a href="structeve_1_1combat_1_1DamageOutcome.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1DamageRequest.html">DamageRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning input for one damage transaction.  <a href="structeve_1_1combat_1_1DamageRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1DamageRuntime.html">DamageRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner-thread deterministic damage coordinator.  <a href="classeve_1_1combat_1_1DamageRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1HitReactionPolicy.html">HitReactionPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Threshold policy for deterministic reaction selection.  <a href="structeve_1_1combat_1_1HitReactionPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1IDamageRule.html">IDamageRule</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional game-owned mitigation/amplification policy.  <a href="classeve_1_1combat_1_1IDamageRule.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1combat_1_1Impulse3.html">Impulse3</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renderer/physics-neutral knockback impulse authored in world units.  <a href="structeve_1_1combat_1_1Impulse3.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a02d670d21bd85c1015f2eaa88f26794a" id="r_a02d670d21bd85c1015f2eaa88f26794a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1combat.html#a02d670d21bd85c1015f2eaa88f26794a">CombatAttributeEventKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1combat.html#a02d670d21bd85c1015f2eaa88f26794aa35d72fa7d84f4ae67d705373d1d44b88">Gain</a>
+, <a class="el" href="namespaceeve_1_1combat.html#a02d670d21bd85c1015f2eaa88f26794aa14781ee5e859104d453ad3eb28b441e5">Loss</a>
+, <a class="el" href="namespaceeve_1_1combat.html#a02d670d21bd85c1015f2eaa88f26794aa37984dcc6be6b4ffecc42cce5d8490be">Depleted</a>
+ }</td></tr>
+<tr class="memdesc:a02d670d21bd85c1015f2eaa88f26794a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable reason for a committed combat-attribute change.  <a href="namespaceeve_1_1combat.html#a02d670d21bd85c1015f2eaa88f26794a">更多...</a><br /></td></tr>
+<tr class="separator:a02d670d21bd85c1015f2eaa88f26794a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb10ce294002e7d1edd776e32499e12e" id="r_abb10ce294002e7d1edd776e32499e12e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">HitReaction</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af">Flinch</a>
+, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232">Stagger</a>
+, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601">Knockdown</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f">Death</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:abb10ce294002e7d1edd776e32499e12e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Typed reaction selected after health and poise are resolved.  <a href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">更多...</a><br /></td></tr>
+<tr class="separator:abb10ce294002e7d1edd776e32499e12e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae48a90769b26c01a49b5d2fb2f21e86e" id="r_ae48a90769b26c01a49b5d2fb2f21e86e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86e">DamageRuleSource</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea7a1920d61156abc05a60135aefe8bc67">Default</a>
+, <a class="el" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea27703c8f150ac4bb0a3a83a7857353af">Provider</a>
+ }</td></tr>
+<tr class="memdesc:ae48a90769b26c01a49b5d2fb2f21e86e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates whether default amounts or an injected rule produced the outcome.  <a href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86e">更多...</a><br /></td></tr>
+<tr class="separator:ae48a90769b26c01a49b5d2fb2f21e86e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a1213ab3a7e2c78dc862939861e4550aa" id="r_a1213ab3a7e2c78dc862939861e4550aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1action_1_1AbilityDefinition.html">action::AbilityDefinition</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1combat.html#a1213ab3a7e2c78dc862939861e4550aa">standardCombatAbilities</a> ()</td></tr>
+<tr class="memdesc:a1213ab3a7e2c78dc862939861e4550aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build twenty validated, registerable standard combat ability definitions.  <br /></td></tr>
+<tr class="separator:a1213ab3a7e2c78dc862939861e4550aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a02d670d21bd85c1015f2eaa88f26794a" name="a02d670d21bd85c1015f2eaa88f26794a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02d670d21bd85c1015f2eaa88f26794a">&#9670;&#160;</a></span>CombatAttributeEventKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1combat.html#a02d670d21bd85c1015f2eaa88f26794a">eve::combat::CombatAttributeEventKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observable reason for a committed combat-attribute change. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a02d670d21bd85c1015f2eaa88f26794aa35d72fa7d84f4ae67d705373d1d44b88" name="a02d670d21bd85c1015f2eaa88f26794aa35d72fa7d84f4ae67d705373d1d44b88"></a>Gain&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a02d670d21bd85c1015f2eaa88f26794aa14781ee5e859104d453ad3eb28b441e5" name="a02d670d21bd85c1015f2eaa88f26794aa14781ee5e859104d453ad3eb28b441e5"></a>Loss&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a02d670d21bd85c1015f2eaa88f26794aa37984dcc6be6b4ffecc42cce5d8490be" name="a02d670d21bd85c1015f2eaa88f26794aa37984dcc6be6b4ffecc42cce5d8490be"></a>Depleted&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="CombatAttributes_8h_source.html">CombatAttributes.h</a> 第 <a class="el" href="CombatAttributes_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae48a90769b26c01a49b5d2fb2f21e86e" name="ae48a90769b26c01a49b5d2fb2f21e86e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae48a90769b26c01a49b5d2fb2f21e86e">&#9670;&#160;</a></span>DamageRuleSource</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86e">eve::combat::DamageRuleSource</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Indicates whether default amounts or an injected rule produced the outcome. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ae48a90769b26c01a49b5d2fb2f21e86ea7a1920d61156abc05a60135aefe8bc67" name="ae48a90769b26c01a49b5d2fb2f21e86ea7a1920d61156abc05a60135aefe8bc67"></a>Default&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae48a90769b26c01a49b5d2fb2f21e86ea27703c8f150ac4bb0a3a83a7857353af" name="ae48a90769b26c01a49b5d2fb2f21e86ea27703c8f150ac4bb0a3a83a7857353af"></a>Provider&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb10ce294002e7d1edd776e32499e12e" name="abb10ce294002e7d1edd776e32499e12e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb10ce294002e7d1edd776e32499e12e">&#9670;&#160;</a></span>HitReaction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12e">eve::combat::HitReaction</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Typed reaction selected after health and poise are resolved. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754" name="abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af" name="abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af"></a>Flinch&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232" name="abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232"></a>Stagger&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601" name="abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601"></a>Knockdown&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f" name="abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f"></a>Death&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a1213ab3a7e2c78dc862939861e4550aa" name="a1213ab3a7e2c78dc862939861e4550aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1213ab3a7e2c78dc862939861e4550aa">&#9670;&#160;</a></span>standardCombatAbilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1action_1_1AbilityDefinition.html">action::AbilityDefinition</a> &gt; &gt; eve::combat::standardCombatAbilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build twenty validated, registerable standard combat ability definitions. </p>
+<p>The catalogue supplies identities, timings, cooldown/instancing/group policy and adapter metadata. Projects attach animation, movement, damage and other presentation/gameplay behavior through Action timeline events and executors. </p><dl class="section return"><dt>返回</dt><dd>Owning definitions, or a structured internal-definition failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="StandardAbilities_8cpp_source.html">StandardAbilities.cpp</a> 第 <a class="el" href="StandardAbilities_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

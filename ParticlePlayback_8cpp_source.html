@@ -1,0 +1,451 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/particles/ParticlePlayback.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_be2a98047adf0b17748c2ae9b7b0177c.html">particles</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ParticlePlayback.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ParticlePlayback_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ParticleEmitter_8h.html">particles/ParticleEmitter.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;random&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1particles.html">eve::particles</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1particles.html#a29ec9b054a9553e054409b25c40c1010">   12</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1particles.html#a29ec9b054a9553e054409b25c40c1010">advanceEmitterSim</a>(<a class="code hl_struct" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a>&amp; cfg, <a class="code hl_struct" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a>&amp; sim, <span class="keywordtype">float</span> dt) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> playbackScale = cfg.<a class="code hl_function" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a279f663fd10a5012292df1f56c6f173c">resolvedParameterScale</a>(<span class="stringliteral">&quot;playback&quot;</span>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a4e715ef33df130281348b720fa0b3d9a">paused</a> || dt &lt;= 0.f || cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a4de56767a4a5c07a65a44efe34f75ded">playbackSpeed</a> &lt;= 0.f || playbackScale &lt;= 0.f) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordtype">float</span> scaledDt = dt * cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a4de56767a4a5c07a65a44efe34f75ded">playbackSpeed</a> * playbackScale;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a1c9c3adccc14c56b85ab81cf20b30862">maxDeltaTime</a> &gt; 0.f &amp;&amp; scaledDt &gt; cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a1c9c3adccc14c56b85ab81cf20b30862">maxDeltaTime</a>) scaledDt = cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a1c9c3adccc14c56b85ab81cf20b30862">maxDeltaTime</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab19592afd49d0126ab8b9617794e7e38">fixedTimeStep</a> &lt;= 0.f) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <a class="code hl_function" href="namespaceeve_1_1particles.html#a751a7c3b6ec30a55f2b9b21047bdbbf0">stepEmitterSim</a>(cfg, sim, scaledDt);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">return</span> scaledDt;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a6026bbf73c20edeaf2c6b1cf499843a7">fixedTimeAccum</a> += scaledDt;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>     = cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a1c9c3adccc14c56b85ab81cf20b30862">maxDeltaTime</a> &gt; 0.f ? std::min(cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab19592afd49d0126ab8b9617794e7e38">fixedTimeStep</a>, cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a1c9c3adccc14c56b85ab81cf20b30862">maxDeltaTime</a>) : cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab19592afd49d0126ab8b9617794e7e38">fixedTimeStep</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>   maxSteps = cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a6c10303c50ae52e5544ef914df20d254">maxSubSteps</a> &gt; 0 ? cfg.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a6c10303c50ae52e5544ef914df20d254">maxSubSteps</a> : 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>    = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">while</span> (sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a6026bbf73c20edeaf2c6b1cf499843a7">fixedTimeAccum</a> + 1e-7f &gt;= <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a> &amp;&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a> &lt; maxSteps) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <a class="code hl_function" href="namespaceeve_1_1particles.html#a751a7c3b6ec30a55f2b9b21047bdbbf0">stepEmitterSim</a>(cfg, sim, <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a6026bbf73c20edeaf2c6b1cf499843a7">fixedTimeAccum</a> -= <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        ++<a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="comment">// Bound retained debt as well as work per frame. A suspended process must</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">// not spend many later frames catching up and producing a VFX burst.</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a> == maxSteps &amp;&amp; sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a6026bbf73c20edeaf2c6b1cf499843a7">fixedTimeAccum</a> &gt;= <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a6026bbf73c20edeaf2c6b1cf499843a7">fixedTimeAccum</a> = std::fmod(sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a6026bbf73c20edeaf2c6b1cf499843a7">fixedTimeAccum</a>, <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">return</span> float(<a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>) * <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceeve_1_1particles.html#ab1270f63a123c7e8adfd725c21aa075c">   40</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1particles.html#a29ec9b054a9553e054409b25c40c1010">advanceEmitterSim</a>(<a class="code hl_struct" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">ParticleEmitter::Config</a>&amp; cfg, <a class="code hl_struct" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">ParticleEmitter::Sim</a>&amp; sim,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                                    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>.delta.nanoseconds() &lt; 0)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                                                 <span class="stringliteral">&quot;particle simulation delta must be non-negative&quot;</span>));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#aa5f35e6a0bd4c4c7fdaa89d44bd54c0d">hasSimulationTick</a> &amp;&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>.tick &lt;= sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a72fc54e45ce12ec67d402798893219ed">simulationTick</a>)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;particle simulation tick must advance monotonically&quot;</span>));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> dt = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>.delta.seconds());</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (!std::isfinite(dt))</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                                                 <span class="stringliteral">&quot;particle simulation delta is outside float range&quot;</span>));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// Scheduler-owned pause, rate and fixed-step policy are already reflected</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="comment">// in the supplied SimulationStep. The legacy emitter playback controls are</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="comment">// intentionally not consulted here.</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (!sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a4e715ef33df130281348b720fa0b3d9a">paused</a> &amp;&amp; dt &gt; 0.f) <a class="code hl_function" href="namespaceeve_1_1particles.html#a751a7c3b6ec30a55f2b9b21047bdbbf0">stepEmitterSim</a>(cfg, sim, dt);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a72fc54e45ce12ec67d402798893219ed">simulationTick</a>    = <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>.tick;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#aa5f35e6a0bd4c4c7fdaa89d44bd54c0d">hasSimulationTick</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a>((sim.<a class="code hl_variable" href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a4e715ef33df130281348b720fa0b3d9a">paused</a> || dt == 0.f) ? <a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::StatusCode::NoOp</a> : <a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ac4e82e9fcdb06a399de6eac992b3d6b3">   64</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ac4e82e9fcdb06a399de6eac992b3d6b3">ParticleEmitter::advance</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1particles.html#a29ec9b054a9553e054409b25c40c1010">advanceEmitterSim</a>(*config(), *sim(), <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="}">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ac9e30bc9b1afa247a3ca120ad2c77652">   68</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ac9e30bc9b1afa247a3ca120ad2c77652">ParticleEmitter::setEmissionRateOverDistance</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a>) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    config()-&gt;emissionRateOverDistance = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a> &gt; 0.f ? <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a> : 0.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#abff2634644e2c8959c3e73f8fb564ae2">   72</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#abff2634644e2c8959c3e73f8fb564ae2">ParticleEmitter::getEmissionRateOverDistance</a>() { <span class="keywordflow">return</span> config()-&gt;emissionRateOverDistance; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ad7a01e0df164d1f3467054d0e972ab64">   74</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ad7a01e0df164d1f3467054d0e972ab64">ParticleEmitter::setLooping</a>(<span class="keywordtype">bool</span> looping) { config()-&gt;looping = looping; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#a966c2331b00f261c2e913c50a22b29ba">   75</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#a966c2331b00f261c2e913c50a22b29ba">ParticleEmitter::getLooping</a>() { <span class="keywordflow">return</span> config()-&gt;looping; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#a4d2b7b565bf03c5eb7b59027e9341034">   77</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#a4d2b7b565bf03c5eb7b59027e9341034">ParticleEmitter::setPlaybackSpeed</a>(<span class="keywordtype">float</span> speed) { config()-&gt;playbackSpeed = speed &gt; 0.f ? speed : 0.f; }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ad0d36466ba5af5178f8855f0bd1dd163">   79</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ad0d36466ba5af5178f8855f0bd1dd163">ParticleEmitter::getPlaybackSpeed</a>() { <span class="keywordflow">return</span> config()-&gt;playbackSpeed; }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#acee4f299200fd1873770e3e04f4fdc3c">   81</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#acee4f299200fd1873770e3e04f4fdc3c">ParticleEmitter::setFixedTimeStep</a>(<span class="keywordtype">float</span> seconds, <span class="keywordtype">int</span> maxSubSteps) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>                = config();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;fixedTimeStep      = seconds &gt; 0.f ? seconds : 0.f;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;maxSubSteps        = maxSubSteps &gt; 0 ? maxSubSteps : 1;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    sim()-&gt;fixedTimeAccum = 0.f;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ae0472e83719ff24759f52984e44e96ed">   88</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ae0472e83719ff24759f52984e44e96ed">ParticleEmitter::getFixedTimeStep</a>() { <span class="keywordflow">return</span> config()-&gt;fixedTimeStep; }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="}">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#a1e89bcccd5d92a30d7881cd51c0d24cb">   90</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#a1e89bcccd5d92a30d7881cd51c0d24cb">ParticleEmitter::setRandomSeed</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>            = config();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>            = sim();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;randomSeed     = <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;autoRandomSeed = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;activeSeed     = <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;rng.seed(<span class="keyword">static_cast&lt;</span>std::mt19937::result_type<span class="keyword">&gt;</span>(<a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>));</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#aeaa85e436d74ef7b229cfcdb6a973261">   99</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#aeaa85e436d74ef7b229cfcdb6a973261">ParticleEmitter::getRandomSeed</a>() { <span class="keywordflow">return</span> config()-&gt;randomSeed; }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ab750c011f0bde5e93de878378b111de9">  101</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ab750c011f0bde5e93de878378b111de9">ParticleEmitter::setAutoRandomSeed</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) { config()-&gt;autoRandomSeed = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ab11bbac89370561b55b31aeb9d28ef3e">  102</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ab11bbac89370561b55b31aeb9d28ef3e">ParticleEmitter::getAutoRandomSeed</a>() { <span class="keywordflow">return</span> config()-&gt;autoRandomSeed; }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ab38271c268d7333ebe1381e40cecab00">  104</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ab38271c268d7333ebe1381e40cecab00">ParticleEmitter::start</a>() {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>    = config();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>    = sim();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">int</span>  <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a> = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;randomSeed;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;autoRandomSeed) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        std::random_device rd;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(rd());</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;activeSeed = <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;rng.seed(<span class="keyword">static_cast&lt;</span>std::mt19937::result_type<span class="keyword">&gt;</span>(<a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>));</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;active            = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;paused            = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;emitterAge        = 0.f;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;fixedTimeAccum    = 0.f;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;distanceEmitAccum = 0.f;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> : <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;bursts) <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.emitted = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> prewarm = <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>-&gt;prewarmSeconds;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> (prewarm &gt; 0.f) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keyword">constexpr</span> <span class="keywordtype">float</span> kPrewarmDt = 1.f / 60.f;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keyword">const</span> <span class="keywordtype">int</span>       <a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>      = int(std::ceil(prewarm / kPrewarmDt));</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a>; ++i) <a class="code hl_function" href="namespaceeve_1_1particles.html#a751a7c3b6ec30a55f2b9b21047bdbbf0">stepEmitterSim</a>(*<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, *<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, kPrewarmDt);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
+</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="foldopen" id="foldopen00128" data-start="{" data-end="}">
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#a17aa649b976c7d80aa3188ac37a594fb">  128</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#a17aa649b976c7d80aa3188ac37a594fb">ParticleEmitter::stop</a>() {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>               = sim();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;active            = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;paused            = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;emitAccum         = 0.f;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;distanceEmitAccum = 0.f;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;fixedTimeAccum    = 0.f;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;emitterAge        = 0.f;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;lastX             = config()-&gt;x;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;lastY             = config()-&gt;y;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;hasLastPos        = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}</div>
+</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="}">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#a22d8423a4bad18b81850b6426f035be8">  141</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#a22d8423a4bad18b81850b6426f035be8">ParticleEmitter::pause</a>() {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = sim();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;active) <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;paused = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>}</div>
+</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ad6c39165e390e9f3cd11ee0647288140">  146</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ad6c39165e390e9f3cd11ee0647288140">ParticleEmitter::reset</a>() {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>               = sim();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;alive             = 0;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;emitAccum         = 0.f;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;distanceEmitAccum = 0.f;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;fixedTimeAccum    = 0.f;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;emitterAge        = 0.f;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;hasLastPos        = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;overflowWarned    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> : config()-&gt;bursts) <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.emitted = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> : <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;particles) <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.life = 0.f;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a> = gpuSim();</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>-&gt;residentHandle != 0) {</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keyword">auto</span>* gfx = eve::ModuleManager::getInstance&lt;eve::graphics::Graphics&gt;(<span class="stringliteral">&quot;Graphics&quot;</span>);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordflow">if</span> (gfx) gfx-&gt;resetGpuParticleEmitter(<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>-&gt;residentHandle);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    }</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>-&gt;residentActive = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>-&gt;estimatedAlive = 0;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>-&gt;timeline       = 0.0;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>-&gt;deathTimes.clear();</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
+</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="foldopen" id="foldopen00168" data-start="{" data-end="}">
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#aed2ccc7338c811476262f31fea2c1d71">  168</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#aed2ccc7338c811476262f31fea2c1d71">ParticleEmitter::emit</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a> &lt;= 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = config();</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = sim();</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="comment">// Spawn at the CURRENT attached position so manual bursts do not lag a</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="comment">// frame behind animation or IK updates.</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#a87741cc00e9715d2c41090097327bf28">syncAttach</a>();</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>; ++i) <a class="code hl_function" href="namespaceeve_1_1particles.html#a32e39e13805e24c7604f96f7c715468b">spawnParticle</a>(*<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, *<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>);</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>}</div>
+</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="foldopen" id="foldopen00178" data-start="{" data-end="}">
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#a29280072a184ca5f85b7f8f11644e6df">  178</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#a29280072a184ca5f85b7f8f11644e6df">ParticleEmitter::isActive</a>() {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = sim();</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;active &amp;&amp; !<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;paused;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>}</div>
+</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ab5dd080de182b6a609fc1ecc7be3fffa">  182</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ab5dd080de182b6a609fc1ecc7be3fffa">ParticleEmitter::isPaused</a>() { <span class="keywordflow">return</span> sim()-&gt;paused; }</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#aae39222f193afef343734a97732232ce">  183</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#aae39222f193afef343734a97732232ce">ParticleEmitter::isStopped</a>() { <span class="keywordflow">return</span> !sim()-&gt;active; }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="foldopen" id="foldopen00185" data-start="{" data-end="}">
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#ab31ae7be008a33a5abfc3c420a217055">  185</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#ab31ae7be008a33a5abfc3c420a217055">ParticleEmitter::getCount</a>() {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a> = gpuSim();</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>-&gt;residentActive ? <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>-&gt;estimatedAlive + sim()-&gt;alive : sim()-&gt;alive;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>}</div>
+</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classeve_1_1particles_1_1ParticleEmitter.html#a4437d9749d1620dcac702ac52f01b562">  189</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1particles_1_1ParticleEmitter.html#a4437d9749d1620dcac702ac52f01b562">ParticleEmitter::getBufferSize</a>() { <span class="keywordflow">return</span> int(sim()-&gt;particles.size()); }</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>}  <span class="comment">// namespace eve::particles</span></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a0b872fb569a8d6ca3c6e55e3d7182e57"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a></div><div class="ttdeci">float rate</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00033">LegacyAnimationImporter.cpp:33</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aParticleEmitter_8h_html"><div class="ttname"><a href="ParticleEmitter_8h.html">ParticleEmitter.h</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ab4ae7205573977222eadd0795db193e2"><div class="ttname"><a href="PrototypeKit_8cpp.html#ab4ae7205573977222eadd0795db193e2">steps</a></div><div class="ttdeci">int steps</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00112">PrototypeKit.cpp:112</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a1673907d4d89d763bb7b94ec1eeb7b60"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a></div><div class="ttdeci">uint8_t g</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00035">PrototypeTextures.cpp:35</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_a17aa649b976c7d80aa3188ac37a594fb"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#a17aa649b976c7d80aa3188ac37a594fb">eve::particles::ParticleEmitter::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00128">ParticlePlayback.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_a1e89bcccd5d92a30d7881cd51c0d24cb"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#a1e89bcccd5d92a30d7881cd51c0d24cb">eve::particles::ParticleEmitter::setRandomSeed</a></div><div class="ttdeci">void setRandomSeed(int seed)</div><div class="ttdoc">Select a deterministic seed and disable automatic seeding.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00090">ParticlePlayback.cpp:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_a22d8423a4bad18b81850b6426f035be8"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#a22d8423a4bad18b81850b6426f035be8">eve::particles::ParticleEmitter::pause</a></div><div class="ttdeci">void pause()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00141">ParticlePlayback.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_a29280072a184ca5f85b7f8f11644e6df"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#a29280072a184ca5f85b7f8f11644e6df">eve::particles::ParticleEmitter::isActive</a></div><div class="ttdeci">bool isActive()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00178">ParticlePlayback.cpp:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_a4437d9749d1620dcac702ac52f01b562"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#a4437d9749d1620dcac702ac52f01b562">eve::particles::ParticleEmitter::getBufferSize</a></div><div class="ttdeci">int getBufferSize()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00189">ParticlePlayback.cpp:189</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_a4d2b7b565bf03c5eb7b59027e9341034"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#a4d2b7b565bf03c5eb7b59027e9341034">eve::particles::ParticleEmitter::setPlaybackSpeed</a></div><div class="ttdeci">void setPlaybackSpeed(float speed)</div><div class="ttdoc">Scale simulation time; zero freezes playback.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00077">ParticlePlayback.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_a87741cc00e9715d2c41090097327bf28"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#a87741cc00e9715d2c41090097327bf28">eve::particles::ParticleEmitter::syncAttach</a></div><div class="ttdeci">void syncAttach()</div><div class="ttdoc">Sync Config.x/y (and direction) from the attached bone. Also called by ParticleSimSystem.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8cpp_source.html#l01332">ParticleEmitter.cpp:1332</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_a966c2331b00f261c2e913c50a22b29ba"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#a966c2331b00f261c2e913c50a22b29ba">eve::particles::ParticleEmitter::getLooping</a></div><div class="ttdeci">bool getLooping()</div><div class="ttdoc">Return whether the finite emitter timeline repeats.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00075">ParticlePlayback.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_aae39222f193afef343734a97732232ce"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#aae39222f193afef343734a97732232ce">eve::particles::ParticleEmitter::isStopped</a></div><div class="ttdeci">bool isStopped()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00183">ParticlePlayback.cpp:183</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ab11bbac89370561b55b31aeb9d28ef3e"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ab11bbac89370561b55b31aeb9d28ef3e">eve::particles::ParticleEmitter::getAutoRandomSeed</a></div><div class="ttdeci">bool getAutoRandomSeed()</div><div class="ttdoc">Return whether start() generates a new random seed.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00102">ParticlePlayback.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ab31ae7be008a33a5abfc3c420a217055"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ab31ae7be008a33a5abfc3c420a217055">eve::particles::ParticleEmitter::getCount</a></div><div class="ttdeci">int getCount()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00185">ParticlePlayback.cpp:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ab38271c268d7333ebe1381e40cecab00"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ab38271c268d7333ebe1381e40cecab00">eve::particles::ParticleEmitter::start</a></div><div class="ttdeci">void start()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00104">ParticlePlayback.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ab5dd080de182b6a609fc1ecc7be3fffa"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ab5dd080de182b6a609fc1ecc7be3fffa">eve::particles::ParticleEmitter::isPaused</a></div><div class="ttdeci">bool isPaused()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00182">ParticlePlayback.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ab750c011f0bde5e93de878378b111de9"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ab750c011f0bde5e93de878378b111de9">eve::particles::ParticleEmitter::setAutoRandomSeed</a></div><div class="ttdeci">void setAutoRandomSeed(bool enabled)</div><div class="ttdoc">Generate a new random seed whenever start() is called.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00101">ParticlePlayback.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_abff2634644e2c8959c3e73f8fb564ae2"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#abff2634644e2c8959c3e73f8fb564ae2">eve::particles::ParticleEmitter::getEmissionRateOverDistance</a></div><div class="ttdeci">float getEmissionRateOverDistance()</div><div class="ttdoc">Return particles emitted per world unit travelled.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00072">ParticlePlayback.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ac4e82e9fcdb06a399de6eac992b3d6b3"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ac4e82e9fcdb06a399de6eac992b3d6b3">eve::particles::ParticleEmitter::advance</a></div><div class="ttdeci">eve::Result&lt; void &gt; advance(const eve::SimulationStep &amp;step)</div><div class="ttdoc">Advance this emitter by one scheduler-owned simulation step.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00064">ParticlePlayback.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ac9e30bc9b1afa247a3ca120ad2c77652"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ac9e30bc9b1afa247a3ca120ad2c77652">eve::particles::ParticleEmitter::setEmissionRateOverDistance</a></div><div class="ttdeci">void setEmissionRateOverDistance(float rate)</div><div class="ttdoc">Set particles emitted per world unit travelled; zero disables it.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00068">ParticlePlayback.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_acee4f299200fd1873770e3e04f4fdc3c"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#acee4f299200fd1873770e3e04f4fdc3c">eve::particles::ParticleEmitter::setFixedTimeStep</a></div><div class="ttdeci">void setFixedTimeStep(float seconds, int maxSubSteps=8)</div><div class="ttdoc">Configure fixed stepping and the per-frame catch-up limit; zero seconds disables it.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00081">ParticlePlayback.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ad0d36466ba5af5178f8855f0bd1dd163"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ad0d36466ba5af5178f8855f0bd1dd163">eve::particles::ParticleEmitter::getPlaybackSpeed</a></div><div class="ttdeci">float getPlaybackSpeed()</div><div class="ttdoc">Return the simulation time multiplier.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00079">ParticlePlayback.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ad6c39165e390e9f3cd11ee0647288140"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ad6c39165e390e9f3cd11ee0647288140">eve::particles::ParticleEmitter::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00146">ParticlePlayback.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ad7a01e0df164d1f3467054d0e972ab64"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ad7a01e0df164d1f3467054d0e972ab64">eve::particles::ParticleEmitter::setLooping</a></div><div class="ttdeci">void setLooping(bool looping)</div><div class="ttdoc">Enable or disable repeating a finite emitter timeline.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00074">ParticlePlayback.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_ae0472e83719ff24759f52984e44e96ed"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#ae0472e83719ff24759f52984e44e96ed">eve::particles::ParticleEmitter::getFixedTimeStep</a></div><div class="ttdeci">float getFixedTimeStep()</div><div class="ttdoc">Return the fixed step in seconds, or zero for variable stepping.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00088">ParticlePlayback.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_aeaa85e436d74ef7b229cfcdb6a973261"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#aeaa85e436d74ef7b229cfcdb6a973261">eve::particles::ParticleEmitter::getRandomSeed</a></div><div class="ttdeci">int getRandomSeed()</div><div class="ttdoc">Return the configured deterministic seed.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00099">ParticlePlayback.cpp:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1particles_1_1ParticleEmitter_html_aed2ccc7338c811476262f31fea2c1d71"><div class="ttname"><a href="classeve_1_1particles_1_1ParticleEmitter.html#aed2ccc7338c811476262f31fea2c1d71">eve::particles::ParticleEmitter::emit</a></div><div class="ttdeci">void emit(int count)</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00168">ParticlePlayback.cpp:168</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html"><div class="ttname"><a href="namespaceeve_1_1particles.html">eve::particles</a></div><div class="ttdef"><b>Definition</b> <a href="ParticleConfig_8cpp_source.html#l00017">ParticleConfig.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html_a29ec9b054a9553e054409b25c40c1010"><div class="ttname"><a href="namespaceeve_1_1particles.html#a29ec9b054a9553e054409b25c40c1010">eve::particles::advanceEmitterSim</a></div><div class="ttdeci">float advanceEmitterSim(ParticleEmitter::Config &amp;cfg, ParticleEmitter::Sim &amp;sim, float dt)</div><div class="ttdoc">Apply playback speed and optional bounded fixed stepping before simulation.</div><div class="ttdef"><b>Definition</b> <a href="ParticlePlayback_8cpp_source.html#l00012">ParticlePlayback.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html_a32e39e13805e24c7604f96f7c715468b"><div class="ttname"><a href="namespaceeve_1_1particles.html#a32e39e13805e24c7604f96f7c715468b">eve::particles::spawnParticle</a></div><div class="ttdeci">bool spawnParticle(ParticleEmitter::Config &amp;cfg, ParticleEmitter::Sim &amp;sim)</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8cpp_source.html#l00358">ParticleEmitter.cpp:358</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1particles_html_a751a7c3b6ec30a55f2b9b21047bdbbf0"><div class="ttname"><a href="namespaceeve_1_1particles.html#a751a7c3b6ec30a55f2b9b21047bdbbf0">eve::particles::stepEmitterSim</a></div><div class="ttdeci">void stepEmitterSim(ParticleEmitter::Config &amp;cfg, ParticleEmitter::Sim &amp;sim, float dt)</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8cpp_source.html#l00414">ParticleEmitter.cpp:414</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::StatusCode::NoOp</a></div><div class="ttdeci">@ NoOp</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Config_html"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html">eve::particles::ParticleEmitter::Config</a></div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00071">ParticleEmitter.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Config_html_a1c9c3adccc14c56b85ab81cf20b30862"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a1c9c3adccc14c56b85ab81cf20b30862">eve::particles::ParticleEmitter::Config::maxDeltaTime</a></div><div class="ttdeci">float maxDeltaTime</div><div class="ttdoc">Cap per-step delta time (0 = unlimited).</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00179">ParticleEmitter.h:179</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Config_html_a279f663fd10a5012292df1f56c6f173c"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a279f663fd10a5012292df1f56c6f173c">eve::particles::ParticleEmitter::Config::resolvedParameterScale</a></div><div class="ttdeci">float resolvedParameterScale(const std::string &amp;target) const</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00107">ParticleEmitter.h:107</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Config_html_a4de56767a4a5c07a65a44efe34f75ded"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a4de56767a4a5c07a65a44efe34f75ded">eve::particles::ParticleEmitter::Config::playbackSpeed</a></div><div class="ttdeci">float playbackSpeed</div><div class="ttdoc">Simulation time multiplier. 0 freezes playback without changing pause state.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00090">ParticleEmitter.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Config_html_a6c10303c50ae52e5544ef914df20d254"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#a6c10303c50ae52e5544ef914df20d254">eve::particles::ParticleEmitter::Config::maxSubSteps</a></div><div class="ttdeci">int maxSubSteps</div><div class="ttdoc">Spiral-of-death guard for fixed stepping.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00094">ParticleEmitter.h:94</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Config_html_ab19592afd49d0126ab8b9617794e7e38"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab19592afd49d0126ab8b9617794e7e38">eve::particles::ParticleEmitter::Config::fixedTimeStep</a></div><div class="ttdeci">float fixedTimeStep</div><div class="ttdoc">Fixed simulation step in seconds (0 = variable step).</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00092">ParticleEmitter.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Sim_html"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html">eve::particles::ParticleEmitter::Sim</a></div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00245">ParticleEmitter.h:245</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Sim_html_a4e715ef33df130281348b720fa0b3d9a"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a4e715ef33df130281348b720fa0b3d9a">eve::particles::ParticleEmitter::Sim::paused</a></div><div class="ttdeci">bool paused</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00253">ParticleEmitter.h:253</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Sim_html_a6026bbf73c20edeaf2c6b1cf499843a7"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a6026bbf73c20edeaf2c6b1cf499843a7">eve::particles::ParticleEmitter::Sim::fixedTimeAccum</a></div><div class="ttdeci">float fixedTimeAccum</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00250">ParticleEmitter.h:250</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Sim_html_a72fc54e45ce12ec67d402798893219ed"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#a72fc54e45ce12ec67d402798893219ed">eve::particles::ParticleEmitter::Sim::simulationTick</a></div><div class="ttdeci">eve::SimulationTick simulationTick</div><div class="ttdoc">Last scheduler tick observed by the checked simulation API.</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00260">ParticleEmitter.h:260</a></div></div>
+<div class="ttc" id="astructeve_1_1particles_1_1ParticleEmitter_1_1Sim_html_aa5f35e6a0bd4c4c7fdaa89d44bd54c0d"><div class="ttname"><a href="structeve_1_1particles_1_1ParticleEmitter_1_1Sim.html#aa5f35e6a0bd4c4c7fdaa89d44bd54c0d">eve::particles::ParticleEmitter::Sim::hasSimulationTick</a></div><div class="ttdeci">bool hasSimulationTick</div><div class="ttdef"><b>Definition</b> <a href="ParticleEmitter_8h_source.html#l00261">ParticleEmitter.h:261</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

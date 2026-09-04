@@ -1,0 +1,1059 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::camera_editing::CameraDocumentTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1camera__editing.html">camera_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html">CameraDocumentTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1camera__editing_1_1CameraDocumentTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::camera_editing::CameraDocumentTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Revisioned camera-rig and director-timeline editing document.  
+ <a href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CameraTarget_8h_source.html">CameraTarget.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::camera_editing::CameraDocumentTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1camera__editing_1_1CameraDocumentTarget.png" usemap="#eve::camera_5Fediting::CameraDocumentTarget_map" alt=""/>
+  <map id="eve::camera_5Fediting::CameraDocumentTarget_map" name="eve::camera_5Fediting::CameraDocumentTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,267,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="277,56,544,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="554,56,821,80"/>
+<area href="classeve_1_1editing_1_1IPropertyProvider.html" title="UI-independent property access for an immutable selection snapshot." alt="eve::editing::IPropertyProvider" shape="rect" coords="831,56,1098,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="277,0,544,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9199594d5212c1f0a58575fa1f77e2b1" id="r_a9199594d5212c1f0a58575fa1f77e2b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a9199594d5212c1f0a58575fa1f77e2b1">CameraDocumentTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a9199594d5212c1f0a58575fa1f77e2b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c8e8c22089b2d36357579fdca0cabf" id="r_ae2c8e8c22089b2d36357579fdca0cabf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#ace25740b4f0bb68162e07ee19c94a6a0">TargetId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#ae2c8e8c22089b2d36357579fdca0cabf">targetId</a> () const override</td></tr>
+<tr class="separator:ae2c8e8c22089b2d36357579fdca0cabf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a808ecc85397dc954dec1bfca3a7270" id="r_a6a808ecc85397dc954dec1bfca3a7270"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a6a808ecc85397dc954dec1bfca3a7270">revision</a> () const override</td></tr>
+<tr class="separator:a6a808ecc85397dc954dec1bfca3a7270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a547795bca71b0437319e2b7f66be1fe4" id="r_a547795bca71b0437319e2b7f66be1fe4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a843adb01410fba39f79c04fed3e0f3f6">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a547795bca71b0437319e2b7f66be1fe4">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:a547795bca71b0437319e2b7f66be1fe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac709ec153d28cece93c6bf825943d4f7" id="r_ac709ec153d28cece93c6bf825943d4f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#ac709ec153d28cece93c6bf825943d4f7">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:ac709ec153d28cece93c6bf825943d4f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc8a6355aeb2366ec0c25835096b63b8" id="r_afc8a6355aeb2366ec0c25835096b63b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a157cac05cd2116f67d9fac07ac1da4ee">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#afc8a6355aeb2366ec0c25835096b63b8">describe</a> () const override</td></tr>
+<tr class="memdesc:afc8a6355aeb2366ec0c25835096b63b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:afc8a6355aeb2366ec0c25835096b63b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80792ee0a914914f10ea0c3ed51a6e10" id="r_a80792ee0a914914f10ea0c3ed51a6e10"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a80792ee0a914914f10ea0c3ed51a6e10">queryCapability</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#a2b3d5531850f6eaf5604760bdcad98de">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="memdesc:a80792ee0a914914f10ea0c3ed51a6e10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional target capability.  <br /></td></tr>
+<tr class="separator:a80792ee0a914914f10ea0c3ed51a6e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44cccae14f2dfed59f273be4f524ee4e" id="r_a44cccae14f2dfed59f273be4f524ee4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a44cccae14f2dfed59f273be4f524ee4e">applyDomainOperation</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &amp;operation) override</td></tr>
+<tr class="memdesc:a44cccae14f2dfed59f273be4f524ee4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a44cccae14f2dfed59f273be4f524ee4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a947f100261068123a7831b42013df4b4" id="r_a947f100261068123a7831b42013df4b4"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#ab9790d5bba7f57ca309214ab1bcfc773">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a947f100261068123a7831b42013df4b4">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:a947f100261068123a7831b42013df4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:a947f100261068123a7831b42013df4b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfe789cc4d37f5a5849f48046765be00" id="r_acfe789cc4d37f5a5849f48046765be00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#acfe789cc4d37f5a5849f48046765be00">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#ab9790d5bba7f57ca309214ab1bcfc773">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:acfe789cc4d37f5a5849f48046765be00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:acfe789cc4d37f5a5849f48046765be00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e8f552f5bf5191fc6289efa0f4f94e3" id="r_a8e8f552f5bf5191fc6289efa0f4f94e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a8e8f552f5bf5191fc6289efa0f4f94e3">currentRevision</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="separator:a8e8f552f5bf5191fc6289efa0f4f94e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae103dc1492d0f387766078c52de226d4" id="r_ae103dc1492d0f387766078c52de226d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#ab900a859e51a745a5017b396b0910d8b">PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#ae103dc1492d0f387766078c52de226d4">schema</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="separator:ae103dc1492d0f387766078c52de226d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad965b6fde6a3b5e97700073b20e6d478" id="r_ad965b6fde6a3b5e97700073b20e6d478"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a07f1bd4fa7a09c50d60c5e47feab75f4">PropertyReadResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#ad965b6fde6a3b5e97700073b20e6d478">read</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;selection, const <a class="el" href="namespaceeve_1_1camera__editing.html#a73fd7ea4cde0d4d4b8a258dae3e6feb3">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="separator:ad965b6fde6a3b5e97700073b20e6d478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad59cdb3b83fceaff76b1392ffb465323" id="r_ad59cdb3b83fceaff76b1392ffb465323"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#ad59cdb3b83fceaff76b1392ffb465323">makeSet</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;selection, const <a class="el" href="namespaceeve_1_1camera__editing.html#a73fd7ea4cde0d4d4b8a258dae3e6feb3">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="namespaceeve_1_1camera__editing.html#aa93c5d4ddb42685673dee3f92b76d08f">EditorValue</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> mode) const override</td></tr>
+<tr class="separator:ad59cdb3b83fceaff76b1392ffb465323"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85cf8eeb4fe884ad8dc2e6608cfef682" id="r_a85cf8eeb4fe884ad8dc2e6608cfef682"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a85cf8eeb4fe884ad8dc2e6608cfef682">makeReset</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;selection, const <a class="el" href="namespaceeve_1_1camera__editing.html#a73fd7ea4cde0d4d4b8a258dae3e6feb3">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="separator:a85cf8eeb4fe884ad8dc2e6608cfef682"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd8bbdaf688643eea181d2184c7f43f4" id="r_afd8bbdaf688643eea181d2184c7f43f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#afd8bbdaf688643eea181d2184c7f43f4">makeCreateRig</a> (const <a class="el" href="structeve_1_1camera__editing_1_1CameraRigValue.html">CameraRigValue</a> &amp;rig) const</td></tr>
+<tr class="memdesc:afd8bbdaf688643eea181d2184c7f43f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a rig with a stable identity.  <br /></td></tr>
+<tr class="separator:afd8bbdaf688643eea181d2184c7f43f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b7d1afd66c6a649f0ecb2bcd5f856dc" id="r_a5b7d1afd66c6a649f0ecb2bcd5f856dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a5b7d1afd66c6a649f0ecb2bcd5f856dc">makeDeleteRig</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#aa3d39340077bdf1115a76af71ebd8fc2">ObjectId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a5b7d1afd66c6a649f0ecb2bcd5f856dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete a rig only when no timeline cut references it.  <br /></td></tr>
+<tr class="separator:a5b7d1afd66c6a649f0ecb2bcd5f856dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4f9d41579dc92c155ce5dfe3b39f2c" id="r_aaf4f9d41579dc92c155ce5dfe3b39f2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#aaf4f9d41579dc92c155ce5dfe3b39f2c">makeCreateKey</a> (const <a class="el" href="structeve_1_1camera__editing_1_1CameraTimelineKeyValue.html">CameraTimelineKeyValue</a> &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:aaf4f9d41579dc92c155ce5dfe3b39f2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a stable timeline key.  <br /></td></tr>
+<tr class="separator:aaf4f9d41579dc92c155ce5dfe3b39f2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1589e551fb0452a8c18ea4b622cee3d" id="r_af1589e551fb0452a8c18ea4b622cee3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#af1589e551fb0452a8c18ea4b622cee3d">makeDeleteKey</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#aa3d39340077bdf1115a76af71ebd8fc2">ObjectId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:af1589e551fb0452a8c18ea4b622cee3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a timeline key.  <br /></td></tr>
+<tr class="separator:af1589e551fb0452a8c18ea4b622cee3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a9a599ae8582ab8f59a7385b6bf0d39" id="r_a3a9a599ae8582ab8f59a7385b6bf0d39"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1camera__editing_1_1CameraRigValue.html">CameraRigValue</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a3a9a599ae8582ab8f59a7385b6bf0d39">rigs</a> () const</td></tr>
+<tr class="memdesc:a3a9a599ae8582ab8f59a7385b6bf0d39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return authored rigs in stable document order.  <br /></td></tr>
+<tr class="separator:a3a9a599ae8582ab8f59a7385b6bf0d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb7bcf67ce6e1f444ca927e8a742ee10" id="r_acb7bcf67ce6e1f444ca927e8a742ee10"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1camera__editing_1_1CameraTimelineKeyValue.html">CameraTimelineKeyValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#acb7bcf67ce6e1f444ca927e8a742ee10">timeline</a> () const</td></tr>
+<tr class="memdesc:acb7bcf67ce6e1f444ca927e8a742ee10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return timeline keys sorted by time then stable identity.  <br /></td></tr>
+<tr class="separator:acb7bcf67ce6e1f444ca927e8a742ee10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49c8d93920ad404c320226f3d3ecd756" id="r_a49c8d93920ad404c320226f3d3ecd756"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#acd2d0cbdcb2eb5be73ed01694747dfda">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a49c8d93920ad404c320226f3d3ecd756">validate</a> () const</td></tr>
+<tr class="memdesc:a49c8d93920ad404c320226f3d3ecd756"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate references, ranges, names and document budgets.  <br /></td></tr>
+<tr class="separator:a49c8d93920ad404c320226f3d3ecd756"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb2b38c4436c806f82d745c56b0411ed" id="r_acb2b38c4436c806f82d745c56b0411ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#aa93c5d4ddb42685673dee3f92b76d08f">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#acb2b38c4436c806f82d745c56b0411ed">snapshotValue</a> () const</td></tr>
+<tr class="memdesc:acb2b38c4436c806f82d745c56b0411ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture a versioned atomic persistence value.  <br /></td></tr>
+<tr class="separator:acb2b38c4436c806f82d745c56b0411ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a921a8bb5dacd10b0b5dc6e77e7b63750" id="r_a921a8bb5dacd10b0b5dc6e77e7b63750"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a921a8bb5dacd10b0b5dc6e77e7b63750">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1camera__editing.html#aa93c5d4ddb42685673dee3f92b76d08f">EditorValue</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a921a8bb5dacd10b0b5dc6e77e7b63750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace the document from a snapshot.  <br /></td></tr>
+<tr class="separator:a921a8bb5dacd10b0b5dc6e77e7b63750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a1a2687f093acd0ca7f4f93af7ff93090"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a1a2687f093acd0ca7f4f93af7ff93090">~IPropertyProvider</a> ()=default</td></tr>
+<tr class="separator:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_aa07e163a9dafdd187f5e74a2208192e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity for generic property editing.  <br /></td></tr>
+<tr class="separator:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Revisioned camera-rig and director-timeline editing document. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8h_source.html">CameraTarget.h</a> 第 <a class="el" href="CameraTarget_8h_source.html#l00065">65</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a9199594d5212c1f0a58575fa1f77e2b1" name="a9199594d5212c1f0a58575fa1f77e2b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9199594d5212c1f0a58575fa1f77e2b1">&#9670;&#160;</a></span>CameraDocumentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::camera_editing::CameraDocumentTarget::CameraDocumentTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a44cccae14f2dfed59f273be4f524ee4e" name="a44cccae14f2dfed59f273be4f524ee4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44cccae14f2dfed59f273be4f524ee4e">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; void &gt; eve::camera_editing::CameraDocumentTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="EditingValue_8cpp_source.html#l00050">eve::editing::Value::isWithinLimits()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="CameraTarget_8h_source.html#l00097">rigs()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00042">validate()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00047">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="ac709ec153d28cece93c6bf825943d4f7" name="ac709ec153d28cece93c6bf825943d4f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac709ec153d28cece93c6bf825943d4f7">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::camera_editing::CameraDocumentTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8h_source.html">CameraTarget.h</a> 第 <a class="el" href="CameraTarget_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a947f100261068123a7831b42013df4b4" name="a947f100261068123a7831b42013df4b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a947f100261068123a7831b42013df4b4">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#ab9790d5bba7f57ca309214ab1bcfc773">IDomainOperationTarget</a> &gt; eve::camera_editing::CameraDocumentTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfe789cc4d37f5a5849f48046765be00" name="acfe789cc4d37f5a5849f48046765be00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe789cc4d37f5a5849f48046765be00">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; void &gt; eve::camera_editing::CameraDocumentTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#ab9790d5bba7f57ca309214ab1bcfc773">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e8f552f5bf5191fc6289efa0f4f94e3" name="a8e8f552f5bf5191fc6289efa0f4f94e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e8f552f5bf5191fc6289efa0f4f94e3">&#9670;&#160;</a></span>currentRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt; eve::camera_editing::CameraDocumentTarget::currentRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a5aa963e389bf3586ffa808670142c379">eve::editing::IPropertyProvider</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="afc8a6355aeb2366ec0c25835096b63b8" name="afc8a6355aeb2366ec0c25835096b63b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc8a6355aeb2366ec0c25835096b63b8">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a157cac05cd2116f67d9fac07ac1da4ee">TargetDescriptor</a> eve::camera_editing::CameraDocumentTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a547795bca71b0437319e2b7f66be1fe4" name="a547795bca71b0437319e2b7f66be1fe4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a547795bca71b0437319e2b7f66be1fe4">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a843adb01410fba39f79c04fed3e0f3f6">EditRegion</a> eve::camera_editing::CameraDocumentTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8h_source.html">CameraTarget.h</a> 第 <a class="el" href="CameraTarget_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a921a8bb5dacd10b0b5dc6e77e7b63750" name="a921a8bb5dacd10b0b5dc6e77e7b63750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a921a8bb5dacd10b0b5dc6e77e7b63750">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; void &gt; eve::camera_editing::CameraDocumentTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#aa93c5d4ddb42685673dee3f92b76d08f">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace the document from a snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CameraTarget_8cpp_source.html#l00043">applyDomainOperation()</a>, <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>.</p>
+
+</div>
+</div>
+<a id="aaf4f9d41579dc92c155ce5dfe3b39f2c" name="aaf4f9d41579dc92c155ce5dfe3b39f2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4f9d41579dc92c155ce5dfe3b39f2c">&#9670;&#160;</a></span>makeCreateKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt; eve::camera_editing::CameraDocumentTarget::makeCreateKey </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1camera__editing_1_1CameraTimelineKeyValue.html">CameraTimelineKeyValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a stable timeline key. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="afd8bbdaf688643eea181d2184c7f43f4" name="afd8bbdaf688643eea181d2184c7f43f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd8bbdaf688643eea181d2184c7f43f4">&#9670;&#160;</a></span>makeCreateRig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt; eve::camera_editing::CameraDocumentTarget::makeCreateRig </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1camera__editing_1_1CameraRigValue.html">CameraRigValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>rig</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a rig with a stable identity. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="CameraTarget_8h_source.html#l00032">eve::camera_editing::CameraRigValue::id</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="af1589e551fb0452a8c18ea4b622cee3d" name="af1589e551fb0452a8c18ea4b622cee3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1589e551fb0452a8c18ea4b622cee3d">&#9670;&#160;</a></span>makeDeleteKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt; eve::camera_editing::CameraDocumentTarget::makeDeleteKey </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#aa3d39340077bdf1115a76af71ebd8fc2">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a timeline key. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b7d1afd66c6a649f0ecb2bcd5f856dc" name="a5b7d1afd66c6a649f0ecb2bcd5f856dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b7d1afd66c6a649f0ecb2bcd5f856dc">&#9670;&#160;</a></span>makeDeleteRig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt; eve::camera_editing::CameraDocumentTarget::makeDeleteRig </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#aa3d39340077bdf1115a76af71ebd8fc2">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete a rig only when no timeline cut references it. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a85cf8eeb4fe884ad8dc2e6608cfef682" name="a85cf8eeb4fe884ad8dc2e6608cfef682"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85cf8eeb4fe884ad8dc2e6608cfef682">&#9670;&#160;</a></span>makeReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt; eve::camera_editing::CameraDocumentTarget::makeReset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a73fd7ea4cde0d4d4b8a258dae3e6feb3">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a6175bdd491af083643d6cac008e99851">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00035">makeSet()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="CameraTarget_8cpp_source.html#l00031">schema()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00035">makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="ad59cdb3b83fceaff76b1392ffb465323" name="ad59cdb3b83fceaff76b1392ffb465323"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad59cdb3b83fceaff76b1392ffb465323">&#9670;&#160;</a></span>makeSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a2831c46b39f13f739816b5bcc89165d0">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#a8d2edbc98c608b6d21cde4677fc3a9e8">DomainOperation</a> &gt; eve::camera_editing::CameraDocumentTarget::makeSet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a73fd7ea4cde0d4d4b8a258dae3e6feb3">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#aa93c5d4ddb42685673dee3f92b76d08f">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a37fd27faadd63ce4dd990ff525b10cc5">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="EditingSelection_8h_source.html#l00018">eve::editing::SelectionSnapshot::items</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00036">makeReset()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00031">schema()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00036">makeReset()</a>.</p>
+
+</div>
+</div>
+<a id="a80792ee0a914914f10ea0c3ed51a6e10" name="a80792ee0a914914f10ea0c3ed51a6e10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80792ee0a914914f10ea0c3ed51a6e10">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::camera_editing::CameraDocumentTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a2b3d5531850f6eaf5604760bdcad98de">CapabilityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an optional target capability. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. </dd></dl>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00068">eve::editing::IEditableTarget::capability()</a>.</p>
+
+</div>
+</div>
+<a id="ad965b6fde6a3b5e97700073b20e6d478" name="ad965b6fde6a3b5e97700073b20e6d478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad965b6fde6a3b5e97700073b20e6d478">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#a07f1bd4fa7a09c50d60c5e47feab75f4">PropertyReadResult</a> eve::camera_editing::CameraDocumentTarget::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a73fd7ea4cde0d4d4b8a258dae3e6feb3">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a416f8e8d2ee0880822430acea12f55d8">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingSelection_8h_source.html#l00018">eve::editing::SelectionSnapshot::items</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00031">schema()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a6a808ecc85397dc954dec1bfca3a7270" name="a6a808ecc85397dc954dec1bfca3a7270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a808ecc85397dc954dec1bfca3a7270">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::camera_editing::CameraDocumentTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8h_source.html">CameraTarget.h</a> 第 <a class="el" href="CameraTarget_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a> , 以及 <a class="el" href="CameraRuntime_8cpp_source.html#l00015">eve::camera_editing::CameraDocumentRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a3a9a599ae8582ab8f59a7385b6bf0d39" name="a3a9a599ae8582ab8f59a7385b6bf0d39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a9a599ae8582ab8f59a7385b6bf0d39">&#9670;&#160;</a></span>rigs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1camera__editing_1_1CameraRigValue.html">CameraRigValue</a> &gt; &amp; eve::camera_editing::CameraDocumentTarget::rigs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return authored rigs in stable document order. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8h_source.html">CameraTarget.h</a> 第 <a class="el" href="CameraTarget_8h_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00043">applyDomainOperation()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00049">eve::camera_editing::CameraPreview::evaluate()</a> , 以及 <a class="el" href="CameraRuntime_8cpp_source.html#l00015">eve::camera_editing::CameraDocumentRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<a id="ae103dc1492d0f387766078c52de226d4" name="ae103dc1492d0f387766078c52de226d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae103dc1492d0f387766078c52de226d4">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#ab900a859e51a745a5017b396b0910d8b">PropertySchema</a> eve::camera_editing::CameraDocumentTarget::schema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1camera__editing.html#a781177b55706c89d99ab03dde73d9aea">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aad2055c613e332305f14ecfd7c3ece44">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00100">eve::editing::PropertySchema::typeId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00036">makeReset()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00035">makeSet()</a> , 以及 <a class="el" href="CameraTarget_8cpp_source.html#l00032">read()</a>.</p>
+
+</div>
+</div>
+<a id="acb2b38c4436c806f82d745c56b0411ed" name="acb2b38c4436c806f82d745c56b0411ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb2b38c4436c806f82d745c56b0411ed">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#aa93c5d4ddb42685673dee3f92b76d08f">EditorValue</a> eve::camera_editing::CameraDocumentTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture a versioned atomic persistence value. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2c8e8c22089b2d36357579fdca0cabf" name="ae2c8e8c22089b2d36357579fdca0cabf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2c8e8c22089b2d36357579fdca0cabf">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1camera__editing.html#ace25740b4f0bb68162e07ee19c94a6a0">TargetId</a> eve::camera_editing::CameraDocumentTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8h_source.html">CameraTarget.h</a> 第 <a class="el" href="CameraTarget_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="acb7bcf67ce6e1f444ca927e8a742ee10" name="acb7bcf67ce6e1f444ca927e8a742ee10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb7bcf67ce6e1f444ca927e8a742ee10">&#9670;&#160;</a></span>timeline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1camera__editing_1_1CameraTimelineKeyValue.html">CameraTimelineKeyValue</a> &gt; eve::camera_editing::CameraDocumentTarget::timeline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return timeline keys sorted by time then stable identity. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00049">eve::camera_editing::CameraPreview::evaluate()</a> , 以及 <a class="el" href="CameraRuntime_8cpp_source.html#l00015">eve::camera_editing::CameraDocumentRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a49c8d93920ad404c320226f3d3ecd756" name="a49c8d93920ad404c320226f3d3ecd756"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49c8d93920ad404c320226f3d3ecd756">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1camera__editing.html#acd2d0cbdcb2eb5be73ed01694747dfda">EditorDiagnostic</a> &gt; eve::camera_editing::CameraDocumentTarget::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate references, ranges, names and document budgets. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a> 第 <a class="el" href="CameraTarget_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00043">applyDomainOperation()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00049">eve::camera_editing::CameraPreview::evaluate()</a> , 以及 <a class="el" href="CameraRuntime_8cpp_source.html#l00015">eve::camera_editing::CameraDocumentRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/camera_editing/<a class="el" href="CameraTarget_8h_source.html">CameraTarget.h</a></li>
+<li>src/modules/camera_editing/<a class="el" href="CameraTarget_8cpp_source.html">CameraTarget.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

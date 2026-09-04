@@ -1,0 +1,456 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorDocumentService.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorDocumentService.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorDocumentService_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EditorDocumentService_8h.html">editor/EditorDocumentService.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="EditorValueJson_8h.html">editor/EditorValueJson.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1MemoryAtomicDocumentStore.html#a0325d151e9c64b0cb8c77f1af4622b4b">    8</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1MemoryAtomicDocumentStore.html#a0325d151e9c64b0cb8c77f1af4622b4b">MemoryAtomicDocumentStore::read</a>(<span class="keyword">const</span> std::string&amp; resourceUri)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">auto</span> found = documents_.find(resourceUri);</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">if</span> (found == documents_.end())</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;StoredDocument&gt;(EditorStatus::NotFound, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.document.store-not-found&quot;</span>),</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>                                                   <span class="stringliteral">&quot;Document resource is not persisted: &quot;</span> + resourceUri);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;StoredDocument&gt;(found-&gt;second);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1MemoryAtomicDocumentStore.html#af8d6ad73ddf4d06935379838ade3ab71">   16</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1MemoryAtomicDocumentStore.html#af8d6ad73ddf4d06935379838ade3ab71">MemoryAtomicDocumentStore::compareAndSwap</a>(<span class="keyword">const</span> std::string&amp; resourceUri,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                                                       <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a>           expectedRevision,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>                                                                       <span class="keyword">const</span> std::string&amp; expectedContentHash,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                                                                       <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; content) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">auto</span>              found       = documents_.find(resourceUri);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a>    current     = found == documents_.end() ? 0 : found-&gt;second.revision;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">const</span> std::string currentHash = found == documents_.end() ? std::string{} : found-&gt;second.contentHash;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (current != expectedRevision || currentHash != expectedContentHash)</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;StoredDocument&gt;(EditorStatus::Conflict, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.document.disk-conflict&quot;</span>),</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                                                   <span class="stringliteral">&quot;Document store revision changed before save&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1StoredDocument.html">StoredDocument</a> <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.<a class="code hl_variable" href="structeve_1_1editor_1_1StoredDocument.html#a66f85ce08067f27dc1152f73f91fe97f">content</a>     = content;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.revision    = current + 1;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.contentHash = editorValueContentHash(content);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    documents_.insert_or_assign(resourceUri, <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;StoredDocument&gt;(std::move(<a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#a7c4b20d3406782cde2c97d84f8059a55">   34</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DocumentSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a7c4b20d3406782cde2c97d84f8059a55">DocumentService::open</a>(<a class="code hl_struct" href="structeve_1_1editor_1_1DocumentKey.html">DocumentKey</a> <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, std::string <a class="code hl_variable" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>, std::string resourceUri,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                                     <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> initialContent) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (!store_ || <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>.asset.empty() || resourceUri.empty())</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.document.invalid-open&quot;</span>,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                     <span class="stringliteral">&quot;Document store, asset identity and resource URI are required&quot;</span>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>(<span class="stringliteral">&quot;document:&quot;</span> + <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>.asset.value());</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (open_.contains(<span class="keywordtype">id</span>)) <span class="keywordflow">return</span> eve::editing::applied&lt;DocumentSnapshot&gt;(open_.at(<span class="keywordtype">id</span>).snapshot);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    OpenDocument document;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    document.snapshot.id                = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    document.snapshot.key               = std::move(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    document.snapshot.title             = std::move(<a class="code hl_variable" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    document.snapshot.resourceUri       = std::move(resourceUri);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    document.snapshot.state             = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">DocumentState::Ready</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a> = store_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#aee640a6d7bb1d4c94dd8d18b30212432">read</a>(document.snapshot.resourceUri);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.ok()) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        document.content                  = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().content;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        document.snapshot.revision.disk   = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().revision;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        document.snapshot.revision.edit   = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().revision;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        document.snapshot.revision.saved  = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().revision;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        document.snapshot.diskContentHash = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().contentHash;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.code() == EditorStatus::NotFound) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        document.content = std::move(initialContent);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(<a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.code(), <span class="stringliteral">&quot;editor.document.store-read&quot;</span>, <span class="stringliteral">&quot;Document store could not be read&quot;</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a52731847591febaa54cfee87c5ec561e">snapshot</a> = document.snapshot;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    open_.emplace(<span class="keywordtype">id</span>, std::move(document));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;DocumentSnapshot&gt;(std::move(<a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a52731847591febaa54cfee87c5ec561e">snapshot</a>));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#abc7a7dc158a2e66e884619eed274f966">   65</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DocumentSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#abc7a7dc158a2e66e884619eed274f966">DocumentService::edit</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document, <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> content,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                                     std::optional&lt;Revision&gt; expectedRevision) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">auto</span> found = open_.find(document);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (found == open_.end()) <span class="keywordflow">return</span> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(EditorStatus::NotFound, <span class="stringliteral">&quot;editor.document.not-open&quot;</span>, <span class="stringliteral">&quot;Document is not open&quot;</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (expectedRevision &amp;&amp; *expectedRevision != found-&gt;second.snapshot.revision.edit)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(EditorStatus::Conflict, <span class="stringliteral">&quot;editor.document.edit-conflict&quot;</span>,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                     <span class="stringliteral">&quot;Document edit revision changed before mutation&quot;</span>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    found-&gt;second.content = std::move(<a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a7dfd790282577abaa39e5667049dc3ec">content</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    ++found-&gt;second.snapshot.revision.edit;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    found-&gt;second.snapshot.state = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">DocumentState::Ready</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;DocumentSnapshot&gt;(found-&gt;second.snapshot);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#a49c78920bdd90c6e29fced8016e4227a">   78</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;SaveTicket&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a49c78920bdd90c6e29fced8016e4227a">DocumentService::requestSave</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">auto</span> found = open_.find(document);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (found == open_.end())</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;SaveTicket&gt;(EditorStatus::NotFound, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.document.not-open&quot;</span>),</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                                               <span class="stringliteral">&quot;Document is not open&quot;</span>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1SaveTicket.html">SaveTicket</a> ticket;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#af646712187ca55c1b4cc465322d5a738">id</a>                   = <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a>(document.<a class="code hl_function" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a>() + <span class="stringliteral">&quot;.save.&quot;</span> + std::to_string(++ticketSequence_));</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#a6e8fa0c9de2955fc1688f5b663676dd6">document</a>             = document;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#aac79e6f627e2868d9d644f17696f962f">capturedEditRevision</a> = found-&gt;second.snapshot.revision.edit;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#a259c683bf8c2ddad3ff0eabdec071d53">expectedDiskRevision</a> = found-&gt;second.snapshot.revision.disk;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#a71e9a6598bc5dd750e9d4aed33732f45">expectedContentHash</a>  = found-&gt;second.snapshot.diskContentHash;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    pendingSaves_.emplace(ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#af646712187ca55c1b4cc465322d5a738">id</a>, PendingSave{ticket, found-&gt;second.content});</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;SaveTicket&gt;(std::move(ticket));</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#a2166780b0724851620cdfbf82a058b2e">   93</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DocumentSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a2166780b0724851620cdfbf82a058b2e">DocumentService::executeSave</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1SaveTicket.html">SaveTicket</a>&amp; ticket) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>  = pendingSaves_.find(ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#af646712187ca55c1b4cc465322d5a738">id</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">auto</span> document = open_.find(ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#a6e8fa0c9de2955fc1688f5b663676dd6">document</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a> == pendingSaves_.end() || document == open_.end())</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(EditorStatus::NotFound, <span class="stringliteral">&quot;editor.document.save-ticket-not-found&quot;</span>,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                     <span class="stringliteral">&quot;Save ticket or document is no longer available&quot;</span>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    document-&gt;second.snapshot.state = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156a4e11db406c6c9f234fe8579cc9bc5ef6">DocumentState::Saving</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a> =</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        store_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#a1a258756aba633b97ce6087a40436038">compareAndSwap</a>(document-&gt;second.snapshot.resourceUri, ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#a259c683bf8c2ddad3ff0eabdec071d53">expectedDiskRevision</a>,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                               ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#a71e9a6598bc5dd750e9d4aed33732f45">expectedContentHash</a>, <a class="code hl_variable" href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>-&gt;second.content);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    pendingSaves_.erase(<a class="code hl_variable" href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.ok()) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        document-&gt;second.snapshot.state =</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.code() == EditorStatus::Conflict ? <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4">DocumentState::Conflict</a> : <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ad7c8c85bf79bbe1b7188497c32c3b0ca">DocumentState::Failed</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        document-&gt;second.snapshot.diagnostics = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.diagnostics();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;DocumentSnapshot&gt;::failure</a>(<a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.status());</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    document-&gt;second.snapshot.revision.disk   = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().revision;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    document-&gt;second.snapshot.revision.saved  = ticket.<a class="code hl_variable" href="structeve_1_1editor_1_1SaveTicket.html#aac79e6f627e2868d9d644f17696f962f">capturedEditRevision</a>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    document-&gt;second.snapshot.diskContentHash = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().contentHash;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    document-&gt;second.snapshot.state           = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">DocumentState::Ready</a>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    document-&gt;second.snapshot.diagnostics.clear();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;DocumentSnapshot&gt;(document-&gt;second.snapshot);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="foldopen" id="foldopen00118" data-start="{" data-end="}">
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#a7dfd790282577abaa39e5667049dc3ec">  118</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EditorValue&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a7dfd790282577abaa39e5667049dc3ec">DocumentService::content</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">auto</span> found = open_.find(document);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">if</span> (found == open_.end())</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;EditorValue&gt;(EditorStatus::NotFound, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.document.not-open&quot;</span>),</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                                                <span class="stringliteral">&quot;Document is not open&quot;</span>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;EditorValue&gt;(found-&gt;second.content);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#a52731847591febaa54cfee87c5ec561e">  126</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DocumentSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a52731847591febaa54cfee87c5ec561e">DocumentService::snapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keyword">auto</span> found = open_.find(document);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (found == open_.end()) <span class="keywordflow">return</span> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(EditorStatus::NotFound, <span class="stringliteral">&quot;editor.document.not-open&quot;</span>, <span class="stringliteral">&quot;Document is not open&quot;</span>);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;DocumentSnapshot&gt;(found-&gt;second.snapshot);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="foldopen" id="foldopen00132" data-start="{" data-end="}">
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#a94a390d625bfc2f99fa561de0ae835ec">  132</a></span>std::vector&lt;DocumentSnapshot&gt; <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a94a390d625bfc2f99fa561de0ae835ec">DocumentService::documents</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    std::vector&lt;DocumentSnapshot&gt; result;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    result.reserve(open_.size());</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, document] : open_) {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        (void)<span class="keywordtype">id</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        result.push_back(document.snapshot);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::sort(result.begin(), result.end(),</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>              [](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>) { return left.id &lt; right.id; });</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>}</div>
+</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="foldopen" id="foldopen00144" data-start="{" data-end="}">
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#ab4a8b4cbdd631714920b19eee008fde8">  144</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DocumentSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#ab4a8b4cbdd631714920b19eee008fde8">DocumentService::reconcileExternal</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document) {</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keyword">auto</span> found = open_.find(document);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">if</span> (found == open_.end()) <span class="keywordflow">return</span> <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>(EditorStatus::NotFound, <span class="stringliteral">&quot;editor.document.not-open&quot;</span>, <span class="stringliteral">&quot;Document is not open&quot;</span>);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a> = store_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#aee640a6d7bb1d4c94dd8d18b30212432">read</a>(found-&gt;second.snapshot.resourceUri);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.ok()) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> expectedMissing = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.code() == EditorStatus::NotFound &amp;&amp;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                                     found-&gt;second.snapshot.revision.disk == 0 &amp;&amp;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                                     found-&gt;second.snapshot.diskContentHash.empty();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">if</span> (expectedMissing) <span class="keywordflow">return</span> eve::editing::applied&lt;DocumentSnapshot&gt;(found-&gt;second.snapshot);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        found-&gt;second.snapshot.state = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.code() == EditorStatus::NotFound ||</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                                               <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.code() == EditorStatus::Conflict</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                                           ? <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4">DocumentState::Conflict</a></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                                           : <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ad7c8c85bf79bbe1b7188497c32c3b0ca">DocumentState::Failed</a>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        found-&gt;second.snapshot.diagnostics = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.diagnostics();</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keywordflow">if</span> (found-&gt;second.snapshot.diagnostics.empty())</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            found-&gt;second.snapshot.diagnostics.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.document.external-missing&quot;</span>),</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                DiagnosticSeverity::Error, <span class="stringliteral">&quot;Persisted document was removed externally&quot;</span>));</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a> = found-&gt;second.snapshot.state == <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4">DocumentState::Conflict</a></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                                        ? EditorStatus::Conflict</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                                        : <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.code();</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;DocumentSnapshot&gt;::failure</a>(<a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, found-&gt;second.snapshot.diagnostics));</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    }</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> changed = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().revision != found-&gt;second.snapshot.revision.disk ||</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                         <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().contentHash != found-&gt;second.snapshot.diskContentHash;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">if</span> (!changed) {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">if</span> (found-&gt;second.snapshot.state == <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4">DocumentState::Conflict</a>) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            found-&gt;second.snapshot.state = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">DocumentState::Ready</a>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            found-&gt;second.snapshot.diagnostics.clear();</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordflow">return</span> eve::editing::applied&lt;DocumentSnapshot&gt;(found-&gt;second.snapshot);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    }</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordflow">if</span> (found-&gt;second.snapshot.dirty()) {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        found-&gt;second.snapshot.state = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4">DocumentState::Conflict</a>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        found-&gt;second.snapshot.diagnostics = {<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.document.external-conflict&quot;</span>), DiagnosticSeverity::Error,</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            <span class="stringliteral">&quot;Document changed on disk while the session has unsaved edits&quot;</span>)};</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;DocumentSnapshot&gt;::failure</a>(</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>(EditorStatus::Conflict, found-&gt;second.snapshot.diagnostics));</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    found-&gt;second.content = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().content;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> synchronizedEdit =</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        std::max(found-&gt;second.snapshot.revision.edit + 1, <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().revision);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    found-&gt;second.snapshot.revision.edit   = synchronizedEdit;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    found-&gt;second.snapshot.revision.saved  = synchronizedEdit;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    found-&gt;second.snapshot.revision.disk   = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().revision;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    found-&gt;second.snapshot.diskContentHash = <a class="code hl_variable" href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a>.value().contentHash;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    found-&gt;second.snapshot.state           = <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">DocumentState::Ready</a>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    found-&gt;second.snapshot.diagnostics.clear();</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;DocumentSnapshot&gt;(found-&gt;second.snapshot);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>}</div>
+</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="foldopen" id="foldopen00199" data-start="{" data-end="}">
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DocumentService.html#a6f4aac404b4cc860f414e2c262232db3">  199</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DocumentService.html#a6f4aac404b4cc860f414e2c262232db3">DocumentService::close</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">if</span> (!open_.erase(document))</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;void&gt;(EditorStatus::NotFound, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.document.not-open&quot;</span>),</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                                         <span class="stringliteral">&quot;Document is not open&quot;</span>);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    std::erase_if(pendingSaves_, [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; entry) { <span class="keywordflow">return</span> entry.second.ticket.document == document; });</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>}</div>
+</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DocumentSnapshot&gt;</a> DocumentService::error(<a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;DocumentSnapshot&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>}</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a318c52c4cdd810a5dbbd886bf5d38244"><div class="ttname"><a href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a></div><div class="ttdeci">std::vector&lt; QuestEvent &gt; pending</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00026">BattleVictory.cpp:26</a></div></div>
+<div class="ttc" id="aConversationImporter_8cpp_html_ac30fed21fe991cc8475ce543929f8b72"><div class="ttname"><a href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="ConversationImporter_8cpp_source.html#l00013">ConversationImporter.cpp:13</a></div></div>
+<div class="ttc" id="aEditorDocumentService_8h_html"><div class="ttname"><a href="EditorDocumentService_8h.html">EditorDocumentService.h</a></div></div>
+<div class="ttc" id="aEditorValueJson_8h_html"><div class="ttname"><a href="EditorValueJson_8h.html">EditorValueJson.h</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ac82e15548a89db7219be3ba46ce5fabc"><div class="ttname"><a href="Evpack_8cpp.html#ac82e15548a89db7219be3ba46ce5fabc">stored</a></div><div class="ttdeci">std::vector&lt; std::uint8_t &gt; stored</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00176">Evpack.cpp:176</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a6202f38a97a1c9eb0142baeb338cf1f1"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a></div><div class="ttdeci">float right</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00016">WorldAnchorProjection.cpp:16</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a7d10b0c779bad3aabf067d52035f7052"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a></div><div class="ttdeci">float left</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00014">WorldAnchorProjection.cpp:14</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a7441ef0865bcb3db9b8064dd7375c1ea"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a></div><div class="ttdeci">int id</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00162">WorldSnapshot.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html_a454c688b892e6145fcad80d0a26a9018"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">eve::UuidIdAdapter::value</a></div><div class="ttdeci">const std::string &amp; value() const noexcept</div><div class="ttdoc">Returns the exact legacy or canonical compatibility spelling.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00326">Identity.h:326</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_a2166780b0724851620cdfbf82a058b2e"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#a2166780b0724851620cdfbf82a058b2e">eve::editor::DocumentService::executeSave</a></div><div class="ttdeci">EditorResult&lt; DocumentSnapshot &gt; executeSave(const SaveTicket &amp;ticket)</div><div class="ttdoc">Execute a captured save ticket without reading newer working content.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00093">EditorDocumentService.cpp:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_a49c78920bdd90c6e29fced8016e4227a"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#a49c78920bdd90c6e29fced8016e4227a">eve::editor::DocumentService::requestSave</a></div><div class="ttdeci">EditorResult&lt; SaveTicket &gt; requestSave(const DocumentId &amp;document)</div><div class="ttdoc">Capture an exact content/revision pair for a later CAS save.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00078">EditorDocumentService.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_a52731847591febaa54cfee87c5ec561e"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#a52731847591febaa54cfee87c5ec561e">eve::editor::DocumentService::snapshot</a></div><div class="ttdeci">EditorResult&lt; DocumentSnapshot &gt; snapshot(const DocumentId &amp;document) const</div><div class="ttdoc">Return one metadata snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00126">EditorDocumentService.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_a6f4aac404b4cc860f414e2c262232db3"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#a6f4aac404b4cc860f414e2c262232db3">eve::editor::DocumentService::close</a></div><div class="ttdeci">EditorResult&lt; void &gt; close(const DocumentId &amp;document)</div><div class="ttdoc">Close and discard in-memory state; persisted content is unchanged.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00199">EditorDocumentService.cpp:199</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_a7c4b20d3406782cde2c97d84f8059a55"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#a7c4b20d3406782cde2c97d84f8059a55">eve::editor::DocumentService::open</a></div><div class="ttdeci">EditorResult&lt; DocumentSnapshot &gt; open(DocumentKey key, std::string title, std::string resourceUri, EditorValue initialContent={})</div><div class="ttdoc">Open an asset-backed document, loading existing persisted content when present.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00034">EditorDocumentService.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_a7dfd790282577abaa39e5667049dc3ec"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#a7dfd790282577abaa39e5667049dc3ec">eve::editor::DocumentService::content</a></div><div class="ttdeci">EditorResult&lt; EditorValue &gt; content(const DocumentId &amp;document) const</div><div class="ttdoc">Return the current working content snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00118">EditorDocumentService.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_a94a390d625bfc2f99fa561de0ae835ec"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#a94a390d625bfc2f99fa561de0ae835ec">eve::editor::DocumentService::documents</a></div><div class="ttdeci">std::vector&lt; DocumentSnapshot &gt; documents() const</div><div class="ttdoc">Return all open documents in stable id order.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00132">EditorDocumentService.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_ab4a8b4cbdd631714920b19eee008fde8"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#ab4a8b4cbdd631714920b19eee008fde8">eve::editor::DocumentService::reconcileExternal</a></div><div class="ttdeci">EditorResult&lt; DocumentSnapshot &gt; reconcileExternal(const DocumentId &amp;document)</div><div class="ttdoc">Reconcile one open document with the latest store value. Clean documents adopt external content; dirt...</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00144">EditorDocumentService.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DocumentService_html_abc7a7dc158a2e66e884619eed274f966"><div class="ttname"><a href="classeve_1_1editor_1_1DocumentService.html#abc7a7dc158a2e66e884619eed274f966">eve::editor::DocumentService::edit</a></div><div class="ttdeci">EditorResult&lt; DocumentSnapshot &gt; edit(const DocumentId &amp;document, EditorValue content, std::optional&lt; Revision &gt; expectedRevision=std::nullopt)</div><div class="ttdoc">Replace the working content using an optional expected edit revision.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00065">EditorDocumentService.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IAtomicDocumentStore_html_a1a258756aba633b97ce6087a40436038"><div class="ttname"><a href="classeve_1_1editor_1_1IAtomicDocumentStore.html#a1a258756aba633b97ce6087a40436038">eve::editor::IAtomicDocumentStore::compareAndSwap</a></div><div class="ttdeci">virtual EditorResult&lt; StoredDocument &gt; compareAndSwap(const std::string &amp;resourceUri, Revision expectedRevision, const std::string &amp;expectedContentHash, const EditorValue &amp;content)=0</div><div class="ttdoc">Replace a value only when the expected disk revision still matches.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IAtomicDocumentStore_html_aee640a6d7bb1d4c94dd8d18b30212432"><div class="ttname"><a href="classeve_1_1editor_1_1IAtomicDocumentStore.html#aee640a6d7bb1d4c94dd8d18b30212432">eve::editor::IAtomicDocumentStore::read</a></div><div class="ttdeci">virtual EditorResult&lt; StoredDocument &gt; read(const std::string &amp;resourceUri) const =0</div><div class="ttdoc">Read the latest value for a resource URI.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MemoryAtomicDocumentStore_html_a0325d151e9c64b0cb8c77f1af4622b4b"><div class="ttname"><a href="classeve_1_1editor_1_1MemoryAtomicDocumentStore.html#a0325d151e9c64b0cb8c77f1af4622b4b">eve::editor::MemoryAtomicDocumentStore::read</a></div><div class="ttdeci">EditorResult&lt; StoredDocument &gt; read(const std::string &amp;resourceUri) const override</div><div class="ttdoc">Read the latest value for a resource URI.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00008">EditorDocumentService.cpp:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1MemoryAtomicDocumentStore_html_af8d6ad73ddf4d06935379838ade3ab71"><div class="ttname"><a href="classeve_1_1editor_1_1MemoryAtomicDocumentStore.html#af8d6ad73ddf4d06935379838ade3ab71">eve::editor::MemoryAtomicDocumentStore::compareAndSwap</a></div><div class="ttdeci">EditorResult&lt; StoredDocument &gt; compareAndSwap(const std::string &amp;resourceUri, Revision expectedRevision, const std::string &amp;expectedContentHash, const EditorValue &amp;content) override</div><div class="ttdoc">Replace a value only when the expected disk revision still matches.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8cpp_source.html#l00016">EditorDocumentService.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a0377b6158f0e722179dde541f17ebf93"><div class="ttname"><a href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">eve::editor::StableId</a></div><div class="ttdeci">eve::editing::StableId StableId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00036">EditorIds.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a3d18229db9da6f8df2cf192dedc2f156a4e11db406c6c9f234fe8579cc9bc5ef6"><div class="ttname"><a href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156a4e11db406c6c9f234fe8579cc9bc5ef6">eve::editor::DocumentState::Saving</a></div><div class="ttdeci">@ Saving</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a3d18229db9da6f8df2cf192dedc2f156ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::editor::DocumentState::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b"><div class="ttname"><a href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">eve::editor::DocumentState::Ready</a></div><div class="ttdeci">@ Ready</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4">eve::editor::DocumentState::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aee556a1a4c69319bef3bea3c87db4db6"><div class="ttname"><a href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">eve::editor::Revision</a></div><div class="ttdeci">eve::editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="EditorProtocol_8h_source.html#l00009">EditorProtocol.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1DocumentKey_html"><div class="ttname"><a href="structeve_1_1editor_1_1DocumentKey.html">eve::editor::DocumentKey</a></div><div class="ttdoc">Stable document identity; paths are deliberately excluded.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00030">EditorDocumentService.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1DocumentSnapshot_html"><div class="ttname"><a href="structeve_1_1editor_1_1DocumentSnapshot.html">eve::editor::DocumentSnapshot</a></div><div class="ttdoc">Immutable document metadata snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00049">EditorDocumentService.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SaveTicket_html"><div class="ttname"><a href="structeve_1_1editor_1_1SaveTicket.html">eve::editor::SaveTicket</a></div><div class="ttdoc">Immutable save request capturing one exact edit revision.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00065">EditorDocumentService.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SaveTicket_html_a259c683bf8c2ddad3ff0eabdec071d53"><div class="ttname"><a href="structeve_1_1editor_1_1SaveTicket.html#a259c683bf8c2ddad3ff0eabdec071d53">eve::editor::SaveTicket::expectedDiskRevision</a></div><div class="ttdeci">Revision expectedDiskRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00069">EditorDocumentService.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SaveTicket_html_a6e8fa0c9de2955fc1688f5b663676dd6"><div class="ttname"><a href="structeve_1_1editor_1_1SaveTicket.html#a6e8fa0c9de2955fc1688f5b663676dd6">eve::editor::SaveTicket::document</a></div><div class="ttdeci">DocumentId document</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00067">EditorDocumentService.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SaveTicket_html_a71e9a6598bc5dd750e9d4aed33732f45"><div class="ttname"><a href="structeve_1_1editor_1_1SaveTicket.html#a71e9a6598bc5dd750e9d4aed33732f45">eve::editor::SaveTicket::expectedContentHash</a></div><div class="ttdeci">std::string expectedContentHash</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00070">EditorDocumentService.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SaveTicket_html_aac79e6f627e2868d9d644f17696f962f"><div class="ttname"><a href="structeve_1_1editor_1_1SaveTicket.html#aac79e6f627e2868d9d644f17696f962f">eve::editor::SaveTicket::capturedEditRevision</a></div><div class="ttdeci">Revision capturedEditRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00068">EditorDocumentService.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SaveTicket_html_af646712187ca55c1b4cc465322d5a738"><div class="ttname"><a href="structeve_1_1editor_1_1SaveTicket.html#af646712187ca55c1b4cc465322d5a738">eve::editor::SaveTicket::id</a></div><div class="ttdeci">StableId id</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00066">EditorDocumentService.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1StoredDocument_html"><div class="ttname"><a href="structeve_1_1editor_1_1StoredDocument.html">eve::editor::StoredDocument</a></div><div class="ttdoc">Value snapshot returned by an atomic document store.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00074">EditorDocumentService.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1StoredDocument_html_a66f85ce08067f27dc1152f73f91fe97f"><div class="ttname"><a href="structeve_1_1editor_1_1StoredDocument.html#a66f85ce08067f27dc1152f73f91fe97f">eve::editor::StoredDocument::content</a></div><div class="ttdeci">EditorValue content</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00075">EditorDocumentService.h:75</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,2080 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::DynamicBoneSolver类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1DynamicBoneSolver-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::DynamicBoneSolver类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>World-space spring-chain solver that writes results as local bone rotations.  
+ <a href="classeve_1_1animation_1_1DynamicBoneSolver.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0d3b7885f9bbe7591936a5947f12cecb" id="r_a0d3b7885f9bbe7591936a5947f12cecb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0d3b7885f9bbe7591936a5947f12cecb">DynamicBoneSolver</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="memdesc:a0d3b7885f9bbe7591936a5947f12cecb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct for a borrowed skeleton, which may be null.  <br /></td></tr>
+<tr class="separator:a0d3b7885f9bbe7591936a5947f12cecb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7da5805c0884259780da5b624cefcedd" id="r_a7da5805c0884259780da5b624cefcedd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a7da5805c0884259780da5b624cefcedd">~DynamicBoneSolver</a> ()</td></tr>
+<tr class="separator:a7da5805c0884259780da5b624cefcedd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad997c9627df4a537cee0755d1f2aae2a" id="r_ad997c9627df4a537cee0755d1f2aae2a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ad997c9627df4a537cee0755d1f2aae2a">DynamicBoneSolver</a> (const <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;)=default</td></tr>
+<tr class="separator:ad997c9627df4a537cee0755d1f2aae2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0994815bce962020afef0c40f84d1463" id="r_a0994815bce962020afef0c40f84d1463"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0994815bce962020afef0c40f84d1463">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;)=default</td></tr>
+<tr class="separator:a0994815bce962020afef0c40f84d1463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af36fcbcd0c0ab455673b058fc5c95bd5" id="r_af36fcbcd0c0ab455673b058fc5c95bd5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#af36fcbcd0c0ab455673b058fc5c95bd5">setSkeleton</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="memdesc:af36fcbcd0c0ab455673b058fc5c95bd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebind the borrowed skeleton; changing it clears index-dependent state.  <br /></td></tr>
+<tr class="separator:af36fcbcd0c0ab455673b058fc5c95bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ab5b2b61b2225a64a8f925e07d9da4f" id="r_a6ab5b2b61b2225a64a8f925e07d9da4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a6ab5b2b61b2225a64a8f925e07d9da4f">getSkeleton</a> () const</td></tr>
+<tr class="memdesc:a6ab5b2b61b2225a64a8f925e07d9da4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the borrowed skeleton, or null. @ownership Borrowed; ownership remains with the animation source. @lifetime Valid until <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#af36fcbcd0c0ab455673b058fc5c95bd5" title="Rebind the borrowed skeleton; changing it clears index-dependent state.">setSkeleton()</a>, skeleton destruction, or solver destruction.  <br /></td></tr>
+<tr class="separator:a6ab5b2b61b2225a64a8f925e07d9da4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b55981d9f5758141b1beff444a995ff" id="r_a0b55981d9f5758141b1beff444a995ff"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0b55981d9f5758141b1beff444a995ff">addChain</a> (int rootBone, int endBone, float stiffness, float damping, float <a class="el" href="TreeMesh_8cpp.html#a17ca74f051befb55deca87ccc0e5cbdd">inertia</a>, float gravityScale=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>=4)</td></tr>
+<tr class="memdesc:a0b55981d9f5758141b1beff444a995ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an ancestor-to-descendant spring chain.  <br /></td></tr>
+<tr class="separator:a0b55981d9f5758141b1beff444a995ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af65f51d62a095e06b30ea485c82b99ef" id="r_af65f51d62a095e06b30ea485c82b99ef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#af65f51d62a095e06b30ea485c82b99ef">addChainByName</a> (const std::string &amp;rootBone, const std::string &amp;endBone, float stiffness, float damping, float <a class="el" href="TreeMesh_8cpp.html#a17ca74f051befb55deca87ccc0e5cbdd">inertia</a>, float gravityScale=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>=4)</td></tr>
+<tr class="memdesc:af65f51d62a095e06b30ea485c82b99ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name-based addChain variant; returns -1 for invalid input.  <br /></td></tr>
+<tr class="separator:af65f51d62a095e06b30ea485c82b99ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc5e8c0b72ddc77c83c6d36b9362c4cb" id="r_acc5e8c0b72ddc77c83c6d36b9362c4cb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#acc5e8c0b72ddc77c83c6d36b9362c4cb">getChainCount</a> () const</td></tr>
+<tr class="memdesc:acc5e8c0b72ddc77c83c6d36b9362c4cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return configured chain count.  <br /></td></tr>
+<tr class="separator:acc5e8c0b72ddc77c83c6d36b9362c4cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef0d2c7ba99a5f151e98f3bb11ec34ab" id="r_aef0d2c7ba99a5f151e98f3bb11ec34ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aef0d2c7ba99a5f151e98f3bb11ec34ab">clearChains</a> ()</td></tr>
+<tr class="memdesc:aef0d2c7ba99a5f151e98f3bb11ec34ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all chains and their simulation state.  <br /></td></tr>
+<tr class="separator:aef0d2c7ba99a5f151e98f3bb11ec34ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac64eafb7d534701125dcc51e7f1be152" id="r_ac64eafb7d534701125dcc51e7f1be152"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ac64eafb7d534701125dcc51e7f1be152">setChainEnabled</a> (int chainIndex, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ac64eafb7d534701125dcc51e7f1be152"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a valid chain's enabled state; invalid indices are ignored.  <br /></td></tr>
+<tr class="separator:ac64eafb7d534701125dcc51e7f1be152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab248974c7d9d98dd73d5cab738d3e9f9" id="r_ab248974c7d9d98dd73d5cab738d3e9f9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ab248974c7d9d98dd73d5cab738d3e9f9">isChainEnabled</a> (int chainIndex) const</td></tr>
+<tr class="memdesc:ab248974c7d9d98dd73d5cab738d3e9f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return enabled state, or false for an invalid index.  <br /></td></tr>
+<tr class="separator:ab248974c7d9d98dd73d5cab738d3e9f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afef41457f58e820d426e87bb00db5e35" id="r_afef41457f58e820d426e87bb00db5e35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#afef41457f58e820d426e87bb00db5e35">setChainFreezeAxis</a> (int chainIndex, int axis)</td></tr>
+<tr class="memdesc:afef41457f58e820d426e87bb00db5e35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restrict a chain to its animated model-space plane.  <br /></td></tr>
+<tr class="separator:afef41457f58e820d426e87bb00db5e35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd329be45f0f81d4bfd7c21dfc6125e0" id="r_abd329be45f0f81d4bfd7c21dfc6125e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#abd329be45f0f81d4bfd7c21dfc6125e0">setChainSelfCollision</a> (int chainIndex, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:abd329be45f0f81d4bfd7c21dfc6125e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable non-adjacent particle self-collision for a chain.  <br /></td></tr>
+<tr class="separator:abd329be45f0f81d4bfd7c21dfc6125e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ac04a22d8f47c3ef4e081f5e2c967f4" id="r_a0ac04a22d8f47c3ef4e081f5e2c967f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0ac04a22d8f47c3ef4e081f5e2c967f4">setChainParticleParameters</a> (int chainIndex, int particleIndex, float stiffness, float damping, float <a class="el" href="TreeMesh_8cpp.html#a17ca74f051befb55deca87ccc0e5cbdd">inertia</a>, float gravityScale, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a0ac04a22d8f47c3ef4e081f5e2c967f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override simulation parameters for one chain particle, where zero is the root.  <br /></td></tr>
+<tr class="separator:a0ac04a22d8f47c3ef4e081f5e2c967f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac581546dbc5b3357ab6f629c3ac6fbcc" id="r_ac581546dbc5b3357ab6f629c3ac6fbcc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ac581546dbc5b3357ab6f629c3ac6fbcc">setChainEndLength</a> (int chainIndex, float <a class="el" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>)</td></tr>
+<tr class="memdesc:ac581546dbc5b3357ab6f629c3ac6fbcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a virtual particle after the last bone along the animated terminal direction.  <br /></td></tr>
+<tr class="separator:ac581546dbc5b3357ab6f629c3ac6fbcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b03e410e8de0d915f3173b02f21bf63" id="r_a7b03e410e8de0d915f3173b02f21bf63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a7b03e410e8de0d915f3173b02f21bf63">setChainEndOffset</a> (int chainIndex, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a7b03e410e8de0d915f3173b02f21bf63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a virtual particle at a last-bone-local offset; this replaces end length mode.  <br /></td></tr>
+<tr class="separator:a7b03e410e8de0d915f3173b02f21bf63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c2d92960768025534b1f305a8672bd5" id="r_a4c2d92960768025534b1f305a8672bd5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a4c2d92960768025534b1f305a8672bd5">clearChainEnd</a> (int chainIndex)</td></tr>
+<tr class="memdesc:a4c2d92960768025534b1f305a8672bd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a chain's virtual terminal particle.  <br /></td></tr>
+<tr class="separator:a4c2d92960768025534b1f305a8672bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8b05e80b62b68ba9e1c8a24653ca4be" id="r_aa8b05e80b62b68ba9e1c8a24653ca4be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aa8b05e80b62b68ba9e1c8a24653ca4be">setGlobalGravity</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:aa8b05e80b62b68ba9e1c8a24653ca4be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set model-space gravity acceleration.  <br /></td></tr>
+<tr class="separator:aa8b05e80b62b68ba9e1c8a24653ca4be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7c6e50648491ff02e37818bbe24f7e8" id="r_aa7c6e50648491ff02e37818bbe24f7e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aa7c6e50648491ff02e37818bbe24f7e8">setExternalForce</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:aa7c6e50648491ff02e37818bbe24f7e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set additional model-space acceleration such as wind.  <br /></td></tr>
+<tr class="separator:aa7c6e50648491ff02e37818bbe24f7e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a102ff6d57b5e509f6e49419699ad8" id="r_a39a102ff6d57b5e509f6e49419699ad8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a39a102ff6d57b5e509f6e49419699ad8">setForceField</a> (const <a class="el" href="classeve_1_1animation_1_1DynamicBoneForceField.html">DynamicBoneForceField</a> *forceField)</td></tr>
+<tr class="memdesc:a39a102ff6d57b5e509f6e49419699ad8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an optional spatial force field sampled on the calling thread. @ownership Borrowed; ownership remains with the caller. @lifetime The provider must outlive this solver or be cleared before destruction.  <br /></td></tr>
+<tr class="separator:a39a102ff6d57b5e509f6e49419699ad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43b63114f15d1984a0f1a0216ae700be" id="r_a43b63114f15d1984a0f1a0216ae700be"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1animation_1_1DynamicBoneForceField.html">DynamicBoneForceField</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a43b63114f15d1984a0f1a0216ae700be">getForceField</a> () const</td></tr>
+<tr class="memdesc:a43b63114f15d1984a0f1a0216ae700be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the borrowed spatial force field, or null. @ownership Borrowed; ownership remains with the caller. @lifetime Valid until <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a39a102ff6d57b5e509f6e49419699ad8" title="Set an optional spatial force field sampled on the calling thread. @ownership Borrowed; ownership rem...">setForceField()</a>, provider destruction, or solver destruction.  <br /></td></tr>
+<tr class="separator:a43b63114f15d1984a0f1a0216ae700be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f02250ebc5ebe758414ceb60fad6422" id="r_a1f02250ebc5ebe758414ceb60fad6422"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a1f02250ebc5ebe758414ceb60fad6422">getGlobalGravityX</a> () const</td></tr>
+<tr class="memdesc:a1f02250ebc5ebe758414ceb60fad6422"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return gravity X.  <br /></td></tr>
+<tr class="separator:a1f02250ebc5ebe758414ceb60fad6422"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85347dd311ee070f158a125de4c94057" id="r_a85347dd311ee070f158a125de4c94057"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a85347dd311ee070f158a125de4c94057">getGlobalGravityY</a> () const</td></tr>
+<tr class="memdesc:a85347dd311ee070f158a125de4c94057"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return gravity Y.  <br /></td></tr>
+<tr class="separator:a85347dd311ee070f158a125de4c94057"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1c277155317ae834e149a16320aa996" id="r_ae1c277155317ae834e149a16320aa996"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ae1c277155317ae834e149a16320aa996">getGlobalGravityZ</a> () const</td></tr>
+<tr class="memdesc:ae1c277155317ae834e149a16320aa996"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return gravity Z.  <br /></td></tr>
+<tr class="separator:ae1c277155317ae834e149a16320aa996"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a324a8c4d0e819191e8b8bdf0e779e27e" id="r_a324a8c4d0e819191e8b8bdf0e779e27e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a324a8c4d0e819191e8b8bdf0e779e27e">setWeight</a> (float weight)</td></tr>
+<tr class="memdesc:a324a8c4d0e819191e8b8bdf0e779e27e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set final rotation blend weight in [0, 1].  <br /></td></tr>
+<tr class="separator:a324a8c4d0e819191e8b8bdf0e779e27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24bdd86bb112af9427ef9aeb0bf206d6" id="r_a24bdd86bb112af9427ef9aeb0bf206d6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a24bdd86bb112af9427ef9aeb0bf206d6">getWeight</a> () const</td></tr>
+<tr class="memdesc:a24bdd86bb112af9427ef9aeb0bf206d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return final rotation blend weight.  <br /></td></tr>
+<tr class="separator:a24bdd86bb112af9427ef9aeb0bf206d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78011e5ff89338c6ad96912b0958819b" id="r_a78011e5ff89338c6ad96912b0958819b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a78011e5ff89338c6ad96912b0958819b">setUpdateRate</a> (float updatesPerSecond)</td></tr>
+<tr class="memdesc:a78011e5ff89338c6ad96912b0958819b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set preferred simulation frequency; zero means one step per update.  <br /></td></tr>
+<tr class="separator:a78011e5ff89338c6ad96912b0958819b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d0180e5a4f8049aaeabd7930a6083b1" id="r_a0d0180e5a4f8049aaeabd7930a6083b1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0d0180e5a4f8049aaeabd7930a6083b1">getUpdateRate</a> () const</td></tr>
+<tr class="memdesc:a0d0180e5a4f8049aaeabd7930a6083b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return preferred simulation frequency.  <br /></td></tr>
+<tr class="separator:a0d0180e5a4f8049aaeabd7930a6083b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75857fc8dc638147f6640afc6ee7dda1" id="r_a75857fc8dc638147f6640afc6ee7dda1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a75857fc8dc638147f6640afc6ee7dda1">setTeleportThreshold</a> (float distance)</td></tr>
+<tr class="memdesc:a75857fc8dc638147f6640afc6ee7dda1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set root movement distance that triggers a simulation reset.  <br /></td></tr>
+<tr class="separator:a75857fc8dc638147f6640afc6ee7dda1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59dc017cdf4baa9afd6d79ee7e66b626" id="r_a59dc017cdf4baa9afd6d79ee7e66b626"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a59dc017cdf4baa9afd6d79ee7e66b626">getTeleportThreshold</a> () const</td></tr>
+<tr class="memdesc:a59dc017cdf4baa9afd6d79ee7e66b626"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return teleport reset distance; zero disables it.  <br /></td></tr>
+<tr class="separator:a59dc017cdf4baa9afd6d79ee7e66b626"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a088d1190925e58f9f3ed4ed12b1ac655" id="r_a088d1190925e58f9f3ed4ed12b1ac655"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a088d1190925e58f9f3ed4ed12b1ac655">setObjectMoveResponse</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a088d1190925e58f9f3ed4ed12b1ac655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set how much simulated particles follow root translation, from zero to one.  <br /></td></tr>
+<tr class="separator:a088d1190925e58f9f3ed4ed12b1ac655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62564598b56f287dfdb5bcc8e05d5ae2" id="r_a62564598b56f287dfdb5bcc8e05d5ae2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a62564598b56f287dfdb5bcc8e05d5ae2">getObjectMoveResponse</a> () const</td></tr>
+<tr class="memdesc:a62564598b56f287dfdb5bcc8e05d5ae2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return root translation response.  <br /></td></tr>
+<tr class="separator:a62564598b56f287dfdb5bcc8e05d5ae2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac123ea6205bcd4e3c6df96e25c20ddc7" id="r_ac123ea6205bcd4e3c6df96e25c20ddc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#ac123ea6205bcd4e3c6df96e25c20ddc7">setDistanceReference</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:ac123ea6205bcd4e3c6df96e25c20ddc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the model-space point used for distance-based sleeping.  <br /></td></tr>
+<tr class="separator:ac123ea6205bcd4e3c6df96e25c20ddc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3103ffab64f79e7aa984e8cbb2c20614" id="r_a3103ffab64f79e7aa984e8cbb2c20614"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a3103ffab64f79e7aa984e8cbb2c20614">setDistanceLimit</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a3103ffab64f79e7aa984e8cbb2c20614"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set sleep distance; zero disables distance sleeping.  <br /></td></tr>
+<tr class="separator:a3103ffab64f79e7aa984e8cbb2c20614"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1ca279f3bdeada5f8d8046dbaa38459" id="r_aa1ca279f3bdeada5f8d8046dbaa38459"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aa1ca279f3bdeada5f8d8046dbaa38459">isChainSleeping</a> (int chainIndex) const</td></tr>
+<tr class="memdesc:aa1ca279f3bdeada5f8d8046dbaa38459"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a valid chain is currently distance-sleeping.  <br /></td></tr>
+<tr class="separator:aa1ca279f3bdeada5f8d8046dbaa38459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40f1b602e0a90e3826ac5b9bf7765840" id="r_a40f1b602e0a90e3826ac5b9bf7765840"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a40f1b602e0a90e3826ac5b9bf7765840">addColliderSphere</a> (float centerX, float centerY, float centerZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a40f1b602e0a90e3826ac5b9bf7765840"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a fixed model-space sphere collider; non-positive radii are ignored.  <br /></td></tr>
+<tr class="separator:a40f1b602e0a90e3826ac5b9bf7765840"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb40cd29a3ba8841b4a157d42a77ac39" id="r_adb40cd29a3ba8841b4a157d42a77ac39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#adb40cd29a3ba8841b4a157d42a77ac39">addBoneColliderSphere</a> (int boneIndex, float <a class="el" href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a>, float <a class="el" href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a>, float offsetZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:adb40cd29a3ba8841b4a157d42a77ac39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a sphere collider following a bone-local offset.  <br /></td></tr>
+<tr class="separator:adb40cd29a3ba8841b4a157d42a77ac39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6427b816131ef9f67e2d910712e83539" id="r_a6427b816131ef9f67e2d910712e83539"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a6427b816131ef9f67e2d910712e83539">addColliderCapsule</a> (float startX, float startY, float startZ, float endX, float endY, float endZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a6427b816131ef9f67e2d910712e83539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a fixed model-space capsule collider.  <br /></td></tr>
+<tr class="separator:a6427b816131ef9f67e2d910712e83539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3be4e4fb319c9467ef9b96778f240ae8" id="r_a3be4e4fb319c9467ef9b96778f240ae8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a3be4e4fb319c9467ef9b96778f240ae8">addBoneColliderCapsule</a> (int boneIndex, float startX, float startY, float startZ, float endX, float endY, float endZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a3be4e4fb319c9467ef9b96778f240ae8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a capsule whose endpoints follow bone-local offsets.  <br /></td></tr>
+<tr class="separator:a3be4e4fb319c9467ef9b96778f240ae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a1e12e4ee07868b70cddab01f91795f" id="r_a5a1e12e4ee07868b70cddab01f91795f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a5a1e12e4ee07868b70cddab01f91795f">clearColliders</a> ()</td></tr>
+<tr class="memdesc:a5a1e12e4ee07868b70cddab01f91795f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all colliders.  <br /></td></tr>
+<tr class="separator:a5a1e12e4ee07868b70cddab01f91795f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebc17c0e804e6fd42766640fac64dd1d" id="r_aebc17c0e804e6fd42766640fac64dd1d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aebc17c0e804e6fd42766640fac64dd1d">getColliderCount</a> () const</td></tr>
+<tr class="memdesc:aebc17c0e804e6fd42766640fac64dd1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return collider count.  <br /></td></tr>
+<tr class="separator:aebc17c0e804e6fd42766640fac64dd1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa5b32afc662075c47f71a841eea102a" id="r_aaa5b32afc662075c47f71a841eea102a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#aaa5b32afc662075c47f71a841eea102a">removeCollider</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:aaa5b32afc662075c47f71a841eea102a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a valid collider index; invalid indices are ignored.  <br /></td></tr>
+<tr class="separator:aaa5b32afc662075c47f71a841eea102a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8735294a8dadfa74b9357a0b2cf84bd7" id="r_a8735294a8dadfa74b9357a0b2cf84bd7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a8735294a8dadfa74b9357a0b2cf84bd7">setColliderEnabled</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a8735294a8dadfa74b9357a0b2cf84bd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable a collider without changing its index.  <br /></td></tr>
+<tr class="separator:a8735294a8dadfa74b9357a0b2cf84bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a4de5f9e3c821c951a01a6b88e50545" id="r_a0a4de5f9e3c821c951a01a6b88e50545"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a0a4de5f9e3c821c951a01a6b88e50545">setColliderInside</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, bool <a class="el" href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">inside</a>)</td></tr>
+<tr class="memdesc:a0a4de5f9e3c821c951a01a6b88e50545"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select inside containment or outside exclusion for a collider.  <br /></td></tr>
+<tr class="separator:a0a4de5f9e3c821c951a01a6b88e50545"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ac7a5316aa9ce134e94f29b7333bf6" id="r_a25ac7a5316aa9ce134e94f29b7333bf6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a25ac7a5316aa9ce134e94f29b7333bf6">setColliderRadius</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a25ac7a5316aa9ce134e94f29b7333bf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change a collider radius; non-positive values are ignored.  <br /></td></tr>
+<tr class="separator:a25ac7a5316aa9ce134e94f29b7333bf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a37f879286185c7dc271c8e5c98c2c2" id="r_a8a37f879286185c7dc271c8e5c98c2c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a8a37f879286185c7dc271c8e5c98c2c2">reset</a> ()</td></tr>
+<tr class="memdesc:a8a37f879286185c7dc271c8e5c98c2c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset all chains to the animated pose on their next update.  <br /></td></tr>
+<tr class="separator:a8a37f879286185c7dc271c8e5c98c2c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ffbeb75fc3cd0c3730104852a3a282c" id="r_a7ffbeb75fc3cd0c3730104852a3a282c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a7ffbeb75fc3cd0c3730104852a3a282c">update</a> (<a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *pose, float dt)</td></tr>
+<tr class="memdesc:a7ffbeb75fc3cd0c3730104852a3a282c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simulate one frame using injected dt and update pose local rotations.  <br /></td></tr>
+<tr class="separator:a7ffbeb75fc3cd0c3730104852a3a282c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fe5453c58062c80caf908329ead6eaa" id="r_a5fe5453c58062c80caf908329ead6eaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation_1_1DynamicBoneDebugSnapshot.html">DynamicBoneDebugSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a5fe5453c58062c80caf908329ead6eaa">debugSnapshot</a> () const</td></tr>
+<tr class="memdesc:a5fe5453c58062c80caf908329ead6eaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy current particles and colliders for tooling visualization.  <br /></td></tr>
+<tr class="separator:a5fe5453c58062c80caf908329ead6eaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6859ca5390c9f692d6454976b62caa13" id="r_a6859ca5390c9f692d6454976b62caa13"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation_1_1DynamicBoneUpdateStats.html">DynamicBoneUpdateStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a6859ca5390c9f692d6454976b62caa13">getLastUpdateStats</a> () const</td></tr>
+<tr class="memdesc:a6859ca5390c9f692d6454976b62caa13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return counters captured by the most recent update.  <br /></td></tr>
+<tr class="separator:a6859ca5390c9f692d6454976b62caa13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>World-space spring-chain solver that writes results as local bone rotations. </p>
+<p>The skeleton is borrowed and must outlive the solver. All methods are main-thread only. Simulation is tolerance-bounded, not bit-exact across floating-point platforms. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00034">34</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0d3b7885f9bbe7591936a5947f12cecb" name="a0d3b7885f9bbe7591936a5947f12cecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d3b7885f9bbe7591936a5947f12cecb">&#9670;&#160;</a></span>DynamicBoneSolver() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::DynamicBoneSolver::DynamicBoneSolver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct for a borrowed skeleton, which may be null. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7da5805c0884259780da5b624cefcedd" name="a7da5805c0884259780da5b624cefcedd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7da5805c0884259780da5b624cefcedd">&#9670;&#160;</a></span>~DynamicBoneSolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::DynamicBoneSolver::~DynamicBoneSolver </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad997c9627df4a537cee0755d1f2aae2a" name="ad997c9627df4a537cee0755d1f2aae2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad997c9627df4a537cee0755d1f2aae2a">&#9670;&#160;</a></span>DynamicBoneSolver() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::DynamicBoneSolver::DynamicBoneSolver </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3be4e4fb319c9467ef9b96778f240ae8" name="a3be4e4fb319c9467ef9b96778f240ae8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3be4e4fb319c9467ef9b96778f240ae8">&#9670;&#160;</a></span>addBoneColliderCapsule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::addBoneColliderCapsule </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a capsule whose endpoints follow bone-local offsets. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="adb40cd29a3ba8841b4a157d42a77ac39" name="adb40cd29a3ba8841b4a157d42a77ac39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb40cd29a3ba8841b4a157d42a77ac39">&#9670;&#160;</a></span>addBoneColliderSphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::addBoneColliderSphere </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offsetZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a sphere collider following a bone-local offset. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a0b55981d9f5758141b1beff444a995ff" name="a0b55981d9f5758141b1beff444a995ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b55981d9f5758141b1beff444a995ff">&#9670;&#160;</a></span>addChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::DynamicBoneSolver::addChain </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rootBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>endBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stiffness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>inertia</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityScale</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em> = <code>4</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add an ancestor-to-descendant spring chain. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rootBone</td><td>Chain root index. </td></tr>
+    <tr><td class="paramname">endBone</td><td>Chain tip index. </td></tr>
+    <tr><td class="paramname">stiffness</td><td>Animated-pose attraction in [0, 1]. </td></tr>
+    <tr><td class="paramname">damping</td><td>Motion damping in [0, 1]. </td></tr>
+    <tr><td class="paramname">inertia</td><td>Retained motion in [0, 1]. </td></tr>
+    <tr><td class="paramname">gravityScale</td><td>Gravity and external-force multiplier. </td></tr>
+    <tr><td class="paramname">radius</td><td>Particle collision radius. </td></tr>
+    <tr><td class="paramname">iterations</td><td>Constraint projection passes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Chain index, or -1 for invalid input. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00031">bones</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00191">inertia</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00193">iterations</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00079">addChainByName()</a>.</p>
+
+</div>
+</div>
+<a id="af65f51d62a095e06b30ea485c82b99ef" name="af65f51d62a095e06b30ea485c82b99ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af65f51d62a095e06b30ea485c82b99ef">&#9670;&#160;</a></span>addChainByName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::DynamicBoneSolver::addChainByName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>rootBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>endBone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stiffness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>inertia</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityScale</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em> = <code>4</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Name-based addChain variant; returns -1 for invalid input. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00071">addChain()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00037">eve::animation::AnimSkeleton::findBone()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00191">inertia</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00193">iterations</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a6427b816131ef9f67e2d910712e83539" name="a6427b816131ef9f67e2d910712e83539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6427b816131ef9f67e2d910712e83539">&#9670;&#160;</a></span>addColliderCapsule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::addColliderCapsule </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>endZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a fixed model-space capsule collider. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a40f1b602e0a90e3826ac5b9bf7765840" name="a40f1b602e0a90e3826ac5b9bf7765840"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40f1b602e0a90e3826ac5b9bf7765840">&#9670;&#160;</a></span>addColliderSphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::addColliderSphere </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>centerZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a fixed model-space sphere collider; non-positive radii are ignored. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a4c2d92960768025534b1f305a8672bd5" name="a4c2d92960768025534b1f305a8672bd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c2d92960768025534b1f305a8672bd5">&#9670;&#160;</a></span>clearChainEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::clearChainEnd </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a chain's virtual terminal particle. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aef0d2c7ba99a5f151e98f3bb11ec34ab" name="aef0d2c7ba99a5f151e98f3bb11ec34ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef0d2c7ba99a5f151e98f3bb11ec34ab">&#9670;&#160;</a></span>clearChains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::clearChains </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all chains and their simulation state. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00049">setSkeleton()</a>.</p>
+
+</div>
+</div>
+<a id="a5a1e12e4ee07868b70cddab01f91795f" name="a5a1e12e4ee07868b70cddab01f91795f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a1e12e4ee07868b70cddab01f91795f">&#9670;&#160;</a></span>clearColliders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::clearColliders </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all colliders. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00049">setSkeleton()</a>.</p>
+
+</div>
+</div>
+<a id="a5fe5453c58062c80caf908329ead6eaa" name="a5fe5453c58062c80caf908329ead6eaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fe5453c58062c80caf908329ead6eaa">&#9670;&#160;</a></span>debugSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation_1_1DynamicBoneDebugSnapshot.html">DynamicBoneDebugSnapshot</a> eve::animation::DynamicBoneSolver::debugSnapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy current particles and colliders for tooling visualization. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DynamicBoneSolver_8h_source.html#l00024">eve::animation::DynamicBoneDebugSnapshot::colliders</a>, <a class="el" href="DynamicBoneSolver_8h_source.html#l00024">eve::animation::DynamicBoneDebugSnapshot::particles</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneOverlay_8cpp_source.html#l00010">eve::animation_editing::ProceduralBoneOverlayBuilder::build()</a>.</p>
+
+</div>
+</div>
+<a id="acc5e8c0b72ddc77c83c6d36b9362c4cb" name="acc5e8c0b72ddc77c83c6d36b9362c4cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc5e8c0b72ddc77c83c6d36b9362c4cb">&#9670;&#160;</a></span>getChainCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::DynamicBoneSolver::getChainCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return configured chain count. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aebc17c0e804e6fd42766640fac64dd1d" name="aebc17c0e804e6fd42766640fac64dd1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebc17c0e804e6fd42766640fac64dd1d">&#9670;&#160;</a></span>getColliderCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::DynamicBoneSolver::getColliderCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return collider count. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a43b63114f15d1984a0f1a0216ae700be" name="a43b63114f15d1984a0f1a0216ae700be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43b63114f15d1984a0f1a0216ae700be">&#9670;&#160;</a></span>getForceField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1animation_1_1DynamicBoneForceField.html">DynamicBoneForceField</a> * eve::animation::DynamicBoneSolver::getForceField </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the borrowed spatial force field, or null. @ownership Borrowed; ownership remains with the caller. @lifetime Valid until <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#a39a102ff6d57b5e509f6e49419699ad8" title="Set an optional spatial force field sampled on the calling thread. @ownership Borrowed; ownership rem...">setForceField()</a>, provider destruction, or solver destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f02250ebc5ebe758414ceb60fad6422" name="a1f02250ebc5ebe758414ceb60fad6422"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f02250ebc5ebe758414ceb60fad6422">&#9670;&#160;</a></span>getGlobalGravityX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::DynamicBoneSolver::getGlobalGravityX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return gravity X. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85347dd311ee070f158a125de4c94057" name="a85347dd311ee070f158a125de4c94057"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85347dd311ee070f158a125de4c94057">&#9670;&#160;</a></span>getGlobalGravityY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::DynamicBoneSolver::getGlobalGravityY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return gravity Y. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1c277155317ae834e149a16320aa996" name="ae1c277155317ae834e149a16320aa996"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1c277155317ae834e149a16320aa996">&#9670;&#160;</a></span>getGlobalGravityZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::DynamicBoneSolver::getGlobalGravityZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return gravity Z. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6859ca5390c9f692d6454976b62caa13" name="a6859ca5390c9f692d6454976b62caa13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6859ca5390c9f692d6454976b62caa13">&#9670;&#160;</a></span>getLastUpdateStats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation_1_1DynamicBoneUpdateStats.html">DynamicBoneUpdateStats</a> eve::animation::DynamicBoneSolver::getLastUpdateStats </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return counters captured by the most recent update. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a62564598b56f287dfdb5bcc8e05d5ae2" name="a62564598b56f287dfdb5bcc8e05d5ae2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62564598b56f287dfdb5bcc8e05d5ae2">&#9670;&#160;</a></span>getObjectMoveResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::DynamicBoneSolver::getObjectMoveResponse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return root translation response. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00128">128</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ab5b2b61b2225a64a8f925e07d9da4f" name="a6ab5b2b61b2225a64a8f925e07d9da4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab5b2b61b2225a64a8f925e07d9da4f">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::DynamicBoneSolver::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the borrowed skeleton, or null. @ownership Borrowed; ownership remains with the animation source. @lifetime Valid until <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html#af36fcbcd0c0ab455673b058fc5c95bd5" title="Rebind the borrowed skeleton; changing it clears index-dependent state.">setSkeleton()</a>, skeleton destruction, or solver destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a59dc017cdf4baa9afd6d79ee7e66b626" name="a59dc017cdf4baa9afd6d79ee7e66b626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59dc017cdf4baa9afd6d79ee7e66b626">&#9670;&#160;</a></span>getTeleportThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::DynamicBoneSolver::getTeleportThreshold </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return teleport reset distance; zero disables it. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00124">124</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d0180e5a4f8049aaeabd7930a6083b1" name="a0d0180e5a4f8049aaeabd7930a6083b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d0180e5a4f8049aaeabd7930a6083b1">&#9670;&#160;</a></span>getUpdateRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::DynamicBoneSolver::getUpdateRate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return preferred simulation frequency. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a24bdd86bb112af9427ef9aeb0bf206d6" name="a24bdd86bb112af9427ef9aeb0bf206d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24bdd86bb112af9427ef9aeb0bf206d6">&#9670;&#160;</a></span>getWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::DynamicBoneSolver::getWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return final rotation blend weight. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab248974c7d9d98dd73d5cab738d3e9f9" name="ab248974c7d9d98dd73d5cab738d3e9f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab248974c7d9d98dd73d5cab738d3e9f9">&#9670;&#160;</a></span>isChainEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::DynamicBoneSolver::isChainEnabled </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return enabled state, or false for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa1ca279f3bdeada5f8d8046dbaa38459" name="aa1ca279f3bdeada5f8d8046dbaa38459"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1ca279f3bdeada5f8d8046dbaa38459">&#9670;&#160;</a></span>isChainSleeping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::DynamicBoneSolver::isChainSleeping </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether a valid chain is currently distance-sleeping. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a0994815bce962020afef0c40f84d1463" name="a0994815bce962020afef0c40f84d1463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0994815bce962020afef0c40f84d1463">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp; eve::animation::DynamicBoneSolver::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1DynamicBoneSolver.html">DynamicBoneSolver</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa5b32afc662075c47f71a841eea102a" name="aaa5b32afc662075c47f71a841eea102a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa5b32afc662075c47f71a841eea102a">&#9670;&#160;</a></span>removeCollider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::removeCollider </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a valid collider index; invalid indices are ignored. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a8a37f879286185c7dc271c8e5c98c2c2" name="a8a37f879286185c7dc271c8e5c98c2c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a37f879286185c7dc271c8e5c98c2c2">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset all chains to the animated pose on their next update. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac64eafb7d534701125dcc51e7f1be152" name="ac64eafb7d534701125dcc51e7f1be152"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac64eafb7d534701125dcc51e7f1be152">&#9670;&#160;</a></span>setChainEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setChainEnabled </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a valid chain's enabled state; invalid indices are ignored. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac581546dbc5b3357ab6f629c3ac6fbcc" name="ac581546dbc5b3357ab6f629c3ac6fbcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac581546dbc5b3357ab6f629c3ac6fbcc">&#9670;&#160;</a></span>setChainEndLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setChainEndLength </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a virtual particle after the last bone along the animated terminal direction. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a7b03e410e8de0d915f3173b02f21bf63" name="a7b03e410e8de0d915f3173b02f21bf63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b03e410e8de0d915f3173b02f21bf63">&#9670;&#160;</a></span>setChainEndOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setChainEndOffset </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a virtual particle at a last-bone-local offset; this replaces end length mode. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="afef41457f58e820d426e87bb00db5e35" name="afef41457f58e820d426e87bb00db5e35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afef41457f58e820d426e87bb00db5e35">&#9670;&#160;</a></span>setChainFreezeAxis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setChainFreezeAxis </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restrict a chain to its animated model-space plane. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chainIndex</td><td>Chain index.</td></tr>
+    <tr><td class="paramname">axis</td><td>0 disables; 1, 2, and 3 freeze X, Y, and Z. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a0ac04a22d8f47c3ef4e081f5e2c967f4" name="a0ac04a22d8f47c3ef4e081f5e2c967f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ac04a22d8f47c3ef4e081f5e2c967f4">&#9670;&#160;</a></span>setChainParticleParameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setChainParticleParameters </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>particleIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stiffness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>inertia</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Override simulation parameters for one chain particle, where zero is the root. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="abd329be45f0f81d4bfd7c21dfc6125e0" name="abd329be45f0f81d4bfd7c21dfc6125e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd329be45f0f81d4bfd7c21dfc6125e0">&#9670;&#160;</a></span>setChainSelfCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setChainSelfCollision </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chainIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable non-adjacent particle self-collision for a chain. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a8735294a8dadfa74b9357a0b2cf84bd7" name="a8735294a8dadfa74b9357a0b2cf84bd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8735294a8dadfa74b9357a0b2cf84bd7">&#9670;&#160;</a></span>setColliderEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setColliderEnabled </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable a collider without changing its index. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a0a4de5f9e3c821c951a01a6b88e50545" name="a0a4de5f9e3c821c951a01a6b88e50545"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a4de5f9e3c821c951a01a6b88e50545">&#9670;&#160;</a></span>setColliderInside()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setColliderInside </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>inside</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select inside containment or outside exclusion for a collider. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="UrbanCrossField_8cpp_source.html#l00025">inside</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a25ac7a5316aa9ce134e94f29b7333bf6" name="a25ac7a5316aa9ce134e94f29b7333bf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ac7a5316aa9ce134e94f29b7333bf6">&#9670;&#160;</a></span>setColliderRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setColliderRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Change a collider radius; non-positive values are ignored. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="a3103ffab64f79e7aa984e8cbb2c20614" name="a3103ffab64f79e7aa984e8cbb2c20614"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3103ffab64f79e7aa984e8cbb2c20614">&#9670;&#160;</a></span>setDistanceLimit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setDistanceLimit </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set sleep distance; zero disables distance sleeping. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="ac123ea6205bcd4e3c6df96e25c20ddc7" name="ac123ea6205bcd4e3c6df96e25c20ddc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac123ea6205bcd4e3c6df96e25c20ddc7">&#9670;&#160;</a></span>setDistanceReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setDistanceReference </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the model-space point used for distance-based sleeping. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aa7c6e50648491ff02e37818bbe24f7e8" name="aa7c6e50648491ff02e37818bbe24f7e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7c6e50648491ff02e37818bbe24f7e8">&#9670;&#160;</a></span>setExternalForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setExternalForce </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set additional model-space acceleration such as wind. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a39a102ff6d57b5e509f6e49419699ad8" name="a39a102ff6d57b5e509f6e49419699ad8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39a102ff6d57b5e509f6e49419699ad8">&#9670;&#160;</a></span>setForceField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setForceField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1DynamicBoneForceField.html">DynamicBoneForceField</a> *&#160;</td>
+          <td class="paramname"><em>forceField</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set an optional spatial force field sampled on the calling thread. @ownership Borrowed; ownership remains with the caller. @lifetime The provider must outlive this solver or be cleared before destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a> 第 <a class="el" href="DynamicBoneSolver_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa8b05e80b62b68ba9e1c8a24653ca4be" name="aa8b05e80b62b68ba9e1c8a24653ca4be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8b05e80b62b68ba9e1c8a24653ca4be">&#9670;&#160;</a></span>setGlobalGravity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setGlobalGravity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set model-space gravity acceleration. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a088d1190925e58f9f3ed4ed12b1ac655" name="a088d1190925e58f9f3ed4ed12b1ac655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a088d1190925e58f9f3ed4ed12b1ac655">&#9670;&#160;</a></span>setObjectMoveResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setObjectMoveResponse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set how much simulated particles follow root translation, from zero to one. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="af36fcbcd0c0ab455673b058fc5c95bd5" name="af36fcbcd0c0ab455673b058fc5c95bd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af36fcbcd0c0ab455673b058fc5c95bd5">&#9670;&#160;</a></span>setSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setSkeleton </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebind the borrowed skeleton; changing it clears index-dependent state. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00084">clearChains()</a> , 以及 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00113">clearColliders()</a>.</p>
+
+</div>
+</div>
+<a id="a75857fc8dc638147f6640afc6ee7dda1" name="a75857fc8dc638147f6640afc6ee7dda1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75857fc8dc638147f6640afc6ee7dda1">&#9670;&#160;</a></span>setTeleportThreshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setTeleportThreshold </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set root movement distance that triggers a simulation reset. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a78011e5ff89338c6ad96912b0958819b" name="a78011e5ff89338c6ad96912b0958819b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78011e5ff89338c6ad96912b0958819b">&#9670;&#160;</a></span>setUpdateRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setUpdateRate </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>updatesPerSecond</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set preferred simulation frequency; zero means one step per update. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a324a8c4d0e819191e8b8bdf0e779e27e" name="a324a8c4d0e819191e8b8bdf0e779e27e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a324a8c4d0e819191e8b8bdf0e779e27e">&#9670;&#160;</a></span>setWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::setWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set final rotation blend weight in [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00057">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a7ffbeb75fc3cd0c3730104852a3a282c" name="a7ffbeb75fc3cd0c3730104852a3a282c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ffbeb75fc3cd0c3730104852a3a282c">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::DynamicBoneSolver::update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Simulate one frame using injected dt and update pose local rotations. </p>
+
+<p class="definition">在文件 <a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a> 第 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimPose_8cpp_source.html#l00230">eve::animation::AnimPose::computeWorld()</a>, <a class="el" href="AnimPose_8h_source.html#l00027">eve::animation::AnimPose::getBoneCount()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="DynamicBoneSolver_8h_source.html">DynamicBoneSolver.h</a></li>
+<li>src/modules/animation/<a class="el" href="DynamicBoneSolver_8cpp_source.html">DynamicBoneSolver.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

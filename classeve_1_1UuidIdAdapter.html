@@ -1,0 +1,919 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::UuidIdAdapter&lt; Tag &gt; 模板类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1UuidIdAdapter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::UuidIdAdapter&lt; Tag &gt; 模板类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UUID-backed identifier adapter for legacy textual boundaries.  
+ <a href="classeve_1_1UuidIdAdapter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Identity_8h_source.html">Identity.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a6769e7e0febdcf8eaef6330487e4c0d5" id="r_a6769e7e0febdcf8eaef6330487e4c0d5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a6769e7e0febdcf8eaef6330487e4c0d5">Uuid</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; Tag &gt;</td></tr>
+<tr class="separator:a6769e7e0febdcf8eaef6330487e4c0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e2043a0cf8c4de23bd9a21f99148537" id="r_a6e2043a0cf8c4de23bd9a21f99148537"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a6e2043a0cf8c4de23bd9a21f99148537">Bytes</a> = typename <a class="el" href="classeve_1_1detail_1_1Id128.html#a4987257919acf80171eb902a15105c5b">Uuid::Bytes</a></td></tr>
+<tr class="separator:a6e2043a0cf8c4de23bd9a21f99148537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af282adecfdc6348a1c04cc4e971571ee" id="r_af282adecfdc6348a1c04cc4e971571ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#af282adecfdc6348a1c04cc4e971571ee">UuidIdAdapter</a> ()=default</td></tr>
+<tr class="memdesc:af282adecfdc6348a1c04cc4e971571ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an empty compatibility identifier.  <br /></td></tr>
+<tr class="separator:af282adecfdc6348a1c04cc4e971571ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a107073172a9613b26f37b2e543394dda" id="r_a107073172a9613b26f37b2e543394dda"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a107073172a9613b26f37b2e543394dda">UuidIdAdapter</a> (const char *<a class="el" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a>)</td></tr>
+<tr class="memdesc:a107073172a9613b26f37b2e543394dda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs from a legacy spelling or canonical UUID text.  <br /></td></tr>
+<tr class="separator:a107073172a9613b26f37b2e543394dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2de68a485fa924c1d10222356f85398d" id="r_a2de68a485fa924c1d10222356f85398d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a2de68a485fa924c1d10222356f85398d">UuidIdAdapter</a> (std::string <a class="el" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a>)</td></tr>
+<tr class="memdesc:a2de68a485fa924c1d10222356f85398d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs from a legacy spelling or canonical UUID text.  <br /></td></tr>
+<tr class="separator:a2de68a485fa924c1d10222356f85398d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ad822edd9b14548528debb56bc7cc4f" id="r_a8ad822edd9b14548528debb56bc7cc4f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a8ad822edd9b14548528debb56bc7cc4f">UuidIdAdapter</a> (std::string_view <a class="el" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a>)</td></tr>
+<tr class="memdesc:a8ad822edd9b14548528debb56bc7cc4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs from a legacy spelling or canonical UUID text.  <br /></td></tr>
+<tr class="separator:a8ad822edd9b14548528debb56bc7cc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a454c688b892e6145fcad80d0a26a9018" id="r_a454c688b892e6145fcad80d0a26a9018"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a> () const noexcept</td></tr>
+<tr class="memdesc:a454c688b892e6145fcad80d0a26a9018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the exact legacy or canonical compatibility spelling.  <br /></td></tr>
+<tr class="separator:a454c688b892e6145fcad80d0a26a9018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae885172aad2787f72ae0f3f66ebfdee5" id="r_ae885172aad2787f72ae0f3f66ebfdee5"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#ae885172aad2787f72ae0f3f66ebfdee5">format</a> () const noexcept</td></tr>
+<tr class="memdesc:ae885172aad2787f72ae0f3f66ebfdee5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the compatibility spelling; use canonicalFormat at persistence boundaries.  <br /></td></tr>
+<tr class="separator:ae885172aad2787f72ae0f3f66ebfdee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9436d9c07df53c4e64ed52bb51d350" id="r_a7e9436d9c07df53c4e64ed52bb51d350"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1UuidIdAdapter.html#a6769e7e0febdcf8eaef6330487e4c0d5">Uuid</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a7e9436d9c07df53c4e64ed52bb51d350">uuid</a> () const noexcept</td></tr>
+<tr class="memdesc:a7e9436d9c07df53c4e64ed52bb51d350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the canonical UUID projection.  <br /></td></tr>
+<tr class="separator:a7e9436d9c07df53c4e64ed52bb51d350"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77adbaee23ce9c6f28ea2067b0d3cb9a" id="r_a77adbaee23ce9c6f28ea2067b0d3cb9a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a77adbaee23ce9c6f28ea2067b0d3cb9a">canonicalFormat</a> () const</td></tr>
+<tr class="memdesc:a77adbaee23ce9c6f28ea2067b0d3cb9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the canonical UUID projection as lower-case UUID text.  <br /></td></tr>
+<tr class="separator:a77adbaee23ce9c6f28ea2067b0d3cb9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d79968b13fa397d4d5b950b4bc8db9" id="r_a82d79968b13fa397d4d5b950b4bc8db9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a82d79968b13fa397d4d5b950b4bc8db9">empty</a> () const noexcept</td></tr>
+<tr class="memdesc:a82d79968b13fa397d4d5b950b4bc8db9"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when no compatibility spelling has been assigned.  <br /></td></tr>
+<tr class="separator:a82d79968b13fa397d4d5b950b4bc8db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a011e253588eaaafb5bed098075b6a3c6" id="r_a011e253588eaaafb5bed098075b6a3c6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a011e253588eaaafb5bed098075b6a3c6">isNil</a> () const noexcept</td></tr>
+<tr class="memdesc:a011e253588eaaafb5bed098075b6a3c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the value is an empty or UUID nil identity.  <br /></td></tr>
+<tr class="separator:a011e253588eaaafb5bed098075b6a3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23992b29d227eb020592cfc44c627c0b" id="r_a23992b29d227eb020592cfc44c627c0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a23992b29d227eb020592cfc44c627c0b">isCanonicalUuid</a> () const noexcept</td></tr>
+<tr class="memdesc:a23992b29d227eb020592cfc44c627c0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the input was canonical UUID text rather than legacy text.  <br /></td></tr>
+<tr class="separator:a23992b29d227eb020592cfc44c627c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f75541c5a17289fe2b9565c4d9bd92f" id="r_a9f75541c5a17289fe2b9565c4d9bd92f"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a9f75541c5a17289fe2b9565c4d9bd92f">hash</a> () const noexcept</td></tr>
+<tr class="memdesc:a9f75541c5a17289fe2b9565c4d9bd92f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable hash of the canonical UUID projection.  <br /></td></tr>
+<tr class="separator:a9f75541c5a17289fe2b9565c4d9bd92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78eb0a704d71ba9b579a413502636003" id="r_a78eb0a704d71ba9b579a413502636003"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a78eb0a704d71ba9b579a413502636003">operator bool</a> () const noexcept</td></tr>
+<tr class="memdesc:a78eb0a704d71ba9b579a413502636003"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit boolean check for a non-empty identifier.  <br /></td></tr>
+<tr class="separator:a78eb0a704d71ba9b579a413502636003"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa9373535b30c358e4deb14fe62c5666f" id="r_aa9373535b30c358e4deb14fe62c5666f"><td class="memItemLeft" align="right" valign="top">static std::optional&lt; <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#aa9373535b30c358e4deb14fe62c5666f">parse</a> (std::string_view <a class="el" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a>)</td></tr>
+<tr class="memdesc:aa9373535b30c358e4deb14fe62c5666f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses canonical UUID text or a non-empty legacy spelling.  <br /></td></tr>
+<tr class="separator:aa9373535b30c358e4deb14fe62c5666f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a227de4b79cdd1d80e669f65dc9c8d446" id="r_a227de4b79cdd1d80e669f65dc9c8d446"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a227de4b79cdd1d80e669f65dc9c8d446">fromUuid</a> (<a class="el" href="classeve_1_1UuidIdAdapter.html#a6769e7e0febdcf8eaef6330487e4c0d5">Uuid</a> <a class="el" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a>)</td></tr>
+<tr class="memdesc:a227de4b79cdd1d80e669f65dc9c8d446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds an adapter from an explicit canonical UUID.  <br /></td></tr>
+<tr class="separator:a227de4b79cdd1d80e669f65dc9c8d446"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0b3105254385db12f2d5db80879ff5e" id="r_af0b3105254385db12f2d5db80879ff5e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#af0b3105254385db12f2d5db80879ff5e">fromLegacy</a> (std::string <a class="el" href="classeve_1_1UuidIdAdapter.html#a454c688b892e6145fcad80d0a26a9018">value</a>)</td></tr>
+<tr class="memdesc:af0b3105254385db12f2d5db80879ff5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds an adapter while explicitly retaining a legacy spelling.  <br /></td></tr>
+<tr class="separator:af0b3105254385db12f2d5db80879ff5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a1681042f26d4cea252a751cd2a75c2c1" id="r_a1681042f26d4cea252a751cd2a75c2c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a1681042f26d4cea252a751cd2a75c2c1">operator==</a> (const <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a> &amp;lhs, const <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a> &amp;rhs) noexcept</td></tr>
+<tr class="separator:a1681042f26d4cea252a751cd2a75c2c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b2d57820d233fe39cc7abb64a141d09" id="r_a6b2d57820d233fe39cc7abb64a141d09"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html#a6b2d57820d233fe39cc7abb64a141d09">operator&lt;=&gt;</a> (const <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a> &amp;lhs, const <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a> &amp;rhs) noexcept</td></tr>
+<tr class="memdesc:a6b2d57820d233fe39cc7abb64a141d09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orders adapter values by their canonical UUID projection.  <br /></td></tr>
+<tr class="separator:a6b2d57820d233fe39cc7abb64a141d09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Tag&gt;<br />
+class eve::UuidIdAdapter&lt; Tag &gt;</div><p>UUID-backed identifier adapter for legacy textual boundaries. </p>
+<dl class="tparams"><dt>模板参数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Tag</td><td>Domain tag for the canonical UUID projection.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>New values are represented by a common strong UUID. A non-UUID, non-empty constructor or parse input is retained verbatim as a compatibility spelling and receives a deterministic UUID projection for hashing, ordering and explicit cross-boundary conversion. This lets old editor logical IDs keep working without introducing another string-identity implementation.</p>
+<p>The legacy spelling is not a persistent UUID. Persistence code must use <code><a class="el" href="classeve_1_1UuidIdAdapter.html#a7e9436d9c07df53c4e64ed52bb51d350" title="Returns the canonical UUID projection.">uuid()</a></code>/<code><a class="el" href="classeve_1_1UuidIdAdapter.html#a77adbaee23ce9c6f28ea2067b0d3cb9a" title="Returns the canonical UUID projection as lower-case UUID text.">canonicalFormat()</a></code> and declare its schema migration policy. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00282">282</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a6e2043a0cf8c4de23bd9a21f99148537" name="a6e2043a0cf8c4de23bd9a21f99148537"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e2043a0cf8c4de23bd9a21f99148537">&#9670;&#160;</a></span>Bytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::Bytes =  typename <a class="el" href="classeve_1_1detail_1_1Id128.html#a4987257919acf80171eb902a15105c5b">Uuid::Bytes</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00285">285</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6769e7e0febdcf8eaef6330487e4c0d5" name="a6769e7e0febdcf8eaef6330487e4c0d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6769e7e0febdcf8eaef6330487e4c0d5">&#9670;&#160;</a></span>Uuid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::Uuid =  <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt;Tag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00284">284</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af282adecfdc6348a1c04cc4e971571ee" name="af282adecfdc6348a1c04cc4e971571ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af282adecfdc6348a1c04cc4e971571ee">&#9670;&#160;</a></span>UuidIdAdapter() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::UuidIdAdapter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an empty compatibility identifier. </p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Identity_8h_source.html#l00319">eve::UuidIdAdapter&lt; Tag &gt;::fromLegacy()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00304">eve::UuidIdAdapter&lt; Tag &gt;::parse()</a>.</p>
+
+</div>
+</div>
+<a id="a107073172a9613b26f37b2e543394dda" name="a107073172a9613b26f37b2e543394dda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a107073172a9613b26f37b2e543394dda">&#9670;&#160;</a></span>UuidIdAdapter() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::UuidIdAdapter </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs from a legacy spelling or canonical UUID text. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00291">291</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2de68a485fa924c1d10222356f85398d" name="a2de68a485fa924c1d10222356f85398d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2de68a485fa924c1d10222356f85398d">&#9670;&#160;</a></span>UuidIdAdapter() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::UuidIdAdapter </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs from a legacy spelling or canonical UUID text. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00294">294</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ad822edd9b14548528debb56bc7cc4f" name="a8ad822edd9b14548528debb56bc7cc4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ad822edd9b14548528debb56bc7cc4f">&#9670;&#160;</a></span>UuidIdAdapter() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::UuidIdAdapter </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs from a legacy spelling or canonical UUID text. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a77adbaee23ce9c6f28ea2067b0d3cb9a" name="a77adbaee23ce9c6f28ea2067b0d3cb9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77adbaee23ce9c6f28ea2067b0d3cb9a">&#9670;&#160;</a></span>canonicalFormat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::canonicalFormat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the canonical UUID projection as lower-case UUID text. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00122">eve::detail::Id128&lt; Tag &gt;::format()</a>.</p>
+
+</div>
+</div>
+<a id="a82d79968b13fa397d4d5b950b4bc8db9" name="a82d79968b13fa397d4d5b950b4bc8db9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82d79968b13fa397d4d5b950b4bc8db9">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when no compatibility spelling has been assigned. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00516">eve::editor::EditorTransactionConsumer::append()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00330">eve::editor::EditorSession::autosaveDocument()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00172">eve::editor::ImportCoordinator::begin()</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00316">eve::editor::EditorTransactionConsumer::begin()</a>, <a class="el" href="EditorTransactionService_8cpp_source.html#l00060">eve::editor::LocalTransactionBackend::begin()</a>, <a class="el" href="EditorPropertyModel_8cpp_source.html#l00262">eve::editor::EditorPropertyModel::beginTransaction()</a>, <a class="el" href="EditorUiSkinPreview_8cpp_source.html#l00023">eve::editor::UiSkinPreviewPlanner::build()</a>, <a class="el" href="SkeletonOverlay_8cpp_source.html#l00057">eve::animation_editing::SkeletonOverlayBuilder::build()</a>, <a class="el" href="EditorPrefab_8cpp_source.html#l00099">eve::editor::ScenePrefabService::capture()</a>, <a class="el" href="EditingGraph_8cpp_source.html#l00044">eve::editing::GraphDocument::connect()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00306">eve::editor::EditorSession::editDocument()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00208">eve::editor::EditorSession::executeCommandReceipt()</a>, <a class="el" href="EditorSelection_8cpp_source.html#l00049">eve::editor::EditorFocusService::focus()</a>, <a class="el" href="AudioMixerTarget_8cpp_source.html#l00100">eve::audio_editing::AudioMixerTarget::makeCreate()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00415">eve::housegen_editing::HouseGenDocumentTarget::makeCreateComponent()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00037">eve::camera_editing::CameraDocumentTarget::makeCreateRig()</a>, <a class="el" href="Identity_8h_source.html#l00350">eve::UuidIdAdapter&lt; Tag &gt;::operator bool()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00349">eve::editor::EditorSession::pollDocumentChanges()</a>, <a class="el" href="EditingAuthority_8cpp_source.html#l00024">eve::editing::LocalWorldAuthority::preflight()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00024">eve::editor::MemoryAssetDatabase::publish()</a>, <a class="el" href="MapIntegration_8cpp_source.html#l00008">eve::map_editing::MapRoadMeshPublisher::publish()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00049">eve::editor::MemoryAssetDatabase::publishBatch()</a>, <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00197">eve::editor::AutosaveService::readDraft()</a>, <a class="el" href="EditorMaterialPreview_8cpp_source.html#l00038">eve::editor::MaterialPreviewService::render()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00045">eve::graphics_editing::GraphicsOffscreenPreviewService::render()</a>, <a class="el" href="ParticleOffscreen_8cpp_source.html#l00005">eve::particles_graphics_editing::ParticleOffscreenPreviewService::render()</a>, <a class="el" href="EditorStylizeOffscreen_8cpp_source.html#l00007">eve::editor::StylizeOffscreenPreviewService::render()</a>, <a class="el" href="EditorSurfaceFluidOffscreen_8cpp_source.html#l00005">eve::editor::SurfaceFluidOffscreenPreviewService::render()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00315">eve::editor::EditorSession::saveDocument()</a>, <a class="el" href="EditorDiskAssetCatalog_8cpp_source.html#l00077">eve::editor::DiskAssetCatalog::scan()</a>, <a class="el" href="EditorEnvironmentBrowser_8cpp_source.html#l00084">eve::editor::EnvironmentAssetBrowser::select()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00261">eve::editor::EditorWorkspace::selectItem()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00242">eve::editor::EditorWorkspace::setModeId()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00463">eve::editor::EditorSession::update()</a>, <a class="el" href="EditorPropertyModel_8cpp_source.html#l00143">eve::editor::EditorPropertyModel::write()</a>, <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00174">eve::editor::AutosaveService::writeDraft()</a> , 以及 <a class="el" href="EditorDiskAssetCatalog_8cpp_source.html#l00043">eve::editor::DiskAssetCatalog::writeSidecar()</a>.</p>
+
+</div>
+</div>
+<a id="ae885172aad2787f72ae0f3f66ebfdee5" name="ae885172aad2787f72ae0f3f66ebfdee5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae885172aad2787f72ae0f3f66ebfdee5">&#9670;&#160;</a></span>format()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::format </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the compatibility spelling; use canonicalFormat at persistence boundaries. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af0b3105254385db12f2d5db80879ff5e" name="af0b3105254385db12f2d5db80879ff5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0b3105254385db12f2d5db80879ff5e">&#9670;&#160;</a></span>fromLegacy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a> <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::fromLegacy </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Builds an adapter while explicitly retaining a legacy spelling. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00319">319</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00122">projected</a>, <a class="el" href="classeve_1_1UuidIdAdapter.html#af282adecfdc6348a1c04cc4e971571ee">eve::UuidIdAdapter&lt; Tag &gt;::UuidIdAdapter()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a227de4b79cdd1d80e669f65dc9c8d446" name="a227de4b79cdd1d80e669f65dc9c8d446"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a227de4b79cdd1d80e669f65dc9c8d446">&#9670;&#160;</a></span>fromUuid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a> <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::fromUuid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1UuidIdAdapter.html#a6769e7e0febdcf8eaef6330487e4c0d5">Uuid</a>&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Builds an adapter from an explicit canonical UUID. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a9f75541c5a17289fe2b9565c4d9bd92f" name="a9f75541c5a17289fe2b9565c4d9bd92f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f75541c5a17289fe2b9565c4d9bd92f">&#9670;&#160;</a></span>hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::hash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable hash of the canonical UUID projection. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00347">347</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00180">eve::detail::Id128&lt; Tag &gt;::hash()</a>.</p>
+
+</div>
+</div>
+<a id="a23992b29d227eb020592cfc44c627c0b" name="a23992b29d227eb020592cfc44c627c0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23992b29d227eb020592cfc44c627c0b">&#9670;&#160;</a></span>isCanonicalUuid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::isCanonicalUuid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the input was canonical UUID text rather than legacy text. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00344">344</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a011e253588eaaafb5bed098075b6a3c6" name="a011e253588eaaafb5bed098075b6a3c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a011e253588eaaafb5bed098075b6a3c6">&#9670;&#160;</a></span>isNil()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::isNil </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the value is an empty or UUID nil identity. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>.</p>
+
+</div>
+</div>
+<a id="a78eb0a704d71ba9b579a413502636003" name="a78eb0a704d71ba9b579a413502636003"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78eb0a704d71ba9b579a413502636003">&#9670;&#160;</a></span>operator bool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::operator bool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit boolean check for a non-empty identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>.</p>
+
+</div>
+</div>
+<a id="aa9373535b30c358e4deb14fe62c5666f" name="aa9373535b30c358e4deb14fe62c5666f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9373535b30c358e4deb14fe62c5666f">&#9670;&#160;</a></span>parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::optional&lt; <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a> &gt; <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::parse </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parses canonical UUID text or a non-empty legacy spelling. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>Input from an editor or compatibility boundary. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Empty only for an empty input; legacy text is deliberately accepted. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1UuidIdAdapter.html#af282adecfdc6348a1c04cc4e971571ee">eve::UuidIdAdapter&lt; Tag &gt;::UuidIdAdapter()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a7e9436d9c07df53c4e64ed52bb51d350" name="a7e9436d9c07df53c4e64ed52bb51d350"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e9436d9c07df53c4e64ed52bb51d350">&#9670;&#160;</a></span>uuid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1UuidIdAdapter.html#a6769e7e0febdcf8eaef6330487e4c0d5">Uuid</a> <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::uuid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the canonical UUID projection. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00332">332</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a454c688b892e6145fcad80d0a26a9018" name="a454c688b892e6145fcad80d0a26a9018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a454c688b892e6145fcad80d0a26a9018">&#9670;&#160;</a></span>value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;::value </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the exact legacy or canonical compatibility spelling. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00108">eve::editor::ActionTimelineTarget::applyDomainOperation()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00050">eve::scene_editing::SceneTargetBase::applyDomainOperation()</a>, <a class="el" href="EditorPrefab_8cpp_source.html#l00214">eve::editor::ScenePrefabService::applyOverrides()</a>, <a class="el" href="EditorUiSkinPreview_8cpp_source.html#l00023">eve::editor::UiSkinPreviewPlanner::build()</a>, <a class="el" href="EditorPrefab_8cpp_source.html#l00099">eve::editor::ScenePrefabService::capture()</a>, <a class="el" href="EditingAuthority_8cpp_source.html#l00107">eve::editing::LocalWorldAuthority::compensate()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00320">eve::avatar_editor::AvatarDocumentEditor::createExpression()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00293">eve::avatar_editor::AvatarDocumentEditor::createParameter()</a>, <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00166">eve::editor::AutosaveService::draftUri()</a>, <a class="el" href="EditorTargetCoordinator_8cpp_source.html#l00056">eve::editor::EditorTargetCoordinator::Impl::execute()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00208">eve::editor::EditorSession::executeCommandReceipt()</a>, <a class="el" href="EditorCommandService_8cpp_source.html#l00200">eve::editor::EditorCommandService::executePlan()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00098">eve::editor::MemoryAssetDatabase::find()</a>, <a class="el" href="Identity_8h_source.html#l00319">eve::UuidIdAdapter&lt; Tag &gt;::fromLegacy()</a>, <a class="el" href="Identity_8h_source.html#l00310">eve::UuidIdAdapter&lt; Tag &gt;::fromUuid()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00322">eve::editor::EditorWorkspace::getFocusedSurface()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a>, <a class="el" href="EditorPrefab_8cpp_source.html#l00377">eve::editor::ScenePrefabService::loadSnapshot()</a>, <a class="el" href="AudioMixerTarget_8cpp_source.html#l00100">eve::audio_editing::AudioMixerTarget::makeCreate()</a>, <a class="el" href="AudioMixerTarget_8cpp_source.html#l00116">eve::audio_editing::AudioMixerTarget::makeDelete()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00213">eve::scene_editing::SceneTargetBase::makeDelete()</a>, <a class="el" href="UiDocument_8cpp_source.html#l00159">eve::ui_editing::UiDocumentTarget::makeDelete()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00232">eve::scene_editing::SceneTargetBase::makeRename()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00258">eve::scene_editing::SceneTargetBase::makeReparent()</a>, <a class="el" href="EditorPluginPermissions_8cpp_source.html#l00098">eve::editor::PluginPermissionTarget::makeSet()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00508">eve::scene_editing::ScenePropertyProvider::makeSet()</a>, <a class="el" href="UiDocumentProperty_8cpp_source.html#l00250">eve::ui_editing::UiDocumentTarget::makeSet()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00192">eve::crowd_editing::CrowdDocumentTarget::makeSetAgent()</a>, <a class="el" href="SocialDocument_8cpp_source.html#l00157">eve::social_editing::SocialDocumentTarget::makeSetEdge()</a>, <a class="el" href="SocialDocument_8cpp_source.html#l00135">eve::social_editing::SocialDocumentTarget::makeSetEntity()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00199">eve::crowd_editing::CrowdDocumentTarget::makeSetPath()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00229">eve::animation_editing::AnimationClipDocumentTarget::makeSetTrack()</a>, <a class="el" href="SceneTarget_8cpp_source.html#l00298">eve::scene_editing::SceneTargetBase::makeSetTransform()</a>, <a class="el" href="CrowdDocument_8cpp_source.html#l00197">eve::crowd_editing::CrowdDocumentTarget::makeSetZone()</a>, <a class="el" href="Identity_8h_source.html#l00304">eve::UuidIdAdapter&lt; Tag &gt;::parse()</a>, <a class="el" href="EditorCommandService_8cpp_source.html#l00159">eve::editor::EditorCommandService::plan()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00532">eve::map_editing::MapDocumentTarget::previewRoad()</a>, <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00812">eve::editor::EditorTransactionConsumer::redo()</a>, <a class="el" href="EditorMaterialPreview_8cpp_source.html#l00038">eve::editor::MaterialPreviewService::render()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00045">eve::graphics_editing::GraphicsOffscreenPreviewService::render()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00078">eve::editor::DocumentService::requestSave()</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a>, <a class="el" href="EditorDiskAssetCatalog_8cpp_source.html#l00077">eve::editor::DiskAssetCatalog::scan()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00242">eve::editor::EditorWorkspace::setModeId()</a>, <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00759">eve::editor::EditorTransactionConsumer::undo()</a>, <a class="el" href="Identity_8h_source.html#l00297">eve::UuidIdAdapter&lt; Tag &gt;::UuidIdAdapter()</a>, <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00174">eve::editor::AutosaveService::writeDraft()</a> , 以及 <a class="el" href="EditorDiskAssetCatalog_8cpp_source.html#l00043">eve::editor::DiskAssetCatalog::writeSidecar()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a6b2d57820d233fe39cc7abb64a141d09" name="a6b2d57820d233fe39cc7abb64a141d09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b2d57820d233fe39cc7abb64a141d09">&#9670;&#160;</a></span>operator&lt;=&gt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto operator&lt;=&gt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Orders adapter values by their canonical UUID projection. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00357">357</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1681042f26d4cea252a751cd2a75c2c1" name="a1681042f26d4cea252a751cd2a75c2c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1681042f26d4cea252a751cd2a75c2c1">&#9670;&#160;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1UuidIdAdapter.html">UuidIdAdapter</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 第 <a class="el" href="Identity_8h_source.html#l00352">352</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Identity_8h_source.html">Identity.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

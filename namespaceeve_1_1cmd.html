@@ -1,0 +1,493 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::cmd 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1cmd.html">cmd</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::cmd 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1cmd_1_1sdk" id="r_namespaceeve_1_1cmd_1_1sdk"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd_1_1sdk.html">sdk</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1BuildArgs.html">BuildArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1CleanArgs.html">CleanArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html">Cmdline</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">命令行模块（eve.cmd）：run / build / package / test / zip / dev-server 等子命令入口。  <a href="classeve_1_1cmd_1_1Cmdline.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1CreateArgs.html">CreateArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1DevServerArgs.html">DevServerArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1DocArgs.html">DocArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1GetArgs.html">GetArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1Handler.html">Handler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One <code>eve &lt;subcommand&gt;</code> handler: <a class="el" href="namespaceCLI.html">CLI</a> setup + argument parsing.  <a href="structeve_1_1cmd_1_1Handler.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1LanguageServerArgs.html">LanguageServerArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1McpArgs.html">McpArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1cmd_1_1MyFormatter.html">MyFormatter</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1PackageArgs.html">PackageArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1Register.html">Register</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">子命令静态注册器（CMD_REG 宏使用）。  <a href="structeve_1_1cmd_1_1Register.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1RunArgs.html">RunArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1TestArgs.html">TestArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1cmd_1_1ZipArgs.html">ZipArgs</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:af5f62dea9118a36851749c7fb7f5a14e" id="r_af5f62dea9118a36851749c7fb7f5a14e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#af5f62dea9118a36851749c7fb7f5a14e">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1BuildArgs.html">BuildArgs</a>)</td></tr>
+<tr class="separator:af5f62dea9118a36851749c7fb7f5a14e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0b5294bbe73115a2b9a7b0087676181" id="r_ad0b5294bbe73115a2b9a7b0087676181"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#ad0b5294bbe73115a2b9a7b0087676181">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1CleanArgs.html">CleanArgs</a>)</td></tr>
+<tr class="separator:ad0b5294bbe73115a2b9a7b0087676181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09f7744c195ea873171333c1b443b7b6" id="r_a09f7744c195ea873171333c1b443b7b6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#a09f7744c195ea873171333c1b443b7b6">Module_IMPL</a> (<a class="el" href="classeve_1_1cmd_1_1Cmdline.html">Cmdline</a>, new <a class="el" href="classeve_1_1cmd_1_1Cmdline.html">Cmdline</a>())</td></tr>
+<tr class="separator:a09f7744c195ea873171333c1b443b7b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8ecddf0b7130b95256b18ab0b8c8a42" id="r_ab8ecddf0b7130b95256b18ab0b8c8a42"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#ab8ecddf0b7130b95256b18ab0b8c8a42">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1CreateArgs.html">CreateArgs</a>)</td></tr>
+<tr class="separator:ab8ecddf0b7130b95256b18ab0b8c8a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bb59867739fff2d4b8ef8abb246c24e" id="r_a5bb59867739fff2d4b8ef8abb246c24e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#a5bb59867739fff2d4b8ef8abb246c24e">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1DevServerArgs.html">DevServerArgs</a>)</td></tr>
+<tr class="separator:a5bb59867739fff2d4b8ef8abb246c24e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fe8f249f1fca243fd491c8e29cf4d4f" id="r_a7fe8f249f1fca243fd491c8e29cf4d4f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#a7fe8f249f1fca243fd491c8e29cf4d4f">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1DocArgs.html">DocArgs</a>)</td></tr>
+<tr class="separator:a7fe8f249f1fca243fd491c8e29cf4d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ac00f4adce7b22a09b4cb878e8386ae" id="r_a0ac00f4adce7b22a09b4cb878e8386ae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#a0ac00f4adce7b22a09b4cb878e8386ae">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1GetArgs.html">GetArgs</a>)</td></tr>
+<tr class="separator:a0ac00f4adce7b22a09b4cb878e8386ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4da9429837f2e39499a8f2ada786eb56" id="r_a4da9429837f2e39499a8f2ada786eb56"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#a4da9429837f2e39499a8f2ada786eb56">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1LanguageServerArgs.html">LanguageServerArgs</a>)</td></tr>
+<tr class="separator:a4da9429837f2e39499a8f2ada786eb56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13ed333173b320e77fef8c8cd378c9ae" id="r_a13ed333173b320e77fef8c8cd378c9ae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#a13ed333173b320e77fef8c8cd378c9ae">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1McpArgs.html">McpArgs</a>)</td></tr>
+<tr class="separator:a13ed333173b320e77fef8c8cd378c9ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8402e831e4dc5f8881bc7b334267788f" id="r_a8402e831e4dc5f8881bc7b334267788f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#a8402e831e4dc5f8881bc7b334267788f">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1PackageArgs.html">PackageArgs</a>)</td></tr>
+<tr class="separator:a8402e831e4dc5f8881bc7b334267788f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd80233638a563d2653faab9abe72c0b" id="r_acd80233638a563d2653faab9abe72c0b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#acd80233638a563d2653faab9abe72c0b">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1RunArgs.html">RunArgs</a>)</td></tr>
+<tr class="separator:acd80233638a563d2653faab9abe72c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebec8ba35141394035c103562dcaf82a" id="r_aebec8ba35141394035c103562dcaf82a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#aebec8ba35141394035c103562dcaf82a">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1TestArgs.html">TestArgs</a>)</td></tr>
+<tr class="separator:aebec8ba35141394035c103562dcaf82a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae78ef5288a39469a7867c7d732ac4f8d" id="r_ae78ef5288a39469a7867c7d732ac4f8d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cmd.html#ae78ef5288a39469a7867c7d732ac4f8d">CMD_REG</a> (<a class="el" href="structeve_1_1cmd_1_1ZipArgs.html">ZipArgs</a>)</td></tr>
+<tr class="separator:ae78ef5288a39469a7867c7d732ac4f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="af5f62dea9118a36851749c7fb7f5a14e" name="af5f62dea9118a36851749c7fb7f5a14e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5f62dea9118a36851749c7fb7f5a14e">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[1/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1BuildArgs.html">BuildArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad0b5294bbe73115a2b9a7b0087676181" name="ad0b5294bbe73115a2b9a7b0087676181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0b5294bbe73115a2b9a7b0087676181">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[2/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1CleanArgs.html">CleanArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab8ecddf0b7130b95256b18ab0b8c8a42" name="ab8ecddf0b7130b95256b18ab0b8c8a42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8ecddf0b7130b95256b18ab0b8c8a42">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[3/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1CreateArgs.html">CreateArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5bb59867739fff2d4b8ef8abb246c24e" name="a5bb59867739fff2d4b8ef8abb246c24e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bb59867739fff2d4b8ef8abb246c24e">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[4/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1DevServerArgs.html">DevServerArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7fe8f249f1fca243fd491c8e29cf4d4f" name="a7fe8f249f1fca243fd491c8e29cf4d4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fe8f249f1fca243fd491c8e29cf4d4f">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[5/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1DocArgs.html">DocArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0ac00f4adce7b22a09b4cb878e8386ae" name="a0ac00f4adce7b22a09b4cb878e8386ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ac00f4adce7b22a09b4cb878e8386ae">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[6/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1GetArgs.html">GetArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4da9429837f2e39499a8f2ada786eb56" name="a4da9429837f2e39499a8f2ada786eb56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4da9429837f2e39499a8f2ada786eb56">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[7/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1LanguageServerArgs.html">LanguageServerArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13ed333173b320e77fef8c8cd378c9ae" name="a13ed333173b320e77fef8c8cd378c9ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ed333173b320e77fef8c8cd378c9ae">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[8/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1McpArgs.html">McpArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8402e831e4dc5f8881bc7b334267788f" name="a8402e831e4dc5f8881bc7b334267788f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8402e831e4dc5f8881bc7b334267788f">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[9/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1PackageArgs.html">PackageArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acd80233638a563d2653faab9abe72c0b" name="acd80233638a563d2653faab9abe72c0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd80233638a563d2653faab9abe72c0b">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[10/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1RunArgs.html">RunArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aebec8ba35141394035c103562dcaf82a" name="aebec8ba35141394035c103562dcaf82a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebec8ba35141394035c103562dcaf82a">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[11/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1TestArgs.html">TestArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae78ef5288a39469a7867c7d732ac4f8d" name="ae78ef5288a39469a7867c7d732ac4f8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae78ef5288a39469a7867c7d732ac4f8d">&#9670;&#160;</a></span>CMD_REG() <span class="overload">[12/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::CMD_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1cmd_1_1ZipArgs.html">ZipArgs</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a09f7744c195ea873171333c1b443b7b6" name="a09f7744c195ea873171333c1b443b7b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09f7744c195ea873171333c1b443b7b6">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::cmd::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1cmd_1_1Cmdline.html">Cmdline</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Cmdline</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

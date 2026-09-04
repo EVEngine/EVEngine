@@ -1,0 +1,842 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::stylize::StyleInstance类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></li><li class="navelem"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1stylize_1_1StyleInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::stylize::StyleInstance类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Mutable parameter instance of an immutable built-in style definition.  
+ <a href="classeve_1_1stylize_1_1StyleInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="StyleInstance_8h_source.html">StyleInstance.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a61c881a7ed9a7e3fdc9bb272a44f4420" id="r_a61c881a7ed9a7e3fdc9bb272a44f4420"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a61c881a7ed9a7e3fdc9bb272a44f4420">StyleInstance</a> (std::string style)</td></tr>
+<tr class="separator:a61c881a7ed9a7e3fdc9bb272a44f4420"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adad667675064107e649b2e03259b0d1d" id="r_adad667675064107e649b2e03259b0d1d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#adad667675064107e649b2e03259b0d1d">~StyleInstance</a> ()=default</td></tr>
+<tr class="separator:adad667675064107e649b2e03259b0d1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72070571d109c616388ecd75b01ab931" id="r_a72070571d109c616388ecd75b01ab931"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a72070571d109c616388ecd75b01ab931">StyleInstance</a> (const <a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:a72070571d109c616388ecd75b01ab931"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09c33523b07c283eff36fb95cdff44e9" id="r_a09c33523b07c283eff36fb95cdff44e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a09c33523b07c283eff36fb95cdff44e9">operator=</a> (const <a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:a09c33523b07c283eff36fb95cdff44e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a9d832bec08a66b133b0ff2f4524a50" id="r_a2a9d832bec08a66b133b0ff2f4524a50"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a2a9d832bec08a66b133b0ff2f4524a50">getStyle</a> () const</td></tr>
+<tr class="separator:a2a9d832bec08a66b133b0ff2f4524a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabdb02afc4266bd86ec4a1e8266887c8" id="r_aabdb02afc4266bd86ec4a1e8266887c8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#aabdb02afc4266bd86ec4a1e8266887c8">getStage</a> () const</td></tr>
+<tr class="separator:aabdb02afc4266bd86ec4a1e8266887c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83575c664e9f771c8943a3afa3b59ccb" id="r_a83575c664e9f771c8943a3afa3b59ccb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a83575c664e9f771c8943a3afa3b59ccb">getPriority</a> () const</td></tr>
+<tr class="separator:a83575c664e9f771c8943a3afa3b59ccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb56787348ddd274af8a00120fb3106a" id="r_aeb56787348ddd274af8a00120fb3106a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#aeb56787348ddd274af8a00120fb3106a">setPriority</a> (int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>)</td></tr>
+<tr class="memdesc:aeb56787348ddd274af8a00120fb3106a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override built-in ordering for authored recipe composition.  <br /></td></tr>
+<tr class="separator:aeb56787348ddd274af8a00120fb3106a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84b83437bd4435f7698c2e213f3742b" id="r_af84b83437bd4435f7698c2e213f3742b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#af84b83437bd4435f7698c2e213f3742b">resetPriority</a> ()</td></tr>
+<tr class="memdesc:af84b83437bd4435f7698c2e213f3742b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the style definition's built-in priority.  <br /></td></tr>
+<tr class="separator:af84b83437bd4435f7698c2e213f3742b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1229f26f8384d70e586ddf774ced990" id="r_ad1229f26f8384d70e586ddf774ced990"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#ad1229f26f8384d70e586ddf774ced990">requiresInput</a> (const std::string &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>) const</td></tr>
+<tr class="separator:ad1229f26f8384d70e586ddf774ced990"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a975004a41c58ccac461080e534b49048" id="r_a975004a41c58ccac461080e534b49048"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a975004a41c58ccac461080e534b49048">getParamCount</a> () const</td></tr>
+<tr class="separator:a975004a41c58ccac461080e534b49048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a480fefe4ee59fca669057bfa2a1c9e90" id="r_a480fefe4ee59fca669057bfa2a1c9e90"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a480fefe4ee59fca669057bfa2a1c9e90">getParamName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a480fefe4ee59fca669057bfa2a1c9e90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac07deb0a6dc917dbab6f306175a8090a" id="r_ac07deb0a6dc917dbab6f306175a8090a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#ac07deb0a6dc917dbab6f306175a8090a">getParamDefault</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:ac07deb0a6dc917dbab6f306175a8090a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a854b6d2472a3fa7ee44d58907c67c49b" id="r_a854b6d2472a3fa7ee44d58907c67c49b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a854b6d2472a3fa7ee44d58907c67c49b">getParamMin</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a854b6d2472a3fa7ee44d58907c67c49b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5f492820679898d4b5d17cfe5cd2efe" id="r_af5f492820679898d4b5d17cfe5cd2efe"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#af5f492820679898d4b5d17cfe5cd2efe">getParamMax</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:af5f492820679898d4b5d17cfe5cd2efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56f03bbe85e6cbd94a20e97579662778" id="r_a56f03bbe85e6cbd94a20e97579662778"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a56f03bbe85e6cbd94a20e97579662778">hasParam</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a56f03bbe85e6cbd94a20e97579662778"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca271937f03d0ebf3971a56b92660b94" id="r_aca271937f03d0ebf3971a56b92660b94"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#aca271937f03d0ebf3971a56b92660b94">isOverridden</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:aca271937f03d0ebf3971a56b92660b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a865ac6cd34945147adadcfd7ebbd5bd1" id="r_a865ac6cd34945147adadcfd7ebbd5bd1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a865ac6cd34945147adadcfd7ebbd5bd1">setFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a865ac6cd34945147adadcfd7ebbd5bd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2baa1f640a54b37b1bad4e7d61704710" id="r_a2baa1f640a54b37b1bad4e7d61704710"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a2baa1f640a54b37b1bad4e7d61704710">getFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a2baa1f640a54b37b1bad4e7d61704710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5db997ef8ba832b9736fac4259bb576e" id="r_a5db997ef8ba832b9736fac4259bb576e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a5db997ef8ba832b9736fac4259bb576e">reset</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a5db997ef8ba832b9736fac4259bb576e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97b7ad9a48a7094430f0c9a10c1cb189" id="r_a97b7ad9a48a7094430f0c9a10c1cb189"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a97b7ad9a48a7094430f0c9a10c1cb189">resetAll</a> ()</td></tr>
+<tr class="separator:a97b7ad9a48a7094430f0c9a10c1cb189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d912807874ee06f30c2f2c804577067" id="r_a5d912807874ee06f30c2f2c804577067"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a5d912807874ee06f30c2f2c804577067">newPass</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx) const</td></tr>
+<tr class="memdesc:a5d912807874ee06f30c2f2c804577067"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a post pass and apply this instance's parameter overrides.  <br /></td></tr>
+<tr class="separator:a5d912807874ee06f30c2f2c804577067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2af3623d6f610fbf7d121b47bb50329d" id="r_a2af3623d6f610fbf7d121b47bb50329d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a2af3623d6f610fbf7d121b47bb50329d">newMeshShader</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx) const</td></tr>
+<tr class="memdesc:a2af3623d6f610fbf7d121b47bb50329d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a mesh technique shader and apply compatible overrides.  <br /></td></tr>
+<tr class="separator:a2af3623d6f610fbf7d121b47bb50329d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cf22ff1dcbd74d787a3c2164fdd137c" id="r_a8cf22ff1dcbd74d787a3c2164fdd137c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html#a8cf22ff1dcbd74d787a3c2164fdd137c">applyToShader</a> (<a class="el" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>) const</td></tr>
+<tr class="memdesc:a8cf22ff1dcbd74d787a3c2164fdd137c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply current overrides to an existing compatible shader.  <br /></td></tr>
+<tr class="separator:a8cf22ff1dcbd74d787a3c2164fdd137c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Mutable parameter instance of an immutable built-in style definition. </p>
+<p>Instances hold only user overrides. Shader programs remain owned and shared by Graphics; creating a pass or mesh shader applies this instance's overrides. </p>
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8h_source.html">StyleInstance.h</a> 第 <a class="el" href="StyleInstance_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a61c881a7ed9a7e3fdc9bb272a44f4420" name="a61c881a7ed9a7e3fdc9bb272a44f4420"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61c881a7ed9a7e3fdc9bb272a44f4420">&#9670;&#160;</a></span>StyleInstance() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::StyleInstance::StyleInstance </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>style</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleShaders_8cpp_source.html#l00164">eve::stylize::findStyleDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="adad667675064107e649b2e03259b0d1d" name="adad667675064107e649b2e03259b0d1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adad667675064107e649b2e03259b0d1d">&#9670;&#160;</a></span>~StyleInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::StyleInstance::~StyleInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a72070571d109c616388ecd75b01ab931" name="a72070571d109c616388ecd75b01ab931"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72070571d109c616388ecd75b01ab931">&#9670;&#160;</a></span>StyleInstance() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::StyleInstance::StyleInstance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8cf22ff1dcbd74d787a3c2164fdd137c" name="a8cf22ff1dcbd74d787a3c2164fdd137c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cf22ff1dcbd74d787a3c2164fdd137c">&#9670;&#160;</a></span>applyToShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleInstance::applyToShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply current overrides to an existing compatible shader. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">shader</td><td>Immediate borrowed shader; it is not retained. @thread Render-thread affine when shader is GPU-backed. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StyleInstance_8cpp_source.html#l00087">newMeshShader()</a> , 以及 <a class="el" href="StyleInstance_8cpp_source.html#l00081">newPass()</a>.</p>
+
+</div>
+</div>
+<a id="a2baa1f640a54b37b1bad4e7d61704710" name="a2baa1f640a54b37b1bad4e7d61704710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2baa1f640a54b37b1bad4e7d61704710">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::stylize::StyleInstance::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00050">desc</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a975004a41c58ccac461080e534b49048" name="a975004a41c58ccac461080e534b49048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a975004a41c58ccac461080e534b49048">&#9670;&#160;</a></span>getParamCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::stylize::StyleInstance::getParamCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleShaders_8cpp_source.html#l00234">eve::stylize::styleParamCount()</a>.</p>
+
+</div>
+</div>
+<a id="ac07deb0a6dc917dbab6f306175a8090a" name="ac07deb0a6dc917dbab6f306175a8090a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac07deb0a6dc917dbab6f306175a8090a">&#9670;&#160;</a></span>getParamDefault()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::stylize::StyleInstance::getParamDefault </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="af5f492820679898d4b5d17cfe5cd2efe" name="af5f492820679898d4b5d17cfe5cd2efe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5f492820679898d4b5d17cfe5cd2efe">&#9670;&#160;</a></span>getParamMax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::stylize::StyleInstance::getParamMax </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a854b6d2472a3fa7ee44d58907c67c49b" name="a854b6d2472a3fa7ee44d58907c67c49b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a854b6d2472a3fa7ee44d58907c67c49b">&#9670;&#160;</a></span>getParamMin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::stylize::StyleInstance::getParamMin </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a480fefe4ee59fca669057bfa2a1c9e90" name="a480fefe4ee59fca669057bfa2a1c9e90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a480fefe4ee59fca669057bfa2a1c9e90">&#9670;&#160;</a></span>getParamName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::stylize::StyleInstance::getParamName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="StyleShaders_8cpp_source.html#l00243">eve::stylize::styleParamName()</a>.</p>
+
+</div>
+</div>
+<a id="a83575c664e9f771c8943a3afa3b59ccb" name="a83575c664e9f771c8943a3afa3b59ccb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83575c664e9f771c8943a3afa3b59ccb">&#9670;&#160;</a></span>getPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::stylize::StyleInstance::getPriority </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleShaders_8cpp_source.html#l00164">eve::stylize::findStyleDefinition()</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+</div>
+</div>
+<a id="aabdb02afc4266bd86ec4a1e8266887c8" name="aabdb02afc4266bd86ec4a1e8266887c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabdb02afc4266bd86ec4a1e8266887c8">&#9670;&#160;</a></span>getStage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::stylize::StyleInstance::getStage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleShaders_8cpp_source.html#l00164">eve::stylize::findStyleDefinition()</a> , 以及 <a class="el" href="PostEffect_8h_source.html#l00026">eve::graphics::postEffectStageName()</a>.</p>
+
+</div>
+</div>
+<a id="a2a9d832bec08a66b133b0ff2f4524a50" name="a2a9d832bec08a66b133b0ff2f4524a50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a9d832bec08a66b133b0ff2f4524a50">&#9670;&#160;</a></span>getStyle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::stylize::StyleInstance::getStyle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8h_source.html">StyleInstance.h</a> 第 <a class="el" href="StyleInstance_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshEffect_8cpp_source.html#l00012">eve::stylize::MeshEffectInstance::MeshEffectInstance()</a>.</p>
+
+</div>
+</div>
+<a id="a56f03bbe85e6cbd94a20e97579662778" name="a56f03bbe85e6cbd94a20e97579662778"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56f03bbe85e6cbd94a20e97579662778">&#9670;&#160;</a></span>hasParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::stylize::StyleInstance::hasParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleShaders_8cpp_source.html#l00257">eve::stylize::findStyleParameter()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshEffect_8cpp_source.html#l00106">eve::stylize::MeshEffectInstance::newMeshShader()</a> , 以及 <a class="el" href="MeshEffect_8cpp_source.html#l00061">eve::stylize::MeshEffectInstance::update()</a>.</p>
+
+</div>
+</div>
+<a id="aca271937f03d0ebf3971a56b92660b94" name="aca271937f03d0ebf3971a56b92660b94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca271937f03d0ebf3971a56b92660b94">&#9670;&#160;</a></span>isOverridden()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::stylize::StyleInstance::isOverridden </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a2af3623d6f610fbf7d121b47bb50329d" name="a2af3623d6f610fbf7d121b47bb50329d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2af3623d6f610fbf7d121b47bb50329d">&#9670;&#160;</a></span>newMeshShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> * eve::stylize::StyleInstance::newMeshShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a mesh technique shader and apply compatible overrides. </p>
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleInstance_8cpp_source.html#l00074">applyToShader()</a>, <a class="el" href="StyleShaders_8cpp_source.html#l00474">eve::stylize::createMeshShader()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshEffect_8cpp_source.html#l00106">eve::stylize::MeshEffectInstance::newMeshShader()</a>.</p>
+
+</div>
+</div>
+<a id="a5d912807874ee06f30c2f2c804577067" name="a5d912807874ee06f30c2f2c804577067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d912807874ee06f30c2f2c804577067">&#9670;&#160;</a></span>newPass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1StylePass.html">StylePass</a> * eve::stylize::StyleInstance::newPass </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a post pass and apply this instance's parameter overrides. </p>
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleInstance_8cpp_source.html#l00074">applyToShader()</a>, <a class="el" href="StyleShaders_8cpp_source.html#l00437">eve::stylize::createPostShader()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+</div>
+</div>
+<a id="a09c33523b07c283eff36fb95cdff44e9" name="a09c33523b07c283eff36fb95cdff44e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09c33523b07c283eff36fb95cdff44e9">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp; eve::stylize::StyleInstance::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1229f26f8384d70e586ddf774ced990" name="ad1229f26f8384d70e586ddf774ced990"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1229f26f8384d70e586ddf774ced990">&#9670;&#160;</a></span>requiresInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::stylize::StyleInstance::requiresInput </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>input</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleShaders_8h_source.html#l00022">eve::stylize::StyleDefinition::depth</a>, <a class="el" href="StyleShaders_8cpp_source.html#l00164">eve::stylize::findStyleDefinition()</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="StyleShaders_8h_source.html#l00023">eve::stylize::StyleDefinition::normal</a> , 以及 <a class="el" href="StyleShaders_8h_source.html#l00019">eve::stylize::StyleDefinition::post</a>.</p>
+
+</div>
+</div>
+<a id="a5db997ef8ba832b9736fac4259bb576e" name="a5db997ef8ba832b9736fac4259bb576e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5db997ef8ba832b9736fac4259bb576e">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleInstance::reset </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a97b7ad9a48a7094430f0c9a10c1cb189" name="a97b7ad9a48a7094430f0c9a10c1cb189"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97b7ad9a48a7094430f0c9a10c1cb189">&#9670;&#160;</a></span>resetAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleInstance::resetAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af84b83437bd4435f7698c2e213f3742b" name="af84b83437bd4435f7698c2e213f3742b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84b83437bd4435f7698c2e213f3742b">&#9670;&#160;</a></span>resetPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleInstance::resetPriority </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restore the style definition's built-in priority. </p>
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8h_source.html">StyleInstance.h</a> 第 <a class="el" href="StyleInstance_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a865ac6cd34945147adadcfd7ebbd5bd1" name="a865ac6cd34945147adadcfd7ebbd5bd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a865ac6cd34945147adadcfd7ebbd5bd1">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleInstance::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a> 第 <a class="el" href="StyleInstance_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00050">desc</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BeamSkillEffect_8cpp_source.html#l00011">eve::stylize::BeamSkillEffect::BeamSkillEffect()</a>, <a class="el" href="MeshEffect_8cpp_source.html#l00106">eve::stylize::MeshEffectInstance::newMeshShader()</a> , 以及 <a class="el" href="MeshEffect_8cpp_source.html#l00061">eve::stylize::MeshEffectInstance::update()</a>.</p>
+
+</div>
+</div>
+<a id="aeb56787348ddd274af8a00120fb3106a" name="aeb56787348ddd274af8a00120fb3106a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb56787348ddd274af8a00120fb3106a">&#9670;&#160;</a></span>setPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::StyleInstance::setPriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Override built-in ordering for authored recipe composition. </p>
+
+<p class="definition">在文件 <a class="el" href="StyleInstance_8h_source.html">StyleInstance.h</a> 第 <a class="el" href="StyleInstance_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/stylize/<a class="el" href="StyleInstance_8h_source.html">StyleInstance.h</a></li>
+<li>src/modules/stylize/<a class="el" href="StyleInstance_8cpp_source.html">StyleInstance.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

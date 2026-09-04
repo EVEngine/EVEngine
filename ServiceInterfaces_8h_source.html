@@ -1,0 +1,242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/ServiceInterfaces.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ServiceInterfaces.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ServiceInterfaces_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// Small, capability-registered service interfaces for the engine&#39;s platform</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// services (filesystem / network / timer).</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">//</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// Providers register a live implementation with eve::cap::provide&lt;I&gt;(impl) at</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// module construction; consumers query with eve::cap::query&lt;I&gt;() and cope with</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// nullptr. Tests provide deterministic mock implementations so error paths can</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// be exercised offline (see test/service_mocks.cpp).</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1service.html">eve::service</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1IFileSystem.html">   23</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1service_1_1IFileSystem.html">IFileSystem</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1IFileSystem.html#afbc20fd0d292baf748c592bc7df3fd6c">   25</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="classeve_1_1service_1_1IFileSystem.html#afbc20fd0d292baf748c592bc7df3fd6c">capabilityName</a> = <span class="stringliteral">&quot;IFileSystem&quot;</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1IFileSystem.html#a0698f03e220a732a340626d24b25226f">   26</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1service_1_1IFileSystem.html#a0698f03e220a732a340626d24b25226f">~IFileSystem</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1IFileSystem.html#a5321ceb1c4e6d4cd8389c4584e80575e">   29</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1service_1_1IFileSystem.html#a5321ceb1c4e6d4cd8389c4584e80575e">readFile</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::vector&lt;uint8_t&gt; &amp;out) = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1IFileSystem.html#a9a5c5870b8c0d85601dede9bd6e68972">   31</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1service_1_1IFileSystem.html#a9a5c5870b8c0d85601dede9bd6e68972">writeFile</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <span class="keyword">const</span> <span class="keywordtype">void</span> *data, <span class="keywordtype">size_t</span> size) = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1IFileSystem.html#a95524a5cdfcc26564b63d9fd11ce9f79">   33</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1service_1_1IFileSystem.html#a95524a5cdfcc26564b63d9fd11ce9f79">fileExists</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1INetwork.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1service_1_1INetwork.html">INetwork</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1INetwork.html#a5e043b9e90722bfe3801e274dc7b099c">   43</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="classeve_1_1service_1_1INetwork.html#a5e043b9e90722bfe3801e274dc7b099c">capabilityName</a> = <span class="stringliteral">&quot;INetwork&quot;</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1INetwork.html#a6e2802da543ba8780780232e83cd7c36">   44</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1service_1_1INetwork.html#a6e2802da543ba8780780232e83cd7c36">~INetwork</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1INetwork.html#adadfe509073e67b0d2de80acc9165e48">   56</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1service_1_1INetwork.html#adadfe509073e67b0d2de80acc9165e48">httpRequest</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>, <span class="keyword">const</span> std::string &amp;url,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                             <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, <span class="keywordtype">int</span> timeoutMs, <span class="keywordtype">int</span> &amp;<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                             std::string &amp;responseBody) = 0;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="};">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1ITimer.html">   66</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1service_1_1ITimer.html">ITimer</a> {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1ITimer.html#a3f604b515c0f99995ddfa82485f85020">   68</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="classeve_1_1service_1_1ITimer.html#a3f604b515c0f99995ddfa82485f85020">capabilityName</a> = <span class="stringliteral">&quot;ITimer&quot;</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1ITimer.html#a7e502ad1f9eac0ea4865e53f42c9ef51">   69</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1service_1_1ITimer.html#a7e502ad1f9eac0ea4865e53f42c9ef51">~ITimer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1service_1_1ITimer.html#ac262fe503a6201d55ebcc54ee74d5e9e">   72</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1service_1_1ITimer.html#ac262fe503a6201d55ebcc54ee74d5e9e">elapsedSeconds</a>() = 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}  <span class="comment">// namespace eve::service</span></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a479a2ee6f46f3e24484628e37ee7460b"><div class="ttname"><a href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a></div><div class="ttdeci">std::uint16_t method</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00157">EvaArchive.cpp:157</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aUnityImporter_8cpp_html_a22ffc871c8cdced782372446356096a5"><div class="ttname"><a href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a></div><div class="ttdeci">std::string body</div><div class="ttdef"><b>Definition</b> <a href="UnityImporter_8cpp_source.html#l00226">UnityImporter.cpp:226</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1IFileSystem_html"><div class="ttname"><a href="classeve_1_1service_1_1IFileSystem.html">eve::service::IFileSystem</a></div><div class="ttdoc">Minimal file read / write / existence surface. Providers: eve::filesystem::Filesystem....</div><div class="ttdef"><b>Definition</b> <a href="ServiceInterfaces_8h_source.html#l00023">ServiceInterfaces.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1IFileSystem_html_a0698f03e220a732a340626d24b25226f"><div class="ttname"><a href="classeve_1_1service_1_1IFileSystem.html#a0698f03e220a732a340626d24b25226f">eve::service::IFileSystem::~IFileSystem</a></div><div class="ttdeci">virtual ~IFileSystem()=default</div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1IFileSystem_html_a5321ceb1c4e6d4cd8389c4584e80575e"><div class="ttname"><a href="classeve_1_1service_1_1IFileSystem.html#a5321ceb1c4e6d4cd8389c4584e80575e">eve::service::IFileSystem::readFile</a></div><div class="ttdeci">virtual bool readFile(const std::string &amp;path, std::vector&lt; uint8_t &gt; &amp;out)=0</div><div class="ttdoc">Reads an entire file.</div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1IFileSystem_html_a95524a5cdfcc26564b63d9fd11ce9f79"><div class="ttname"><a href="classeve_1_1service_1_1IFileSystem.html#a95524a5cdfcc26564b63d9fd11ce9f79">eve::service::IFileSystem::fileExists</a></div><div class="ttdeci">virtual bool fileExists(const std::string &amp;path)=0</div><div class="ttdoc">True when the path exists (file or directory).</div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1IFileSystem_html_a9a5c5870b8c0d85601dede9bd6e68972"><div class="ttname"><a href="classeve_1_1service_1_1IFileSystem.html#a9a5c5870b8c0d85601dede9bd6e68972">eve::service::IFileSystem::writeFile</a></div><div class="ttdeci">virtual bool writeFile(const std::string &amp;path, const void *data, size_t size)=0</div><div class="ttdoc">Writes bytes to a file.</div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1IFileSystem_html_afbc20fd0d292baf748c592bc7df3fd6c"><div class="ttname"><a href="classeve_1_1service_1_1IFileSystem.html#afbc20fd0d292baf748c592bc7df3fd6c">eve::service::IFileSystem::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="ServiceInterfaces_8h_source.html#l00025">ServiceInterfaces.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1INetwork_html"><div class="ttname"><a href="classeve_1_1service_1_1INetwork.html">eve::service::INetwork</a></div><div class="ttdoc">Minimal synchronous HTTP request surface. Providers: eve::network::Network. Mocks return canned statu...</div><div class="ttdef"><b>Definition</b> <a href="ServiceInterfaces_8h_source.html#l00041">ServiceInterfaces.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1INetwork_html_a5e043b9e90722bfe3801e274dc7b099c"><div class="ttname"><a href="classeve_1_1service_1_1INetwork.html#a5e043b9e90722bfe3801e274dc7b099c">eve::service::INetwork::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="ServiceInterfaces_8h_source.html#l00043">ServiceInterfaces.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1INetwork_html_a6e2802da543ba8780780232e83cd7c36"><div class="ttname"><a href="classeve_1_1service_1_1INetwork.html#a6e2802da543ba8780780232e83cd7c36">eve::service::INetwork::~INetwork</a></div><div class="ttdeci">virtual ~INetwork()=default</div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1INetwork_html_adadfe509073e67b0d2de80acc9165e48"><div class="ttname"><a href="classeve_1_1service_1_1INetwork.html#adadfe509073e67b0d2de80acc9165e48">eve::service::INetwork::httpRequest</a></div><div class="ttdeci">virtual bool httpRequest(const std::string &amp;method, const std::string &amp;url, const std::string &amp;body, int timeoutMs, int &amp;status, std::string &amp;responseBody)=0</div><div class="ttdoc">Performs one HTTP request synchronously.</div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1ITimer_html"><div class="ttname"><a href="classeve_1_1service_1_1ITimer.html">eve::service::ITimer</a></div><div class="ttdoc">Monotonic elapsed-seconds clock. Providers: eve::timer::Timer. Mocks return scripted values so time-d...</div><div class="ttdef"><b>Definition</b> <a href="ServiceInterfaces_8h_source.html#l00066">ServiceInterfaces.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1ITimer_html_a3f604b515c0f99995ddfa82485f85020"><div class="ttname"><a href="classeve_1_1service_1_1ITimer.html#a3f604b515c0f99995ddfa82485f85020">eve::service::ITimer::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="ServiceInterfaces_8h_source.html#l00068">ServiceInterfaces.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1ITimer_html_a7e502ad1f9eac0ea4865e53f42c9ef51"><div class="ttname"><a href="classeve_1_1service_1_1ITimer.html#a7e502ad1f9eac0ea4865e53f42c9ef51">eve::service::ITimer::~ITimer</a></div><div class="ttdeci">virtual ~ITimer()=default</div></div>
+<div class="ttc" id="aclasseve_1_1service_1_1ITimer_html_ac262fe503a6201d55ebcc54ee74d5e9e"><div class="ttname"><a href="classeve_1_1service_1_1ITimer.html#ac262fe503a6201d55ebcc54ee74d5e9e">eve::service::ITimer::elapsedSeconds</a></div><div class="ttdeci">virtual double elapsedSeconds()=0</div><div class="ttdoc">Seconds since the provider was created (monotonic, non-decreasing).</div></div>
+<div class="ttc" id="anamespaceeve_1_1service_html"><div class="ttname"><a href="namespaceeve_1_1service.html">eve::service</a></div><div class="ttdef"><b>Definition</b> <a href="GpuTimer_8h_source.html#l00010">GpuTimer.h:10</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveKnickpoint.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CaveKnickpoint.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CaveKnickpoint_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="CaveKnickpoint_8h.html">procgen/algorithms/CaveKnickpoint.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>CaveHydrologyVec3 subtract(CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { <span class="keywordflow">return</span> {<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z}; }</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>CaveHydrologyVec3 add(CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { <span class="keywordflow">return</span> {<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z}; }</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>CaveHydrologyVec3 multiply(CaveHydrologyVec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> {<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.x * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.y * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.z * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>};</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">dot</a>(CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z; }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">float</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(CaveHydrologyVec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <span class="keywordflow">return</span> std::sqrt(<a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">dot</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)); }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>CaveHydrologyVec3 <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a7e72a289370e7236563fd0efdf389a26">normalize</a>(CaveHydrologyVec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> magnitude = <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> magnitude &gt; 1e-6f ? multiply(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, 1.f / magnitude) : CaveHydrologyVec3{1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">float</span> smoothstep(<span class="keywordtype">float</span> lo, <span class="keywordtype">float</span> hi, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = std::clamp((<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> - lo) / std::max(hi - lo, 1e-6f), 0.f, 1.f);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * (3.f - 2.f * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keywordtype">float</span> downwardSlope(<span class="keyword">const</span> CaveHydrologyPoint&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> CaveHydrologyPoint&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">const</span> CaveHydrologyVec3 delta = subtract(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.position, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.position);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> std::max(0.f, -delta.y / std::max(<a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(delta), 1e-6f));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#ad61e020caec6c9e32c67aafdb6b5e730">   38</a></span>std::vector&lt;CaveKnickpointSite&gt; <a class="code hl_function" href="namespaceeve_1_1procgen.html#ad61e020caec6c9e32c67aafdb6b5e730">createCaveKnickpointSites</a>(<span class="keyword">const</span> std::vector&lt;CaveHydrologyPoint&gt;&amp; trunk,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                                          <span class="keyword">const</span> std::vector&lt;float&gt;&amp;              hydraulicWeights,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                                          <span class="keywordtype">float</span>                                  sedimentLoad) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::vector&lt;CaveKnickpointSite&gt; sites;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (trunk.size() &lt; 4 || sedimentLoad &lt;= 0.f) <span class="keywordflow">return</span> sites;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> toolAvailability = smoothstep(0.025f, 0.28f, sedimentLoad);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> coverProtection  = std::clamp(sedimentLoad * sedimentLoad * 0.68f, 0.f, 0.68f);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> toolsAndCover    = toolAvailability * (1.f - coverProtection);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i + 1 &lt; trunk.size(); ++i) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> incomingSlope = downwardSlope(trunk[i - 1], trunk[i]);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> outgoingSlope = downwardSlope(trunk[i], trunk[i + 1]);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> slopeBreak    = std::max(0.f, outgoingSlope - incomingSlope);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> drop          = std::max(0.f, trunk[i].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>.y - trunk[i + 1].position.y);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>        = 0.5f * (trunk[i].radius + trunk[i + 1].radius);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (outgoingSlope &lt; 0.28f || slopeBreak &lt; 0.12f || drop &lt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * 0.25f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> = normalize(subtract(trunk[i + 1].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, trunk[i].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>));</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>       lateral = normalize({-<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>.z, 0.f, <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>.x});</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">if</span> (std::fabs(<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>.y) &gt; 0.94f) lateral = {0.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>       hydraulicIntensity = i &lt; hydraulicWeights.size() ? hydraulicWeights[i] : 1.f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>       erosionPotential   = smoothstep(0.12f, 0.65f, slopeBreak) * toolsAndCover *</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                               std::pow(std::clamp(hydraulicIntensity, 0.25f, 1.6f), 1.15f);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>       poolScale          = <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * (0.9f + std::min(drop / std::max(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, 1e-6f), 1.2f) * 0.35f);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> poolCenter         = add(trunk[i + 1].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, multiply(<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>, <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * 0.28f));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        poolCenter.y -= <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * 0.52f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> headwallCenter = add(trunk[i].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, multiply(<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>, <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * 0.18f));</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        headwallCenter.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a1d235bf12c5275954cffeb8622ed947f">y</a> -= <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * 0.24f;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        sites.push_back({trunk[i].position, poolCenter, headwallCenter, <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>, lateral, poolScale * 1.65f,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                         poolScale * 0.92f, poolScale * 1.05f, slopeBreak, drop, erosionPotential});</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> sites;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a81898d37e66d235ae056c21aca21a62d">   71</a></span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveKnickpointSample.html">CaveKnickpointSample</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a81898d37e66d235ae056c21aca21a62d">sampleCaveKnickpointErosion</a>(<a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>                      <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                                                 <span class="keyword">const</span> std::vector&lt;CaveKnickpointSite&gt;&amp; sites) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveKnickpointSample.html">CaveKnickpointSample</a> result;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; sites.size(); ++i) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveKnickpointSite.html">CaveKnickpointSite</a>&amp; site      = sites[i];</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>   poolDelta = subtract(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#aa8ceba73bed0dd5969f681c506155610">poolCenter</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>               along     = dot(poolDelta, site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a67ee4f0f0d08000d5e87b53471ce278c">tangent</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>               lateral   = dot(poolDelta, site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a1f9038dceb99a7be2cce5418eb05a40c">lateral</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>               <a class="code hl_variable" href="Climbing_8cpp.html#a0ef08fd776d2f8ef00eeaea1128aa89c">vertical</a>  = poolDelta.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a1d235bf12c5275954cffeb8622ed947f">y</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>               poolDistance =</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            std::sqrt((along * along) / std::max(site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a8e8961f06f7ae3c9b80467b3c942e632">alongRadius</a> * site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a8e8961f06f7ae3c9b80467b3c942e632">alongRadius</a>, 1e-6f) +</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                      (lateral * lateral) / std::max(site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a73a0031e6d4f867edcd33887aec0bded">lateralRadius</a> * site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a73a0031e6d4f867edcd33887aec0bded">lateralRadius</a>, 1e-6f) +</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                      (<a class="code hl_variable" href="Climbing_8cpp.html#a0ef08fd776d2f8ef00eeaea1128aa89c">vertical</a> * <a class="code hl_variable" href="Climbing_8cpp.html#a0ef08fd776d2f8ef00eeaea1128aa89c">vertical</a>) / std::max(site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a00811c0c0b739550d8a3ad5cd641a4cc">depthRadius</a> * site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a00811c0c0b739550d8a3ad5cd641a4cc">depthRadius</a>, 1e-6f));</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> poolEnvelope     = 1.f - smoothstep(0.1f, 1.f, poolDistance);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> floorBias        = 1.f - smoothstep(-0.12f, 0.68f, <a class="code hl_variable" href="Climbing_8cpp.html#a0ef08fd776d2f8ef00eeaea1128aa89c">vertical</a> / std::max(site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a00811c0c0b739550d8a3ad5cd641a4cc">depthRadius</a>, 1e-6f));</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> verticalDrilling = poolEnvelope * floorBias * site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a58a5f1758ad3e5bd9a20c222130f2586">erosionPotential</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> headDelta    = subtract(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a7f11fc09d5756ef859893f066e947218">headwallCenter</a>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             headAlong    = dot(headDelta, site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a67ee4f0f0d08000d5e87b53471ce278c">tangent</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             headLateral  = dot(headDelta, site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a1f9038dceb99a7be2cce5418eb05a40c">lateral</a>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             headVertical = headDelta.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a1d235bf12c5275954cffeb8622ed947f">y</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             headDistance =</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            std::sqrt((headAlong * headAlong) / std::max(site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a8e8961f06f7ae3c9b80467b3c942e632">alongRadius</a> * site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a8e8961f06f7ae3c9b80467b3c942e632">alongRadius</a> * 0.22f, 1e-6f) +</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                      (headLateral * headLateral) / std::max(site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a73a0031e6d4f867edcd33887aec0bded">lateralRadius</a> * site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a73a0031e6d4f867edcd33887aec0bded">lateralRadius</a>, 1e-6f) +</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                      (headVertical * headVertical) / std::max(site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a00811c0c0b739550d8a3ad5cd641a4cc">depthRadius</a> * site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a00811c0c0b739550d8a3ad5cd641a4cc">depthRadius</a> * 0.42f, 1e-6f));</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> headEnvelope     = 1.f - smoothstep(0.12f, 1.f, headDistance);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> lowerFace        = 1.f - smoothstep(0.05f, 0.75f, headVertical / std::max(site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a00811c0c0b739550d8a3ad5cd641a4cc">depthRadius</a>, 1e-6f));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> headwallUndercut = headEnvelope * lowerFace * site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a58a5f1758ad3e5bd9a20c222130f2586">erosionPotential</a> * 0.48f;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> erosion          = std::max(verticalDrilling, headwallUndercut);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">if</span> (erosion &gt; result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSample.html#a457df3b798c5a9ca1cbd4eb1f2ab09f2">erosion</a>) result = {erosion, verticalDrilling, headwallUndercut, site.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a2f8b7600c487b879b8c286ecff12c19d">slopeBreak</a>, int(i)};</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
+</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCaveKnickpoint_8h_html"><div class="ttname"><a href="CaveKnickpoint_8h.html">CaveKnickpoint.h</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a30e07cd2f88ee881fc71802591f69f60"><div class="ttname"><a href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a></div><div class="ttdeci">Vec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00080">CaveMesh.cpp:80</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00094">CaveMesh.cpp:94</a></div></div>
+<div class="ttc" id="aClimbing_8cpp_html_a0ef08fd776d2f8ef00eeaea1128aa89c"><div class="ttname"><a href="Climbing_8cpp.html#a0ef08fd776d2f8ef00eeaea1128aa89c">vertical</a></div><div class="ttdeci">bool vertical</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00078">Climbing.cpp:78</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aRTSSystems_8cpp_html_a8daa8a8d84a130186d9cca31c33e8bae"><div class="ttname"><a href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a></div><div class="ttdeci">WorldPosition point</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8cpp_source.html#l00080">RTSSystems.cpp:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a7e72a289370e7236563fd0efdf389a26"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a7e72a289370e7236563fd0efdf389a26">eve::procgen::urban::normalize</a></div><div class="ttdeci">Vec2 normalize(const Vec2 &amp;a)</div><div class="ttdef"><b>Definition</b> <a href="UrbanTypes_8h_source.html#l00032">UrbanTypes.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a801145dddf90e252b78db277ad210010"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">eve::procgen::urban::dot</a></div><div class="ttdeci">double dot(const Vec2 &amp;a, const Vec2 &amp;b)</div><div class="ttdef"><b>Definition</b> <a href="UrbanTypes_8h_source.html#l00029">UrbanTypes.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a81898d37e66d235ae056c21aca21a62d"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a81898d37e66d235ae056c21aca21a62d">eve::procgen::sampleCaveKnickpointErosion</a></div><div class="ttdeci">CaveKnickpointSample sampleCaveKnickpointErosion(CaveHydrologyVec3 point, const std::vector&lt; CaveKnickpointSite &gt; &amp;sites)</div><div class="ttdoc">Sample plunge-pool drilling and lower-headwall erosion around derived knickpoints.</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8cpp_source.html#l00071">CaveKnickpoint.cpp:71</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ad61e020caec6c9e32c67aafdb6b5e730"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ad61e020caec6c9e32c67aafdb6b5e730">eve::procgen::createCaveKnickpointSites</a></div><div class="ttdeci">std::vector&lt; CaveKnickpointSite &gt; createCaveKnickpointSites(const std::vector&lt; CaveHydrologyPoint &gt; &amp;trunk, const std::vector&lt; float &gt; &amp;hydraulicWeights, float sedimentLoad)</div><div class="ttdoc">Derive knickpoints from steepening downstream segments of the authoritative trunk path.</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8cpp_source.html#l00038">CaveKnickpoint.cpp:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">eve::procgen::CaveHydrologyVec3</a></div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00008">CaveHydrology.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html_a1d235bf12c5275954cffeb8622ed947f"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a1d235bf12c5275954cffeb8622ed947f">eve::procgen::CaveHydrologyVec3::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00010">CaveHydrology.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSample.html">eve::procgen::CaveKnickpointSample</a></div><div class="ttdoc">Local vertical drilling and headwall-undercut response at a cave-stream knickpoint.</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00025">CaveKnickpoint.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSample_html_a457df3b798c5a9ca1cbd4eb1f2ab09f2"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSample.html#a457df3b798c5a9ca1cbd4eb1f2ab09f2">eve::procgen::CaveKnickpointSample::erosion</a></div><div class="ttdeci">float erosion</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00026">CaveKnickpoint.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html">eve::procgen::CaveKnickpointSite</a></div><div class="ttdoc">One slope-break-driven cave-stream knickpoint and downstream plunge pool.</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00010">CaveKnickpoint.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_a00811c0c0b739550d8a3ad5cd641a4cc"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a00811c0c0b739550d8a3ad5cd641a4cc">eve::procgen::CaveKnickpointSite::depthRadius</a></div><div class="ttdeci">float depthRadius</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00018">CaveKnickpoint.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_a1f9038dceb99a7be2cce5418eb05a40c"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a1f9038dceb99a7be2cce5418eb05a40c">eve::procgen::CaveKnickpointSite::lateral</a></div><div class="ttdeci">CaveHydrologyVec3 lateral</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00015">CaveKnickpoint.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_a2f8b7600c487b879b8c286ecff12c19d"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a2f8b7600c487b879b8c286ecff12c19d">eve::procgen::CaveKnickpointSite::slopeBreak</a></div><div class="ttdeci">float slopeBreak</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00019">CaveKnickpoint.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_a58a5f1758ad3e5bd9a20c222130f2586"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a58a5f1758ad3e5bd9a20c222130f2586">eve::procgen::CaveKnickpointSite::erosionPotential</a></div><div class="ttdeci">float erosionPotential</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00021">CaveKnickpoint.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_a67ee4f0f0d08000d5e87b53471ce278c"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a67ee4f0f0d08000d5e87b53471ce278c">eve::procgen::CaveKnickpointSite::tangent</a></div><div class="ttdeci">CaveHydrologyVec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00014">CaveKnickpoint.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_a73a0031e6d4f867edcd33887aec0bded"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a73a0031e6d4f867edcd33887aec0bded">eve::procgen::CaveKnickpointSite::lateralRadius</a></div><div class="ttdeci">float lateralRadius</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00017">CaveKnickpoint.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_a7f11fc09d5756ef859893f066e947218"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a7f11fc09d5756ef859893f066e947218">eve::procgen::CaveKnickpointSite::headwallCenter</a></div><div class="ttdeci">CaveHydrologyVec3 headwallCenter</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00013">CaveKnickpoint.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_a8e8961f06f7ae3c9b80467b3c942e632"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#a8e8961f06f7ae3c9b80467b3c942e632">eve::procgen::CaveKnickpointSite::alongRadius</a></div><div class="ttdeci">float alongRadius</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00016">CaveKnickpoint.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveKnickpointSite_html_aa8ceba73bed0dd5969f681c506155610"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveKnickpointSite.html#aa8ceba73bed0dd5969f681c506155610">eve::procgen::CaveKnickpointSite::poolCenter</a></div><div class="ttdeci">CaveHydrologyVec3 poolCenter</div><div class="ttdef"><b>Definition</b> <a href="CaveKnickpoint_8h_source.html#l00012">CaveKnickpoint.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ScriptException类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1ScriptException.html">ScriptException</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ScriptException-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ScriptException类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Exception.html">Exception</a> raised at the public <a class="el" href="classeve_1_1Runtime.html">Runtime</a> boundary.  
+ <a href="classeve_1_1ScriptException.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Runtime_8h_source.html">Runtime.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::ScriptException 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1ScriptException.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8d5a3bfe451acece4925a0c5bd33f0b0" id="r_a8d5a3bfe451acece4925a0c5bd33f0b0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#a8d5a3bfe451acece4925a0c5bd33f0b0">ScriptException</a> (<a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445">ScriptStage</a> <a class="el" href="classeve_1_1ScriptException.html#a68eb1a36b1ee2b5960e82d1f6d903cad">stage</a>, std::string <a class="el" href="classeve_1_1ScriptException.html#a8b30074b9166668245b889564193e078">source</a>, uint64_t <a class="el" href="classeve_1_1ScriptException.html#aef323cde73a1116a7407d75bce6bbea3">scriptId</a>, const std::string &amp;message)</td></tr>
+<tr class="separator:a8d5a3bfe451acece4925a0c5bd33f0b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacea90b5e0627018b6d83714deee836b" id="r_aacea90b5e0627018b6d83714deee836b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#aacea90b5e0627018b6d83714deee836b">ScriptException</a> (<a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445">ScriptStage</a> <a class="el" href="classeve_1_1ScriptException.html#a68eb1a36b1ee2b5960e82d1f6d903cad">stage</a>, std::string <a class="el" href="classeve_1_1ScriptException.html#a8b30074b9166668245b889564193e078">source</a>, uint64_t <a class="el" href="classeve_1_1ScriptException.html#aef323cde73a1116a7407d75bce6bbea3">scriptId</a>, const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">script::ScriptErrorContext</a> &amp;context)</td></tr>
+<tr class="memdesc:aacea90b5e0627018b6d83714deee836b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs from a captured script error context.  <br /></td></tr>
+<tr class="separator:aacea90b5e0627018b6d83714deee836b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68eb1a36b1ee2b5960e82d1f6d903cad" id="r_a68eb1a36b1ee2b5960e82d1f6d903cad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445">ScriptStage</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#a68eb1a36b1ee2b5960e82d1f6d903cad">stage</a> () const noexcept</td></tr>
+<tr class="separator:a68eb1a36b1ee2b5960e82d1f6d903cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b30074b9166668245b889564193e078" id="r_a8b30074b9166668245b889564193e078"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#a8b30074b9166668245b889564193e078">source</a> () const noexcept</td></tr>
+<tr class="separator:a8b30074b9166668245b889564193e078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef323cde73a1116a7407d75bce6bbea3" id="r_aef323cde73a1116a7407d75bce6bbea3"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#aef323cde73a1116a7407d75bce6bbea3">scriptId</a> () const noexcept</td></tr>
+<tr class="separator:aef323cde73a1116a7407d75bce6bbea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4833c9a1e0eb13379c3569390869654f" id="r_a4833c9a1e0eb13379c3569390869654f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#a4833c9a1e0eb13379c3569390869654f">hasLocation</a> () const noexcept</td></tr>
+<tr class="memdesc:a4833c9a1e0eb13379c3569390869654f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the exception carries a script source line.  <br /></td></tr>
+<tr class="separator:a4833c9a1e0eb13379c3569390869654f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af437e13d8e7b30534c6ce3c9b28a999b" id="r_af437e13d8e7b30534c6ce3c9b28a999b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#af437e13d8e7b30534c6ce3c9b28a999b">line</a> () const noexcept</td></tr>
+<tr class="memdesc:af437e13d8e7b30534c6ce3c9b28a999b"><td class="mdescLeft">&#160;</td><td class="mdescRight">1-based throw/compile site line; -1 when unknown.  <br /></td></tr>
+<tr class="separator:af437e13d8e7b30534c6ce3c9b28a999b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a581e5ce09bd66e053307ba3252925a70" id="r_a581e5ce09bd66e053307ba3252925a70"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#a581e5ce09bd66e053307ba3252925a70">column</a> () const noexcept</td></tr>
+<tr class="memdesc:a581e5ce09bd66e053307ba3252925a70"><td class="mdescLeft">&#160;</td><td class="mdescRight">1-based compile column; -1 when unknown.  <br /></td></tr>
+<tr class="separator:a581e5ce09bd66e053307ba3252925a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a748ebd9054bfef65ce48c4b2192ae0fc" id="r_a748ebd9054bfef65ce48c4b2192ae0fc"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#a748ebd9054bfef65ce48c4b2192ae0fc">function</a> () const noexcept</td></tr>
+<tr class="memdesc:a748ebd9054bfef65ce48c4b2192ae0fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function name at the throw site; empty when unknown.  <br /></td></tr>
+<tr class="separator:a748ebd9054bfef65ce48c4b2192ae0fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f8a8b7a6b0f79fa535c555b19ada4b" id="r_a28f8a8b7a6b0f79fa535c555b19ada4b"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#a28f8a8b7a6b0f79fa535c555b19ada4b">stackTrace</a> () const noexcept</td></tr>
+<tr class="memdesc:a28f8a8b7a6b0f79fa535c555b19ada4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multi-line call stack captured at the throw site.  <br /></td></tr>
+<tr class="separator:a28f8a8b7a6b0f79fa535c555b19ada4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a132b471e9f323883b77a3e249085e3c6" id="r_a132b471e9f323883b77a3e249085e3c6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptException.html#a132b471e9f323883b77a3e249085e3c6">reported</a> () const noexcept</td></tr>
+<tr class="memdesc:a132b471e9f323883b77a3e249085e3c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when a reporter (e.g. DevTool hook) already handled it.  <br /></td></tr>
+<tr class="separator:a132b471e9f323883b77a3e249085e3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Exception.html">Exception</a> raised at the public <a class="el" href="classeve_1_1Runtime.html">Runtime</a> boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00058">58</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8d5a3bfe451acece4925a0c5bd33f0b0" name="a8d5a3bfe451acece4925a0c5bd33f0b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d5a3bfe451acece4925a0c5bd33f0b0">&#9670;&#160;</a></span>ScriptException() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ScriptException::ScriptException </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445">ScriptStage</a>&#160;</td>
+          <td class="paramname"><em>stage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>scriptId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>message</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8h_source.html#l00074">scriptId()</a>, <a class="el" href="Runtime_8h_source.html#l00073">source()</a> , 以及 <a class="el" href="Runtime_8h_source.html#l00072">stage()</a>.</p>
+
+</div>
+</div>
+<a id="aacea90b5e0627018b6d83714deee836b" name="aacea90b5e0627018b6d83714deee836b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacea90b5e0627018b6d83714deee836b">&#9670;&#160;</a></span>ScriptException() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ScriptException::ScriptException </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445">ScriptStage</a>&#160;</td>
+          <td class="paramname"><em>stage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>scriptId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1script_1_1ScriptErrorContext.html">script::ScriptErrorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs from a captured script error context. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stage</td><td>Lifecycle stage that failed. </td></tr>
+    <tr><td class="paramname">source</td><td>Source name of the failing script. </td></tr>
+    <tr><td class="paramname">scriptId</td><td>Id of the failing script (0 when unknown). </td></tr>
+    <tr><td class="paramname">context</td><td>Structured error payload (message, site, stack). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a> 第 <a class="el" href="Runtime_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptError_8cpp_source.html#l00189">eve::script::formatScriptError()</a>, <a class="el" href="Runtime_8h_source.html#l00074">scriptId()</a>, <a class="el" href="Runtime_8h_source.html#l00073">source()</a> , 以及 <a class="el" href="Runtime_8h_source.html#l00072">stage()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a581e5ce09bd66e053307ba3252925a70" name="a581e5ce09bd66e053307ba3252925a70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a581e5ce09bd66e053307ba3252925a70">&#9670;&#160;</a></span>column()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ScriptException::column </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>1-based compile column; -1 when unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a748ebd9054bfef65ce48c4b2192ae0fc" name="a748ebd9054bfef65ce48c4b2192ae0fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a748ebd9054bfef65ce48c4b2192ae0fc">&#9670;&#160;</a></span>function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ScriptException::function </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Function name at the throw site; empty when unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4833c9a1e0eb13379c3569390869654f" name="a4833c9a1e0eb13379c3569390869654f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4833c9a1e0eb13379c3569390869654f">&#9670;&#160;</a></span>hasLocation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ScriptException::hasLocation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the exception carries a script source line. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af437e13d8e7b30534c6ce3c9b28a999b" name="af437e13d8e7b30534c6ce3c9b28a999b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af437e13d8e7b30534c6ce3c9b28a999b">&#9670;&#160;</a></span>line()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ScriptException::line </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>1-based throw/compile site line; -1 when unknown. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a132b471e9f323883b77a3e249085e3c6" name="a132b471e9f323883b77a3e249085e3c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a132b471e9f323883b77a3e249085e3c6">&#9670;&#160;</a></span>reported()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ScriptException::reported </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when a reporter (e.g. DevTool hook) already handled it. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef323cde73a1116a7407d75bce6bbea3" name="aef323cde73a1116a7407d75bce6bbea3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef323cde73a1116a7407d75bce6bbea3">&#9670;&#160;</a></span>scriptId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ScriptException::scriptId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00304">ScriptException()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00292">ScriptException()</a>.</p>
+
+</div>
+</div>
+<a id="a8b30074b9166668245b889564193e078" name="a8b30074b9166668245b889564193e078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b30074b9166668245b889564193e078">&#9670;&#160;</a></span>source()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ScriptException::source </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00993">eve::Runtime::reload()</a>, <a class="el" href="Runtime_8cpp_source.html#l00304">ScriptException()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00292">ScriptException()</a>.</p>
+
+</div>
+</div>
+<a id="a28f8a8b7a6b0f79fa535c555b19ada4b" name="a28f8a8b7a6b0f79fa535c555b19ada4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28f8a8b7a6b0f79fa535c555b19ada4b">&#9670;&#160;</a></span>stackTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ScriptException::stackTrace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Multi-line call stack captured at the throw site. </p>
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a68eb1a36b1ee2b5960e82d1f6d903cad" name="a68eb1a36b1ee2b5960e82d1f6d903cad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68eb1a36b1ee2b5960e82d1f6d903cad">&#9670;&#160;</a></span>stage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#aa6df6fea82bc0dd802f0447de6726445">ScriptStage</a> eve::ScriptException::stage </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Runtime_8h_source.html">Runtime.h</a> 第 <a class="el" href="Runtime_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00304">ScriptException()</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00292">ScriptException()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Runtime_8h_source.html">Runtime.h</a></li>
+<li>src/engine/common/<a class="el" href="Runtime_8cpp_source.html">Runtime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

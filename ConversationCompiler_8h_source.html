@@ -1,0 +1,215 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dialogue/ConversationCompiler.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9d7eb5392a4fb7dccc4284e89fdc9c92.html">dialogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ConversationCompiler.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ConversationCompiler_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Conversation_8h.html">dialogue/Conversation.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dialogue.html">eve::dialogue</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html">ConversationDiagnostic</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85">   11</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85">Severity</a> { <a class="code hl_enumvalue" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85a0eaadb4fcb48a0a0ed7bc9868be9fbaa">Warning</a>, <a class="code hl_enumvalue" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85a902b0d55fddef6f8d651fe1035b7d4bd">Error</a> };</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a200a6224fc5a054c89c6c76b13c2e87a">   12</a></span>    <a class="code hl_enumeration" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85">Severity</a> <a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a200a6224fc5a054c89c6c76b13c2e87a">severity</a> = <a class="code hl_enumvalue" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85a902b0d55fddef6f8d651fe1035b7d4bd">Severity::Error</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#ac1f044031102088d2ac1749b41a48a75">   13</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#ac1f044031102088d2ac1749b41a48a75">path</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#aefd088bd5a66baee973cc5665c51cbf7">   14</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#aefd088bd5a66baee973cc5665c51cbf7">line</a> = 0;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a34ae440f5166b97de4329c31b0f3258e">   15</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a34ae440f5166b97de4329c31b0f3258e">message</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>};</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dialogue.html#aa040baf1be022bd696869339ce19fac6">compileDnutConversations</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                              std::vector&lt;ConversationAsset&gt;&amp; assets,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                              std::vector&lt;ConversationDiagnostic&gt;&amp; diagnostics);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dialogue.html#a695a8011730158c696560fb1b0386cde">lintConversations</a>(<span class="keyword">const</span> std::vector&lt;ConversationAsset&gt;&amp; assets, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                       std::vector&lt;ConversationDiagnostic&gt;&amp; diagnostics);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>std::string <a class="code hl_function" href="namespaceeve_1_1dialogue.html#af03949856180016739b039da84a1cfdc">exportConversationLocalizationCsv</a>(<span class="keyword">const</span> std::vector&lt;ConversationAsset&gt;&amp; assets);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}  <span class="comment">// namespace eve::dialogue</span></div>
+<div class="ttc" id="aConversation_8h_html"><div class="ttname"><a href="Conversation_8h.html">Conversation.h</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html"><div class="ttname"><a href="namespaceeve_1_1dialogue.html">eve::dialogue</a></div><div class="ttdef"><b>Definition</b> <a href="Conversation_8cpp_source.html#l00006">Conversation.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_a695a8011730158c696560fb1b0386cde"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#a695a8011730158c696560fb1b0386cde">eve::dialogue::lintConversations</a></div><div class="ttdeci">bool lintConversations(const std::vector&lt; ConversationAsset &gt; &amp;assets, const std::string &amp;path, std::vector&lt; ConversationDiagnostic &gt; &amp;diagnostics)</div><div class="ttdoc">Validate references and report unreachable nodes.</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8cpp_source.html#l00179">ConversationCompiler.cpp:179</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_aa040baf1be022bd696869339ce19fac6"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#aa040baf1be022bd696869339ce19fac6">eve::dialogue::compileDnutConversations</a></div><div class="ttdeci">bool compileDnutConversations(const std::string &amp;source, const std::string &amp;path, std::vector&lt; ConversationAsset &gt; &amp;assets, std::vector&lt; ConversationDiagnostic &gt; &amp;diagnostics)</div><div class="ttdoc">Compile parameterized conversation blocks embedded in .dnut text.</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8cpp_source.html#l00085">ConversationCompiler.cpp:85</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_af03949856180016739b039da84a1cfdc"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#af03949856180016739b039da84a1cfdc">eve::dialogue::exportConversationLocalizationCsv</a></div><div class="ttdeci">std::string exportConversationLocalizationCsv(const std::vector&lt; ConversationAsset &gt; &amp;assets)</div><div class="ttdoc">Export stable line IDs and localization keys as RFC4180 CSV.</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8cpp_source.html#l00219">ConversationCompiler.cpp:219</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html">eve::dialogue::ConversationDiagnostic</a></div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8h_source.html#l00010">ConversationCompiler.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html_a006b46294be39f2165e03337dd697d85"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85">eve::dialogue::ConversationDiagnostic::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8h_source.html#l00011">ConversationCompiler.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html_a006b46294be39f2165e03337dd697d85a0eaadb4fcb48a0a0ed7bc9868be9fbaa"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85a0eaadb4fcb48a0a0ed7bc9868be9fbaa">eve::dialogue::ConversationDiagnostic::Severity::Warning</a></div><div class="ttdeci">@ Warning</div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html_a006b46294be39f2165e03337dd697d85a902b0d55fddef6f8d651fe1035b7d4bd"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85a902b0d55fddef6f8d651fe1035b7d4bd">eve::dialogue::ConversationDiagnostic::Severity::Error</a></div><div class="ttdeci">@ Error</div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html_a200a6224fc5a054c89c6c76b13c2e87a"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a200a6224fc5a054c89c6c76b13c2e87a">eve::dialogue::ConversationDiagnostic::severity</a></div><div class="ttdeci">Severity severity</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8h_source.html#l00012">ConversationCompiler.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html_a34ae440f5166b97de4329c31b0f3258e"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a34ae440f5166b97de4329c31b0f3258e">eve::dialogue::ConversationDiagnostic::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8h_source.html#l00015">ConversationCompiler.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html_ac1f044031102088d2ac1749b41a48a75"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#ac1f044031102088d2ac1749b41a48a75">eve::dialogue::ConversationDiagnostic::path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8h_source.html#l00013">ConversationCompiler.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html_aefd088bd5a66baee973cc5665c51cbf7"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#aefd088bd5a66baee973cc5665c51cbf7">eve::dialogue::ConversationDiagnostic::line</a></div><div class="ttdeci">int line</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8h_source.html#l00014">ConversationCompiler.h:14</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

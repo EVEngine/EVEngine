@@ -1,0 +1,328 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveScallops.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CaveScallops.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CaveScallops_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="CaveScallops_8h.html">procgen/algorithms/CaveScallops.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">constexpr</span> <span class="keywordtype">float</span> Pi = 3.1415926535f;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keywordtype">float</span> smoothstep(<span class="keywordtype">float</span> edge0, <span class="keywordtype">float</span> edge1, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = std::clamp((<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> - edge0) / (edge1 - edge0), 0.f, 1.f);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * (3.f - 2.f * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">float</span> scallopCell(<span class="keywordtype">float</span> along, <span class="keywordtype">float</span> <a class="code hl_variable" href="WorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, <span class="keywordtype">float</span> phaseOffset, <span class="keywordtype">float</span> exponent,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                  <span class="keywordtype">float</span> flowSeparation) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>   <a class="code hl_variable" href="PixelWorld_8cpp.html#afd5d8ae03d127bc059a76d4629cf7f6b">cells</a>          = std::max(3, <span class="keywordtype">int</span>(std::round(2.f * Pi * <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> / <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)));</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> flowPhase      = along * 2.f * Pi / <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a> + phaseOffset;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> crossPhase     = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a> * float(<a class="code hl_variable" href="PixelWorld_8cpp.html#afd5d8ae03d127bc059a76d4629cf7f6b">cells</a>) + 0.5f * std::sin(flowPhase * 0.5f) + phaseOffset * 0.37f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> stationaryWave = 0.5f + 0.5f * std::cos(flowPhase) + 0.16f * std::sin(flowPhase);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> separatedPhase = flowPhase + (0.32f + 0.24f * (1.f - exponent)) * std::cos(flowPhase);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> separatedWave  = 0.5f + 0.5f * std::cos(separatedPhase) + 0.1f * std::sin(separatedPhase);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> shiftedWave = std::clamp(stationaryWave + flowSeparation * (separatedWave - stationaryWave), 0.f, 1.f);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> crossWave   = 0.5f + 0.5f * std::cos(crossPhase);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> std::pow(shiftedWave * crossWave, exponent);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keywordtype">float</span>             <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">dot</a>(CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z; }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>CaveHydrologyVec3 sub(CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { <span class="keywordflow">return</span> {<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z}; }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>CaveHydrologyVec3 add(CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { <span class="keywordflow">return</span> {<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z}; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>CaveHydrologyVec3 mul(CaveHydrologyVec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>) { <span class="keywordflow">return</span> {<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z * <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>}; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a3af2345a0deae60cf5d20e2e5b6da019">   36</a></span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveScallopSample.html">CaveScallopSample</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a3af2345a0deae60cf5d20e2e5b6da019">sampleCaveScallops</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveScallopInput.html">CaveScallopInput</a>&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveScallopSample.html">CaveScallopSample</a> result;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>       hydraulicScale  = 1.f / std::sqrt(std::clamp(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.hydraulicIntensity, 0.25f, 1.45f));</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>       seedPhase       = float(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.seed % 1009u) * (2.f * Pi / 1009.f);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>       patchScale      = std::max(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.baseScale * 5.5f, 1e-4f);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>       correlatedField = 0.68f * std::sin(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.along * 2.f * Pi / patchScale + seedPhase) +</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                        0.32f * std::sin(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.angle * 2.f + seedPhase * 1.73f);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#a572f2fd42203cbf7d8fc2970c7419f77">scaleMultiplier</a>            = std::exp(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.scaleVariability * 0.38f * correlatedField);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#aa417c2a908b77299b42a08d717def0aa">scale</a> = <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.baseScale * (1.f + <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.hydraulicScaling * (hydraulicScale - 1.f)) * result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#a572f2fd42203cbf7d8fc2970c7419f77">scaleMultiplier</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> wallMask      = 1.f - smoothstep(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.radius * 1.25f, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.radius * 2.2f, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.distance);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> crestExponent = 0.62f - <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.maturity * 0.24f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> youngCell =</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        scallopCell(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.along, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.angle, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.radius, result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#aa417c2a908b77299b42a08d717def0aa">scale</a>, 0.f, crestExponent, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.flowSeparation);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="comment">// Normal ablation broadens troughs until adjacent cells merge. A subdued</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">// fine-scale remnant keeps the mature surface from becoming a single wave.</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> matureScale = result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#aa417c2a908b77299b42a08d717def0aa">scale</a> * (1.f + <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.maturity * 1.6f);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> matureCell =</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        scallopCell(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.along, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.angle, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.radius, matureScale, 1.17f, crestExponent, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.flowSeparation);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> coarsenedCell = std::max(youngCell * (1.f - <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.maturity * 0.68f), matureCell * <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.maturity);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="comment">// Curved conduits focus fresh reactant and separated flow on the outer bank.</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// The broad cosine lobe avoids a seam while retaining the scallop-scale cusps.</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> outerBank = std::max(0.f, std::cos(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.angle - <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.outerBankAngle));</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> bendGain  = 1.f + <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.bendUndercut * <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.bendStrength * outerBank * 1.35f;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#a14d44c3462316c663ba6b1c9aaeb036c">erosion</a> = coarsenedCell * wallMask * std::clamp(result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#aa417c2a908b77299b42a08d717def0aa">scale</a> / <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.baseScale, 0.7f, 1.5f) * bendGain;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#aa8cc3fdc614678669da4e2e8ecb1efe8">   64</a></span><a class="code hl_struct" href="structeve_1_1procgen_1_1CavePassageFrame.html">CavePassageFrame</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#aa8cc3fdc614678669da4e2e8ecb1efe8">nearestCavePassageFrame</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>&amp; <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, <span class="keyword">const</span> std::vector&lt;CaveHydrologyPoint&gt;&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                         <span class="keyword">const</span> std::vector&lt;float&gt;&amp; hydraulicIntensity) {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CavePassageFrame.html">CavePassageFrame</a> nearest;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">float</span>            accumulated   = 0.f;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">auto</span>             nodeIntensity = [&amp;](<span class="keywordtype">size_t</span> node) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">if</span> (hydraulicIntensity.empty()) <span class="keywordflow">return</span> 1.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">if</span> (node == 0) <span class="keywordflow">return</span> hydraulicIntensity.front();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">if</span> (node &gt;= <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.size() - 1) <span class="keywordflow">return</span> hydraulicIntensity.back();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> 0.5f * (hydraulicIntensity[node - 1] + hydraulicIntensity[node]);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    };</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">auto</span> nodeBend = [&amp;](<span class="keywordtype">size_t</span> node) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">if</span> (node == 0 || node + 1 &gt;= <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.size()) <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>{};</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> incoming       = sub(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[node].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[node - 1].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> outgoing       = sub(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[node + 1].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[node].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             incomingLength = std::sqrt(dot(incoming, incoming));</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             outgoingLength = std::sqrt(dot(outgoing, outgoing));</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">if</span> (incomingLength &lt;= 1e-8f || outgoingLength &lt;= 1e-8f) <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>{};</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">return</span> sub(mul(outgoing, 1.f / outgoingLength), mul(incoming, 1.f / incomingLength));</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    };</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.size(); ++i) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> segment = sub(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[i].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[i - 1].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             length2 = dot(segment, segment);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>  = std::sqrt(length2);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> =</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            length2 &gt; 1e-8f ? std::clamp(dot(sub(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[i - 1].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>), segment) / length2, 0.f, 1.f) : 0.f;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> closest  = add(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[i - 1].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, mul(segment, <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>));</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> delta    = sub(<a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, closest);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>             distance = std::sqrt(dot(delta, delta));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">if</span> (distance &lt; nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a7a49d5bc02f41b9cc2bd7dad0b5d8a94">distance</a>) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> =</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a> &gt; 1e-8f ? mul(segment, 1.f / <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>) : <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>{1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> binormal{-<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#ade587f50b773d1dae87158bd43bf3111">z</a>, 0.f, <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>.x};</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keyword">const</span> <span class="keywordtype">float</span>       binormalLength = std::sqrt(dot(binormal, binormal));</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            binormal = binormalLength &gt; 1e-6f ? mul(binormal, 1.f / binormalLength) : <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>{1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#af086e6624cd6556674fee500ff39b128">along</a>                      = accumulated + <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a2af8d06873652e2efa6cf3c7cd2fc5af">angle</a>                      = std::atan2(dot(delta, binormal), delta.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a1d235bf12c5275954cffeb8622ed947f">y</a>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a7a49d5bc02f41b9cc2bd7dad0b5d8a94">distance</a>                   = distance;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a5e65c408c84e58aac95d518e933d4377">radius</a>                     = <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[i - 1].radius + (<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[i].radius - <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>[i - 1].radius) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#aebed41b179840524a1c90f96a6208e25">hydraulicIntensity</a>         = nodeIntensity(i - 1) + (nodeIntensity(i) - nodeIntensity(i - 1)) * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#adbfdc46fa92422689bac734379443571">tangent</a>                    = <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> bend       = add(mul(nodeBend(i - 1), 1.f - <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>), mul(nodeBend(i), <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>));</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keyword">const</span> <span class="keywordtype">float</span>             bendLength = std::sqrt(dot(bend, bend));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a2e62f8d633f8b49fee6ab8fd238c4e5a">bendStrength</a>               = std::clamp(bendLength, 0.f, 1.f);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            <span class="keywordflow">if</span> (bendLength &gt; 1e-6f) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> outer = mul(bend, -1.f / bendLength);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                nearest.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#ab3026b457df5170f5db45ee0b0e4b69f">outerBankAngle</a>        = std::atan2(dot(outer, binormal), outer.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a1d235bf12c5275954cffeb8622ed947f">y</a>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        accumulated += <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> nearest;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a30e07cd2f88ee881fc71802591f69f60"><div class="ttname"><a href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a></div><div class="ttdeci">Vec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00080">CaveMesh.cpp:80</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00094">CaveMesh.cpp:94</a></div></div>
+<div class="ttc" id="aCaveScallops_8h_html"><div class="ttname"><a href="CaveScallops_8h.html">CaveScallops.h</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_afd5d8ae03d127bc059a76d4629cf7f6b"><div class="ttname"><a href="PixelWorld_8cpp.html#afd5d8ae03d127bc059a76d4629cf7f6b">cells</a></div><div class="ttdeci">std::array&lt; PixelCell, kPixelChunkSize *kPixelChunkSize &gt; cells</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00052">PixelWorld.cpp:52</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aRTSSystems_8cpp_html_a8daa8a8d84a130186d9cca31c33e8bae"><div class="ttname"><a href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a></div><div class="ttdeci">WorldPosition point</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8cpp_source.html#l00080">RTSSystems.cpp:80</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_ab8ef1bf8a70cc07c6d55823c390a7e76"><div class="ttname"><a href="WorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a></div><div class="ttdeci">float angle</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00164">WorldSnapshot.cpp:164</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a801145dddf90e252b78db277ad210010"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">eve::procgen::urban::dot</a></div><div class="ttdeci">double dot(const Vec2 &amp;a, const Vec2 &amp;b)</div><div class="ttdef"><b>Definition</b> <a href="UrbanTypes_8h_source.html#l00029">UrbanTypes.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a3af2345a0deae60cf5d20e2e5b6da019"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a3af2345a0deae60cf5d20e2e5b6da019">eve::procgen::sampleCaveScallops</a></div><div class="ttdeci">CaveScallopSample sampleCaveScallops(const CaveScallopInput &amp;input)</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8cpp_source.html#l00036">CaveScallops.cpp:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aa8cc3fdc614678669da4e2e8ecb1efe8"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aa8cc3fdc614678669da4e2e8ecb1efe8">eve::procgen::nearestCavePassageFrame</a></div><div class="ttdeci">CavePassageFrame nearestCavePassageFrame(const CaveHydrologyVec3 &amp;point, const std::vector&lt; CaveHydrologyPoint &gt; &amp;path, const std::vector&lt; float &gt; &amp;hydraulicIntensity)</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8cpp_source.html#l00064">CaveScallops.cpp:64</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">eve::procgen::CaveHydrologyVec3</a></div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00008">CaveHydrology.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html_a1d235bf12c5275954cffeb8622ed947f"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a1d235bf12c5275954cffeb8622ed947f">eve::procgen::CaveHydrologyVec3::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00010">CaveHydrology.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html_ade587f50b773d1dae87158bd43bf3111"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#ade587f50b773d1dae87158bd43bf3111">eve::procgen::CaveHydrologyVec3::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00011">CaveHydrology.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html">eve::procgen::CavePassageFrame</a></div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00033">CaveScallops.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_a2af8d06873652e2efa6cf3c7cd2fc5af"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#a2af8d06873652e2efa6cf3c7cd2fc5af">eve::procgen::CavePassageFrame::angle</a></div><div class="ttdeci">float angle</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00035">CaveScallops.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_a2e62f8d633f8b49fee6ab8fd238c4e5a"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#a2e62f8d633f8b49fee6ab8fd238c4e5a">eve::procgen::CavePassageFrame::bendStrength</a></div><div class="ttdeci">float bendStrength</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00039">CaveScallops.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_a5e65c408c84e58aac95d518e933d4377"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#a5e65c408c84e58aac95d518e933d4377">eve::procgen::CavePassageFrame::radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00037">CaveScallops.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_a7a49d5bc02f41b9cc2bd7dad0b5d8a94"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#a7a49d5bc02f41b9cc2bd7dad0b5d8a94">eve::procgen::CavePassageFrame::distance</a></div><div class="ttdeci">float distance</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00036">CaveScallops.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_ab3026b457df5170f5db45ee0b0e4b69f"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#ab3026b457df5170f5db45ee0b0e4b69f">eve::procgen::CavePassageFrame::outerBankAngle</a></div><div class="ttdeci">float outerBankAngle</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00040">CaveScallops.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_adbfdc46fa92422689bac734379443571"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#adbfdc46fa92422689bac734379443571">eve::procgen::CavePassageFrame::tangent</a></div><div class="ttdeci">CaveHydrologyVec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00041">CaveScallops.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_aebed41b179840524a1c90f96a6208e25"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#aebed41b179840524a1c90f96a6208e25">eve::procgen::CavePassageFrame::hydraulicIntensity</a></div><div class="ttdeci">float hydraulicIntensity</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00038">CaveScallops.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_af086e6624cd6556674fee500ff39b128"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#af086e6624cd6556674fee500ff39b128">eve::procgen::CavePassageFrame::along</a></div><div class="ttdeci">float along</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00034">CaveScallops.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html">eve::procgen::CaveScallopInput</a></div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00010">CaveScallops.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopSample.html">eve::procgen::CaveScallopSample</a></div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00027">CaveScallops.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopSample_html_a14d44c3462316c663ba6b1c9aaeb036c"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopSample.html#a14d44c3462316c663ba6b1c9aaeb036c">eve::procgen::CaveScallopSample::erosion</a></div><div class="ttdeci">float erosion</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00028">CaveScallops.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopSample_html_a572f2fd42203cbf7d8fc2970c7419f77"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopSample.html#a572f2fd42203cbf7d8fc2970c7419f77">eve::procgen::CaveScallopSample::scaleMultiplier</a></div><div class="ttdeci">float scaleMultiplier</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00030">CaveScallops.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopSample_html_aa417c2a908b77299b42a08d717def0aa"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopSample.html#aa417c2a908b77299b42a08d717def0aa">eve::procgen::CaveScallopSample::scale</a></div><div class="ttdeci">float scale</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00029">CaveScallops.h:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

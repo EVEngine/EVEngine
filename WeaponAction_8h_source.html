@@ -1,0 +1,229 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/weapon/WeaponAction.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3549d6d40925778ea7fe373869498ee4.html">weapon</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WeaponAction.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WeaponAction_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Action_8h.html">action/Action.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="AtomicResourcePayment_8h.html">transaction/AtomicResourcePayment.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="WeaponTypes_8h.html">weapon/WeaponTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weapon.html">eve::weapon</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponActionAdapter.html">   27</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1weapon_1_1WeaponActionAdapter.html">WeaponActionAdapter</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::optional&lt;eve::resource::CostSpec&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a267e44bc3f53fef89ffc126f1a466bfb">resourceCost</a>(</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>&amp; weapon);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::transaction::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a3f5ef45dedefdb605c51335e460e0e28">fire</a>(</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>&amp; weapon, <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_class" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a>&amp; effect, std::string transactionId = {});</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::transaction::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a3f5ef45dedefdb605c51335e460e0e28">fire</a>(</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>&amp; weapon, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp; attack, <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <a class="code hl_class" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a>&amp; effect, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a> = <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a>(1));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;action::ActionDefinition&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a35d9a2529caab591ddd95e9eed2320d2">makeDefinition</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>&amp; weapon,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                                                              <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp;    request);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;action::ActionRequest&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#aed2b8f13f512fddb17bdf366513315a9">makeRequest</a>(</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>&amp; weapon, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp; attack,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        std::optional&lt;ecs::EntityHandle&gt; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>        = std::nullopt,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a>              requestedTick = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>());</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>};</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}  <span class="comment">// namespace eve::weapon</span></div>
+<div class="ttc" id="aAction_8h_html"><div class="ttname"><a href="Action_8h.html">Action.h</a></div><div class="ttdoc">Renderer- and ruleset-neutral gameplay action pipeline.</div></div>
+<div class="ttc" id="aAtomicResourcePayment_8h_html"><div class="ttname"><a href="AtomicResourcePayment_8h.html">AtomicResourcePayment.h</a></div><div class="ttdoc">Small transaction facade for a resource cost plus one domain effect.</div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_ae8ae5102f9ee2a73efc07b521079dfc9"><div class="ttname"><a href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a></div><div class="ttdeci">eve::resource::IResourceAccount * account</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00036">DialoguePayment.cpp:36</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aWeaponTypes_8h_html"><div class="ttname"><a href="WeaponTypes_8h.html">WeaponTypes.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a></div><div class="ttdoc">Provider-neutral resource account contract.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00308">ResourceAccount.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ITransactionParticipant_html"><div class="ttname"><a href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a></div><div class="ttdoc">Synchronous participant contract for one coordinator transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00119">Transaction.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponActionAdapter_html"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponActionAdapter.html">eve::weapon::WeaponActionAdapter</a></div><div class="ttdoc">Translates a WeaponDefinition/AttackRequest pair to Action values.</div><div class="ttdef"><b>Definition</b> <a href="WeaponAction_8h_source.html#l00027">WeaponAction.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponActionAdapter_html_a267e44bc3f53fef89ffc126f1a466bfb"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a267e44bc3f53fef89ffc126f1a466bfb">eve::weapon::WeaponActionAdapter::resourceCost</a></div><div class="ttdeci">static eve::Result&lt; std::optional&lt; eve::resource::CostSpec &gt; &gt; resourceCost(const WeaponDefinition &amp;weapon)</div><div class="ttdoc">Convert the weapon trigger resource into a canonical cost.</div><div class="ttdef"><b>Definition</b> <a href="WeaponAction_8cpp_source.html#l00074">WeaponAction.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponActionAdapter_html_a35d9a2529caab591ddd95e9eed2320d2"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a35d9a2529caab591ddd95e9eed2320d2">eve::weapon::WeaponActionAdapter::makeDefinition</a></div><div class="ttdeci">static eve::Result&lt; action::ActionDefinition &gt; makeDefinition(const WeaponDefinition &amp;weapon, const AttackRequest &amp;request)</div><div class="ttdoc">Build an action definition for one attack request.</div><div class="ttdef"><b>Definition</b> <a href="WeaponAction_8cpp_source.html#l00138">WeaponAction.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponActionAdapter_html_a3f5ef45dedefdb605c51335e460e0e28"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a3f5ef45dedefdb605c51335e460e0e28">eve::weapon::WeaponActionAdapter::fire</a></div><div class="ttdeci">static eve::Result&lt; eve::transaction::TransactionReceipt &gt; fire(const WeaponDefinition &amp;weapon, eve::resource::IResourceAccount &amp;account, eve::transaction::ITransactionParticipant &amp;effect, std::string transactionId={})</div><div class="ttdoc">Execute one already-built weapon effect and charge its resource atomically.</div><div class="ttdef"><b>Definition</b> <a href="WeaponAction_8cpp_source.html#l00125">WeaponAction.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponActionAdapter_html_aed2b8f13f512fddb17bdf366513315a9"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponActionAdapter.html#aed2b8f13f512fddb17bdf366513315a9">eve::weapon::WeaponActionAdapter::makeRequest</a></div><div class="ttdeci">static eve::Result&lt; action::ActionRequest &gt; makeRequest(const WeaponDefinition &amp;weapon, const AttackRequest &amp;attack, std::optional&lt; ecs::EntityHandle &gt; source=std::nullopt, eve::SimulationTick requestedTick=eve::SimulationTick::zero())</div><div class="ttdoc">Build a request carrying the original weapon attack parameters.</div><div class="ttdef"><b>Definition</b> <a href="WeaponAction_8cpp_source.html#l00170">WeaponAction.cpp:170</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html"><div class="ttname"><a href="namespaceeve_1_1weapon.html">eve::weapon</a></div><div class="ttdoc">载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="RTSArchetype_8h_source.html#l00010">RTSArchetype.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1AttackRequest_html"><div class="ttname"><a href="structeve_1_1weapon_1_1AttackRequest.html">eve::weapon::AttackRequest</a></div><div class="ttdoc">一次攻击请求（C++ 系统 / 脚本发起）。角度均为度。 旧名 FireRequest 保留为别名，向后兼容。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00202">WeaponTypes.h:202</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponDefinition_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponDefinition.html">eve::weapon::WeaponDefinition</a></div><div class="ttdoc">武器模板（registerWeaponsFromJson 注册，进程级注册表）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00130">WeaponTypes.h:130</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorCurveDocument.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorCurveDocument.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorCurveDocument_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorAuthority_8h.html">editor/EditorAuthority.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorTarget_8h.html">editor/EditorTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurveKey.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1EditorCurveKey.html">EditorCurveKey</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurveKey.html#ad5cd1f8ee6a0ef2748d473a274ca302a">   16</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurveKey.html#ad5cd1f8ee6a0ef2748d473a274ca302a">id</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurveKey.html#a876f336aad240f3d62cda8fc878c4817">   17</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurveKey.html#a876f336aad240f3d62cda8fc878c4817">time</a> = 0.0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurveKey.html#ac143c4b5ec3a1e9256aca8bd6af6186a">   18</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurveKey.html#ac143c4b5ec3a1e9256aca8bd6af6186a">value</a> = 0.0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurveKey.html#a42771cdc584ceda4d8e9f674444e809a">   19</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurveKey.html#a42771cdc584ceda4d8e9f674444e809a">inTangent</a> = 0.0;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurveKey.html#ad330135bdb24db5ba7dd56bbb0b3f9f8">   20</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurveKey.html#ad330135bdb24db5ba7dd56bbb0b3f9f8">outTangent</a> = 0.0;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurveKey.html#a0df770cd66dba89ff2c35f0aaa2bf727">   21</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurveKey.html#a0df770cd66dba89ff2c35f0aaa2bf727">interpolation</a> = <span class="stringliteral">&quot;linear&quot;</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>};</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorGradientStop.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1EditorGradientStop.html">EditorGradientStop</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorGradientStop.html#aa44f38d10d0d7f60a3afdbca811d5955">   26</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorGradientStop.html#aa44f38d10d0d7f60a3afdbca811d5955">id</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorGradientStop.html#a09e43b993c46bb256c3b24b5bd0ca391">   27</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorGradientStop.html#a09e43b993c46bb256c3b24b5bd0ca391">time</a> = 0.0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorGradientStop.html#a61e575d09dec95f47c379d26e57b1801">   28</a></span>    std::array&lt;double, 4&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1EditorGradientStop.html#a61e575d09dec95f47c379d26e57b1801">color</a>{1.0, 1.0, 1.0, 1.0};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurvePreview.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1EditorCurvePreview.html">EditorCurvePreview</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurvePreview.html#a88614c67f9eeb1a24799252c7f5d1b27">   33</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurvePreview.html#a88614c67f9eeb1a24799252c7f5d1b27">status</a> = EditorStatus::Failed;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurvePreview.html#a2f0c9ededb5af5fe7d6a799006473d5b">   34</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurvePreview.html#a2f0c9ededb5af5fe7d6a799006473d5b">documentRevision</a> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurvePreview.html#a0a26405d75853e0bad0f801f6b453e42">   35</a></span>    std::vector&lt;double&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurvePreview.html#a0a26405d75853e0bad0f801f6b453e42">curveSamples</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurvePreview.html#acdee8521efc97a16e9885ae0ae03071d">   36</a></span>    std::vector&lt;std::array&lt;double, 4&gt;&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurvePreview.html#acdee8521efc97a16e9885ae0ae03071d">gradientSamples</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1EditorCurvePreview.html#aa0d090bd6dfdcf6e1947951057fa4d3d">   37</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1EditorCurvePreview.html#aa0d090bd6dfdcf6e1947951057fa4d3d">diagnostics</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html">ICurveDocumentEditTarget</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a0b0fc8c8c631e36203daf8dbc7fc6787">   43</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a0b0fc8c8c631e36203daf8dbc7fc6787">~ICurveDocumentEditTarget</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a650366b85b6fc209004f69a08c04e982">   44</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a> <a class="code hl_function" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a650366b85b6fc209004f69a08c04e982">editorCapabilityId</a>() { <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a833aebc8223a13bb0cd9d0b384c907db">CapabilityId</a>(<span class="stringliteral">&quot;eve.editor.target.curve-document&quot;</span>); }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#acca7cf366a6e6579bf5572adf7ae628f">   46</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#acca7cf366a6e6579bf5572adf7ae628f">makeSetKey</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorCurveKey.html">EditorCurveKey</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#af0c90f2a7bc39c344c2c97b9b2fe8d7d">   48</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#af0c90f2a7bc39c344c2c97b9b2fe8d7d">makeDeleteKey</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a0b5ae7e195bf28736c13d361e0ba63dd">   50</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a0b5ae7e195bf28736c13d361e0ba63dd">makeSetStop</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorGradientStop.html">EditorGradientStop</a>&amp; stop) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a9a603029fce837d637499a97754220a2">   52</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a9a603029fce837d637499a97754220a2">makeDeleteStop</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>&amp; stop) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorCurveDocument.html">   56</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1EditorCurveDocument.html">EditorCurveDocument</a> final : <span class="keyword">public</span> <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                                  <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                  <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">IDomainOperationTargetStaging</a>,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                  <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html">ICurveDocumentEditTarget</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1editor_1_1EditorCurveDocument.html">EditorCurveDocument</a>(std::string <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorCurveDocument.html#abbef0f6bfc405a57c046135fc35c8916">   62</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#abbef0f6bfc405a57c046135fc35c8916">targetId</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a>(id_); }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorCurveDocument.html#a2c3c659f1b451ccf6b0f702cfefe333c">   63</a></span>    std::uint64_t <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a2c3c659f1b451ccf6b0f702cfefe333c">revision</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorCurveDocument.html#a231723ea3fdbba8c50e41bc9511d3397">   64</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a231723ea3fdbba8c50e41bc9511d3397">dirtyRegion</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> dirty_; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorCurveDocument.html#a3442103e44737260742afbb0847d8d9a">   65</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a3442103e44737260742afbb0847d8d9a">clearDirtyRegion</a>()<span class="keyword"> override </span>{ dirty_.<a class="code hl_function" href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">clear</a>(); }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a95ad099b725eddd06f247d113b376a48">describe</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#ae31c76e7af9dfec3e73e0a19734ec2ea">queryCapability</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>&amp; <a class="code hl_function" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a15ef57cfaa23cc7707d383289afc9339">applyDomainOperation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>&amp; operation) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    [[nodiscard]] std::unique_ptr&lt;IDomainOperationTarget&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a5d6d48ed7256b909a07e6ed28bf7be30">cloneDomainState</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#aeb483b41d52386fad0090a80724742d4">commitDomainState</a>(</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        std::unique_ptr&lt;IDomainOperationTarget&gt; candidate) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a257e41ed733b2b110a0c23cae4276366">makeSetKey</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorCurveKey.html">EditorCurveKey</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a03e410da5b372ac2463059b80750cf16">makeDeleteKey</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a59b525c8ee5949c16d97e3c63a57e927">makeSetStop</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorGradientStop.html">EditorGradientStop</a>&amp; stop) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a8408659616ef670283629d2b01ddfbaf">makeDeleteStop</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>&amp; stop) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::vector&lt;EditorCurveKey&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a84873909a25aecb53e8b9d7c151ce89e">keys</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    std::vector&lt;EditorGradientStop&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#ad698908562b25beb2d14c17a263660b1">stops</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#aad581bf437afc3d705ca3569cd5c43ea">sampleCurve</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    std::array&lt;double, 4&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#ae1fc26af01c71faa7e3b9fb9a9b851a3">sampleGradient</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1EditorCurvePreview.html">EditorCurvePreview</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#a6f413f5e1e9eff5aea551ba4cdbc02be">preview</a>(<span class="keywordtype">int</span> sampleCount, <span class="keywordtype">int</span> maximumSamples = 4096) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#ab05463e01fe167e245e516cb7cd14f5e">snapshotValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorCurveDocument.html#ab6ac3dfa4f84323987d4444e1efd5a86">loadSnapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; snapshot);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::string id_;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> revision_ = 1;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> dirty_;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    std::map&lt;StableId, EditorCurveKey&gt; keys_;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    std::map&lt;StableId, EditorGradientStop&gt; stops_;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>};</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditorAuthority_8h_html"><div class="ttname"><a href="EditorAuthority_8h.html">EditorAuthority.h</a></div></div>
+<div class="ttc" id="aEditorTarget_8h_html"><div class="ttname"><a href="EditorTarget_8h.html">EditorTarget.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a8b8dfe2335a5bf90695960dc6a1c5d3b"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTargetStaging_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></div><div class="ttdoc">Optional candidate/publish capability for atomic domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00025">EditingTargetOperations.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></div><div class="ttdoc">Editable-target capability that applies owning domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00011">EditingTargetOperations.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html_a1e541660312c789b59e0a247f6e614ac"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">eve::editing::IEditableTarget::capability</a></div><div class="ttdeci">eve::OptionalRef&lt; C &gt; capability()</div><div class="ttdoc">Query a capability through its interface-owned stable identity.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00068">EditableTarget.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html">eve::editor::EditorCurveDocument</a></div><div class="ttdoc">UI-neutral reversible curve and gradient timeline document.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00056">EditorCurveDocument.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a03e410da5b372ac2463059b80750cf16"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a03e410da5b372ac2463059b80750cf16">eve::editor::EditorCurveDocument::makeDeleteKey</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeDeleteKey(const StableId &amp;key) const override</div><div class="ttdoc">Plan deletion of a scalar key.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00129">EditorCurveDocument.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a15ef57cfaa23cc7707d383289afc9339"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a15ef57cfaa23cc7707d383289afc9339">eve::editor::EditorCurveDocument::applyDomainOperation</a></div><div class="ttdeci">EditorResult&lt; void &gt; applyDomainOperation(const DomainOperation &amp;operation) override</div><div class="ttdoc">Apply one validated domain operation.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00096">EditorCurveDocument.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a231723ea3fdbba8c50e41bc9511d3397"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a231723ea3fdbba8c50e41bc9511d3397">eve::editor::EditorCurveDocument::dirtyRegion</a></div><div class="ttdeci">EditRegion dirtyRegion() const override</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00064">EditorCurveDocument.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a257e41ed733b2b110a0c23cae4276366"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a257e41ed733b2b110a0c23cae4276366">eve::editor::EditorCurveDocument::makeSetKey</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSetKey(const EditorCurveKey &amp;key) const override</div><div class="ttdoc">Plan creation or replacement of a scalar key.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00123">EditorCurveDocument.cpp:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a2c3c659f1b451ccf6b0f702cfefe333c"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a2c3c659f1b451ccf6b0f702cfefe333c">eve::editor::EditorCurveDocument::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00063">EditorCurveDocument.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a3442103e44737260742afbb0847d8d9a"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a3442103e44737260742afbb0847d8d9a">eve::editor::EditorCurveDocument::clearDirtyRegion</a></div><div class="ttdeci">void clearDirtyRegion() override</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00065">EditorCurveDocument.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a59b525c8ee5949c16d97e3c63a57e927"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a59b525c8ee5949c16d97e3c63a57e927">eve::editor::EditorCurveDocument::makeSetStop</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSetStop(const EditorGradientStop &amp;stop) const override</div><div class="ttdoc">Plan creation or replacement of a gradient stop.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00134">EditorCurveDocument.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a5d6d48ed7256b909a07e6ed28bf7be30"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a5d6d48ed7256b909a07e6ed28bf7be30">eve::editor::EditorCurveDocument::cloneDomainState</a></div><div class="ttdeci">std::unique_ptr&lt; IDomainOperationTarget &gt; cloneDomainState() const override</div><div class="ttdoc">Clone the complete target state into an owning detached candidate.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00113">EditorCurveDocument.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a6f413f5e1e9eff5aea551ba4cdbc02be"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a6f413f5e1e9eff5aea551ba4cdbc02be">eve::editor::EditorCurveDocument::preview</a></div><div class="ttdeci">EditorCurvePreview preview(int sampleCount, int maximumSamples=4096) const</div><div class="ttdoc">Build a bounded lookup preview for viewport/material upload.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00173">EditorCurveDocument.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a8408659616ef670283629d2b01ddfbaf"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a8408659616ef670283629d2b01ddfbaf">eve::editor::EditorCurveDocument::makeDeleteStop</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeDeleteStop(const StableId &amp;stop) const override</div><div class="ttdoc">Plan deletion of a gradient stop.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00140">EditorCurveDocument.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a84873909a25aecb53e8b9d7c151ce89e"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a84873909a25aecb53e8b9d7c151ce89e">eve::editor::EditorCurveDocument::keys</a></div><div class="ttdeci">std::vector&lt; EditorCurveKey &gt; keys() const</div><div class="ttdoc">Return scalar keys in stable timeline order.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00145">EditorCurveDocument.cpp:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_a95ad099b725eddd06f247d113b376a48"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#a95ad099b725eddd06f247d113b376a48">eve::editor::EditorCurveDocument::describe</a></div><div class="ttdeci">TargetDescriptor describe() const override</div><div class="ttdoc">Describe the target for tools and automation.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00087">EditorCurveDocument.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_aad581bf437afc3d705ca3569cd5c43ea"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#aad581bf437afc3d705ca3569cd5c43ea">eve::editor::EditorCurveDocument::sampleCurve</a></div><div class="ttdeci">double sampleCurve(double time) const</div><div class="ttdoc">Sample scalar curve at normalized time.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00148">EditorCurveDocument.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_ab05463e01fe167e245e516cb7cd14f5e"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#ab05463e01fe167e245e516cb7cd14f5e">eve::editor::EditorCurveDocument::snapshotValue</a></div><div class="ttdeci">EditorValue snapshotValue() const</div><div class="ttdoc">Capture deterministic schema-version-one timeline data.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00187">EditorCurveDocument.cpp:187</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_ab6ac3dfa4f84323987d4444e1efd5a86"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#ab6ac3dfa4f84323987d4444e1efd5a86">eve::editor::EditorCurveDocument::loadSnapshot</a></div><div class="ttdeci">EditorResult&lt; void &gt; loadSnapshot(const EditorValue &amp;snapshot)</div><div class="ttdoc">Atomically load a validated timeline snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00193">EditorCurveDocument.cpp:193</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_abbef0f6bfc405a57c046135fc35c8916"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#abbef0f6bfc405a57c046135fc35c8916">eve::editor::EditorCurveDocument::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00062">EditorCurveDocument.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_ad698908562b25beb2d14c17a263660b1"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#ad698908562b25beb2d14c17a263660b1">eve::editor::EditorCurveDocument::stops</a></div><div class="ttdeci">std::vector&lt; EditorGradientStop &gt; stops() const</div><div class="ttdoc">Return gradient stops in stable timeline order.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00146">EditorCurveDocument.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_ae1fc26af01c71faa7e3b9fb9a9b851a3"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#ae1fc26af01c71faa7e3b9fb9a9b851a3">eve::editor::EditorCurveDocument::sampleGradient</a></div><div class="ttdeci">std::array&lt; double, 4 &gt; sampleGradient(double time) const</div><div class="ttdoc">Sample gradient at normalized time.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00163">EditorCurveDocument.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_ae31c76e7af9dfec3e73e0a19734ec2ea"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#ae31c76e7af9dfec3e73e0a19734ec2ea">eve::editor::EditorCurveDocument::queryCapability</a></div><div class="ttdeci">void * queryCapability(const CapabilityId &amp;capability) override</div><div class="ttdoc">Query an optional target capability.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00091">EditorCurveDocument.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCurveDocument_html_aeb483b41d52386fad0090a80724742d4"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCurveDocument.html#aeb483b41d52386fad0090a80724742d4">eve::editor::EditorCurveDocument::commitDomainState</a></div><div class="ttdeci">EditorResult&lt; void &gt; commitDomainState(std::unique_ptr&lt; IDomainOperationTarget &gt; candidate) override</div><div class="ttdoc">Atomically publish a validated candidate state.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8cpp_source.html#l00117">EditorCurveDocument.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ICurveDocumentEditTarget_html"><div class="ttname"><a href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html">eve::editor::ICurveDocumentEditTarget</a></div><div class="ttdoc">Stable key/gradient editing capability shared by effects and animation presenters.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00041">EditorCurveDocument.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ICurveDocumentEditTarget_html_a0b0fc8c8c631e36203daf8dbc7fc6787"><div class="ttname"><a href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a0b0fc8c8c631e36203daf8dbc7fc6787">eve::editor::ICurveDocumentEditTarget::~ICurveDocumentEditTarget</a></div><div class="ttdeci">virtual ~ICurveDocumentEditTarget()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ICurveDocumentEditTarget_html_a0b5ae7e195bf28736c13d361e0ba63dd"><div class="ttname"><a href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a0b5ae7e195bf28736c13d361e0ba63dd">eve::editor::ICurveDocumentEditTarget::makeSetStop</a></div><div class="ttdeci">virtual EditorResult&lt; DomainOperation &gt; makeSetStop(const EditorGradientStop &amp;stop) const =0</div><div class="ttdoc">Plan creation or replacement of a gradient stop.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ICurveDocumentEditTarget_html_a650366b85b6fc209004f69a08c04e982"><div class="ttname"><a href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a650366b85b6fc209004f69a08c04e982">eve::editor::ICurveDocumentEditTarget::editorCapabilityId</a></div><div class="ttdeci">static CapabilityId editorCapabilityId()</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00044">EditorCurveDocument.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ICurveDocumentEditTarget_html_a9a603029fce837d637499a97754220a2"><div class="ttname"><a href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#a9a603029fce837d637499a97754220a2">eve::editor::ICurveDocumentEditTarget::makeDeleteStop</a></div><div class="ttdeci">virtual EditorResult&lt; DomainOperation &gt; makeDeleteStop(const StableId &amp;stop) const =0</div><div class="ttdoc">Plan deletion of a gradient stop.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ICurveDocumentEditTarget_html_acca7cf366a6e6579bf5572adf7ae628f"><div class="ttname"><a href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#acca7cf366a6e6579bf5572adf7ae628f">eve::editor::ICurveDocumentEditTarget::makeSetKey</a></div><div class="ttdeci">virtual EditorResult&lt; DomainOperation &gt; makeSetKey(const EditorCurveKey &amp;key) const =0</div><div class="ttdoc">Plan creation or replacement of a scalar key.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ICurveDocumentEditTarget_html_af0c90f2a7bc39c344c2c97b9b2fe8d7d"><div class="ttname"><a href="classeve_1_1editor_1_1ICurveDocumentEditTarget.html#af0c90f2a7bc39c344c2c97b9b2fe8d7d">eve::editor::ICurveDocumentEditTarget::makeDeleteKey</a></div><div class="ttdeci">virtual EditorResult&lt; DomainOperation &gt; makeDeleteKey(const StableId &amp;key) const =0</div><div class="ttdoc">Plan deletion of a scalar key.</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a5cad32dd3db1b40e5875c1b258a4e3e5"><div class="ttname"><a href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">eve::editor::TargetId</a></div><div class="ttdeci">eve::editing::TargetId TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00029">EditorIds.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a833aebc8223a13bb0cd9d0b384c907db"><div class="ttname"><a href="namespaceeve_1_1editor.html#a833aebc8223a13bb0cd9d0b384c907db">eve::editor::CapabilityId</a></div><div class="ttdeci">eve::editing::CapabilityId CapabilityId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00033">EditorIds.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aee556a1a4c69319bef3bea3c87db4db6"><div class="ttname"><a href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">eve::editor::Revision</a></div><div class="ttdeci">eve::editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="EditorProtocol_8h_source.html#l00009">EditorProtocol.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html">eve::editing::EditRegion</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00008">EditableTarget.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html_acc33c22f9fc876d717944a1fe94a932c"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">eve::editing::EditRegion::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00011">EditableTarget.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TargetDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1TargetDescriptor.html">eve::editing::TargetDescriptor</a></div><div class="ttdoc">Stable discovery metadata exposed by every editable target.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00032">EditableTarget.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurveKey_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurveKey.html">eve::editor::EditorCurveKey</a></div><div class="ttdoc">Stable scalar curve key with editable Hermite tangents.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00015">EditorCurveDocument.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurveKey_html_a0df770cd66dba89ff2c35f0aaa2bf727"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurveKey.html#a0df770cd66dba89ff2c35f0aaa2bf727">eve::editor::EditorCurveKey::interpolation</a></div><div class="ttdeci">std::string interpolation</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00021">EditorCurveDocument.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurveKey_html_a42771cdc584ceda4d8e9f674444e809a"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurveKey.html#a42771cdc584ceda4d8e9f674444e809a">eve::editor::EditorCurveKey::inTangent</a></div><div class="ttdeci">double inTangent</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00019">EditorCurveDocument.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurveKey_html_a876f336aad240f3d62cda8fc878c4817"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurveKey.html#a876f336aad240f3d62cda8fc878c4817">eve::editor::EditorCurveKey::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00017">EditorCurveDocument.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurveKey_html_ac143c4b5ec3a1e9256aca8bd6af6186a"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurveKey.html#ac143c4b5ec3a1e9256aca8bd6af6186a">eve::editor::EditorCurveKey::value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00018">EditorCurveDocument.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurveKey_html_ad330135bdb24db5ba7dd56bbb0b3f9f8"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurveKey.html#ad330135bdb24db5ba7dd56bbb0b3f9f8">eve::editor::EditorCurveKey::outTangent</a></div><div class="ttdeci">double outTangent</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00020">EditorCurveDocument.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurveKey_html_ad5cd1f8ee6a0ef2748d473a274ca302a"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurveKey.html#ad5cd1f8ee6a0ef2748d473a274ca302a">eve::editor::EditorCurveKey::id</a></div><div class="ttdeci">StableId id</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00016">EditorCurveDocument.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurvePreview_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurvePreview.html">eve::editor::EditorCurvePreview</a></div><div class="ttdoc">Bounded revision-tagged curve/gradient lookup preview.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00032">EditorCurveDocument.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurvePreview_html_a0a26405d75853e0bad0f801f6b453e42"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurvePreview.html#a0a26405d75853e0bad0f801f6b453e42">eve::editor::EditorCurvePreview::curveSamples</a></div><div class="ttdeci">std::vector&lt; double &gt; curveSamples</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00035">EditorCurveDocument.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurvePreview_html_a2f0c9ededb5af5fe7d6a799006473d5b"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurvePreview.html#a2f0c9ededb5af5fe7d6a799006473d5b">eve::editor::EditorCurvePreview::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00034">EditorCurveDocument.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurvePreview_html_a88614c67f9eeb1a24799252c7f5d1b27"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurvePreview.html#a88614c67f9eeb1a24799252c7f5d1b27">eve::editor::EditorCurvePreview::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00033">EditorCurveDocument.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurvePreview_html_aa0d090bd6dfdcf6e1947951057fa4d3d"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurvePreview.html#aa0d090bd6dfdcf6e1947951057fa4d3d">eve::editor::EditorCurvePreview::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00037">EditorCurveDocument.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorCurvePreview_html_acdee8521efc97a16e9885ae0ae03071d"><div class="ttname"><a href="structeve_1_1editor_1_1EditorCurvePreview.html#acdee8521efc97a16e9885ae0ae03071d">eve::editor::EditorCurvePreview::gradientSamples</a></div><div class="ttdeci">std::vector&lt; std::array&lt; double, 4 &gt; &gt; gradientSamples</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00036">EditorCurveDocument.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorGradientStop_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorGradientStop.html">eve::editor::EditorGradientStop</a></div><div class="ttdoc">Stable normalized RGBA gradient stop.</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00025">EditorCurveDocument.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorGradientStop_html_a09e43b993c46bb256c3b24b5bd0ca391"><div class="ttname"><a href="structeve_1_1editor_1_1EditorGradientStop.html#a09e43b993c46bb256c3b24b5bd0ca391">eve::editor::EditorGradientStop::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00027">EditorCurveDocument.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorGradientStop_html_a61e575d09dec95f47c379d26e57b1801"><div class="ttname"><a href="structeve_1_1editor_1_1EditorGradientStop.html#a61e575d09dec95f47c379d26e57b1801">eve::editor::EditorGradientStop::color</a></div><div class="ttdeci">std::array&lt; double, 4 &gt; color</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00028">EditorCurveDocument.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorGradientStop_html_aa44f38d10d0d7f60a3afdbca811d5955"><div class="ttname"><a href="structeve_1_1editor_1_1EditorGradientStop.html#aa44f38d10d0d7f60a3afdbca811d5955">eve::editor::EditorGradientStop::id</a></div><div class="ttdeci">StableId id</div><div class="ttdef"><b>Definition</b> <a href="EditorCurveDocument_8h_source.html#l00026">EditorCurveDocument.h:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

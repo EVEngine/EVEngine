@@ -1,0 +1,725 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::vehicle::VehicleOrderQueueAdapter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1vehicle.html">vehicle</a></li><li class="navelem"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::vehicle::VehicleOrderQueueAdapter类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Maps <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html" title="一条 Vehicle 领域命令（生命周期由 Vehicle order adapter 执行）。">VehicleOrder</a> domain payloads onto an <a class="el" href="classeve_1_1orders_1_1CommandQueue.html" title="Generic priority order queue with no gameplay or entity semantics.">orders::CommandQueue</a>.  
+ <a href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VehicleOrderQueueAdapter_8h_source.html">VehicleOrderQueueAdapter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1vehicle_1_1VehicleOrderQueueAdapter_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad75be671d810d9dc87f3285d422f24ba" id="r_ad75be671d810d9dc87f3285d422f24ba"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#ad75be671d810d9dc87f3285d422f24ba">VehicleOrderQueueAdapter</a> ()</td></tr>
+<tr class="memdesc:ad75be671d810d9dc87f3285d422f24ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an empty adapter with an owned generic queue.  <br /></td></tr>
+<tr class="separator:ad75be671d810d9dc87f3285d422f24ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58117cea99e965af76ca440524081dc2" id="r_a58117cea99e965af76ca440524081dc2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a58117cea99e965af76ca440524081dc2">~VehicleOrderQueueAdapter</a> ()</td></tr>
+<tr class="memdesc:a58117cea99e965af76ca440524081dc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases the owned generic queue and domain payloads.  <br /></td></tr>
+<tr class="separator:a58117cea99e965af76ca440524081dc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae405b5e67573bef87e4b23a452051afa" id="r_ae405b5e67573bef87e4b23a452051afa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#ae405b5e67573bef87e4b23a452051afa">VehicleOrderQueueAdapter</a> (const <a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;)</td></tr>
+<tr class="memdesc:ae405b5e67573bef87e4b23a452051afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep-copies generic lifecycle state and <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> payloads.  <br /></td></tr>
+<tr class="separator:ae405b5e67573bef87e4b23a452051afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0e8b5f944799dda4b5b1586ae6af130" id="r_aa0e8b5f944799dda4b5b1586ae6af130"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#aa0e8b5f944799dda4b5b1586ae6af130">operator=</a> (const <a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;)</td></tr>
+<tr class="memdesc:aa0e8b5f944799dda4b5b1586ae6af130"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep-copies generic lifecycle state and <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> payloads.  <br /></td></tr>
+<tr class="separator:aa0e8b5f944799dda4b5b1586ae6af130"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b562d172811942e865c4d903d84145d" id="r_a2b562d172811942e865c4d903d84145d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a2b562d172811942e865c4d903d84145d">VehicleOrderQueueAdapter</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:a2b562d172811942e865c4d903d84145d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfers adapter ownership without copying queue state.  <br /></td></tr>
+<tr class="separator:a2b562d172811942e865c4d903d84145d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed3fa2032a6652b75f60da67e956b005" id="r_aed3fa2032a6652b75f60da67e956b005"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#aed3fa2032a6652b75f60da67e956b005">operator=</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:aed3fa2032a6652b75f60da67e956b005"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfers adapter ownership without copying queue state.  <br /></td></tr>
+<tr class="separator:aed3fa2032a6652b75f60da67e956b005"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc64bffd632f01457b2f23481cbf06d2" id="r_adc64bffd632f01457b2f23481cbf06d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#adc64bffd632f01457b2f23481cbf06d2">append</a> (const <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a> &amp;<a class="el" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0, double timeoutSeconds=0.0)</td></tr>
+<tr class="memdesc:adc64bffd632f01457b2f23481cbf06d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> domain order to the generic queue.  <br /></td></tr>
+<tr class="separator:adc64bffd632f01457b2f23481cbf06d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3114d12234b5837f3a3475407f717d46" id="r_a3114d12234b5837f3a3475407f717d46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a3114d12234b5837f3a3475407f717d46">replace</a> (const <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a> &amp;<a class="el" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0, double timeoutSeconds=0.0)</td></tr>
+<tr class="memdesc:a3114d12234b5837f3a3475407f717d46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels unfinished orders and starts a replacement.  <br /></td></tr>
+<tr class="separator:a3114d12234b5837f3a3475407f717d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36035ddb57686261f8564256730428dc" id="r_a36035ddb57686261f8564256730428dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a36035ddb57686261f8564256730428dc">interrupt</a> (const <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a> &amp;<a class="el" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0, double timeoutSeconds=0.0)</td></tr>
+<tr class="memdesc:a36035ddb57686261f8564256730428dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interrupts the active order when the generic priority permits.  <br /></td></tr>
+<tr class="separator:a36035ddb57686261f8564256730428dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3da553089d3c266392242c30c48c917" id="r_af3da553089d3c266392242c30c48c917"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#af3da553089d3c266392242c30c48c917">completeCurrent</a> ()</td></tr>
+<tr class="memdesc:af3da553089d3c266392242c30c48c917"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes the current generic order and activates the next one.  <br /></td></tr>
+<tr class="separator:af3da553089d3c266392242c30c48c917"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9753c8952b03e6aebc94fb1b5213d52c" id="r_a9753c8952b03e6aebc94fb1b5213d52c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a9753c8952b03e6aebc94fb1b5213d52c">failCurrent</a> (const std::string &amp;reason)</td></tr>
+<tr class="memdesc:a9753c8952b03e6aebc94fb1b5213d52c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fails the current generic order and activates the next one.  <br /></td></tr>
+<tr class="separator:a9753c8952b03e6aebc94fb1b5213d52c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad93c1485cb07efb7aeda56ccc128c7cd" id="r_ad93c1485cb07efb7aeda56ccc128c7cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#ad93c1485cb07efb7aeda56ccc128c7cd">cancel</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;reason=&quot;cancelled&quot;)</td></tr>
+<tr class="memdesc:ad93c1485cb07efb7aeda56ccc128c7cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels an active or queued generic order by stable id.  <br /></td></tr>
+<tr class="separator:ad93c1485cb07efb7aeda56ccc128c7cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7db07a3998218b818b855f7e04c9d894" id="r_a7db07a3998218b818b855f7e04c9d894"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a7db07a3998218b818b855f7e04c9d894">update</a> (double dtSeconds)</td></tr>
+<tr class="memdesc:a7db07a3998218b818b855f7e04c9d894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances generic timeout handling.  <br /></td></tr>
+<tr class="separator:a7db07a3998218b818b855f7e04c9d894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8e0be2a15e7688895df35f8f8c31e7f" id="r_af8e0be2a15e7688895df35f8f8c31e7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#af8e0be2a15e7688895df35f8f8c31e7f">clear</a> ()</td></tr>
+<tr class="memdesc:af8e0be2a15e7688895df35f8f8c31e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears generic queue history and <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> domain payloads.  <br /></td></tr>
+<tr class="separator:af8e0be2a15e7688895df35f8f8c31e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14386555a51fadc3e59b12126baff6e9" id="r_a14386555a51fadc3e59b12126baff6e9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a14386555a51fadc3e59b12126baff6e9">current</a> () const</td></tr>
+<tr class="memdesc:a14386555a51fadc3e59b12126baff6e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> payload for the active generic order, or null.  <br /></td></tr>
+<tr class="separator:a14386555a51fadc3e59b12126baff6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e7f8788009aeae9b19c92b15c7d71d1" id="r_a4e7f8788009aeae9b19c92b15c7d71d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a4e7f8788009aeae9b19c92b15c7d71d1">activeOrQueuedCount</a> () const</td></tr>
+<tr class="memdesc:a4e7f8788009aeae9b19c92b15c7d71d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of active and queued <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> orders.  <br /></td></tr>
+<tr class="separator:a4e7f8788009aeae9b19c92b15c7d71d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a038560e4e7de01592d0a7ba4b7aa9675" id="r_a038560e4e7de01592d0a7ba4b7aa9675"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a038560e4e7de01592d0a7ba4b7aa9675">syncCompatibility</a> (<a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1Orders.html">VehicleEntity::Orders</a> &amp;legacy) const</td></tr>
+<tr class="memdesc:a038560e4e7de01592d0a7ba4b7aa9675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refreshes the legacy component projection.  <br /></td></tr>
+<tr class="separator:a038560e4e7de01592d0a7ba4b7aa9675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Maps <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html" title="一条 Vehicle 领域命令（生命周期由 Vehicle order adapter 执行）。">VehicleOrder</a> domain payloads onto an <a class="el" href="classeve_1_1orders_1_1CommandQueue.html" title="Generic priority order queue with no gameplay or entity semantics.">orders::CommandQueue</a>. </p>
+<p>The adapter owns its queue and domain payload map. The observation returned by <a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a14386555a51fadc3e59b12126baff6e9" title="Returns the Vehicle payload for the active generic order, or null.">current()</a> is borrowed until the next mutating adapter call. The legacy Orders::queue/current fields are refreshed by <a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#a038560e4e7de01592d0a7ba4b7aa9675" title="Refreshes the legacy component projection.">syncCompatibility()</a> and are a read-only compatibility projection for existing <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> consumers. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8h_source.html">VehicleOrderQueueAdapter.h</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad75be671d810d9dc87f3285d422f24ba" name="ad75be671d810d9dc87f3285d422f24ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad75be671d810d9dc87f3285d422f24ba">&#9670;&#160;</a></span>VehicleOrderQueueAdapter() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::vehicle::VehicleOrderQueueAdapter::VehicleOrderQueueAdapter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates an empty adapter with an owned generic queue. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58117cea99e965af76ca440524081dc2" name="a58117cea99e965af76ca440524081dc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58117cea99e965af76ca440524081dc2">&#9670;&#160;</a></span>~VehicleOrderQueueAdapter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::vehicle::VehicleOrderQueueAdapter::~VehicleOrderQueueAdapter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases the owned generic queue and domain payloads. </p>
+
+</div>
+</div>
+<a id="ae405b5e67573bef87e4b23a452051afa" name="ae405b5e67573bef87e4b23a452051afa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae405b5e67573bef87e4b23a452051afa">&#9670;&#160;</a></span>VehicleOrderQueueAdapter() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::vehicle::VehicleOrderQueueAdapter::VehicleOrderQueueAdapter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deep-copies generic lifecycle state and <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> payloads. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b562d172811942e865c4d903d84145d" name="a2b562d172811942e865c4d903d84145d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b562d172811942e865c4d903d84145d">&#9670;&#160;</a></span>VehicleOrderQueueAdapter() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::vehicle::VehicleOrderQueueAdapter::VehicleOrderQueueAdapter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfers adapter ownership without copying queue state. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4e7f8788009aeae9b19c92b15c7d71d1" name="a4e7f8788009aeae9b19c92b15c7d71d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e7f8788009aeae9b19c92b15c7d71d1">&#9670;&#160;</a></span>activeOrQueuedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::VehicleOrderQueueAdapter::activeOrQueuedCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of active and queued <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> orders. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1orders.html#a59f6bb174ca520627742f4f398258292a4d3d769b812b6faa6b76e1a8abaece2d">eve::orders::Active</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="namespaceeve_1_1orders.html#a59f6bb174ca520627742f4f398258292a7b2f31b90fe1c2cc33a52233c1925df3">eve::orders::Queued</a> , 以及 <a class="el" href="CommandQueue_8h_source.html#l00067">eve::orders::Order::state</a>.</p>
+
+</div>
+</div>
+<a id="adc64bffd632f01457b2f23481cbf06d2" name="adc64bffd632f01457b2f23481cbf06d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc64bffd632f01457b2f23481cbf06d2">&#9670;&#160;</a></span>append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::vehicle::VehicleOrderQueueAdapter::append </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a> &amp;&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeoutSeconds</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Appends a <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> domain order to the generic queue. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00054">append()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Vehicle_8cpp_source.html#l00079">eve::vehicle::vehicleOrderTypeName()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00054">append()</a>.</p>
+
+</div>
+</div>
+<a id="ad93c1485cb07efb7aeda56ccc128c7cd" name="ad93c1485cb07efb7aeda56ccc128c7cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad93c1485cb07efb7aeda56ccc128c7cd">&#9670;&#160;</a></span>cancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::vehicle::VehicleOrderQueueAdapter::cancel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>&quot;cancelled&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels an active or queued generic order by stable id. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af8e0be2a15e7688895df35f8f8c31e7f" name="af8e0be2a15e7688895df35f8f8c31e7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8e0be2a15e7688895df35f8f8c31e7f">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::VehicleOrderQueueAdapter::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears generic queue history and <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> domain payloads. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3da553089d3c266392242c30c48c917" name="af3da553089d3c266392242c30c48c917"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3da553089d3c266392242c30c48c917">&#9670;&#160;</a></span>completeCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::vehicle::VehicleOrderQueueAdapter::completeCurrent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Completes the current generic order and activates the next one. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a> , 以及 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00120">current()</a>.</p>
+
+</div>
+</div>
+<a id="a14386555a51fadc3e59b12126baff6e9" name="a14386555a51fadc3e59b12126baff6e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14386555a51fadc3e59b12126baff6e9">&#9670;&#160;</a></span>current()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a> * eve::vehicle::VehicleOrderQueueAdapter::current </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> payload for the active generic order, or null. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable payload owned by this adapter. @ownership <a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html" title="Maps VehicleOrder domain payloads onto an orders::CommandQueue.">VehicleOrderQueueAdapter</a> owns the payload; callers must not delete it. @lifetime Valid until the next mutating adapter call, <a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html#af8e0be2a15e7688895df35f8f8c31e7f" title="Clears generic queue history and Vehicle domain payloads.">clear()</a>, or destruction. @thread Call on the adapter's owning simulation thread. @reentrancy Do not retain or re-enter adapter mutation while observing the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Scheduling_8h_source.html#l00015">eve::scheduling::ItemMetadata::id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00083">completeCurrent()</a> , 以及 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00093">failCurrent()</a>.</p>
+
+</div>
+</div>
+<a id="a9753c8952b03e6aebc94fb1b5213d52c" name="a9753c8952b03e6aebc94fb1b5213d52c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9753c8952b03e6aebc94fb1b5213d52c">&#9670;&#160;</a></span>failCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::vehicle::VehicleOrderQueueAdapter::failCurrent </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fails the current generic order and activates the next one. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a> , 以及 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00120">current()</a>.</p>
+
+</div>
+</div>
+<a id="a36035ddb57686261f8564256730428dc" name="a36035ddb57686261f8564256730428dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36035ddb57686261f8564256730428dc">&#9670;&#160;</a></span>interrupt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::vehicle::VehicleOrderQueueAdapter::interrupt </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a> &amp;&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeoutSeconds</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interrupts the active order when the generic priority permits. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Vehicle_8cpp_source.html#l00079">eve::vehicle::vehicleOrderTypeName()</a>.</p>
+
+</div>
+</div>
+<a id="aa0e8b5f944799dda4b5b1586ae6af130" name="aa0e8b5f944799dda4b5b1586ae6af130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0e8b5f944799dda4b5b1586ae6af130">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp; eve::vehicle::VehicleOrderQueueAdapter::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deep-copies generic lifecycle state and <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> payloads. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed3fa2032a6652b75f60da67e956b005" name="aed3fa2032a6652b75f60da67e956b005"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed3fa2032a6652b75f60da67e956b005">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp; eve::vehicle::VehicleOrderQueueAdapter::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleOrderQueueAdapter.html">VehicleOrderQueueAdapter</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfers adapter ownership without copying queue state. </p>
+
+</div>
+</div>
+<a id="a3114d12234b5837f3a3475407f717d46" name="a3114d12234b5837f3a3475407f717d46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3114d12234b5837f3a3475407f717d46">&#9670;&#160;</a></span>replace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::vehicle::VehicleOrderQueueAdapter::replace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1vehicle_1_1VehicleOrder.html">VehicleOrder</a> &amp;&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeoutSeconds</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels unfinished orders and starts a replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Vehicle_8cpp_source.html#l00079">eve::vehicle::vehicleOrderTypeName()</a>.</p>
+
+</div>
+</div>
+<a id="a038560e4e7de01592d0a7ba4b7aa9675" name="a038560e4e7de01592d0a7ba4b7aa9675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a038560e4e7de01592d0a7ba4b7aa9675">&#9670;&#160;</a></span>syncCompatibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::VehicleOrderQueueAdapter::syncCompatibility </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1Orders.html">VehicleEntity::Orders</a> &amp;&#160;</td>
+          <td class="paramname"><em>legacy</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refreshes the legacy component projection. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">legacy</td><td><a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1Orders.html" title="Vehicle order lifecycle adapter and compatibility projection.">VehicleEntity::Orders</a> component to update. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>The adapter remains the only lifecycle authority. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1orders.html#a59f6bb174ca520627742f4f398258292a4d3d769b812b6faa6b76e1a8abaece2d">eve::orders::Active</a>, <a class="el" href="VehicleTypes_8h_source.html#l00252">eve::vehicle::VehicleEntity::Orders::current</a>, <a class="el" href="Scheduling_8h_source.html#l00015">eve::scheduling::ItemMetadata::id</a>, <a class="el" href="VehicleTypes_8h_source.html#l00251">eve::vehicle::VehicleEntity::Orders::queue</a>, <a class="el" href="namespaceeve_1_1orders.html#a59f6bb174ca520627742f4f398258292a7b2f31b90fe1c2cc33a52233c1925df3">eve::orders::Queued</a> , 以及 <a class="el" href="CommandQueue_8h_source.html#l00067">eve::orders::Order::state</a>.</p>
+
+</div>
+</div>
+<a id="a7db07a3998218b818b855f7e04c9d894" name="a7db07a3998218b818b855f7e04c9d894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7db07a3998218b818b855f7e04c9d894">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::VehicleOrderQueueAdapter::update </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances generic timeout handling. </p>
+
+<p class="definition">在文件 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a> 第 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00053">updated</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/vehicle/<a class="el" href="VehicleOrderQueueAdapter_8h_source.html">VehicleOrderQueueAdapter.h</a></li>
+<li>src/modules/vehicle/<a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html">VehicleOrderQueueAdapter.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

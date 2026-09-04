@@ -1,0 +1,763 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::QuestSystem类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html">QuestSystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1QuestSystem-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::QuestSystem类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="QuestSystem_8h_source.html">QuestSystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a19fd1731b658c803fb0367e50aa6eeb0" id="r_a19fd1731b658c803fb0367e50aa6eeb0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a19fd1731b658c803fb0367e50aa6eeb0">syncAuto</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>)</td></tr>
+<tr class="memdesc:a19fd1731b658c803fb0367e50aa6eeb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">补建 Registry 里尚不在 <a class="el" href="classeve_1_1rpg_1_1Tracker.html" title="一份任务进度 + 本实例事件队列。">Tracker</a> 上的条目，并解开前置已齐的 locked 条目。  <br /></td></tr>
+<tr class="separator:a19fd1731b658c803fb0367e50aa6eeb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59afb0e28d980e993b50ddc68f534b0f" id="r_a59afb0e28d980e993b50ddc68f534b0f"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a59afb0e28d980e993b50ddc68f534b0f">hasMetRequirements</a> (const <a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const <a class="el" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> &amp;def)</td></tr>
+<tr class="memdesc:a59afb0e28d980e993b50ddc68f534b0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">def 的全部 requires 在本 <a class="el" href="classeve_1_1rpg_1_1Tracker.html" title="一份任务进度 + 本实例事件队列。">Tracker</a> 上均已 completed（谓词查询）。  <br /></td></tr>
+<tr class="separator:a59afb0e28d980e993b50ddc68f534b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d46d7b61f8afc071adafff1c23af9a2" id="r_a3d46d7b61f8afc071adafff1c23af9a2"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a3d46d7b61f8afc071adafff1c23af9a2">stateForUnlocked</a> (const <a class="el" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> &amp;def)</td></tr>
+<tr class="memdesc:a3d46d7b61f8afc071adafff1c23af9a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">解锁后的落点：startPolicy==auto → "active"，否则 "inactive"。  <br /></td></tr>
+<tr class="separator:a3d46d7b61f8afc071adafff1c23af9a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e184947cd63578f4d5272363c196050" id="r_a8e184947cd63578f4d5272363c196050"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a8e184947cd63578f4d5272363c196050">activate</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string *reason=nullptr)</td></tr>
+<tr class="memdesc:a8e184947cd63578f4d5272363c196050"><td class="mdescLeft">&#160;</td><td class="mdescRight">激活：仅 inactive 且前置已齐时成功；否则 push reject 并返回 false（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:a8e184947cd63578f4d5272363c196050"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04a3de69be90ccdcafb5bda86cd46a83" id="r_a04a3de69be90ccdcafb5bda86cd46a83"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a04a3de69be90ccdcafb5bda86cd46a83">canActivate</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string *reason=nullptr)</td></tr>
+<tr class="memdesc:a04a3de69be90ccdcafb5bda86cd46a83"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否可激活（谓词查询，可返回 reason）。  <br /></td></tr>
+<tr class="separator:a04a3de69be90ccdcafb5bda86cd46a83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3912241f048ec1ca302aad1bba9dece4" id="r_a3912241f048ec1ca302aad1bba9dece4"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a3912241f048ec1ca302aad1bba9dece4">canActivateReason</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a3912241f048ec1ca302aad1bba9dece4"><td class="mdescLeft">&#160;</td><td class="mdescRight">不可激活的原因（"" 可激活，否则 unknown/locked/alreadyActive/alreadyCompleted/failed/ready）。  <br /></td></tr>
+<tr class="separator:a3912241f048ec1ca302aad1bba9dece4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf9103c2a776c79f8cf0ddafcc645825" id="r_abf9103c2a776c79f8cf0ddafcc645825"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#abf9103c2a776c79f8cf0ddafcc645825">notify</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const std::string &amp;topic, const std::string &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, int amount)</td></tr>
+<tr class="memdesc:abf9103c2a776c79f8cf0ddafcc645825"><td class="mdescLeft">&#160;</td><td class="mdescRight">报告事实 (topic, target, amount)；只推进 state==active 的条目。  <br /></td></tr>
+<tr class="separator:abf9103c2a776c79f8cf0ddafcc645825"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a168c0990c4ef2fa0675091b91a444654" id="r_a168c0990c4ef2fa0675091b91a444654"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a168c0990c4ef2fa0675091b91a444654">claim</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string *reason=nullptr)</td></tr>
+<tr class="memdesc:a168c0990c4ef2fa0675091b91a444654"><td class="mdescLeft">&#160;</td><td class="mdescRight">仅 state==ready 时成功 → completed 并触发解锁；否则 reject（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:a168c0990c4ef2fa0675091b91a444654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ad0ea8d30b6517e8a3dfeed1d76b8ad" id="r_a0ad0ea8d30b6517e8a3dfeed1d76b8ad"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a0ad0ea8d30b6517e8a3dfeed1d76b8ad">reset</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a0ad0ea8d30b6517e8a3dfeed1d76b8ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">进度清零并按当前 requires 回落 locked/inactive/active；不级联（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:a0ad0ea8d30b6517e8a3dfeed1d76b8ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af793ccb1360b598a0a2ce2d670b24f5a" id="r_af793ccb1360b598a0a2ce2d670b24f5a"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#af793ccb1360b598a0a2ce2d670b24f5a">abandon</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:af793ccb1360b598a0a2ce2d670b24f5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">abandon/fail → failed；对 completed/failed/locked/未知 id 为 reject（compatibility facade (脚本兼容门面)）。  <br /></td></tr>
+<tr class="separator:af793ccb1360b598a0a2ce2d670b24f5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a3748eb1c23e5fb5591df1e2302fc79" id="r_a6a3748eb1c23e5fb5591df1e2302fc79"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a6a3748eb1c23e5fb5591df1e2302fc79">fail</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;reason)</td></tr>
+<tr class="separator:a6a3748eb1c23e5fb5591df1e2302fc79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a921541e5bd79dd0c38a2a5b830c861d1" id="r_a921541e5bd79dd0c38a2a5b830c861d1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1QuestSystem.html#a921541e5bd79dd0c38a2a5b830c861d1">pollEvents</a> (<a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, std::vector&lt; <a class="el" href="structeve_1_1rpg_1_1QuestEvent.html">QuestEvent</a> &gt; &amp;out)</td></tr>
+<tr class="memdesc:a921541e5bd79dd0c38a2a5b830c861d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">把 <a class="el" href="classeve_1_1rpg_1_1Tracker.html" title="一份任务进度 + 本实例事件队列。">Tracker</a> 的 pending 移动并清空到 out。  <br /></td></tr>
+<tr class="separator:a921541e5bd79dd0c38a2a5b830c861d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="QuestSystem_8h_source.html">QuestSystem.h</a> 第 <a class="el" href="QuestSystem_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="af793ccb1360b598a0a2ce2d670b24f5a" name="af793ccb1360b598a0a2ce2d670b24f5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af793ccb1360b598a0a2ce2d670b24f5a">&#9670;&#160;</a></span>abandon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::QuestSystem::abandon </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>abandon/fail → failed；对 completed/failed/locked/未知 id 为 reject（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tracker_8cpp_source.html#l00033">eve::rpg::Tracker::abandon()</a>.</p>
+
+</div>
+</div>
+<a id="a8e184947cd63578f4d5272363c196050" name="a8e184947cd63578f4d5272363c196050"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e184947cd63578f4d5272363c196050">&#9670;&#160;</a></span>activate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::QuestSystem::activate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>激活：仅 inactive 且前置已齐时成功；否则 push reject 并返回 false（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00100">canActivateReason()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tracker_8cpp_source.html#l00017">eve::rpg::Tracker::activate()</a>.</p>
+
+</div>
+</div>
+<a id="a04a3de69be90ccdcafb5bda86cd46a83" name="a04a3de69be90ccdcafb5bda86cd46a83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04a3de69be90ccdcafb5bda86cd46a83">&#9670;&#160;</a></span>canActivate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::QuestSystem::canActivate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>是否可激活（谓词查询，可返回 reason）。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestSystem_8cpp_source.html#l00100">canActivateReason()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tracker_8cpp_source.html#l00019">eve::rpg::Tracker::canActivate()</a>.</p>
+
+</div>
+</div>
+<a id="a3912241f048ec1ca302aad1bba9dece4" name="a3912241f048ec1ca302aad1bba9dece4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3912241f048ec1ca302aad1bba9dece4">&#9670;&#160;</a></span>canActivateReason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::QuestSystem::canActivateReason </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>不可激活的原因（"" 可激活，否则 unknown/locked/alreadyActive/alreadyCompleted/failed/ready）。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00048">hasMetRequirements()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestSystem_8cpp_source.html#l00122">activate()</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00116">canActivate()</a> , 以及 <a class="el" href="Tracker_8cpp_source.html#l00021">eve::rpg::Tracker::canActivateReason()</a>.</p>
+
+</div>
+</div>
+<a id="a168c0990c4ef2fa0675091b91a444654" name="a168c0990c4ef2fa0675091b91a444654"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a168c0990c4ef2fa0675091b91a444654">&#9670;&#160;</a></span>claim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::QuestSystem::claim </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>仅 state==ready 时成功 → completed 并触发解锁；否则 reject（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00061">syncAuto()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tracker_8cpp_source.html#l00029">eve::rpg::Tracker::claim()</a> , 以及 <a class="el" href="QuestReward_8cpp_source.html#l00025">eve::rpg::QuestReward::claim()</a>.</p>
+
+</div>
+</div>
+<a id="a6a3748eb1c23e5fb5591df1e2302fc79" name="a6a3748eb1c23e5fb5591df1e2302fc79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a3748eb1c23e5fb5591df1e2302fc79">&#9670;&#160;</a></span>fail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::QuestSystem::fail </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tracker_8cpp_source.html#l00035">eve::rpg::Tracker::fail()</a>.</p>
+
+</div>
+</div>
+<a id="a59afb0e28d980e993b50ddc68f534b0f" name="a59afb0e28d980e993b50ddc68f534b0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59afb0e28d980e993b50ddc68f534b0f">&#9670;&#160;</a></span>hasMetRequirements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::QuestSystem::hasMetRequirements </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> &amp;&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>def</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>def 的全部 requires 在本 <a class="el" href="classeve_1_1rpg_1_1Tracker.html" title="一份任务进度 + 本实例事件队列。">Tracker</a> 上均已 completed（谓词查询）。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8h_source.html#l00029">eve::rpg::QuestDefinition::requiresIds</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestSystem_8cpp_source.html#l00100">canActivateReason()</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00196">reset()</a> , 以及 <a class="el" href="QuestSystem_8cpp_source.html#l00061">syncAuto()</a>.</p>
+
+</div>
+</div>
+<a id="abf9103c2a776c79f8cf0ddafcc645825" name="abf9103c2a776c79f8cf0ddafcc645825"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf9103c2a776c79f8cf0ddafcc645825">&#9670;&#160;</a></span>notify()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::QuestSystem::notify </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>topic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>报告事实 (topic, target, amount)；只推进 state==active 的条目。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="Quest_8h_source.html#l00030">eve::rpg::QuestDefinition::objectives</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tracker_8cpp_source.html#l00025">eve::rpg::Tracker::notify()</a>.</p>
+
+</div>
+</div>
+<a id="a921541e5bd79dd0c38a2a5b830c861d1" name="a921541e5bd79dd0c38a2a5b830c861d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a921541e5bd79dd0c38a2a5b830c861d1">&#9670;&#160;</a></span>pollEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::QuestSystem::pollEvents </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1rpg_1_1QuestEvent.html">QuestEvent</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>把 <a class="el" href="classeve_1_1rpg_1_1Tracker.html" title="一份任务进度 + 本实例事件队列。">Tracker</a> 的 pending 移动并清空到 out。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a0ad0ea8d30b6517e8a3dfeed1d76b8ad" name="a0ad0ea8d30b6517e8a3dfeed1d76b8ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ad0ea8d30b6517e8a3dfeed1d76b8ad">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::QuestSystem::reset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>进度清零并按当前 requires 回落 locked/inactive/active；不级联（compatibility facade (脚本兼容门面)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestTypes_8h_source.html#l00036">eve::rpg::ObjectiveRuntime::count</a>, <a class="el" href="QuestTypes_8h_source.html#l00035">eve::rpg::ObjectiveRuntime::current</a>, <a class="el" href="QuestTypes_8h_source.html#l00037">eve::rpg::ObjectiveRuntime::done</a>, <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00048">hasMetRequirements()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="QuestTypes_8h_source.html#l00034">eve::rpg::ObjectiveRuntime::id</a>, <a class="el" href="Quest_8h_source.html#l00030">eve::rpg::QuestDefinition::objectives</a>, <a class="el" href="QuestTypes_8h_source.html#l00045">eve::rpg::QuestRuntime::objectives</a>, <a class="el" href="QuestTypes_8h_source.html#l00044">eve::rpg::QuestRuntime::state</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00057">stateForUnlocked()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tracker_8cpp_source.html#l00031">eve::rpg::Tracker::reset()</a>.</p>
+
+</div>
+</div>
+<a id="a3d46d7b61f8afc071adafff1c23af9a2" name="a3d46d7b61f8afc071adafff1c23af9a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d46d7b61f8afc071adafff1c23af9a2">&#9670;&#160;</a></span>stateForUnlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::QuestSystem::stateForUnlocked </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rpg_1_1QuestDefinition.html">QuestDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>def</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>解锁后的落点：startPolicy==auto → "active"，否则 "inactive"。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Quest_8h_source.html#l00025">eve::rpg::QuestDefinition::startPolicy</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestSystem_8cpp_source.html#l00196">reset()</a> , 以及 <a class="el" href="QuestSystem_8cpp_source.html#l00061">syncAuto()</a>.</p>
+
+</div>
+</div>
+<a id="a19fd1731b658c803fb0367e50aa6eeb0" name="a19fd1731b658c803fb0367e50aa6eeb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19fd1731b658c803fb0367e50aa6eeb0">&#9670;&#160;</a></span>syncAuto()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::QuestSystem::syncAuto </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> *&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>补建 Registry 里尚不在 <a class="el" href="classeve_1_1rpg_1_1Tracker.html" title="一份任务进度 + 本实例事件队列。">Tracker</a> 上的条目，并解开前置已齐的 locked 条目。 </p>
+
+<p class="definition">在文件 <a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a> 第 <a class="el" href="QuestSystem_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QuestTypes_8h_source.html#l00036">eve::rpg::ObjectiveRuntime::count</a>, <a class="el" href="QuestTypes_8h_source.html#l00035">eve::rpg::ObjectiveRuntime::current</a>, <a class="el" href="QuestTypes_8h_source.html#l00037">eve::rpg::ObjectiveRuntime::done</a>, <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00048">hasMetRequirements()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="QuestTypes_8h_source.html#l00034">eve::rpg::ObjectiveRuntime::id</a>, <a class="el" href="QuestTypes_8h_source.html#l00042">eve::rpg::QuestRuntime::id</a>, <a class="el" href="Quest_8cpp_source.html#l00172">eve::rpg::QuestRegistry::ids()</a>, <a class="el" href="Quest_8h_source.html#l00030">eve::rpg::QuestDefinition::objectives</a>, <a class="el" href="QuestTypes_8h_source.html#l00045">eve::rpg::QuestRuntime::objectives</a>, <a class="el" href="QuestTypes_8h_source.html#l00044">eve::rpg::QuestRuntime::state</a>, <a class="el" href="QuestSystem_8cpp_source.html#l00057">stateForUnlocked()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QuestSystem_8cpp_source.html#l00174">claim()</a>, <a class="el" href="Tracker_8cpp_source.html#l00015">eve::rpg::Tracker::syncAuto()</a> , 以及 <a class="el" href="Tracker_8cpp_source.html#l00013">eve::rpg::Tracker::Tracker()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="QuestSystem_8h_source.html">QuestSystem.h</a></li>
+<li>src/modules/rpg/<a class="el" href="QuestSystem_8cpp_source.html">QuestSystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

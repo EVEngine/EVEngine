@@ -1,0 +1,441 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::MemoryAssetDatabase类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html">MemoryAssetDatabase</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1MemoryAssetDatabase-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::MemoryAssetDatabase类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Thread-neutral in-memory asset index used by editor hosts and tests.  
+ <a href="classeve_1_1editor_1_1MemoryAssetDatabase.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorAssetDatabase_8h_source.html">EditorAssetDatabase.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4a846f6a49fff25ecc6b9d6b3dcdd99f" id="r_a4a846f6a49fff25ecc6b9d6b3dcdd99f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#a4a846f6a49fff25ecc6b9d6b3dcdd99f">publish</a> (<a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> record, std::vector&lt; <a class="el" href="structeve_1_1editor_1_1AssetDependency.html">AssetDependency</a> &gt; <a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#aeaea4f29c8e7fd9df9f67f767efc3546">dependencies</a>={})</td></tr>
+<tr class="memdesc:a4a846f6a49fff25ecc6b9d6b3dcdd99f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish one validated record and its dependencies.  <br /></td></tr>
+<tr class="separator:a4a846f6a49fff25ecc6b9d6b3dcdd99f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a913983a068df9a4b5ea329b2b514e23b" id="r_a913983a068df9a4b5ea329b2b514e23b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#a913983a068df9a4b5ea329b2b514e23b">publishBatch</a> (std::vector&lt; <a class="el" href="structeve_1_1editor_1_1AssetPublication.html">AssetPublication</a> &gt; publications)</td></tr>
+<tr class="memdesc:a913983a068df9a4b5ea329b2b514e23b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically publish an entire package projection as one index generation.  <br /></td></tr>
+<tr class="separator:a913983a068df9a4b5ea329b2b514e23b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a435e8942cfcb528c5a969edcb0a4dd96" id="r_a435e8942cfcb528c5a969edcb0a4dd96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#a435e8942cfcb528c5a969edcb0a4dd96">find</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">AssetGuid</a> &amp;guid) const</td></tr>
+<tr class="memdesc:a435e8942cfcb528c5a969edcb0a4dd96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find one asset by stable GUID.  <br /></td></tr>
+<tr class="separator:a435e8942cfcb528c5a969edcb0a4dd96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4d2e187efac10df4ef1018a1bb9db7a" id="r_af4d2e187efac10df4ef1018a1bb9db7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#af4d2e187efac10df4ef1018a1bb9db7a">findByUri</a> (const std::string &amp;logicalUri) const</td></tr>
+<tr class="memdesc:af4d2e187efac10df4ef1018a1bb9db7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find one asset by logical content URI.  <br /></td></tr>
+<tr class="separator:af4d2e187efac10df4ef1018a1bb9db7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85153698668bc1f0d2747055a590d7dd" id="r_a85153698668bc1f0d2747055a590d7dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetPage.html">AssetPage</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#a85153698668bc1f0d2747055a590d7dd">query</a> (const <a class="el" href="structeve_1_1editor_1_1AssetQuery.html">AssetQuery</a> &amp;query, std::size_t <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>, std::size_t limit, std::optional&lt; std::uint64_t &gt; <a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#ac4ab7509ff6a0942e69d8018e0550b9f">generation</a>=std::nullopt) const</td></tr>
+<tr class="memdesc:a85153698668bc1f0d2747055a590d7dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a deterministic page; stale generations return Conflict.  <br /></td></tr>
+<tr class="separator:a85153698668bc1f0d2747055a590d7dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaea4f29c8e7fd9df9f67f767efc3546" id="r_aeaea4f29c8e7fd9df9f67f767efc3546"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1AssetDependency.html">AssetDependency</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#aeaea4f29c8e7fd9df9f67f767efc3546">dependencies</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">AssetGuid</a> &amp;guid, bool incoming=false) const</td></tr>
+<tr class="memdesc:aeaea4f29c8e7fd9df9f67f767efc3546"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query outgoing or incoming dependencies for one asset.  <br /></td></tr>
+<tr class="separator:aeaea4f29c8e7fd9df9f67f767efc3546"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4ab7509ff6a0942e69d8018e0550b9f" id="r_ac4ab7509ff6a0942e69d8018e0550b9f"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MemoryAssetDatabase.html#ac4ab7509ff6a0942e69d8018e0550b9f">generation</a> () const</td></tr>
+<tr class="memdesc:ac4ab7509ff6a0942e69d8018e0550b9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the monotonic index generation.  <br /></td></tr>
+<tr class="separator:ac4ab7509ff6a0942e69d8018e0550b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Thread-neutral in-memory asset index used by editor hosts and tests. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAssetDatabase_8h_source.html">EditorAssetDatabase.h</a> 第 <a class="el" href="EditorAssetDatabase_8h_source.html#l00068">68</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aeaea4f29c8e7fd9df9f67f767efc3546" name="aeaea4f29c8e7fd9df9f67f767efc3546"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaea4f29c8e7fd9df9f67f767efc3546">&#9670;&#160;</a></span>dependencies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1AssetDependency.html">AssetDependency</a> &gt; eve::editor::MemoryAssetDatabase::dependencies </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">AssetGuid</a> &amp;&#160;</td>
+          <td class="paramname"><em>guid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>incoming</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query outgoing or incoming dependencies for one asset. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAssetDatabase_8cpp_source.html">EditorAssetDatabase.cpp</a> 第 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00024">publish()</a> , 以及 <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a435e8942cfcb528c5a969edcb0a4dd96" name="a435e8942cfcb528c5a969edcb0a4dd96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a435e8942cfcb528c5a969edcb0a4dd96">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt; eve::editor::MemoryAssetDatabase::find </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">AssetGuid</a> &amp;&#160;</td>
+          <td class="paramname"><em>guid</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find one asset by stable GUID. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAssetDatabase_8cpp_source.html">EditorAssetDatabase.cpp</a> 第 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00106">findByUri()</a>, <a class="el" href="EditorRuntimeManifest_8cpp_source.html#l00021">eve::editor::RuntimeEditorPublisher::publish()</a>, <a class="el" href="EditorPhysicsAsset_8cpp_source.html#l00059">eve::editor::AssetDatabasePhysicsColliderResolver::resolve()</a> , 以及 <a class="el" href="EditorEnvironmentBrowser_8cpp_source.html#l00084">eve::editor::EnvironmentAssetBrowser::select()</a>.</p>
+
+</div>
+</div>
+<a id="af4d2e187efac10df4ef1018a1bb9db7a" name="af4d2e187efac10df4ef1018a1bb9db7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4d2e187efac10df4ef1018a1bb9db7a">&#9670;&#160;</a></span>findByUri()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt; eve::editor::MemoryAssetDatabase::findByUri </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>logicalUri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find one asset by logical content URI. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAssetDatabase_8cpp_source.html">EditorAssetDatabase.cpp</a> 第 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00098">find()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorPhysicsAsset_8cpp_source.html#l00059">eve::editor::AssetDatabasePhysicsColliderResolver::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="ac4ab7509ff6a0942e69d8018e0550b9f" name="ac4ab7509ff6a0942e69d8018e0550b9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4ab7509ff6a0942e69d8018e0550b9f">&#9670;&#160;</a></span>generation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::editor::MemoryAssetDatabase::generation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the monotonic index generation. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAssetDatabase_8h_source.html">EditorAssetDatabase.h</a> 第 <a class="el" href="EditorAssetDatabase_8h_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00113">query()</a>.</p>
+
+</div>
+</div>
+<a id="a4a846f6a49fff25ecc6b9d6b3dcdd99f" name="a4a846f6a49fff25ecc6b9d6b3dcdd99f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a846f6a49fff25ecc6b9d6b3dcdd99f">&#9670;&#160;</a></span>publish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt; eve::editor::MemoryAssetDatabase::publish </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a>&#160;</td>
+          <td class="paramname"><em>record</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1AssetDependency.html">AssetDependency</a> &gt;&#160;</td>
+          <td class="paramname"><em>dependencies</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically publish one validated record and its dependencies. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAssetDatabase_8cpp_source.html">EditorAssetDatabase.cpp</a> 第 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00155">dependencies()</a>, <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00037">eve::editor::AssetDependency::from</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00017">eve::editor::AssetRecord::guid</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00018">eve::editor::AssetRecord::logicalUri</a>, <a class="el" href="namespaceeve_1_1editor.html#a99eea4b40241276976f599f4d2c959deae7d31fc0602fb2ede144d18cdffd816b">eve::editor::Ready</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00027">eve::editor::AssetRecord::status</a> , 以及 <a class="el" href="EditorAssetDatabase_8h_source.html#l00019">eve::editor::AssetRecord::typeId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00183">eve::editor::ImportCoordinator::publish()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00162">eve::editor::ImportCoordinator::publish()</a> , 以及 <a class="el" href="EditorDiskAssetCatalog_8cpp_source.html#l00077">eve::editor::DiskAssetCatalog::scan()</a>.</p>
+
+</div>
+</div>
+<a id="a913983a068df9a4b5ea329b2b514e23b" name="a913983a068df9a4b5ea329b2b514e23b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a913983a068df9a4b5ea329b2b514e23b">&#9670;&#160;</a></span>publishBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt; &gt; eve::editor::MemoryAssetDatabase::publishBatch </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1AssetPublication.html">AssetPublication</a> &gt;&#160;</td>
+          <td class="paramname"><em>publications</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically publish an entire package projection as one index generation. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning published records; rejection leaves records, URIs, dependencies and generation unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorAssetDatabase_8cpp_source.html">EditorAssetDatabase.cpp</a> 第 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00037">eve::editor::AssetDependency::from</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00017">eve::editor::AssetRecord::guid</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00018">eve::editor::AssetRecord::logicalUri</a>, <a class="el" href="namespaceeve_1_1editor.html#a99eea4b40241276976f599f4d2c959deae7d31fc0602fb2ede144d18cdffd816b">eve::editor::Ready</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00027">eve::editor::AssetRecord::status</a> , 以及 <a class="el" href="EditorAssetDatabase_8h_source.html#l00019">eve::editor::AssetRecord::typeId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">eve::editor::publishEvaAssetProjection()</a>.</p>
+
+</div>
+</div>
+<a id="a85153698668bc1f0d2747055a590d7dd" name="a85153698668bc1f0d2747055a590d7dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85153698668bc1f0d2747055a590d7dd">&#9670;&#160;</a></span>query()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetPage.html">AssetPage</a>&lt; <a class="el" href="structeve_1_1editor_1_1AssetRecord.html">AssetRecord</a> &gt; &gt; eve::editor::MemoryAssetDatabase::query </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1AssetQuery.html">AssetQuery</a> &amp;&#160;</td>
+          <td class="paramname"><em>query</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>limit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; std::uint64_t &gt;&#160;</td>
+          <td class="paramname"><em>generation</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query a deterministic page; stale generations return Conflict. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorAssetDatabase_8cpp_source.html">EditorAssetDatabase.cpp</a> 第 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00064">eve::editor::AssetPage&lt; T &gt;::generation</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00087">generation()</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00063">eve::editor::AssetPage&lt; T &gt;::hasMore</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="EditorAssetDatabase_8h_source.html#l00062">eve::editor::AssetPage&lt; T &gt;::nextOffset</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00113">query()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a> , 以及 <a class="el" href="EditorAssetDatabase_8h_source.html#l00061">eve::editor::AssetPage&lt; T &gt;::values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00113">query()</a> , 以及 <a class="el" href="EditorEnvironmentBrowser_8cpp_source.html#l00065">eve::editor::EnvironmentAssetBrowser::query()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorAssetDatabase_8h_source.html">EditorAssetDatabase.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorAssetDatabase_8cpp_source.html">EditorAssetDatabase.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

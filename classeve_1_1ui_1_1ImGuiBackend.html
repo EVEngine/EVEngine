@@ -1,0 +1,625 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::ImGuiBackend类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html">ImGuiBackend</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1ImGuiBackend-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::ImGuiBackend类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Dear <a class="el" href="namespaceImGui.html">ImGui</a> + SDL input + Vulkan present overlay.  
+ <a href="classeve_1_1ui_1_1ImGuiBackend.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ImGuiBackend_8h_source.html">ImGuiBackend.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::ui::ImGuiBackend 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1ui_1_1ImGuiBackend.png" usemap="#eve::ui::ImGuiBackend_map" alt=""/>
+  <map id="eve::ui::ImGuiBackend_map" name="eve::ui::ImGuiBackend_map">
+<area href="classeve_1_1ui_1_1UIBackend.html" title="Platform / renderer backend for declarative UI. Concrete implementations live under ui/&lt;backend&gt;/ (e...." alt="eve::ui::UIBackend" shape="rect" coords="0,0,135,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac94506f293c07dc860e92b562c0f781f" id="r_ac94506f293c07dc860e92b562c0f781f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#ac94506f293c07dc860e92b562c0f781f">ImGuiBackend</a> ()=default</td></tr>
+<tr class="separator:ac94506f293c07dc860e92b562c0f781f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac393d5e94491d97ecd39e8071b8d24b6" id="r_ac393d5e94491d97ecd39e8071b8d24b6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#ac393d5e94491d97ecd39e8071b8d24b6">~ImGuiBackend</a> () override</td></tr>
+<tr class="separator:ac393d5e94491d97ecd39e8071b8d24b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6e8904e74d2c41d9efbc8c5cea0434f" id="r_ad6e8904e74d2c41d9efbc8c5cea0434f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#ad6e8904e74d2c41d9efbc8c5cea0434f">ImGuiBackend</a> (const <a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html">ImGuiBackend</a> &amp;)=delete</td></tr>
+<tr class="separator:ad6e8904e74d2c41d9efbc8c5cea0434f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab70b1b9c65e04550b2b396ee41542e0b" id="r_ab70b1b9c65e04550b2b396ee41542e0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html">ImGuiBackend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#ab70b1b9c65e04550b2b396ee41542e0b">operator=</a> (const <a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html">ImGuiBackend</a> &amp;)=delete</td></tr>
+<tr class="separator:ab70b1b9c65e04550b2b396ee41542e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafba1825ce836bf836783ffc0ff2cc6a" id="r_aafba1825ce836bf836783ffc0ff2cc6a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#aafba1825ce836bf836783ffc0ff2cc6a">init</a> (SDL_Window *<a class="el" href="namespaceeve_1_1ui.html#aa9faeccac79ba15e77d60dae53b07951">window</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a> *gfx) override</td></tr>
+<tr class="separator:aafba1825ce836bf836783ffc0ff2cc6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b6ec4ca84dfc00eb33f2b4926fb5db2" id="r_a4b6ec4ca84dfc00eb33f2b4926fb5db2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#a4b6ec4ca84dfc00eb33f2b4926fb5db2">shutdown</a> () override</td></tr>
+<tr class="separator:a4b6ec4ca84dfc00eb33f2b4926fb5db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a030c42262a1a136f46ecaa1df6fc7f80" id="r_a030c42262a1a136f46ecaa1df6fc7f80"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#a030c42262a1a136f46ecaa1df6fc7f80">isInitialized</a> () const override</td></tr>
+<tr class="separator:a030c42262a1a136f46ecaa1df6fc7f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef30da5b2306c2459808944242743793" id="r_aef30da5b2306c2459808944242743793"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#aef30da5b2306c2459808944242743793">processEvent</a> (const SDL_Event *event) override</td></tr>
+<tr class="separator:aef30da5b2306c2459808944242743793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa31e29ec6e54629c865eadb882ac2fba" id="r_aa31e29ec6e54629c865eadb882ac2fba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#aa31e29ec6e54629c865eadb882ac2fba">newFrame</a> () override</td></tr>
+<tr class="separator:aa31e29ec6e54629c865eadb882ac2fba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae01e38052219935e3f81c57e3ff795b4" id="r_ae01e38052219935e3f81c57e3ff795b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#ae01e38052219935e3f81c57e3ff795b4">wantCaptureMouse</a> () const override</td></tr>
+<tr class="separator:ae01e38052219935e3f81c57e3ff795b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86f3e067218c3f089e3a9074b8193ff1" id="r_a86f3e067218c3f089e3a9074b8193ff1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#a86f3e067218c3f089e3a9074b8193ff1">wantCaptureKeyboard</a> () const override</td></tr>
+<tr class="separator:a86f3e067218c3f089e3a9074b8193ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb7767d7a054adbf9e73fa1ce1d5b0a5" id="r_aeb7767d7a054adbf9e73fa1ce1d5b0a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#aeb7767d7a054adbf9e73fa1ce1d5b0a5">setScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>) override</td></tr>
+<tr class="memdesc:aeb7767d7a054adbf9e73fa1ce1d5b0a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale fonts + <a class="el" href="namespaceImGui.html">ImGui</a> style metrics (1 = default desktop).  <br /></td></tr>
+<tr class="separator:aeb7767d7a054adbf9e73fa1ce1d5b0a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3039548bb661d33dc9665638b3ce5ac4" id="r_a3039548bb661d33dc9665638b3ce5ac4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html#a3039548bb661d33dc9665638b3ce5ac4">getScale</a> () const override</td></tr>
+<tr class="separator:a3039548bb661d33dc9665638b3ce5ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1ui_1_1UIBackend"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1ui_1_1UIBackend')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1ui_1_1UIBackend.html">eve::ui::UIBackend</a></td></tr>
+<tr class="memitem:a71c202c1af7585e382f5ecb1153d2b18 inherit pub_methods_classeve_1_1ui_1_1UIBackend" id="r_a71c202c1af7585e382f5ecb1153d2b18"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1UIBackend.html#a71c202c1af7585e382f5ecb1153d2b18">~UIBackend</a> ()=default</td></tr>
+<tr class="separator:a71c202c1af7585e382f5ecb1153d2b18 inherit pub_methods_classeve_1_1ui_1_1UIBackend"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Dear <a class="el" href="namespaceImGui.html">ImGui</a> + SDL input + Vulkan present overlay. </p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8h_source.html">ImGuiBackend.h</a> 第 <a class="el" href="ImGuiBackend_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac94506f293c07dc860e92b562c0f781f" name="ac94506f293c07dc860e92b562c0f781f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac94506f293c07dc860e92b562c0f781f">&#9670;&#160;</a></span>ImGuiBackend() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::ImGuiBackend::ImGuiBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac393d5e94491d97ecd39e8071b8d24b6" name="ac393d5e94491d97ecd39e8071b8d24b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac393d5e94491d97ecd39e8071b8d24b6">&#9670;&#160;</a></span>~ImGuiBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::ImGuiBackend::~ImGuiBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImGuiBackend_8cpp_source.html#l00276">shutdown()</a>.</p>
+
+</div>
+</div>
+<a id="ad6e8904e74d2c41d9efbc8c5cea0434f" name="ad6e8904e74d2c41d9efbc8c5cea0434f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6e8904e74d2c41d9efbc8c5cea0434f">&#9670;&#160;</a></span>ImGuiBackend() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::ImGuiBackend::ImGuiBackend </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html">ImGuiBackend</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3039548bb661d33dc9665638b3ce5ac4" name="a3039548bb661d33dc9665638b3ce5ac4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3039548bb661d33dc9665638b3ce5ac4">&#9670;&#160;</a></span>getScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::ImGuiBackend::getScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#aa9ba7e1baeb277ff836c41a69e784b31">eve::ui::UIBackend</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8h_source.html">ImGuiBackend.h</a> 第 <a class="el" href="ImGuiBackend_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafba1825ce836bf836783ffc0ff2cc6a" name="aafba1825ce836bf836783ffc0ff2cc6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafba1825ce836bf836783ffc0ff2cc6a">&#9670;&#160;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::ImGuiBackend::init </td>
+          <td>(</td>
+          <td class="paramtype">SDL_Window *&#160;</td>
+          <td class="paramname"><em>window</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#a48677a8288122272e18eef40bbaebf19">eve::ui::UIBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8h_source.html#l01266">eve::graphics::Graphics::addWindowDestroyedCallback()</a>, <a class="el" href="Theme_8cpp_source.html#l00173">eve::ui::applyThemeToImGui()</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00632">eve::graphics::vulkan::Graphics::getDevice()</a>, <a class="el" href="Theme_8cpp_source.html#l00137">eve::ui::globalTheme()</a>, <a class="el" href="imgui__impl__wgpu_8h.html#a7fc42f7c46611604fc9ab63af07ba84d">ImGui_ImplWGPU_CreateFontsTexture()</a>, <a class="el" href="imgui__impl__wgpu_8h.html#a82dc2999d1fb5a6a2757acae5566e670">ImGui_ImplWGPU_Init()</a>, <a class="el" href="Theme_8cpp_source.html#l00167">eve::ui::setThemeDpiScale()</a>, <a class="el" href="Theme_8cpp_source.html#l00161">eve::ui::setThemeUiScale()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00266">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="a030c42262a1a136f46ecaa1df6fc7f80" name="a030c42262a1a136f46ecaa1df6fc7f80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a030c42262a1a136f46ecaa1df6fc7f80">&#9670;&#160;</a></span>isInitialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::ImGuiBackend::isInitialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#aeff2542b16c03acfdfd81f1bed31adb8">eve::ui::UIBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8h_source.html">ImGuiBackend.h</a> 第 <a class="el" href="ImGuiBackend_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa31e29ec6e54629c865eadb882ac2fba" name="aa31e29ec6e54629c865eadb882ac2fba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa31e29ec6e54629c865eadb882ac2fba">&#9670;&#160;</a></span>newFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ImGuiBackend::newFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#afdd697ab58e46e97d18207f9419da64e">eve::ui::UIBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="imgui__impl__wgpu_8h.html#a66452774219a993368c3ad017d67848c">ImGui_ImplWGPU_NewFrame()</a> , 以及 <a class="el" href="Graphics_8h_source.html#l01277">eve::graphics::Graphics::setPresentOverlay()</a>.</p>
+
+</div>
+</div>
+<a id="ab70b1b9c65e04550b2b396ee41542e0b" name="ab70b1b9c65e04550b2b396ee41542e0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab70b1b9c65e04550b2b396ee41542e0b">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html">ImGuiBackend</a> &amp; eve::ui::ImGuiBackend::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1ImGuiBackend.html">ImGuiBackend</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aef30da5b2306c2459808944242743793" name="aef30da5b2306c2459808944242743793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef30da5b2306c2459808944242743793">&#9670;&#160;</a></span>processEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ImGuiBackend::processEvent </td>
+          <td>(</td>
+          <td class="paramtype">const SDL_Event *&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#a1e279c57cfa991f6913ef909e3ffc56e">eve::ui::UIBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb7767d7a054adbf9e73fa1ce1d5b0a5" name="aeb7767d7a054adbf9e73fa1ce1d5b0a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb7767d7a054adbf9e73fa1ce1d5b0a5">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ImGuiBackend::setScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Scale fonts + <a class="el" href="namespaceImGui.html">ImGui</a> style metrics (1 = default desktop). </p>
+
+<p>重载 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#acfaeeb9c5dfea09c012ae30506cc465d">eve::ui::UIBackend</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a4b6ec4ca84dfc00eb33f2b4926fb5db2" name="a4b6ec4ca84dfc00eb33f2b4926fb5db2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b6ec4ca84dfc00eb33f2b4926fb5db2">&#9670;&#160;</a></span>shutdown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ImGuiBackend::shutdown </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#a9bbd50bc644e688fda8e16391665bdb0">eve::ui::UIBackend</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8h_source.html#l01282">eve::graphics::Graphics::getPresentOverlayUser()</a>, <a class="el" href="imgui__impl__wgpu_8h.html#a8f518adc1b396651e1c4c785644b72fc">ImGui_ImplWGPU_Shutdown()</a> , 以及 <a class="el" href="Graphics_8h_source.html#l01277">eve::graphics::Graphics::setPresentOverlay()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ImGuiBackend_8cpp_source.html#l00171">~ImGuiBackend()</a>.</p>
+
+</div>
+</div>
+<a id="a86f3e067218c3f089e3a9074b8193ff1" name="a86f3e067218c3f089e3a9074b8193ff1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86f3e067218c3f089e3a9074b8193ff1">&#9670;&#160;</a></span>wantCaptureKeyboard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::ImGuiBackend::wantCaptureKeyboard </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#a75a2692919405ac280e56ccf99073f8a">eve::ui::UIBackend</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00670">670</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae01e38052219935e3f81c57e3ff795b4" name="ae01e38052219935e3f81c57e3ff795b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae01e38052219935e3f81c57e3ff795b4">&#9670;&#160;</a></span>wantCaptureMouse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::ImGuiBackend::wantCaptureMouse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1ui_1_1UIBackend.html#a3ca614fe48b535e0e63b31af6d31459f">eve::ui::UIBackend</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a> 第 <a class="el" href="ImGuiBackend_8cpp_source.html#l00665">665</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/imgui/<a class="el" href="ImGuiBackend_8h_source.html">ImGuiBackend.h</a></li>
+<li>src/modules/ui/imgui/<a class="el" href="ImGuiBackend_8cpp_source.html">ImGuiBackend.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

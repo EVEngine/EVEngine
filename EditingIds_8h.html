@@ -1,0 +1,249 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editing/EditingIds.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_c30fd2ccc85dff25828f75fb0f9ea243.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">EditingIds.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Identity_8h_source.html">common/Identity.h</a>&quot;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div>
+<p><a href="EditingIds_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1StrongIdHash.html">eve::editing::StrongIdHash&lt; Id &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash functor for a strong authoring identifier.  <a href="structeve_1_1editing_1_1StrongIdHash.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dotted property path (<code>layout.size</code>) compared and persisted as text.  <a href="classeve_1_1editing_1_1PropertyPath.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1PropertyPathHash.html">eve::editing::PropertyPathHash</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash functor for a dotted property path.  <a href="structeve_1_1editing_1_1PropertyPathHash.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1editing" id="r_namespaceeve_1_1editing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html">eve::editing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a83862cc43bb747b66aebdbd7cd6085f5" id="r_a83862cc43bb747b66aebdbd7cd6085f5"><td class="memTemplParams" colspan="2">template&lt;class Tag &gt; </td></tr>
+<tr class="memitem:a83862cc43bb747b66aebdbd7cd6085f5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">eve::editing::StrongId</a> = <a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a>&lt; Tag &gt;</td></tr>
+<tr class="memdesc:a83862cc43bb747b66aebdbd7cd6085f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">UUID-backed identifier used by authoring contracts.  <br /></td></tr>
+<tr class="separator:a83862cc43bb747b66aebdbd7cd6085f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1e987167a7524aa0e9fdee20818de5c" id="r_ad1e987167a7524aa0e9fdee20818de5c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#ad1e987167a7524aa0e9fdee20818de5c">eve::editing::SessionId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; SessionIdTag &gt;</td></tr>
+<tr class="separator:ad1e987167a7524aa0e9fdee20818de5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b0f525a0b733bb08ccf8109b114213b" id="r_a2b0f525a0b733bb08ccf8109b114213b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; TargetIdTag &gt;</td></tr>
+<tr class="separator:a2b0f525a0b733bb08ccf8109b114213b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abab06456c15fc263bb2c585849371eea" id="r_abab06456c15fc263bb2c585849371eea"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#abab06456c15fc263bb2c585849371eea">eve::editing::CommandId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; CommandIdTag &gt;</td></tr>
+<tr class="separator:abab06456c15fc263bb2c585849371eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dae4cea7066ce4242fe52a567b7e506" id="r_a8dae4cea7066ce4242fe52a567b7e506"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a8dae4cea7066ce4242fe52a567b7e506">eve::editing::ToolId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; ToolIdTag &gt;</td></tr>
+<tr class="separator:a8dae4cea7066ce4242fe52a567b7e506"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a637962b2b7ca12ca9c3416d6fd5f2b1b" id="r_a637962b2b7ca12ca9c3416d6fd5f2b1b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; RuleIdTag &gt;</td></tr>
+<tr class="separator:a637962b2b7ca12ca9c3416d6fd5f2b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e450b5eb4cf0da7c013972cc572568" id="r_a80e450b5eb4cf0da7c013972cc572568"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">eve::editing::CapabilityId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; CapabilityIdTag &gt;</td></tr>
+<tr class="separator:a80e450b5eb4cf0da7c013972cc572568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a574edbcd85274c1df908ce3c43bcf939" id="r_a574edbcd85274c1df908ce3c43bcf939"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a574edbcd85274c1df908ce3c43bcf939">eve::editing::TransactionId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; TransactionIdTag &gt;</td></tr>
+<tr class="separator:a574edbcd85274c1df908ce3c43bcf939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07f0133613fc769596fb921d57920a56" id="r_a07f0133613fc769596fb921d57920a56"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a07f0133613fc769596fb921d57920a56">eve::editing::PlanId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; PlanIdTag &gt;</td></tr>
+<tr class="separator:a07f0133613fc769596fb921d57920a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60962f18b15404d7942fbae13fd833be" id="r_a60962f18b15404d7942fbae13fd833be"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">eve::editing::StableId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; StableIdTag &gt;</td></tr>
+<tr class="separator:a60962f18b15404d7942fbae13fd833be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d916283d8333abd61ff13f34344f5d6" id="r_a2d916283d8333abd61ff13f34344f5d6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">eve::editing::ObjectId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; ObjectIdTag &gt;</td></tr>
+<tr class="separator:a2d916283d8333abd61ff13f34344f5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39e0554f8a5dce7fdebf1fe770b8c078" id="r_a39e0554f8a5dce7fdebf1fe770b8c078"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a39e0554f8a5dce7fdebf1fe770b8c078">eve::editing::AssetGuid</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; AssetGuidTag &gt;</td></tr>
+<tr class="separator:a39e0554f8a5dce7fdebf1fe770b8c078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb5bcefee9d0ff487dfa0fa12db08013" id="r_aeb5bcefee9d0ff487dfa0fa12db08013"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aeb5bcefee9d0ff487dfa0fa12db08013">eve::editing::DocumentId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; DocumentIdTag &gt;</td></tr>
+<tr class="separator:aeb5bcefee9d0ff487dfa0fa12db08013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90a3849ec29f2fe1ce5c2322b5c1f3f6" id="r_a90a3849ec29f2fe1ce5c2322b5c1f3f6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">eve::editing::GraphNodeId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; GraphNodeIdTag &gt;</td></tr>
+<tr class="separator:a90a3849ec29f2fe1ce5c2322b5c1f3f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81debce673234f46d7ab5705ba7cead2" id="r_a81debce673234f46d7ab5705ba7cead2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a81debce673234f46d7ab5705ba7cead2">eve::editing::GraphPinId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; GraphPinIdTag &gt;</td></tr>
+<tr class="separator:a81debce673234f46d7ab5705ba7cead2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1406ca4adac6f39880b3e63b1788f3" id="r_aba1406ca4adac6f39880b3e63b1788f3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#aba1406ca4adac6f39880b3e63b1788f3">eve::editing::TaskId</a> = <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; TaskIdTag &gt;</td></tr>
+<tr class="separator:aba1406ca4adac6f39880b3e63b1788f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a1b7e1c9d6625a2d65aa65893bd1a3b18" id="r_a1b7e1c9d6625a2d65aa65893bd1a3b18"><td class="memTemplParams" colspan="2">template&lt;class Tag &gt; </td></tr>
+<tr class="memitem:a1b7e1c9d6625a2d65aa65893bd1a3b18"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">eve::StrongUuid</a>&lt; Tag &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1editing.html#a1b7e1c9d6625a2d65aa65893bd1a3b18">eve::editing::canonicalUuid</a> (const <a class="el" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">StrongId</a>&lt; Tag &gt; &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) noexcept</td></tr>
+<tr class="memdesc:a1b7e1c9d6625a2d65aa65893bd1a3b18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project an authoring identifier to its canonical UUID value.  <br /></td></tr>
+<tr class="separator:a1b7e1c9d6625a2d65aa65893bd1a3b18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

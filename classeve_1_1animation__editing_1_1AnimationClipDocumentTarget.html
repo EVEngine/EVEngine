@@ -1,0 +1,1168 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation_editing::AnimationClipDocumentTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation__editing.html">animation_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html">AnimationClipDocumentTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation_editing::AnimationClipDocumentTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-neutral animation clip document with reversible stable-id timeline edits.  
+ <a href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::animation_editing::AnimationClipDocumentTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.png" usemap="#eve::animation_5Fediting::AnimationClipDocumentTarget_map" alt=""/>
+  <map id="eve::animation_5Fediting::AnimationClipDocumentTarget_map" name="eve::animation_5Fediting::AnimationClipDocumentTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,311,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="321,56,632,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="642,56,953,80"/>
+<area href="classeve_1_1editing_1_1IEditingSnapshotProvider.html" title="Optional capability exposing a deterministic, persistence-safe editing snapshot." alt="eve::editing::IEditingSnapshotProvider" shape="rect" coords="963,56,1274,80"/>
+<area href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html" title="Timeline editing capability for skeletal clips." alt="eve::animation_editing::IAnimationClipEditTarget" shape="rect" coords="1284,56,1595,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="321,0,632,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a94eea50397c3ddd24ae66183323e003f" id="r_a94eea50397c3ddd24ae66183323e003f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a94eea50397c3ddd24ae66183323e003f">AnimationClipDocumentTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a94eea50397c3ddd24ae66183323e003f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c53d155f023cc52f72503b8c0b80338" id="r_a5c53d155f023cc52f72503b8c0b80338"><td class="memItemLeft" align="right" valign="top">TargetId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a5c53d155f023cc52f72503b8c0b80338">targetId</a> () const override</td></tr>
+<tr class="separator:a5c53d155f023cc52f72503b8c0b80338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78573f0950d89833ea5e9451cf19bcd5" id="r_a78573f0950d89833ea5e9451cf19bcd5"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a78573f0950d89833ea5e9451cf19bcd5">revision</a> () const override</td></tr>
+<tr class="separator:a78573f0950d89833ea5e9451cf19bcd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dd7207fffb3f1d5168f909e30680203" id="r_a9dd7207fffb3f1d5168f909e30680203"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a9dd7207fffb3f1d5168f909e30680203">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:a9dd7207fffb3f1d5168f909e30680203"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5caaeddec370f33d9395d7f633b680d8" id="r_a5caaeddec370f33d9395d7f633b680d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a5caaeddec370f33d9395d7f633b680d8">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:a5caaeddec370f33d9395d7f633b680d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e353b52c6fd0912cf4fd897432762bc" id="r_a6e353b52c6fd0912cf4fd897432762bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a6e353b52c6fd0912cf4fd897432762bc">describe</a> () const override</td></tr>
+<tr class="memdesc:a6e353b52c6fd0912cf4fd897432762bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:a6e353b52c6fd0912cf4fd897432762bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3174f52888ff0a77335a0fc04287a30" id="r_ac3174f52888ff0a77335a0fc04287a30"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#ac3174f52888ff0a77335a0fc04287a30">queryCapability</a> (const CapabilityId &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="memdesc:ac3174f52888ff0a77335a0fc04287a30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional target capability.  <br /></td></tr>
+<tr class="separator:ac3174f52888ff0a77335a0fc04287a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0937bfb2dfa866091757298124794b35" id="r_a0937bfb2dfa866091757298124794b35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a0937bfb2dfa866091757298124794b35">applyDomainOperation</a> (const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;operation) override</td></tr>
+<tr class="memdesc:a0937bfb2dfa866091757298124794b35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a0937bfb2dfa866091757298124794b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62421fd00644a523d2588c6b1649ac95" id="r_a62421fd00644a523d2588c6b1649ac95"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a62421fd00644a523d2588c6b1649ac95">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:a62421fd00644a523d2588c6b1649ac95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:a62421fd00644a523d2588c6b1649ac95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc320c38f785123ab4a6e8a4d55adcf8" id="r_acc320c38f785123ab4a6e8a4d55adcf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#acc320c38f785123ab4a6e8a4d55adcf8">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:acc320c38f785123ab4a6e8a4d55adcf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:acc320c38f785123ab4a6e8a4d55adcf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3073af5758406c275249fb618a3dce3e" id="r_a3073af5758406c275249fb618a3dce3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a3073af5758406c275249fb618a3dce3e">makeSetSettings</a> (double <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a7c0393a3fce65ec24f8c4dcb35b687ed">duration</a>, double <a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a28470e380623adaa2754a80d142d26c5">sampleRate</a>, bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a5ed2b25d9f2f070cb0ee764aa0985308">loop</a>) const override</td></tr>
+<tr class="memdesc:a3073af5758406c275249fb618a3dce3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan replacement of duration, sample rate and looping settings.  <br /></td></tr>
+<tr class="separator:a3073af5758406c275249fb618a3dce3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56cf4eeae44d4162bd82f1714ab38ab0" id="r_a56cf4eeae44d4162bd82f1714ab38ab0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a56cf4eeae44d4162bd82f1714ab38ab0">makeSetTrack</a> (const <a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a> &amp;track) const override</td></tr>
+<tr class="memdesc:a56cf4eeae44d4162bd82f1714ab38ab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan creation or replacement of a complete stable bone track.  <br /></td></tr>
+<tr class="separator:a56cf4eeae44d4162bd82f1714ab38ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b6e5e03c9ffe8945197aee13980b325" id="r_a7b6e5e03c9ffe8945197aee13980b325"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a7b6e5e03c9ffe8945197aee13980b325">makeDeleteTrack</a> (const <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> &amp;track) const override</td></tr>
+<tr class="memdesc:a7b6e5e03c9ffe8945197aee13980b325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan removal of a stable bone track.  <br /></td></tr>
+<tr class="separator:a7b6e5e03c9ffe8945197aee13980b325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9101a55a6e953397455a8e1709d721ad" id="r_a9101a55a6e953397455a8e1709d721ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a9101a55a6e953397455a8e1709d721ad">makeSetEvent</a> (const <a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a> &amp;event) const override</td></tr>
+<tr class="memdesc:a9101a55a6e953397455a8e1709d721ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan creation or replacement of an event marker.  <br /></td></tr>
+<tr class="separator:a9101a55a6e953397455a8e1709d721ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85a52d839cab3762b5bfe3409efe7cf8" id="r_a85a52d839cab3762b5bfe3409efe7cf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a85a52d839cab3762b5bfe3409efe7cf8">makeDeleteEvent</a> (const <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> &amp;event) const override</td></tr>
+<tr class="memdesc:a85a52d839cab3762b5bfe3409efe7cf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan removal of an event marker.  <br /></td></tr>
+<tr class="separator:a85a52d839cab3762b5bfe3409efe7cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f5a2f049c0225593c4a5f253b6cfa0d" id="r_a7f5a2f049c0225593c4a5f253b6cfa0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a7f5a2f049c0225593c4a5f253b6cfa0d">makeSetMask</a> (const <a class="el" href="structeve_1_1animation__editing_1_1AnimationMaskEntry.html">AnimationMaskEntry</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>) const override</td></tr>
+<tr class="memdesc:a7f5a2f049c0225593c4a5f253b6cfa0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan replacement of a bone mask weight.  <br /></td></tr>
+<tr class="separator:a7f5a2f049c0225593c4a5f253b6cfa0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c0393a3fce65ec24f8c4dcb35b687ed" id="r_a7c0393a3fce65ec24f8c4dcb35b687ed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a7c0393a3fce65ec24f8c4dcb35b687ed">duration</a> () const noexcept</td></tr>
+<tr class="memdesc:a7c0393a3fce65ec24f8c4dcb35b687ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clip duration in seconds.  <br /></td></tr>
+<tr class="separator:a7c0393a3fce65ec24f8c4dcb35b687ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28470e380623adaa2754a80d142d26c5" id="r_a28470e380623adaa2754a80d142d26c5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a28470e380623adaa2754a80d142d26c5">sampleRate</a> () const noexcept</td></tr>
+<tr class="memdesc:a28470e380623adaa2754a80d142d26c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authored sample rate.  <br /></td></tr>
+<tr class="separator:a28470e380623adaa2754a80d142d26c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6eefc82f22473da05b1af75e3f55bfe" id="r_aa6eefc82f22473da05b1af75e3f55bfe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#aa6eefc82f22473da05b1af75e3f55bfe">isLooping</a> () const noexcept</td></tr>
+<tr class="memdesc:aa6eefc82f22473da05b1af75e3f55bfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether preview time wraps.  <br /></td></tr>
+<tr class="separator:aa6eefc82f22473da05b1af75e3f55bfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0e9e8af65e030c8d5e5c2d55392ae28" id="r_ac0e9e8af65e030c8d5e5c2d55392ae28"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#ac0e9e8af65e030c8d5e5c2d55392ae28">tracks</a> () const</td></tr>
+<tr class="memdesc:ac0e9e8af65e030c8d5e5c2d55392ae28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return tracks ordered by stable id.  <br /></td></tr>
+<tr class="separator:ac0e9e8af65e030c8d5e5c2d55392ae28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95006848eb06ce54fe40bfae8eb542d7" id="r_a95006848eb06ce54fe40bfae8eb542d7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a95006848eb06ce54fe40bfae8eb542d7">events</a> () const</td></tr>
+<tr class="memdesc:a95006848eb06ce54fe40bfae8eb542d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return event markers ordered by time then stable id.  <br /></td></tr>
+<tr class="separator:a95006848eb06ce54fe40bfae8eb542d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27e635b95c423d640a17731864e8ec69" id="r_a27e635b95c423d640a17731864e8ec69"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1animation__editing.html#ac53c74d454d85f23135b81d931023290">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a27e635b95c423d640a17731864e8ec69">validate</a> (const std::vector&lt; std::string &gt; &amp;skeletonBones={}) const</td></tr>
+<tr class="memdesc:a27e635b95c423d640a17731864e8ec69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate timeline, references and mask against optional target bone names.  <br /></td></tr>
+<tr class="separator:a27e635b95c423d640a17731864e8ec69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a637817ed4a082dc88dd6ece8bfb7184d" id="r_a637817ed4a082dc88dd6ece8bfb7184d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation__editing_1_1AnimationClipPreview.html">AnimationClipPreview</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a637817ed4a082dc88dd6ece8bfb7184d">preview</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>, const std::vector&lt; std::string &gt; &amp;skeletonBones={}) const</td></tr>
+<tr class="memdesc:a637817ed4a082dc88dd6ece8bfb7184d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample the authored clip without mutating a runtime asset.  <br /></td></tr>
+<tr class="separator:a637817ed4a082dc88dd6ece8bfb7184d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64fcde0b48cc077d7113cf22bb6ae0e" id="r_af64fcde0b48cc077d7113cf22bb6ae0e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation__editing_1_1AnimationRetargetPreview.html">AnimationRetargetPreview</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#af64fcde0b48cc077d7113cf22bb6ae0e">previewRetarget</a> (const std::vector&lt; std::string &gt; &amp;targetBones) const</td></tr>
+<tr class="memdesc:af64fcde0b48cc077d7113cf22bb6ae0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preview exact then normalized-name retarget mapping without baking a clip.  <br /></td></tr>
+<tr class="separator:af64fcde0b48cc077d7113cf22bb6ae0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a758994e1eae97ec51aa345717bb7b4bd" id="r_a758994e1eae97ec51aa345717bb7b4bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a758994e1eae97ec51aa345717bb7b4bd">snapshotValue</a> () const override</td></tr>
+<tr class="memdesc:a758994e1eae97ec51aa345717bb7b4bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture deterministic schema-version-one clip data.  <br /></td></tr>
+<tr class="separator:a758994e1eae97ec51aa345717bb7b4bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a620dbfbcde4601c967544ef2548353e0" id="r_a620dbfbcde4601c967544ef2548353e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1AnimationClipDocumentTarget.html#a620dbfbcde4601c967544ef2548353e0">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a620dbfbcde4601c967544ef2548353e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically load deterministic schema-version-one clip data.  <br /></td></tr>
+<tr class="separator:a620dbfbcde4601c967544ef2548353e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a3e202dd6b1ca3b75e726a90a82081653"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">queryCapability</a> (const <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>)</td></tr>
+<tr class="memdesc:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional stable capability.  <br /></td></tr>
+<tr class="separator:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="memitem:aa00a32f2caa4773935cb1e420cb556f4 inherit pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider" id="r_aa00a32f2caa4773935cb1e420cb556f4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#aa00a32f2caa4773935cb1e420cb556f4">~IEditingSnapshotProvider</a> ()=default</td></tr>
+<tr class="separator:aa00a32f2caa4773935cb1e420cb556f4 inherit pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html">eve::animation_editing::IAnimationClipEditTarget</a></td></tr>
+<tr class="memitem:a7a90982d570167fa3491e51c690f75ee inherit pub_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget" id="r_a7a90982d570167fa3491e51c690f75ee"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a7a90982d570167fa3491e51c690f75ee">~IAnimationClipEditTarget</a> ()=default</td></tr>
+<tr class="separator:a7a90982d570167fa3491e51c690f75ee inherit pub_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="memitem:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider" id="r_a4662234a5db91e86c8be8df9d88ebd53"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a4662234a5db91e86c8be8df9d88ebd53">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity shared by every editable domain target.  <br /></td></tr>
+<tr class="separator:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html">eve::animation_editing::IAnimationClipEditTarget</a></td></tr>
+<tr class="memitem:ad48703763e60bd1219c25045185f2529 inherit pub_static_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget" id="r_ad48703763e60bd1219c25045185f2529"><td class="memItemLeft" align="right" valign="top">static CapabilityId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#ad48703763e60bd1219c25045185f2529">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:ad48703763e60bd1219c25045185f2529 inherit pub_static_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability id for clip timeline operations.  <br /></td></tr>
+<tr class="separator:ad48703763e60bd1219c25045185f2529 inherit pub_static_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4909d7f198a5bddf6954356374a1f315 inherit pub_static_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget" id="r_a4909d7f198a5bddf6954356374a1f315"><td class="memItemLeft" align="right" valign="top">static CapabilityId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a4909d7f198a5bddf6954356374a1f315">editorCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a4909d7f198a5bddf6954356374a1f315 inherit pub_static_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility spelling retained for existing editor tools.  <br /></td></tr>
+<tr class="separator:a4909d7f198a5bddf6954356374a1f315 inherit pub_static_methods_classeve_1_1animation__editing_1_1IAnimationClipEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-neutral animation clip document with reversible stable-id timeline edits. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00098">98</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a94eea50397c3ddd24ae66183323e003f" name="a94eea50397c3ddd24ae66183323e003f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94eea50397c3ddd24ae66183323e003f">&#9670;&#160;</a></span>AnimationClipDocumentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation_editing::AnimationClipDocumentTarget::AnimationClipDocumentTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0937bfb2dfa866091757298124794b35" name="a0937bfb2dfa866091757298124794b35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0937bfb2dfa866091757298124794b35">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; void &gt; eve::animation_editing::AnimationClipDocumentTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="AnimationClip_8h_source.html#l00124">duration()</a>, <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">rate</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00322">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a5caaeddec370f33d9395d7f633b680d8" name="a5caaeddec370f33d9395d7f633b680d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5caaeddec370f33d9395d7f633b680d8">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation_editing::AnimationClipDocumentTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a62421fd00644a523d2588c6b1649ac95" name="a62421fd00644a523d2588c6b1649ac95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62421fd00644a523d2588c6b1649ac95">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc320c38f785123ab4a6e8a4d55adcf8" name="acc320c38f785123ab4a6e8a4d55adcf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc320c38f785123ab4a6e8a4d55adcf8">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; void &gt; eve::animation_editing::AnimationClipDocumentTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>.</p>
+
+</div>
+</div>
+<a id="a6e353b52c6fd0912cf4fd897432762bc" name="a6e353b52c6fd0912cf4fd897432762bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e353b52c6fd0912cf4fd897432762bc">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> eve::animation_editing::AnimationClipDocumentTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00037">eve::editing::TargetDescriptor::capabilities</a>, <a class="el" href="AnimationClip_8h_source.html#l00080">eve::animation_editing::IAnimationClipEditTarget::editingCapabilityId()</a>, <a class="el" href="EditableTarget_8h_source.html#l00122">eve::editing::IEditingSnapshotProvider::editingCapabilityId()</a>, <a class="el" href="EditableTarget_8h_source.html#l00033">eve::editing::TargetDescriptor::id</a>, <a class="el" href="EditableTarget_8h_source.html#l00035">eve::editing::TargetDescriptor::revision</a> , 以及 <a class="el" href="EditableTarget_8h_source.html#l00034">eve::editing::TargetDescriptor::type</a>.</p>
+
+</div>
+</div>
+<a id="a9dd7207fffb3f1d5168f909e30680203" name="a9dd7207fffb3f1d5168f909e30680203"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dd7207fffb3f1d5168f909e30680203">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> eve::animation_editing::AnimationClipDocumentTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7c0393a3fce65ec24f8c4dcb35b687ed" name="a7c0393a3fce65ec24f8c4dcb35b687ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c0393a3fce65ec24f8c4dcb35b687ed">&#9670;&#160;</a></span>duration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editing::AnimationClipDocumentTarget::duration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clip duration in seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00168">applyDomainOperation()</a>, <a class="el" href="AnimationClipEditor_8h_source.html#l00088">eve::animation_editor::AnimationClipEditor::duration()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00218">makeSetSettings()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00187">eve::animation_editor::AnimationClipEditor::moveSelectedKey()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00116">eve::animation_editor::AnimationClipEditor::seekSeconds()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00183">eve::animation_editor::AnimationClipEditor::setLoop()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00179">eve::animation_editor::AnimationClipEditor::setSampleRate()</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00256">eve::animation_editor::AnimationClipEditor::update()</a>.</p>
+
+</div>
+</div>
+<a id="a95006848eb06ce54fe40bfae8eb542d7" name="a95006848eb06ce54fe40bfae8eb542d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95006848eb06ce54fe40bfae8eb542d7">&#9670;&#160;</a></span>events()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::events </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return event markers ordered by time then stable id. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationClipRuntimeBuilder::build()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00362">eve::animation_editor::AnimationClipEditor::eventCount()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00370">eve::animation_editor::AnimationClipEditor::eventName()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00364">eve::animation_editor::AnimationClipEditor::eventX()</a> , 以及 <a class="el" href="AnimationClip_8cpp_source.html#l00315">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="aa6eefc82f22473da05b1af75e3f55bfe" name="aa6eefc82f22473da05b1af75e3f55bfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6eefc82f22473da05b1af75e3f55bfe">&#9670;&#160;</a></span>isLooping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation_editing::AnimationClipDocumentTarget::isLooping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether preview time wraps. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8h_source.html#l00090">eve::animation_editor::AnimationClipEditor::isLooping()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00175">eve::animation_editor::AnimationClipEditor::setDuration()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00179">eve::animation_editor::AnimationClipEditor::setSampleRate()</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00256">eve::animation_editor::AnimationClipEditor::update()</a>.</p>
+
+</div>
+</div>
+<a id="a620dbfbcde4601c967544ef2548353e0" name="a620dbfbcde4601c967544ef2548353e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a620dbfbcde4601c967544ef2548353e0">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; void &gt; eve::animation_editing::AnimationClipDocumentTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically load deterministic schema-version-one clip data. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8cpp_source.html#l00168">applyDomainOperation()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00135">events</a>, <a class="el" href="EditingValue_8h_source.html#l00050">eve::editing::Value::getIf()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00241">makeSetEvent()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00253">makeSetMask()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00218">makeSetSettings()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00229">makeSetTrack()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">rate</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a>.</p>
+
+</div>
+</div>
+<a id="a85a52d839cab3762b5bfe3409efe7cf8" name="a85a52d839cab3762b5bfe3409efe7cf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85a52d839cab3762b5bfe3409efe7cf8">&#9670;&#160;</a></span>makeDeleteEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::makeDeleteEvent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan removal of an event marker. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a9a2c7132a7a666e7c47a269305b55da5">eve::animation_editing::IAnimationClipEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b6e5e03c9ffe8945197aee13980b325" name="a7b6e5e03c9ffe8945197aee13980b325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b6e5e03c9ffe8945197aee13980b325">&#9670;&#160;</a></span>makeDeleteTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::makeDeleteTrack </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1animation__editing.html#a4663394e7883fb0cd0a80c177100a037">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>track</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan removal of a stable bone track. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a1fae869d0a479ab84ec8c63db521c7ea">eve::animation_editing::IAnimationClipEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9101a55a6e953397455a8e1709d721ad" name="a9101a55a6e953397455a8e1709d721ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9101a55a6e953397455a8e1709d721ad">&#9670;&#160;</a></span>makeSetEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::makeSetEvent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation__editing_1_1AnimationEventRecord.html">AnimationEventRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan creation or replacement of an event marker. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a8126f4fd8a022858b3e1cb81979ca30c">eve::animation_editing::IAnimationClipEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00035">eve::animation_editing::AnimationEventRecord::id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00322">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a7f5a2f049c0225593c4a5f253b6cfa0d" name="a7f5a2f049c0225593c4a5f253b6cfa0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f5a2f049c0225593c4a5f253b6cfa0d">&#9670;&#160;</a></span>makeSetMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::makeSetMask </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation__editing_1_1AnimationMaskEntry.html">AnimationMaskEntry</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan replacement of a bone mask weight. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a21c4609b74ebea24e977c07b19db223c">eve::animation_editing::IAnimationClipEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00322">loadSnapshot()</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00171">eve::animation_editor::AnimationClipEditor::setMaskWeight()</a>.</p>
+
+</div>
+</div>
+<a id="a3073af5758406c275249fb618a3dce3e" name="a3073af5758406c275249fb618a3dce3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3073af5758406c275249fb618a3dce3e">&#9670;&#160;</a></span>makeSetSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::makeSetSettings </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sampleRate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>loop</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan replacement of duration, sample rate and looping settings. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#a32d2f5369f09fa2ef04af7c6d212b771">eve::animation_editing::IAnimationClipEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00124">duration()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a> , 以及 <a class="el" href="AnimationClip_8h_source.html#l00126">sampleRate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00322">loadSnapshot()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00175">eve::animation_editor::AnimationClipEditor::setDuration()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00183">eve::animation_editor::AnimationClipEditor::setLoop()</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00179">eve::animation_editor::AnimationClipEditor::setSampleRate()</a>.</p>
+
+</div>
+</div>
+<a id="a56cf4eeae44d4162bd82f1714ab38ab0" name="a56cf4eeae44d4162bd82f1714ab38ab0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56cf4eeae44d4162bd82f1714ab38ab0">&#9670;&#160;</a></span>makeSetTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#a670b04df53467b3e13077930c6215a0b">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::makeSetTrack </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a> &amp;&#160;</td>
+          <td class="paramname"><em>track</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan creation or replacement of a complete stable bone track. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation__editing_1_1IAnimationClipEditTarget.html#af4581962e0be78013902d683225a0471">eve::animation_editing::IAnimationClipEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00028">eve::animation_editing::AnimationBoneTrack::id</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00322">loadSnapshot()</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00187">eve::animation_editor::AnimationClipEditor::moveSelectedKey()</a>.</p>
+
+</div>
+</div>
+<a id="a637817ed4a082dc88dd6ece8bfb7184d" name="a637817ed4a082dc88dd6ece8bfb7184d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a637817ed4a082dc88dd6ece8bfb7184d">&#9670;&#160;</a></span>preview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation__editing_1_1AnimationClipPreview.html">AnimationClipPreview</a> eve::animation_editing::AnimationClipDocumentTarget::preview </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>skeletonBones</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample the authored clip without mutating a runtime asset. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="AnimationClip_8h_source.html#l00049">eve::animation_editing::AnimationSampledBone::bone</a>, <a class="el" href="AnimationClip_8h_source.html#l00061">eve::animation_editing::AnimationClipPreview::bones</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00031">bones</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="AnimationClip_8h_source.html#l00062">eve::animation_editing::AnimationClipPreview::diagnostics</a>, <a class="el" href="AnimationClip_8h_source.html#l00059">eve::animation_editing::AnimationClipPreview::documentRevision</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="AnimationClip_8h_source.html#l00053">eve::animation_editing::AnimationSampledBone::maskWeight</a>, <a class="el" href="AnimationClip_8h_source.html#l00050">eve::animation_editing::AnimationSampledBone::positionX</a>, <a class="el" href="AnimationClip_8h_source.html#l00050">eve::animation_editing::AnimationSampledBone::positionY</a>, <a class="el" href="AnimationClip_8h_source.html#l00050">eve::animation_editing::AnimationSampledBone::positionZ</a>, <a class="el" href="AnimationClip_8h_source.html#l00051">eve::animation_editing::AnimationSampledBone::rotationW</a>, <a class="el" href="AnimationClip_8h_source.html#l00051">eve::animation_editing::AnimationSampledBone::rotationX</a>, <a class="el" href="AnimationClip_8h_source.html#l00051">eve::animation_editing::AnimationSampledBone::rotationY</a>, <a class="el" href="AnimationClip_8h_source.html#l00051">eve::animation_editing::AnimationSampledBone::rotationZ</a>, <a class="el" href="AnimationClip_8h_source.html#l00052">eve::animation_editing::AnimationSampledBone::scaleX</a>, <a class="el" href="AnimationClip_8h_source.html#l00052">eve::animation_editing::AnimationSampledBone::scaleY</a>, <a class="el" href="AnimationClip_8h_source.html#l00052">eve::animation_editing::AnimationSampledBone::scaleZ</a>, <a class="el" href="AnimationClip_8h_source.html#l00058">eve::animation_editing::AnimationClipPreview::status</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AnimationClip_8h_source.html#l00060">eve::animation_editing::AnimationClipPreview::time</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a> , 以及 <a class="el" href="AnimationClip_8cpp_source.html#l00270">validate()</a>.</p>
+
+</div>
+</div>
+<a id="af64fcde0b48cc077d7113cf22bb6ae0e" name="af64fcde0b48cc077d7113cf22bb6ae0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af64fcde0b48cc077d7113cf22bb6ae0e">&#9670;&#160;</a></span>previewRetarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation__editing_1_1AnimationRetargetPreview.html">AnimationRetargetPreview</a> eve::animation_editing::AnimationClipDocumentTarget::previewRetarget </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>targetBones</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Preview exact then normalized-name retarget mapping without baking a clip. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00303">303</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimationClip_8h_source.html#l00072">eve::animation_editing::AnimationRetargetPreview::diagnostics</a>, <a class="el" href="AnimationClip_8h_source.html#l00068">eve::animation_editing::AnimationRetargetPreview::documentRevision</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="AnimationClip_8h_source.html#l00069">eve::animation_editing::AnimationRetargetPreview::mapping</a>, <a class="el" href="AnimationClip_8h_source.html#l00067">eve::animation_editing::AnimationRetargetPreview::status</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="AnimationClip_8h_source.html#l00070">eve::animation_editing::AnimationRetargetPreview::unmatchedSourceBones</a> , 以及 <a class="el" href="AnimationClip_8h_source.html#l00071">eve::animation_editing::AnimationRetargetPreview::unmatchedTargetBones</a>.</p>
+
+</div>
+</div>
+<a id="ac3174f52888ff0a77335a0fc04287a30" name="ac3174f52888ff0a77335a0fc04287a30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3174f52888ff0a77335a0fc04287a30">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::animation_editing::AnimationClipDocumentTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const CapabilityId &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an optional target capability. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00068">eve::editing::IEditableTarget::capability()</a>, <a class="el" href="AnimationClip_8h_source.html#l00080">eve::animation_editing::IAnimationClipEditTarget::editingCapabilityId()</a> , 以及 <a class="el" href="EditableTarget_8h_source.html#l00122">eve::editing::IEditingSnapshotProvider::editingCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a78573f0950d89833ea5e9451cf19bcd5" name="a78573f0950d89833ea5e9451cf19bcd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78573f0950d89833ea5e9451cf19bcd5">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::animation_editing::AnimationClipDocumentTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8h_source.html#l00087">eve::animation_editor::AnimationClipEditor::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a28470e380623adaa2754a80d142d26c5" name="a28470e380623adaa2754a80d142d26c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28470e380623adaa2754a80d142d26c5">&#9670;&#160;</a></span>sampleRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editing::AnimationClipDocumentTarget::sampleRate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Authored sample rate. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClip_8cpp_source.html#l00218">makeSetSettings()</a>, <a class="el" href="AnimationClipEditor_8h_source.html#l00089">eve::animation_editor::AnimationClipEditor::sampleRate()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00175">eve::animation_editor::AnimationClipEditor::setDuration()</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00183">eve::animation_editor::AnimationClipEditor::setLoop()</a>.</p>
+
+</div>
+</div>
+<a id="a758994e1eae97ec51aa345717bb7b4bd" name="a758994e1eae97ec51aa345717bb7b4bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a758994e1eae97ec51aa345717bb7b4bd">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation__editing.html#ab318e42a80fd1a8dca9e58d28fb1a540">EditorValue</a> eve::animation_editing::AnimationClipDocumentTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capture deterministic schema-version-one clip data. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a91414d122d58ade824a03fe4e8578a55">eve::editing::IEditingSnapshotProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00265">events()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="AnimationClip_8cpp_source.html#l00261">tracks()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationClipRuntimeBuilder::build()</a>.</p>
+
+</div>
+</div>
+<a id="a5c53d155f023cc52f72503b8c0b80338" name="a5c53d155f023cc52f72503b8c0b80338"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c53d155f023cc52f72503b8c0b80338">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TargetId eve::animation_editing::AnimationClipDocumentTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a> 第 <a class="el" href="AnimationClip_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationClipRuntimeBuilder::build()</a>.</p>
+
+</div>
+</div>
+<a id="ac0e9e8af65e030c8d5e5c2d55392ae28" name="ac0e9e8af65e030c8d5e5c2d55392ae28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0e9e8af65e030c8d5e5c2d55392ae28">&#9670;&#160;</a></span>tracks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1animation__editing_1_1AnimationBoneTrack.html">AnimationBoneTrack</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::tracks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return tracks ordered by stable id. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00261">261</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationClipRuntimeBuilder::build()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00313">eve::animation_editor::AnimationClipEditor::layoutHeight()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00187">eve::animation_editor::AnimationClipEditor::moveSelectedKey()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00132">eve::animation_editor::AnimationClipEditor::pointerDown()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00315">snapshotValue()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00327">eve::animation_editor::AnimationClipEditor::trackBone()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00325">eve::animation_editor::AnimationClipEditor::trackCount()</a> , 以及 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00333">eve::animation_editor::AnimationClipEditor::trackId()</a>.</p>
+
+</div>
+</div>
+<a id="a27e635b95c423d640a17731864e8ec69" name="a27e635b95c423d640a17731864e8ec69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27e635b95c423d640a17731864e8ec69">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1animation__editing.html#ac53c74d454d85f23135b81d931023290">EditorDiagnostic</a> &gt; eve::animation_editing::AnimationClipDocumentTarget::validate </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>skeletonBones</em> = <code>{}</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate timeline, references and mask against optional target bone names. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a> 第 <a class="el" href="AnimationClip_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00031">bones</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationClipRuntimeBuilder::build()</a> , 以及 <a class="el" href="AnimationClip_8cpp_source.html#l00281">preview()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation_editing/<a class="el" href="AnimationClip_8h_source.html">AnimationClip.h</a></li>
+<li>src/modules/animation_editing/<a class="el" href="AnimationClip_8cpp_source.html">AnimationClip.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

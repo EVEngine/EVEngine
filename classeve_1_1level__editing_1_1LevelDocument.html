@@ -1,0 +1,1145 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::level_editing::LevelDocument类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1level__editing.html">level_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html">LevelDocument</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1level__editing_1_1LevelDocument-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::level_editing::LevelDocument类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Format-neutral, editable top-down level model.  
+ <a href="classeve_1_1level__editing_1_1LevelDocument.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aede3b6ff5024798ca07778cd0b66c76b" id="r_aede3b6ff5024798ca07778cd0b66c76b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#aede3b6ff5024798ca07778cd0b66c76b">LevelDocument</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>=1, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>=1, float tileWidth=32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float tileHeight=32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:aede3b6ff5024798ca07778cd0b66c76b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaac81bda610d8c9146e4f6ae25b650bb" id="r_aaac81bda610d8c9146e4f6ae25b650bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#aaac81bda610d8c9146e4f6ae25b650bb">resize</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:aaac81bda610d8c9146e4f6ae25b650bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Changes map dimensions and resizes all tile layers.  <br /></td></tr>
+<tr class="separator:aaac81bda610d8c9146e4f6ae25b650bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7dc78a5babdfef578a3bf0cb331c0b2" id="r_ae7dc78a5babdfef578a3bf0cb331c0b2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#ae7dc78a5babdfef578a3bf0cb331c0b2">getWidth</a> () const</td></tr>
+<tr class="separator:ae7dc78a5babdfef578a3bf0cb331c0b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e1e568a498275d75c1430befd51a6e2" id="r_a8e1e568a498275d75c1430befd51a6e2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a8e1e568a498275d75c1430befd51a6e2">getHeight</a> () const</td></tr>
+<tr class="separator:a8e1e568a498275d75c1430befd51a6e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40e97b0971384f90166884749d5a5f59" id="r_a40e97b0971384f90166884749d5a5f59"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a40e97b0971384f90166884749d5a5f59">getTileWidth</a> () const</td></tr>
+<tr class="separator:a40e97b0971384f90166884749d5a5f59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa56c4d627429a6e67d0d66e14c4f07a9" id="r_aa56c4d627429a6e67d0d66e14c4f07a9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#aa56c4d627429a6e67d0d66e14c4f07a9">getTileHeight</a> () const</td></tr>
+<tr class="separator:aa56c4d627429a6e67d0d66e14c4f07a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7a67bcadd6fa23fdf0038da3ce4dc48" id="r_ad7a67bcadd6fa23fdf0038da3ce4dc48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#ad7a67bcadd6fa23fdf0038da3ce4dc48">setTileSize</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="separator:ad7a67bcadd6fa23fdf0038da3ce4dc48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa25bf987cc71a112631487c94a98d611" id="r_aa25bf987cc71a112631487c94a98d611"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#aa25bf987cc71a112631487c94a98d611">setOrientation</a> (const std::string &amp;orientation)</td></tr>
+<tr class="separator:aa25bf987cc71a112631487c94a98d611"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81ea086b519fda8118839b9de6f750f8" id="r_a81ea086b519fda8118839b9de6f750f8"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a81ea086b519fda8118839b9de6f750f8">getOrientation</a> () const</td></tr>
+<tr class="separator:a81ea086b519fda8118839b9de6f750f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeba4c5af4dfbb1e21c63598985e1a3f9" id="r_aeba4c5af4dfbb1e21c63598985e1a3f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#aeba4c5af4dfbb1e21c63598985e1a3f9">addTileLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:aeba4c5af4dfbb1e21c63598985e1a3f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a163b03c347463a6321ee5056b7e99941" id="r_a163b03c347463a6321ee5056b7e99941"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a163b03c347463a6321ee5056b7e99941">addObjectLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a163b03c347463a6321ee5056b7e99941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9d748c60f34190718225be92d6e625b" id="r_ae9d748c60f34190718225be92d6e625b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9">LevelChange</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#ae9d748c60f34190718225be92d6e625b">removeLayer</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:ae9d748c60f34190718225be92d6e625b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c3c2e516c2e60173ab9589fa100f105" id="r_a2c3c2e516c2e60173ab9589fa100f105"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9">LevelChange</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a2c3c2e516c2e60173ab9589fa100f105">moveLayer</a> (int <a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, int <a class="el" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>)</td></tr>
+<tr class="separator:a2c3c2e516c2e60173ab9589fa100f105"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e10d379228be0235610e8d5b2b935a3" id="r_a1e10d379228be0235610e8d5b2b935a3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a1e10d379228be0235610e8d5b2b935a3">getLayerCount</a> () const</td></tr>
+<tr class="separator:a1e10d379228be0235610e8d5b2b935a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03b8a7ce292b9535680a49018cc1c78b" id="r_a03b8a7ce292b9535680a49018cc1c78b"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a03b8a7ce292b9535680a49018cc1c78b">getLayerName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a03b8a7ce292b9535680a49018cc1c78b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4ac736df0de9ddb20e457959c3386dd" id="r_aa4ac736df0de9ddb20e457959c3386dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#aa4ac736df0de9ddb20e457959c3386dd">setLayerName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:aa4ac736df0de9ddb20e457959c3386dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0a64811275c075b47533336f656acb1" id="r_af0a64811275c075b47533336f656acb1"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#af0a64811275c075b47533336f656acb1">getLayerKind</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:af0a64811275c075b47533336f656acb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdc1c7dcea13b58ea61a079c90fa7035" id="r_afdc1c7dcea13b58ea61a079c90fa7035"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#afdc1c7dcea13b58ea61a079c90fa7035">getTileLayer</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:afdc1c7dcea13b58ea61a079c90fa7035"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a298420af8b4a008684994a48d57702f0" id="r_a298420af8b4a008684994a48d57702f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a298420af8b4a008684994a48d57702f0">getTileLayer</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a298420af8b4a008684994a48d57702f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96888b746a9edcbc9357d034b29731d3" id="r_a96888b746a9edcbc9357d034b29731d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a96888b746a9edcbc9357d034b29731d3">layer</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a96888b746a9edcbc9357d034b29731d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bb8a7dc7f680706f480ffbcd932652e" id="r_a8bb8a7dc7f680706f480ffbcd932652e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a8bb8a7dc7f680706f480ffbcd932652e">layer</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a8bb8a7dc7f680706f480ffbcd932652e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a046efbf23f4a48a125cba6ae9f608329" id="r_a046efbf23f4a48a125cba6ae9f608329"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a046efbf23f4a48a125cba6ae9f608329">addObject</a> (int layerIndex, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a046efbf23f4a48a125cba6ae9f608329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fa1a0820424801343a04cc3b3a73bb2" id="r_a2fa1a0820424801343a04cc3b3a73bb2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a2fa1a0820424801343a04cc3b3a73bb2">getObjectCount</a> (int layerIndex) const</td></tr>
+<tr class="separator:a2fa1a0820424801343a04cc3b3a73bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2eb5f46adfc2d4a353a26984e6c0a8a" id="r_ab2eb5f46adfc2d4a353a26984e6c0a8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelObject.html">LevelObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#ab2eb5f46adfc2d4a353a26984e6c0a8a">object</a> (int layerIndex, int objectIndex)</td></tr>
+<tr class="separator:ab2eb5f46adfc2d4a353a26984e6c0a8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac869c6eb766e1719bc59f93b88fcf4d9" id="r_ac869c6eb766e1719bc59f93b88fcf4d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1level__editing_1_1LevelObject.html">LevelObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#ac869c6eb766e1719bc59f93b88fcf4d9">object</a> (int layerIndex, int objectIndex) const</td></tr>
+<tr class="separator:ac869c6eb766e1719bc59f93b88fcf4d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9445fcfaf68a34add98f8b0f48907a98" id="r_a9445fcfaf68a34add98f8b0f48907a98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9">LevelChange</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a9445fcfaf68a34add98f8b0f48907a98">removeObject</a> (int layerIndex, int objectIndex)</td></tr>
+<tr class="separator:a9445fcfaf68a34add98f8b0f48907a98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd674d3543a62d732d1e62e8803d28a1" id="r_afd674d3543a62d732d1e62e8803d28a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#afd674d3543a62d732d1e62e8803d28a1">setProperty</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:afd674d3543a62d732d1e62e8803d28a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a655f6a77bcf14f374b5cbc6ed5d50c35" id="r_a655f6a77bcf14f374b5cbc6ed5d50c35"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a655f6a77bcf14f374b5cbc6ed5d50c35">getProperty</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;fallback={}) const</td></tr>
+<tr class="separator:a655f6a77bcf14f374b5cbc6ed5d50c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace23673eca2495ddf7f0c2501c4d5921" id="r_ace23673eca2495ddf7f0c2501c4d5921"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#ace23673eca2495ddf7f0c2501c4d5921">properties</a> ()</td></tr>
+<tr class="separator:ace23673eca2495ddf7f0c2501c4d5921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad74439d59a916307856dfc0123bd1d74" id="r_ad74439d59a916307856dfc0123bd1d74"><td class="memItemLeft" align="right" valign="top">const std::unordered_map&lt; std::string, std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#ad74439d59a916307856dfc0123bd1d74">properties</a> () const</td></tr>
+<tr class="separator:ad74439d59a916307856dfc0123bd1d74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d716dd027709abd88307e2a9cb9a90d" id="r_a9d716dd027709abd88307e2a9cb9a90d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#a9d716dd027709abd88307e2a9cb9a90d">layers</a> ()</td></tr>
+<tr class="separator:a9d716dd027709abd88307e2a9cb9a90d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab21e7bd52392fda4a4aaa4ca48b8d86f" id="r_ab21e7bd52392fda4a4aaa4ca48b8d86f"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html#ab21e7bd52392fda4a4aaa4ca48b8d86f">layers</a> () const</td></tr>
+<tr class="separator:ab21e7bd52392fda4a4aaa4ca48b8d86f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Format-neutral, editable top-down level model. </p>
+<p>Coordinates are world pixels, tile GID 0 means empty, and orientation is one of orthogonal, isometric, staggered or hexagonal. Unknown developer data can be preserved in string properties at document, layer and object scope. </p>
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00052">52</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aede3b6ff5024798ca07778cd0b66c76b" name="aede3b6ff5024798ca07778cd0b66c76b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aede3b6ff5024798ca07778cd0b66c76b">&#9670;&#160;</a></span>LevelDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::level_editing::LevelDocument::LevelDocument </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tileWidth</em> = <code>32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tileHeight</em> = <code>32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a046efbf23f4a48a125cba6ae9f608329" name="a046efbf23f4a48a125cba6ae9f608329"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a046efbf23f4a48a125cba6ae9f608329">&#9670;&#160;</a></span>addObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::LevelDocument::addObject </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layerIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelDocument_8h_source.html#l00018">eve::level_editing::LevelObject::id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8ac8308b1eba7ba926a61b8fd802194386">eve::level_editing::LevelLayer::Objects</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="LevelDocument_8h_source.html#l00019">eve::level_editing::LevelObject::type</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="LevelDocument_8h_source.html#l00021">eve::level_editing::LevelObject::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="LevelDocument_8h_source.html#l00021">eve::level_editing::LevelObject::y</a>.</p>
+
+</div>
+</div>
+<a id="a163b03c347463a6321ee5056b7e99941" name="a163b03c347463a6321ee5056b7e99941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a163b03c347463a6321ee5056b7e99941">&#9670;&#160;</a></span>addObjectLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::LevelDocument::addObjectLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelDocument_8h_source.html#l00031">eve::level_editing::LevelLayer::id</a>, <a class="el" href="LevelDocument_8h_source.html#l00033">eve::level_editing::LevelLayer::kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="LevelDocument_8h_source.html#l00032">eve::level_editing::LevelLayer::name</a> , 以及 <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8ac8308b1eba7ba926a61b8fd802194386">eve::level_editing::LevelLayer::Objects</a>.</p>
+
+</div>
+</div>
+<a id="aeba4c5af4dfbb1e21c63598985e1a3f9" name="aeba4c5af4dfbb1e21c63598985e1a3f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeba4c5af4dfbb1e21c63598985e1a3f9">&#9670;&#160;</a></span>addTileLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::LevelDocument::addTileLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelDocument_8h_source.html#l00031">eve::level_editing::LevelLayer::id</a>, <a class="el" href="LevelDocument_8h_source.html#l00033">eve::level_editing::LevelLayer::kind</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="LevelDocument_8h_source.html#l00032">eve::level_editing::LevelLayer::name</a>, <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8aa67f2c9d056f29b94521c17b838b9756">eve::level_editing::LevelLayer::Tiles</a> , 以及 <a class="el" href="LevelDocument_8h_source.html#l00039">eve::level_editing::LevelLayer::tiles</a>.</p>
+
+</div>
+</div>
+<a id="a8e1e568a498275d75c1430befd51a6e2" name="a8e1e568a498275d75c1430befd51a6e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e1e568a498275d75c1430befd51a6e2">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::LevelDocument::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e10d379228be0235610e8d5b2b935a3" name="a1e10d379228be0235610e8d5b2b935a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e10d379228be0235610e8d5b2b935a3">&#9670;&#160;</a></span>getLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::LevelDocument::getLayerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af0a64811275c075b47533336f656acb1" name="af0a64811275c075b47533336f656acb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0a64811275c075b47533336f656acb1">&#9670;&#160;</a></span>getLayerKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string eve::level_editing::LevelDocument::getLayerKind </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8aa67f2c9d056f29b94521c17b838b9756">eve::level_editing::LevelLayer::Tiles</a>.</p>
+
+</div>
+</div>
+<a id="a03b8a7ce292b9535680a49018cc1c78b" name="a03b8a7ce292b9535680a49018cc1c78b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03b8a7ce292b9535680a49018cc1c78b">&#9670;&#160;</a></span>getLayerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::level_editing::LevelDocument::getLayerName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a2fa1a0820424801343a04cc3b3a73bb2" name="a2fa1a0820424801343a04cc3b3a73bb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fa1a0820424801343a04cc3b3a73bb2">&#9670;&#160;</a></span>getObjectCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::LevelDocument::getObjectCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layerIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a81ea086b519fda8118839b9de6f750f8" name="a81ea086b519fda8118839b9de6f750f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81ea086b519fda8118839b9de6f750f8">&#9670;&#160;</a></span>getOrientation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::level_editing::LevelDocument::getOrientation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a655f6a77bcf14f374b5cbc6ed5d50c35" name="a655f6a77bcf14f374b5cbc6ed5d50c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a655f6a77bcf14f374b5cbc6ed5d50c35">&#9670;&#160;</a></span>getProperty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::level_editing::LevelDocument::getProperty </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="aa56c4d627429a6e67d0d66e14c4f07a9" name="aa56c4d627429a6e67d0d66e14c4f07a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa56c4d627429a6e67d0d66e14c4f07a9">&#9670;&#160;</a></span>getTileHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::level_editing::LevelDocument::getTileHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afdc1c7dcea13b58ea61a079c90fa7035" name="afdc1c7dcea13b58ea61a079c90fa7035"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdc1c7dcea13b58ea61a079c90fa7035">&#9670;&#160;</a></span>getTileLayer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> &gt; eve::level_editing::LevelDocument::getTileLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a298420af8b4a008684994a48d57702f0" name="a298420af8b4a008684994a48d57702f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a298420af8b4a008684994a48d57702f0">&#9670;&#160;</a></span>getTileLayer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> &gt; eve::level_editing::LevelDocument::getTileLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a40e97b0971384f90166884749d5a5f59" name="a40e97b0971384f90166884749d5a5f59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40e97b0971384f90166884749d5a5f59">&#9670;&#160;</a></span>getTileWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::level_editing::LevelDocument::getTileWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7dc78a5babdfef578a3bf0cb331c0b2" name="ae7dc78a5babdfef578a3bf0cb331c0b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7dc78a5babdfef578a3bf0cb331c0b2">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::LevelDocument::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96888b746a9edcbc9357d034b29731d3" name="a96888b746a9edcbc9357d034b29731d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96888b746a9edcbc9357d034b29731d3">&#9670;&#160;</a></span>layer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a> &gt; eve::level_editing::LevelDocument::layer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8bb8a7dc7f680706f480ffbcd932652e" name="a8bb8a7dc7f680706f480ffbcd932652e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bb8a7dc7f680706f480ffbcd932652e">&#9670;&#160;</a></span>layer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a> &gt; eve::level_editing::LevelDocument::layer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d716dd027709abd88307e2a9cb9a90d" name="a9d716dd027709abd88307e2a9cb9a90d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d716dd027709abd88307e2a9cb9a90d">&#9670;&#160;</a></span>layers() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a> &gt; &amp; eve::level_editing::LevelDocument::layers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab21e7bd52392fda4a4aaa4ca48b8d86f" name="ab21e7bd52392fda4a4aaa4ca48b8d86f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab21e7bd52392fda4a4aaa4ca48b8d86f">&#9670;&#160;</a></span>layers() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a> &gt; &amp; eve::level_editing::LevelDocument::layers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c3c2e516c2e60173ab9589fa100f105" name="a2c3c2e516c2e60173ab9589fa100f105"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c3c2e516c2e60173ab9589fa100f105">&#9670;&#160;</a></span>moveLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9">LevelChange</a> eve::level_editing::LevelDocument::moveLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>to</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9a820dbd2b8f606aff866c0bbfb6b737c1">eve::level_editing::Changed</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a> , 以及 <a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9a5ff3c6978f87d96febfdc8ed3899a97e">eve::level_editing::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="ab2eb5f46adfc2d4a353a26984e6c0a8a" name="ab2eb5f46adfc2d4a353a26984e6c0a8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2eb5f46adfc2d4a353a26984e6c0a8a">&#9670;&#160;</a></span>object() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelObject.html">LevelObject</a> &gt; eve::level_editing::LevelDocument::object </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layerIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>objectIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="ac869c6eb766e1719bc59f93b88fcf4d9" name="ac869c6eb766e1719bc59f93b88fcf4d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac869c6eb766e1719bc59f93b88fcf4d9">&#9670;&#160;</a></span>object() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1level__editing_1_1LevelObject.html">LevelObject</a> &gt; eve::level_editing::LevelDocument::object </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layerIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>objectIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="ace23673eca2495ddf7f0c2501c4d5921" name="ace23673eca2495ddf7f0c2501c4d5921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace23673eca2495ddf7f0c2501c4d5921">&#9670;&#160;</a></span>properties() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; std::string, std::string &gt; &amp; eve::level_editing::LevelDocument::properties </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad74439d59a916307856dfc0123bd1d74" name="ad74439d59a916307856dfc0123bd1d74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad74439d59a916307856dfc0123bd1d74">&#9670;&#160;</a></span>properties() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::unordered_map&lt; std::string, std::string &gt; &amp; eve::level_editing::LevelDocument::properties </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9d748c60f34190718225be92d6e625b" name="ae9d748c60f34190718225be92d6e625b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9d748c60f34190718225be92d6e625b">&#9670;&#160;</a></span>removeLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9">LevelChange</a> eve::level_editing::LevelDocument::removeLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9a820dbd2b8f606aff866c0bbfb6b737c1">eve::level_editing::Changed</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9a5ff3c6978f87d96febfdc8ed3899a97e">eve::level_editing::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="a9445fcfaf68a34add98f8b0f48907a98" name="a9445fcfaf68a34add98f8b0f48907a98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9445fcfaf68a34add98f8b0f48907a98">&#9670;&#160;</a></span>removeObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9">LevelChange</a> eve::level_editing::LevelDocument::removeObject </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layerIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>objectIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9a820dbd2b8f606aff866c0bbfb6b737c1">eve::level_editing::Changed</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="namespaceeve_1_1level__editing.html#a83a3a2b498f0851294bcf512cc8f69f9a5ff3c6978f87d96febfdc8ed3899a97e">eve::level_editing::Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="aaac81bda610d8c9146e4f6ae25b650bb" name="aaac81bda610d8c9146e4f6ae25b650bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaac81bda610d8c9146e4f6ae25b650bb">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::LevelDocument::resize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Changes map dimensions and resizes all tile layers. </p>
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="aa4ac736df0de9ddb20e457959c3386dd" name="aa4ac736df0de9ddb20e457959c3386dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4ac736df0de9ddb20e457959c3386dd">&#9670;&#160;</a></span>setLayerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::LevelDocument::setLayerName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="aa25bf987cc71a112631487c94a98d611" name="aa25bf987cc71a112631487c94a98d611"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa25bf987cc71a112631487c94a98d611">&#9670;&#160;</a></span>setOrientation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::LevelDocument::setOrientation </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>orientation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="afd674d3543a62d732d1e62e8803d28a1" name="afd674d3543a62d732d1e62e8803d28a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd674d3543a62d732d1e62e8803d28a1">&#9670;&#160;</a></span>setProperty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::LevelDocument::setProperty </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ad7a67bcadd6fa23fdf0038da3ce4dc48" name="ad7a67bcadd6fa23fdf0038da3ce4dc48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7a67bcadd6fa23fdf0038da3ce4dc48">&#9670;&#160;</a></span>setTileSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::LevelDocument::setTileSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a> 第 <a class="el" href="LevelDocument_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/level_editing/<a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a></li>
+<li>src/modules/level_editing/<a class="el" href="LevelDocument_8cpp_source.html">LevelDocument.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

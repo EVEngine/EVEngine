@@ -1,0 +1,248 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/Physics.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Physics.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Physics_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">class </span>World;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f">World3D</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>Cloth;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a912eefe59cc36b190aecdab602c1c185">Cloth3D</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>ClothGPU;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Fluid2D;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>DistanceField3D;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Physics.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1Physics.html">Physics</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Physics.html#a5e1a266787a137255075d3b5af3967e9">   24</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#a5e1a266787a137255075d3b5af3967e9">Module_REG</a>(<a class="code hl_class" href="classeve_1_1physics_1_1Physics.html">Physics</a>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#a952eec5d1e947b8b0633ecbae0ed0230">Physics</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Physics.html#afb1a069bab782977c712c6b8eeb1472b">   26</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#afb1a069bab782977c712c6b8eeb1472b">~Physics</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#a739f9086f8cf0bcafaf3cc4f7c06eb60">setMeter</a>(<span class="keywordtype">float</span> pixelsPerMeter);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#ae388e06d44438b1bd3eeec2e563aca59">getMeter</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#aeb33dbef852329e6cf1dc26210731122">newWorld</a>(<span class="keywordtype">float</span> gravityX, <span class="keywordtype">float</span> gravityY, <span class="keywordtype">bool</span> sleep = <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#a051c17cb9498c3057284a5ac5aaf3c32">newWorld3D</a>(<span class="keywordtype">float</span> gravityX, <span class="keywordtype">float</span> gravityY, <span class="keywordtype">float</span> gravityZ, <span class="keywordtype">bool</span> sleep = <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <a class="code hl_class" href="classeve_1_1physics_1_1DistanceField3D.html">DistanceField3D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#a00118331498527254c5dfa582bb1717e">newDistanceField3D</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, <span class="keywordtype">float</span> cellSize,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                        <span class="keywordtype">float</span> originX = 0.f, <span class="keywordtype">float</span> originY = 0.f,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                        <span class="keywordtype">float</span> originZ = 0.f, <span class="keywordtype">float</span> outsideDistance = 1e6f);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Cloth.html">Cloth</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#aa4df8b77e953027d3d50629ca529bd51">newCloth</a>(<span class="keywordtype">int</span> cols, <span class="keywordtype">int</span> rows, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#a540cc6328ec3a88a3a7a07c92ccf3f4f">newCloth3D</a>(<span class="keywordtype">int</span> cols, <span class="keywordtype">int</span> rows, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                        <span class="keywordtype">float</span> originZ);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <a class="code hl_class" href="classeve_1_1physics_1_1ClothGPU.html">ClothGPU</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#a8da098e24aabc38ef2ce6795e2430a7c">newClothGPU</a>(<span class="keywordtype">int</span> cols, <span class="keywordtype">int</span> rows, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Physics.html#ab790325449be1512be1d56d4395d3014">newFluid2D</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a> = 512);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordtype">float</span> meter_ = 30.f;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>};</div>
+</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_ac6929dd676d28e30e74a1624a9324cc7"><div class="ttname"><a href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a></div><div class="ttdeci">std::uint32_t capacity</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00036">GraphicsParticles.cpp:36</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a12acf4cc0533ead229b8b9f6c86b7fe6"><div class="ttname"><a href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a></div><div class="ttdeci">int spacing</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00136">TileConfig.cpp:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00045">Module.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth3D.html">eve::physics::Cloth3D</a></div><div class="ttdoc">Interactive 3D cloth — Verlet particles + distance constraints. Meter space, +Y up,...</div><div class="ttdef"><b>Definition</b> <a href="Cloth3D_8h_source.html#l00028">Cloth3D.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ClothGPU_html"><div class="ttname"><a href="classeve_1_1physics_1_1ClothGPU.html">eve::physics::ClothGPU</a></div><div class="ttdoc">GPU-accelerated 2D cloth — Verlet integration and distance-constraint relaxation run in a Vulkan comp...</div><div class="ttdef"><b>Definition</b> <a href="ClothGPU_8h_source.html#l00031">ClothGPU.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html">eve::physics::Cloth</a></div><div class="ttdoc">Interactive 2D cloth — Verlet particles + distance constraints. Pixel space (same convention as Box2D...</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00027">Cloth.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1DistanceField3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1DistanceField3D.html">eve::physics::DistanceField3D</a></div><div class="ttdoc">Regular 3D signed-distance grid for terrain and voxel collision queries. Negative samples are solid,...</div><div class="ttdef"><b>Definition</b> <a href="DistanceField3D_8h_source.html#l00014">DistanceField3D.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Fluid2D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Fluid2D.html">eve::physics::Fluid2D</a></div><div class="ttdoc">Interactive 2D particle fluid (double-density relaxation) in pixel space. Script-owned; independent o...</div><div class="ttdef"><b>Definition</b> <a href="Fluid2D_8h_source.html#l00017">Fluid2D.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html">eve::physics::Physics</a></div><div class="ttdoc">Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive 2D/3D cloth (Verlet,...</div><div class="ttdef"><b>Definition</b> <a href="Physics_8h_source.html#l00022">Physics.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_a00118331498527254c5dfa582bb1717e"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#a00118331498527254c5dfa582bb1717e">eve::physics::Physics::newDistanceField3D</a></div><div class="ttdeci">DistanceField3D * newDistanceField3D(int width, int height, int depth, float cellSize, float originX=0.f, float originY=0.f, float originZ=0.f, float outsideDistance=1e6f)</div><div class="ttdoc">Create a regular 3D signed-distance grid for map collision queries.</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00046">Physics.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_a051c17cb9498c3057284a5ac5aaf3c32"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#a051c17cb9498c3057284a5ac5aaf3c32">eve::physics::Physics::newWorld3D</a></div><div class="ttdeci">World3D * newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep=true)</div><div class="ttdoc">Create a 3D Box3D physics world. Coordinates are meters (Box3D native); +Y is up by convention.</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00042">Physics.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_a540cc6328ec3a88a3a7a07c92ccf3f4f"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#a540cc6328ec3a88a3a7a07c92ccf3f4f">eve::physics::Physics::newCloth3D</a></div><div class="ttdeci">Cloth3D * newCloth3D(int cols, int rows, float spacing, float originX, float originY, float originZ)</div><div class="ttdoc">Create a Verlet cloth grid in 3D meter space (+Y up, grid in XZ).</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00057">Physics.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_a5e1a266787a137255075d3b5af3967e9"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#a5e1a266787a137255075d3b5af3967e9">eve::physics::Physics::Module_REG</a></div><div class="ttdeci">Module_REG(Physics)</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_a739f9086f8cf0bcafaf3cc4f7c06eb60"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#a739f9086f8cf0bcafaf3cc4f7c06eb60">eve::physics::Physics::setMeter</a></div><div class="ttdeci">void setMeter(float pixelsPerMeter)</div><div class="ttdoc">Pixels per meter for 2D Box2D worlds (default 30, same as LÖVE).</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00030">Physics.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_a8da098e24aabc38ef2ce6795e2430a7c"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#a8da098e24aabc38ef2ce6795e2430a7c">eve::physics::Physics::newClothGPU</a></div><div class="ttdeci">ClothGPU * newClothGPU(int cols, int rows, float spacing, float originX, float originY)</div><div class="ttdoc">Create a GPU-accelerated 2D Verlet cloth (compute shader backend). Same interface as Cloth; requires ...</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00062">Physics.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_a952eec5d1e947b8b0633ecbae0ed0230"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#a952eec5d1e947b8b0633ecbae0ed0230">eve::physics::Physics::Physics</a></div><div class="ttdeci">Physics()</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00026">Physics.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_aa4df8b77e953027d3d50629ca529bd51"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#aa4df8b77e953027d3d50629ca529bd51">eve::physics::Physics::newCloth</a></div><div class="ttdeci">Cloth * newCloth(int cols, int rows, float spacing, float originX, float originY)</div><div class="ttdoc">Create a Verlet cloth grid (top row pinned).</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00053">Physics.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_ab790325449be1512be1d56d4395d3014"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#ab790325449be1512be1d56d4395d3014">eve::physics::Physics::newFluid2D</a></div><div class="ttdeci">Fluid2D * newFluid2D(int capacity=512)</div><div class="ttdoc">Creates an interactive 2D particle fluid in pixel space.</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00068">Physics.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_ae388e06d44438b1bd3eeec2e563aca59"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#ae388e06d44438b1bd3eeec2e563aca59">eve::physics::Physics::getMeter</a></div><div class="ttdeci">float getMeter() const</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00036">Physics.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_aeb33dbef852329e6cf1dc26210731122"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#aeb33dbef852329e6cf1dc26210731122">eve::physics::Physics::newWorld</a></div><div class="ttdeci">World * newWorld(float gravityX, float gravityY, bool sleep=true)</div><div class="ttdoc">Create a 2D Box2D physics world.</div><div class="ttdef"><b>Definition</b> <a href="Physics_8cpp_source.html#l00038">Physics.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Physics_html_afb1a069bab782977c712c6b8eeb1472b"><div class="ttname"><a href="classeve_1_1physics_1_1Physics.html#afb1a069bab782977c712c6b8eeb1472b">eve::physics::Physics::~Physics</a></div><div class="ttdeci">~Physics() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00050">World3D.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World_html"><div class="ttname"><a href="classeve_1_1physics_1_1World.html">eve::physics::World</a></div><div class="ttdoc">Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...</div><div class="ttdef"><b>Definition</b> <a href="World_8h_source.html#l00035">World.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00035">Climbing.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f"><div class="ttname"><a href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f">eve::physics::SimulationBackendDomain::World3D</a></div><div class="ttdeci">@ World3D</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a7d8538622ecace62d228f842ec9c31f9a912eefe59cc36b190aecdab602c1c185"><div class="ttname"><a href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a912eefe59cc36b190aecdab602c1c185">eve::physics::SimulationBackendDomain::Cloth3D</a></div><div class="ttdeci">@ Cloth3D</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

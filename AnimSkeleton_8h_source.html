@@ -1,0 +1,269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/AnimSkeleton.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AnimSkeleton.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AnimSkeleton_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimMath_8h.html">animation/AnimMath.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimSkeleton.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimSkeleton.html#afab36c6ce5888d38547a5a22afb6cb18">   16</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#afab36c6ce5888d38547a5a22afb6cb18">AnimSkeleton</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimSkeleton.html#a57b2e0b0007efd9401798b2dd3184aa3">   17</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a57b2e0b0007efd9401798b2dd3184aa3">~AnimSkeleton</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimSkeleton.html#a6591c5e65844afcefe79181d339b47a1">   19</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a6591c5e65844afcefe79181d339b47a1">AnimSkeleton</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimSkeleton.html#a9ab22b4caf3ef89117f8bcd07cee7e4e">   20</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a9ab22b4caf3ef89117f8bcd07cee7e4e">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#afcb4e2f7f5e0cb1eb960fd68e416f186">addBone</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keywordtype">int</span> parentIndex = -1);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">   28</a></span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">getBoneCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(bones_.size()); }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    std::string <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#aea9910aaf1d86c629782cb1469d9a9dd">getBoneName</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#af18ed708e13e9f78c16631f3bfacbde0">findBone</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a48956aa575226d90ea9007deca253628">getParent</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a5300ceeb919ac005366aca6a618c69ba">setBindPosition</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#afa968ef9b533f2c70f12dbc4ec9af8c3">setBindRotation</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#af72cb126b6271a97ce538181bfaaa07a">setBindScale</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#ac26e7cfe29e145a0abdd15274a9a0e31">getBindPositionX</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a2b50ca10458bd9c148955b146cb8b84b">getBindPositionY</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a625806cf872ce7e28cb1e61b9e9098c9">getBindPositionZ</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#ade1b20305425146cd02a2e00b41cf00d">getBindRotationX</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a87644f40b273658dabf163893759ad2a">getBindRotationY</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#ad29d0c1b950e196869e62876d74b7998">getBindRotationZ</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a65a6ae1033a6028ca5ed88e58fc19a59">getBindRotationW</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a41f5565c502c152d5ba2d1c62a4ebe09">getBindScaleX</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#a6d92b31d9451966d19be2e4bec7a0373">getBindScaleY</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#aa618e247f1f898a6aebe12f7a6a6512f">getBindScaleZ</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#af0d7d4db58e507b362b221be633b7479">setBoneLodLimit</a>(<span class="keywordtype">int</span> boneIndex, <span class="keywordtype">int</span> highestLod);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#ae97095b9989eb03a8376835291e8530b">getBoneLodLimit</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#ac4097c6422982bf9848523adf6e0337b">bindLocal</a>(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1AnimSkeleton.html#afc96c35f3802fb1d494d11f49526571d">applyBindPose</a>(<span class="keyword">class</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *pose) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">struct </span>Bone {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        std::string  <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordtype">int</span>          <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a> = -1;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> bind;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordtype">int</span>          lodLimit = 0x7fffffff;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    };</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span>               requireBone(<span class="keywordtype">int</span> boneIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::vector&lt;Bone&gt;  bones_;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimMath_8h_html"><div class="ttname"><a href="AnimMath_8h.html">AnimMath.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_ae5a367e308f2a54eea84358fbc9bee47"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a></div><div class="ttdeci">std::int32_t parent</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00014">LegacyAnimationImporter.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a2b50ca10458bd9c148955b146cb8b84b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a2b50ca10458bd9c148955b146cb8b84b">eve::animation::AnimSkeleton::getBindPositionY</a></div><div class="ttdeci">float getBindPositionY(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00090">AnimSkeleton.cpp:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a41f5565c502c152d5ba2d1c62a4ebe09"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a41f5565c502c152d5ba2d1c62a4ebe09">eve::animation::AnimSkeleton::getBindScaleX</a></div><div class="ttdeci">float getBindScaleX(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00114">AnimSkeleton.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a44d26194685931ff9c09672982daddba"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a44d26194685931ff9c09672982daddba">eve::animation::AnimSkeleton::getBoneCount</a></div><div class="ttdeci">int getBoneCount() const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00028">AnimSkeleton.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a48956aa575226d90ea9007deca253628"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a48956aa575226d90ea9007deca253628">eve::animation::AnimSkeleton::getParent</a></div><div class="ttdeci">int getParent(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00044">AnimSkeleton.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a5300ceeb919ac005366aca6a618c69ba"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a5300ceeb919ac005366aca6a618c69ba">eve::animation::AnimSkeleton::setBindPosition</a></div><div class="ttdeci">void setBindPosition(int boneIndex, float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00049">AnimSkeleton.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a57b2e0b0007efd9401798b2dd3184aa3"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a57b2e0b0007efd9401798b2dd3184aa3">eve::animation::AnimSkeleton::~AnimSkeleton</a></div><div class="ttdeci">~AnimSkeleton()=default</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a625806cf872ce7e28cb1e61b9e9098c9"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a625806cf872ce7e28cb1e61b9e9098c9">eve::animation::AnimSkeleton::getBindPositionZ</a></div><div class="ttdeci">float getBindPositionZ(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00094">AnimSkeleton.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a6591c5e65844afcefe79181d339b47a1"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a6591c5e65844afcefe79181d339b47a1">eve::animation::AnimSkeleton::AnimSkeleton</a></div><div class="ttdeci">AnimSkeleton(const AnimSkeleton &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a65a6ae1033a6028ca5ed88e58fc19a59"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a65a6ae1033a6028ca5ed88e58fc19a59">eve::animation::AnimSkeleton::getBindRotationW</a></div><div class="ttdeci">float getBindRotationW(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00110">AnimSkeleton.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a6d92b31d9451966d19be2e4bec7a0373"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a6d92b31d9451966d19be2e4bec7a0373">eve::animation::AnimSkeleton::getBindScaleY</a></div><div class="ttdeci">float getBindScaleY(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00118">AnimSkeleton.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a87644f40b273658dabf163893759ad2a"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a87644f40b273658dabf163893759ad2a">eve::animation::AnimSkeleton::getBindRotationY</a></div><div class="ttdeci">float getBindRotationY(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00102">AnimSkeleton.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_a9ab22b4caf3ef89117f8bcd07cee7e4e"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#a9ab22b4caf3ef89117f8bcd07cee7e4e">eve::animation::AnimSkeleton::operator=</a></div><div class="ttdeci">AnimSkeleton &amp; operator=(const AnimSkeleton &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_aa618e247f1f898a6aebe12f7a6a6512f"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#aa618e247f1f898a6aebe12f7a6a6512f">eve::animation::AnimSkeleton::getBindScaleZ</a></div><div class="ttdeci">float getBindScaleZ(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00122">AnimSkeleton.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_ac26e7cfe29e145a0abdd15274a9a0e31"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#ac26e7cfe29e145a0abdd15274a9a0e31">eve::animation::AnimSkeleton::getBindPositionX</a></div><div class="ttdeci">float getBindPositionX(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00086">AnimSkeleton.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_ac4097c6422982bf9848523adf6e0337b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#ac4097c6422982bf9848523adf6e0337b">eve::animation::AnimSkeleton::bindLocal</a></div><div class="ttdeci">const TransformTRS &amp; bindLocal(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00127">AnimSkeleton.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_ad29d0c1b950e196869e62876d74b7998"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#ad29d0c1b950e196869e62876d74b7998">eve::animation::AnimSkeleton::getBindRotationZ</a></div><div class="ttdeci">float getBindRotationZ(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00106">AnimSkeleton.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_ade1b20305425146cd02a2e00b41cf00d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#ade1b20305425146cd02a2e00b41cf00d">eve::animation::AnimSkeleton::getBindRotationX</a></div><div class="ttdeci">float getBindRotationX(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00098">AnimSkeleton.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_ae97095b9989eb03a8376835291e8530b"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#ae97095b9989eb03a8376835291e8530b">eve::animation::AnimSkeleton::getBoneLodLimit</a></div><div class="ttdeci">int getBoneLodLimit(int boneIndex) const</div><div class="ttdoc">Highest LOD at which the bone is sampled; defaults to all LODs.</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00081">AnimSkeleton.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_aea9910aaf1d86c629782cb1469d9a9dd"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#aea9910aaf1d86c629782cb1469d9a9dd">eve::animation::AnimSkeleton::getBoneName</a></div><div class="ttdeci">std::string getBoneName(int boneIndex) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00032">AnimSkeleton.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_af0d7d4db58e507b362b221be633b7479"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#af0d7d4db58e507b362b221be633b7479">eve::animation::AnimSkeleton::setBoneLodLimit</a></div><div class="ttdeci">void setBoneLodLimit(int boneIndex, int highestLod)</div><div class="ttdoc">Set the highest animation LOD at which this bone is sampled (0 = full-detail only)....</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00075">AnimSkeleton.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_af18ed708e13e9f78c16631f3bfacbde0"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#af18ed708e13e9f78c16631f3bfacbde0">eve::animation::AnimSkeleton::findBone</a></div><div class="ttdeci">int findBone(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00037">AnimSkeleton.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_af72cb126b6271a97ce538181bfaaa07a"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#af72cb126b6271a97ce538181bfaaa07a">eve::animation::AnimSkeleton::setBindScale</a></div><div class="ttdeci">void setBindScale(int boneIndex, float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00067">AnimSkeleton.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_afa968ef9b533f2c70f12dbc4ec9af8c3"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#afa968ef9b533f2c70f12dbc4ec9af8c3">eve::animation::AnimSkeleton::setBindRotation</a></div><div class="ttdeci">void setBindRotation(int boneIndex, float x, float y, float z, float w)</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00057">AnimSkeleton.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_afab36c6ce5888d38547a5a22afb6cb18"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#afab36c6ce5888d38547a5a22afb6cb18">eve::animation::AnimSkeleton::AnimSkeleton</a></div><div class="ttdeci">AnimSkeleton()=default</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_afc96c35f3802fb1d494d11f49526571d"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#afc96c35f3802fb1d494d11f49526571d">eve::animation::AnimSkeleton::applyBindPose</a></div><div class="ttdeci">void applyBindPose(class AnimPose *pose) const</div><div class="ttdoc">Fill pose locals with bind pose.</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00132">AnimSkeleton.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html_afcb4e2f7f5e0cb1eb960fd68e416f186"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html#afcb4e2f7f5e0cb1eb960fd68e416f186">eve::animation::AnimSkeleton::addBone</a></div><div class="ttdeci">int addBone(const std::string &amp;name, int parentIndex=-1)</div><div class="ttdoc">Append a bone. parentIndex = -1 for root.</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8cpp_source.html#l00014">AnimSkeleton.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00051">Animation.cpp:51</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html">eve::animation::TransformTRS</a></div><div class="ttdoc">Local TRS used by skeletal animation (quaternion xyzw).</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00009">AnimMath.h:9</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,655 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::action::ActionRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1action.html">action</a></li><li class="navelem"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1action_1_1ActionRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::action::ActionRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic action lifecycle coordinator.  
+ <a href="classeve_1_1action_1_1ActionRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Action_8h_source.html">Action.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a253f3323713947803e4cb76adba5caec" id="r_a253f3323713947803e4cb76adba5caec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a253f3323713947803e4cb76adba5caec">ActionRuntime</a> (<a class="el" href="structeve_1_1action_1_1ActionServices.html">ActionServices</a> services={})</td></tr>
+<tr class="memdesc:a253f3323713947803e4cb76adba5caec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind borrowed composition ports to this owner-thread runtime.  <br /></td></tr>
+<tr class="separator:a253f3323713947803e4cb76adba5caec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a4734a0f75ef684caacd5ddae403fcc" id="r_a5a4734a0f75ef684caacd5ddae403fcc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a5a4734a0f75ef684caacd5ddae403fcc">ActionRuntime</a> (const <a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a5a4734a0f75ef684caacd5ddae403fcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e195bef9fd228ef771b976a48dd332e" id="r_a9e195bef9fd228ef771b976a48dd332e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a9e195bef9fd228ef771b976a48dd332e">operator=</a> (const <a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;)=delete</td></tr>
+<tr class="separator:a9e195bef9fd228ef771b976a48dd332e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a52a46d3150f31045b822a04d382567" id="r_a3a52a46d3150f31045b822a04d382567"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a3a52a46d3150f31045b822a04d382567">ActionRuntime</a> (<a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a3a52a46d3150f31045b822a04d382567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5d1d2c8838081cde5a0b7ae08053b53" id="r_ac5d1d2c8838081cde5a0b7ae08053b53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#ac5d1d2c8838081cde5a0b7ae08053b53">operator=</a> (<a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:ac5d1d2c8838081cde5a0b7ae08053b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c0a53505f03dc94bf5ff55bd72caedc" id="r_a1c0a53505f03dc94bf5ff55bd72caedc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a1c0a53505f03dc94bf5ff55bd72caedc">~ActionRuntime</a> ()=default</td></tr>
+<tr class="separator:a1c0a53505f03dc94bf5ff55bd72caedc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2517d367f9de4651124e9f2f9bfc938" id="r_af2517d367f9de4651124e9f2f9bfc938"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#af2517d367f9de4651124e9f2f9bfc938">submit</a> (<a class="el" href="structeve_1_1action_1_1ActionDefinition.html">ActionDefinition</a> definition, <a class="el" href="structeve_1_1action_1_1ActionRequest.html">ActionRequest</a> request)</td></tr>
+<tr class="memdesc:af2517d367f9de4651124e9f2f9bfc938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submit a validated definition/request pair in Requested phase.  <br /></td></tr>
+<tr class="separator:af2517d367f9de4651124e9f2f9bfc938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c02a40c07cdf2354038eabe74882595" id="r_a1c02a40c07cdf2354038eabe74882595"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionAdvance.html">ActionAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a1c02a40c07cdf2354038eabe74882595">advance</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a> delta)</td></tr>
+<tr class="memdesc:a1c02a40c07cdf2354038eabe74882595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance one execution by an injected simulation duration.  <br /></td></tr>
+<tr class="separator:a1c02a40c07cdf2354038eabe74882595"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b6cce458d1fbdda5187031ed9d91dfc" id="r_a3b6cce458d1fbdda5187031ed9d91dfc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a3b6cce458d1fbdda5187031ed9d91dfc">cancel</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a3b6cce458d1fbdda5187031ed9d91dfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel a non-terminal execution before its Active transaction.  <br /></td></tr>
+<tr class="separator:a3b6cce458d1fbdda5187031ed9d91dfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d0f209208ad53916670dad623cbefd6" id="r_a8d0f209208ad53916670dad623cbefd6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1action_1_1ActionExecution.html">ActionExecution</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a8d0f209208ad53916670dad623cbefd6">find</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const noexcept</td></tr>
+<tr class="memdesc:a8d0f209208ad53916670dad623cbefd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find a borrowed read-only execution view, or null when absent.  <br /></td></tr>
+<tr class="separator:a8d0f209208ad53916670dad623cbefd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a693c27dc75cbed9e2a1f2cbb058f5247" id="r_a693c27dc75cbed9e2a1f2cbb058f5247"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1action_1_1ActionExecution.html">ActionExecution</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a693c27dc75cbed9e2a1f2cbb058f5247">find</a> (<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) noexcept</td></tr>
+<tr class="memdesc:a693c27dc75cbed9e2a1f2cbb058f5247"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find a borrowed mutable execution view for owner-side inspection.  <br /></td></tr>
+<tr class="separator:a693c27dc75cbed9e2a1f2cbb058f5247"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec470c00d9ffc4af133dddd3941140b" id="r_a8ec470c00d9ffc4af133dddd3941140b"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a8ec470c00d9ffc4af133dddd3941140b">executionCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a8ec470c00d9ffc4af133dddd3941140b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of executions retained by this runtime.  <br /></td></tr>
+<tr class="separator:a8ec470c00d9ffc4af133dddd3941140b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a49fc450802828d9e8ae7c7c2b306e6" id="r_a8a49fc450802828d9e8ae7c7c2b306e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a8a49fc450802828d9e8ae7c7c2b306e6">clear</a> () noexcept</td></tr>
+<tr class="memdesc:a8a49fc450802828d9e8ae7c7c2b306e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard every retained execution and restart deterministic local ids at one.  <br /></td></tr>
+<tr class="separator:a8a49fc450802828d9e8ae7c7c2b306e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic action lifecycle coordinator. </p>
+<p>No method reads a clock. <code><a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a1c02a40c07cdf2354038eabe74882595" title="Advance one execution by an injected simulation duration.">advance()</a></code> consumes only the supplied tick and duration. Structural execution storage is owned here; adapters only submit requests and observe results. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00474">474</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a253f3323713947803e4cb76adba5caec" name="a253f3323713947803e4cb76adba5caec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a253f3323713947803e4cb76adba5caec">&#9670;&#160;</a></span>ActionRuntime() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::action::ActionRuntime::ActionRuntime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1action_1_1ActionServices.html">ActionServices</a>&#160;</td>
+          <td class="paramname"><em>services</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind borrowed composition ports to this owner-thread runtime. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">services</td><td>Providers used synchronously during validation and Active. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>Every non-null provider must outlive this runtime and obey its own thread/reentrancy contract. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00482">482</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a4734a0f75ef684caacd5ddae403fcc" name="a5a4734a0f75ef684caacd5ddae403fcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a4734a0f75ef684caacd5ddae403fcc">&#9670;&#160;</a></span>ActionRuntime() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::action::ActionRuntime::ActionRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3a52a46d3150f31045b822a04d382567" name="a3a52a46d3150f31045b822a04d382567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a52a46d3150f31045b822a04d382567">&#9670;&#160;</a></span>ActionRuntime() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::action::ActionRuntime::ActionRuntime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c0a53505f03dc94bf5ff55bd72caedc" name="a1c0a53505f03dc94bf5ff55bd72caedc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c0a53505f03dc94bf5ff55bd72caedc">&#9670;&#160;</a></span>~ActionRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::action::ActionRuntime::~ActionRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1c02a40c07cdf2354038eabe74882595" name="a1c02a40c07cdf2354038eabe74882595"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c02a40c07cdf2354038eabe74882595">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionAdvance.html">ActionAdvance</a> &gt; eve::action::ActionRuntime::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance one execution by an injected simulation duration. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Execution identity returned by submit. </td></tr>
+    <tr><td class="paramname">tick</td><td>Non-decreasing simulation tick for this call. </td></tr>
+    <tr><td class="paramname">delta</td><td>Non-negative simulation duration; zero is allowed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Transition summary, or a structured failure. A failed/cancelled execution is observable through <a class="el" href="classeve_1_1action_1_1ActionRuntime.html#a8d0f209208ad53916670dad623cbefd6" title="Find a borrowed read-only execution view, or null when absent.">find()</a> after the failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8cpp_source.html">Action.cpp</a> 第 <a class="el" href="Action_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a4d3d769b812b6faa6b76e1a8abaece2d">eve::action::Active</a>, <a class="el" href="Action_8h_source.html#l00076">eve::action::ActionTiming::active</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447aa149e85a44aeec9140e92733d9ed694e">eve::action::Cancelled</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a07ca5050e697392c9ed47e6453f1453f">eve::action::Completed</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::action::Failed</a>, <a class="el" href="Action_8cpp_source.html#l00190">find()</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Time_8h_source.html#l00073">eve::Duration::isZero()</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a556b050ce914d18480d6ea30308c7790">eve::action::Recover</a>, <a class="el" href="Action_8h_source.html#l00078">eve::action::ActionTiming::recover</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447afcdf8a82eba24e303b63b2e49a507ecb">eve::action::Requested</a>, <a class="el" href="Action_8h_source.html#l00399">eve::action::ActionExecution::status()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="Action_8h_source.html#l00108">eve::action::ActionDefinition::timeline</a>, <a class="el" href="Action_8h_source.html#l00092">eve::action::ActionDefinition::timing</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447ac423b2af9f3f373c6576a8512645da9b">eve::action::Validating</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a3d501c93b1c2ecdb8ca9ffc8ef9c7055">eve::action::Windup</a>, <a class="el" href="Action_8h_source.html#l00074">eve::action::ActionTiming::windup</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingControl_8cpp_source.html#l00215">eve::climbing::ClimbingControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a3b6cce458d1fbdda5187031ed9d91dfc" name="a3b6cce458d1fbdda5187031ed9d91dfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b6cce458d1fbdda5187031ed9d91dfc">&#9670;&#160;</a></span>cancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::action::ActionRuntime::cancel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancel a non-terminal execution before its Active transaction. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Execution identity returned by submit. </td></tr>
+    <tr><td class="paramname">tick</td><td>Deterministic simulation tick at cancellation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied/NoOp operation result, or a structured cancellation failure. No reservation exists across frames; after Active has committed, cancellation does not undo the committed operation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8cpp_source.html">Action.cpp</a> 第 <a class="el" href="Action_8cpp_source.html#l00536">536</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447aa149e85a44aeec9140e92733d9ed694e">eve::action::Cancelled</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447a07ca5050e697392c9ed47e6453f1453f">eve::action::Completed</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597faf1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve_1_1action.html#a7de5593d842e98fdefb20c44a046f447ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::action::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00084">eve::Status::failure()</a>, <a class="el" href="Action_8cpp_source.html#l00190">find()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AbilitySystem_8cpp_source.html#l00093">eve::action::AbilityRuntime::activate()</a> , 以及 <a class="el" href="ClimbingControl_8cpp_source.html#l00158">eve::climbing::ClimbingControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a8a49fc450802828d9e8ae7c7c2b306e6" name="a8a49fc450802828d9e8ae7c7c2b306e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a49fc450802828d9e8ae7c7c2b306e6">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::action::ActionRuntime::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Discard every retained execution and restart deterministic local ids at one. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8cpp_source.html">Action.cpp</a> 第 <a class="el" href="Action_8cpp_source.html#l00553">553</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ec470c00d9ffc4af133dddd3941140b" name="a8ec470c00d9ffc4af133dddd3941140b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ec470c00d9ffc4af133dddd3941140b">&#9670;&#160;</a></span>executionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::action::ActionRuntime::executionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of executions retained by this runtime. </p>
+
+<p class="definition">在文件 <a class="el" href="Action_8h_source.html">Action.h</a> 第 <a class="el" href="Action_8h_source.html#l00534">534</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8d0f209208ad53916670dad623cbefd6" name="a8d0f209208ad53916670dad623cbefd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d0f209208ad53916670dad623cbefd6">&#9670;&#160;</a></span>find() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1action_1_1ActionExecution.html">ActionExecution</a> * eve::action::ActionRuntime::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find a borrowed read-only execution view, or null when absent. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed storage owned by this runtime; valid until erase or <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a> destruction. @lifetime The caller must not retain the pointer beyond that owner. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8cpp_source.html">Action.cpp</a> 第 <a class="el" href="Action_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AbilitySystem_8cpp_source.html#l00093">eve::action::AbilityRuntime::activate()</a>, <a class="el" href="Action_8cpp_source.html#l00385">advance()</a>, <a class="el" href="Action_8cpp_source.html#l00536">cancel()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04260">eve::rts::RTSProjectileSystem::step()</a> , 以及 <a class="el" href="AbilitySystem_8cpp_source.html#l00192">eve::action::AbilityRuntime::synchronize()</a>.</p>
+
+</div>
+</div>
+<a id="a693c27dc75cbed9e2a1f2cbb058f5247" name="a693c27dc75cbed9e2a1f2cbb058f5247"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a693c27dc75cbed9e2a1f2cbb058f5247">&#9670;&#160;</a></span>find() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1action_1_1ActionExecution.html">ActionExecution</a> * eve::action::ActionRuntime::find </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find a borrowed mutable execution view for owner-side inspection. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed storage owned by this runtime; valid until erase or <a class="el" href="classeve_1_1action_1_1ActionRuntime.html" title="Deterministic action lifecycle coordinator.">ActionRuntime</a> destruction. @lifetime The caller must not retain the pointer beyond that owner. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8cpp_source.html">Action.cpp</a> 第 <a class="el" href="Action_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5d1d2c8838081cde5a0b7ae08053b53" name="ac5d1d2c8838081cde5a0b7ae08053b53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5d1d2c8838081cde5a0b7ae08053b53">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp; eve::action::ActionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9e195bef9fd228ef771b976a48dd332e" name="a9e195bef9fd228ef771b976a48dd332e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e195bef9fd228ef771b976a48dd332e">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp; eve::action::ActionRuntime::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af2517d367f9de4651124e9f2f9bfc938" name="af2517d367f9de4651124e9f2f9bfc938"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2517d367f9de4651124e9f2f9bfc938">&#9670;&#160;</a></span>submit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">ActionExecutionId</a> &gt; eve::action::ActionRuntime::submit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1action_1_1ActionDefinition.html">ActionDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1action_1_1ActionRequest.html">ActionRequest</a>&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Submit a validated definition/request pair in Requested phase. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">definition</td><td>Definition copied into the execution. </td></tr>
+    <tr><td class="paramname">request</td><td>Request copied into the execution. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>New execution id or a structured rejection; no state is created when validation fails. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Action_8cpp_source.html">Action.cpp</a> 第 <a class="el" href="Action_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa2d13df6f8b5e4c5af9f87e0dc39df69d">eve::Pending</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Action_8cpp_source.html#l00118">eve::action::ActionRequest::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AbilitySystem_8cpp_source.html#l00093">eve::action::AbilityRuntime::activate()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/action/<a class="el" href="Action_8h_source.html">Action.h</a></li>
+<li>src/modules/action/<a class="el" href="Action_8cpp_source.html">Action.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

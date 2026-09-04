@@ -1,0 +1,267 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 昼夜循环模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">昼夜循环模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>昼夜循环模块</h1>
+<p><b>脚本入口：</b> <code>eve.DayNight()</code></p>
+<p>一个随时间流逝驱动太阳、天空与光照的昼夜循环系统。模块维护一个 24 小时 时钟（速度可调），每帧按当前**太阳高度角 / 方位角**重新摆放方向光，并按需 生成一张程序化天空盒立方体贴图（天空渐变 + 太阳光盘 + 夜间星空）作为 3D IBL 环境光，使**天空盒角度与反射天空都跟随太阳转动**。</p>
+<p>入夜后（太阳低于地平线）可切换互补的光照系统，每个都以一组 <code>Light3D</code> 实体实现：</p>
+<ul>
+<li>**月光（moonlight）**：来自月亮方向的冷色方向光；</li>
+<li>**星光（starlight）**：微弱偏蓝的环境光，柔和地托起夜色；</li>
+<li>**火焰（fire）**：位于调用者指定篝火位置的暖色点光源；</li>
+<li>**萤火虫（fireflies）**：一组暖色、缓慢漂移的点光源。</li>
+</ul>
+<p>演示场景见 <code>examples/daynight</code>（<code>eve run examples/daynight</code>）。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local daynight = eve.DayNight();</div>
+<div class="line">daynight.init(gfx);</div>
+<div class="line">daynight.setTimeOfDay(12.0);        // 正午</div>
+<div class="line">daynight.setSpeed(0.5);             // 每个真实秒前进 0.5 个模拟小时</div>
+<div class="line">daynight.setFirePosition(0.0, 0.6, 0.0);</div>
+<div class="line">daynight.addFirefly(2.0, 0.8, 1.0);</div>
+<div class="line">daynight.setNightLight(&quot;fireflies&quot;, true);</div>
+<div class="line"> </div>
+<div class="line">// 每帧、在 gfx.render3D() 之前：</div>
+<div class="line">daynight.update(dt, gfx);</div>
+<div class="line">camera.setAmbient(daynight.getAmbientR(),</div>
+<div class="line">                  daynight.getAmbientG(),</div>
+<div class="line">                  daynight.getAmbientB());</div>
+<div class="line"> </div>
+<div class="line">// 用同一套太阳方向和大气衰减颜色驱动体积云，日落霞光会与天空一致。</div>
+<div class="line">cloud.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(), daynight.getSunDirZ());</div>
+<div class="line">cloud.setCloudLightColor(daynight.getSunR(), daynight.getSunG(), daynight.getSunB());</div>
+<div class="line">gfx.render3D();</div>
+</div><!-- fragment --><p><code>daynight.update</code> 会同步更新方向光、背景色与程序化天空盒；相机环境光需通过 <code>getAmbientR/G/B()</code>（或 <code>getAmbientBrightness()</code>）由脚本喂给相机。</p>
+<h2>时钟与太阳</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">API   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setTimeOfDay(h)</code> / <code>getTimeOfDay()</code>   </td><td class="markdownTableBodyNone">设置 / 读取钟表时间（<code>[0,24)</code> 小时）    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>setSpeed(hprs)</code> / <code>getSpeed()</code>   </td><td class="markdownTableBodyNone">每个真实秒前进的模拟小时数    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setPaused(b)</code> / <code>isPaused()</code>   </td><td class="markdownTableBodyNone">暂停 / 恢复时间流逝    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>isNight()</code>   </td><td class="markdownTableBodyNone">太阳是否低于地平线（入夜）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getSunElevation()</code> / <code>getSunAzimuth()</code>   </td><td class="markdownTableBodyNone">太阳高度角 / 方位角（度）    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>getSunDirX/Y/Z()</code>   </td><td class="markdownTableBodyNone">指向太阳的世界方向（单位向量）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getSunIntensity()</code>   </td><td class="markdownTableBodyNone">太阳能量 <code>[0,1]</code>，低于地平线为 0    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>setTurbidity(v)</code> / <code>getTurbidity()</code>   </td><td class="markdownTableBodyNone">大气浑浊度 <code>[1.5,10]</code>；越高，地平线雾霾与暖色霞光越强    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setMieStrength(v)</code> / <code>getMieStrength()</code>   </td><td class="markdownTableBodyNone">米氏气溶胶强度 <code>[0,4]</code>，控制太阳周围光晕与地平线泛白    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>setSkyExposure(v)</code> / <code>getSkyExposure()</code>   </td><td class="markdownTableBodyNone">天空写入 RGBA8 cubemap 前的曝光 <code>[0.05,8]</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>applyAtmosphere(volumetric)</code>   </td><td class="markdownTableBodyNone">将当前太阳方向、直射光、天空色和天气影响统一写入 <code>Volumetric</code> fog/cloud 对象，避免脚本分别维护不一致参数   </td></tr>
+</table>
+<p>太阳高度角在正午达到约 <code>70°</code>，方位角在一天内转动 360°。</p>
+<h2>天空与环境</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">API   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setSkyboxEnabled(b)</code> / <code>isSkyboxEnabled()</code>   </td><td class="markdownTableBodyNone">开关程序化天空盒（IBL 环境光）    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>setWeatherInfluence(cloudiness, flash)</code>   </td><td class="markdownTableBodyNone">注入天气影响：云量 <code>[0,1]</code> 压低天空、日光与星光，闪电亮度 <code>[0,1]</code> 短暂照亮环境    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getWeatherCloudiness()</code> / <code>getWeatherFlash()</code>   </td><td class="markdownTableBodyNone">读取当前云量和闪电环境光影响    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>getSkyR/G/B()</code>   </td><td class="markdownTableBodyNone">地平线处天空基调色（用于清屏背景）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>getAmbientR/G/B()</code> / <code>getAmbientBrightness()</code>   </td><td class="markdownTableBodyNone">建议的相机环境光   </td></tr>
+</table>
+<p>天空使用波长相关的瑞利散射、近似米氏散射、太阳路径消光和多散射底色生成， 因此低太阳高度会自然产生暖色太阳、地平线霞光和更宽的气溶胶光晕。天空盒为 每面 128×128；仅在太阳角变化到新“桶”或大气参数改变时重新生成，避免逐帧 GPU 分配。当前图形后端的环境贴图格式仍为 RGBA8，模块使用 ACES 拟合曲线映射 物理辐亮度；后端升级至浮点环境贴图后可移除此中间映射。</p>
+<h2>夜间光照系统</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">API   </th><th class="markdownTableHeadNone">说明    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>setNightLight(name, b)</code> / <code>isNightLight(name)</code>   </td><td class="markdownTableBodyNone">开关命名光照系统    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>setFirePosition(x,y,z)</code>   </td><td class="markdownTableBodyNone">设置篝火点光源位置    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>addFirefly(x,y,z)</code>   </td><td class="markdownTableBodyNone">添加一只萤火虫锚点（上限 8 只）    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>clearFireflies()</code> / <code>getFireflyCount()</code>   </td><td class="markdownTableBodyNone">清空 / 读取萤火虫数量   </td></tr>
+</table>
+<p>命名系统：<code>"moonlight"</code> / <code>"starlight"</code> / <code>"fire"</code> / <code>"fireflies"</code>。除星光通过 环境光实现外，其余均为逐帧启停与摆位的 <code>Light3D</code> 实体。</p>
+<h2>实现方式</h2>
+<ul>
+<li>**太阳轨道**：由时钟推导高度角 / 方位角，再换算为世界方向驱动方向光， 高度角低时太阳能量平滑衰减至 0。</li>
+<li>**程序化天空盒**：每张面计算波长相关的大气单次散射、太阳消光及近似多次 散射，叠加具有真实角尺度的太阳盘，夜间再撒上确定性星光；同一天空写入 IBL， 使可见天空与材质反射保持一致。</li>
+<li>**夜间光源**：月亮为方向光，篝火为暖色点光，萤火虫为绕锚点正弦漂移的一 组点光；全部按命名开关启停。</li>
+</ul>
+<h3>PR #287 新增绑定</h3>
+<ul>
+<li>反射链、HDR 与探针相关 API：<code>applyReflectionProbeSky</code> </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

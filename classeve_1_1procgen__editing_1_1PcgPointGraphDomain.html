@@ -1,0 +1,453 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen_editing::PcgPointGraphDomain类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen__editing.html">procgen_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html">PcgPointGraphDomain</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen_editing::PcgPointGraphDomain类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>procgen.point</code> editor graph domain backed by <a class="el" href="classeve_1_1procgen_1_1PointGraph.html" title="A data-flow graph for attributed procedural points.">procgen::PointGraph</a> schema.  
+ <a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PcgGraph_8h_source.html">PcgGraph.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::procgen_editing::PcgPointGraphDomain 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.png" usemap="#eve::procgen_5Fediting::PcgPointGraphDomain_map" alt=""/>
+  <map id="eve::procgen_5Fediting::PcgPointGraphDomain_map" name="eve::procgen_5Fediting::PcgPointGraphDomain_map">
+<area href="classeve_1_1editing_1_1IGraphDomainProvider.html" title="Domain-owned typed connection policy." alt="eve::editing::IGraphDomainProvider" shape="rect" coords="0,0,263,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7506bd05f77638ebdc577fc876a702f4" id="r_a7506bd05f77638ebdc577fc876a702f4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a7506bd05f77638ebdc577fc876a702f4">domain</a> () const override</td></tr>
+<tr class="separator:a7506bd05f77638ebdc577fc876a702f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af950ae6c4c267da4e7008ef012fe4046" id="r_af950ae6c4c267da4e7008ef012fe4046"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#af950ae6c4c267da4e7008ef012fe4046">canConnect</a> (const <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> &amp;<a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, const <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> &amp;<a class="el" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>) const override</td></tr>
+<tr class="separator:af950ae6c4c267da4e7008ef012fe4046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e4787c0bec24085a713ceab77a22c23" id="r_a1e4787c0bec24085a713ceab77a22c23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a1e4787c0bec24085a713ceab77a22c23">makeNode</a> (const <a class="el" href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">GraphNodeId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;operation) const</td></tr>
+<tr class="memdesc:a1e4787c0bec24085a713ceab77a22c23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a generic editor node from one reflected PointGraph operation.  <br /></td></tr>
+<tr class="separator:a1e4787c0bec24085a713ceab77a22c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14201d4fc844a7e273099d5c140e3dc1" id="r_a14201d4fc844a7e273099d5c140e3dc1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html">PcgGraphMigrationResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a14201d4fc844a7e273099d5c140e3dc1">migrate</a> (const <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>) const</td></tr>
+<tr class="memdesc:a14201d4fc844a7e273099d5c140e3dc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upgrade a legacy graph without mutating the source document.  <br /></td></tr>
+<tr class="separator:a14201d4fc844a7e273099d5c140e3dc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a972af39b7665897c7fb0c52bd96329b1" id="r_a972af39b7665897c7fb0c52bd96329b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html">PcgGraphCompileResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a972af39b7665897c7fb0c52bd96329b1">compile</a> (const <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>) const</td></tr>
+<tr class="memdesc:a972af39b7665897c7fb0c52bd96329b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compile topology and scalar properties into a reusable PointGraph definition.  <br /></td></tr>
+<tr class="separator:a972af39b7665897c7fb0c52bd96329b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad245ba41db92d7bbbd4d690b8261c386" id="r_ad245ba41db92d7bbbd4d690b8261c386"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html">PcgGraphPreviewResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#ad245ba41db92d7bbbd4d690b8261c386">preview</a> (const <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, const std::string &amp;inputNode, <a class="el" href="classeve_1_1procgen_1_1PointSet.html">procgen::PointSet</a> *previewInput, const std::string &amp;outputNode, int nodeBudget=0, int pointBudget=100000) const</td></tr>
+<tr class="memdesc:ad245ba41db92d7bbbd4d690b8261c386"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compile and execute an isolated point-input preview for editor visualization.  <br /></td></tr>
+<tr class="separator:ad245ba41db92d7bbbd4d690b8261c386"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IGraphDomainProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IGraphDomainProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html">eve::editing::IGraphDomainProvider</a></td></tr>
+<tr class="memitem:a93e9722dc346f927854cf2a8eb8bbc25 inherit pub_methods_classeve_1_1editing_1_1IGraphDomainProvider" id="r_a93e9722dc346f927854cf2a8eb8bbc25"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html#a93e9722dc346f927854cf2a8eb8bbc25">~IGraphDomainProvider</a> ()=default</td></tr>
+<tr class="separator:a93e9722dc346f927854cf2a8eb8bbc25 inherit pub_methods_classeve_1_1editing_1_1IGraphDomainProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><code>procgen.point</code> editor graph domain backed by <a class="el" href="classeve_1_1procgen_1_1PointGraph.html" title="A data-flow graph for attributed procedural points.">procgen::PointGraph</a> schema. </p>
+<p>This optional bridge is compiled only when both editor and procgen modules are enabled. It creates typed pins/default properties from runtime operation reflection and compiles the neutral GraphDocument into a versioned asset. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgGraph_8h_source.html">PcgGraph.h</a> 第 <a class="el" href="PcgGraph_8h_source.html#l00062">62</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="af950ae6c4c267da4e7008ef012fe4046" name="af950ae6c4c267da4e7008ef012fe4046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af950ae6c4c267da4e7008ef012fe4046">&#9670;&#160;</a></span>canConnect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a> eve::procgen_editing::PcgPointGraphDomain::canConnect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>to</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html#ab948d421c547534a0708c1ce47923f4d">eve::editing::IGraphDomainProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PcgGraph_8cpp_source.html">PcgGraph.cpp</a> 第 <a class="el" href="PcgGraph_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingGraph_8h_source.html#l00049">eve::editing::GraphConnectionDecision::allowed</a>, <a class="el" href="EditingGraph_8h_source.html#l00050">eve::editing::GraphConnectionDecision::diagnostics</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a> , 以及 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">compile()</a>.</p>
+
+</div>
+</div>
+<a id="a972af39b7665897c7fb0c52bd96329b1" name="a972af39b7665897c7fb0c52bd96329b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a972af39b7665897c7fb0c52bd96329b1">&#9670;&#160;</a></span>compile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html">PcgGraphCompileResult</a> eve::procgen_editing::PcgPointGraphDomain::compile </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compile topology and scalar properties into a reusable PointGraph definition. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgGraph_8cpp_source.html">PcgGraph.cpp</a> 第 <a class="el" href="PcgGraph_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00142">eve::procgen::PointGraph::addNode()</a>, <a class="el" href="EditingResult_8h_source.html#l00041">eve::editing::applied()</a>, <a class="el" href="PcgGraph_8cpp_source.html#l00060">canConnect()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00184">eve::procgen::PointGraph::connect()</a>, <a class="el" href="PcgGraph_8h_source.html#l00018">eve::procgen_editing::PcgGraphCompileResult::definition</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00096">eve::procgen::PointGraph::deserializeDefinition()</a>, <a class="el" href="PcgGraph_8h_source.html#l00019">eve::procgen_editing::PcgGraphCompileResult::diagnostics</a>, <a class="el" href="PcgGraph_8h_source.html#l00017">eve::procgen_editing::PcgGraphCompileResult::documentRevision</a>, <a class="el" href="PointGraph_8cpp_source.html#l00285">eve::procgen::PointGraph::exposeParameter()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="PointGraph_8cpp_source.html#l00436">eve::procgen::PointGraph::getError()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00531">eve::procgen::PointGraph::getOperationParamCount()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00535">eve::procgen::PointGraph::getOperationParamKey()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00541">eve::procgen::PointGraph::getOperationParamKind()</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="EditingGraph_8h_source.html#l00024">eve::editing::GraphNodeRecord::id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="PcgGraph_8cpp_source.html#l00103">migrate()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="classeve_1_1editing_1_1Value.html#a087df93beeca21a0a3292fd2b2ce45eaabbb93ef26e3c101ff11cdd21cab08a94">eve::editing::Value::Null</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a>, <a class="el" href="PointGraphAsset_8cpp_source.html#l00044">eve::procgen::PointGraph::serializeDefinition()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00252">eve::procgen::PointGraph::setNodeFloat()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00262">eve::procgen::PointGraph::setNodeInt()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00274">eve::procgen::PointGraph::setNodeString()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00366">eve::procgen::PointGraph::setNodeSubgraph()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="PcgGraph_8h_source.html#l00016">eve::procgen_editing::PcgGraphCompileResult::status</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00350">preview()</a>.</p>
+
+</div>
+</div>
+<a id="a7506bd05f77638ebdc577fc876a702f4" name="a7506bd05f77638ebdc577fc876a702f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7506bd05f77638ebdc577fc876a702f4">&#9670;&#160;</a></span>domain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen_editing::PcgPointGraphDomain::domain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IGraphDomainProvider.html#ae057c0ef4047a3fe46c377ab8cea6eba">eve::editing::IGraphDomainProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="PcgGraph_8h_source.html">PcgGraph.h</a> 第 <a class="el" href="PcgGraph_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00103">migrate()</a>.</p>
+
+</div>
+</div>
+<a id="a1e4787c0bec24085a713ceab77a22c23" name="a1e4787c0bec24085a713ceab77a22c23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e4787c0bec24085a713ceab77a22c23">&#9670;&#160;</a></span>makeNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a> &gt; eve::procgen_editing::PcgPointGraphDomain::makeNode </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">GraphNodeId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>operation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a generic editor node from one reflected PointGraph operation. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgGraph_8cpp_source.html">PcgGraph.cpp</a> 第 <a class="el" href="PcgGraph_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00019">defaultValue</a>, <a class="el" href="PointGraph_8cpp_source.html#l00527">eve::procgen::PointGraph::getOperationInputCount()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00531">eve::procgen::PointGraph::getOperationParamCount()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00547">eve::procgen::PointGraph::getOperationParamDefault()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00535">eve::procgen::PointGraph::getOperationParamKey()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00541">eve::procgen::PointGraph::getOperationParamKind()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="PointGraph_8cpp_source.html#l00023">inputs</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00103">migrate()</a>.</p>
+
+</div>
+</div>
+<a id="a14201d4fc844a7e273099d5c140e3dc1" name="a14201d4fc844a7e273099d5c140e3dc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14201d4fc844a7e273099d5c140e3dc1">&#9670;&#160;</a></span>migrate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html">PcgGraphMigrationResult</a> eve::procgen_editing::PcgPointGraphDomain::migrate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upgrade a legacy graph without mutating the source document. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgGraph_8cpp_source.html">PcgGraph.cpp</a> 第 <a class="el" href="PcgGraph_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgGraph_8h_source.html#l00028">eve::procgen_editing::PcgGraphMigrationResult::diagnostics</a>, <a class="el" href="PcgGraph_8h_source.html#l00064">domain()</a>, <a class="el" href="EditingGraph_8h_source.html#l00043">eve::editing::GraphDocumentData::edges</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="PcgGraph_8h_source.html#l00025">eve::procgen_editing::PcgGraphMigrationResult::fromVersion</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="PcgGraph_8h_source.html#l00027">eve::procgen_editing::PcgGraphMigrationResult::graph</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="PcgGraph_8cpp_source.html#l00073">makeNode()</a>, <a class="el" href="EditingGraph_8h_source.html#l00042">eve::editing::GraphDocumentData::nodes</a>, <a class="el" href="classeve_1_1editing_1_1Value.html#a087df93beeca21a0a3292fd2b2ce45eaabbb93ef26e3c101ff11cdd21cab08a94">eve::editing::Value::Null</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a>, <a class="el" href="EditingGraph_8h_source.html#l00040">eve::editing::GraphDocumentData::schemaVersion</a>, <a class="el" href="PcgGraph_8h_source.html#l00024">eve::procgen_editing::PcgGraphMigrationResult::status</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00188">compile()</a>.</p>
+
+</div>
+</div>
+<a id="ad245ba41db92d7bbbd4d690b8261c386" name="ad245ba41db92d7bbbd4d690b8261c386"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad245ba41db92d7bbbd4d690b8261c386">&#9670;&#160;</a></span>preview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html">PcgGraphPreviewResult</a> eve::procgen_editing::PcgPointGraphDomain::preview </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>inputNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">procgen::PointSet</a> *&#160;</td>
+          <td class="paramname"><em>previewInput</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>outputNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nodeBudget</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pointBudget</em> = <code>100000</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compile and execute an isolated point-input preview for editor visualization. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">graph</td><td>Immutable graph document snapshot. </td></tr>
+    <tr><td class="paramname">inputNode</td><td>PointGraph input node receiving previewInput. </td></tr>
+    <tr><td class="paramname">previewInput</td><td>Non-owning point data used only for this execution. </td></tr>
+    <tr><td class="paramname">outputNode</td><td>Node whose evaluated output determines outputCount. </td></tr>
+    <tr><td class="paramname">nodeBudget</td><td>Maximum newly evaluated nodes, or zero for unlimited. </td></tr>
+    <tr><td class="paramname">pointBudget</td><td>Maximum points cached by one node, or zero for unlimited. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="PcgGraph_8cpp_source.html">PcgGraph.cpp</a> 第 <a class="el" href="PcgGraph_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgGraph_8h_source.html#l00043">eve::procgen_editing::PcgGraphPreviewMetric::averageDensity</a>, <a class="el" href="PcgGraph_8h_source.html#l00036">eve::procgen_editing::PcgGraphPreviewMetric::cacheHit</a>, <a class="el" href="PcgGraph_8cpp_source.html#l00188">compile()</a>, <a class="el" href="PcgGraph_8h_source.html#l00052">eve::procgen_editing::PcgGraphPreviewResult::diagnostics</a>, <a class="el" href="PcgGraph_8h_source.html#l00049">eve::procgen_editing::PcgGraphPreviewResult::documentRevision</a>, <a class="el" href="PointSet_8cpp_source.html#l00046">eve::procgen::PointSet::empty()</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PcgGraph_8h_source.html#l00040">eve::procgen_editing::PcgGraphPreviewMetric::maxX</a>, <a class="el" href="PcgGraph_8h_source.html#l00041">eve::procgen_editing::PcgGraphPreviewMetric::maxY</a>, <a class="el" href="PcgGraph_8h_source.html#l00042">eve::procgen_editing::PcgGraphPreviewMetric::maxZ</a>, <a class="el" href="PcgGraph_8h_source.html#l00051">eve::procgen_editing::PcgGraphPreviewResult::metrics</a>, <a class="el" href="PcgGraph_8h_source.html#l00035">eve::procgen_editing::PcgGraphPreviewMetric::milliseconds</a>, <a class="el" href="PcgGraph_8h_source.html#l00037">eve::procgen_editing::PcgGraphPreviewMetric::minX</a>, <a class="el" href="PcgGraph_8h_source.html#l00038">eve::procgen_editing::PcgGraphPreviewMetric::minY</a>, <a class="el" href="PcgGraph_8h_source.html#l00039">eve::procgen_editing::PcgGraphPreviewMetric::minZ</a>, <a class="el" href="PcgGraph_8h_source.html#l00033">eve::procgen_editing::PcgGraphPreviewMetric::nodeId</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="PcgGraph_8h_source.html#l00034">eve::procgen_editing::PcgGraphPreviewMetric::outputCount</a>, <a class="el" href="PcgGraph_8h_source.html#l00050">eve::procgen_editing::PcgGraphPreviewResult::outputCount</a> , 以及 <a class="el" href="PcgGraph_8h_source.html#l00048">eve::procgen_editing::PcgGraphPreviewResult::status</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen_editing/<a class="el" href="PcgGraph_8h_source.html">PcgGraph.h</a></li>
+<li>src/modules/procgen_editing/<a class="el" href="PcgGraph_8cpp_source.html">PcgGraph.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,2184 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::vehicle::Vehicle类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1vehicle.html">vehicle</a></li><li class="navelem"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">Vehicle</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1vehicle_1_1Vehicle-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::vehicle::Vehicle类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>载具模块（eve.Vehicle）。  
+ <a href="classeve_1_1vehicle_1_1Vehicle.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Vehicle_8h_source.html">Vehicle.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::vehicle::Vehicle 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1vehicle_1_1Vehicle.png" usemap="#eve::vehicle::Vehicle_map" alt=""/>
+  <map id="eve::vehicle::Vehicle_map" name="eve::vehicle::Vehicle_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,129,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af33cbf9dfaad08a5c9a4bc856a5cffd4" id="r_af33cbf9dfaad08a5c9a4bc856a5cffd4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#af33cbf9dfaad08a5c9a4bc856a5cffd4">Module_REG</a> (<a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">Vehicle</a>)</td></tr>
+<tr class="separator:af33cbf9dfaad08a5c9a4bc856a5cffd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cb757569c4f1560e0e31b1b0f79d2ff" id="r_a4cb757569c4f1560e0e31b1b0f79d2ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a4cb757569c4f1560e0e31b1b0f79d2ff">Vehicle</a> ()</td></tr>
+<tr class="separator:a4cb757569c4f1560e0e31b1b0f79d2ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26884e1ace1aae9085095745c20d9c58" id="r_a26884e1ace1aae9085095745c20d9c58"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a26884e1ace1aae9085095745c20d9c58">~Vehicle</a> () override</td></tr>
+<tr class="separator:a26884e1ace1aae9085095745c20d9c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae06e6aaf4a410e60d4b9ec383f80564d" id="r_ae06e6aaf4a410e60d4b9ec383f80564d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ae06e6aaf4a410e60d4b9ec383f80564d">registerVehiclesFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:ae06e6aaf4a410e60d4b9ec383f80564d"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 JSON 注册载具模板；返回成功注册数量。  <br /></td></tr>
+<tr class="separator:ae06e6aaf4a410e60d4b9ec383f80564d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7198ef676d2012302e7f4242d212b8c7" id="r_a7198ef676d2012302e7f4242d212b8c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7198ef676d2012302e7f4242d212b8c7">clearVehicleDefinitions</a> ()</td></tr>
+<tr class="memdesc:a7198ef676d2012302e7f4242d212b8c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空全部载具模板。  <br /></td></tr>
+<tr class="separator:a7198ef676d2012302e7f4242d212b8c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a5a2d0a0b1ab8b5b0f95458eb5e62b0" id="r_a0a5a2d0a0b1ab8b5b0f95458eb5e62b0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a0a5a2d0a0b1ab8b5b0f95458eb5e62b0">getVehicleDefinitionCount</a> ()</td></tr>
+<tr class="memdesc:a0a5a2d0a0b1ab8b5b0f95458eb5e62b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">已注册载具模板数量。  <br /></td></tr>
+<tr class="separator:a0a5a2d0a0b1ab8b5b0f95458eb5e62b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24c32ed118f85903ba19f4caa2e8287c" id="r_a24c32ed118f85903ba19f4caa2e8287c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a24c32ed118f85903ba19f4caa2e8287c">hasVehicleDefinition</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a24c32ed118f85903ba19f4caa2e8287c"><td class="mdescLeft">&#160;</td><td class="mdescRight">载具模板查询。  <br /></td></tr>
+<tr class="separator:a24c32ed118f85903ba19f4caa2e8287c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53447b76730573df1ed639af10ae602d" id="r_a53447b76730573df1ed639af10ae602d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a53447b76730573df1ed639af10ae602d">getVehicleDefinitionMobility</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a53447b76730573df1ed639af10ae602d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a703e76ccd58f896fcb18eecffc63dc5d" id="r_a703e76ccd58f896fcb18eecffc63dc5d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a703e76ccd58f896fcb18eecffc63dc5d">getVehicleDefinitionMaxHealth</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a703e76ccd58f896fcb18eecffc63dc5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac674dd6cb9d832220c54a09efb1c5e1f" id="r_ac674dd6cb9d832220c54a09efb1c5e1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac674dd6cb9d832220c54a09efb1c5e1f">definitionRegistry</a> () noexcept</td></tr>
+<tr class="memdesc:ac674dd6cb9d832220c54a09efb1c5e1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the canonical common registry for vehicle definitions.  <br /></td></tr>
+<tr class="separator:ac674dd6cb9d832220c54a09efb1c5e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1deec5bd12c4412bfcc8b3d44acf79c3" id="r_a1deec5bd12c4412bfcc8b3d44acf79c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a1deec5bd12c4412bfcc8b3d44acf79c3">newVehicle</a> (const std::string &amp;defId, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, const std::string &amp;faction=&quot;&quot;)</td></tr>
+<tr class="memdesc:a1deec5bd12c4412bfcc8b3d44acf79c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">工厂：按模板创建载具并挂载武器挂点（ECS 表持有，脚本持有句柄）。  <br /></td></tr>
+<tr class="separator:a1deec5bd12c4412bfcc8b3d44acf79c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42af37378a007c09c801db52c32511d9" id="r_a42af37378a007c09c801db52c32511d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a42af37378a007c09c801db52c32511d9">moveTo</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="memdesc:a42af37378a007c09c801db52c32511d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">RTS 命令。  <br /></td></tr>
+<tr class="separator:a42af37378a007c09c801db52c32511d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46b1b0a2f2911fbd2b98612700183948" id="r_a46b1b0a2f2911fbd2b98612700183948"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a46b1b0a2f2911fbd2b98612700183948">attackMove</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a46b1b0a2f2911fbd2b98612700183948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a242d2d57010627a2299671ec98843212" id="r_a242d2d57010627a2299671ec98843212"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a242d2d57010627a2299671ec98843212">attack</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int targetId=0)</td></tr>
+<tr class="separator:a242d2d57010627a2299671ec98843212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb329900f2d96179f68a9160fbfb0c8c" id="r_adb329900f2d96179f68a9160fbfb0c8c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#adb329900f2d96179f68a9160fbfb0c8c">stop</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:adb329900f2d96179f68a9160fbfb0c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd5963bc960df89c1765eb8fa3d8c72" id="r_acfd5963bc960df89c1765eb8fa3d8c72"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#acfd5963bc960df89c1765eb8fa3d8c72">hold</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:acfd5963bc960df89c1765eb8fa3d8c72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac930e7a8ddeea86783bcf6283db46cc6" id="r_ac930e7a8ddeea86783bcf6283db46cc6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac930e7a8ddeea86783bcf6283db46cc6">clearOrders</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:ac930e7a8ddeea86783bcf6283db46cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7eaa9d6598abca2a6625d11e76a4dd1" id="r_ac7eaa9d6598abca2a6625d11e76a4dd1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac7eaa9d6598abca2a6625d11e76a4dd1">orderCount</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:ac7eaa9d6598abca2a6625d11e76a4dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1ac63f0283e60abc9e92ca34ca435cd" id="r_ac1ac63f0283e60abc9e92ca34ca435cd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac1ac63f0283e60abc9e92ca34ca435cd">getCurrentOrderType</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:ac1ac63f0283e60abc9e92ca34ca435cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">当前命令类型名（"move" / "attack_move" / "attack" / "stop" / "hold" / "none"）。  <br /></td></tr>
+<tr class="separator:ac1ac63f0283e60abc9e92ca34ca435cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae13ccd8bdc110bdc13806e41d983d7e3" id="r_ae13ccd8bdc110bdc13806e41d983d7e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ae13ccd8bdc110bdc13806e41d983d7e3">setInput</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float throttle, float steer, float brake=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, bool handbrake=false)</td></tr>
+<tr class="memdesc:ae13ccd8bdc110bdc13806e41d983d7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">直接驾驶输入（FPS / 脚本驱动；RTS 命令也会写 input）。  <br /></td></tr>
+<tr class="separator:ae13ccd8bdc110bdc13806e41d983d7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac57f92a3f7a5baf2d2a67f8790249e23" id="r_ac57f92a3f7a5baf2d2a67f8790249e23"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#ac57f92a3f7a5baf2d2a67f8790249e23">getX</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:ac57f92a3f7a5baf2d2a67f8790249e23"><td class="mdescLeft">&#160;</td><td class="mdescRight">状态查询 / 设置。  <br /></td></tr>
+<tr class="separator:ac57f92a3f7a5baf2d2a67f8790249e23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6eb8421fda5618711d8dd24bb0cbfc8d" id="r_a6eb8421fda5618711d8dd24bb0cbfc8d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a6eb8421fda5618711d8dd24bb0cbfc8d">getY</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a6eb8421fda5618711d8dd24bb0cbfc8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a795967174c3fa37ef476ac6f0fcd3aba" id="r_a795967174c3fa37ef476ac6f0fcd3aba"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a795967174c3fa37ef476ac6f0fcd3aba">getHeading</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a795967174c3fa37ef476ac6f0fcd3aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ac02b961dab46942ac9564cbfd60ada" id="r_a8ac02b961dab46942ac9564cbfd60ada"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a8ac02b961dab46942ac9564cbfd60ada">getSpeed</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a8ac02b961dab46942ac9564cbfd60ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa347765d0b1e4e4e999c294c849ba67" id="r_afa347765d0b1e4e4e999c294c849ba67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#afa347765d0b1e4e4e999c294c849ba67">setPosition</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:afa347765d0b1e4e4e999c294c849ba67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42fbe1e060dfe00ab5da7a26492da3cc" id="r_a42fbe1e060dfe00ab5da7a26492da3cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a42fbe1e060dfe00ab5da7a26492da3cc">setHeading</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float deg)</td></tr>
+<tr class="separator:a42fbe1e060dfe00ab5da7a26492da3cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa88113c29796ae7dbcc70b675f1960ce" id="r_aa88113c29796ae7dbcc70b675f1960ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aa88113c29796ae7dbcc70b675f1960ce">isArrived</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:aa88113c29796ae7dbcc70b675f1960ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c67e7fe6eb1631173a45ecf02ddb3ce" id="r_a2c67e7fe6eb1631173a45ecf02ddb3ce"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a2c67e7fe6eb1631173a45ecf02ddb3ce">getHealth</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a2c67e7fe6eb1631173a45ecf02ddb3ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e88220d3625362dd49a3e4b9d05b30" id="r_a38e88220d3625362dd49a3e4b9d05b30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a38e88220d3625362dd49a3e4b9d05b30">setHealth</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float hp)</td></tr>
+<tr class="separator:a38e88220d3625362dd49a3e4b9d05b30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c8456a909eea4c4aa22a3061ea0325" id="r_a13c8456a909eea4c4aa22a3061ea0325"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a13c8456a909eea4c4aa22a3061ea0325">getMaxHealth</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a13c8456a909eea4c4aa22a3061ea0325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7617b7586ae3947d1fc18fcda677f4ab" id="r_a7617b7586ae3947d1fc18fcda677f4ab"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7617b7586ae3947d1fc18fcda677f4ab">getFaction</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a7617b7586ae3947d1fc18fcda677f4ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa66a53a8e49caafdc4b1632022b026a" id="r_aaa66a53a8e49caafdc4b1632022b026a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aaa66a53a8e49caafdc4b1632022b026a">setFaction</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, const std::string &amp;faction)</td></tr>
+<tr class="separator:aaa66a53a8e49caafdc4b1632022b026a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ac23c268f3d950479220e5fd99d6320" id="r_a0ac23c268f3d950479220e5fd99d6320"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a0ac23c268f3d950479220e5fd99d6320">attachPhysics2D</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a0ac23c268f3d950479220e5fd99d6320"><td class="mdescLeft">&#160;</td><td class="mdescRight">物理绑定（physics 模块开启时可用；返回是否成功）。  <br /></td></tr>
+<tr class="separator:a0ac23c268f3d950479220e5fd99d6320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91f20dceac2df810a9ce22e1255bd214" id="r_a91f20dceac2df810a9ce22e1255bd214"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a91f20dceac2df810a9ce22e1255bd214">attachPhysics3D</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <a class="el" href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, float heightY=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a91f20dceac2df810a9ce22e1255bd214"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef36d90bcd81dae3b4079ee8ff9df0e7" id="r_aef36d90bcd81dae3b4079ee8ff9df0e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aef36d90bcd81dae3b4079ee8ff9df0e7">detachPhysics</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:aef36d90bcd81dae3b4079ee8ff9df0e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4391a27951e17676cbb805ce309cb183" id="r_a4391a27951e17676cbb805ce309cb183"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a4391a27951e17676cbb805ce309cb183">hasPhysics</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a4391a27951e17676cbb805ce309cb183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ed0b4fc899f506f5f5639e35e5624c0" id="r_a7ed0b4fc899f506f5f5639e35e5624c0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7ed0b4fc899f506f5f5639e35e5624c0">getPhysicsSpace</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a7ed0b4fc899f506f5f5639e35e5624c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5691adac3df9113de7a167a2f2fb0d6e" id="r_a5691adac3df9113de7a167a2f2fb0d6e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a5691adac3df9113de7a167a2f2fb0d6e">getHeight</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:a5691adac3df9113de7a167a2f2fb0d6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D 车身高度（无 3D 物理时返回 0）。  <br /></td></tr>
+<tr class="separator:a5691adac3df9113de7a167a2f2fb0d6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c104bf07f6f76c7f3c1684a9f0d87d1" id="r_a0c104bf07f6f76c7f3c1684a9f0d87d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a0c104bf07f6f76c7f3c1684a9f0d87d1">applyDamage</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float amount, const std::string &amp;zone=&quot;&quot;, int <a class="el" href="EvpackSceneTemplateLoader_8cpp.html#a7949c7ae554ffd67302880738fcc5387">sourceId</a>=0)</td></tr>
+<tr class="memdesc:a0c104bf07f6f76c7f3c1684a9f0d87d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">伤害管线：修饰器 → 装甲区倍率 → 扣血 → 事件。  <br /></td></tr>
+<tr class="separator:a0c104bf07f6f76c7f3c1684a9f0d87d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a148e352629532a30db3090729e9e4c63" id="r_a148e352629532a30db3090729e9e4c63"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a148e352629532a30db3090729e9e4c63">getArmorZoneMult</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, const std::string &amp;zone)</td></tr>
+<tr class="memdesc:a148e352629532a30db3090729e9e4c63"><td class="mdescLeft">&#160;</td><td class="mdescRight">装甲区倍率（未命中任何区返回 1）。  <br /></td></tr>
+<tr class="separator:a148e352629532a30db3090729e9e4c63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b900332657e763df4a08038272a38fc" id="r_a8b900332657e763df4a08038272a38fc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a8b900332657e763df4a08038272a38fc">isDestroyed</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:a8b900332657e763df4a08038272a38fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否已摧毁。  <br /></td></tr>
+<tr class="separator:a8b900332657e763df4a08038272a38fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a573094e0a40abaadefeac779e219ba3b" id="r_a573094e0a40abaadefeac779e219ba3b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a573094e0a40abaadefeac779e219ba3b">getSeatCount</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:a573094e0a40abaadefeac779e219ba3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">座位（FPS 面）。  <br /></td></tr>
+<tr class="separator:a573094e0a40abaadefeac779e219ba3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d19f134e06ecd672f52519a48d77d6c" id="r_a7d19f134e06ecd672f52519a48d77d6c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7d19f134e06ecd672f52519a48d77d6c">getSeatName</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int seatIndex)</td></tr>
+<tr class="separator:a7d19f134e06ecd672f52519a48d77d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a439cbcc6044d86c89c26c28755b3c3b8" id="r_a439cbcc6044d86c89c26c28755b3c3b8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a439cbcc6044d86c89c26c28755b3c3b8">getSeatCameraMode</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int seatIndex)</td></tr>
+<tr class="separator:a439cbcc6044d86c89c26c28755b3c3b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefb9d25bc866cd25e36633c334748228" id="r_aefb9d25bc866cd25e36633c334748228"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aefb9d25bc866cd25e36633c334748228">isSeatOccupied</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int seatIndex)</td></tr>
+<tr class="separator:aefb9d25bc866cd25e36633c334748228"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0205df758172dffb91a8c9846a413643" id="r_a0205df758172dffb91a8c9846a413643"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a0205df758172dffb91a8c9846a413643">getSeatOccupant</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int seatIndex)</td></tr>
+<tr class="separator:a0205df758172dffb91a8c9846a413643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a3945e082154c92ec7320f1aeb4fb0d" id="r_a8a3945e082154c92ec7320f1aeb4fb0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1weapon_1_1WeaponMountEntity.html">eve::weapon::WeaponMountEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a8a3945e082154c92ec7320f1aeb4fb0d">getSeatMount</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int seatIndex)</td></tr>
+<tr class="memdesc:a8a3945e082154c92ec7320f1aeb4fb0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">座位绑定的武器挂点（mountIndex 无效返回 nullptr）。  <br /></td></tr>
+<tr class="separator:a8a3945e082154c92ec7320f1aeb4fb0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00e74f05651ad2de9341623f62c7cab3" id="r_a00e74f05651ad2de9341623f62c7cab3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a00e74f05651ad2de9341623f62c7cab3">enterSeat</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int seatIndex, int playerId)</td></tr>
+<tr class="separator:a00e74f05651ad2de9341623f62c7cab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec27d1d94ff9b04252d65402eb0dda44" id="r_aec27d1d94ff9b04252d65402eb0dda44"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aec27d1d94ff9b04252d65402eb0dda44">exitSeat</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int seatIndex)</td></tr>
+<tr class="separator:aec27d1d94ff9b04252d65402eb0dda44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f5c8aa39551abfb3419d6df7c4c6d04" id="r_a9f5c8aa39551abfb3419d6df7c4c6d04"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a9f5c8aa39551abfb3419d6df7c4c6d04">exitSeatByPlayer</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int playerId)</td></tr>
+<tr class="separator:a9f5c8aa39551abfb3419d6df7c4c6d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27a8c34bbf4aa9f9a462a47adbc06b83" id="r_a27a8c34bbf4aa9f9a462a47adbc06b83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a27a8c34bbf4aa9f9a462a47adbc06b83">setPlayerControls</a> (int playerId, float throttle, float steer, float brake, bool fire, float aimYaw, float aimPitch)</td></tr>
+<tr class="memdesc:a27a8c34bbf4aa9f9a462a47adbc06b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">写入玩家控制（归一化；角度为度）。  <br /></td></tr>
+<tr class="separator:a27a8c34bbf4aa9f9a462a47adbc06b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a4d45eb2888522a85979d0fc68350d7" id="r_a5a4d45eb2888522a85979d0fc68350d7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a5a4d45eb2888522a85979d0fc68350d7">getMountCount</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:a5a4d45eb2888522a85979d0fc68350d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">挂点查询（返回 weapon 模块的挂点实体）。  <br /></td></tr>
+<tr class="separator:a5a4d45eb2888522a85979d0fc68350d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03be6ca6ffbbff1b80f5bfd5fb57f321" id="r_a03be6ca6ffbbff1b80f5bfd5fb57f321"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1weapon_1_1WeaponMountEntity.html">eve::weapon::WeaponMountEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a03be6ca6ffbbff1b80f5bfd5fb57f321">getMount</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a03be6ca6ffbbff1b80f5bfd5fb57f321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6651501a079ef056fb2133ef850b478c" id="r_a6651501a079ef056fb2133ef850b478c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a6651501a079ef056fb2133ef850b478c">update</a> (float dt)</td></tr>
+<tr class="memdesc:a6651501a079ef056fb2133ef850b478c"><td class="mdescLeft">&#160;</td><td class="mdescRight">每帧推进全部载具（命令 → 移动 → RTS 自动瞄准）。  <br /></td></tr>
+<tr class="separator:a6651501a079ef056fb2133ef850b478c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a665349de4fcd981019b0324f67ebc3e7" id="r_a665349de4fcd981019b0324f67ebc3e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a665349de4fcd981019b0324f67ebc3e7">clearEvents</a> ()</td></tr>
+<tr class="memdesc:a665349de4fcd981019b0324f67ebc3e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">事件队列（order_completed 等，上一次 update 产生）。  <br /></td></tr>
+<tr class="separator:a665349de4fcd981019b0324f67ebc3e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56b2d7752065a422d888b350c6cbb40c" id="r_a56b2d7752065a422d888b350c6cbb40c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a56b2d7752065a422d888b350c6cbb40c">getEventCount</a> () const</td></tr>
+<tr class="separator:a56b2d7752065a422d888b350c6cbb40c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ae7e2a117c4b9ee84ff8b9ec1eb07ca" id="r_a4ae7e2a117c4b9ee84ff8b9ec1eb07ca"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a4ae7e2a117c4b9ee84ff8b9ec1eb07ca">getEventType</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a4ae7e2a117c4b9ee84ff8b9ec1eb07ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb02569b9777fdf373a51ac82851d292" id="r_adb02569b9777fdf373a51ac82851d292"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#adb02569b9777fdf373a51ac82851d292">getEventVehicleId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:adb02569b9777fdf373a51ac82851d292"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ffccc856d7967e67fde827a039d025f" id="r_a7ffccc856d7967e67fde827a039d025f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7ffccc856d7967e67fde827a039d025f">getEventDefId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a7ffccc856d7967e67fde827a039d025f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa21bfa1c01b494a70dbd93e0784d61f5" id="r_aa21bfa1c01b494a70dbd93e0784d61f5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aa21bfa1c01b494a70dbd93e0784d61f5">getEventOrderType</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aa21bfa1c01b494a70dbd93e0784d61f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa08739f33ad552dbb11df3279ea42de0" id="r_aa08739f33ad552dbb11df3279ea42de0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#aa08739f33ad552dbb11df3279ea42de0">getEventX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aa08739f33ad552dbb11df3279ea42de0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bba30e90bea5af416182c3ff4108d1c" id="r_a7bba30e90bea5af416182c3ff4108d1c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a7bba30e90bea5af416182c3ff4108d1c">getEventY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a7bba30e90bea5af416182c3ff4108d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a889718ce7cb003022309744673cb2fb4" id="r_a889718ce7cb003022309744673cb2fb4"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a889718ce7cb003022309744673cb2fb4">registerMobility</a> (<a class="el" href="classeve_1_1vehicle_1_1IVehicleMobility.html">IVehicleMobility</a> *mobility)</td></tr>
+<tr class="memdesc:a889718ce7cb003022309744673cb2fb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">注册移动模型（C++ 插件/游戏侧扩展点；同名替换）。  <br /></td></tr>
+<tr class="separator:a889718ce7cb003022309744673cb2fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a80b2b36b0f7262650dba25ac771aef" id="r_a8a80b2b36b0f7262650dba25ac771aef"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html#a8a80b2b36b0f7262650dba25ac771aef">getMobilityCount</a> ()</td></tr>
+<tr class="memdesc:a8a80b2b36b0f7262650dba25ac771aef"><td class="mdescLeft">&#160;</td><td class="mdescRight">已注册移动模型数量（内置 kinematic 起步）。  <br /></td></tr>
+<tr class="separator:a8a80b2b36b0f7262650dba25ac771aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>载具模块（eve.Vehicle）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8h_source.html">Vehicle.h</a> 第 <a class="el" href="Vehicle_8h_source.html#l00031">31</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4cb757569c4f1560e0e31b1b0f79d2ff" name="a4cb757569c4f1560e0e31b1b0f79d2ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cb757569c4f1560e0e31b1b0f79d2ff">&#9670;&#160;</a></span>Vehicle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::vehicle::Vehicle::Vehicle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00198">eve::vehicle::VehicleSystem::setEventSink()</a>.</p>
+
+</div>
+</div>
+<a id="a26884e1ace1aae9085095745c20d9c58" name="a26884e1ace1aae9085095745c20d9c58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26884e1ace1aae9085095745c20d9c58">&#9670;&#160;</a></span>~Vehicle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::vehicle::Vehicle::~Vehicle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00198">eve::vehicle::VehicleSystem::setEventSink()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0c104bf07f6f76c7f3c1684a9f0d87d1" name="a0c104bf07f6f76c7f3c1684a9f0d87d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c104bf07f6f76c7f3c1684a9f0d87d1">&#9670;&#160;</a></span>applyDamage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::applyDamage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>zone</em> = <code>&quot;&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sourceId</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>伤害管线：修饰器 → 装甲区倍率 → 扣血 → 事件。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00388">388</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#a3fce26f7cfe88e1e37d70535f9910298af7bd791aac4fda53ce6d08edc1a62e01">eve::vehicle::Damaged</a>, <a class="el" href="VehicleTypes_8h_source.html#l00165">eve::vehicle::VehicleEvent::defId</a>, <a class="el" href="namespaceeve_1_1vehicle.html#a3fce26f7cfe88e1e37d70535f9910298aaefbd0597f1bc2493bbc18898243513b">eve::vehicle::Destroyed</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00048">sourceId</a>, <a class="el" href="VehicleTypes_8h_source.html#l00163">eve::vehicle::VehicleEvent::type</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="VehicleTypes_8h_source.html#l00164">eve::vehicle::VehicleEvent::vehicleId</a>, <a class="el" href="VehicleTypes_8h_source.html#l00167">eve::vehicle::VehicleEvent::x</a>, <a class="el" href="VehicleTypes_8h_source.html#l00168">eve::vehicle::VehicleEvent::y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a0ac23c268f3d950479220e5fd99d6320" name="a0ac23c268f3d950479220e5fd99d6320"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ac23c268f3d950479220e5fd99d6320">&#9670;&#160;</a></span>attachPhysics2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::attachPhysics2D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World.html">eve::physics::World</a> *&#160;</td>
+          <td class="paramname"><em>world</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>物理绑定（physics 模块开启时可用；返回是否成功）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00520">520</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a733d43480c8589b1368e5def6b480415">eve::vehicle::Applied</a>, <a class="el" href="VehiclePhysics_8cpp_source.html#l00159">eve::vehicle::VehiclePhysics::attach2D()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a91f20dceac2df810a9ce22e1255bd214" name="a91f20dceac2df810a9ce22e1255bd214"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91f20dceac2df810a9ce22e1255bd214">&#9670;&#160;</a></span>attachPhysics3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::attachPhysics3D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightY</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00524">524</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a733d43480c8589b1368e5def6b480415">eve::vehicle::Applied</a>, <a class="el" href="VehiclePhysics_8cpp_source.html#l00175">eve::vehicle::VehiclePhysics::attach3D()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="a242d2d57010627a2299671ec98843212" name="a242d2d57010627a2299671ec98843212"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a242d2d57010627a2299671ec98843212">&#9670;&#160;</a></span>attack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::attack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>targetId</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#adcc03a0d7f3cdb6e26a164f0b6212c07adcfafcb4323b102c7e204555d313ba0a">eve::vehicle::Attack</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00260">eve::vehicle::VehicleSystem::pushOrder()</a>, <a class="el" href="VehicleTypes_8h_source.html#l00061">eve::vehicle::VehicleOrder::targetId</a>, <a class="el" href="VehicleTypes_8h_source.html#l00058">eve::vehicle::VehicleOrder::type</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="VehicleTypes_8h_source.html#l00059">eve::vehicle::VehicleOrder::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="VehicleTypes_8h_source.html#l00060">eve::vehicle::VehicleOrder::y</a>.</p>
+
+</div>
+</div>
+<a id="a46b1b0a2f2911fbd2b98612700183948" name="a46b1b0a2f2911fbd2b98612700183948"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46b1b0a2f2911fbd2b98612700183948">&#9670;&#160;</a></span>attackMove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::attackMove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#adcc03a0d7f3cdb6e26a164f0b6212c07a364dce30a8b9b040a3938b09d9932a4a">eve::vehicle::AttackMove</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00260">eve::vehicle::VehicleSystem::pushOrder()</a>, <a class="el" href="VehicleTypes_8h_source.html#l00058">eve::vehicle::VehicleOrder::type</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="VehicleTypes_8h_source.html#l00059">eve::vehicle::VehicleOrder::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="VehicleTypes_8h_source.html#l00060">eve::vehicle::VehicleOrder::y</a>.</p>
+
+</div>
+</div>
+<a id="a665349de4fcd981019b0324f67ebc3e7" name="a665349de4fcd981019b0324f67ebc3e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a665349de4fcd981019b0324f67ebc3e7">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>事件队列（order_completed 等，上一次 update 产生）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00654">654</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac930e7a8ddeea86783bcf6283db46cc6" name="ac930e7a8ddeea86783bcf6283db46cc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac930e7a8ddeea86783bcf6283db46cc6">&#9670;&#160;</a></span>clearOrders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::clearOrders </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00337">337</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00276">eve::vehicle::VehicleSystem::clearOrders()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a7198ef676d2012302e7f4242d212b8c7" name="a7198ef676d2012302e7f4242d212b8c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7198ef676d2012302e7f4242d212b8c7">&#9670;&#160;</a></span>clearVehicleDefinitions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::clearVehicleDefinitions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清空全部载具模板。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Definitions_8cpp_source.html#l00373">eve::definitions::DefinitionRegistry::atType()</a>, <a class="el" href="Definitions_8cpp_source.html#l00358">eve::definitions::DefinitionRegistry::countType()</a> , 以及 <a class="el" href="Definitions_8cpp_source.html#l00304">eve::definitions::DefinitionRegistry::remove()</a>.</p>
+
+</div>
+</div>
+<a id="ac674dd6cb9d832220c54a09efb1c5e1f" name="ac674dd6cb9d832220c54a09efb1c5e1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac674dd6cb9d832220c54a09efb1c5e1f">&#9670;&#160;</a></span>definitionRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a> &amp; eve::vehicle::Vehicle::definitionRegistry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the canonical common registry for vehicle definitions. </p>
+<dl class="section remark"><dt>备注</dt><dd>The returned registry is borrowed, owner-thread affine, and is the binding point for <a class="el" href="classeve_1_1vehicle_1_1VehicleDefinitionRuntime.html" title="Binds a VehicleDefinition to a VehicleEntity without a new root type.">VehicleDefinitionRuntime</a> adapters. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8h_source.html">Vehicle.h</a> 第 <a class="el" href="Vehicle_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00328">eve::vehicle::VehicleDefinitionRuntime::create()</a>.</p>
+
+</div>
+</div>
+<a id="aef36d90bcd81dae3b4079ee8ff9df0e7" name="aef36d90bcd81dae3b4079ee8ff9df0e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef36d90bcd81dae3b4079ee8ff9df0e7">&#9670;&#160;</a></span>detachPhysics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::detachPhysics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00528">528</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a733d43480c8589b1368e5def6b480415">eve::vehicle::Applied</a>, <a class="el" href="VehiclePhysics_8cpp_source.html#l00196">eve::vehicle::VehiclePhysics::detach()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a00e74f05651ad2de9341623f62c7cab3" name="a00e74f05651ad2de9341623f62c7cab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00e74f05651ad2de9341623f62c7cab3">&#9670;&#160;</a></span>enterSeat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::enterSeat </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seatIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>playerId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00480">480</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00311">eve::vehicle::VehicleSystem::enterSeat()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aec27d1d94ff9b04252d65402eb0dda44" name="aec27d1d94ff9b04252d65402eb0dda44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec27d1d94ff9b04252d65402eb0dda44">&#9670;&#160;</a></span>exitSeat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::exitSeat </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seatIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00484">484</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00317">eve::vehicle::VehicleSystem::exitSeat()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a9f5c8aa39551abfb3419d6df7c4c6d04" name="a9f5c8aa39551abfb3419d6df7c4c6d04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f5c8aa39551abfb3419d6df7c4c6d04">&#9670;&#160;</a></span>exitSeatByPlayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::exitSeatByPlayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>playerId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00488">488</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00317">eve::vehicle::VehicleSystem::exitSeat()</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00323">eve::vehicle::VehicleSystem::findSeatByPlayer()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a148e352629532a30db3090729e9e4c63" name="a148e352629532a30db3090729e9e4c63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a148e352629532a30db3090729e9e4c63">&#9670;&#160;</a></span>getArmorZoneMult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getArmorZoneMult </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>zone</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>装甲区倍率（未命中任何区返回 1）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00425">425</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ac1ac63f0283e60abc9e92ca34ca435cd" name="ac1ac63f0283e60abc9e92ca34ca435cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1ac63f0283e60abc9e92ca34ca435cd">&#9670;&#160;</a></span>getCurrentOrderType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getCurrentOrderType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>当前命令类型名（"move" / "attack_move" / "attack" / "stop" / "hold" / "none"）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00283">eve::vehicle::VehicleSystem::currentOrder()</a>, <a class="el" href="VehicleTypes_8h_source.html#l00058">eve::vehicle::VehicleOrder::type</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="Vehicle_8cpp_source.html#l00079">eve::vehicle::vehicleOrderTypeName()</a>.</p>
+
+</div>
+</div>
+<a id="a56b2d7752065a422d888b350c6cbb40c" name="a56b2d7752065a422d888b350c6cbb40c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56b2d7752065a422d888b350c6cbb40c">&#9670;&#160;</a></span>getEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::getEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00656">656</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Vehicle_8cpp_source.html#l00666">getEventDefId()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00670">getEventOrderType()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00658">getEventType()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00662">getEventVehicleId()</a>, <a class="el" href="Vehicle_8cpp_source.html#l00674">getEventX()</a> , 以及 <a class="el" href="Vehicle_8cpp_source.html#l00676">getEventY()</a>.</p>
+
+</div>
+</div>
+<a id="a7ffccc856d7967e67fde827a039d025f" name="a7ffccc856d7967e67fde827a039d025f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ffccc856d7967e67fde827a039d025f">&#9670;&#160;</a></span>getEventDefId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getEventDefId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00666">666</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Vehicle_8cpp_source.html#l00656">getEventCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa21bfa1c01b494a70dbd93e0784d61f5" name="aa21bfa1c01b494a70dbd93e0784d61f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa21bfa1c01b494a70dbd93e0784d61f5">&#9670;&#160;</a></span>getEventOrderType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getEventOrderType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00670">670</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Vehicle_8cpp_source.html#l00656">getEventCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a4ae7e2a117c4b9ee84ff8b9ec1eb07ca" name="a4ae7e2a117c4b9ee84ff8b9ec1eb07ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ae7e2a117c4b9ee84ff8b9ec1eb07ca">&#9670;&#160;</a></span>getEventType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getEventType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00658">658</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Vehicle_8cpp_source.html#l00656">getEventCount()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a> , 以及 <a class="el" href="Vehicle_8cpp_source.html#l00090">eve::vehicle::vehicleEventTypeName()</a>.</p>
+
+</div>
+</div>
+<a id="adb02569b9777fdf373a51ac82851d292" name="adb02569b9777fdf373a51ac82851d292"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb02569b9777fdf373a51ac82851d292">&#9670;&#160;</a></span>getEventVehicleId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getEventVehicleId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00662">662</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Vehicle_8cpp_source.html#l00656">getEventCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa08739f33ad552dbb11df3279ea42de0" name="aa08739f33ad552dbb11df3279ea42de0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa08739f33ad552dbb11df3279ea42de0">&#9670;&#160;</a></span>getEventX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getEventX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00674">674</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Vehicle_8cpp_source.html#l00656">getEventCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7bba30e90bea5af416182c3ff4108d1c" name="a7bba30e90bea5af416182c3ff4108d1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bba30e90bea5af416182c3ff4108d1c">&#9670;&#160;</a></span>getEventY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getEventY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00676">676</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Vehicle_8cpp_source.html#l00656">getEventCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7617b7586ae3947d1fc18fcda677f4ab" name="a7617b7586ae3947d1fc18fcda677f4ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7617b7586ae3947d1fc18fcda677f4ab">&#9670;&#160;</a></span>getFaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getFaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00378">378</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a795967174c3fa37ef476ac6f0fcd3aba" name="a795967174c3fa37ef476ac6f0fcd3aba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a795967174c3fa37ef476ac6f0fcd3aba">&#9670;&#160;</a></span>getHeading()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getHeading </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a2c67e7fe6eb1631173a45ecf02ddb3ce" name="a2c67e7fe6eb1631173a45ecf02ddb3ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c67e7fe6eb1631173a45ecf02ddb3ce">&#9670;&#160;</a></span>getHealth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getHealth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a5691adac3df9113de7a167a2f2fb0d6e" name="a5691adac3df9113de7a167a2f2fb0d6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5691adac3df9113de7a167a2f2fb0d6e">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getHeight </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>3D 车身高度（无 3D 物理时返回 0）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00541">541</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehiclePhysics_8cpp_source.html#l00214">eve::vehicle::VehiclePhysics::height()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a13c8456a909eea4c4aa22a3061ea0325" name="a13c8456a909eea4c4aa22a3061ea0325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13c8456a909eea4c4aa22a3061ea0325">&#9670;&#160;</a></span>getMaxHealth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getMaxHealth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a8a80b2b36b0f7262650dba25ac771aef" name="a8a80b2b36b0f7262650dba25ac771aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a80b2b36b0f7262650dba25ac771aef">&#9670;&#160;</a></span>getMobilityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::getMobilityCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>已注册移动模型数量（内置 kinematic 起步）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00196">eve::vehicle::VehicleSystem::mobilityCount()</a>.</p>
+
+</div>
+</div>
+<a id="a03be6ca6ffbbff1b80f5bfd5fb57f321" name="a03be6ca6ffbbff1b80f5bfd5fb57f321"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03be6ca6ffbbff1b80f5bfd5fb57f321">&#9670;&#160;</a></span>getMount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1weapon_1_1WeaponMountEntity.html">eve::weapon::WeaponMountEntity</a> * eve::vehicle::Vehicle::getMount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00549">549</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a5a4d45eb2888522a85979d0fc68350d7" name="a5a4d45eb2888522a85979d0fc68350d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a4d45eb2888522a85979d0fc68350d7">&#9670;&#160;</a></span>getMountCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::getMountCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>挂点查询（返回 weapon 模块的挂点实体）。 </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable weapon-mount entity owned by the ECS world. @ownership The weapon module/ECS owns the mount; <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> never transfers or deletes it. @lifetime Valid until mount or world destruction; use its generation handle across frames. @thread Call on the <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> module's owning ECS thread. @reentrancy The query invokes no callbacks; do not retain the pointer across mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00547">547</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a7ed0b4fc899f506f5f5639e35e5624c0" name="a7ed0b4fc899f506f5f5639e35e5624c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ed0b4fc899f506f5f5639e35e5624c0">&#9670;&#160;</a></span>getPhysicsSpace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getPhysicsSpace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00537">537</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a439cbcc6044d86c89c26c28755b3c3b8" name="a439cbcc6044d86c89c26c28755b3c3b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a439cbcc6044d86c89c26c28755b3c3b8">&#9670;&#160;</a></span>getSeatCameraMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getSeatCameraMode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seatIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00448">448</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a573094e0a40abaadefeac779e219ba3b" name="a573094e0a40abaadefeac779e219ba3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a573094e0a40abaadefeac779e219ba3b">&#9670;&#160;</a></span>getSeatCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::getSeatCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>座位（FPS 面）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00439">439</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a8a3945e082154c92ec7320f1aeb4fb0d" name="a8a3945e082154c92ec7320f1aeb4fb0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a3945e082154c92ec7320f1aeb4fb0d">&#9670;&#160;</a></span>getSeatMount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1weapon_1_1WeaponMountEntity.html">eve::weapon::WeaponMountEntity</a> * eve::vehicle::Vehicle::getSeatMount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seatIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>座位绑定的武器挂点（mountIndex 无效返回 nullptr）。 </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable weapon-mount entity owned by the ECS world. @ownership The weapon module/ECS owns the mount; <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> never transfers or deletes it. @lifetime Valid until mount or world destruction; a stored cross-frame reference must be a generation handle. @thread Call on the <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> module's owning ECS thread. @reentrancy The query invokes no callbacks; do not retain the pointer across seat or ECS mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00469">469</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a7d19f134e06ecd672f52519a48d77d6c" name="a7d19f134e06ecd672f52519a48d77d6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d19f134e06ecd672f52519a48d77d6c">&#9670;&#160;</a></span>getSeatName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getSeatName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seatIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00441">441</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a0205df758172dffb91a8c9846a413643" name="a0205df758172dffb91a8c9846a413643"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0205df758172dffb91a8c9846a413643">&#9670;&#160;</a></span>getSeatOccupant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::getSeatOccupant </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seatIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00462">462</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a8ac02b961dab46942ac9564cbfd60ada" name="a8ac02b961dab46942ac9564cbfd60ada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ac02b961dab46942ac9564cbfd60ada">&#9670;&#160;</a></span>getSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getSpeed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a0a5a2d0a0b1ab8b5b0f95458eb5e62b0" name="a0a5a2d0a0b1ab8b5b0f95458eb5e62b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a5a2d0a0b1ab8b5b0f95458eb5e62b0">&#9670;&#160;</a></span>getVehicleDefinitionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::getVehicleDefinitionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>已注册载具模板数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Definitions_8cpp_source.html#l00358">eve::definitions::DefinitionRegistry::countType()</a>.</p>
+
+</div>
+</div>
+<a id="a703e76ccd58f896fcb18eecffc63dc5d" name="a703e76ccd58f896fcb18eecffc63dc5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a703e76ccd58f896fcb18eecffc63dc5d">&#9670;&#160;</a></span>getVehicleDefinitionMaxHealth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getVehicleDefinitionMaxHealth </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53447b76730573df1ed639af10ae602d" name="a53447b76730573df1ed639af10ae602d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53447b76730573df1ed639af10ae602d">&#9670;&#160;</a></span>getVehicleDefinitionMobility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::vehicle::Vehicle::getVehicleDefinitionMobility </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac57f92a3f7a5baf2d2a67f8790249e23" name="ac57f92a3f7a5baf2d2a67f8790249e23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57f92a3f7a5baf2d2a67f8790249e23">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getX </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>状态查询 / 设置。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a6eb8421fda5618711d8dd24bb0cbfc8d" name="a6eb8421fda5618711d8dd24bb0cbfc8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6eb8421fda5618711d8dd24bb0cbfc8d">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::vehicle::Vehicle::getY </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00356">356</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a4391a27951e17676cbb805ce309cb183" name="a4391a27951e17676cbb805ce309cb183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4391a27951e17676cbb805ce309cb183">&#9670;&#160;</a></span>hasPhysics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::hasPhysics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00532">532</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a24c32ed118f85903ba19f4caa2e8287c" name="a24c32ed118f85903ba19f4caa2e8287c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24c32ed118f85903ba19f4caa2e8287c">&#9670;&#160;</a></span>hasVehicleDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::hasVehicleDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>载具模板查询。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Definitions_8cpp_source.html#l00322">eve::definitions::DefinitionRegistry::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="acfd5963bc960df89c1765eb8fa3d8c72" name="acfd5963bc960df89c1765eb8fa3d8c72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfd5963bc960df89c1765eb8fa3d8c72">&#9670;&#160;</a></span>hold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::hold </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#adcc03a0d7f3cdb6e26a164f0b6212c07abcd8db575b47c838e5d551e3973db4ac">eve::vehicle::Hold</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00260">eve::vehicle::VehicleSystem::pushOrder()</a>, <a class="el" href="VehicleTypes_8h_source.html#l00058">eve::vehicle::VehicleOrder::type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aa88113c29796ae7dbcc70b675f1960ce" name="aa88113c29796ae7dbcc70b675f1960ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa88113c29796ae7dbcc70b675f1960ce">&#9670;&#160;</a></span>isArrived()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::isArrived </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a8b900332657e763df4a08038272a38fc" name="a8b900332657e763df4a08038272a38fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b900332657e763df4a08038272a38fc">&#9670;&#160;</a></span>isDestroyed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::isDestroyed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>是否已摧毁。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00433">433</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aefb9d25bc866cd25e36633c334748228" name="aefb9d25bc866cd25e36633c334748228"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefb9d25bc866cd25e36633c334748228">&#9670;&#160;</a></span>isSeatOccupied()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::vehicle::Vehicle::isSeatOccupied </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seatIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00455">455</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="af33cbf9dfaad08a5c9a4bc856a5cffd4" name="af33cbf9dfaad08a5c9a4bc856a5cffd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af33cbf9dfaad08a5c9a4bc856a5cffd4">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::vehicle::Vehicle::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1Vehicle.html">Vehicle</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42af37378a007c09c801db52c32511d9" name="a42af37378a007c09c801db52c32511d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42af37378a007c09c801db52c32511d9">&#9670;&#160;</a></span>moveTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::moveTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>RTS 命令。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#adcc03a0d7f3cdb6e26a164f0b6212c07a6bc362dbf494c61ea117fe3c71ca48a5">eve::vehicle::Move</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00260">eve::vehicle::VehicleSystem::pushOrder()</a>, <a class="el" href="VehicleTypes_8h_source.html#l00058">eve::vehicle::VehicleOrder::type</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="VehicleTypes_8h_source.html#l00059">eve::vehicle::VehicleOrder::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="VehicleTypes_8h_source.html#l00060">eve::vehicle::VehicleOrder::y</a>.</p>
+
+</div>
+</div>
+<a id="a1deec5bd12c4412bfcc8b3d44acf79c3" name="a1deec5bd12c4412bfcc8b3d44acf79c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1deec5bd12c4412bfcc8b3d44acf79c3">&#9670;&#160;</a></span>newVehicle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> * eve::vehicle::Vehicle::newVehicle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>defId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heading</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>faction</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>工厂：按模板创建载具并挂载武器挂点（ECS 表持有，脚本持有句柄）。 </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable pointer to the ECS-owned vehicle; null means validation or creation failed. @ownership The ECS world owns the entity; callers must not delete it. @lifetime Valid until ECS destroys the entity or world; retain its generation handle across frames. @thread Call on the <a class="el" href="classeve_1_1vehicle_1_1Vehicle.html" title="载具模块（eve.Vehicle）。">Vehicle</a> module's owning ECS thread. @reentrancy Creation does not invoke user callbacks; do not mutate the ECS world re-entrantly while using the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTypes_8h_source.html#l00273">eve::vehicle::VehicleEntity::MountSlot::aimMode</a>, <a class="el" href="VehicleTypes_8h_source.html#l00301">eve::vehicle::VehicleEntity::SeatSlot::cameraMode</a>, <a class="el" href="Vehicle_8cpp_source.html#l00099">eve::vehicle::VehicleEntity::createVehicle()</a>, <a class="el" href="VehicleTypes_8h_source.html#l00300">eve::vehicle::VehicleEntity::SeatSlot::driver</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00174">heading</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="VehicleTypes_8h_source.html#l00140">eve::vehicle::VehicleDefinition::maxHealth</a>, <a class="el" href="VehicleTypes_8h_source.html#l00272">eve::vehicle::VehicleEntity::MountSlot::mount</a>, <a class="el" href="VehicleTypes_8h_source.html#l00302">eve::vehicle::VehicleEntity::SeatSlot::mountIndex</a>, <a class="el" href="VehicleTypes_8h_source.html#l00142">eve::vehicle::VehicleDefinition::mounts</a>, <a class="el" href="VehicleTypes_8h_source.html#l00299">eve::vehicle::VehicleEntity::SeatSlot::name</a>, <a class="el" href="Module_8h_source.html#l00039">requireModInst</a>, <a class="el" href="VehicleTypes_8h_source.html#l00144">eve::vehicle::VehicleDefinition::seats</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="ac7eaa9d6598abca2a6625d11e76a4dd1" name="ac7eaa9d6598abca2a6625d11e76a4dd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7eaa9d6598abca2a6625d11e76a4dd1">&#9670;&#160;</a></span>orderCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::orderCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a889718ce7cb003022309744673cb2fb4" name="a889718ce7cb003022309744673cb2fb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a889718ce7cb003022309744673cb2fb4">&#9670;&#160;</a></span>registerMobility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::registerMobility </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1IVehicleMobility.html">IVehicleMobility</a> *&#160;</td>
+          <td class="paramname"><em>mobility</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>注册移动模型（C++ 插件/游戏侧扩展点；同名替换）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00186">eve::vehicle::VehicleSystem::registerMobility()</a>.</p>
+
+</div>
+</div>
+<a id="ae06e6aaf4a410e60d4b9ec383f80564d" name="ae06e6aaf4a410e60d4b9ec383f80564d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae06e6aaf4a410e60d4b9ec383f80564d">&#9670;&#160;</a></span>registerVehiclesFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::vehicle::Vehicle::registerVehiclesFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>从 JSON 注册载具模板；返回成功注册数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="Definitions_8cpp_source.html#l00266">eve::definitions::DefinitionRegistry::insert()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00104">eve::vehicle::parseVehicleDefinition()</a>, <a class="el" href="Definitions_8cpp_source.html#l00285">eve::definitions::DefinitionRegistry::replace()</a>, <a class="el" href="Definitions_8cpp_source.html#l00322">eve::definitions::DefinitionRegistry::resolve()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>, <a class="el" href="Definitions_8h_source.html#l00030">eve::definitions::Definition::type</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aaa66a53a8e49caafdc4b1632022b026a" name="aaa66a53a8e49caafdc4b1632022b026a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa66a53a8e49caafdc4b1632022b026a">&#9670;&#160;</a></span>setFaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::setFaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>faction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a42fbe1e060dfe00ab5da7a26492da3cc" name="a42fbe1e060dfe00ab5da7a26492da3cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42fbe1e060dfe00ab5da7a26492da3cc">&#9670;&#160;</a></span>setHeading()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::setHeading </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a38e88220d3625362dd49a3e4b9d05b30" name="a38e88220d3625362dd49a3e4b9d05b30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38e88220d3625362dd49a3e4b9d05b30">&#9670;&#160;</a></span>setHealth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::setHealth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hp</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="ae13ccd8bdc110bdc13806e41d983d7e3" name="ae13ccd8bdc110bdc13806e41d983d7e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae13ccd8bdc110bdc13806e41d983d7e3">&#9670;&#160;</a></span>setInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::setInput </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>throttle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>steer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>brake</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>handbrake</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>直接驾驶输入（FPS / 脚本驱动；RTS 命令也会写 input）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00511">511</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a27a8c34bbf4aa9f9a462a47adbc06b83" name="a27a8c34bbf4aa9f9a462a47adbc06b83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27a8c34bbf4aa9f9a462a47adbc06b83">&#9670;&#160;</a></span>setPlayerControls()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::setPlayerControls </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>playerId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>throttle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>steer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>brake</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fire</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aimYaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aimPitch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>写入玩家控制（归一化；角度为度）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00495">495</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00302">eve::vehicle::VehicleSystem::setPlayerControls()</a> , 以及 <a class="el" href="VehicleDriver_8h_source.html#l00019">eve::vehicle::PlayerControl::throttle</a>.</p>
+
+</div>
+</div>
+<a id="afa347765d0b1e4e4e999c294c849ba67" name="afa347765d0b1e4e4e999c294c849ba67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa347765d0b1e4e4e999c294c849ba67">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::setPosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="adb329900f2d96179f68a9160fbfb0c8c" name="adb329900f2d96179f68a9160fbfb0c8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb329900f2d96179f68a9160fbfb0c8c">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::stop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> *&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleSystem_8cpp_source.html#l00260">eve::vehicle::VehicleSystem::pushOrder()</a>, <a class="el" href="namespaceeve_1_1vehicle.html#adcc03a0d7f3cdb6e26a164f0b6212c07a11a755d598c0c417f9a36758c3da7481">eve::vehicle::Stop</a>, <a class="el" href="VehicleTypes_8h_source.html#l00058">eve::vehicle::VehicleOrder::type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a6651501a079ef056fb2133ef850b478c" name="a6651501a079ef056fb2133ef850b478c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6651501a079ef056fb2133ef850b478c">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::Vehicle::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>每帧推进全部载具（命令 → 移动 → RTS 自动瞄准）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a> 第 <a class="el" href="Vehicle_8cpp_source.html#l00560">560</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="VehicleSystem_8cpp_source.html#l00200">eve::vehicle::VehicleSystem::update()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/vehicle/<a class="el" href="Vehicle_8h_source.html">Vehicle.h</a></li>
+<li>src/modules/vehicle/<a class="el" href="Vehicle_8cpp_source.html">Vehicle.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

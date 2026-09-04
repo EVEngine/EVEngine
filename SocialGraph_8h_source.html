@@ -1,0 +1,296 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/social/SocialGraph.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_08e2c0331567ac64178cd2ad37146378.html">social</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SocialGraph.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SocialGraph_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1social.html">eve::social</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">   13</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> = std::string;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1social_1_1SocialChangeEvent.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1social_1_1SocialChangeEvent.html">SocialChangeEvent</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1social_1_1SocialChangeEvent.html#ad7c5faab39e8670310dae9f2b2a02093">   17</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1social_1_1SocialChangeEvent.html#ad7c5faab39e8670310dae9f2b2a02093">sequence</a> = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1social_1_1SocialChangeEvent.html#a08c799db568fc0e6a68b9def5d06f7a0">   18</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1social_1_1SocialChangeEvent.html#a08c799db568fc0e6a68b9def5d06f7a0">action</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1social_1_1SocialChangeEvent.html#ae21871524d3f9ab8a48be913bc4ea4e6">   19</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>      <a class="code hl_variable" href="structeve_1_1social_1_1SocialChangeEvent.html#ae21871524d3f9ab8a48be913bc4ea4e6">source</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1social_1_1SocialChangeEvent.html#a9b6d76b7e66458f1a8b4fb943f1e597b">   20</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>      <a class="code hl_variable" href="structeve_1_1social_1_1SocialChangeEvent.html#a9b6d76b7e66458f1a8b4fb943f1e597b">target</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1social_1_1SocialChangeEvent.html#a9cc8903797df182025d3cf477571981b">   21</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1social_1_1SocialChangeEvent.html#a9cc8903797df182025d3cf477571981b">type</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1social_1_1SocialChangeEvent.html#ab3fdf65eff6988ce7597422a189d211e">   22</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1social_1_1SocialChangeEvent.html#ab3fdf65eff6988ce7597422a189d211e">oldValue</a> = 0.0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1social_1_1SocialChangeEvent.html#a376e4cab5062a3bb84665cfddccbb402">   23</a></span>    <span class="keywordtype">double</span>        <a class="code hl_variable" href="structeve_1_1social_1_1SocialChangeEvent.html#a376e4cab5062a3bb84665cfddccbb402">newValue</a> = 0.0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1social_1_1SocialGraph.html">   32</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1social_1_1SocialGraph.html">SocialGraph</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a2e38500d9aaed00e060dddfee0f11f00">integerId</a>(std::int64_t <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a2b311fea6438a931293b5fb756041994">setOwner</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; entity, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; owner);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#acd242585b9acb2e761a793fb4340e1bc">ownerOf</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; entity) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::vector&lt;EntityId&gt; <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a25c6af9dcafc3fb51cc839ab8eb3f6cd">ownedBy</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; owner) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a91c415211382a875107338238aef329d">setController</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; entity, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; controller);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a1f475e873e3801fbecac18a1f70a6b2c">controllerOf</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; entity) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    std::vector&lt;EntityId&gt; <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a5ecfc0df8f2d71f90969aecbde292222">controlledBy</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; controller) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a0e3b9694e948814b778907251e6e595e">assign</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> std::string&amp; role, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a86e4ae6c182188e3b6ddaef2b81f344d">unassign</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> std::string&amp; role, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#aecbadf84ad8c9cae8716d7f5c467d526">isAssigned</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> std::string&amp; role, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    std::vector&lt;EntityId&gt; <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#abfbe8a23ff7987c09f00b10a15b568d4">targetsOf</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> std::string&amp; role) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::vector&lt;EntityId&gt; <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#ac6e3f4fbaa008032159b5a07cd0f7656">assigneesOf</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; role) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a86da29bfa7d9becf777e121ce18dabca">setRelation</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a31bb4257cd417d82b630d9bcc1cc4510">addRelation</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <span class="keywordtype">double</span> delta);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a1fb21f7032bd9f6c4a9ce2267f33cf4a">link</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#ad9bbf53259fd77ab7e888b0c5259025a">removeRelation</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#af94dbe18effb171e7c7b7a67f96ca893">hasRelation</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#af04a0039a70507b73f701093cd44d4fb">relation</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                    <span class="keywordtype">double</span> fallback = 0.0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    std::vector&lt;EntityId&gt; <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#af81906e478c973f8ba87b3dd4c2c2a0a">relationTargets</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a> = 0.0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::vector&lt;EntityId&gt; <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#afcd4e3a4b6d53388784a5322c6bd0d08">relationSources</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a> = 0.0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#ac450d03603d3c77cbe8d18bc04d8e13a">removeEntity</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a>&amp; entity);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#ada61cf66ef2b21e7d8f59340364b08b1">clear</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1social_1_1SocialGraph.html#afa92f4d5ff37d2be502595af2b2096be">   86</a></span>    <span class="keyword">const</span> std::vector&lt;SocialChangeEvent&gt;&amp; <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#afa92f4d5ff37d2be502595af2b2096be">events</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> events_; }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1social_1_1SocialGraph.html#a331f7f56869ed13472a17ed1ebfb7654">   88</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1social_1_1SocialGraph.html#a331f7f56869ed13472a17ed1ebfb7654">clearEvents</a>() { events_.clear(); }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">using </span>EntitySet = std::map&lt;EntityId, bool&gt;;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">using </span>PairKey   = std::pair&lt;EntityId, std::string&gt;;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">using </span>EdgeKey   = std::tuple&lt;EntityId, EntityId, std::string&gt;;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> emit(std::string action, <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a> = {}, <a class="code hl_typedef" href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">EntityId</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = {}, std::string <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> = {},</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>              <span class="keywordtype">double</span> oldValue = 0.0, <span class="keywordtype">double</span> newValue = 0.0);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">static</span> std::vector&lt;EntityId&gt; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>(<span class="keyword">const</span> EntitySet* set);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    std::map&lt;EntityId, EntityId&gt;   owners_;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    std::map&lt;EntityId, EntitySet&gt;  owned_;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::map&lt;EntityId, EntityId&gt;   controllers_;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::map&lt;EntityId, EntitySet&gt;  controlled_;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    std::map&lt;PairKey, EntitySet&gt;   assignmentTargets_;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::map&lt;PairKey, EntitySet&gt;   assignmentSources_;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    std::map&lt;EdgeKey, double&gt;      relations_;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::map&lt;PairKey, EntitySet&gt;   relationTargets_;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::map&lt;PairKey, EntitySet&gt;   relationSources_;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::vector&lt;SocialChangeEvent&gt; events_;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::uint64_t                  nextSequence_ = 1;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>};</div>
+</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}  <span class="comment">// namespace eve::social</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00021">ActionTimelineWidget.cpp:21</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a127467c202a16db28ed73fe86239cfd3"><div class="ttname"><a href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a></div><div class="ttdeci">std::map&lt; std::string, Var &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00459">EditorHost.cpp:459</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a909c88a187a1961fa2765ce3b9cecb24"><div class="ttname"><a href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a></div><div class="ttdeci">float minimum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00239">GltfImporter.cpp:239</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html">eve::social::SocialGraph</a></div><div class="ttdoc">Indexed ownership, control, assignment, and typed-relation graph.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00032">SocialGraph.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a0e3b9694e948814b778907251e6e595e"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a0e3b9694e948814b778907251e6e595e">eve::social::SocialGraph::assign</a></div><div class="ttdeci">bool assign(const EntityId &amp;source, const std::string &amp;role, const EntityId &amp;target)</div><div class="ttdoc">Adds a role-based source-to-target assignment.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00086">SocialGraph.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a1f475e873e3801fbecac18a1f70a6b2c"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a1f475e873e3801fbecac18a1f70a6b2c">eve::social::SocialGraph::controllerOf</a></div><div class="ttdeci">EntityId controllerOf(const EntityId &amp;entity) const</div><div class="ttdoc">Returns an entity's controller, or an empty string when absent.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00076">SocialGraph.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a1fb21f7032bd9f6c4a9ce2267f33cf4a"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a1fb21f7032bd9f6c4a9ce2267f33cf4a">eve::social::SocialGraph::link</a></div><div class="ttdeci">bool link(const EntityId &amp;source, const EntityId &amp;target, const std::string &amp;type)</div><div class="ttdoc">Creates a directed typed relation with weight 1.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00140">SocialGraph.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a25c6af9dcafc3fb51cc839ab8eb3f6cd"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a25c6af9dcafc3fb51cc839ab8eb3f6cd">eve::social::SocialGraph::ownedBy</a></div><div class="ttdeci">std::vector&lt; EntityId &gt; ownedBy(const EntityId &amp;owner) const</div><div class="ttdoc">Returns entities owned by owner in deterministic ID order.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00056">SocialGraph.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a2b311fea6438a931293b5fb756041994"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a2b311fea6438a931293b5fb756041994">eve::social::SocialGraph::setOwner</a></div><div class="ttdeci">bool setOwner(const EntityId &amp;entity, const EntityId &amp;owner)</div><div class="ttdoc">Sets an entity's owner; an empty owner removes ownership.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00036">SocialGraph.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a2e38500d9aaed00e060dddfee0f11f00"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a2e38500d9aaed00e060dddfee0f11f00">eve::social::SocialGraph::integerId</a></div><div class="ttdeci">static EntityId integerId(std::int64_t id)</div><div class="ttdoc">Converts a stable integer ID to its canonical graph key.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00020">SocialGraph.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a31bb4257cd417d82b630d9bcc1cc4510"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a31bb4257cd417d82b630d9bcc1cc4510">eve::social::SocialGraph::addRelation</a></div><div class="ttdeci">double addRelation(const EntityId &amp;source, const EntityId &amp;target, const std::string &amp;type, double delta)</div><div class="ttdoc">Adds delta to a directed typed relation and returns its new weight.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00134">SocialGraph.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a331f7f56869ed13472a17ed1ebfb7654"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a331f7f56869ed13472a17ed1ebfb7654">eve::social::SocialGraph::clearEvents</a></div><div class="ttdeci">void clearEvents()</div><div class="ttdoc">Clears queued events without changing graph state.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00088">SocialGraph.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a5ecfc0df8f2d71f90969aecbde292222"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a5ecfc0df8f2d71f90969aecbde292222">eve::social::SocialGraph::controlledBy</a></div><div class="ttdeci">std::vector&lt; EntityId &gt; controlledBy(const EntityId &amp;controller) const</div><div class="ttdoc">Returns entities controlled by controller in deterministic ID order.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00081">SocialGraph.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a86da29bfa7d9becf777e121ce18dabca"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a86da29bfa7d9becf777e121ce18dabca">eve::social::SocialGraph::setRelation</a></div><div class="ttdeci">bool setRelation(const EntityId &amp;source, const EntityId &amp;target, const std::string &amp;type, double value)</div><div class="ttdoc">Sets a directed typed relation weight, creating the edge if needed.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00121">SocialGraph.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a86e4ae6c182188e3b6ddaef2b81f344d"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a86e4ae6c182188e3b6ddaef2b81f344d">eve::social::SocialGraph::unassign</a></div><div class="ttdeci">bool unassign(const EntityId &amp;source, const std::string &amp;role, const EntityId &amp;target)</div><div class="ttdoc">Removes a role-based source-to-target assignment.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00096">SocialGraph.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_a91c415211382a875107338238aef329d"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#a91c415211382a875107338238aef329d">eve::social::SocialGraph::setController</a></div><div class="ttdeci">bool setController(const EntityId &amp;entity, const EntityId &amp;controller)</div><div class="ttdoc">Sets an entity's controller; an empty controller removes control.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00061">SocialGraph.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_abfbe8a23ff7987c09f00b10a15b568d4"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#abfbe8a23ff7987c09f00b10a15b568d4">eve::social::SocialGraph::targetsOf</a></div><div class="ttdeci">std::vector&lt; EntityId &gt; targetsOf(const EntityId &amp;source, const std::string &amp;role) const</div><div class="ttdoc">Returns targets assigned from source with role in deterministic order.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00111">SocialGraph.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_ac450d03603d3c77cbe8d18bc04d8e13a"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#ac450d03603d3c77cbe8d18bc04d8e13a">eve::social::SocialGraph::removeEntity</a></div><div class="ttdeci">bool removeEntity(const EntityId &amp;entity)</div><div class="ttdoc">Removes an entity and every incoming/outgoing graph reference to it.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00188">SocialGraph.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_ac6e3f4fbaa008032159b5a07cd0f7656"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#ac6e3f4fbaa008032159b5a07cd0f7656">eve::social::SocialGraph::assigneesOf</a></div><div class="ttdeci">std::vector&lt; EntityId &gt; assigneesOf(const EntityId &amp;target, const std::string &amp;role) const</div><div class="ttdoc">Returns sources assigned to target with role in deterministic order.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00116">SocialGraph.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_acd242585b9acb2e761a793fb4340e1bc"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#acd242585b9acb2e761a793fb4340e1bc">eve::social::SocialGraph::ownerOf</a></div><div class="ttdeci">EntityId ownerOf(const EntityId &amp;entity) const</div><div class="ttdoc">Returns an entity's owner, or an empty string when absent.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00051">SocialGraph.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_ad9bbf53259fd77ab7e888b0c5259025a"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#ad9bbf53259fd77ab7e888b0c5259025a">eve::social::SocialGraph::removeRelation</a></div><div class="ttdeci">bool removeRelation(const EntityId &amp;source, const EntityId &amp;target, const std::string &amp;type)</div><div class="ttdoc">Removes an exact directed typed relation.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00144">SocialGraph.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_ada61cf66ef2b21e7d8f59340364b08b1"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#ada61cf66ef2b21e7d8f59340364b08b1">eve::social::SocialGraph::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clears all graph state and pending events.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00215">SocialGraph.cpp:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_aecbadf84ad8c9cae8716d7f5c467d526"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#aecbadf84ad8c9cae8716d7f5c467d526">eve::social::SocialGraph::isAssigned</a></div><div class="ttdeci">bool isAssigned(const EntityId &amp;source, const std::string &amp;role, const EntityId &amp;target) const</div><div class="ttdoc">Tests whether an exact assignment exists.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00106">SocialGraph.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_af04a0039a70507b73f701093cd44d4fb"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#af04a0039a70507b73f701093cd44d4fb">eve::social::SocialGraph::relation</a></div><div class="ttdeci">double relation(const EntityId &amp;source, const EntityId &amp;target, const std::string &amp;type, double fallback=0.0) const</div><div class="ttdoc">Gets an exact relation weight, or fallback when absent.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00160">SocialGraph.cpp:160</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_af81906e478c973f8ba87b3dd4c2c2a0a"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#af81906e478c973f8ba87b3dd4c2c2a0a">eve::social::SocialGraph::relationTargets</a></div><div class="ttdeci">std::vector&lt; EntityId &gt; relationTargets(const EntityId &amp;source, const std::string &amp;type, double minimum=0.0) const</div><div class="ttdoc">Returns outgoing relation targets filtered by type and minimum weight.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00166">SocialGraph.cpp:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_af94dbe18effb171e7c7b7a67f96ca893"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#af94dbe18effb171e7c7b7a67f96ca893">eve::social::SocialGraph::hasRelation</a></div><div class="ttdeci">bool hasRelation(const EntityId &amp;source, const EntityId &amp;target, const std::string &amp;type) const</div><div class="ttdoc">Tests whether an exact directed typed relation exists.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00156">SocialGraph.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_afa92f4d5ff37d2be502595af2b2096be"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#afa92f4d5ff37d2be502595af2b2096be">eve::social::SocialGraph::events</a></div><div class="ttdeci">const std::vector&lt; SocialChangeEvent &gt; &amp; events() const</div><div class="ttdoc">Returns queued mutation events in sequence order.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00086">SocialGraph.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1social_1_1SocialGraph_html_afcd4e3a4b6d53388784a5322c6bd0d08"><div class="ttname"><a href="classeve_1_1social_1_1SocialGraph.html#afcd4e3a4b6d53388784a5322c6bd0d08">eve::social::SocialGraph::relationSources</a></div><div class="ttdeci">std::vector&lt; EntityId &gt; relationSources(const EntityId &amp;target, const std::string &amp;type, double minimum=0.0) const</div><div class="ttdoc">Returns incoming relation sources filtered by type and minimum weight.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8cpp_source.html#l00177">SocialGraph.cpp:177</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1social_html"><div class="ttname"><a href="namespaceeve_1_1social.html">eve::social</a></div><div class="ttdef"><b>Definition</b> <a href="Social_8cpp_source.html#l00005">Social.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1social_html_ad9f4e4c290eb2fdaad69665e4bdb37a5"><div class="ttname"><a href="namespaceeve_1_1social.html#ad9f4e4c290eb2fdaad69665e4bdb37a5">eve::social::EntityId</a></div><div class="ttdeci">std::string EntityId</div><div class="ttdoc">Stable, game-defined identifier used by the social graph.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00013">SocialGraph.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1social_1_1SocialChangeEvent_html"><div class="ttname"><a href="structeve_1_1social_1_1SocialChangeEvent.html">eve::social::SocialChangeEvent</a></div><div class="ttdoc">Immutable description of one social graph mutation.</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00016">SocialGraph.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1social_1_1SocialChangeEvent_html_a08c799db568fc0e6a68b9def5d06f7a0"><div class="ttname"><a href="structeve_1_1social_1_1SocialChangeEvent.html#a08c799db568fc0e6a68b9def5d06f7a0">eve::social::SocialChangeEvent::action</a></div><div class="ttdeci">std::string action</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00018">SocialGraph.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1social_1_1SocialChangeEvent_html_a376e4cab5062a3bb84665cfddccbb402"><div class="ttname"><a href="structeve_1_1social_1_1SocialChangeEvent.html#a376e4cab5062a3bb84665cfddccbb402">eve::social::SocialChangeEvent::newValue</a></div><div class="ttdeci">double newValue</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00023">SocialGraph.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1social_1_1SocialChangeEvent_html_a9b6d76b7e66458f1a8b4fb943f1e597b"><div class="ttname"><a href="structeve_1_1social_1_1SocialChangeEvent.html#a9b6d76b7e66458f1a8b4fb943f1e597b">eve::social::SocialChangeEvent::target</a></div><div class="ttdeci">EntityId target</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00020">SocialGraph.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1social_1_1SocialChangeEvent_html_a9cc8903797df182025d3cf477571981b"><div class="ttname"><a href="structeve_1_1social_1_1SocialChangeEvent.html#a9cc8903797df182025d3cf477571981b">eve::social::SocialChangeEvent::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00021">SocialGraph.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1social_1_1SocialChangeEvent_html_ab3fdf65eff6988ce7597422a189d211e"><div class="ttname"><a href="structeve_1_1social_1_1SocialChangeEvent.html#ab3fdf65eff6988ce7597422a189d211e">eve::social::SocialChangeEvent::oldValue</a></div><div class="ttdeci">double oldValue</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00022">SocialGraph.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1social_1_1SocialChangeEvent_html_ad7c5faab39e8670310dae9f2b2a02093"><div class="ttname"><a href="structeve_1_1social_1_1SocialChangeEvent.html#ad7c5faab39e8670310dae9f2b2a02093">eve::social::SocialChangeEvent::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00017">SocialGraph.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1social_1_1SocialChangeEvent_html_ae21871524d3f9ab8a48be913bc4ea4e6"><div class="ttname"><a href="structeve_1_1social_1_1SocialChangeEvent.html#ae21871524d3f9ab8a48be913bc4ea4e6">eve::social::SocialChangeEvent::source</a></div><div class="ttdeci">EntityId source</div><div class="ttdef"><b>Definition</b> <a href="SocialGraph_8h_source.html#l00019">SocialGraph.h:19</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

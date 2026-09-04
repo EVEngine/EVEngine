@@ -1,0 +1,333 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/spritestack_editing/SpriteStackRuntime.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_07155877a702933d4b1f85d27c6cec8a.html">spritestack_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SpriteStackRuntime.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SpriteStackRuntime_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="SpriteStackTarget_8h.html">spritestack_editing/SpriteStackTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ImageData_8h.html">image/ImageData.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ModelData_8h.html">model3d/ModelData.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve_1_1spritestack__editing.html">   11</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1spritestack__editing.html">eve::spritestack_editing</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;T&gt;</a> fail(<a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, RuleId(rule), std::move(message));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>std::uint64_t checksum(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; <a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keyword">auto</span>*   bytes = <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getData());</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    std::uint64_t <a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>  = 1469598103934665603ull;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getSize(); ++i) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a> ^= bytes[i];</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a> *= 1099511628211ull;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><a class="code hl_struct" href="structeve_1_1spritestack__editing_1_1SpriteStackLayerArtifact.html">SpriteStackLayerArtifact</a> artifact(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; <a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::size_t <a class="code hl_variable" href="UrbanGenerator_8cpp.html#aab0abdc9ebee3ef68012a45b72d89aa1">covered</a> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &lt; <a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getHeight(); ++<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; <a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getWidth(); ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getPixel(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>).a &gt; 0.f) ++<a class="code hl_variable" href="UrbanGenerator_8cpp.html#aab0abdc9ebee3ef68012a45b72d89aa1">covered</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">const</span> std::size_t <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a5e97f2110c1b66c571902dda9b85ab54">pixels</a> = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getWidth()) * <a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getHeight();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> {<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, <a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getWidth(), <a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>.getHeight(), checksum(<a class="code hl_variable" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a>),</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a5e97f2110c1b66c571902dda9b85ab54">pixels</a> ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UrbanGenerator_8cpp.html#aab0abdc9ebee3ef68012a45b72d89aa1">covered</a>) / <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a5e97f2110c1b66c571902dda9b85ab54">pixels</a> : 0.0};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a7b6741ba220c46bff42b9e37e5ed0586">SpriteStackBakeRuntime::SpriteStackBakeRuntime</a>()  = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a3c8df429631e278af3d3428ab88bbe21">SpriteStackBakeRuntime::~SpriteStackBakeRuntime</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a703949337e14f04b454aa77c4aa061e8">   40</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;std::vector&lt;SpriteStackLayerArtifact&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a703949337e14f04b454aa77c4aa061e8">SpriteStackBakeRuntime::bake</a>(</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html">SpriteStackDocumentTarget</a>&amp; document, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1spritestack__editing_1_1ISpriteStackModelResolver.html">ISpriteStackModelResolver</a>* resolver) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">const</span> <span class="keyword">auto</span> diagnostics = document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#ac4c932a722290b2df5888925fa91c2d7">validate</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> : diagnostics)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.severity() == DiagnosticSeverity::Error)</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult</a>&lt;std::vector&lt;SpriteStackLayerArtifact&gt;&gt;::failure(</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                <a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>(EditorStatus::Rejected, diagnostics));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::vector&lt;image::ImageData*&gt; raw;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">if</span> (document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#acdbce1eea6c628b4bd544715b9910d47">value</a>().<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#afaef1a64db1e00fe50d5f9de5466df11">sourceKind</a> == <span class="stringliteral">&quot;primitive&quot;</span>)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            raw = <a class="code hl_function" href="namespaceeve_1_1spritestack.html#a9135958373a133e6a50180a15d63226c">spritestack::slicePrimitiveToLayers</a>(document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#acdbce1eea6c628b4bd544715b9910d47">value</a>().<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#ac59fa0374bc95f4fa735c6b0d8e3aa50">source</a>, document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#acdbce1eea6c628b4bd544715b9910d47">value</a>().<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#a3eb4a1ba4cd3eadde9e97a4ec59500f3">bake</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">if</span> (!resolver)</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keywordflow">return</span> fail&lt;std::vector&lt;SpriteStackLayerArtifact&gt;&gt;(EditorStatus::Rejected,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                                                   <span class="stringliteral">&quot;editor.spritestack.resolver&quot;</span>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                                                   <span class="stringliteral">&quot;Model SpriteStack bake requires an asset resolver&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keyword">auto</span> resolved = resolver-&gt;<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1ISpriteStackModelResolver.html#a90130e1f738e08f4c5c78198189be1d9">resolveModel</a>(document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#acdbce1eea6c628b4bd544715b9910d47">value</a>().<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#ac59fa0374bc95f4fa735c6b0d8e3aa50">source</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordflow">if</span> (!resolved.ok() || !resolved.value())</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult</a>&lt;std::vector&lt;SpriteStackLayerArtifact&gt;&gt;::failure(resolved.status());</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            raw = <a class="code hl_function" href="namespaceeve_1_1spritestack.html#aa017dc6986c6817867e9dfb0c0b6d917">spritestack::sliceModelToLayers</a>(resolved.value(), document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#acdbce1eea6c628b4bd544715b9910d47">value</a>().<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#a3eb4a1ba4cd3eadde9e97a4ec59500f3">bake</a>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; exception) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span>* <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a> : raw) <span class="keyword">delete</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> fail&lt;std::vector&lt;SpriteStackLayerArtifact&gt;&gt;(EditorStatus::Failed, <span class="stringliteral">&quot;editor.spritestack.bake&quot;</span>,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                                           exception.what());</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (raw.size() != <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#acdbce1eea6c628b4bd544715b9910d47">value</a>().<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#a3eb4a1ba4cd3eadde9e97a4ec59500f3">bake</a>.<a class="code hl_variable" href="structeve_1_1spritestack_1_1SliceOptions.html#a11527a2f5a4caeffec45acfcf1fca7ed">layerCount</a>) ||</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        std::any_of(raw.begin(), raw.end(), [](<span class="keyword">auto</span>* <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> == <span class="keyword">nullptr</span>; })) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span>* <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a> : raw) <span class="keyword">delete</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> fail&lt;std::vector&lt;SpriteStackLayerArtifact&gt;&gt;(EditorStatus::Failed, <span class="stringliteral">&quot;editor.spritestack.layer-count&quot;</span>,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                                           <span class="stringliteral">&quot;SpriteStack baker returned an incomplete generation&quot;</span>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::vector&lt;std::unique_ptr&lt;image::ImageData&gt;&gt; candidate;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    std::vector&lt;SpriteStackLayerArtifact&gt;          artifacts;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    candidate.reserve(raw.size());</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    artifacts.reserve(raw.size());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; raw.size(); ++i) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        candidate.emplace_back(raw[i]);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        artifacts.push_back(artifact(*raw[i], <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i)));</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    layers_ = std::move(candidate);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    stack_.reset();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    value_             = document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#acdbce1eea6c628b4bd544715b9910d47">value</a>();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    revision_          = document.<a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#a778d15dbbecc0110b1b6af1f75ae2eb9">revision</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;std::vector&lt;SpriteStackLayerArtifact&gt;&gt;(std::move(artifacts), diagnostics);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00087" data-start="{" data-end="}">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a31b197fd3b30a35c237d2b2037838535">   87</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;spritestack::SpriteStack2D*&gt;</a> <a class="code hl_function" href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a31b197fd3b30a35c237d2b2037838535">SpriteStackBakeRuntime::publish</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* graphics,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                                                          Revision expectedRevision) {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (expectedRevision != revision_)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> fail&lt;spritestack::SpriteStack2D*&gt;(EditorStatus::Conflict, <span class="stringliteral">&quot;editor.spritestack.stale&quot;</span>,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                                                 <span class="stringliteral">&quot;SpriteStack bake generation is stale&quot;</span>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (!graphics || layers_.empty())</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">return</span> fail&lt;spritestack::SpriteStack2D*&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.spritestack.publish&quot;</span>,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                                                 <span class="stringliteral">&quot;SpriteStack publication requires Graphics and baked layers&quot;</span>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">auto</span> candidate = std::make_unique&lt;spritestack::SpriteStack2D&gt;();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        candidate-&gt;setLayerCount(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(layers_.size()));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; layers_.size(); ++i)</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            candidate-&gt;setLayerImage(graphics, layers_[i].get(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i));</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        candidate-&gt;setThickness(value_.<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#ade9d052614d834f15da39827e95ced00">layerOffset</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        candidate-&gt;setSize(value_.<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#a918168bb777b4d92a21080c7afd77ab8">displayWidth</a>, value_.<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#a19cd7a2a902afd820aef098c8b99715b">displayHeight</a>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        candidate-&gt;setShadowEnabled(value_.<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#aa4d7e01f3586cfdd216e1543a3538ba3">shadow</a>);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        candidate-&gt;setShadowOpacity(value_.<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#ae078933bc8a1c17163c79159563cd026">shadowOpacity</a>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        candidate-&gt;setOutline(value_.<a class="code hl_variable" href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#aff065508e6e410cd56ff6d782e280820">outlineWidth</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; exception) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">return</span> fail&lt;spritestack::SpriteStack2D*&gt;(EditorStatus::Failed, <span class="stringliteral">&quot;editor.spritestack.publish&quot;</span>, exception.what());</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    stack_ = std::move(candidate);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;spritestack::SpriteStack2D*&gt;(stack_.get());</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}  <span class="comment">// namespace eve::spritestack_editing</span></div>
+</div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_a5fb132b1d88427518f97e5e710bc1c93"><div class="ttname"><a href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a></div><div class="ttdeci">std::array&lt; std::uint8_t, 32 &gt; hash</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00177">Evpack.cpp:177</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aImageData_8h_html"><div class="ttname"><a href="ImageData_8h.html">ImageData.h</a></div></div>
+<div class="ttc" id="aModelData_8h_html"><div class="ttname"><a href="ModelData_8h.html">ModelData.h</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00146">Pathfinder.cpp:146</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a5e97f2110c1b66c571902dda9b85ab54"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a5e97f2110c1b66c571902dda9b85ab54">pixels</a></div><div class="ttdeci">uint8_t * pixels</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00043">PrototypeTextures.cpp:43</a></div></div>
+<div class="ttc" id="aSpriteStackTarget_8h_html"><div class="ttname"><a href="SpriteStackTarget_8h.html">SpriteStackTarget.h</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a96b4a087acee7543a7624102a67fc14d"><div class="ttname"><a href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">image</a></div><div class="ttdeci">std::string image</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00129">TileConfig.cpp:129</a></div></div>
+<div class="ttc" id="aUrbanGenerator_8cpp_html_aab0abdc9ebee3ef68012a45b72d89aa1"><div class="ttname"><a href="UrbanGenerator_8cpp.html#aab0abdc9ebee3ef68012a45b72d89aa1">covered</a></div><div class="ttdeci">int covered</div><div class="ttdef"><b>Definition</b> <a href="UrbanGenerator_8cpp_source.html#l00213">UrbanGenerator.cpp:213</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00033">ImageData.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1ISpriteStackModelResolver_html"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1ISpriteStackModelResolver.html">eve::spritestack_editing::ISpriteStackModelResolver</a></div><div class="ttdoc">Resolves model assets without coupling the document to AssetDB ownership.</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00117">SpriteStackTarget.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1ISpriteStackModelResolver_html_a90130e1f738e08f4c5c78198189be1d9"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1ISpriteStackModelResolver.html#a90130e1f738e08f4c5c78198189be1d9">eve::spritestack_editing::ISpriteStackModelResolver::resolveModel</a></div><div class="ttdeci">virtual EditorResult&lt; model3d::ModelData * &gt; resolveModel(const std::string &amp;assetId) const =0</div><div class="ttdoc">Resolve a ready, borrowed ModelData for the duration of bake().</div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1SpriteStackBakeRuntime_html_a31b197fd3b30a35c237d2b2037838535"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a31b197fd3b30a35c237d2b2037838535">eve::spritestack_editing::SpriteStackBakeRuntime::publish</a></div><div class="ttdeci">EditorResult&lt; spritestack::SpriteStack2D * &gt; publish(graphics::Graphics *graphics, Revision expectedRevision)</div><div class="ttdoc">Create and populate a live stack from the current baked generation.</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackRuntime_8cpp_source.html#l00087">SpriteStackRuntime.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1SpriteStackBakeRuntime_html_a3c8df429631e278af3d3428ab88bbe21"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a3c8df429631e278af3d3428ab88bbe21">eve::spritestack_editing::SpriteStackBakeRuntime::~SpriteStackBakeRuntime</a></div><div class="ttdeci">~SpriteStackBakeRuntime()</div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1SpriteStackBakeRuntime_html_a703949337e14f04b454aa77c4aa061e8"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a703949337e14f04b454aa77c4aa061e8">eve::spritestack_editing::SpriteStackBakeRuntime::bake</a></div><div class="ttdeci">EditorResult&lt; std::vector&lt; SpriteStackLayerArtifact &gt; &gt; bake(const SpriteStackDocumentTarget &amp;document, const ISpriteStackModelResolver *resolver=nullptr)</div><div class="ttdoc">Bake all layers in temporary ownership before replacing the generation.</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackRuntime_8cpp_source.html#l00040">SpriteStackRuntime.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1SpriteStackBakeRuntime_html_a7b6741ba220c46bff42b9e37e5ed0586"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1SpriteStackBakeRuntime.html#a7b6741ba220c46bff42b9e37e5ed0586">eve::spritestack_editing::SpriteStackBakeRuntime::SpriteStackBakeRuntime</a></div><div class="ttdeci">SpriteStackBakeRuntime()</div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1SpriteStackDocumentTarget_html"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html">eve::spritestack_editing::SpriteStackDocumentTarget</a></div><div class="ttdoc">Revisioned SpriteStack bake preset with reusable Inspector metadata.</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00069">SpriteStackTarget.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1SpriteStackDocumentTarget_html_a778d15dbbecc0110b1b6af1f75ae2eb9"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#a778d15dbbecc0110b1b6af1f75ae2eb9">eve::spritestack_editing::SpriteStackDocumentTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00076">SpriteStackTarget.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1SpriteStackDocumentTarget_html_ac4c932a722290b2df5888925fa91c2d7"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#ac4c932a722290b2df5888925fa91c2d7">eve::spritestack_editing::SpriteStackDocumentTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdoc">Validate source, sampling limits, output memory and presentation values.</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8cpp_source.html#l00206">SpriteStackTarget.cpp:206</a></div></div>
+<div class="ttc" id="aclasseve_1_1spritestack__editing_1_1SpriteStackDocumentTarget_html_acdbce1eea6c628b4bd544715b9910d47"><div class="ttname"><a href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#acdbce1eea6c628b4bd544715b9910d47">eve::spritestack_editing::SpriteStackDocumentTarget::value</a></div><div class="ttdeci">const SpriteStackAssetValue &amp; value() const</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00093">SpriteStackTarget.h:93</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spritestack__editing_html"><div class="ttname"><a href="namespaceeve_1_1spritestack__editing.html">eve::spritestack_editing</a></div><div class="ttdef"><b>Definition</b> <a href="SpriteStackRuntime_8cpp_source.html#l00011">SpriteStackRuntime.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spritestack_html_a9135958373a133e6a50180a15d63226c"><div class="ttname"><a href="namespaceeve_1_1spritestack.html#a9135958373a133e6a50180a15d63226c">eve::spritestack::slicePrimitiveToLayers</a></div><div class="ttdeci">std::vector&lt; image::ImageData * &gt; slicePrimitiveToLayers(const std::string &amp;kind, const SliceOptions &amp;opt)</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00374">SpriteStack.cpp:374</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1spritestack_html_aa017dc6986c6817867e9dfb0c0b6d917"><div class="ttname"><a href="namespaceeve_1_1spritestack.html#aa017dc6986c6817867e9dfb0c0b6d917">eve::spritestack::sliceModelToLayers</a></div><div class="ttdeci">std::vector&lt; image::ImageData * &gt; sliceModelToLayers(model3d::ModelData *model, const SliceOptions &amp;opt)</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8cpp_source.html#l00335">SpriteStack.cpp:335</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack_1_1SliceOptions_html_a11527a2f5a4caeffec45acfcf1fca7ed"><div class="ttname"><a href="structeve_1_1spritestack_1_1SliceOptions.html#a11527a2f5a4caeffec45acfcf1fca7ed">eve::spritestack::SliceOptions::layerCount</a></div><div class="ttdeci">int layerCount</div><div class="ttdef"><b>Definition</b> <a href="SpriteStack_8h_source.html#l00031">SpriteStack.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_a19cd7a2a902afd820aef098c8b99715b"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#a19cd7a2a902afd820aef098c8b99715b">eve::spritestack_editing::SpriteStackAssetValue::displayHeight</a></div><div class="ttdeci">float displayHeight</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00061">SpriteStackTarget.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_a3eb4a1ba4cd3eadde9e97a4ec59500f3"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#a3eb4a1ba4cd3eadde9e97a4ec59500f3">eve::spritestack_editing::SpriteStackAssetValue::bake</a></div><div class="ttdeci">spritestack::SliceOptions bake</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00059">SpriteStackTarget.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_a918168bb777b4d92a21080c7afd77ab8"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#a918168bb777b4d92a21080c7afd77ab8">eve::spritestack_editing::SpriteStackAssetValue::displayWidth</a></div><div class="ttdeci">float displayWidth</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00060">SpriteStackTarget.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_aa4d7e01f3586cfdd216e1543a3538ba3"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#aa4d7e01f3586cfdd216e1543a3538ba3">eve::spritestack_editing::SpriteStackAssetValue::shadow</a></div><div class="ttdeci">bool shadow</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00063">SpriteStackTarget.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_ac59fa0374bc95f4fa735c6b0d8e3aa50"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#ac59fa0374bc95f4fa735c6b0d8e3aa50">eve::spritestack_editing::SpriteStackAssetValue::source</a></div><div class="ttdeci">std::string source</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00058">SpriteStackTarget.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_ade9d052614d834f15da39827e95ced00"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#ade9d052614d834f15da39827e95ced00">eve::spritestack_editing::SpriteStackAssetValue::layerOffset</a></div><div class="ttdeci">float layerOffset</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00062">SpriteStackTarget.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_ae078933bc8a1c17163c79159563cd026"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#ae078933bc8a1c17163c79159563cd026">eve::spritestack_editing::SpriteStackAssetValue::shadowOpacity</a></div><div class="ttdeci">float shadowOpacity</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00064">SpriteStackTarget.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_afaef1a64db1e00fe50d5f9de5466df11"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#afaef1a64db1e00fe50d5f9de5466df11">eve::spritestack_editing::SpriteStackAssetValue::sourceKind</a></div><div class="ttdeci">std::string sourceKind</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00057">SpriteStackTarget.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackAssetValue_html_aff065508e6e410cd56ff6d782e280820"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackAssetValue.html#aff065508e6e410cd56ff6d782e280820">eve::spritestack_editing::SpriteStackAssetValue::outlineWidth</a></div><div class="ttdeci">float outlineWidth</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00065">SpriteStackTarget.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1spritestack__editing_1_1SpriteStackLayerArtifact_html"><div class="ttname"><a href="structeve_1_1spritestack__editing_1_1SpriteStackLayerArtifact.html">eve::spritestack_editing::SpriteStackLayerArtifact</a></div><div class="ttdoc">Metadata for one immutable baked layer.</div><div class="ttdef"><b>Definition</b> <a href="SpriteStackTarget_8h_source.html#l00110">SpriteStackTarget.h:110</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

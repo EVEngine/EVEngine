@@ -1,0 +1,223 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveMixingCorrosion.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CaveMixingCorrosion.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CaveMixingCorrosion_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="CaveHydrology_8h.html">procgen/algorithms/CaveHydrology.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingSite.html">   11</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveMixingSite.html">CaveMixingSite</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingSite.html#a9b3616394511228eaa47bf32ba85cbc0">   12</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveMixingSite.html#a9b3616394511228eaa47bf32ba85cbc0">center</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingSite.html#a965afa7e29b8d18705eeb1664e1d16dc">   13</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveMixingSite.html#a965afa7e29b8d18705eeb1664e1d16dc">tangent</a>{1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingSite.html#a002184cdb5aa77ea0231692b0bf55f30">   14</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveMixingSite.html#a002184cdb5aa77ea0231692b0bf55f30">alongRadius</a>     = 0.2f;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingSite.html#ab886f02983b3b42fe00d69380e834c08">   15</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveMixingSite.html#ab886f02983b3b42fe00d69380e834c08">radialRadius</a>    = 0.1f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingSite.html#a81119749e34e4ab3b7f5fee3e62f1653">   16</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveMixingSite.html#a81119749e34e4ab3b7f5fee3e62f1653">mixingPotential</a> = 0.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html">CaveMixingCorrosionSample</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a35dc6a5848f97499a83f02eb4a7ffec0">   21</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a35dc6a5848f97499a83f02eb4a7ffec0">erosion</a>         = 0.f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a8ceae57380c5ae7e3c1a45b5c986e1e1">   22</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a8ceae57380c5ae7e3c1a45b5c986e1e1">mixingPotential</a> = 0.f;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a37c7f5c8e634538ba0e3e069ee09a022">   23</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a37c7f5c8e634538ba0e3e069ee09a022">siteIndex</a>       = -1;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>[[nodiscard]] std::vector&lt;CaveMixingSite&gt; <a class="code hl_function" href="namespaceeve_1_1procgen.html#a527807a9182d0e4c1360104c79f4970d">createCaveMixingSites</a>(<span class="keyword">const</span> std::vector&lt;CaveHydrologyPoint&gt;&amp;  trunk,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                                                                <span class="keyword">const</span> std::vector&lt;CaveHydrologyBranch&gt;&amp; branches,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                                                uint32_t                                <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>[[nodiscard]] <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html">CaveMixingCorrosionSample</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#ac5cba217a2b53fe00932dba24e8bf477">sampleCaveMixingCorrosion</a>(<a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a>                  <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                                                  <span class="keyword">const</span> std::vector&lt;CaveMixingSite&gt;&amp; sites);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCaveHydrology_8h_html"><div class="ttname"><a href="CaveHydrology_8h.html">CaveHydrology.h</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="aRTSSystems_8cpp_html_a8daa8a8d84a130186d9cca31c33e8bae"><div class="ttname"><a href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a></div><div class="ttdeci">WorldPosition point</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8cpp_source.html#l00080">RTSSystems.cpp:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a527807a9182d0e4c1360104c79f4970d"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a527807a9182d0e4c1360104c79f4970d">eve::procgen::createCaveMixingSites</a></div><div class="ttdeci">std::vector&lt; CaveMixingSite &gt; createCaveMixingSites(const std::vector&lt; CaveHydrologyPoint &gt; &amp;trunk, const std::vector&lt; CaveHydrologyBranch &gt; &amp;branches, uint32_t seed)</div><div class="ttdoc">Derive mixing sites from authoritative branch anchors in a cave hydrology network.</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8cpp_source.html#l00034">CaveMixingCorrosion.cpp:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ac5cba217a2b53fe00932dba24e8bf477"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ac5cba217a2b53fe00932dba24e8bf477">eve::procgen::sampleCaveMixingCorrosion</a></div><div class="ttdeci">CaveMixingCorrosionSample sampleCaveMixingCorrosion(CaveHydrologyVec3 point, const std::vector&lt; CaveMixingSite &gt; &amp;sites)</div><div class="ttdoc">Sample localized shell retreat around branch-to-trunk mixing sites.</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8cpp_source.html#l00060">CaveMixingCorrosion.cpp:60</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">eve::procgen::CaveHydrologyVec3</a></div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00008">CaveHydrology.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingCorrosionSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html">eve::procgen::CaveMixingCorrosionSample</a></div><div class="ttdoc">Local corrosion strength and the contributing mixing-water potential.</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00020">CaveMixingCorrosion.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingCorrosionSample_html_a35dc6a5848f97499a83f02eb4a7ffec0"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a35dc6a5848f97499a83f02eb4a7ffec0">eve::procgen::CaveMixingCorrosionSample::erosion</a></div><div class="ttdeci">float erosion</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00021">CaveMixingCorrosion.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingCorrosionSample_html_a37c7f5c8e634538ba0e3e069ee09a022"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a37c7f5c8e634538ba0e3e069ee09a022">eve::procgen::CaveMixingCorrosionSample::siteIndex</a></div><div class="ttdeci">int siteIndex</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00023">CaveMixingCorrosion.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingCorrosionSample_html_a8ceae57380c5ae7e3c1a45b5c986e1e1"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingCorrosionSample.html#a8ceae57380c5ae7e3c1a45b5c986e1e1">eve::procgen::CaveMixingCorrosionSample::mixingPotential</a></div><div class="ttdeci">float mixingPotential</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00022">CaveMixingCorrosion.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingSite_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingSite.html">eve::procgen::CaveMixingSite</a></div><div class="ttdoc">One chemistry-weighted branch-to-trunk mixing site.</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00011">CaveMixingCorrosion.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingSite_html_a002184cdb5aa77ea0231692b0bf55f30"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingSite.html#a002184cdb5aa77ea0231692b0bf55f30">eve::procgen::CaveMixingSite::alongRadius</a></div><div class="ttdeci">float alongRadius</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00014">CaveMixingCorrosion.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingSite_html_a81119749e34e4ab3b7f5fee3e62f1653"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingSite.html#a81119749e34e4ab3b7f5fee3e62f1653">eve::procgen::CaveMixingSite::mixingPotential</a></div><div class="ttdeci">float mixingPotential</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00016">CaveMixingCorrosion.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingSite_html_a965afa7e29b8d18705eeb1664e1d16dc"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingSite.html#a965afa7e29b8d18705eeb1664e1d16dc">eve::procgen::CaveMixingSite::tangent</a></div><div class="ttdeci">CaveHydrologyVec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00013">CaveMixingCorrosion.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingSite_html_a9b3616394511228eaa47bf32ba85cbc0"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingSite.html#a9b3616394511228eaa47bf32ba85cbc0">eve::procgen::CaveMixingSite::center</a></div><div class="ttdeci">CaveHydrologyVec3 center</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00012">CaveMixingCorrosion.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveMixingSite_html_ab886f02983b3b42fe00d69380e834c08"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveMixingSite.html#ab886f02983b3b42fe00d69380e834c08">eve::procgen::CaveMixingSite::radialRadius</a></div><div class="ttdeci">float radialRadius</div><div class="ttdef"><b>Definition</b> <a href="CaveMixingCorrosion_8h_source.html#l00015">CaveMixingCorrosion.h:15</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

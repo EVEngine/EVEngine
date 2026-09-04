@@ -1,0 +1,280 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics_editing/OffscreenPreview.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bec1d61ef4d3f3e5b72ec5c990556f7.html">graphics_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">OffscreenPreview.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="OffscreenPreview_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProtocol_8h.html">editing/EditingProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>Canvas;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span>ICanvasFactory;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>ICanvasTarget;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1image.html">eve::image</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">ImageData</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics__editing.html">eve::graphics_editing</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics__editing.html#a616fb49dc45ec7404d7a889aa449f9ba">   22</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a>; <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">editing::StableId</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics__editing.html#a159d92d96c15e94289aa14b0ab6fe0b5">   23</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1graphics__editing.html#a159d92d96c15e94289aa14b0ab6fe0b5">Revision</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a>; <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics__editing.html#a8761c5a999abf4adb3dfbca4c0943df8">   24</a></span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;<span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult</a>=<a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;T&gt;</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html">OffscreenPreviewRequest</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#adfa8a25bf0dbd747064b94406d61c290">   28</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a> <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#adfa8a25bf0dbd747064b94406d61c290">previewId</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#a148fc7389dac89e5d180b351680397d4">   29</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics__editing.html#a159d92d96c15e94289aa14b0ab6fe0b5">Revision</a> <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#a148fc7389dac89e5d180b351680397d4">sourceRevision</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#a5b2a16adfa1d86b5c64285074b291f9e">   30</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#a5b2a16adfa1d86b5c64285074b291f9e">width</a> = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#ac818a57d6ab467595ee98a3f58e2b956">   31</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#ac818a57d6ab467595ee98a3f58e2b956">height</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#aab6e9753bffe7f8ae3dbe8dcff95f055">   32</a></span>    std::array&lt;double, 4&gt; <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#aab6e9753bffe7f8ae3dbe8dcff95f055">clearColor</a>{0.08, 0.08, 0.10, 1.0};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html">OffscreenPreviewArtifact</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#ab733a0a643a862c564e27a6486912d2b">   37</a></span>    std::string <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#ab733a0a643a862c564e27a6486912d2b">handle</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#aa25743ad8edde7722d080dcab8657a30">   38</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a> <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#aa25743ad8edde7722d080dcab8657a30">previewId</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#a8daeb6fd6624003e5d7aa9abc5ae9448">   39</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics__editing.html#a159d92d96c15e94289aa14b0ab6fe0b5">Revision</a> <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#a8daeb6fd6624003e5d7aa9abc5ae9448">sourceRevision</a> = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#ad37f39297ba270c020ba0efd222db5d6">   40</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#ad37f39297ba270c020ba0efd222db5d6">width</a> = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#abf5321dea971b84c812eec8b71bd80f9">   41</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#abf5321dea971b84c812eec8b71bd80f9">height</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">   45</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">GraphicsOffscreenPreviewService</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ae3de878859a26e612df00642b1f4ab92">   47</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ae3de878859a26e612df00642b1f4ab92">DrawCallback</a> = std::function&lt;EditorResult&lt;void&gt;(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>*, <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a>*)&gt;;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">GraphicsOffscreenPreviewService</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* graphics,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                                    <a class="code hl_class" href="classeve_1_1graphics_1_1ICanvasFactory.html">graphics::ICanvasFactory</a>* canvases,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                                    <a class="code hl_class" href="classeve_1_1graphics_1_1ICanvasTarget.html">graphics::ICanvasTarget</a>* targets);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#a79b801eb186a66244631557f8560e614">   52</a></span>    <a class="code hl_function" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#a79b801eb186a66244631557f8560e614">~GraphicsOffscreenPreviewService</a>();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ac591b36713106f6be3d947080e6da0c6">   53</a></span>    <a class="code hl_function" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ac591b36713106f6be3d947080e6da0c6">GraphicsOffscreenPreviewService</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">GraphicsOffscreenPreviewService</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ab1dbb512761b5f32c0cecaa2ad960a80">   54</a></span>    <a class="code hl_class" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">GraphicsOffscreenPreviewService</a>&amp; <a class="code hl_function" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ab1dbb512761b5f32c0cecaa2ad960a80">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">GraphicsOffscreenPreviewService</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;OffscreenPreviewArtifact&gt;</a> <a class="code hl_function" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#a8935acaffc9841ed48e79e0cc0b59834">render</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html">OffscreenPreviewRequest</a>&amp; request,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                                                  <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ae3de878859a26e612df00642b1f4ab92">DrawCallback</a>&amp; <a class="code hl_variable" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                                  <span class="keywordtype">int</span> maximumDimension = 4096,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                                  std::uint64_t maximumPixels = 16777216);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;const image::ImageData*&gt;</a> <a class="code hl_function" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#af44dc45ab4a31c53bccaa70d5a5f523f">image</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                                <a class="code hl_typedef" href="namespaceeve_1_1graphics__editing.html#a159d92d96c15e94289aa14b0ab6fe0b5">Revision</a> currentRevision) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_variable" href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">struct </span>Impl;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}  <span class="comment">// namespace eve::graphics_editing</span></div>
+<div class="ttc" id="aEditingProtocol_8h_html"><div class="ttname"><a href="EditingProtocol_8h.html">EditingProtocol.h</a></div></div>
+<div class="ttc" id="aGraphics_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00079">Graphics.cpp:79</a></div></div>
+<div class="ttc" id="aMeshVfxRenderBatch_8cpp_html_a90ba9e50cca44205ade0c723c61f20ad"><div class="ttname"><a href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a></div><div class="ttdeci">MeshVfxBatchedDraw draw</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8cpp_source.html#l00013">MeshVfxRenderBatch.cpp:13</a></div></div>
+<div class="ttc" id="aProcgen_8cpp_html_a9ec61e0d400a00436d584301088ae052"><div class="ttname"><a href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; void &gt;()&gt; release</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00074">Procgen.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ICanvasFactory_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ICanvasFactory.html">eve::graphics::ICanvasFactory</a></div><div class="ttdoc">Narrow offscreen-Canvas allocation boundary for tools and optional modules.</div><div class="ttdef"><b>Definition</b> <a href="ICanvasFactory_8h_source.html#l00008">ICanvasFactory.h:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ICanvasTarget_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ICanvasTarget.html">eve::graphics::ICanvasTarget</a></div><div class="ttdoc">Narrow render-target binding boundary for optional tooling modules.</div><div class="ttdef"><b>Definition</b> <a href="ICanvasTarget_8h_source.html#l00006">ICanvasTarget.h:6</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService_html"><div class="ttname"><a href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">eve::graphics_editing::GraphicsOffscreenPreviewService</a></div><div class="ttdoc">Concrete Graphics/Canvas preview bridge with revision-safe artifact storage.</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00045">OffscreenPreview.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService_html_a79b801eb186a66244631557f8560e614"><div class="ttname"><a href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#a79b801eb186a66244631557f8560e614">eve::graphics_editing::GraphicsOffscreenPreviewService::~GraphicsOffscreenPreviewService</a></div><div class="ttdeci">~GraphicsOffscreenPreviewService()</div></div>
+<div class="ttc" id="aclasseve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService_html_a8935acaffc9841ed48e79e0cc0b59834"><div class="ttname"><a href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#a8935acaffc9841ed48e79e0cc0b59834">eve::graphics_editing::GraphicsOffscreenPreviewService::render</a></div><div class="ttdeci">EditorResult&lt; OffscreenPreviewArtifact &gt; render(const OffscreenPreviewRequest &amp;request, const DrawCallback &amp;draw, int maximumDimension=4096, std::uint64_t maximumPixels=16777216)</div><div class="ttdoc">Clear, draw and read back one isolated offscreen Canvas.</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00045">OffscreenPreview.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService_html_ab1dbb512761b5f32c0cecaa2ad960a80"><div class="ttname"><a href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ab1dbb512761b5f32c0cecaa2ad960a80">eve::graphics_editing::GraphicsOffscreenPreviewService::operator=</a></div><div class="ttdeci">GraphicsOffscreenPreviewService &amp; operator=(const GraphicsOffscreenPreviewService &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService_html_ac591b36713106f6be3d947080e6da0c6"><div class="ttname"><a href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ac591b36713106f6be3d947080e6da0c6">eve::graphics_editing::GraphicsOffscreenPreviewService::GraphicsOffscreenPreviewService</a></div><div class="ttdeci">GraphicsOffscreenPreviewService(const GraphicsOffscreenPreviewService &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService_html_ae3de878859a26e612df00642b1f4ab92"><div class="ttname"><a href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#ae3de878859a26e612df00642b1f4ab92">eve::graphics_editing::GraphicsOffscreenPreviewService::DrawCallback</a></div><div class="ttdeci">std::function&lt; EditorResult&lt; void &gt;(graphics::Graphics *, graphics::Canvas *)&gt; DrawCallback</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00047">OffscreenPreview.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService_html_af44dc45ab4a31c53bccaa70d5a5f523f"><div class="ttname"><a href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html#af44dc45ab4a31c53bccaa70d5a5f523f">eve::graphics_editing::GraphicsOffscreenPreviewService::image</a></div><div class="ttdeci">EditorResult&lt; const image::ImageData * &gt; image(const std::string &amp;handle, Revision currentRevision) const</div><div class="ttdoc">Borrow pixels only when the requested source revision still matches.</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00104">OffscreenPreview.cpp:104</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">eve::artifact::PartKind::ImageData</a></div><div class="ttdeci">@ ImageData</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a60962f18b15404d7942fbae13fd833be"><div class="ttname"><a href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">eve::editing::StableId</a></div><div class="ttdeci">StrongId&lt; StableIdTag &gt; StableId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00061">EditingIds.h:61</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics__editing_html"><div class="ttname"><a href="namespaceeve_1_1graphics__editing.html">eve::graphics_editing</a></div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00012">OffscreenPreview.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics__editing_html_a159d92d96c15e94289aa14b0ab6fe0b5"><div class="ttname"><a href="namespaceeve_1_1graphics__editing.html#a159d92d96c15e94289aa14b0ab6fe0b5">eve::graphics_editing::Revision</a></div><div class="ttdeci">editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00023">OffscreenPreview.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html"><div class="ttname"><a href="namespaceeve_1_1image.html">eve::image</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00023">AvatarInstance.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewArtifact_html"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html">eve::graphics_editing::OffscreenPreviewArtifact</a></div><div class="ttdoc">In-memory artifact metadata returned after synchronous readback.</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00036">OffscreenPreview.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewArtifact_html_a8daeb6fd6624003e5d7aa9abc5ae9448"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#a8daeb6fd6624003e5d7aa9abc5ae9448">eve::graphics_editing::OffscreenPreviewArtifact::sourceRevision</a></div><div class="ttdeci">Revision sourceRevision</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00039">OffscreenPreview.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewArtifact_html_aa25743ad8edde7722d080dcab8657a30"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#aa25743ad8edde7722d080dcab8657a30">eve::graphics_editing::OffscreenPreviewArtifact::previewId</a></div><div class="ttdeci">StableId previewId</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00038">OffscreenPreview.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewArtifact_html_ab733a0a643a862c564e27a6486912d2b"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#ab733a0a643a862c564e27a6486912d2b">eve::graphics_editing::OffscreenPreviewArtifact::handle</a></div><div class="ttdeci">std::string handle</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00037">OffscreenPreview.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewArtifact_html_abf5321dea971b84c812eec8b71bd80f9"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#abf5321dea971b84c812eec8b71bd80f9">eve::graphics_editing::OffscreenPreviewArtifact::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00041">OffscreenPreview.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewArtifact_html_ad37f39297ba270c020ba0efd222db5d6"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewArtifact.html#ad37f39297ba270c020ba0efd222db5d6">eve::graphics_editing::OffscreenPreviewArtifact::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00040">OffscreenPreview.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewRequest_html"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html">eve::graphics_editing::OffscreenPreviewRequest</a></div><div class="ttdoc">Immutable request for one isolated Canvas render and CPU readback.</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00027">OffscreenPreview.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewRequest_html_a148fc7389dac89e5d180b351680397d4"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#a148fc7389dac89e5d180b351680397d4">eve::graphics_editing::OffscreenPreviewRequest::sourceRevision</a></div><div class="ttdeci">Revision sourceRevision</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00029">OffscreenPreview.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewRequest_html_a5b2a16adfa1d86b5c64285074b291f9e"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#a5b2a16adfa1d86b5c64285074b291f9e">eve::graphics_editing::OffscreenPreviewRequest::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00030">OffscreenPreview.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewRequest_html_aab6e9753bffe7f8ae3dbe8dcff95f055"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#aab6e9753bffe7f8ae3dbe8dcff95f055">eve::graphics_editing::OffscreenPreviewRequest::clearColor</a></div><div class="ttdeci">std::array&lt; double, 4 &gt; clearColor</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00032">OffscreenPreview.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewRequest_html_ac818a57d6ab467595ee98a3f58e2b956"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#ac818a57d6ab467595ee98a3f58e2b956">eve::graphics_editing::OffscreenPreviewRequest::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00031">OffscreenPreview.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics__editing_1_1OffscreenPreviewRequest_html_adfa8a25bf0dbd747064b94406d61c290"><div class="ttname"><a href="structeve_1_1graphics__editing_1_1OffscreenPreviewRequest.html#adfa8a25bf0dbd747064b94406d61c290">eve::graphics_editing::OffscreenPreviewRequest::previewId</a></div><div class="ttdeci">StableId previewId</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00028">OffscreenPreview.h:28</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

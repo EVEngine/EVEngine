@@ -1,0 +1,785 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::ActionTimelineWidget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html">ActionTimelineWidget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1ActionTimelineWidget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::ActionTimelineWidget类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Interactive timeline adapter shared by developer and in-game editor hosts.  
+ <a href="classeve_1_1editor_1_1ActionTimelineWidget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ActionTimelineWidget_8h_source.html">ActionTimelineWidget.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6a0bf3a5643b7c88433b1b070b70f351" id="r_a6a0bf3a5643b7c88433b1b070b70f351"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a6a0bf3a5643b7c88433b1b070b70f351">ActionTimelineWidget</a> (<a class="el" href="classeve_1_1editor_1_1ActionTimelineEditor.html">ActionTimelineEditor</a> &amp;editor, const <a class="el" href="classeve_1_1action_1_1ActionNotifyRegistry.html">action::ActionNotifyRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a6a0bf3a5643b7c88433b1b070b70f351"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a widget over authoritative editor and notify services.  <br /></td></tr>
+<tr class="separator:a6a0bf3a5643b7c88433b1b070b70f351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a013ba8e7f8aee9faa51deeac765f0110" id="r_a013ba8e7f8aee9faa51deeac765f0110"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a013ba8e7f8aee9faa51deeac765f0110">setViewport</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float rowHeight, float labelWidth=120.0f)</td></tr>
+<tr class="memdesc:a013ba8e7f8aee9faa51deeac765f0110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure host-space dimensions used for layout and hit testing.  <br /></td></tr>
+<tr class="separator:a013ba8e7f8aee9faa51deeac765f0110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b899ad6bd85e79e650f92ca3ec944b0" id="r_a5b899ad6bd85e79e650f92ca3ec944b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editor_1_1TimelineWidgetLayout.html">TimelineWidgetLayout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a5b899ad6bd85e79e650f92ca3ec944b0">layout</a> () const</td></tr>
+<tr class="memdesc:a5b899ad6bd85e79e650f92ca3ec944b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project the current authoritative timeline plus any active drag preview.  <br /></td></tr>
+<tr class="separator:a5b899ad6bd85e79e650f92ca3ec944b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e75982f1312bac4220beea15a51a02d" id="r_a4e75982f1312bac4220beea15a51a02d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a4e75982f1312bac4220beea15a51a02d">draw</a> (<a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;overlay) const</td></tr>
+<tr class="memdesc:a4e75982f1312bac4220beea15a51a02d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit rows, items, handles and playhead to an arbitrary overlay host.  <br /></td></tr>
+<tr class="separator:a4e75982f1312bac4220beea15a51a02d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d2de563834e4beeae9d0456c381d54f" id="r_a1d2de563834e4beeae9d0456c381d54f"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1editor_1_1TimelineHit.html">TimelineHit</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a1d2de563834e4beeae9d0456c381d54f">hitTest</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const</td></tr>
+<tr class="memdesc:a1d2de563834e4beeae9d0456c381d54f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hit-test projected item bodies and state handles.  <br /></td></tr>
+<tr class="separator:a1d2de563834e4beeae9d0456c381d54f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe0fe4ec03b7d0fe9ff690c9c3debd6b" id="r_afe0fe4ec03b7d0fe9ff690c9c3debd6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#afe0fe4ec03b7d0fe9ff690c9c3debd6b">pointerDown</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, bool additiveSelection=false)</td></tr>
+<tr class="memdesc:afe0fe4ec03b7d0fe9ff690c9c3debd6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select an item and begin a pointer drag.  <br /></td></tr>
+<tr class="separator:afe0fe4ec03b7d0fe9ff690c9c3debd6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78d7eb42c6dbbbbd968d4867f4281340" id="r_a78d7eb42c6dbbbbd968d4867f4281340"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a78d7eb42c6dbbbbd968d4867f4281340">pointerMove</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="memdesc:a78d7eb42c6dbbbbd968d4867f4281340"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the non-authoritative drag preview.  <br /></td></tr>
+<tr class="separator:a78d7eb42c6dbbbbd968d4867f4281340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4716a1363f979b4741ca11cc12c63d3f" id="r_a4716a1363f979b4741ca11cc12c63d3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a4716a1363f979b4741ca11cc12c63d3f">pointerUp</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="memdesc:a4716a1363f979b4741ca11cc12c63d3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit the active drag as one undoable edit.  <br /></td></tr>
+<tr class="separator:a4716a1363f979b4741ca11cc12c63d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b671435b72823e9050fefeed55dd576" id="r_a8b671435b72823e9050fefeed55dd576"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a8b671435b72823e9050fefeed55dd576">cancelPointer</a> () noexcept</td></tr>
+<tr class="memdesc:a8b671435b72823e9050fefeed55dd576"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel a drag without mutating the timeline.  <br /></td></tr>
+<tr class="separator:a8b671435b72823e9050fefeed55dd576"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c392b19d1db986561aa35b95505e7e" id="r_a13c392b19d1db986561aa35b95505e7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#af1c803448f9267e3b1382236c9beb382">TimelineDragStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a13c392b19d1db986561aa35b95505e7e">dragStatus</a> () const noexcept</td></tr>
+<tr class="memdesc:a13c392b19d1db986561aa35b95505e7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current pointer-drag lifecycle state.  <br /></td></tr>
+<tr class="separator:a13c392b19d1db986561aa35b95505e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad254c01831217fded2611f3be3dd5040" id="r_ad254c01831217fded2611f3be3dd5040"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#ad254c01831217fded2611f3be3dd5040">seek</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</td></tr>
+<tr class="memdesc:ad254c01831217fded2611f3be3dd5040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seek the editor preview cursor from a host-space coordinate.  <br /></td></tr>
+<tr class="separator:ad254c01831217fded2611f3be3dd5040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47efb77efbfbdb6a3f13d66b925de47f" id="r_a47efb77efbfbdb6a3f13d66b925de47f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a47efb77efbfbdb6a3f13d66b925de47f">inspectSelection</a> (<a class="el" href="classeve_1_1editor_1_1IEditorInspector.html">IEditorInspector</a> &amp;inspector)</td></tr>
+<tr class="memdesc:a47efb77efbfbdb6a3f13d66b925de47f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Present and apply selected item timing, type and JSON payload fields.  <br /></td></tr>
+<tr class="separator:a47efb77efbfbdb6a3f13d66b925de47f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afff7019fb69ffe40650e44a99f1b6661" id="r_afff7019fb69ffe40650e44a99f1b6661"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1TimelineWidgetCommandDescriptor.html">TimelineWidgetCommandDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#afff7019fb69ffe40650e44a99f1b6661">commands</a> () const</td></tr>
+<tr class="memdesc:afff7019fb69ffe40650e44a99f1b6661"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return standard menu entries with current enabled state.  <br /></td></tr>
+<tr class="separator:afff7019fb69ffe40650e44a99f1b6661"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af187fec807bf7032c26ee3e7d366c6e5" id="r_af187fec807bf7032c26ee3e7d366c6e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#af187fec807bf7032c26ee3e7d366c6e5">invoke</a> (<a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ff">TimelineWidgetCommand</a> command)</td></tr>
+<tr class="memdesc:af187fec807bf7032c26ee3e7d366c6e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a standard menu command.  <br /></td></tr>
+<tr class="separator:af187fec807bf7032c26ee3e7d366c6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47ca35eec5ebf366c9b429bf91a01aca" id="r_a47ca35eec5ebf366c9b429bf91a01aca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a47ca35eec5ebf366c9b429bf91a01aca">handleShortcut</a> (std::string_view shortcut)</td></tr>
+<tr class="memdesc:a47ca35eec5ebf366c9b429bf91a01aca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a normalized shortcut such as Ctrl+C, Delete or Space.  <br /></td></tr>
+<tr class="separator:a47ca35eec5ebf366c9b429bf91a01aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae82666b9fe8d1a07ac737f0bc161c7ff" id="r_ae82666b9fe8d1a07ac737f0bc161c7ff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1action_1_1ActionNotifyDescriptor.html">action::ActionNotifyDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#ae82666b9fe8d1a07ac737f0bc161c7ff">insertableTypes</a> (<a class="el" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">action::ActionNotifyShape</a> shape) const</td></tr>
+<tr class="memdesc:ae82666b9fe8d1a07ac737f0bc161c7ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notify types suitable for an instant or state insertion picker.  <br /></td></tr>
+<tr class="separator:ae82666b9fe8d1a07ac737f0bc161c7ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f08e86aca116cace96a2b872a273f0" id="r_ab0f08e86aca116cace96a2b872a273f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#ab0f08e86aca116cace96a2b872a273f0">addNotifyAtCursor</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#a796271009cb4b679640c5ea4ecf8f6c8">trackId</a>, std::string_view <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> <a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)</td></tr>
+<tr class="memdesc:ab0f08e86aca116cace96a2b872a273f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a validated instant notify at the preview cursor.  <br /></td></tr>
+<tr class="separator:ab0f08e86aca116cace96a2b872a273f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d646b96969129babca630df5fe394f3" id="r_a5d646b96969129babca630df5fe394f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionTimelineWidget.html#a5d646b96969129babca630df5fe394f3">addStateAtCursor</a> (const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#a796271009cb4b679640c5ea4ecf8f6c8">trackId</a>, std::string_view <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>, <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> <a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)</td></tr>
+<tr class="memdesc:a5d646b96969129babca630df5fe394f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a validated notify state beginning at the preview cursor.  <br /></td></tr>
+<tr class="separator:a5d646b96969129babca630df5fe394f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Interactive timeline adapter shared by developer and in-game editor hosts. </p>
+<p>The widget borrows an editor and notify registry that must outlive it. Pointer drags mutate only widget preview state until pointerUp commits exactly one undoable domain transaction. All methods are owner-thread-only. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8h_source.html">ActionTimelineWidget.h</a> 第 <a class="el" href="ActionTimelineWidget_8h_source.html#l00067">67</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6a0bf3a5643b7c88433b1b070b70f351" name="a6a0bf3a5643b7c88433b1b070b70f351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a0bf3a5643b7c88433b1b070b70f351">&#9670;&#160;</a></span>ActionTimelineWidget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::ActionTimelineWidget::ActionTimelineWidget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1ActionTimelineEditor.html">ActionTimelineEditor</a> &amp;&#160;</td>
+          <td class="paramname"><em>editor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1action_1_1ActionNotifyRegistry.html">action::ActionNotifyRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a widget over authoritative editor and notify services. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab0f08e86aca116cace96a2b872a273f0" name="ab0f08e86aca116cace96a2b872a273f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0f08e86aca116cace96a2b872a273f0">&#9670;&#160;</a></span>addNotifyAtCursor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::addNotifyAtCursor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>trackId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert a validated instant notify at the preview cursor. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00393">eve::editor::ActionTimelineEditor::addNotify()</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7">eve::action::Notify</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00181">eve::editor::ActionTimelineEditor::previewTime()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00019">trackId</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00092">eve::action::ActionNotifyRegistry::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a5d646b96969129babca630df5fe394f3" name="a5d646b96969129babca630df5fe394f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d646b96969129babca630df5fe394f3">&#9670;&#160;</a></span>addStateAtCursor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::addStateAtCursor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &amp;&#160;</td>
+          <td class="paramname"><em>trackId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>duration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert a validated notify state beginning at the preview cursor. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00403">eve::editor::ActionTimelineEditor::addState()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00106">eve::action::ActionTimeline::duration</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00181">eve::editor::ActionTimelineEditor::previewTime()</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">eve::action::StateEnter</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00119">eve::editor::ActionTimelineEditor::target()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00073">eve::editor::ActionTimelineTarget::timeline()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00019">trackId</a>, <a class="el" href="Time_8cpp_source.html#l00030">eve::Duration::tryAdd()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00092">eve::action::ActionNotifyRegistry::validate()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a8b671435b72823e9050fefeed55dd576" name="a8b671435b72823e9050fefeed55dd576"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b671435b72823e9050fefeed55dd576">&#9670;&#160;</a></span>cancelPointer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ActionTimelineWidget::cancelPointer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cancel a drag without mutating the timeline. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8h_source.html">ActionTimelineWidget.h</a> 第 <a class="el" href="ActionTimelineWidget_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afff7019fb69ffe40650e44a99f1b6661" name="afff7019fb69ffe40650e44a99f1b6661"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afff7019fb69ffe40650e44a99f1b6661">&#9670;&#160;</a></span>commands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1TimelineWidgetCommandDescriptor.html">TimelineWidgetCommandDescriptor</a> &gt; eve::editor::ActionTimelineWidget::commands </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return standard menu entries with current enabled state. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineEditor_8h_source.html#l00166">eve::editor::ActionTimelineEditor::canRedo()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00164">eve::editor::ActionTimelineEditor::canUndo()</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa5fb63579fc981698f97d55bfecb213ea">eve::editor::Copy</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffaef062a4139c5c9f784bdd03c9025cb57">eve::editor::DeleteSelection</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa36bb6559696dc9124986ae120515984f">eve::editor::Paste</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00183">eve::editor::ActionTimelineEditor::playing()</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffad93ecae0ca93243198fca3ea70ba1b8a">eve::editor::PlayPause</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa5afeaba074ef570dc720caaa855d49f6">eve::editor::Redo</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00149">eve::editor::ActionTimelineEditor::selectionCount()</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa1cdc076b28f70afac5fcedadf99fa119">eve::editor::Undo</a>.</p>
+
+</div>
+</div>
+<a id="a13c392b19d1db986561aa35b95505e7e" name="a13c392b19d1db986561aa35b95505e7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13c392b19d1db986561aa35b95505e7e">&#9670;&#160;</a></span>dragStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#af1c803448f9267e3b1382236c9beb382">TimelineDragStatus</a> eve::editor::ActionTimelineWidget::dragStatus </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current pointer-drag lifecycle state. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8h_source.html">ActionTimelineWidget.h</a> 第 <a class="el" href="ActionTimelineWidget_8h_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#af1c803448f9267e3b1382236c9beb382a4d3d769b812b6faa6b76e1a8abaece2d">eve::editor::Active</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#af1c803448f9267e3b1382236c9beb382ae599161956d626eda4cb0a5ffb85271c">eve::editor::Idle</a>.</p>
+
+</div>
+</div>
+<a id="a4e75982f1312bac4220beea15a51a02d" name="a4e75982f1312bac4220beea15a51a02d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e75982f1312bac4220beea15a51a02d">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ActionTimelineWidget::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;&#160;</td>
+          <td class="paramname"><em>overlay</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Emit rows, items, handles and playhead to an arbitrary overlay host. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="ActionTimelineWidget_8h_source.html#l00046">eve::editor::TimelineWidgetLayout::items</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00082">layout()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html#aaaa83da59f32b2b311b1775a7038d932">eve::editor::IEditorOverlay::line()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00181">eve::editor::ActionTimelineEditor::previewTime()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html#ab98b9aad43e31bfcf325f6dfa4bcf535">eve::editor::IEditorOverlay::rectangle()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00119">eve::editor::ActionTimelineEditor::target()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html#a1198741f91915a44277040b712830866">eve::editor::IEditorOverlay::text()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00073">eve::editor::ActionTimelineTarget::timeline()</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>.</p>
+
+</div>
+</div>
+<a id="a47ca35eec5ebf366c9b429bf91a01aca" name="a47ca35eec5ebf366c9b429bf91a01aca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47ca35eec5ebf366c9b429bf91a01aca">&#9670;&#160;</a></span>handleShortcut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::handleShortcut </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>shortcut</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute a normalized shortcut such as Ctrl+C, Delete or Space. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa5fb63579fc981698f97d55bfecb213ea">eve::editor::Copy</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffaef062a4139c5c9f784bdd03c9025cb57">eve::editor::DeleteSelection</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00292">invoke()</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa36bb6559696dc9124986ae120515984f">eve::editor::Paste</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffad93ecae0ca93243198fca3ea70ba1b8a">eve::editor::PlayPause</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa5afeaba074ef570dc720caaa855d49f6">eve::editor::Redo</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa1cdc076b28f70afac5fcedadf99fa119">eve::editor::Undo</a>.</p>
+
+</div>
+</div>
+<a id="a1d2de563834e4beeae9d0456c381d54f" name="a1d2de563834e4beeae9d0456c381d54f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d2de563834e4beeae9d0456c381d54f">&#9670;&#160;</a></span>hitTest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1editor_1_1TimelineHit.html">TimelineHit</a> &gt; eve::editor::ActionTimelineWidget::hitTest </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hit-test projected item bodies and state handles. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#ae6e88b00248728aaa3008c5ea1707e32aac101b32dda4448cf13a93fe283dddd8">eve::editor::Body</a>, <a class="el" href="namespaceeve_1_1editor.html#ae6e88b00248728aaa3008c5ea1707e32a0de9cd94f38b1e26c14915a646ea1afd">eve::editor::EndHandle</a>, <a class="el" href="ActionTimelineWidget_8h_source.html#l00037">eve::editor::TimelineHit::itemId</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00082">layout()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00122">projected</a>, <a class="el" href="namespaceeve_1_1editor.html#ae6e88b00248728aaa3008c5ea1707e32a6e65b648631caa2dad96f8c3f50b4c5e">eve::editor::StartHandle</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00159">pointerDown()</a>.</p>
+
+</div>
+</div>
+<a id="ae82666b9fe8d1a07ac737f0bc161c7ff" name="ae82666b9fe8d1a07ac737f0bc161c7ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae82666b9fe8d1a07ac737f0bc161c7ff">&#9670;&#160;</a></span>insertableTypes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1action_1_1ActionNotifyDescriptor.html">action::ActionNotifyDescriptor</a> &gt; eve::editor::ActionTimelineWidget::insertableTypes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">action::ActionNotifyShape</a>&#160;</td>
+          <td class="paramname"><em>shape</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Notify types suitable for an instant or state insertion picker. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00085">eve::action::ActionNotifyRegistry::descriptors()</a>.</p>
+
+</div>
+</div>
+<a id="a47efb77efbfbdb6a3f13d66b925de47f" name="a47efb77efbfbdb6a3f13d66b925de47f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47efb77efbfbdb6a3f13d66b925de47f">&#9670;&#160;</a></span>inspectSelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::inspectSelection </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorInspector.html">IEditorInspector</a> &amp;&#160;</td>
+          <td class="paramname"><em>inspector</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Present and apply selected item timing, type and JSON payload fields. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html#aa870b363249bfba5bb37342335040fde">eve::editor::IEditorInspector::beginGroup()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00077">eve::action::ActionNotifyRegistry::descriptor()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="ActionTimeline_8h_source.html#l00106">eve::action::ActionTimeline::duration</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00479">eve::editor::ActionTimelineEditor::editItem()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html#a875b2189fc7eb6360595a7710577faf2">eve::editor::IEditorInspector::endGroup()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Time_8cpp_source.html#l00016">eve::Duration::fromSeconds()</a>, <a class="el" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2a54828f327f31abd59f2f459c0247756d">eve::action::Instant</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="EditingResult_8h_source.html#l00053">eve::editing::noOp()</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7">eve::action::Notify</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="Identity_8cpp_source.html#l00036">eve::LogicalId::parse()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html#ae366e5a3a2914eb20da8e33790896f4b">eve::editor::IEditorInspector::scalar()</a>, <a class="el" href="Time_8cpp_source.html#l00028">eve::Duration::seconds()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00572">eve::editor::ActionTimelineEditor::selectedItemIds()</a>, <a class="el" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2a46a2a41cc6e552044816a2d04634545d">eve::action::State</a>, <a class="el" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">eve::action::StateEnter</a>, <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html#aeb546fe1610195af4572c9746d008855">eve::editor::IEditorInspector::string()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00119">eve::editor::ActionTimelineEditor::target()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00073">eve::editor::ActionTimelineTarget::timeline()</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00087">eve::action::ActionTimelineEvent::trackId</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00092">eve::action::ActionNotifyRegistry::validate()</a> , 以及 <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="af187fec807bf7032c26ee3e7d366c6e5" name="af187fec807bf7032c26ee3e7d366c6e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af187fec807bf7032c26ee3e7d366c6e5">&#9670;&#160;</a></span>invoke()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::invoke </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ff">TimelineWidgetCommand</a>&#160;</td>
+          <td class="paramname"><em>command</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute a standard menu command. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa5fb63579fc981698f97d55bfecb213ea">eve::editor::Copy</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00582">eve::editor::ActionTimelineEditor::copySelection()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00651">eve::editor::ActionTimelineEditor::deleteSelection()</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffaef062a4139c5c9f784bdd03c9025cb57">eve::editor::DeleteSelection</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00599">eve::editor::ActionTimelineEditor::paste()</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa36bb6559696dc9124986ae120515984f">eve::editor::Paste</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00171">eve::editor::ActionTimelineEditor::pause()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00169">eve::editor::ActionTimelineEditor::play()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00183">eve::editor::ActionTimelineEditor::playing()</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffad93ecae0ca93243198fca3ea70ba1b8a">eve::editor::PlayPause</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00181">eve::editor::ActionTimelineEditor::previewTime()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00672">eve::editor::ActionTimelineEditor::redo()</a>, <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa5afeaba074ef570dc720caaa855d49f6">eve::editor::Redo</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00572">eve::editor::ActionTimelineEditor::selectedItemIds()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00119">eve::editor::ActionTimelineEditor::target()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00073">eve::editor::ActionTimelineTarget::timeline()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00670">eve::editor::ActionTimelineEditor::undo()</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#a25cfe7055c10eb8f437cd13e03e329ffa1cdc076b28f70afac5fcedadf99fa119">eve::editor::Undo</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00335">handleShortcut()</a>.</p>
+
+</div>
+</div>
+<a id="a5b899ad6bd85e79e650f92ca3ec944b0" name="a5b899ad6bd85e79e650f92ca3ec944b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b899ad6bd85e79e650f92ca3ec944b0">&#9670;&#160;</a></span>layout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editor_1_1TimelineWidgetLayout.html">TimelineWidgetLayout</a> eve::editor::ActionTimelineWidget::layout </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project the current authoritative timeline plus any active drag preview. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="ActionTimelineWidget_8h_source.html#l00044">eve::editor::TimelineWidgetLayout::height</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="ActionTimelineWidget_8h_source.html#l00046">eve::editor::TimelineWidgetLayout::items</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00239">minimum</a>, <a class="el" href="ActionTimelineWidget_8h_source.html#l00045">eve::editor::TimelineWidgetLayout::playheadX</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00181">eve::editor::ActionTimelineEditor::previewTime()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00572">eve::editor::ActionTimelineEditor::selectedItemIds()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00119">eve::editor::ActionTimelineEditor::target()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00073">eve::editor::ActionTimelineTarget::timeline()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="ActionTimeline_8h_source.html#l00108">eve::action::ActionTimeline::tracks</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00035">tracks</a> , 以及 <a class="el" href="ActionTimelineWidget_8h_source.html#l00043">eve::editor::TimelineWidgetLayout::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00118">draw()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00144">hitTest()</a>.</p>
+
+</div>
+</div>
+<a id="afe0fe4ec03b7d0fe9ff690c9c3debd6b" name="afe0fe4ec03b7d0fe9ff690c9c3debd6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe0fe4ec03b7d0fe9ff690c9c3debd6b">&#9670;&#160;</a></span>pointerDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::pointerDown </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>additiveSelection</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select an item and begin a pointer drag. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineEditor_8h_source.html#l00145">eve::editor::ActionTimelineEditor::clearSelection()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00144">hitTest()</a>, <a class="el" href="EditingResult_8h_source.html#l00053">eve::editing::noOp()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00558">eve::editor::ActionTimelineEditor::selectItem()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00119">eve::editor::ActionTimelineEditor::target()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00073">eve::editor::ActionTimelineTarget::timeline()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a78d7eb42c6dbbbbd968d4867f4281340" name="a78d7eb42c6dbbbbd968d4867f4281340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d7eb42c6dbbbbd968d4867f4281340">&#9670;&#160;</a></span>pointerMove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::pointerMove </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the non-authoritative drag preview. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a4716a1363f979b4741ca11cc12c63d3f" name="a4716a1363f979b4741ca11cc12c63d3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4716a1363f979b4741ca11cc12c63d3f">&#9670;&#160;</a></span>pointerUp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::pointerUp </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Commit the active drag as one undoable edit. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#ae6e88b00248728aaa3008c5ea1707e32aac101b32dda4448cf13a93fe283dddd8">eve::editor::Body</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00413">eve::editor::ActionTimelineEditor::moveItem()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00440">eve::editor::ActionTimelineEditor::resizeState()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00053">updated</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="ad254c01831217fded2611f3be3dd5040" name="ad254c01831217fded2611f3be3dd5040"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad254c01831217fded2611f3be3dd5040">&#9670;&#160;</a></span>seek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::seek </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Seek the editor preview cursor from a host-space coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00674">eve::editor::ActionTimelineEditor::seek()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a013ba8e7f8aee9faa51deeac765f0110" name="a013ba8e7f8aee9faa51deeac765f0110"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a013ba8e7f8aee9faa51deeac765f0110">&#9670;&#160;</a></span>setViewport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionTimelineWidget::setViewport </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rowHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>labelWidth</em> = <code>120.0f</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure host-space dimensions used for layout and hit testing. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a> 第 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/action_editor/<a class="el" href="ActionTimelineWidget_8h_source.html">ActionTimelineWidget.h</a></li>
+<li>src/modules/action_editor/<a class="el" href="ActionTimelineWidget_8cpp_source.html">ActionTimelineWidget.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/GameplayTagPicker.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GameplayTagPicker.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GameplayTagPicker_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="GameplayTag_8h.html">tags/GameplayTag.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html">   14</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html">GameplayTagPickerEntry</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a9c7b03e22e39d126498bf310b1ed33ea">   15</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">tags::GameplayTagId</a> <a class="code hl_variable" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a9c7b03e22e39d126498bf310b1ed33ea">id</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a833b52d29d02c273e8086ec937de1d56">   16</a></span>    std::string         <a class="code hl_variable" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a833b52d29d02c273e8086ec937de1d56">name</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a969e30e6f8e1dde579cf500db3b942ec">   17</a></span>    std::string         <a class="code hl_variable" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a969e30e6f8e1dde579cf500db3b942ec">description</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a2a4deef47818704d241b5463262cf8f9">   18</a></span>    std::size_t         <a class="code hl_variable" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a2a4deef47818704d241b5463262cf8f9">depth</a>       = 0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#aba30b9bb2e4f83ce3af8190219e27879">   19</a></span>    <span class="keywordtype">bool</span>                <a class="code hl_variable" href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#aba30b9bb2e4f83ce3af8190219e27879">hasChildren</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1GameplayTagPicker.html">   29</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1GameplayTagPicker.html">GameplayTagPicker</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1GameplayTagPicker.html#ad65faef9728812a15bcb41b7ed1109cb">   32</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1editor_1_1GameplayTagPicker.html#ad65faef9728812a15bcb41b7ed1109cb">GameplayTagPicker</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tags_1_1GameplayTagRegistry.html">tags::GameplayTagRegistry</a>&amp; registry) : registry_(registry) {}</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1GameplayTagPicker.html#aec7d31272c2d2ed50e1d1f76b8ab0957">   35</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1GameplayTagPicker.html#aec7d31272c2d2ed50e1d1f76b8ab0957">setFilter</a>(std::string <a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>) { filter_ = std::move(<a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>); }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1GameplayTagPicker.html#a8b6e86a41b0410d3854a3faa0c91f70c">setRoot</a>(std::string <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1GameplayTagPicker.html#a244a74691ea6325bdf3d709385f91e91">select</a>(std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1GameplayTagPicker.html#a7720e37f8a915d9f3b566859e0476176">   41</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1GameplayTagPicker.html#a7720e37f8a915d9f3b566859e0476176">clearSelection</a>() { selected_.clear(); }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1GameplayTagPicker.html#a67fd637fc49825c57545ee6add7f54a2">   43</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1editor_1_1GameplayTagPicker.html#a67fd637fc49825c57545ee6add7f54a2">selected</a>() const noexcept { <span class="keywordflow">return</span> selected_; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard]] std::vector&lt;GameplayTagPickerEntry&gt; <a class="code hl_function" href="classeve_1_1editor_1_1GameplayTagPicker.html#ae4b1cb535d8d662d3e72ebab51a709be">entries</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tags_1_1GameplayTagRegistry.html">tags::GameplayTagRegistry</a>&amp; registry_;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    std::string                      filter_;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    std::string                      root_;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::string                      selected_;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>};</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aGameplayTag_8h_html"><div class="ttname"><a href="GameplayTag_8h.html">GameplayTag.h</a></div><div class="ttdoc">Stable hierarchical gameplay-tag definitions and registry.</div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_aee43da4e9117b04a03d47cfb325445d4"><div class="ttname"><a href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a></div><div class="ttdeci">Value root</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00039">GltfImporter.cpp:39</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a61e0e449fd7e8647d521cafd4f1d55a3"><div class="ttname"><a href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a></div><div class="ttdeci">std::string filter</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00184">SceneLoader.cpp:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; GameplayTagIdTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GameplayTagPicker_html"><div class="ttname"><a href="classeve_1_1editor_1_1GameplayTagPicker.html">eve::editor::GameplayTagPicker</a></div><div class="ttdoc">Searchable selection model shared by developer and in-game editors.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00029">GameplayTagPicker.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GameplayTagPicker_html_a244a74691ea6325bdf3d709385f91e91"><div class="ttname"><a href="classeve_1_1editor_1_1GameplayTagPicker.html#a244a74691ea6325bdf3d709385f91e91">eve::editor::GameplayTagPicker::select</a></div><div class="ttdeci">Result&lt; void &gt; select(std::string name)</div><div class="ttdoc">Select an exact registered definition.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8cpp_source.html#l00015">GameplayTagPicker.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GameplayTagPicker_html_a67fd637fc49825c57545ee6add7f54a2"><div class="ttname"><a href="classeve_1_1editor_1_1GameplayTagPicker.html#a67fd637fc49825c57545ee6add7f54a2">eve::editor::GameplayTagPicker::selected</a></div><div class="ttdeci">const std::string &amp; selected() const noexcept</div><div class="ttdoc">Return the selected canonical name, or empty.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00043">GameplayTagPicker.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GameplayTagPicker_html_a7720e37f8a915d9f3b566859e0476176"><div class="ttname"><a href="classeve_1_1editor_1_1GameplayTagPicker.html#a7720e37f8a915d9f3b566859e0476176">eve::editor::GameplayTagPicker::clearSelection</a></div><div class="ttdeci">void clearSelection()</div><div class="ttdoc">Clear the current selection.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00041">GameplayTagPicker.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GameplayTagPicker_html_a8b6e86a41b0410d3854a3faa0c91f70c"><div class="ttname"><a href="classeve_1_1editor_1_1GameplayTagPicker.html#a8b6e86a41b0410d3854a3faa0c91f70c">eve::editor::GameplayTagPicker::setRoot</a></div><div class="ttdeci">Result&lt; void &gt; setRoot(std::string root)</div><div class="ttdoc">Restrict results to a tag root and its descendants; empty clears the root.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8cpp_source.html#l00007">GameplayTagPicker.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GameplayTagPicker_html_ad65faef9728812a15bcb41b7ed1109cb"><div class="ttname"><a href="classeve_1_1editor_1_1GameplayTagPicker.html#ad65faef9728812a15bcb41b7ed1109cb">eve::editor::GameplayTagPicker::GameplayTagPicker</a></div><div class="ttdeci">GameplayTagPicker(const tags::GameplayTagRegistry &amp;registry)</div><div class="ttdoc">Construct a picker borrowing the canonical registry.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00032">GameplayTagPicker.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GameplayTagPicker_html_ae4b1cb535d8d662d3e72ebab51a709be"><div class="ttname"><a href="classeve_1_1editor_1_1GameplayTagPicker.html#ae4b1cb535d8d662d3e72ebab51a709be">eve::editor::GameplayTagPicker::entries</a></div><div class="ttdeci">std::vector&lt; GameplayTagPickerEntry &gt; entries() const</div><div class="ttdoc">Build deterministic owning entries for the current root and filter.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8cpp_source.html#l00023">GameplayTagPicker.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1GameplayTagPicker_html_aec7d31272c2d2ed50e1d1f76b8ab0957"><div class="ttname"><a href="classeve_1_1editor_1_1GameplayTagPicker.html#aec7d31272c2d2ed50e1d1f76b8ab0957">eve::editor::GameplayTagPicker::setFilter</a></div><div class="ttdeci">void setFilter(std::string filter)</div><div class="ttdoc">Set a case-insensitive name/description filter.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00035">GameplayTagPicker.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1GameplayTagRegistry_html"><div class="ttname"><a href="classeve_1_1tags_1_1GameplayTagRegistry.html">eve::tags::GameplayTagRegistry</a></div><div class="ttdoc">Canonical owner of versioned gameplay-tag definitions.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTag_8h_source.html#l00046">GameplayTag.h:46</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1GameplayTagPickerEntry_html"><div class="ttname"><a href="structeve_1_1editor_1_1GameplayTagPickerEntry.html">eve::editor::GameplayTagPickerEntry</a></div><div class="ttdoc">Owning row projected for tree/list UI implementations.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00014">GameplayTagPicker.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1GameplayTagPickerEntry_html_a2a4deef47818704d241b5463262cf8f9"><div class="ttname"><a href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a2a4deef47818704d241b5463262cf8f9">eve::editor::GameplayTagPickerEntry::depth</a></div><div class="ttdeci">std::size_t depth</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00018">GameplayTagPicker.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1GameplayTagPickerEntry_html_a833b52d29d02c273e8086ec937de1d56"><div class="ttname"><a href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a833b52d29d02c273e8086ec937de1d56">eve::editor::GameplayTagPickerEntry::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00016">GameplayTagPicker.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1GameplayTagPickerEntry_html_a969e30e6f8e1dde579cf500db3b942ec"><div class="ttname"><a href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a969e30e6f8e1dde579cf500db3b942ec">eve::editor::GameplayTagPickerEntry::description</a></div><div class="ttdeci">std::string description</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00017">GameplayTagPicker.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1GameplayTagPickerEntry_html_a9c7b03e22e39d126498bf310b1ed33ea"><div class="ttname"><a href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#a9c7b03e22e39d126498bf310b1ed33ea">eve::editor::GameplayTagPickerEntry::id</a></div><div class="ttdeci">tags::GameplayTagId id</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00015">GameplayTagPicker.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1GameplayTagPickerEntry_html_aba30b9bb2e4f83ce3af8190219e27879"><div class="ttname"><a href="structeve_1_1editor_1_1GameplayTagPickerEntry.html#aba30b9bb2e4f83ce3af8190219e27879">eve::editor::GameplayTagPickerEntry::hasChildren</a></div><div class="ttdeci">bool hasChildren</div><div class="ttdef"><b>Definition</b> <a href="GameplayTagPicker_8h_source.html#l00019">GameplayTagPicker.h:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

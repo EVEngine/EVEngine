@@ -1,0 +1,280 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/effects/EffectDefinitionRuntime.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_41105a9973ac91971c5aa8fbf5111bc4.html">effects</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EffectDefinitionRuntime.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EffectDefinitionRuntime_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="DefinitionRuntime_8h.html">common/definitions/DefinitionRuntime.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Definitions_8h.html">definitions/Definitions.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="EffectTypes_8h.html">effects/EffectTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1effects.html">eve::effects</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1effects_1_1EffectRuntimeState.html">EffectRuntimeState</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#a9ca4baa8f2b3ffdee3cfb732f6f0aacf">   23</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#a9ca4baa8f2b3ffdee3cfb732f6f0aacf">stackKey</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#a3583d3ed25ec241eb8289ebda890188a">   24</a></span>    <span class="keywordtype">int</span>                      <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#a3583d3ed25ec241eb8289ebda890188a">priority</a>   = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#a5fccc77892e38aa34a684b31d2754f17">   25</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#a5fccc77892e38aa34a684b31d2754f17">duration</a>   = 0.0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#ab918d313cb84458ddb5db6a79e1e905e">   26</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#ab918d313cb84458ddb5db6a79e1e905e">remaining</a>  = -1.0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#a28d16e894bfd434685364d82597517f1">   27</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#a28d16e894bfd434685364d82597517f1">magnitude</a>  = 0.0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#a768c370202263d5f17804f2992310bc1">   28</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#a768c370202263d5f17804f2992310bc1">stackCount</a> = 1;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#a5765297fbfad13b8298bc7e47659de35">   29</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#a5765297fbfad13b8298bc7e47659de35">maxStacks</a>  = 1;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#a94621e9a9e5004cb916c9a9efcb70e7f">   30</a></span>    <a class="code hl_struct" href="structeve_1_1effects_1_1EffectPolicy.html">EffectPolicy</a>             <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#a94621e9a9e5004cb916c9a9efcb70e7f">policy</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#aa5751798d5b4879b8711384999758f52">   31</a></span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectPayload.html">EffectPayload</a>            <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#aa5751798d5b4879b8711384999758f52">payload</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1effects_1_1EffectRuntimeState.html#a0d43051f7a53e78a988f06f191a02250">   32</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1effects_1_1EffectRuntimeState.html#a0d43051f7a53e78a988f06f191a02250">tags</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">   43</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a> final {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;EffectDefinitionRuntime&gt;</a> <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a58be02d34fb7682d2be37901d781c2a7">create</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>&amp; registry, <a class="code hl_class" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a> definition, std::string subject,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> instanceId,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac1539ca92dc994a6faefd777adfd92bc">   61</a></span>    <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac1539ca92dc994a6faefd777adfd92bc">EffectDefinitionRuntime</a>(<a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>&amp;&amp;) noexcept = default;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a8d10a1e10d6e0741b26b04248169f67e">   63</a></span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>&amp;&amp;) noexcept = default;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aaccb8a05885d7e0bd36bab0025c2167e">   65</a></span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>(const <a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>&amp;) = delete;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aaa10929d0898b915bfa20f82ae7aa812">   67</a></span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>&amp; operator=(const <a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>&amp;) = delete;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a7adb09d92c9fbb73449aef71e3f85251">   69</a></span>    ~<a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>() = default;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    [[nodiscard]] const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::InstanceIdentity&amp; <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a79f117e236efe38e403f8b48f5698c05">identity</a>() const noexcept;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] const <a class="code hl_struct" href="structeve_1_1effects_1_1EffectRuntimeState.html">EffectRuntimeState</a>&amp; <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac6f5e6975e1294227e1956614cf5afbf">state</a>() const noexcept;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1effects_1_1EffectRuntimeState.html">EffectRuntimeState</a>&amp; <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac6f5e6975e1294227e1956614cf5afbf">state</a>() noexcept;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::DefinitionHandle <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aed35bfe482a4b135316cb23fe02b754e">definitionHandle</a>() const noexcept;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac053c0b0a5300f0874c913377256ee7b">   80</a></span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::ReloadPolicy <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac053c0b0a5300f0874c913377256ee7b">reloadPolicy</a>() const noexcept { <span class="keywordflow">return</span> policy_; }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ae5cb2869093fc902cfe24a3790126bbc">setActive</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a2c4b0bc107de46916be30893cbc0b6b6">isActive</a>() const noexcept;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aa6a57dd14e5247402662806dc63e2ff8">applyTo</a>(<a class="code hl_struct" href="structeve_1_1effects_1_1EffectInstance.html">EffectInstance</a>* effect) const;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::ReloadOutcome&gt; <a class="code hl_function" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a0063ab6399a86e77def5aef9fcc87f08">reload</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::ReloadPolicy <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>private:</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_class" href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">EffectDefinitionRuntime</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::definitions::DefinitionRegistry&amp;                registry,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                            <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::RuntimeInstance&lt;<a class="code hl_struct" href="structeve_1_1effects_1_1EffectRuntimeState.html">EffectRuntimeState</a>&gt; runtime, <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> subject,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                            <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="code hl_namespace" href="namespaceeve.html">eve</a>::definition::ReloadPolicy <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        : registry_(&amp;registry),</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>          runtime_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(runtime)),</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>          subject_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(subject)),</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>          source_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)),</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>          policy_(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>) {}</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>*                registry_ = <span class="keyword">nullptr</span>;  <span class="comment">// borrowed</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classeve_1_1definition_1_1RuntimeInstance.html">eve::definition::RuntimeInstance&lt;EffectRuntimeState&gt;</a> runtime_;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    std::string                                          subject_;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    std::string                                          source_;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>                        policy_;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>};</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}  <span class="comment">// namespace eve::effects</span></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a03c996f9fcf0e10baeb3e700be0c409a"><div class="ttname"><a href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00036">CardTypes.cpp:36</a></div></div>
+<div class="ttc" id="aDefinitionRuntime_8h_html"><div class="ttname"><a href="DefinitionRuntime_8h.html">DefinitionRuntime.h</a></div><div class="ttdoc">Common identity and hot-reload contract for typed runtime instances.</div></div>
+<div class="ttc" id="aDefinitions_8h_html"><div class="ttname"><a href="Definitions_8h.html">Definitions.h</a></div></div>
+<div class="ttc" id="aEffectTypes_8h_html"><div class="ttname"><a href="EffectTypes_8h.html">EffectTypes.h</a></div><div class="ttdoc">Definition, policy, instance and lifecycle value types for effects.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html"><div class="ttname"><a href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a></div><div class="ttdoc">Stable definition reference backed by LogicalId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00083">ResourceRef.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1definition_1_1RuntimeInstance_html"><div class="ttname"><a href="classeve_1_1definition_1_1RuntimeInstance.html">eve::definition::RuntimeInstance</a></div><div class="ttdoc">Owns one strongly typed runtime state and its definition identity.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8h_source.html#l00163">DefinitionRuntime.h:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions_1_1DefinitionRegistry_html"><div class="ttname"><a href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a></div><div class="ttdoc">Deterministic registry of topic-neutral, versioned JSON definitions.</div><div class="ttdef"><b>Definition</b> <a href="Definitions_8h_source.html#l00056">Definitions.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html">eve::effects::EffectDefinitionRuntime</a></div><div class="ttdoc">Binds a typed effect runtime to a generation-qualified definition.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00043">EffectDefinitionRuntime.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_a0063ab6399a86e77def5aef9fcc87f08"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a0063ab6399a86e77def5aef9fcc87f08">eve::effects::EffectDefinitionRuntime::reload</a></div><div class="ttdeci">eve::Result&lt; eve::definition::ReloadOutcome &gt; reload(eve::definition::ReloadPolicy policy)</div><div class="ttdoc">Resolve the registry's current generation and execute a policy.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8cpp_source.html#l00264">EffectDefinitionRuntime.cpp:264</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_a2c4b0bc107de46916be30893cbc0b6b6"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a2c4b0bc107de46916be30893cbc0b6b6">eve::effects::EffectDefinitionRuntime::isActive</a></div><div class="ttdeci">bool isActive() const noexcept</div><div class="ttdoc">Return whether the effect is active for reload policy decisions.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8cpp_source.html#l00235">EffectDefinitionRuntime.cpp:235</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_a58be02d34fb7682d2be37901d781c2a7"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a58be02d34fb7682d2be37901d781c2a7">eve::effects::EffectDefinitionRuntime::create</a></div><div class="ttdeci">static eve::Result&lt; EffectDefinitionRuntime &gt; create(eve::definitions::DefinitionRegistry &amp;registry, eve::DefinitionRef definition, std::string subject, std::string source, eve::PersistentId instanceId, eve::definition::ReloadPolicy policy=eve::definition::ReloadPolicy::KeepInstanceValues)</div><div class="ttdoc">Create a typed effect runtime from a registry definition.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8cpp_source.html#l00204">EffectDefinitionRuntime.cpp:204</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_a79f117e236efe38e403f8b48f5698c05"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#a79f117e236efe38e403f8b48f5698c05">eve::effects::EffectDefinitionRuntime::identity</a></div><div class="ttdeci">const eve::definition::InstanceIdentity &amp; identity() const noexcept</div><div class="ttdoc">Borrow the unified instance identity.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8cpp_source.html#l00221">EffectDefinitionRuntime.cpp:221</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_aa6a57dd14e5247402662806dc63e2ff8"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aa6a57dd14e5247402662806dc63e2ff8">eve::effects::EffectDefinitionRuntime::applyTo</a></div><div class="ttdeci">eve::Result&lt; void &gt; applyTo(EffectInstance *effect) const</div><div class="ttdoc">Atomically project the typed runtime into an EffectInstance.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8cpp_source.html#l00237">EffectDefinitionRuntime.cpp:237</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_ac053c0b0a5300f0874c913377256ee7b"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac053c0b0a5300f0874c913377256ee7b">eve::effects::EffectDefinitionRuntime::reloadPolicy</a></div><div class="ttdeci">eve::definition::ReloadPolicy reloadPolicy() const noexcept</div><div class="ttdoc">Return the configured reload policy.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00080">EffectDefinitionRuntime.h:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_ac1539ca92dc994a6faefd777adfd92bc"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac1539ca92dc994a6faefd777adfd92bc">eve::effects::EffectDefinitionRuntime::EffectDefinitionRuntime</a></div><div class="ttdeci">EffectDefinitionRuntime(EffectDefinitionRuntime &amp;&amp;) noexcept=default</div><div class="ttdoc">Move an effect runtime while retaining its borrowed registry binding.</div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_ac6f5e6975e1294227e1956614cf5afbf"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ac6f5e6975e1294227e1956614cf5afbf">eve::effects::EffectDefinitionRuntime::state</a></div><div class="ttdeci">const EffectRuntimeState &amp; state() const noexcept</div><div class="ttdoc">Borrow the strongly typed effect runtime state.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8cpp_source.html#l00225">EffectDefinitionRuntime.cpp:225</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_ae5cb2869093fc902cfe24a3790126bbc"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#ae5cb2869093fc902cfe24a3790126bbc">eve::effects::EffectDefinitionRuntime::setActive</a></div><div class="ttdeci">void setActive(bool active) noexcept</div><div class="ttdoc">Mark this effect active/inactive for RejectWhileActive.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8cpp_source.html#l00233">EffectDefinitionRuntime.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectDefinitionRuntime_html_aed35bfe482a4b135316cb23fe02b754e"><div class="ttname"><a href="classeve_1_1effects_1_1EffectDefinitionRuntime.html#aed35bfe482a4b135316cb23fe02b754e">eve::effects::EffectDefinitionRuntime::definitionHandle</a></div><div class="ttdeci">eve::definition::DefinitionHandle definitionHandle() const noexcept</div><div class="ttdoc">Borrow the current generation-qualified definition handle.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8cpp_source.html#l00229">EffectDefinitionRuntime.cpp:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1effects_1_1EffectPayload_html"><div class="ttname"><a href="classeve_1_1effects_1_1EffectPayload.html">eve::effects::EffectPayload</a></div><div class="ttdoc">Deterministic JSON-compatible payload carried by a definition or instance.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00061">EffectTypes.h:61</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definition_html_a3d64f47e218ceb4a83d17f201372b9a8"><div class="ttname"><a href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a></div><div class="ttdeci">ReloadPolicy</div><div class="ttdoc">Policy used when a live definition is replaced.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8h_source.html#l00029">DefinitionRuntime.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definition_html_a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020"><div class="ttname"><a href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8aa9a4f4011f63205c85cad7c38011f020">eve::definition::ReloadPolicy::KeepInstanceValues</a></div><div class="ttdeci">@ KeepInstanceValues</div><div class="ttdoc">Replace the definition generation and preserve all instance values.</div></div>
+<div class="ttc" id="anamespaceeve_1_1effects_html"><div class="ttname"><a href="namespaceeve_1_1effects.html">eve::effects</a></div><div class="ttdef"><b>Definition</b> <a href="EffectContainer_8cpp_source.html#l00010">EffectContainer.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectInstance_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectInstance.html">eve::effects::EffectInstance</a></div><div class="ttdoc">One owned runtime effect fact.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00125">EffectTypes.h:125</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectPolicy_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectPolicy.html">eve::effects::EffectPolicy</a></div><div class="ttdoc">Independent policy dimensions used when applying an effect definition.</div><div class="ttdef"><b>Definition</b> <a href="EffectTypes_8h_source.html#l00051">EffectTypes.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html">eve::effects::EffectRuntimeState</a></div><div class="ttdoc">Typed mutable lifecycle values for one effect instance.</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00022">EffectDefinitionRuntime.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_a0d43051f7a53e78a988f06f191a02250"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#a0d43051f7a53e78a988f06f191a02250">eve::effects::EffectRuntimeState::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00032">EffectDefinitionRuntime.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_a28d16e894bfd434685364d82597517f1"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#a28d16e894bfd434685364d82597517f1">eve::effects::EffectRuntimeState::magnitude</a></div><div class="ttdeci">double magnitude</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00027">EffectDefinitionRuntime.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_a3583d3ed25ec241eb8289ebda890188a"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#a3583d3ed25ec241eb8289ebda890188a">eve::effects::EffectRuntimeState::priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00024">EffectDefinitionRuntime.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_a5765297fbfad13b8298bc7e47659de35"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#a5765297fbfad13b8298bc7e47659de35">eve::effects::EffectRuntimeState::maxStacks</a></div><div class="ttdeci">std::uint32_t maxStacks</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00029">EffectDefinitionRuntime.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_a5fccc77892e38aa34a684b31d2754f17"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#a5fccc77892e38aa34a684b31d2754f17">eve::effects::EffectRuntimeState::duration</a></div><div class="ttdeci">double duration</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00025">EffectDefinitionRuntime.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_a768c370202263d5f17804f2992310bc1"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#a768c370202263d5f17804f2992310bc1">eve::effects::EffectRuntimeState::stackCount</a></div><div class="ttdeci">std::uint32_t stackCount</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00028">EffectDefinitionRuntime.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_a94621e9a9e5004cb916c9a9efcb70e7f"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#a94621e9a9e5004cb916c9a9efcb70e7f">eve::effects::EffectRuntimeState::policy</a></div><div class="ttdeci">EffectPolicy policy</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00030">EffectDefinitionRuntime.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_a9ca4baa8f2b3ffdee3cfb732f6f0aacf"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#a9ca4baa8f2b3ffdee3cfb732f6f0aacf">eve::effects::EffectRuntimeState::stackKey</a></div><div class="ttdeci">std::string stackKey</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00023">EffectDefinitionRuntime.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_aa5751798d5b4879b8711384999758f52"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#aa5751798d5b4879b8711384999758f52">eve::effects::EffectRuntimeState::payload</a></div><div class="ttdeci">EffectPayload payload</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00031">EffectDefinitionRuntime.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1effects_1_1EffectRuntimeState_html_ab918d313cb84458ddb5db6a79e1e905e"><div class="ttname"><a href="structeve_1_1effects_1_1EffectRuntimeState.html#ab918d313cb84458ddb5db6a79e1e905e">eve::effects::EffectRuntimeState::remaining</a></div><div class="ttdeci">double remaining</div><div class="ttdef"><b>Definition</b> <a href="EffectDefinitionRuntime_8h_source.html#l00026">EffectDefinitionRuntime.h:26</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

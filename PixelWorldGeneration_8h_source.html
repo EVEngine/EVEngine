@@ -1,0 +1,276 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/pixelworld/PixelWorldGeneration.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_72f5911f7825619aacf57c36184744ad.html">pixelworld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PixelWorldGeneration.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PixelWorldGeneration_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="PixelWorld_8h.html">pixelworld/PixelWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1pixelworld.html">eve::pixelworld</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3">   11</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3">PixelBiome</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3aac12ee4aedb176eb73ce3f6c0d1e9036">Forest</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a000c016d34ff41e245b69c67f22c83ff">Desert</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a4f8365b8d89daa02f237583bb89fd962">Fungal</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a93caee50969688ecfe6d0d9e5657a268">Volcanic</a> };</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html">   14</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html">PixelMaterialStamp</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a49021e8419d29098f9f72b8a6c3ef38d">   15</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a49021e8419d29098f9f72b8a6c3ef38d">originX</a> = 0;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a5f66e4e5e090fc02500afb2abe11ecf5">   16</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a5f66e4e5e090fc02500afb2abe11ecf5">originY</a> = 0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a9a8e5eda2c10e7a9f3189fad4642d476">   17</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a9a8e5eda2c10e7a9f3189fad4642d476">width</a> = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a8b6570d553ca2fc546031a5e9b24a9be">   18</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a8b6570d553ca2fc546031a5e9b24a9be">height</a> = 0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#adac7e713c30389d17080d7bee5a9b7cd">   19</a></span>    std::vector&lt;PixelCell&gt; <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#adac7e713c30389d17080d7bee5a9b7cd">cells</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a996ab0b04945a8b838548a0c2c22803b">   24</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a996ab0b04945a8b838548a0c2c22803b">kSchemaVersion</a> = 1;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a5257db5e7be5625b7ed492bce8acbcd3">   25</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a5257db5e7be5625b7ed492bce8acbcd3">schemaVersion</a> = <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a996ab0b04945a8b838548a0c2c22803b">kSchemaVersion</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a506d84ec2f553b72409d089a46c13fdb">   26</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a506d84ec2f553b72409d089a46c13fdb">seed</a> = 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a909a4a21b4dbad27ba64e98c862fa9c4">   27</a></span>    <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelChunkRegion.html">PixelChunkRegion</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a909a4a21b4dbad27ba64e98c862fa9c4">region</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a2a27e591c092212617b8ae1b3d2cd244">   28</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a2a27e591c092212617b8ae1b3d2cd244">surfaceY</a> = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#ab703ddf5beacc23195b246ed611cac46">   29</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#ab703ddf5beacc23195b246ed611cac46">terrainAmplitude</a> = 24;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a3fc5017e175e76646419a3d6658c77b7">   30</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a3fc5017e175e76646419a3d6658c77b7">waterLevel</a> = 36;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#acc7e30ac06049928e54e4da9fadd9bcd">   32</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#acc7e30ac06049928e54e4da9fadd9bcd">caveThreshold</a> = 3600;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#af7e9ae4d8aa0a9ad19180ec8e42b6118">   33</a></span>    std::vector&lt;PixelMaterialStamp&gt; <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#af7e9ae4d8aa0a9ad19180ec8e42b6118">stamps</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html">   37</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html">PixelGeneratedChunkSummary</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a3b3395d2a83d79758be69ec3db57ef6b">   38</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a3b3395d2a83d79758be69ec3db57ef6b">x</a> = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a6c617f049fb92d0918dc77f5a2ff9294">   39</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a6c617f049fb92d0918dc77f5a2ff9294">y</a> = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#aee14cf7bc3a7f045c447e708d3ef4794">   40</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3">PixelBiome</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#aee14cf7bc3a7f045c447e708d3ef4794">biome</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3aac12ee4aedb176eb73ce3f6c0d1e9036">PixelBiome::Forest</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#ab9f26de245e2ec131461d2ea49d2331d">   41</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#ab9f26de245e2ec131461d2ea49d2331d">solidCells</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a1148d3c2d2e0d9ae696583900b4035db">   42</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a1148d3c2d2e0d9ae696583900b4035db">caveCells</a> = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a21914db4e8e07b49818952ca34e24a1b">   43</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a21914db4e8e07b49818952ca34e24a1b">stampedCells</a> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a0e880e49940d1e0a20f92d546efce4ff">   45</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a0e880e49940d1e0a20f92d546efce4ff">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html">PixelGeneratedChunkSummary</a>&amp;,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                           <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html">PixelGeneratedChunkSummary</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00050" data-start="{" data-end="};">
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html">   50</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html">PixelWorldGenerationOutput</a> {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#ab2c375250e5ecf2d31d2d57e91dff4de">   51</a></span>    <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelChunkBatch.html">PixelChunkBatch</a> <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#ab2c375250e5ecf2d31d2d57e91dff4de">batch</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#ab5072fc6a5cf4b23314d7556249c82e3">   52</a></span>    std::vector&lt;PixelGeneratedChunkSummary&gt; <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#ab5072fc6a5cf4b23314d7556249c82e3">chunks</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#a72b4658864728f343fafc4ed48f0ebbe">   53</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#a72b4658864728f343fafc4ed48f0ebbe">contentHash</a> = 0;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PixelWorldGenerationOutput&gt;</a> <a class="code hl_function" href="namespaceeve_1_1pixelworld.html#a3e2fb893927b821d490af7ec16f21188">generatePixelWorld</a>(</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">PixelWorldGenerationRequest</a>&amp; request, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">MaterialCatalog</a>&amp; catalog,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::uint64_t sourceRevision, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> sourceTick = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>(),</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::uint64_t sourceLastEditSequence = 0);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}  <span class="comment">// namespace eve::pixelworld</span></div>
+<div class="ttc" id="aPixelWorld_8h_html"><div class="ttname"><a href="PixelWorld_8h.html">PixelWorld.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1MaterialCatalog_html"><div class="ttname"><a href="classeve_1_1pixelworld_1_1MaterialCatalog.html">eve::pixelworld::MaterialCatalog</a></div><div class="ttdoc">Owning immutable material and reaction table used by one PixelWorld.</div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8h_source.html#l00082">PixelMaterial.h:82</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html">eve::pixelworld</a></div><div class="ttdef"><b>Definition</b> <a href="PixelMaterial_8cpp_source.html#l00011">PixelMaterial.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_a3e2fb893927b821d490af7ec16f21188"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#a3e2fb893927b821d490af7ec16f21188">eve::pixelworld::generatePixelWorld</a></div><div class="ttdeci">eve::Result&lt; PixelWorldGenerationOutput &gt; generatePixelWorld(const PixelWorldGenerationRequest &amp;request, const MaterialCatalog &amp;catalog, std::uint64_t sourceRevision, eve::SimulationTick sourceTick, std::uint64_t sourceLastEditSequence)</div><div class="ttdoc">Generate a seamless canonical Chunk batch without mutating a PixelWorld.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8cpp_source.html#l00082">PixelWorldGeneration.cpp:82</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_aca14bc721e9641e95031e34c12368be3"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3">eve::pixelworld::PixelBiome</a></div><div class="ttdeci">PixelBiome</div><div class="ttdoc">Stable coarse biome selected from deterministic world coordinates.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00011">PixelWorldGeneration.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_aca14bc721e9641e95031e34c12368be3a000c016d34ff41e245b69c67f22c83ff"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a000c016d34ff41e245b69c67f22c83ff">eve::pixelworld::PixelBiome::Desert</a></div><div class="ttdeci">@ Desert</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_aca14bc721e9641e95031e34c12368be3a4f8365b8d89daa02f237583bb89fd962"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a4f8365b8d89daa02f237583bb89fd962">eve::pixelworld::PixelBiome::Fungal</a></div><div class="ttdeci">@ Fungal</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_aca14bc721e9641e95031e34c12368be3a93caee50969688ecfe6d0d9e5657a268"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3a93caee50969688ecfe6d0d9e5657a268">eve::pixelworld::PixelBiome::Volcanic</a></div><div class="ttdeci">@ Volcanic</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld_html_aca14bc721e9641e95031e34c12368be3aac12ee4aedb176eb73ce3f6c0d1e9036"><div class="ttname"><a href="namespaceeve_1_1pixelworld.html#aca14bc721e9641e95031e34c12368be3aac12ee4aedb176eb73ce3f6c0d1e9036">eve::pixelworld::PixelBiome::Forest</a></div><div class="ttdeci">@ Forest</div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelChunkBatch_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelChunkBatch.html">eve::pixelworld::PixelChunkBatch</a></div><div class="ttdoc">Owning authoritative Chunk correction with source world metadata.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8h_source.html#l00083">PixelWorld.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelChunkRegion_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelChunkRegion.html">eve::pixelworld::PixelChunkRegion</a></div><div class="ttdoc">Inclusive finite rectangle expressed in Chunk coordinates.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8h_source.html#l00097">PixelWorld.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelGeneratedChunkSummary_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html">eve::pixelworld::PixelGeneratedChunkSummary</a></div><div class="ttdoc">Deterministic diagnostics for one generated Chunk.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00037">PixelWorldGeneration.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelGeneratedChunkSummary_html_a0e880e49940d1e0a20f92d546efce4ff"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a0e880e49940d1e0a20f92d546efce4ff">eve::pixelworld::PixelGeneratedChunkSummary::operator==</a></div><div class="ttdeci">friend bool operator==(const PixelGeneratedChunkSummary &amp;, const PixelGeneratedChunkSummary &amp;)=default</div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelGeneratedChunkSummary_html_a1148d3c2d2e0d9ae696583900b4035db"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a1148d3c2d2e0d9ae696583900b4035db">eve::pixelworld::PixelGeneratedChunkSummary::caveCells</a></div><div class="ttdeci">std::uint32_t caveCells</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00042">PixelWorldGeneration.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelGeneratedChunkSummary_html_a21914db4e8e07b49818952ca34e24a1b"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a21914db4e8e07b49818952ca34e24a1b">eve::pixelworld::PixelGeneratedChunkSummary::stampedCells</a></div><div class="ttdeci">std::uint32_t stampedCells</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00043">PixelWorldGeneration.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelGeneratedChunkSummary_html_a3b3395d2a83d79758be69ec3db57ef6b"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a3b3395d2a83d79758be69ec3db57ef6b">eve::pixelworld::PixelGeneratedChunkSummary::x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00038">PixelWorldGeneration.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelGeneratedChunkSummary_html_a6c617f049fb92d0918dc77f5a2ff9294"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#a6c617f049fb92d0918dc77f5a2ff9294">eve::pixelworld::PixelGeneratedChunkSummary::y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00039">PixelWorldGeneration.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelGeneratedChunkSummary_html_ab9f26de245e2ec131461d2ea49d2331d"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#ab9f26de245e2ec131461d2ea49d2331d">eve::pixelworld::PixelGeneratedChunkSummary::solidCells</a></div><div class="ttdeci">std::uint32_t solidCells</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00041">PixelWorldGeneration.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelGeneratedChunkSummary_html_aee14cf7bc3a7f045c447e708d3ef4794"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelGeneratedChunkSummary.html#aee14cf7bc3a7f045c447e708d3ef4794">eve::pixelworld::PixelGeneratedChunkSummary::biome</a></div><div class="ttdeci">PixelBiome biome</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00040">PixelWorldGeneration.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelMaterialStamp_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html">eve::pixelworld::PixelMaterialStamp</a></div><div class="ttdoc">Owning row-major material stamp applied after terrain and cave generation.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00014">PixelWorldGeneration.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelMaterialStamp_html_a49021e8419d29098f9f72b8a6c3ef38d"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a49021e8419d29098f9f72b8a6c3ef38d">eve::pixelworld::PixelMaterialStamp::originX</a></div><div class="ttdeci">int originX</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00015">PixelWorldGeneration.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelMaterialStamp_html_a5f66e4e5e090fc02500afb2abe11ecf5"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a5f66e4e5e090fc02500afb2abe11ecf5">eve::pixelworld::PixelMaterialStamp::originY</a></div><div class="ttdeci">int originY</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00016">PixelWorldGeneration.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelMaterialStamp_html_a8b6570d553ca2fc546031a5e9b24a9be"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a8b6570d553ca2fc546031a5e9b24a9be">eve::pixelworld::PixelMaterialStamp::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00018">PixelWorldGeneration.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelMaterialStamp_html_a9a8e5eda2c10e7a9f3189fad4642d476"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#a9a8e5eda2c10e7a9f3189fad4642d476">eve::pixelworld::PixelMaterialStamp::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00017">PixelWorldGeneration.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelMaterialStamp_html_adac7e713c30389d17080d7bee5a9b7cd"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelMaterialStamp.html#adac7e713c30389d17080d7bee5a9b7cd">eve::pixelworld::PixelMaterialStamp::cells</a></div><div class="ttdeci">std::vector&lt; PixelCell &gt; cells</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00019">PixelWorldGeneration.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationOutput_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html">eve::pixelworld::PixelWorldGenerationOutput</a></div><div class="ttdoc">Owning generated correction plus reproducibility evidence.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00050">PixelWorldGeneration.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationOutput_html_a72b4658864728f343fafc4ed48f0ebbe"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#a72b4658864728f343fafc4ed48f0ebbe">eve::pixelworld::PixelWorldGenerationOutput::contentHash</a></div><div class="ttdeci">std::uint64_t contentHash</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00053">PixelWorldGeneration.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationOutput_html_ab2c375250e5ecf2d31d2d57e91dff4de"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#ab2c375250e5ecf2d31d2d57e91dff4de">eve::pixelworld::PixelWorldGenerationOutput::batch</a></div><div class="ttdeci">PixelChunkBatch batch</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00051">PixelWorldGeneration.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationOutput_html_ab5072fc6a5cf4b23314d7556249c82e3"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationOutput.html#ab5072fc6a5cf4b23314d7556249c82e3">eve::pixelworld::PixelWorldGenerationOutput::chunks</a></div><div class="ttdeci">std::vector&lt; PixelGeneratedChunkSummary &gt; chunks</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00052">PixelWorldGeneration.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html">eve::pixelworld::PixelWorldGenerationRequest</a></div><div class="ttdoc">Versioned bounded request for deterministic biome and cave generation.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00023">PixelWorldGeneration.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_a2a27e591c092212617b8ae1b3d2cd244"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a2a27e591c092212617b8ae1b3d2cd244">eve::pixelworld::PixelWorldGenerationRequest::surfaceY</a></div><div class="ttdeci">int surfaceY</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00028">PixelWorldGeneration.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_a3fc5017e175e76646419a3d6658c77b7"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a3fc5017e175e76646419a3d6658c77b7">eve::pixelworld::PixelWorldGenerationRequest::waterLevel</a></div><div class="ttdeci">int waterLevel</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00030">PixelWorldGeneration.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_a506d84ec2f553b72409d089a46c13fdb"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a506d84ec2f553b72409d089a46c13fdb">eve::pixelworld::PixelWorldGenerationRequest::seed</a></div><div class="ttdeci">std::uint64_t seed</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00026">PixelWorldGeneration.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_a5257db5e7be5625b7ed492bce8acbcd3"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a5257db5e7be5625b7ed492bce8acbcd3">eve::pixelworld::PixelWorldGenerationRequest::schemaVersion</a></div><div class="ttdeci">std::uint32_t schemaVersion</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00025">PixelWorldGeneration.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_a909a4a21b4dbad27ba64e98c862fa9c4"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a909a4a21b4dbad27ba64e98c862fa9c4">eve::pixelworld::PixelWorldGenerationRequest::region</a></div><div class="ttdeci">PixelChunkRegion region</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00027">PixelWorldGeneration.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_a996ab0b04945a8b838548a0c2c22803b"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#a996ab0b04945a8b838548a0c2c22803b">eve::pixelworld::PixelWorldGenerationRequest::kSchemaVersion</a></div><div class="ttdeci">static constexpr std::uint32_t kSchemaVersion</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00024">PixelWorldGeneration.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_ab703ddf5beacc23195b246ed611cac46"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#ab703ddf5beacc23195b246ed611cac46">eve::pixelworld::PixelWorldGenerationRequest::terrainAmplitude</a></div><div class="ttdeci">int terrainAmplitude</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00029">PixelWorldGeneration.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_acc7e30ac06049928e54e4da9fadd9bcd"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#acc7e30ac06049928e54e4da9fadd9bcd">eve::pixelworld::PixelWorldGenerationRequest::caveThreshold</a></div><div class="ttdeci">std::uint32_t caveThreshold</div><div class="ttdoc">Cave admission threshold in [0, 10000]; larger values carve more cells.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00032">PixelWorldGeneration.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelWorldGenerationRequest_html_af7e9ae4d8aa0a9ad19180ec8e42b6118"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelWorldGenerationRequest.html#af7e9ae4d8aa0a9ad19180ec8e42b6118">eve::pixelworld::PixelWorldGenerationRequest::stamps</a></div><div class="ttdeci">std::vector&lt; PixelMaterialStamp &gt; stamps</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldGeneration_8h_source.html#l00033">PixelWorldGeneration.h:33</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

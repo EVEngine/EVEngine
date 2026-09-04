@@ -1,0 +1,1232 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::avatar_editing::AvatarDocumentTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1avatar__editing.html">avatar_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html">AvatarDocumentTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::avatar_editing::AvatarDocumentTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Revisioned image/Live2D/VRoid Avatar authoring asset.  
+ <a href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::avatar_editing::AvatarDocumentTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.png" usemap="#eve::avatar_5Fediting::AvatarDocumentTarget_map" alt=""/>
+  <map id="eve::avatar_5Fediting::AvatarDocumentTarget_map" name="eve::avatar_5Fediting::AvatarDocumentTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,261,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="271,56,532,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="542,56,803,80"/>
+<area href="classeve_1_1editing_1_1IPropertyProvider.html" title="UI-independent property access for an immutable selection snapshot." alt="eve::editing::IPropertyProvider" shape="rect" coords="813,56,1074,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="271,0,532,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a679c13c0faf6cd8bd1166f38f295f6af" id="r_a679c13c0faf6cd8bd1166f38f295f6af"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a679c13c0faf6cd8bd1166f38f295f6af">AvatarDocumentTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a679c13c0faf6cd8bd1166f38f295f6af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae35823a43c6fecf309bb9a0230ed3fb1" id="r_ae35823a43c6fecf309bb9a0230ed3fb1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a5cec47b7e9743e5843945887fa53d7f8">TargetId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#ae35823a43c6fecf309bb9a0230ed3fb1">targetId</a> () const override</td></tr>
+<tr class="separator:ae35823a43c6fecf309bb9a0230ed3fb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae27d873d00be971e91bbd1e1de07a6a1" id="r_ae27d873d00be971e91bbd1e1de07a6a1"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#ae27d873d00be971e91bbd1e1de07a6a1">revision</a> () const override</td></tr>
+<tr class="separator:ae27d873d00be971e91bbd1e1de07a6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff7dbf71d09fba02a285495d3c1ee599" id="r_aff7dbf71d09fba02a285495d3c1ee599"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1bb398d88175b064c8e992c879d2265c">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#aff7dbf71d09fba02a285495d3c1ee599">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:aff7dbf71d09fba02a285495d3c1ee599"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab57fc6b3650b1cfc3744fed579fb31c0" id="r_ab57fc6b3650b1cfc3744fed579fb31c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#ab57fc6b3650b1cfc3744fed579fb31c0">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:ab57fc6b3650b1cfc3744fed579fb31c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af01bbd307d7bc4dd8b01898182e7db54" id="r_af01bbd307d7bc4dd8b01898182e7db54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a3d1d884f2cd8adfa7aa18e711a9dde52">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#af01bbd307d7bc4dd8b01898182e7db54">describe</a> () const override</td></tr>
+<tr class="memdesc:af01bbd307d7bc4dd8b01898182e7db54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:af01bbd307d7bc4dd8b01898182e7db54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9775d93fb2e8bfff2847642013e33e8" id="r_aa9775d93fb2e8bfff2847642013e33e8"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#aa9775d93fb2e8bfff2847642013e33e8">queryCapability</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#a50c45323060269c9983d0082716733d7">CapabilityId</a> &amp;) override</td></tr>
+<tr class="memdesc:aa9775d93fb2e8bfff2847642013e33e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional stable editing capability.  <br /></td></tr>
+<tr class="separator:aa9775d93fb2e8bfff2847642013e33e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a842abf7ea2935c9545a60269d00de5bd" id="r_a842abf7ea2935c9545a60269d00de5bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a842abf7ea2935c9545a60269d00de5bd">applyDomainOperation</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &amp;) override</td></tr>
+<tr class="memdesc:a842abf7ea2935c9545a60269d00de5bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a842abf7ea2935c9545a60269d00de5bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a319ccf4ffbc1138334f795b280782d30" id="r_a319ccf4ffbc1138334f795b280782d30"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#ac63ec7074cd3090c05c4789dff5e5c49">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a319ccf4ffbc1138334f795b280782d30">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:a319ccf4ffbc1138334f795b280782d30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:a319ccf4ffbc1138334f795b280782d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84b672d71e709b97968aff37eeaab57c" id="r_a84b672d71e709b97968aff37eeaab57c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a84b672d71e709b97968aff37eeaab57c">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#ac63ec7074cd3090c05c4789dff5e5c49">IDomainOperationTarget</a> &gt;) override</td></tr>
+<tr class="memdesc:a84b672d71e709b97968aff37eeaab57c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:a84b672d71e709b97968aff37eeaab57c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a435e60ba531bacc07689d81ea412db19" id="r_a435e60ba531bacc07689d81ea412db19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a435e60ba531bacc07689d81ea412db19">currentRevision</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;) const override</td></tr>
+<tr class="separator:a435e60ba531bacc07689d81ea412db19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6accfe49a9587efc986bfc3c9ca511e6" id="r_a6accfe49a9587efc986bfc3c9ca511e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#ab61af72233b21c23f943def04d39bb77">PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a6accfe49a9587efc986bfc3c9ca511e6">schema</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;) const override</td></tr>
+<tr class="separator:a6accfe49a9587efc986bfc3c9ca511e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8909fb6832abf4aef7f0c605535669d4" id="r_a8909fb6832abf4aef7f0c605535669d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a74ca75dada9fc97066f417b94d71d7ac">PropertyReadResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a8909fb6832abf4aef7f0c605535669d4">read</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;, const <a class="el" href="namespaceeve_1_1avatar__editing.html#ab9d8694b43e61e50345a64baaefc2cbd">PropertyPath</a> &amp;) const override</td></tr>
+<tr class="separator:a8909fb6832abf4aef7f0c605535669d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b891fd614cbbf659a6e507e9e94797b" id="r_a6b891fd614cbbf659a6e507e9e94797b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a6b891fd614cbbf659a6e507e9e94797b">makeSet</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;, const <a class="el" href="namespaceeve_1_1avatar__editing.html#ab9d8694b43e61e50345a64baaefc2cbd">PropertyPath</a> &amp;, const <a class="el" href="namespaceeve_1_1avatar__editing.html#ae068fe041e3f0a044ed97e03b0b68cbf">EditorValue</a> &amp;, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a>) const override</td></tr>
+<tr class="separator:a6b891fd614cbbf659a6e507e9e94797b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abed6856e3dd5914407bf3e517e8d637a" id="r_abed6856e3dd5914407bf3e517e8d637a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#abed6856e3dd5914407bf3e517e8d637a">makeReset</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;, const <a class="el" href="namespaceeve_1_1avatar__editing.html#ab9d8694b43e61e50345a64baaefc2cbd">PropertyPath</a> &amp;) const override</td></tr>
+<tr class="separator:abed6856e3dd5914407bf3e517e8d637a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad431e869ba15c3ea1c397deb40423f46" id="r_ad431e869ba15c3ea1c397deb40423f46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#ad431e869ba15c3ea1c397deb40423f46">makeSetSource</a> (std::string <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a82acacfd4b19f9435bab755680fca7d4">kind</a>, std::string asset) const</td></tr>
+<tr class="memdesc:ad431e869ba15c3ea1c397deb40423f46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change backend kind and model source.  <br /></td></tr>
+<tr class="separator:ad431e869ba15c3ea1c397deb40423f46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95eecdfa2a7dc204a7cc6b8a029f30a0" id="r_a95eecdfa2a7dc204a7cc6b8a029f30a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a95eecdfa2a7dc204a7cc6b8a029f30a0">makeCreateLayer</a> (const <a class="el" href="structeve_1_1avatar__editing_1_1AvatarLayerValue.html">AvatarLayerValue</a> &amp;) const</td></tr>
+<tr class="separator:a95eecdfa2a7dc204a7cc6b8a029f30a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb57cad602836a23fc34d1324c92c072" id="r_acb57cad602836a23fc34d1324c92c072"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#acb57cad602836a23fc34d1324c92c072">makeDeleteLayer</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#a66d3fa8f223bd1e5b09024a305416cf6">ObjectId</a> &amp;) const</td></tr>
+<tr class="separator:acb57cad602836a23fc34d1324c92c072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a1b01bc0f7c0d56a95d5cd8ba768563" id="r_a2a1b01bc0f7c0d56a95d5cd8ba768563"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a2a1b01bc0f7c0d56a95d5cd8ba768563">makeCreateParameter</a> (const <a class="el" href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html">AvatarParameterValue</a> &amp;) const</td></tr>
+<tr class="separator:a2a1b01bc0f7c0d56a95d5cd8ba768563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f7f496f08f132dd0eaf73445ab54463" id="r_a7f7f496f08f132dd0eaf73445ab54463"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a7f7f496f08f132dd0eaf73445ab54463">makeDeleteParameter</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#a66d3fa8f223bd1e5b09024a305416cf6">ObjectId</a> &amp;) const</td></tr>
+<tr class="separator:a7f7f496f08f132dd0eaf73445ab54463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a062be35c3e5fa3102ff2f2640a741eaa" id="r_a062be35c3e5fa3102ff2f2640a741eaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a062be35c3e5fa3102ff2f2640a741eaa">makeCreateExpression</a> (const <a class="el" href="structeve_1_1avatar__editing_1_1AvatarExpressionValue.html">AvatarExpressionValue</a> &amp;) const</td></tr>
+<tr class="separator:a062be35c3e5fa3102ff2f2640a741eaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61a1b48923464ad80ac2ad0e4818c308" id="r_a61a1b48923464ad80ac2ad0e4818c308"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a61a1b48923464ad80ac2ad0e4818c308">makeDeleteExpression</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#a66d3fa8f223bd1e5b09024a305416cf6">ObjectId</a> &amp;) const</td></tr>
+<tr class="separator:a61a1b48923464ad80ac2ad0e4818c308"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82acacfd4b19f9435bab755680fca7d4" id="r_a82acacfd4b19f9435bab755680fca7d4"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a82acacfd4b19f9435bab755680fca7d4">kind</a> () const</td></tr>
+<tr class="separator:a82acacfd4b19f9435bab755680fca7d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ef766f82f5ca66b56c530187b0a76d6" id="r_a4ef766f82f5ca66b56c530187b0a76d6"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a4ef766f82f5ca66b56c530187b0a76d6">sourceAsset</a> () const</td></tr>
+<tr class="separator:a4ef766f82f5ca66b56c530187b0a76d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5c406667119af43c9e93de1eb875051" id="r_ac5c406667119af43c9e93de1eb875051"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1avatar__editing_1_1AvatarLayerValue.html">AvatarLayerValue</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#ac5c406667119af43c9e93de1eb875051">layers</a> () const</td></tr>
+<tr class="separator:ac5c406667119af43c9e93de1eb875051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef59787d2b11275385adb95eea05d64d" id="r_aef59787d2b11275385adb95eea05d64d"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html">AvatarParameterValue</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#aef59787d2b11275385adb95eea05d64d">parameters</a> () const</td></tr>
+<tr class="separator:aef59787d2b11275385adb95eea05d64d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c77c8628b8c43728e96da6a38621e30" id="r_a4c77c8628b8c43728e96da6a38621e30"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1avatar__editing_1_1AvatarExpressionValue.html">AvatarExpressionValue</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a4c77c8628b8c43728e96da6a38621e30">expressions</a> () const</td></tr>
+<tr class="separator:a4c77c8628b8c43728e96da6a38621e30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32de6ec9e98ea803c6a9431ce736dd21" id="r_a32de6ec9e98ea803c6a9431ce736dd21"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#acc2530087a6e10fb1f160c47c4392f21">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a32de6ec9e98ea803c6a9431ce736dd21">validate</a> () const</td></tr>
+<tr class="separator:a32de6ec9e98ea803c6a9431ce736dd21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07b1889424331bf9358229d200ab5f03" id="r_a07b1889424331bf9358229d200ab5f03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#ae068fe041e3f0a044ed97e03b0b68cbf">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a07b1889424331bf9358229d200ab5f03">snapshotValue</a> () const</td></tr>
+<tr class="separator:a07b1889424331bf9358229d200ab5f03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69157fcc658c45faf018c5eadb3e0d26" id="r_a69157fcc658c45faf018c5eadb3e0d26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a69157fcc658c45faf018c5eadb3e0d26">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1avatar__editing.html#ae068fe041e3f0a044ed97e03b0b68cbf">EditorValue</a> &amp;)</td></tr>
+<tr class="separator:a69157fcc658c45faf018c5eadb3e0d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a1a2687f093acd0ca7f4f93af7ff93090"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a1a2687f093acd0ca7f4f93af7ff93090">~IPropertyProvider</a> ()=default</td></tr>
+<tr class="separator:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_aa07e163a9dafdd187f5e74a2208192e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity for generic property editing.  <br /></td></tr>
+<tr class="separator:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Revisioned image/Live2D/VRoid Avatar authoring asset. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00074">74</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a679c13c0faf6cd8bd1166f38f295f6af" name="a679c13c0faf6cd8bd1166f38f295f6af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a679c13c0faf6cd8bd1166f38f295f6af">&#9670;&#160;</a></span>AvatarDocumentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar_editing::AvatarDocumentTarget::AvatarDocumentTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a842abf7ea2935c9545a60269d00de5bd" name="a842abf7ea2935c9545a60269d00de5bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a842abf7ea2935c9545a60269d00de5bd">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; void &gt; eve::avatar_editing::AvatarDocumentTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="AvatarTarget_8h_source.html#l00112">expressions()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="EditingValue_8cpp_source.html#l00050">eve::editing::Value::isWithinLimits()</a>, <a class="el" href="AvatarTarget_8h_source.html#l00108">kind()</a>, <a class="el" href="AvatarTarget_8h_source.html#l00110">layers()</a>, <a class="el" href="AvatarTarget_8h_source.html#l00111">parameters()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00484">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="ab57fc6b3650b1cfc3744fed579fb31c0" name="ab57fc6b3650b1cfc3744fed579fb31c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab57fc6b3650b1cfc3744fed579fb31c0">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::avatar_editing::AvatarDocumentTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a319ccf4ffbc1138334f795b280782d30" name="a319ccf4ffbc1138334f795b280782d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a319ccf4ffbc1138334f795b280782d30">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#ac63ec7074cd3090c05c4789dff5e5c49">IDomainOperationTarget</a> &gt; eve::avatar_editing::AvatarDocumentTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00471">471</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a84b672d71e709b97968aff37eeaab57c" name="a84b672d71e709b97968aff37eeaab57c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84b672d71e709b97968aff37eeaab57c">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; void &gt; eve::avatar_editing::AvatarDocumentTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#ac63ec7074cd3090c05c4789dff5e5c49">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00474">474</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a435e60ba531bacc07689d81ea412db19" name="a435e60ba531bacc07689d81ea412db19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a435e60ba531bacc07689d81ea412db19">&#9670;&#160;</a></span>currentRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt; eve::avatar_editing::AvatarDocumentTarget::currentRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a5aa963e389bf3586ffa808670142c379">eve::editing::IPropertyProvider</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af01bbd307d7bc4dd8b01898182e7db54" name="af01bbd307d7bc4dd8b01898182e7db54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af01bbd307d7bc4dd8b01898182e7db54">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a3d1d884f2cd8adfa7aa18e711a9dde52">TargetDescriptor</a> eve::avatar_editing::AvatarDocumentTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProperty_8h_source.html#l00121">eve::editing::IPropertyProvider::editingCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="aff7dbf71d09fba02a285495d3c1ee599" name="aff7dbf71d09fba02a285495d3c1ee599"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff7dbf71d09fba02a285495d3c1ee599">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1bb398d88175b064c8e992c879d2265c">EditRegion</a> eve::avatar_editing::AvatarDocumentTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4c77c8628b8c43728e96da6a38621e30" name="a4c77c8628b8c43728e96da6a38621e30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c77c8628b8c43728e96da6a38621e30">&#9670;&#160;</a></span>expressions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1avatar__editing_1_1AvatarExpressionValue.html">AvatarExpressionValue</a> &gt; &amp; eve::avatar_editing::AvatarDocumentTarget::expressions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00424">applyDomainOperation()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00329">eve::avatar_editor::AvatarDocumentEditor::deleteSelectedExpression()</a>, <a class="el" href="AvatarDocumentEditor_8h_source.html#l00101">eve::avatar_editor::AvatarDocumentEditor::expressionCount()</a>, <a class="el" href="AvatarRuntime_8cpp_source.html#l00018">eve::avatar_editing::AvatarDocumentRuntime::publish()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00208">eve::avatar_editor::AvatarDocumentEditor::selectExpression()</a>.</p>
+
+</div>
+</div>
+<a id="a82acacfd4b19f9435bab755680fca7d4" name="a82acacfd4b19f9435bab755680fca7d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82acacfd4b19f9435bab755680fca7d4">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::avatar_editing::AvatarDocumentTarget::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00424">applyDomainOperation()</a>, <a class="el" href="AvatarDocumentEditor_8h_source.html#l00070">eve::avatar_editor::AvatarDocumentEditor::kind()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00301">makeSetSource()</a> , 以及 <a class="el" href="AvatarRuntime_8cpp_source.html#l00018">eve::avatar_editing::AvatarDocumentRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<a id="ac5c406667119af43c9e93de1eb875051" name="ac5c406667119af43c9e93de1eb875051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5c406667119af43c9e93de1eb875051">&#9670;&#160;</a></span>layers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1avatar__editing_1_1AvatarLayerValue.html">AvatarLayerValue</a> &gt; &amp; eve::avatar_editing::AvatarDocumentTarget::layers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00424">applyDomainOperation()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00263">eve::avatar_editor::AvatarDocumentEditor::createLayer()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00276">eve::avatar_editor::AvatarDocumentEditor::deleteSelectedLayer()</a>, <a class="el" href="AvatarDocumentEditor_8h_source.html#l00074">eve::avatar_editor::AvatarDocumentEditor::layerCount()</a>, <a class="el" href="AvatarRuntime_8cpp_source.html#l00018">eve::avatar_editing::AvatarDocumentRuntime::publish()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00179">eve::avatar_editor::AvatarDocumentEditor::selectLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a69157fcc658c45faf018c5eadb3e0d26" name="a69157fcc658c45faf018c5eadb3e0d26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69157fcc658c45faf018c5eadb3e0d26">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; void &gt; eve::avatar_editing::AvatarDocumentTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#ae068fe041e3f0a044ed97e03b0b68cbf">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00484">484</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8cpp_source.html#l00424">applyDomainOperation()</a>, <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a062be35c3e5fa3102ff2f2640a741eaa" name="a062be35c3e5fa3102ff2f2640a741eaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a062be35c3e5fa3102ff2f2640a741eaa">&#9670;&#160;</a></span>makeCreateExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeCreateExpression </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1avatar__editing_1_1AvatarExpressionValue.html">AvatarExpressionValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00320">eve::avatar_editor::AvatarDocumentEditor::createExpression()</a>.</p>
+
+</div>
+</div>
+<a id="a95eecdfa2a7dc204a7cc6b8a029f30a0" name="a95eecdfa2a7dc204a7cc6b8a029f30a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95eecdfa2a7dc204a7cc6b8a029f30a0">&#9670;&#160;</a></span>makeCreateLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeCreateLayer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1avatar__editing_1_1AvatarLayerValue.html">AvatarLayerValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00263">eve::avatar_editor::AvatarDocumentEditor::createLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a2a1b01bc0f7c0d56a95d5cd8ba768563" name="a2a1b01bc0f7c0d56a95d5cd8ba768563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a1b01bc0f7c0d56a95d5cd8ba768563">&#9670;&#160;</a></span>makeCreateParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeCreateParameter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html">AvatarParameterValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00293">eve::avatar_editor::AvatarDocumentEditor::createParameter()</a>.</p>
+
+</div>
+</div>
+<a id="a61a1b48923464ad80ac2ad0e4818c308" name="a61a1b48923464ad80ac2ad0e4818c308"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61a1b48923464ad80ac2ad0e4818c308">&#9670;&#160;</a></span>makeDeleteExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeDeleteExpression </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#a66d3fa8f223bd1e5b09024a305416cf6">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00369">369</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00329">eve::avatar_editor::AvatarDocumentEditor::deleteSelectedExpression()</a>.</p>
+
+</div>
+</div>
+<a id="acb57cad602836a23fc34d1324c92c072" name="acb57cad602836a23fc34d1324c92c072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb57cad602836a23fc34d1324c92c072">&#9670;&#160;</a></span>makeDeleteLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeDeleteLayer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#a66d3fa8f223bd1e5b09024a305416cf6">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00276">eve::avatar_editor::AvatarDocumentEditor::deleteSelectedLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a7f7f496f08f132dd0eaf73445ab54463" name="a7f7f496f08f132dd0eaf73445ab54463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f7f496f08f132dd0eaf73445ab54463">&#9670;&#160;</a></span>makeDeleteParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeDeleteParameter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#a66d3fa8f223bd1e5b09024a305416cf6">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00302">eve::avatar_editor::AvatarDocumentEditor::deleteSelectedParameter()</a>.</p>
+
+</div>
+</div>
+<a id="abed6856e3dd5914407bf3e517e8d637a" name="abed6856e3dd5914407bf3e517e8d637a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abed6856e3dd5914407bf3e517e8d637a">&#9670;&#160;</a></span>makeReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeReset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#ab9d8694b43e61e50345a64baaefc2cbd">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a6175bdd491af083643d6cac008e99851">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00254">makeSet()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="AvatarTarget_8cpp_source.html#l00171">schema()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00254">makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a6b891fd614cbbf659a6e507e9e94797b" name="a6b891fd614cbbf659a6e507e9e94797b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b891fd614cbbf659a6e507e9e94797b">&#9670;&#160;</a></span>makeSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeSet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#ab9d8694b43e61e50345a64baaefc2cbd">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#ae068fe041e3f0a044ed97e03b0b68cbf">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a37fd27faadd63ce4dd990ff525b10cc5">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00295">makeReset()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00171">schema()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00295">makeReset()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00235">eve::avatar_editor::AvatarDocumentEditor::setLayerVisible()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00244">eve::avatar_editor::AvatarDocumentEditor::setLayerZ()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00254">eve::avatar_editor::AvatarDocumentEditor::setParameterValue()</a>.</p>
+
+</div>
+</div>
+<a id="ad431e869ba15c3ea1c397deb40423f46" name="ad431e869ba15c3ea1c397deb40423f46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad431e869ba15c3ea1c397deb40423f46">&#9670;&#160;</a></span>makeSetSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#a93b68ff903e55fa2c5c5f5d80bb01612">DomainOperation</a> &gt; eve::avatar_editing::AvatarDocumentTarget::makeSetSource </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>asset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Change backend kind and model source. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00301">301</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00108">kind()</a>.</p>
+
+</div>
+</div>
+<a id="aef59787d2b11275385adb95eea05d64d" name="aef59787d2b11275385adb95eea05d64d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef59787d2b11275385adb95eea05d64d">&#9670;&#160;</a></span>parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1avatar__editing_1_1AvatarParameterValue.html">AvatarParameterValue</a> &gt; &amp; eve::avatar_editing::AvatarDocumentTarget::parameters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00424">applyDomainOperation()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00302">eve::avatar_editor::AvatarDocumentEditor::deleteSelectedParameter()</a>, <a class="el" href="AvatarDocumentEditor_8h_source.html#l00093">eve::avatar_editor::AvatarDocumentEditor::parameterCount()</a>, <a class="el" href="AvatarRuntime_8cpp_source.html#l00018">eve::avatar_editing::AvatarDocumentRuntime::publish()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00193">eve::avatar_editor::AvatarDocumentEditor::selectParameter()</a>.</p>
+
+</div>
+</div>
+<a id="aa9775d93fb2e8bfff2847642013e33e8" name="aa9775d93fb2e8bfff2847642013e33e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9775d93fb2e8bfff2847642013e33e8">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::avatar_editing::AvatarDocumentTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#a50c45323060269c9983d0082716733d7">CapabilityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an optional stable editing capability. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by this target, or null when unsupported. @lifetime Valid until this target is destroyed or the capability is explicitly invalidated. </dd></dl>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00121">eve::editing::IPropertyProvider::editingCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a8909fb6832abf4aef7f0c605535669d4" name="a8909fb6832abf4aef7f0c605535669d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8909fb6832abf4aef7f0c605535669d4">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a74ca75dada9fc97066f417b94d71d7ac">PropertyReadResult</a> eve::avatar_editing::AvatarDocumentTarget::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#ab9d8694b43e61e50345a64baaefc2cbd">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a416f8e8d2ee0880822430acea12f55d8">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00171">schema()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="ae27d873d00be971e91bbd1e1de07a6a1" name="ae27d873d00be971e91bbd1e1de07a6a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae27d873d00be971e91bbd1e1de07a6a1">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::avatar_editing::AvatarDocumentTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarRuntime_8cpp_source.html#l00018">eve::avatar_editing::AvatarDocumentRuntime::publish()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00068">eve::avatar_editor::AvatarDocumentEditor::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a6accfe49a9587efc986bfc3c9ca511e6" name="a6accfe49a9587efc986bfc3c9ca511e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6accfe49a9587efc986bfc3c9ca511e6">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#ab61af72233b21c23f943def04d39bb77">PropertySchema</a> eve::avatar_editing::AvatarDocumentTarget::schema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1avatar__editing.html#aeb5c29fea68f30a39eb7688696da4e67">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aad2055c613e332305f14ecfd7c3ece44">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProperty_8h_source.html#l00102">eve::editing::PropertySchema::properties</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00171">schema()</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00100">eve::editing::PropertySchema::typeId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00295">makeReset()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00254">makeSet()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00192">read()</a> , 以及 <a class="el" href="AvatarTarget_8cpp_source.html#l00171">schema()</a>.</p>
+
+</div>
+</div>
+<a id="a07b1889424331bf9358229d200ab5f03" name="a07b1889424331bf9358229d200ab5f03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07b1889424331bf9358229d200ab5f03">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#ae068fe041e3f0a044ed97e03b0b68cbf">EditorValue</a> eve::avatar_editing::AvatarDocumentTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00481">481</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ef766f82f5ca66b56c530187b0a76d6" name="a4ef766f82f5ca66b56c530187b0a76d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ef766f82f5ca66b56c530187b0a76d6">&#9670;&#160;</a></span>sourceAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::avatar_editing::AvatarDocumentTarget::sourceAsset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarRuntime_8cpp_source.html#l00018">eve::avatar_editing::AvatarDocumentRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<a id="ae35823a43c6fecf309bb9a0230ed3fb1" name="ae35823a43c6fecf309bb9a0230ed3fb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae35823a43c6fecf309bb9a0230ed3fb1">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a5cec47b7e9743e5843945887fa53d7f8">TargetId</a> eve::avatar_editing::AvatarDocumentTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a> 第 <a class="el" href="AvatarTarget_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a32de6ec9e98ea803c6a9431ce736dd21" name="a32de6ec9e98ea803c6a9431ce736dd21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32de6ec9e98ea803c6a9431ce736dd21">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1avatar__editing.html#acc2530087a6e10fb1f160c47c4392f21">EditorDiagnostic</a> &gt; eve::avatar_editing::AvatarDocumentTarget::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a> 第 <a class="el" href="AvatarTarget_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarRuntime_8cpp_source.html#l00018">eve::avatar_editing::AvatarDocumentRuntime::publish()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/avatar_editing/<a class="el" href="AvatarTarget_8h_source.html">AvatarTarget.h</a></li>
+<li>src/modules/avatar_editing/<a class="el" href="AvatarTarget_8cpp_source.html">AvatarTarget.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tags/Tags.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5bec95dedccf52791640274e337a4add.html">tags</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Tags.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Tags_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Tags_8h.html">tags/Tags.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tags.html">eve::tags</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>std::string valueAt(<span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">return</span> index &lt; 0 || static_cast&lt;std::size_t&gt;(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) &gt;= <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.size() ? std::string{} : <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>];</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>}</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">const</span> TagChangeEvent* eventAt(<span class="keyword">const</span> TagStore&amp; store, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a> = store.events();</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> index &lt; 0 || static_cast&lt;std::size_t&gt;(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) &gt;= <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>.size() ? nullptr : &amp;<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>];</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>std::vector&lt;std::string&gt; strings(ssq::Array array) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    std::vector&lt;std::string&gt; result;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    result.reserve(array.size());</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; array.size(); ++i) result.push_back(array.get&lt;std::string&gt;(i));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">bool</span> requireAllTags(Tags* self, <span class="keyword">const</span> std::string&amp; subject, ssq::Array requested) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">return</span> self-&gt;store().requireAllTags(subject, strings(requested));</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">bool</span> requireAnyTag(Tags* self, <span class="keyword">const</span> std::string&amp; subject, ssq::Array requested) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">return</span> self-&gt;store().requireAnyTag(subject, strings(requested));</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">bool</span> requireAllCapabilities(Tags* self, <span class="keyword">const</span> std::string&amp; subject, ssq::Array requested) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> self-&gt;store().requireAllCapabilities(subject, strings(requested));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keywordtype">bool</span> requireAnyCapability(Tags* self, <span class="keyword">const</span> std::string&amp; subject, ssq::Array requested) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> self-&gt;store().requireAnyCapability(subject, strings(requested));</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tags.html#ae2d95cd4bc0162b3efa4057395d9738f">   39</a></span><a class="code hl_define" href="Module_8h.html#a91ade12cb7684447c2302317e2203fc4">Module_IMPL</a>(<a class="code hl_class" href="classeve_1_1tags_1_1Tags.html">Tags</a>, <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1tags_1_1Tags.html">Tags</a>());</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#abe1f142a50aa68e4b89ea713f176954d">   41</a></span><span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#abe1f142a50aa68e4b89ea713f176954d">Tags::add</a>(<span class="keyword">const</span> std::string&amp; subject, <span class="keyword">const</span> std::string&amp; tag) { <span class="keywordflow">return</span> store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#ad8767e9eefed37b30b11565be68dfa18">addTag</a>(subject, tag); }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a4b307c3c102fc4dca90ff32b9cbafba8">   42</a></span><span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a4b307c3c102fc4dca90ff32b9cbafba8">Tags::remove</a>(<span class="keyword">const</span> std::string&amp; subject, <span class="keyword">const</span> std::string&amp; tag) { <span class="keywordflow">return</span> store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#a56b8d0073ef9f5a0c6ed6c5af29b35a3">removeTag</a>(subject, tag); }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#af8265d857904fbb37887065eb1c44a48">   43</a></span><span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#af8265d857904fbb37887065eb1c44a48">Tags::has</a>(<span class="keyword">const</span> std::string&amp; subject, <span class="keyword">const</span> std::string&amp; tag)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#abc2ab166e7b3d1e96121ea61ce6ad741">hasTag</a>(subject, tag); }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a4a5005dc9e8992266cab6b09e746436d">   44</a></span><span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a4a5005dc9e8992266cab6b09e746436d">Tags::count</a>(<span class="keyword">const</span> std::string&amp; subject)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#a490d1a3db9ef509e6220c6fe37a68ac0">tagsOf</a>(subject).size()); }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a72cbc843687464c1cdf0cbcf39fbd21b">   45</a></span>std::string <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a72cbc843687464c1cdf0cbcf39fbd21b">Tags::at</a>(<span class="keyword">const</span> std::string&amp; subject, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> valueAt(store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#a490d1a3db9ef509e6220c6fe37a68ac0">tagsOf</a>(subject), <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>); }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a47d2c68d72e8f437a04d12f8f50368f9">   46</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a47d2c68d72e8f437a04d12f8f50368f9">Tags::subjectCount</a>(<span class="keyword">const</span> std::string&amp; tag)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#ae9926cd2b277235141966d807eadbea9">subjectsWithTag</a>(tag).size()); }</div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a8301a0983cfcb4a6e36ea5052dcadf17">   47</a></span>std::string <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a8301a0983cfcb4a6e36ea5052dcadf17">Tags::subjectAt</a>(<span class="keyword">const</span> std::string&amp; tag, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> valueAt(store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#ae9926cd2b277235141966d807eadbea9">subjectsWithTag</a>(tag), <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#ad13e1129ec1ee446ca636044a14af38f">   51</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#ad13e1129ec1ee446ca636044a14af38f">Tags::addCapability</a>(<span class="keyword">const</span> std::string&amp; subject, <span class="keyword">const</span> std::string&amp; capability) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#aa2936f07b11d5fc761664e59dffb916f">addCapability</a>(subject, capability);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a3acc31c465bb8eeb603fff4ec9243685">   54</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a3acc31c465bb8eeb603fff4ec9243685">Tags::removeCapability</a>(<span class="keyword">const</span> std::string&amp; subject, <span class="keyword">const</span> std::string&amp; capability) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">return</span> store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#a5760171b8a0954ce1435156a9f0032ee">removeCapability</a>(subject, capability);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a8e73f6d6f7de92a1569f66eb53c71ae4">   57</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a8e73f6d6f7de92a1569f66eb53c71ae4">Tags::hasCapability</a>(<span class="keyword">const</span> std::string&amp; subject, <span class="keyword">const</span> std::string&amp; capability)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#af51d5c32d7950b3f3726d6aa7caa1163">hasCapability</a>(subject, capability);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a5fc622a9f239df352578b230dbb1b224">   60</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a5fc622a9f239df352578b230dbb1b224">Tags::capabilityCount</a>(<span class="keyword">const</span> std::string&amp; subject)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#ab3e7e2fb37e38096f9134b7f5cf129db">capabilitiesOf</a>(subject).size());</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#afece9604285968a8aee576a775f9b7ed">   63</a></span>std::string <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#afece9604285968a8aee576a775f9b7ed">Tags::capabilityAt</a>(<span class="keyword">const</span> std::string&amp; subject, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">return</span> valueAt(store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#ab3e7e2fb37e38096f9134b7f5cf129db">capabilitiesOf</a>(subject), <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a903ae0ec123edb76634f64fda3b66f7a">   67</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a903ae0ec123edb76634f64fda3b66f7a">Tags::removeSubject</a>(<span class="keyword">const</span> std::string&amp; subject) { <span class="keywordflow">return</span> store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#a371dd79f59f654d874d5035fe0509573">removeSubject</a>(subject); }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#aa0597d6f04eaff24cfe3410ca26e90c5">   68</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#aa0597d6f04eaff24cfe3410ca26e90c5">Tags::clear</a>() { store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#a72c2b4ff029c52b2d63baab56b4b7881">clear</a>(); }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#acdc5f02d7a7eab694175fc6171d876d7">   69</a></span><span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#acdc5f02d7a7eab694175fc6171d876d7">Tags::eventCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#ad13772e2117534d9aa6165e1d493f2b3">events</a>().size()); }</div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#ab788610523ca7e2125ff335378fd81cf">   70</a></span><span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#ab788610523ca7e2125ff335378fd81cf">Tags::eventSequence</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keyword">event</span> = eventAt(store_, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">return</span> <span class="keyword">event</span> ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<span class="keyword">event</span>-&gt;sequence) : 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#aa5e51a28e6ed6017dfe22c2ddde8d33b">   74</a></span>std::string <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#aa5e51a28e6ed6017dfe22c2ddde8d33b">Tags::eventAction</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keyword">event</span> = eventAt(store_, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">return</span> <span class="keyword">event</span> ? <span class="keyword">event</span>-&gt;action : std::string{};</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#afce6fecd29cf6727639c66fb0e59e063">   78</a></span>std::string <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#afce6fecd29cf6727639c66fb0e59e063">Tags::eventSubject</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keyword">event</span> = eventAt(store_, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">return</span> <span class="keyword">event</span> ? <span class="keyword">event</span>-&gt;subject : std::string{};</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#ada16a438129c0d8a70b9dc86c7bee6a9">   82</a></span>std::string <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#ada16a438129c0d8a70b9dc86c7bee6a9">Tags::eventValue</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keyword">event</span> = eventAt(store_, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> <span class="keyword">event</span> ? <span class="keyword">event</span>-&gt;value : std::string{};</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1tags_1_1Tags.html#a4215a094d1e1468c618f2f4587d5ebe3">   86</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a4215a094d1e1468c618f2f4587d5ebe3">Tags::clearEvents</a>() { store_.<a class="code hl_function" href="classeve_1_1tags_1_1TagStore.html#aae2e096fe8c103b667454d919cb19497">clearEvents</a>(); }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keywordtype">void</span> Tags::expose(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a> = table.addClass(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, Tags::create, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    expose(<a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keywordtype">void</span> Tags::expose(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getName&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">Tags::getName</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;add&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#abe1f142a50aa68e4b89ea713f176954d">Tags::add</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;remove&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a4b307c3c102fc4dca90ff32b9cbafba8">Tags::remove</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;has&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#af8265d857904fbb37887065eb1c44a48">Tags::has</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;count&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a4a5005dc9e8992266cab6b09e746436d">Tags::count</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;at&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a72cbc843687464c1cdf0cbcf39fbd21b">Tags::at</a>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;subjectCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a47d2c68d72e8f437a04d12f8f50368f9">Tags::subjectCount</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;subjectAt&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a8301a0983cfcb4a6e36ea5052dcadf17">Tags::subjectAt</a>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;requireAll&quot;</span>, requireAllTags);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;requireAny&quot;</span>, requireAnyTag);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;addCapability&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#ad13e1129ec1ee446ca636044a14af38f">Tags::addCapability</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;removeCapability&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a3acc31c465bb8eeb603fff4ec9243685">Tags::removeCapability</a>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;hasCapability&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a8e73f6d6f7de92a1569f66eb53c71ae4">Tags::hasCapability</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;capabilityCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a5fc622a9f239df352578b230dbb1b224">Tags::capabilityCount</a>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;capabilityAt&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#afece9604285968a8aee576a775f9b7ed">Tags::capabilityAt</a>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;requireAllCapabilities&quot;</span>, requireAllCapabilities);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;requireAnyCapability&quot;</span>, requireAnyCapability);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;removeSubject&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a903ae0ec123edb76634f64fda3b66f7a">Tags::removeSubject</a>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;clear&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#aa0597d6f04eaff24cfe3410ca26e90c5">Tags::clear</a>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;eventCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#acdc5f02d7a7eab694175fc6171d876d7">Tags::eventCount</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;eventSequence&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#ab788610523ca7e2125ff335378fd81cf">Tags::eventSequence</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;eventAction&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#aa5e51a28e6ed6017dfe22c2ddde8d33b">Tags::eventAction</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;eventSubject&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#afce6fecd29cf6727639c66fb0e59e063">Tags::eventSubject</a>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;eventValue&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#ada16a438129c0d8a70b9dc86c7bee6a9">Tags::eventValue</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;clearEvents&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1tags_1_1Tags.html#a4215a094d1e1468c618f2f4587d5ebe3">Tags::clearEvents</a>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}  <span class="comment">// namespace eve::tags</span></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00021">ECS.cpp:21</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a127467c202a16db28ed73fe86239cfd3"><div class="ttname"><a href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a></div><div class="ttdeci">std::map&lt; std::string, Var &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00459">EditorHost.cpp:459</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aModule_8h_html_a91ade12cb7684447c2302317e2203fc4"><div class="ttname"><a href="Module_8h.html#a91ade12cb7684447c2302317e2203fc4">Module_IMPL</a></div><div class="ttdeci">#define Module_IMPL(ModuleName, newExpr)</div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00026">Module.h:26</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a6432e7a83650f875c816d914fb84d4ad"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a></div><div class="ttdeci">Battle::Events events</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00135">TacticsPersistence.cpp:135</a></div></div>
+<div class="ttc" id="aTags_8h_html"><div class="ttname"><a href="Tags_8h.html">Tags.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html_ae00d561f21eef86f21d032b53ca84da0"><div class="ttname"><a href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">eve::Module::getName</a></div><div class="ttdeci">virtual std::string getName() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_a371dd79f59f654d874d5035fe0509573"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#a371dd79f59f654d874d5035fe0509573">eve::tags::TagStore::removeSubject</a></div><div class="ttdeci">bool removeSubject(const SubjectId &amp;subject)</div><div class="ttdoc">Removes all tags and capabilities belonging to one subject.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00124">TagStore.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_a490d1a3db9ef509e6220c6fe37a68ac0"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#a490d1a3db9ef509e6220c6fe37a68ac0">eve::tags::TagStore::tagsOf</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tagsOf(const SubjectId &amp;subject) const</div><div class="ttdoc">Returns a subject's tags in lexical order.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00066">TagStore.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_a56b8d0073ef9f5a0c6ed6c5af29b35a3"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#a56b8d0073ef9f5a0c6ed6c5af29b35a3">eve::tags::TagStore::removeTag</a></div><div class="ttdeci">bool removeTag(const SubjectId &amp;subject, const std::string &amp;tag)</div><div class="ttdoc">Removes a tag from a subject.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00053">TagStore.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_a5760171b8a0954ce1435156a9f0032ee"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#a5760171b8a0954ce1435156a9f0032ee">eve::tags::TagStore::removeCapability</a></div><div class="ttdeci">bool removeCapability(const SubjectId &amp;subject, const std::string &amp;capability)</div><div class="ttdoc">Removes a capability from a subject.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00104">TagStore.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_a72c2b4ff029c52b2d63baab56b4b7881"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#a72c2b4ff029c52b2d63baab56b4b7881">eve::tags::TagStore::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clears all state and resets event sequencing.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00134">TagStore.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_aa2936f07b11d5fc761664e59dffb916f"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#aa2936f07b11d5fc761664e59dffb916f">eve::tags::TagStore::addCapability</a></div><div class="ttdeci">bool addCapability(const SubjectId &amp;subject, const std::string &amp;capability)</div><div class="ttdoc">Adds a capability to a subject.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00101">TagStore.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_aae2e096fe8c103b667454d919cb19497"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#aae2e096fe8c103b667454d919cb19497">eve::tags::TagStore::clearEvents</a></div><div class="ttdeci">void clearEvents()</div><div class="ttdoc">Clears queued changes without changing tag state.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8h_source.html#l00072">TagStore.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_ab3e7e2fb37e38096f9134b7f5cf129db"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#ab3e7e2fb37e38096f9134b7f5cf129db">eve::tags::TagStore::capabilitiesOf</a></div><div class="ttdeci">std::vector&lt; std::string &gt; capabilitiesOf(const SubjectId &amp;subject) const</div><div class="ttdoc">Returns a subject's capabilities in lexical order.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00111">TagStore.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_abc2ab166e7b3d1e96121ea61ce6ad741"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#abc2ab166e7b3d1e96121ea61ce6ad741">eve::tags::TagStore::hasTag</a></div><div class="ttdeci">bool hasTag(const SubjectId &amp;subject, const std::string &amp;tag) const</div><div class="ttdoc">Tests whether a subject has an exact tag.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00056">TagStore.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_ad13772e2117534d9aa6165e1d493f2b3"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#ad13772e2117534d9aa6165e1d493f2b3">eve::tags::TagStore::events</a></div><div class="ttdeci">const std::vector&lt; TagChangeEvent &gt; &amp; events() const</div><div class="ttdoc">Returns queued changes in deterministic sequence order.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8h_source.html#l00070">TagStore.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_ad8767e9eefed37b30b11565be68dfa18"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#ad8767e9eefed37b30b11565be68dfa18">eve::tags::TagStore::addTag</a></div><div class="ttdeci">bool addTag(const SubjectId &amp;subject, const std::string &amp;tag)</div><div class="ttdoc">Adds a tag to a subject.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00050">TagStore.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_ae9926cd2b277235141966d807eadbea9"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#ae9926cd2b277235141966d807eadbea9">eve::tags::TagStore::subjectsWithTag</a></div><div class="ttdeci">std::vector&lt; SubjectId &gt; subjectsWithTag(const std::string &amp;tag) const</div><div class="ttdoc">Returns subjects carrying a tag in lexical order.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00070">TagStore.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1TagStore_html_af51d5c32d7950b3f3726d6aa7caa1163"><div class="ttname"><a href="classeve_1_1tags_1_1TagStore.html#af51d5c32d7950b3f3726d6aa7caa1163">eve::tags::TagStore::hasCapability</a></div><div class="ttdeci">bool hasCapability(const SubjectId &amp;subject, const std::string &amp;capability) const</div><div class="ttdoc">Tests whether a subject has an exact capability.</div><div class="ttdef"><b>Definition</b> <a href="TagStore_8cpp_source.html#l00107">TagStore.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html">eve::tags::Tags</a></div><div class="ttdoc">Script-facing module for generic tags and capabilities.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8h_source.html#l00012">Tags.h:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a3acc31c465bb8eeb603fff4ec9243685"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a3acc31c465bb8eeb603fff4ec9243685">eve::tags::Tags::removeCapability</a></div><div class="ttdeci">bool removeCapability(const std::string &amp;subject, const std::string &amp;capability)</div><div class="ttdoc">Removes a capability from a subject.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00054">Tags.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a4215a094d1e1468c618f2f4587d5ebe3"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a4215a094d1e1468c618f2f4587d5ebe3">eve::tags::Tags::clearEvents</a></div><div class="ttdeci">void clearEvents()</div><div class="ttdoc">Clears queued events without changing state.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00086">Tags.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a47d2c68d72e8f437a04d12f8f50368f9"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a47d2c68d72e8f437a04d12f8f50368f9">eve::tags::Tags::subjectCount</a></div><div class="ttdeci">int subjectCount(const std::string &amp;tag) const</div><div class="ttdoc">Gets the number of subjects carrying a tag.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00046">Tags.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a4a5005dc9e8992266cab6b09e746436d"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a4a5005dc9e8992266cab6b09e746436d">eve::tags::Tags::count</a></div><div class="ttdeci">int count(const std::string &amp;subject) const</div><div class="ttdoc">Gets a subject's tag count.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00044">Tags.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a4b307c3c102fc4dca90ff32b9cbafba8"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a4b307c3c102fc4dca90ff32b9cbafba8">eve::tags::Tags::remove</a></div><div class="ttdeci">bool remove(const std::string &amp;subject, const std::string &amp;tag)</div><div class="ttdoc">Removes a tag from a subject.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00042">Tags.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a5fc622a9f239df352578b230dbb1b224"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a5fc622a9f239df352578b230dbb1b224">eve::tags::Tags::capabilityCount</a></div><div class="ttdeci">int capabilityCount(const std::string &amp;subject) const</div><div class="ttdoc">Gets a subject's capability count.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00060">Tags.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a72cbc843687464c1cdf0cbcf39fbd21b"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a72cbc843687464c1cdf0cbcf39fbd21b">eve::tags::Tags::at</a></div><div class="ttdeci">std::string at(const std::string &amp;subject, int index) const</div><div class="ttdoc">Gets a subject's tag by deterministic index, or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00045">Tags.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a8301a0983cfcb4a6e36ea5052dcadf17"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a8301a0983cfcb4a6e36ea5052dcadf17">eve::tags::Tags::subjectAt</a></div><div class="ttdeci">std::string subjectAt(const std::string &amp;tag, int index) const</div><div class="ttdoc">Gets a subject carrying a tag by deterministic index, or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00047">Tags.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a8e73f6d6f7de92a1569f66eb53c71ae4"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a8e73f6d6f7de92a1569f66eb53c71ae4">eve::tags::Tags::hasCapability</a></div><div class="ttdeci">bool hasCapability(const std::string &amp;subject, const std::string &amp;capability) const</div><div class="ttdoc">Tests whether a subject has a capability.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00057">Tags.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_a903ae0ec123edb76634f64fda3b66f7a"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#a903ae0ec123edb76634f64fda3b66f7a">eve::tags::Tags::removeSubject</a></div><div class="ttdeci">bool removeSubject(const std::string &amp;subject)</div><div class="ttdoc">Removes every tag and capability belonging to a subject.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00067">Tags.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_aa0597d6f04eaff24cfe3410ca26e90c5"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#aa0597d6f04eaff24cfe3410ca26e90c5">eve::tags::Tags::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clears all state and resets event sequencing.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00068">Tags.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_aa5e51a28e6ed6017dfe22c2ddde8d33b"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#aa5e51a28e6ed6017dfe22c2ddde8d33b">eve::tags::Tags::eventAction</a></div><div class="ttdeci">std::string eventAction(int index) const</div><div class="ttdoc">Gets event action by index, or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00074">Tags.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_ab788610523ca7e2125ff335378fd81cf"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#ab788610523ca7e2125ff335378fd81cf">eve::tags::Tags::eventSequence</a></div><div class="ttdeci">int eventSequence(int index) const</div><div class="ttdoc">Gets event sequence by index, or zero.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00070">Tags.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_abe1f142a50aa68e4b89ea713f176954d"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#abe1f142a50aa68e4b89ea713f176954d">eve::tags::Tags::add</a></div><div class="ttdeci">bool add(const std::string &amp;subject, const std::string &amp;tag)</div><div class="ttdoc">Adds a tag to a subject.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00041">Tags.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_acdc5f02d7a7eab694175fc6171d876d7"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#acdc5f02d7a7eab694175fc6171d876d7">eve::tags::Tags::eventCount</a></div><div class="ttdeci">int eventCount() const</div><div class="ttdoc">Gets queued change event count.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00069">Tags.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_ad13e1129ec1ee446ca636044a14af38f"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#ad13e1129ec1ee446ca636044a14af38f">eve::tags::Tags::addCapability</a></div><div class="ttdeci">bool addCapability(const std::string &amp;subject, const std::string &amp;capability)</div><div class="ttdoc">Adds a capability to a subject.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00051">Tags.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_ada16a438129c0d8a70b9dc86c7bee6a9"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#ada16a438129c0d8a70b9dc86c7bee6a9">eve::tags::Tags::eventValue</a></div><div class="ttdeci">std::string eventValue(int index) const</div><div class="ttdoc">Gets event tag or capability by index, or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00082">Tags.cpp:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_af8265d857904fbb37887065eb1c44a48"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#af8265d857904fbb37887065eb1c44a48">eve::tags::Tags::has</a></div><div class="ttdeci">bool has(const std::string &amp;subject, const std::string &amp;tag) const</div><div class="ttdoc">Tests whether a subject has a tag.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00043">Tags.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_afce6fecd29cf6727639c66fb0e59e063"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#afce6fecd29cf6727639c66fb0e59e063">eve::tags::Tags::eventSubject</a></div><div class="ttdeci">std::string eventSubject(int index) const</div><div class="ttdoc">Gets event subject by index, or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00078">Tags.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1tags_1_1Tags_html_afece9604285968a8aee576a775f9b7ed"><div class="ttname"><a href="classeve_1_1tags_1_1Tags.html#afece9604285968a8aee576a775f9b7ed">eve::tags::Tags::capabilityAt</a></div><div class="ttdeci">std::string capabilityAt(const std::string &amp;subject, int index) const</div><div class="ttdoc">Gets a capability by deterministic index, or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="Tags_8cpp_source.html#l00063">Tags.cpp:63</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tags_html"><div class="ttname"><a href="namespaceeve_1_1tags.html">eve::tags</a></div><div class="ttdef"><b>Definition</b> <a href="GameplayTag_8cpp_source.html#l00009">GameplayTag.cpp:9</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,734 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::network::NetReader类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1network.html">network</a></li><li class="navelem"><a class="el" href="classeve_1_1network_1_1NetReader.html">NetReader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1network_1_1NetReader-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::network::NetReader类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="NetStream_8h_source.html">NetStream.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af75e909763c5fadf608a51e6a948b930" id="r_af75e909763c5fadf608a51e6a948b930"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#af75e909763c5fadf608a51e6a948b930">NetReader</a> ()=default</td></tr>
+<tr class="separator:af75e909763c5fadf608a51e6a948b930"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab30b9c6090a38be70f414d198f5f96ca" id="r_ab30b9c6090a38be70f414d198f5f96ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#ab30b9c6090a38be70f414d198f5f96ca">NetReader</a> (const void *<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="separator:ab30b9c6090a38be70f414d198f5f96ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9302469b3a82367d654f68d4118ed726" id="r_a9302469b3a82367d654f68d4118ed726"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a9302469b3a82367d654f68d4118ed726">NetReader</a> (const std::vector&lt; char &gt; &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>)</td></tr>
+<tr class="separator:a9302469b3a82367d654f68d4118ed726"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affd6306d89000e8a14ab6679a45e31ac" id="r_affd6306d89000e8a14ab6679a45e31ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#affd6306d89000e8a14ab6679a45e31ac">init</a> (const void *<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="separator:affd6306d89000e8a14ab6679a45e31ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4feb2910eff9dbb660f33b14f05bb3bd" id="r_a4feb2910eff9dbb660f33b14f05bb3bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a4feb2910eff9dbb660f33b14f05bb3bd">setBytes</a> (const std::string &amp;<a class="el" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>)</td></tr>
+<tr class="separator:a4feb2910eff9dbb660f33b14f05bb3bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac231f1196b5f4b72c6b222ab2fb26137" id="r_ac231f1196b5f4b72c6b222ab2fb26137"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#ac231f1196b5f4b72c6b222ab2fb26137">u8</a> ()</td></tr>
+<tr class="separator:ac231f1196b5f4b72c6b222ab2fb26137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afab95170ef1a1c2f8216c135c063910e" id="r_afab95170ef1a1c2f8216c135c063910e"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#afab95170ef1a1c2f8216c135c063910e">i8</a> ()</td></tr>
+<tr class="separator:afab95170ef1a1c2f8216c135c063910e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18d0e47f0656982ab04b51d4fd7b4cf7" id="r_a18d0e47f0656982ab04b51d4fd7b4cf7"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a18d0e47f0656982ab04b51d4fd7b4cf7">u16</a> ()</td></tr>
+<tr class="separator:a18d0e47f0656982ab04b51d4fd7b4cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a448ff8641d782cd528c3211518347c02" id="r_a448ff8641d782cd528c3211518347c02"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a448ff8641d782cd528c3211518347c02">i16</a> ()</td></tr>
+<tr class="separator:a448ff8641d782cd528c3211518347c02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca4e34427bc9d11693a985608162c33d" id="r_aca4e34427bc9d11693a985608162c33d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#aca4e34427bc9d11693a985608162c33d">u32</a> ()</td></tr>
+<tr class="separator:aca4e34427bc9d11693a985608162c33d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89c885c1d2c30b8639cdb929f3bacbe4" id="r_a89c885c1d2c30b8639cdb929f3bacbe4"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a89c885c1d2c30b8639cdb929f3bacbe4">i32</a> ()</td></tr>
+<tr class="separator:a89c885c1d2c30b8639cdb929f3bacbe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8122c5a259e01a08e0c3907ac7526d2" id="r_af8122c5a259e01a08e0c3907ac7526d2"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#af8122c5a259e01a08e0c3907ac7526d2">u64</a> ()</td></tr>
+<tr class="separator:af8122c5a259e01a08e0c3907ac7526d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab600efa439b3467c69e323cb975512e6" id="r_ab600efa439b3467c69e323cb975512e6"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#ab600efa439b3467c69e323cb975512e6">i64</a> ()</td></tr>
+<tr class="separator:ab600efa439b3467c69e323cb975512e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a114ed0e30975f026b8fee3895d75722d" id="r_a114ed0e30975f026b8fee3895d75722d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a114ed0e30975f026b8fee3895d75722d">f32</a> ()</td></tr>
+<tr class="separator:a114ed0e30975f026b8fee3895d75722d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2cb30707b9f2bad8cfc5c0579a545f2" id="r_ac2cb30707b9f2bad8cfc5c0579a545f2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#ac2cb30707b9f2bad8cfc5c0579a545f2">f64</a> ()</td></tr>
+<tr class="separator:ac2cb30707b9f2bad8cfc5c0579a545f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac56c0df3202d57f65dafba2839153a3a" id="r_ac56c0df3202d57f65dafba2839153a3a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#ac56c0df3202d57f65dafba2839153a3a">b</a> ()</td></tr>
+<tr class="separator:ac56c0df3202d57f65dafba2839153a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa49dd598e223274f2c9d6c7750a47c39" id="r_aa49dd598e223274f2c9d6c7750a47c39"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#aa49dd598e223274f2c9d6c7750a47c39">str</a> ()</td></tr>
+<tr class="separator:aa49dd598e223274f2c9d6c7750a47c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52ce4e2c77ff9d6cc993efe63c8c9654" id="r_a52ce4e2c77ff9d6cc993efe63c8c9654"><td class="memItemLeft" align="right" valign="top">std::vector&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a52ce4e2c77ff9d6cc993efe63c8c9654">bytes</a> (size_t <a class="el" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>)</td></tr>
+<tr class="separator:a52ce4e2c77ff9d6cc993efe63c8c9654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35daf44641248c38d856de071df3ebf0" id="r_a35daf44641248c38d856de071df3ebf0"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a35daf44641248c38d856de071df3ebf0">remaining</a> () const</td></tr>
+<tr class="separator:a35daf44641248c38d856de071df3ebf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c27667ea0b4e2748c56080ceb49292b" id="r_a8c27667ea0b4e2748c56080ceb49292b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a8c27667ea0b4e2748c56080ceb49292b">pos</a> () const</td></tr>
+<tr class="separator:a8c27667ea0b4e2748c56080ceb49292b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dd624a0d2a89ac57ad1a218f2034d7f" id="r_a8dd624a0d2a89ac57ad1a218f2034d7f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1network_1_1NetReader.html#a8dd624a0d2a89ac57ad1a218f2034d7f">ok</a> () const</td></tr>
+<tr class="separator:a8dd624a0d2a89ac57ad1a218f2034d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="NetStream_8h_source.html">NetStream.h</a> 第 <a class="el" href="NetStream_8h_source.html#l00048">48</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af75e909763c5fadf608a51e6a948b930" name="af75e909763c5fadf608a51e6a948b930"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af75e909763c5fadf608a51e6a948b930">&#9670;&#160;</a></span>NetReader() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::NetReader::NetReader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab30b9c6090a38be70f414d198f5f96ca" name="ab30b9c6090a38be70f414d198f5f96ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab30b9c6090a38be70f414d198f5f96ca">&#9670;&#160;</a></span>NetReader() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::NetReader::NetReader </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="NetStream_8cpp_source.html#l00123">init()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="a9302469b3a82367d654f68d4118ed726" name="a9302469b3a82367d654f68d4118ed726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9302469b3a82367d654f68d4118ed726">&#9670;&#160;</a></span>NetReader() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::network::NetReader::NetReader </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; char &gt; &amp;&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="NetStream_8cpp_source.html#l00123">init()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac56c0df3202d57f65dafba2839153a3a" name="ac56c0df3202d57f65dafba2839153a3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac56c0df3202d57f65dafba2839153a3a">&#9670;&#160;</a></span>b()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::NetReader::b </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NetStream_8cpp_source.html#l00151">u8()</a>.</p>
+
+</div>
+</div>
+<a id="a52ce4e2c77ff9d6cc993efe63c8c9654" name="a52ce4e2c77ff9d6cc993efe63c8c9654"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52ce4e2c77ff9d6cc993efe63c8c9654">&#9670;&#160;</a></span>bytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; char &gt; eve::network::NetReader::bytes </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="NetStream_8cpp_source.html#l00146">remaining()</a> , 以及 <a class="el" href="NetStream_8cpp_source.html#l00173">u32()</a>.</p>
+
+</div>
+</div>
+<a id="a114ed0e30975f026b8fee3895d75722d" name="a114ed0e30975f026b8fee3895d75722d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a114ed0e30975f026b8fee3895d75722d">&#9670;&#160;</a></span>f32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::network::NetReader::f32 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NetStream_8cpp_source.html#l00173">u32()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="ac2cb30707b9f2bad8cfc5c0579a545f2" name="ac2cb30707b9f2bad8cfc5c0579a545f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2cb30707b9f2bad8cfc5c0579a545f2">&#9670;&#160;</a></span>f64()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::network::NetReader::f64 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NetStream_8cpp_source.html#l00183">u64()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a448ff8641d782cd528c3211518347c02" name="a448ff8641d782cd528c3211518347c02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a448ff8641d782cd528c3211518347c02">&#9670;&#160;</a></span>i16()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t eve::network::NetReader::i16 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NetStream_8cpp_source.html#l00163">u16()</a>.</p>
+
+</div>
+</div>
+<a id="a89c885c1d2c30b8639cdb929f3bacbe4" name="a89c885c1d2c30b8639cdb929f3bacbe4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89c885c1d2c30b8639cdb929f3bacbe4">&#9670;&#160;</a></span>i32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t eve::network::NetReader::i32 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NetStream_8cpp_source.html#l00173">u32()</a>.</p>
+
+</div>
+</div>
+<a id="ab600efa439b3467c69e323cb975512e6" name="ab600efa439b3467c69e323cb975512e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab600efa439b3467c69e323cb975512e6">&#9670;&#160;</a></span>i64()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::network::NetReader::i64 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NetStream_8cpp_source.html#l00183">u64()</a>.</p>
+
+</div>
+</div>
+<a id="afab95170ef1a1c2f8216c135c063910e" name="afab95170ef1a1c2f8216c135c063910e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afab95170ef1a1c2f8216c135c063910e">&#9670;&#160;</a></span>i8()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t eve::network::NetReader::i8 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="affd6306d89000e8a14ab6679a45e31ac" name="affd6306d89000e8a14ab6679a45e31ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affd6306d89000e8a14ab6679a45e31ac">&#9670;&#160;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::NetReader::init </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns false when the buffer is null/empty-invalid; <a class="el" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok()</a> tracks state. </p>
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetStream_8cpp_source.html#l00119">NetReader()</a>, <a class="el" href="NetStream_8cpp_source.html#l00115">NetReader()</a> , 以及 <a class="el" href="NetStream_8h_source.html#l00056">setBytes()</a>.</p>
+
+</div>
+</div>
+<a id="a8dd624a0d2a89ac57ad1a218f2034d7f" name="a8dd624a0d2a89ac57ad1a218f2034d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dd624a0d2a89ac57ad1a218f2034d7f">&#9670;&#160;</a></span>ok()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::NetReader::ok </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8h_source.html">NetStream.h</a> 第 <a class="el" href="NetStream_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c27667ea0b4e2748c56080ceb49292b" name="a8c27667ea0b4e2748c56080ceb49292b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c27667ea0b4e2748c56080ceb49292b">&#9670;&#160;</a></span>pos()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::network::NetReader::pos </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8h_source.html">NetStream.h</a> 第 <a class="el" href="NetStream_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a35daf44641248c38d856de071df3ebf0" name="a35daf44641248c38d856de071df3ebf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35daf44641248c38d856de071df3ebf0">&#9670;&#160;</a></span>remaining()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::network::NetReader::remaining </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetStream_8cpp_source.html#l00223">bytes()</a>.</p>
+
+</div>
+</div>
+<a id="a4feb2910eff9dbb660f33b14f05bb3bd" name="a4feb2910eff9dbb660f33b14f05bb3bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4feb2910eff9dbb660f33b14f05bb3bd">&#9670;&#160;</a></span>setBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::network::NetReader::setBytes </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8h_source.html">NetStream.h</a> 第 <a class="el" href="NetStream_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NetStream_8cpp_source.html#l00123">init()</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<a id="aa49dd598e223274f2c9d6c7750a47c39" name="aa49dd598e223274f2c9d6c7750a47c39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa49dd598e223274f2c9d6c7750a47c39">&#9670;&#160;</a></span>str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::network::NetReader::str </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="NetStream_8cpp_source.html#l00173">u32()</a>.</p>
+
+</div>
+</div>
+<a id="a18d0e47f0656982ab04b51d4fd7b4cf7" name="a18d0e47f0656982ab04b51d4fd7b4cf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18d0e47f0656982ab04b51d4fd7b4cf7">&#9670;&#160;</a></span>u16()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t eve::network::NetReader::u16 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetStream_8cpp_source.html#l00169">i16()</a>.</p>
+
+</div>
+</div>
+<a id="aca4e34427bc9d11693a985608162c33d" name="aca4e34427bc9d11693a985608162c33d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca4e34427bc9d11693a985608162c33d">&#9670;&#160;</a></span>u32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::network::NetReader::u32 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetStream_8cpp_source.html#l00223">bytes()</a>, <a class="el" href="NetStream_8cpp_source.html#l00193">f32()</a>, <a class="el" href="NetStream_8cpp_source.html#l00179">i32()</a> , 以及 <a class="el" href="NetStream_8cpp_source.html#l00211">str()</a>.</p>
+
+</div>
+</div>
+<a id="af8122c5a259e01a08e0c3907ac7526d2" name="af8122c5a259e01a08e0c3907ac7526d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8122c5a259e01a08e0c3907ac7526d2">&#9670;&#160;</a></span>u64()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::network::NetReader::u64 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetStream_8cpp_source.html#l00200">f64()</a> , 以及 <a class="el" href="NetStream_8cpp_source.html#l00189">i64()</a>.</p>
+
+</div>
+</div>
+<a id="ac231f1196b5f4b72c6b222ab2fb26137" name="ac231f1196b5f4b72c6b222ab2fb26137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac231f1196b5f4b72c6b222ab2fb26137">&#9670;&#160;</a></span>u8()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::network::NetReader::u8 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a> 第 <a class="el" href="NetStream_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NetStream_8cpp_source.html#l00207">b()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/network/<a class="el" href="NetStream_8h_source.html">NetStream.h</a></li>
+<li>src/modules/network/<a class="el" href="NetStream_8cpp_source.html">NetStream.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

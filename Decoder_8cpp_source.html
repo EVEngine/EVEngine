@@ -1,0 +1,234 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/sound/Decoder.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7921590f9b13e0977640d2e5a7f26e23.html">sound</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Decoder.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Decoder_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Decoder_8h.html">Decoder.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;medialoader/sound/Decoder.h&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>sound {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#a7459ced65a58340d4025cb4a970ec7b9">    9</a></span><a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a7459ced65a58340d4025cb4a970ec7b9">Decoder::Decoder</a>(std::unique_ptr&lt;medialoader::Decoder&gt; <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>, std::vector&lt;char&gt; ownedData)</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    : <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)), ownedData(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(ownedData)) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">if</span> (!this-&gt;impl)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Invalid sound decoder&quot;</span>);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a0afb7d18a554c6ed992327cda22b8b63">Decoder::~Decoder</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#a8453c3d676c623a11957ea1cb9bc2307">   17</a></span><a class="code hl_class" href="classeve_1_1sound_1_1Decoder.html">Decoder</a> *<a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a8453c3d676c623a11957ea1cb9bc2307">Decoder::clone</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">auto</span> *cloned = impl-&gt;clone();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (!cloned)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Could not clone sound decoder&quot;</span>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="comment">// medialoader clone reuses the same data pointer; keep a copy of owned bytes.</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1sound_1_1Decoder.html">Decoder</a>(std::unique_ptr&lt;medialoader::Decoder&gt;(cloned), ownedData);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#afe8bebf51d05b04bbd6c6898170d0a2e">   25</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#afe8bebf51d05b04bbd6c6898170d0a2e">Decoder::decode</a>() { <span class="keywordflow">return</span> impl-&gt;decode(); }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#ae44b4ae62f6424a9c831b4adb96d1588">   26</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#ae44b4ae62f6424a9c831b4adb96d1588">Decoder::getSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> impl-&gt;getSize(); }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#a1626f4a5442d296da8593ee34c02a0c4">   27</a></span><span class="keywordtype">void</span> *<a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a1626f4a5442d296da8593ee34c02a0c4">Decoder::getBuffer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> impl-&gt;getBuffer(); }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#ab7e4dd9b803731438630e321ca64a01c">   28</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#ab7e4dd9b803731438630e321ca64a01c">Decoder::seek</a>(<span class="keywordtype">double</span> seconds) { <span class="keywordflow">return</span> impl-&gt;seek(seconds); }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#ab664497f8ffd0df55d7045e76e3992b2">   29</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#ab664497f8ffd0df55d7045e76e3992b2">Decoder::rewind</a>() { <span class="keywordflow">return</span> impl-&gt;rewind(); }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#a36321bbfe9df3dad69ff8171c2e477e2">   30</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a36321bbfe9df3dad69ff8171c2e477e2">Decoder::isSeekable</a>() { <span class="keywordflow">return</span> impl-&gt;isSeekable(); }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#a2fb98ccafa929858def356242e95f36a">   31</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a2fb98ccafa929858def356242e95f36a">Decoder::isFinished</a>() { <span class="keywordflow">return</span> impl-&gt;isFinished(); }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#a3fd99eb0bd83b0391050e4072d19439f">   32</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a3fd99eb0bd83b0391050e4072d19439f">Decoder::getChannelCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> impl-&gt;getChannelCount(); }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#aeba3ed40de1d4593e1bae5ffdaf3061a">   33</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#aeba3ed40de1d4593e1bae5ffdaf3061a">Decoder::getBitDepth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> impl-&gt;getBitDepth(); }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#a308ccd2411d545ea2cd36ab048cbcd12">   34</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a308ccd2411d545ea2cd36ab048cbcd12">Decoder::getSampleRate</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> impl-&gt;getSampleRate(); }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1sound_1_1Decoder.html#a211a04d2803e937a1f035bea82f281d8">   35</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1sound_1_1Decoder.html#a211a04d2803e937a1f035bea82f281d8">Decoder::getDuration</a>() { <span class="keywordflow">return</span> impl-&gt;getDuration(); }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}  <span class="comment">// namespace sound</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aCapability_8cpp_html_ad55031c6556322124ec04be72e3244de"><div class="ttname"><a href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a></div><div class="ttdeci">void * impl</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00014">Capability.cpp:14</a></div></div>
+<div class="ttc" id="aDecoder_8h_html"><div class="ttname"><a href="Decoder_8h.html">Decoder.h</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html">eve::sound::Decoder</a></div><div class="ttdoc">Streaming audio decoder (medialoader-backed). Owns the raw encoded bytes and decodes incrementally vi...</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8h_source.html#l00020">Decoder.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a0afb7d18a554c6ed992327cda22b8b63"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a0afb7d18a554c6ed992327cda22b8b63">eve::sound::Decoder::~Decoder</a></div><div class="ttdeci">~Decoder() override</div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a1626f4a5442d296da8593ee34c02a0c4"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a1626f4a5442d296da8593ee34c02a0c4">eve::sound::Decoder::getBuffer</a></div><div class="ttdeci">void * getBuffer() const</div><div class="ttdoc">Internal decoded buffer.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00027">Decoder.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a211a04d2803e937a1f035bea82f281d8"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a211a04d2803e937a1f035bea82f281d8">eve::sound::Decoder::getDuration</a></div><div class="ttdeci">double getDuration()</div><div class="ttdoc">Total duration in seconds.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00035">Decoder.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a2fb98ccafa929858def356242e95f36a"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a2fb98ccafa929858def356242e95f36a">eve::sound::Decoder::isFinished</a></div><div class="ttdeci">bool isFinished()</div><div class="ttdoc">True when the stream is fully decoded.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00031">Decoder.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a308ccd2411d545ea2cd36ab048cbcd12"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a308ccd2411d545ea2cd36ab048cbcd12">eve::sound::Decoder::getSampleRate</a></div><div class="ttdeci">int getSampleRate() const</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00034">Decoder.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a36321bbfe9df3dad69ff8171c2e477e2"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a36321bbfe9df3dad69ff8171c2e477e2">eve::sound::Decoder::isSeekable</a></div><div class="ttdeci">bool isSeekable()</div><div class="ttdoc">True when seeking is supported.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00030">Decoder.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a3fd99eb0bd83b0391050e4072d19439f"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a3fd99eb0bd83b0391050e4072d19439f">eve::sound::Decoder::getChannelCount</a></div><div class="ttdeci">int getChannelCount() const</div><div class="ttdoc">Format metadata.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00032">Decoder.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a7459ced65a58340d4025cb4a970ec7b9"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a7459ced65a58340d4025cb4a970ec7b9">eve::sound::Decoder::Decoder</a></div><div class="ttdeci">Decoder(std::unique_ptr&lt; medialoader::Decoder &gt; impl, std::vector&lt; char &gt; ownedData)</div><div class="ttdoc">Wraps a medialoader decoder and the encoded bytes it needs.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00009">Decoder.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_a8453c3d676c623a11957ea1cb9bc2307"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#a8453c3d676c623a11957ea1cb9bc2307">eve::sound::Decoder::clone</a></div><div class="ttdeci">Decoder * clone() const</div><div class="ttdoc">Duplicates the decoder (each clone keeps its own position).</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00017">Decoder.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_ab664497f8ffd0df55d7045e76e3992b2"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#ab664497f8ffd0df55d7045e76e3992b2">eve::sound::Decoder::rewind</a></div><div class="ttdeci">bool rewind()</div><div class="ttdoc">Rewinds to the start; false when unsupported.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00029">Decoder.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_ab7e4dd9b803731438630e321ca64a01c"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#ab7e4dd9b803731438630e321ca64a01c">eve::sound::Decoder::seek</a></div><div class="ttdeci">bool seek(double seconds)</div><div class="ttdoc">Seeks to a time in seconds; false when unsupported.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00028">Decoder.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_ae44b4ae62f6424a9c831b4adb96d1588"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#ae44b4ae62f6424a9c831b4adb96d1588">eve::sound::Decoder::getSize</a></div><div class="ttdeci">int getSize() const</div><div class="ttdoc">Bytes decoded so far into the internal buffer.</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00026">Decoder.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_aeba3ed40de1d4593e1bae5ffdaf3061a"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#aeba3ed40de1d4593e1bae5ffdaf3061a">eve::sound::Decoder::getBitDepth</a></div><div class="ttdeci">int getBitDepth() const</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00033">Decoder.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html_afe8bebf51d05b04bbd6c6898170d0a2e"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html#afe8bebf51d05b04bbd6c6898170d0a2e">eve::sound::Decoder::decode</a></div><div class="ttdeci">int decode()</div><div class="ttdoc">Decodes the next chunk; returns bytes produced (0 = end/error).</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8cpp_source.html#l00025">Decoder.cpp:25</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

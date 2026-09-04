@@ -1,0 +1,797 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::level_editing::EditorHistory类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1level__editing.html">level_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html">EditorHistory</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1level__editing_1_1EditorHistory-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::level_editing::EditorHistory类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Undo/redo stack: opaque string actions + optional tile change groups that can apply directly to a <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html" title="Independent GID grid for map brushes (no hard dependency on map.TileLayer).">TileBuffer</a>.  
+ <a href="classeve_1_1level__editing_1_1EditorHistory.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorHistory_8h_source.html">EditorHistory.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af8679e4b09673d4ab8afbc9406a10632" id="r_af8679e4b09673d4ab8afbc9406a10632"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#af8679e4b09673d4ab8afbc9406a10632">clear</a> ()</td></tr>
+<tr class="separator:af8679e4b09673d4ab8afbc9406a10632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3807c326ed90e8886a86c801c3b7a73d" id="r_a3807c326ed90e8886a86c801c3b7a73d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a3807c326ed90e8886a86c801c3b7a73d">push</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)</td></tr>
+<tr class="separator:a3807c326ed90e8886a86c801c3b7a73d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24b8b3ed02c8af5943b03093734419da" id="r_a24b8b3ed02c8af5943b03093734419da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a24b8b3ed02c8af5943b03093734419da">beginGroup</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a24b8b3ed02c8af5943b03093734419da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b14951b2c26e96c6d5acdf2c311e1c5" id="r_a6b14951b2c26e96c6d5acdf2c311e1c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a6b14951b2c26e96c6d5acdf2c311e1c5">recordTile</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int oldGid, int newGid)</td></tr>
+<tr class="separator:a6b14951b2c26e96c6d5acdf2c311e1c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afce10b985e851af3208a65d7386fcbb3" id="r_afce10b985e851af3208a65d7386fcbb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#afce10b985e851af3208a65d7386fcbb3">endGroup</a> ()</td></tr>
+<tr class="separator:afce10b985e851af3208a65d7386fcbb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeea0e87c547303be3372e90597fa6fbf" id="r_aeea0e87c547303be3372e90597fa6fbf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#aeea0e87c547303be3372e90597fa6fbf">isGrouping</a> () const</td></tr>
+<tr class="separator:aeea0e87c547303be3372e90597fa6fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad49b865538064ed3efd5bcee6cdd2c44" id="r_ad49b865538064ed3efd5bcee6cdd2c44"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#ad49b865538064ed3efd5bcee6cdd2c44">canUndo</a> () const</td></tr>
+<tr class="separator:ad49b865538064ed3efd5bcee6cdd2c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fb47f951b7e0b1913993ef80b4f81ca" id="r_a3fb47f951b7e0b1913993ef80b4f81ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a3fb47f951b7e0b1913993ef80b4f81ca">canRedo</a> () const</td></tr>
+<tr class="separator:a3fb47f951b7e0b1913993ef80b4f81ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d771444da33e9a426e8cc44a8994922" id="r_a0d771444da33e9a426e8cc44a8994922"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a0d771444da33e9a426e8cc44a8994922">getUndoCount</a> () const</td></tr>
+<tr class="separator:a0d771444da33e9a426e8cc44a8994922"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93d329398429b664dd838f0722ccb93e" id="r_a93d329398429b664dd838f0722ccb93e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a93d329398429b664dd838f0722ccb93e">getRedoCount</a> () const</td></tr>
+<tr class="separator:a93d329398429b664dd838f0722ccb93e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d820a5145402f2c8f27c834f1a5ce5d" id="r_a3d820a5145402f2c8f27c834f1a5ce5d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a3d820a5145402f2c8f27c834f1a5ce5d">undoAction</a> ()</td></tr>
+<tr class="memdesc:a3d820a5145402f2c8f27c834f1a5ce5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move the latest action to redo history and return its stable name.  <br /></td></tr>
+<tr class="separator:a3d820a5145402f2c8f27c834f1a5ce5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9d134471ee581c8ba2b75528bfa7099" id="r_ad9d134471ee581c8ba2b75528bfa7099"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#ad9d134471ee581c8ba2b75528bfa7099">redoAction</a> ()</td></tr>
+<tr class="memdesc:ad9d134471ee581c8ba2b75528bfa7099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move the latest redo action back to undo history and return its stable name.  <br /></td></tr>
+<tr class="separator:ad9d134471ee581c8ba2b75528bfa7099"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a545354227f075e1d7b8a18ea58a22a87" id="r_a545354227f075e1d7b8a18ea58a22a87"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a545354227f075e1d7b8a18ea58a22a87">undo</a> ()</td></tr>
+<tr class="memdesc:a545354227f075e1d7b8a18ea58a22a87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only boolean projection of <a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a3d820a5145402f2c8f27c834f1a5ce5d" title="Move the latest action to redo history and return its stable name.">undoAction()</a>.  <br /></td></tr>
+<tr class="separator:a545354227f075e1d7b8a18ea58a22a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a096d61d8490349c97c822648e50b784e" id="r_a096d61d8490349c97c822648e50b784e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a096d61d8490349c97c822648e50b784e">redo</a> ()</td></tr>
+<tr class="memdesc:a096d61d8490349c97c822648e50b784e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only boolean projection of <a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#ad9d134471ee581c8ba2b75528bfa7099" title="Move the latest redo action back to undo history and return its stable name.">redoAction()</a>.  <br /></td></tr>
+<tr class="separator:a096d61d8490349c97c822648e50b784e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b572bcafe71dd5a21817a1c8282c8b1" id="r_a2b572bcafe71dd5a21817a1c8282c8b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a2b572bcafe71dd5a21817a1c8282c8b1">applyLastToBufferChecked</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> &amp;<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>)</td></tr>
+<tr class="memdesc:a2b572bcafe71dd5a21817a1c8282c8b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply last undone/redone tile group to buffer (no-op for opaque actions).  <br /></td></tr>
+<tr class="separator:a2b572bcafe71dd5a21817a1c8282c8b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66197c726973597c5465cc6bc07f840c" id="r_a66197c726973597c5465cc6bc07f840c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a66197c726973597c5465cc6bc07f840c">applyLastToBuffer</a> (<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>)</td></tr>
+<tr class="memdesc:a66197c726973597c5465cc6bc07f840c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only nullable pointer projection of <a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a2b572bcafe71dd5a21817a1c8282c8b1" title="Apply last undone/redone tile group to buffer (no-op for opaque actions).">applyLastToBufferChecked()</a>.  <br /></td></tr>
+<tr class="separator:a66197c726973597c5465cc6bc07f840c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeb939e4e640545eb8784fc9518b77c7" id="r_aeeb939e4e640545eb8784fc9518b77c7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#aeeb939e4e640545eb8784fc9518b77c7">getLastActionName</a> () const</td></tr>
+<tr class="separator:aeeb939e4e640545eb8784fc9518b77c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a178fda0de4006eccfb623d938715feda" id="r_a178fda0de4006eccfb623d938715feda"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a178fda0de4006eccfb623d938715feda">getLastActionKind</a> () const</td></tr>
+<tr class="separator:a178fda0de4006eccfb623d938715feda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f4049dcfeed3fe4150d66ef5a16340f" id="r_a0f4049dcfeed3fe4150d66ef5a16340f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a0f4049dcfeed3fe4150d66ef5a16340f">getLastPayload</a> () const</td></tr>
+<tr class="separator:a0f4049dcfeed3fe4150d66ef5a16340f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1839dba0a986d1534650f7c85e86eee0" id="r_a1839dba0a986d1534650f7c85e86eee0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a1839dba0a986d1534650f7c85e86eee0">getLastTileCount</a> () const</td></tr>
+<tr class="separator:a1839dba0a986d1534650f7c85e86eee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec089632fafb4763ae5e076b494d1cfd" id="r_aec089632fafb4763ae5e076b494d1cfd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#aec089632fafb4763ae5e076b494d1cfd">getLastTileX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aec089632fafb4763ae5e076b494d1cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a222ba8479ad7d9cde063784136856a50" id="r_a222ba8479ad7d9cde063784136856a50"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a222ba8479ad7d9cde063784136856a50">getLastTileY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a222ba8479ad7d9cde063784136856a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70de52da17fee3872c9a6c2cc5c53ae3" id="r_a70de52da17fee3872c9a6c2cc5c53ae3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a70de52da17fee3872c9a6c2cc5c53ae3">getLastTileOldGid</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a70de52da17fee3872c9a6c2cc5c53ae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67ca5e368a02eee912e5c0b9c076ffb8" id="r_a67ca5e368a02eee912e5c0b9c076ffb8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a67ca5e368a02eee912e5c0b9c076ffb8">getLastTileNewGid</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a67ca5e368a02eee912e5c0b9c076ffb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Undo/redo stack: opaque string actions + optional tile change groups that can apply directly to a <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html" title="Independent GID grid for map brushes (no hard dependency on map.TileLayer).">TileBuffer</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8h_source.html">EditorHistory.h</a> 第 <a class="el" href="EditorHistory_8h_source.html#l00015">15</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a66197c726973597c5465cc6bc07f840c" name="a66197c726973597c5465cc6bc07f840c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66197c726973597c5465cc6bc07f840c">&#9670;&#160;</a></span>applyLastToBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::level_editing::EditorHistory::applyLastToBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only nullable pointer projection of <a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a2b572bcafe71dd5a21817a1c8282c8b1" title="Apply last undone/redone tile group to buffer (no-op for opaque actions).">applyLastToBufferChecked()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHistory_8cpp_source.html#l00092">applyLastToBufferChecked()</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a>.</p>
+
+</div>
+</div>
+<a id="a2b572bcafe71dd5a21817a1c8282c8b1" name="a2b572bcafe71dd5a21817a1c8282c8b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b572bcafe71dd5a21817a1c8282c8b1">&#9670;&#160;</a></span>applyLastToBufferChecked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::level_editing::EditorHistory::applyLastToBufferChecked </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply last undone/redone tile group to buffer (no-op for opaque actions). </p>
+<p>Apply the latest tile action with a structured failure result. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorHistory_8cpp_source.html#l00106">applyLastToBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="a24b8b3ed02c8af5943b03093734419da" name="a24b8b3ed02c8af5943b03093734419da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b8b3ed02c8af5943b03093734419da">&#9670;&#160;</a></span>beginGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::EditorHistory::beginGroup </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a3fb47f951b7e0b1913993ef80b4f81ca" name="a3fb47f951b7e0b1913993ef80b4f81ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fb47f951b7e0b1913993ef80b4f81ca">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::level_editing::EditorHistory::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad49b865538064ed3efd5bcee6cdd2c44" name="ad49b865538064ed3efd5bcee6cdd2c44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad49b865538064ed3efd5bcee6cdd2c44">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::level_editing::EditorHistory::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af8679e4b09673d4ab8afbc9406a10632" name="af8679e4b09673d4ab8afbc9406a10632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8679e4b09673d4ab8afbc9406a10632">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::EditorHistory::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afce10b985e851af3208a65d7386fcbb3" name="afce10b985e851af3208a65d7386fcbb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afce10b985e851af3208a65d7386fcbb3">&#9670;&#160;</a></span>endGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::EditorHistory::endGroup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a178fda0de4006eccfb623d938715feda" name="a178fda0de4006eccfb623d938715feda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a178fda0de4006eccfb623d938715feda">&#9670;&#160;</a></span>getLastActionKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::level_editing::EditorHistory::getLastActionKind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeeb939e4e640545eb8784fc9518b77c7" name="aeeb939e4e640545eb8784fc9518b77c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeb939e4e640545eb8784fc9518b77c7">&#9670;&#160;</a></span>getLastActionName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::level_editing::EditorHistory::getLastActionName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f4049dcfeed3fe4150d66ef5a16340f" name="a0f4049dcfeed3fe4150d66ef5a16340f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f4049dcfeed3fe4150d66ef5a16340f">&#9670;&#160;</a></span>getLastPayload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::level_editing::EditorHistory::getLastPayload </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1839dba0a986d1534650f7c85e86eee0" name="a1839dba0a986d1534650f7c85e86eee0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1839dba0a986d1534650f7c85e86eee0">&#9670;&#160;</a></span>getLastTileCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::EditorHistory::getLastTileCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67ca5e368a02eee912e5c0b9c076ffb8" name="a67ca5e368a02eee912e5c0b9c076ffb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67ca5e368a02eee912e5c0b9c076ffb8">&#9670;&#160;</a></span>getLastTileNewGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::EditorHistory::getLastTileNewGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a70de52da17fee3872c9a6c2cc5c53ae3" name="a70de52da17fee3872c9a6c2cc5c53ae3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70de52da17fee3872c9a6c2cc5c53ae3">&#9670;&#160;</a></span>getLastTileOldGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::EditorHistory::getLastTileOldGid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aec089632fafb4763ae5e076b494d1cfd" name="aec089632fafb4763ae5e076b494d1cfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec089632fafb4763ae5e076b494d1cfd">&#9670;&#160;</a></span>getLastTileX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::EditorHistory::getLastTileX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a222ba8479ad7d9cde063784136856a50" name="a222ba8479ad7d9cde063784136856a50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a222ba8479ad7d9cde063784136856a50">&#9670;&#160;</a></span>getLastTileY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::EditorHistory::getLastTileY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a93d329398429b664dd838f0722ccb93e" name="a93d329398429b664dd838f0722ccb93e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93d329398429b664dd838f0722ccb93e">&#9670;&#160;</a></span>getRedoCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::EditorHistory::getRedoCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d771444da33e9a426e8cc44a8994922" name="a0d771444da33e9a426e8cc44a8994922"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d771444da33e9a426e8cc44a8994922">&#9670;&#160;</a></span>getUndoCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::level_editing::EditorHistory::getUndoCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeea0e87c547303be3372e90597fa6fbf" name="aeea0e87c547303be3372e90597fa6fbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeea0e87c547303be3372e90597fa6fbf">&#9670;&#160;</a></span>isGrouping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::level_editing::EditorHistory::isGrouping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8h_source.html">EditorHistory.h</a> 第 <a class="el" href="EditorHistory_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3807c326ed90e8886a86c801c3b7a73d" name="a3807c326ed90e8886a86c801c3b7a73d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3807c326ed90e8886a86c801c3b7a73d">&#9670;&#160;</a></span>push()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::EditorHistory::push </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>.</p>
+
+</div>
+</div>
+<a id="a6b14951b2c26e96c6d5acdf2c311e1c5" name="a6b14951b2c26e96c6d5acdf2c311e1c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b14951b2c26e96c6d5acdf2c311e1c5">&#9670;&#160;</a></span>recordTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::level_editing::EditorHistory::recordTile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>oldGid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>newGid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a096d61d8490349c97c822648e50b784e" name="a096d61d8490349c97c822648e50b784e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a096d61d8490349c97c822648e50b784e">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::level_editing::EditorHistory::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only boolean projection of <a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#ad9d134471ee581c8ba2b75528bfa7099" title="Move the latest redo action back to undo history and return its stable name.">redoAction()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHistory_8cpp_source.html#l00075">redoAction()</a>.</p>
+
+</div>
+</div>
+<a id="ad9d134471ee581c8ba2b75528bfa7099" name="ad9d134471ee581c8ba2b75528bfa7099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9d134471ee581c8ba2b75528bfa7099">&#9670;&#160;</a></span>redoAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; std::string &gt; eve::level_editing::EditorHistory::redoAction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move the latest redo action back to undo history and return its stable name. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorHistory_8cpp_source.html#l00090">redo()</a>.</p>
+
+</div>
+</div>
+<a id="a545354227f075e1d7b8a18ea58a22a87" name="a545354227f075e1d7b8a18ea58a22a87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a545354227f075e1d7b8a18ea58a22a87">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::level_editing::EditorHistory::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only boolean projection of <a class="el" href="classeve_1_1level__editing_1_1EditorHistory.html#a3d820a5145402f2c8f27c834f1a5ce5d" title="Move the latest action to redo history and return its stable name.">undoAction()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHistory_8cpp_source.html#l00062">undoAction()</a>.</p>
+
+</div>
+</div>
+<a id="a3d820a5145402f2c8f27c834f1a5ce5d" name="a3d820a5145402f2c8f27c834f1a5ce5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d820a5145402f2c8f27c834f1a5ce5d">&#9670;&#160;</a></span>undoAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; std::string &gt; eve::level_editing::EditorHistory::undoAction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move the latest action to redo history and return its stable name. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a> 第 <a class="el" href="EditorHistory_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorHistory_8cpp_source.html#l00088">undo()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/level_editing/<a class="el" href="EditorHistory_8h_source.html">EditorHistory.h</a></li>
+<li>src/modules/level_editing/<a class="el" href="EditorHistory_8cpp_source.html">EditorHistory.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

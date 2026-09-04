@@ -1,0 +1,251 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CavePlucking.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CavePlucking.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CavePlucking_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="CavePlucking_8h.html">procgen/algorithms/CavePlucking.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keywordtype">float</span> smoothstep(<span class="keywordtype">float</span> lo, <span class="keywordtype">float</span> hi, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = std::clamp((<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> - lo) / std::max(hi - lo, 1e-6f), 0.f, 1.f);</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> * (3.f - 2.f * <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>uint32_t <a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>(uint32_t <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> ^= <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> &gt;&gt; 16u;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> *= 0x7feb352du;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> ^= <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> &gt;&gt; 15u;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> *= 0x846ca68bu;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> ^ (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> &gt;&gt; 16u);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>uint32_t cellKey(<span class="keywordtype">int</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> &gt;= 0 ? uint32_t(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) * 2u : uint32_t(-<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) * 2u - 1u; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#aa4dfa5130b1d6e4de3e7b2ceec75989b">   26</a></span><a class="code hl_struct" href="structeve_1_1procgen_1_1CavePluckingSample.html">CavePluckingSample</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#aa4dfa5130b1d6e4de3e7b2ceec75989b">sampleCaveFloodPlucking</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CavePluckingInput.html">CavePluckingInput</a>&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CavePluckingSample.html">CavePluckingSample</a> result;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>        primary   = std::clamp(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.primaryFractureMask, 0.f, 1.f);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>        <a class="code hl_variable" href="HexTerrain_8cpp.html#a79f57348b1438a168edfda4b1336f0ec">secondary</a> = std::clamp(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.secondaryFractureMask, 0.f, primary);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="comment">// One strongly exposed discontinuity can release a slab; intersecting planes</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// further increase the chance of a hydraulically extractable block.</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePluckingSample.html#af03d764530ebe4efd63dc51f1afbeae6">fracturePredisposition</a> = std::clamp(primary * 0.58f + std::sqrt(primary * <a class="code hl_variable" href="HexTerrain_8cpp.html#a79f57348b1438a168edfda4b1336f0ec">secondary</a>) * 0.62f, 0.f, 1.f);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePluckingSample.html#af03d764530ebe4efd63dc51f1afbeae6">fracturePredisposition</a> &lt;= 0.f) <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePluckingSample.html#a5fee8df15f9180bddf963ea7413280cf">hydraulicActivation</a> = smoothstep(0.48f, 1.05f, <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.hydraulicIntensity);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> nearBed        = std::clamp(std::pow(std::max(0.f, -std::cos(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.angle)), 1.2f) +</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                                std::pow(std::fabs(std::sin(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.angle)), 1.7f) * 0.24f,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                            0.f, 1.f);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>    <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>  = std::max(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.blockScale, 0.02f);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>    gx     = <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.x / <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>    gy     = <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.y / (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a> * 0.72f);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>    gz     = <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.z / (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a> * 1.18f);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>      ix     = int(std::floor(gx));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>      iy     = int(std::floor(gy));</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>      iz     = int(std::floor(gz));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>    lx     = std::fabs((gx - std::floor(gx)) * 2.f - 1.f);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>    ly     = std::fabs((gy - std::floor(gy)) * 2.f - 1.f);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>    lz     = std::fabs((gz - std::floor(gz)) * 2.f - 1.f);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>    cuboid = 1.f - smoothstep(0.58f, 0.94f, std::max({lx, ly, lz}));</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">const</span> uint32_t <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> =</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_variable" href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a>(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>.seed ^ cellKey(ix) * 0x9e3779b9u ^ cellKey(iy) * 0x85ebca6bu ^ cellKey(iz) * 0xc2b2ae35u);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> cellSelection = smoothstep(0.62f, 0.88f, <span class="keywordtype">float</span>(<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> &amp; 0xffffu) / 65535.f);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePluckingSample.html#aecba7fbc95b8df3ffa4efae894faf045">blockMask</a>          = cuboid * cellSelection;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a> = smoothstep(0.22f, 0.78f, result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePluckingSample.html#af03d764530ebe4efd63dc51f1afbeae6">fracturePredisposition</a> * result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePluckingSample.html#a5fee8df15f9180bddf963ea7413280cf">hydraulicActivation</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePluckingSample.html#a2fed1a45a50ceb2d2ec7b77cb745c772">erosion</a>      = std::clamp(nearBed * result.<a class="code hl_variable" href="structeve_1_1procgen_1_1CavePluckingSample.html#aecba7fbc95b8df3ffa4efae894faf045">blockMask</a> * <a class="code hl_variable" href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCavePlucking_8h_html"><div class="ttname"><a href="CavePlucking_8h.html">CavePlucking.h</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_a5fb132b1d88427518f97e5e710bc1c93"><div class="ttname"><a href="Evpack_8cpp.html#a5fb132b1d88427518f97e5e710bc1c93">hash</a></div><div class="ttdeci">std::array&lt; std::uint8_t, 32 &gt; hash</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00177">Evpack.cpp:177</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aHexTerrain_8cpp_html_a79f57348b1438a168edfda4b1336f0ec"><div class="ttname"><a href="HexTerrain_8cpp.html#a79f57348b1438a168edfda4b1336f0ec">secondary</a></div><div class="ttdeci">int secondary</div><div class="ttdef"><b>Definition</b> <a href="HexTerrain_8cpp_source.html#l00035">HexTerrain.cpp:35</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aProcgen_8cpp_html_a9ec61e0d400a00436d584301088ae052"><div class="ttname"><a href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; void &gt;()&gt; release</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00074">Procgen.cpp:74</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aa4dfa5130b1d6e4de3e7b2ceec75989b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aa4dfa5130b1d6e4de3e7b2ceec75989b">eve::procgen::sampleCaveFloodPlucking</a></div><div class="ttdeci">CavePluckingSample sampleCaveFloodPlucking(const CavePluckingInput &amp;input)</div><div class="ttdoc">Sample thresholded removal of blocks bounded by one or more exposed fractures.</div><div class="ttdef"><b>Definition</b> <a href="CavePlucking_8cpp_source.html#l00026">CavePlucking.cpp:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePluckingInput_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePluckingInput.html">eve::procgen::CavePluckingInput</a></div><div class="ttdoc">Inputs for flood plucking of fracture-bounded cave-floor blocks.</div><div class="ttdef"><b>Definition</b> <a href="CavePlucking_8h_source.html#l00008">CavePlucking.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePluckingSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePluckingSample.html">eve::procgen::CavePluckingSample</a></div><div class="ttdoc">Local fracture predisposition, hydraulic threshold, and block removal response.</div><div class="ttdef"><b>Definition</b> <a href="CavePlucking_8h_source.html#l00021">CavePlucking.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePluckingSample_html_a2fed1a45a50ceb2d2ec7b77cb745c772"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePluckingSample.html#a2fed1a45a50ceb2d2ec7b77cb745c772">eve::procgen::CavePluckingSample::erosion</a></div><div class="ttdeci">float erosion</div><div class="ttdef"><b>Definition</b> <a href="CavePlucking_8h_source.html#l00022">CavePlucking.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePluckingSample_html_a5fee8df15f9180bddf963ea7413280cf"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePluckingSample.html#a5fee8df15f9180bddf963ea7413280cf">eve::procgen::CavePluckingSample::hydraulicActivation</a></div><div class="ttdeci">float hydraulicActivation</div><div class="ttdef"><b>Definition</b> <a href="CavePlucking_8h_source.html#l00024">CavePlucking.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePluckingSample_html_aecba7fbc95b8df3ffa4efae894faf045"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePluckingSample.html#aecba7fbc95b8df3ffa4efae894faf045">eve::procgen::CavePluckingSample::blockMask</a></div><div class="ttdeci">float blockMask</div><div class="ttdef"><b>Definition</b> <a href="CavePlucking_8h_source.html#l00025">CavePlucking.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePluckingSample_html_af03d764530ebe4efd63dc51f1afbeae6"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePluckingSample.html#af03d764530ebe4efd63dc51f1afbeae6">eve::procgen::CavePluckingSample::fracturePredisposition</a></div><div class="ttdeci">float fracturePredisposition</div><div class="ttdef"><b>Definition</b> <a href="CavePlucking_8h_source.html#l00023">CavePlucking.h:23</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

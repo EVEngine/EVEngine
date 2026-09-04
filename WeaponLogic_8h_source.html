@@ -1,0 +1,228 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/weapon/WeaponLogic.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3549d6d40925778ea7fe373869498ee4.html">weapon</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WeaponLogic.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WeaponLogic_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weapon.html">eve::weapon</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">struct </span>AttackRequest;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>WeaponEntity;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1weapon_1_1IWeaponLogic.html">IWeaponLogic</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html#aab5863cef9b9c647f3b722d208c051af">   24</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#aab5863cef9b9c647f3b722d208c051af">~IWeaponLogic</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html#aa173d08fa46f85dc6142aefc2eb1f45c">   34</a></span>    <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#aa173d08fa46f85dc6142aefc2eb1f45c">name</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html#a7c4d35e970859bb9b09455b8cf6bc91b">   37</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#a7c4d35e970859bb9b09455b8cf6bc91b">canFire</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html#ad19dd0361294498e60e9e9baf4afb143">   40</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#ad19dd0361294498e60e9e9baf4afb143">fire</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp; req) = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html#aab229a6c847c48e79dd4b6cfa3bc9f30">   43</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#aab229a6c847c48e79dd4b6cfa3bc9f30">update</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keywordtype">float</span> dt) = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html#aebe423061d13cfd7fa5eb3dc95401d86">   46</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#aebe423061d13cfd7fa5eb3dc95401d86">begin</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp; req) { (void)<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>; (void)req; }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html#a1e3b62e1e8597c3451f90e2d265f2443">   49</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#a1e3b62e1e8597c3451f90e2d265f2443">channel</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp; req, <span class="keywordtype">float</span> dt) { (void)<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>; (void)req; (void)dt; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IWeaponLogic.html#a9421f11bf6d502797d96938d0c53b678">   52</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IWeaponLogic.html#a9421f11bf6d502797d96938d0c53b678">end</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp; req) { (void)<a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>; (void)req; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IProjectileService.html">   59</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1weapon_1_1IProjectileService.html">IProjectileService</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IProjectileService.html#abc51d22e71cc7fbe1d85f9d8b9deda0e">   61</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1weapon_1_1IProjectileService.html#abc51d22e71cc7fbe1d85f9d8b9deda0e">capabilityName</a> = <span class="stringliteral">&quot;IProjectileService&quot;</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IProjectileService.html#a4b143e5322bf20885ef42b73685e7ccd">   63</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IProjectileService.html#a4b143e5322bf20885ef42b73685e7ccd">~IProjectileService</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1IProjectileService.html#a34b174c7a3d3bf8efc6198bc8f936b89">   66</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1IProjectileService.html#a34b174c7a3d3bf8efc6198bc8f936b89">spawnProjectile</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a>&amp; req) = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}  <span class="comment">// namespace eve::weapon</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IProjectileService_html"><div class="ttname"><a href="classeve_1_1weapon_1_1IProjectileService.html">eve::weapon::IProjectileService</a></div><div class="ttdoc">投射物服务：由游戏侧实现并注册为能力。 weapon 模块只认识这个接口，弹道/爆炸/受击由提供方负责。</div><div class="ttdef"><b>Definition</b> <a href="WeaponLogic_8h_source.html#l00059">WeaponLogic.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IProjectileService_html_a34b174c7a3d3bf8efc6198bc8f936b89"><div class="ttname"><a href="classeve_1_1weapon_1_1IProjectileService.html#a34b174c7a3d3bf8efc6198bc8f936b89">eve::weapon::IProjectileService::spawnProjectile</a></div><div class="ttdeci">virtual void spawnProjectile(const WeaponEntity &amp;w, const AttackRequest &amp;req)=0</div><div class="ttdoc">按武器模板的 projectile 参数生成一枚投射物。</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IProjectileService_html_a4b143e5322bf20885ef42b73685e7ccd"><div class="ttname"><a href="classeve_1_1weapon_1_1IProjectileService.html#a4b143e5322bf20885ef42b73685e7ccd">eve::weapon::IProjectileService::~IProjectileService</a></div><div class="ttdeci">virtual ~IProjectileService()=default</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IProjectileService_html_abc51d22e71cc7fbe1d85f9d8b9deda0e"><div class="ttname"><a href="classeve_1_1weapon_1_1IProjectileService.html#abc51d22e71cc7fbe1d85f9d8b9deda0e">eve::weapon::IProjectileService::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="WeaponLogic_8h_source.html#l00061">WeaponLogic.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html">eve::weapon::IWeaponLogic</a></div><div class="ttdoc">武器逻辑接口：注册到 WeaponSystem 的可插拔行为。</div><div class="ttdef"><b>Definition</b> <a href="WeaponLogic_8h_source.html#l00022">WeaponLogic.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_a1e3b62e1e8597c3451f90e2d265f2443"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#a1e3b62e1e8597c3451f90e2d265f2443">eve::weapon::IWeaponLogic::channel</a></div><div class="ttdeci">virtual void channel(WeaponEntity &amp;w, const AttackRequest &amp;req, float dt)</div><div class="ttdoc">阶段机处于 Active 时逐帧调用（引导/制导）（默认空实现）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponLogic_8h_source.html#l00049">WeaponLogic.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_a7c4d35e970859bb9b09455b8cf6bc91b"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#a7c4d35e970859bb9b09455b8cf6bc91b">eve::weapon::IWeaponLogic::canFire</a></div><div class="ttdeci">virtual bool canFire(const WeaponEntity &amp;w) const =0</div><div class="ttdoc">逻辑自身的触发条件（资源/冷却/阶段由 WeaponSystem 统一检查）。</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_a9421f11bf6d502797d96938d0c53b678"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#a9421f11bf6d502797d96938d0c53b678">eve::weapon::IWeaponLogic::end</a></div><div class="ttdeci">virtual void end(WeaponEntity &amp;w, const AttackRequest &amp;req)</div><div class="ttdoc">阶段机进入 Recover 时调用（默认空实现）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponLogic_8h_source.html#l00052">WeaponLogic.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_aa173d08fa46f85dc6142aefc2eb1f45c"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#aa173d08fa46f85dc6142aefc2eb1f45c">eve::weapon::IWeaponLogic::name</a></div><div class="ttdeci">virtual const char * name() const =0</div><div class="ttdoc">稳定名字（&quot;hitscan&quot; / &quot;projectile&quot; / &quot;melee&quot; / 自定义名）。</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_aab229a6c847c48e79dd4b6cfa3bc9f30"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#aab229a6c847c48e79dd4b6cfa3bc9f30">eve::weapon::IWeaponLogic::update</a></div><div class="ttdeci">virtual void update(WeaponEntity &amp;w, float dt)=0</div><div class="ttdoc">每帧推进逻辑自身状态。</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_aab5863cef9b9c647f3b722d208c051af"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#aab5863cef9b9c647f3b722d208c051af">eve::weapon::IWeaponLogic::~IWeaponLogic</a></div><div class="ttdeci">virtual ~IWeaponLogic()=default</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_ad19dd0361294498e60e9e9baf4afb143"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#ad19dd0361294498e60e9e9baf4afb143">eve::weapon::IWeaponLogic::fire</a></div><div class="ttdeci">virtual void fire(WeaponEntity &amp;w, const AttackRequest &amp;req)=0</div><div class="ttdoc">执行攻击效果：生成投射物 / 命中判定等。资源已由系统扣除。</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1IWeaponLogic_html_aebe423061d13cfd7fa5eb3dc95401d86"><div class="ttname"><a href="classeve_1_1weapon_1_1IWeaponLogic.html#aebe423061d13cfd7fa5eb3dc95401d86">eve::weapon::IWeaponLogic::begin</a></div><div class="ttdeci">virtual void begin(WeaponEntity &amp;w, const AttackRequest &amp;req)</div><div class="ttdoc">阶段机进入 Windup 时调用（默认空实现）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponLogic_8h_source.html#l00046">WeaponLogic.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEntity_html"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEntity.html">eve::weapon::WeaponEntity</a></div><div class="ttdoc">武器实体：数据全部在组件里，行为在 WeaponSystem。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00274">WeaponTypes.h:274</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html"><div class="ttname"><a href="namespaceeve_1_1weapon.html">eve::weapon</a></div><div class="ttdoc">载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="RTSArchetype_8h_source.html#l00010">RTSArchetype.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1AttackRequest_html"><div class="ttname"><a href="structeve_1_1weapon_1_1AttackRequest.html">eve::weapon::AttackRequest</a></div><div class="ttdoc">一次攻击请求（C++ 系统 / 脚本发起）。角度均为度。 旧名 FireRequest 保留为别名，向后兼容。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00202">WeaponTypes.h:202</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

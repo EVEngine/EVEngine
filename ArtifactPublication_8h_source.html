@@ -1,0 +1,394 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/ArtifactPublication.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ArtifactPublication.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ArtifactPublication_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Identity_8h.html">common/Identity.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1artifact.html">eve::artifact</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397a">   26</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397a">PartKind</a> : std::uint8_t {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa5174d1309f275ba6f275db3af9eb3e18">Grid</a>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da">PointSet</a>,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa2fb9f97ae851e5999f38d760c395f3a7">MeshData</a>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">ImageData</a>,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa39e1450275f6b9c731ff9faafab3f44c">Collider</a>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Bounds.html">   35</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1artifact_1_1Bounds.html">Bounds</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Bounds.html#a17cba486a04500248b5b72b730aa3cdd">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Bounds.html#a17cba486a04500248b5b72b730aa3cdd">minX</a>  = 0.f;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Bounds.html#a13af5b42b4db2d61c91576399e322dd0">   37</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Bounds.html#a13af5b42b4db2d61c91576399e322dd0">minY</a>  = 0.f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Bounds.html#a48907eb837e7c201c9f1fcd5d8ccbd22">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Bounds.html#a48907eb837e7c201c9f1fcd5d8ccbd22">minZ</a>  = 0.f;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Bounds.html#afac8723c8c05a5c29875c96d93f058ff">   39</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Bounds.html#afac8723c8c05a5c29875c96d93f058ff">maxX</a>  = 0.f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Bounds.html#ad0ab8706283a3cae235393fe5708f1ad">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Bounds.html#ad0ab8706283a3cae235393fe5708f1ad">maxY</a>  = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Bounds.html#a392f528b46f1d0d29b9a5b7196624b17">   41</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Bounds.html#a392f528b46f1d0d29b9a5b7196624b17">maxZ</a>  = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Bounds.html#a0ac2d73fc618942de9c1b55aa45dcfa5">   42</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_variable" href="structeve_1_1artifact_1_1Bounds.html#a0ac2d73fc618942de9c1b55aa45dcfa5">valid</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Point.html">   46</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1artifact_1_1Point.html">Point</a> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Point.html#ad8ff3b55149096c63682928bc98a6f7c">   47</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Point.html#ad8ff3b55149096c63682928bc98a6f7c">x</a> = 0.f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Point.html#a60e5124cd5b7836ee3c9ce63ec7b490c">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Point.html#a60e5124cd5b7836ee3c9ce63ec7b490c">y</a> = 0.f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1Point.html#a60fb81e4c2315e92932d5a388d2bca0d">   49</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1artifact_1_1Point.html#a60fb81e4c2315e92932d5a388d2bca0d">z</a> = 0.f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>};</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html">   59</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1artifact_1_1PartView.html">PartView</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a66b2d4963a27e6364518c891a14405ce">   60</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a>                   <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a66b2d4963a27e6364518c891a14405ce">id</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a99d7d0b0214ff3058060ed71945b6422">   61</a></span>    std::string_view               <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a99d7d0b0214ff3058060ed71945b6422">role</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a8f38ce88ea581cfbe7a22f3349fe88d0">   62</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397a">PartKind</a>                       <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a8f38ce88ea581cfbe7a22f3349fe88d0">kind</a>          = <a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa5174d1309f275ba6f275db3af9eb3e18">PartKind::Grid</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a6ac963212abc93659e94044d239616fc">   63</a></span>    std::uint64_t                  <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a6ac963212abc93659e94044d239616fc">schemaVersion</a> = 1;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#abb5c5871e1aeaad2d3c12986a1a39cc2">   64</a></span>    std::string_view               <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#abb5c5871e1aeaad2d3c12986a1a39cc2">buildKey</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a5578ffc94c1c457eba4691e8622ae513">   65</a></span>    <a class="code hl_struct" href="structeve_1_1artifact_1_1Bounds.html">Bounds</a>                         <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a5578ffc94c1c457eba4691e8622ae513">bounds</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a54a43431b27bd7815c62095ff63ddcde">   66</a></span>    std::span&lt;const float&gt;         <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a54a43431b27bd7815c62095ff63ddcde">positions</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a4259f2e21aa8a6c96e79d3ad5aeaeb3a">   67</a></span>    std::span&lt;const float&gt;         <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a4259f2e21aa8a6c96e79d3ad5aeaeb3a">normals</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#aaa9169413810fb42dffdae3f4e8575f0">   68</a></span>    std::span&lt;const float&gt;         <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#aaa9169413810fb42dffdae3f4e8575f0">uvs</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a23b99ef24ee1fa7b8c1cc249ade376f2">   69</a></span>    std::span&lt;const std::uint32_t&gt; <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a23b99ef24ee1fa7b8c1cc249ade376f2">indices</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a15b101283f8f79ae874ae0a26c8bb37d">   70</a></span>    std::int32_t                   <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a15b101283f8f79ae874ae0a26c8bb37d">width</a>  = 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#ab786412a4cf920675301371da04669f4">   71</a></span>    std::int32_t                   <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#ab786412a4cf920675301371da04669f4">height</a> = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#aa583dd7e743a0656005a2bafcb1693e7">   72</a></span>    std::span&lt;const std::uint32_t&gt; <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#aa583dd7e743a0656005a2bafcb1693e7">cells</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a7ab96b4ce51889e9b522fedfeb68bc80">   73</a></span>    std::span&lt;const Point&gt;         <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a7ab96b4ce51889e9b522fedfeb68bc80">points</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PartView.html#a38cf260b87ca22b959dcb7b8a6f16a55">   74</a></span>    std::string_view               <a class="code hl_variable" href="structeve_1_1artifact_1_1PartView.html#a38cf260b87ca22b959dcb7b8a6f16a55">metadataJson</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="};">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublicationView.html">   83</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1artifact_1_1PublicationView.html">PublicationView</a> {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublicationView.html#ae025d45381caa3d488e0f3fd631e4d93">   84</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a>              <a class="code hl_variable" href="structeve_1_1artifact_1_1PublicationView.html#ae025d45381caa3d488e0f3fd631e4d93">id</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublicationView.html#a7a49884530527b4ca1f97a86aa2bd3f4">   85</a></span>    std::uint64_t             <a class="code hl_variable" href="structeve_1_1artifact_1_1PublicationView.html#a7a49884530527b4ca1f97a86aa2bd3f4">schemaVersion</a> = 1;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublicationView.html#ab9eab91965e8cce65b6228b56ff2e277">   86</a></span>    std::string_view          <a class="code hl_variable" href="structeve_1_1artifact_1_1PublicationView.html#ab9eab91965e8cce65b6228b56ff2e277">buildKey</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublicationView.html#adcc237bc354647c161ab9f1366645aad">   87</a></span>    <a class="code hl_struct" href="structeve_1_1artifact_1_1Bounds.html">Bounds</a>                    <a class="code hl_variable" href="structeve_1_1artifact_1_1PublicationView.html#adcc237bc354647c161ab9f1366645aad">bounds</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublicationView.html#a0ad1a999611c9d86208df7fb0bf14082">   88</a></span>    std::span&lt;const PartView&gt; <a class="code hl_variable" href="structeve_1_1artifact_1_1PublicationView.html#a0ad1a999611c9d86208df7fb0bf14082">parts</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublicationView.html#a81fb8883dd2380288b2340c9f87c1e24">   89</a></span>    std::string_view          <a class="code hl_variable" href="structeve_1_1artifact_1_1PublicationView.html#a81fb8883dd2380288b2340c9f87c1e24">metadataJson</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>};</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="};">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1PreparedPublication.html">  100</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1artifact_1_1PreparedPublication.html">PreparedPublication</a> {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1PreparedPublication.html#a5bf198ac170d7cdc1867d3033c205599">  102</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1artifact_1_1PreparedPublication.html#a5bf198ac170d7cdc1867d3033c205599">~PreparedPublication</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1PreparedPublication.html#a48aaa7351a82cddc3c815c65706efbb3">  104</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1artifact_1_1PreparedPublication.html#a48aaa7351a82cddc3c815c65706efbb3">commit</a>() noexcept = 0;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1PreparedPublication.html#a6bd26004a31b0198f9f9a091b3a6137a">  106</a></span>    virtual <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1artifact_1_1PreparedPublication.html#a6bd26004a31b0198f9f9a091b3a6137a">rollback</a>() noexcept = 0;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="};">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1ProviderContract.html">  110</a></span>class <a class="code hl_class" href="classeve_1_1artifact_1_1ProviderContract.html">ProviderContract</a> {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1ProviderContract.html#ad7e1191c0debb589a0619566c58bf8b0">  112</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1artifact_1_1ProviderContract.html#ad7e1191c0debb589a0619566c58bf8b0">~ProviderContract</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1ProviderContract.html#a405c5379a25dab67e34ae0095a96c5ea">  119</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;PreparedPublication&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1artifact_1_1ProviderContract.html#a405c5379a25dab67e34ae0095a96c5ea">prepare</a>(</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1artifact_1_1PublicationView.html">PublicationView</a>&amp; publication) = 0;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Value&gt;</a> snapshotState() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> restoreState(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; state);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1ProviderContract.html#a6fd1f4add3a3bb104fc98f73287dc7f2">  136</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1artifact_1_1ProviderContract.html#a6fd1f4add3a3bb104fc98f73287dc7f2">emptyState</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">true</span>; }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1ProviderContract.html#a26319b92cb27e20b49b2d3e74045ec29">  139</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1artifact_1_1ProviderContract.html#a26319b92cb27e20b49b2d3e74045ec29">clearState</a>() noexcept {}</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>};</div>
+</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="foldopen" id="foldopen00143" data-start="{" data-end="};">
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">  143</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">ISceneArtifactAdapter</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1artifact_1_1ProviderContract.html">ProviderContract</a> {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html#a5fd1f1bbb57185e650698481fed058a2">  145</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* capabilityName = <span class="stringliteral">&quot;eve.procgen.ISceneArtifactAdapter&quot;</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html#a14f89dd697167b9a5a86989781469b51">  146</a></span>    <a class="code hl_function" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html#a14f89dd697167b9a5a86989781469b51">~ISceneArtifactAdapter</a>() <span class="keyword">override</span>           = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>};</div>
+</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="};">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IMapArtifactAdapter.html">  150</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1artifact_1_1IMapArtifactAdapter.html">IMapArtifactAdapter</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1artifact_1_1ProviderContract.html">ProviderContract</a> {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IMapArtifactAdapter.html#a1b9791bf02bd13ee71431436fa9c7cff">  152</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* capabilityName = <span class="stringliteral">&quot;eve.procgen.IMapArtifactAdapter&quot;</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IMapArtifactAdapter.html#a74fe35ecd6b650f2082e82c41ca75424">  153</a></span>    <a class="code hl_function" href="classeve_1_1artifact_1_1IMapArtifactAdapter.html#a74fe35ecd6b650f2082e82c41ca75424">~IMapArtifactAdapter</a>() <span class="keyword">override</span>             = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>};</div>
+</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="foldopen" id="foldopen00157" data-start="{" data-end="};">
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">  157</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">IGraphicsArtifactAdapter</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1artifact_1_1ProviderContract.html">ProviderContract</a> {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html#a218048eefa70bff8de19e5c66ebe31ff">  159</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* capabilityName = <span class="stringliteral">&quot;eve.procgen.IGraphicsArtifactAdapter&quot;</span>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html#a393c079479353bcf907b84e6fbd341ec">  160</a></span>    <a class="code hl_function" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html#a393c079479353bcf907b84e6fbd341ec">~IGraphicsArtifactAdapter</a>() <span class="keyword">override</span>        = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>};</div>
+</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="foldopen" id="foldopen00164" data-start="{" data-end="};">
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html">  164</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html">IPhysicsArtifactAdapter</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1artifact_1_1ProviderContract.html">ProviderContract</a> {</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html#ac35169b095ccd54e55f2a94780326185">  166</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* capabilityName = <span class="stringliteral">&quot;eve.procgen.IPhysicsArtifactAdapter&quot;</span>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html#a81d8e85ee4ff4784b4c21af498666cd3">  167</a></span>    <a class="code hl_function" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html#a81d8e85ee4ff4784b4c21af498666cd3">~IPhysicsArtifactAdapter</a>() <span class="keyword">override</span>         = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>};</div>
+</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="foldopen" id="foldopen00171" data-start="{" data-end="};">
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishOptions.html">  171</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1artifact_1_1PublishOptions.html">PublishOptions</a> {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishOptions.html#a9c8e4bcbde80090db37e8765afcfefc8">  172</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="Graphics_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishOptions.html#ab5ddb6288d0fa621d82256922bea5878">  173</a></span>    <span class="keywordtype">bool</span> graphics = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishOptions.html#ac4e3f35a093c961b68b3264886fde1cf">  174</a></span>    <span class="keywordtype">bool</span> physics  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishOptions.html#a5847e54030a11a640b4f8644c0260fd5">  176</a></span>    <span class="keywordtype">bool</span> map = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>};</div>
+</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="foldopen" id="foldopen00180" data-start="{" data-end="};">
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishReceipt.html">  180</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1artifact_1_1PublishReceipt.html">PublishReceipt</a> {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishReceipt.html#a5210c3b5822463ee77a718bba0de5ee9">  181</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> <a class="code hl_variable" href="structeve_1_1artifact_1_1PublishReceipt.html#a5210c3b5822463ee77a718bba0de5ee9">id</a>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishReceipt.html#a9b0f1d0a1371e93021d5daf52bd0dd7e">  182</a></span>    <span class="keywordtype">bool</span>         scenePublished    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishReceipt.html#a3d58ee6d54a1b97b3245e10b095b373a">  183</a></span>    <span class="keywordtype">bool</span>         graphicsPublished = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishReceipt.html#abbbf623c77be4e3b8ef3a933c7d8cf45">  184</a></span>    <span class="keywordtype">bool</span>         physicsPublished  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="structeve_1_1artifact_1_1PublishReceipt.html#ac41f38c38d8439b5d1d2cd195e0978f7">  185</a></span>    <span class="keywordtype">bool</span>         mapPublished      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>};</div>
+</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>}  <span class="comment">// namespace eve::artifact</span></div>
+<div class="ttc" id="aGraphics_8cpp_html_a5b83fac640501a116489fd013eab82db"><div class="ttname"><a href="Graphics_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a></div><div class="ttdeci">std::weak_ptr&lt; PrimitiveScene &gt; scene</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00078">Graphics.cpp:78</a></div></div>
+<div class="ttc" id="aIdentity_8h_html"><div class="ttname"><a href="Identity_8h.html">Identity.h</a></div><div class="ttdoc">Strong identity values shared by persistence, content and logical-name APIs.</div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IGraphicsArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">eve::artifact::IGraphicsArtifactAdapter</a></div><div class="ttdoc">Graphics resource publication capability, implemented by graphics.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00157">ArtifactPublication.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IGraphicsArtifactAdapter_html_a393c079479353bcf907b84e6fbd341ec"><div class="ttname"><a href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html#a393c079479353bcf907b84e6fbd341ec">eve::artifact::IGraphicsArtifactAdapter::~IGraphicsArtifactAdapter</a></div><div class="ttdeci">~IGraphicsArtifactAdapter() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IMapArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1IMapArtifactAdapter.html">eve::artifact::IMapArtifactAdapter</a></div><div class="ttdoc">Tile/map publication capability, implemented by the map module.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00150">ArtifactPublication.h:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IMapArtifactAdapter_html_a74fe35ecd6b650f2082e82c41ca75424"><div class="ttname"><a href="classeve_1_1artifact_1_1IMapArtifactAdapter.html#a74fe35ecd6b650f2082e82c41ca75424">eve::artifact::IMapArtifactAdapter::~IMapArtifactAdapter</a></div><div class="ttdeci">~IMapArtifactAdapter() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IPhysicsArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html">eve::artifact::IPhysicsArtifactAdapter</a></div><div class="ttdoc">Collider publication capability, implemented by physics.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00164">ArtifactPublication.h:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IPhysicsArtifactAdapter_html_a81d8e85ee4ff4784b4c21af498666cd3"><div class="ttname"><a href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html#a81d8e85ee4ff4784b4c21af498666cd3">eve::artifact::IPhysicsArtifactAdapter::~IPhysicsArtifactAdapter</a></div><div class="ttdeci">~IPhysicsArtifactAdapter() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ISceneArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">eve::artifact::ISceneArtifactAdapter</a></div><div class="ttdoc">Scene graph publication capability, implemented by the scene module.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00143">ArtifactPublication.h:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ISceneArtifactAdapter_html_a14f89dd697167b9a5a86989781469b51"><div class="ttname"><a href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html#a14f89dd697167b9a5a86989781469b51">eve::artifact::ISceneArtifactAdapter::~ISceneArtifactAdapter</a></div><div class="ttdeci">~ISceneArtifactAdapter() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1PreparedPublication_html"><div class="ttname"><a href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a></div><div class="ttdoc">A prepared consumer mutation with a non-throwing visibility boundary.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00100">ArtifactPublication.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1PreparedPublication_html_a48aaa7351a82cddc3c815c65706efbb3"><div class="ttname"><a href="classeve_1_1artifact_1_1PreparedPublication.html#a48aaa7351a82cddc3c815c65706efbb3">eve::artifact::PreparedPublication::commit</a></div><div class="ttdeci">virtual void commit() noexcept=0</div><div class="ttdoc">Make the prepared mutation observable; the operation cannot fail.</div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1PreparedPublication_html_a5bf198ac170d7cdc1867d3033c205599"><div class="ttname"><a href="classeve_1_1artifact_1_1PreparedPublication.html#a5bf198ac170d7cdc1867d3033c205599">eve::artifact::PreparedPublication::~PreparedPublication</a></div><div class="ttdeci">virtual ~PreparedPublication()=default</div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1PreparedPublication_html_a6bd26004a31b0198f9f9a091b3a6137a"><div class="ttname"><a href="classeve_1_1artifact_1_1PreparedPublication.html#a6bd26004a31b0198f9f9a091b3a6137a">eve::artifact::PreparedPublication::rollback</a></div><div class="ttdeci">virtual void rollback() noexcept=0</div><div class="ttdoc">Discard the prepared mutation; idempotent and non-throwing.</div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ProviderContract_html"><div class="ttname"><a href="classeve_1_1artifact_1_1ProviderContract.html">eve::artifact::ProviderContract</a></div><div class="ttdoc">Base contract for a consumer-owned artifact provider.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00110">ArtifactPublication.h:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ProviderContract_html_a26319b92cb27e20b49b2d3e74045ec29"><div class="ttname"><a href="classeve_1_1artifact_1_1ProviderContract.html#a26319b92cb27e20b49b2d3e74045ec29">eve::artifact::ProviderContract::clearState</a></div><div class="ttdeci">virtual void clearState() noexcept</div><div class="ttdoc">Clear provider state during aggregate-restore failure cleanup.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00139">ArtifactPublication.h:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ProviderContract_html_a405c5379a25dab67e34ae0095a96c5ea"><div class="ttname"><a href="classeve_1_1artifact_1_1ProviderContract.html#a405c5379a25dab67e34ae0095a96c5ea">eve::artifact::ProviderContract::prepare</a></div><div class="ttdeci">virtual eve::Result&lt; std::unique_ptr&lt; PreparedPublication &gt; &gt; prepare(const PublicationView &amp;publication)=0</div><div class="ttdoc">Prepare a provider-local mutation from a borrowed publication view.</div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ProviderContract_html_a6fd1f4add3a3bb104fc98f73287dc7f2"><div class="ttname"><a href="classeve_1_1artifact_1_1ProviderContract.html#a6fd1f4add3a3bb104fc98f73287dc7f2">eve::artifact::ProviderContract::emptyState</a></div><div class="ttdeci">virtual bool emptyState() const noexcept</div><div class="ttdoc">Return whether this provider has no committed observable state.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00136">ArtifactPublication.h:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ProviderContract_html_ad7e1191c0debb589a0619566c58bf8b0"><div class="ttname"><a href="classeve_1_1artifact_1_1ProviderContract.html#ad7e1191c0debb589a0619566c58bf8b0">eve::artifact::ProviderContract::~ProviderContract</a></div><div class="ttdeci">virtual ~ProviderContract()=default</div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html"><div class="ttname"><a href="namespaceeve_1_1artifact.html">eve::artifact</a></div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8cpp_source.html#l00003">ArtifactPublication.cpp:3</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397a"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397a">eve::artifact::PartKind</a></div><div class="ttdeci">PartKind</div><div class="ttdoc">The leaf kinds understood by consumer-owned artifact providers.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00026">ArtifactPublication.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">eve::artifact::PartKind::ImageData</a></div><div class="ttdeci">@ ImageData</div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa2fb9f97ae851e5999f38d760c395f3a7"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa2fb9f97ae851e5999f38d760c395f3a7">eve::artifact::PartKind::MeshData</a></div><div class="ttdeci">@ MeshData</div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa39e1450275f6b9c731ff9faafab3f44c"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa39e1450275f6b9c731ff9faafab3f44c">eve::artifact::PartKind::Collider</a></div><div class="ttdeci">@ Collider</div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa5174d1309f275ba6f275db3af9eb3e18"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa5174d1309f275ba6f275db3af9eb3e18">eve::artifact::PartKind::Grid</a></div><div class="ttdeci">@ Grid</div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da">eve::artifact::PartKind::PointSet</a></div><div class="ttdeci">@ PointSet</div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html">eve::artifact::Bounds</a></div><div class="ttdoc">Backend-neutral axis-aligned bounds copied from a generated part.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00035">ArtifactPublication.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html_a0ac2d73fc618942de9c1b55aa45dcfa5"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html#a0ac2d73fc618942de9c1b55aa45dcfa5">eve::artifact::Bounds::valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00042">ArtifactPublication.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html_a13af5b42b4db2d61c91576399e322dd0"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html#a13af5b42b4db2d61c91576399e322dd0">eve::artifact::Bounds::minY</a></div><div class="ttdeci">float minY</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00037">ArtifactPublication.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html_a17cba486a04500248b5b72b730aa3cdd"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html#a17cba486a04500248b5b72b730aa3cdd">eve::artifact::Bounds::minX</a></div><div class="ttdeci">float minX</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00036">ArtifactPublication.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html_a392f528b46f1d0d29b9a5b7196624b17"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html#a392f528b46f1d0d29b9a5b7196624b17">eve::artifact::Bounds::maxZ</a></div><div class="ttdeci">float maxZ</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00041">ArtifactPublication.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html_a48907eb837e7c201c9f1fcd5d8ccbd22"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html#a48907eb837e7c201c9f1fcd5d8ccbd22">eve::artifact::Bounds::minZ</a></div><div class="ttdeci">float minZ</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00038">ArtifactPublication.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html_ad0ab8706283a3cae235393fe5708f1ad"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html#ad0ab8706283a3cae235393fe5708f1ad">eve::artifact::Bounds::maxY</a></div><div class="ttdeci">float maxY</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00040">ArtifactPublication.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Bounds_html_afac8723c8c05a5c29875c96d93f058ff"><div class="ttname"><a href="structeve_1_1artifact_1_1Bounds.html#afac8723c8c05a5c29875c96d93f058ff">eve::artifact::Bounds::maxX</a></div><div class="ttdeci">float maxX</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00039">ArtifactPublication.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html">eve::artifact::PartView</a></div><div class="ttdoc">Borrowed immutable view of one generated leaf.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00059">ArtifactPublication.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a15b101283f8f79ae874ae0a26c8bb37d"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a15b101283f8f79ae874ae0a26c8bb37d">eve::artifact::PartView::width</a></div><div class="ttdeci">std::int32_t width</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00070">ArtifactPublication.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a23b99ef24ee1fa7b8c1cc249ade376f2"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a23b99ef24ee1fa7b8c1cc249ade376f2">eve::artifact::PartView::indices</a></div><div class="ttdeci">std::span&lt; const std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00069">ArtifactPublication.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a38cf260b87ca22b959dcb7b8a6f16a55"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a38cf260b87ca22b959dcb7b8a6f16a55">eve::artifact::PartView::metadataJson</a></div><div class="ttdeci">std::string_view metadataJson</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00074">ArtifactPublication.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a4259f2e21aa8a6c96e79d3ad5aeaeb3a"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a4259f2e21aa8a6c96e79d3ad5aeaeb3a">eve::artifact::PartView::normals</a></div><div class="ttdeci">std::span&lt; const float &gt; normals</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00067">ArtifactPublication.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a54a43431b27bd7815c62095ff63ddcde"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a54a43431b27bd7815c62095ff63ddcde">eve::artifact::PartView::positions</a></div><div class="ttdeci">std::span&lt; const float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00066">ArtifactPublication.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a5578ffc94c1c457eba4691e8622ae513"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a5578ffc94c1c457eba4691e8622ae513">eve::artifact::PartView::bounds</a></div><div class="ttdeci">Bounds bounds</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00065">ArtifactPublication.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a66b2d4963a27e6364518c891a14405ce"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a66b2d4963a27e6364518c891a14405ce">eve::artifact::PartView::id</a></div><div class="ttdeci">PersistentId id</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00060">ArtifactPublication.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a6ac963212abc93659e94044d239616fc"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a6ac963212abc93659e94044d239616fc">eve::artifact::PartView::schemaVersion</a></div><div class="ttdeci">std::uint64_t schemaVersion</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00063">ArtifactPublication.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a7ab96b4ce51889e9b522fedfeb68bc80"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a7ab96b4ce51889e9b522fedfeb68bc80">eve::artifact::PartView::points</a></div><div class="ttdeci">std::span&lt; const Point &gt; points</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00073">ArtifactPublication.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a8f38ce88ea581cfbe7a22f3349fe88d0"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a8f38ce88ea581cfbe7a22f3349fe88d0">eve::artifact::PartView::kind</a></div><div class="ttdeci">PartKind kind</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00062">ArtifactPublication.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_a99d7d0b0214ff3058060ed71945b6422"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#a99d7d0b0214ff3058060ed71945b6422">eve::artifact::PartView::role</a></div><div class="ttdeci">std::string_view role</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00061">ArtifactPublication.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_aa583dd7e743a0656005a2bafcb1693e7"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#aa583dd7e743a0656005a2bafcb1693e7">eve::artifact::PartView::cells</a></div><div class="ttdeci">std::span&lt; const std::uint32_t &gt; cells</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00072">ArtifactPublication.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_aaa9169413810fb42dffdae3f4e8575f0"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#aaa9169413810fb42dffdae3f4e8575f0">eve::artifact::PartView::uvs</a></div><div class="ttdeci">std::span&lt; const float &gt; uvs</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00068">ArtifactPublication.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_ab786412a4cf920675301371da04669f4"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#ab786412a4cf920675301371da04669f4">eve::artifact::PartView::height</a></div><div class="ttdeci">std::int32_t height</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00071">ArtifactPublication.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PartView_html_abb5c5871e1aeaad2d3c12986a1a39cc2"><div class="ttname"><a href="structeve_1_1artifact_1_1PartView.html#abb5c5871e1aeaad2d3c12986a1a39cc2">eve::artifact::PartView::buildKey</a></div><div class="ttdeci">std::string_view buildKey</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00064">ArtifactPublication.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Point_html"><div class="ttname"><a href="structeve_1_1artifact_1_1Point.html">eve::artifact::Point</a></div><div class="ttdoc">Minimal point representation used at the publication boundary.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00046">ArtifactPublication.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Point_html_a60e5124cd5b7836ee3c9ce63ec7b490c"><div class="ttname"><a href="structeve_1_1artifact_1_1Point.html#a60e5124cd5b7836ee3c9ce63ec7b490c">eve::artifact::Point::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00048">ArtifactPublication.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Point_html_a60fb81e4c2315e92932d5a388d2bca0d"><div class="ttname"><a href="structeve_1_1artifact_1_1Point.html#a60fb81e4c2315e92932d5a388d2bca0d">eve::artifact::Point::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00049">ArtifactPublication.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1Point_html_ad8ff3b55149096c63682928bc98a6f7c"><div class="ttname"><a href="structeve_1_1artifact_1_1Point.html#ad8ff3b55149096c63682928bc98a6f7c">eve::artifact::Point::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00047">ArtifactPublication.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a></div><div class="ttdoc">Borrowed immutable view of one complete generated publication.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00083">ArtifactPublication.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html_a0ad1a999611c9d86208df7fb0bf14082"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html#a0ad1a999611c9d86208df7fb0bf14082">eve::artifact::PublicationView::parts</a></div><div class="ttdeci">std::span&lt; const PartView &gt; parts</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00088">ArtifactPublication.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html_a7a49884530527b4ca1f97a86aa2bd3f4"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html#a7a49884530527b4ca1f97a86aa2bd3f4">eve::artifact::PublicationView::schemaVersion</a></div><div class="ttdeci">std::uint64_t schemaVersion</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00085">ArtifactPublication.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html_a81fb8883dd2380288b2340c9f87c1e24"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html#a81fb8883dd2380288b2340c9f87c1e24">eve::artifact::PublicationView::metadataJson</a></div><div class="ttdeci">std::string_view metadataJson</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00089">ArtifactPublication.h:89</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html_ab9eab91965e8cce65b6228b56ff2e277"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html#ab9eab91965e8cce65b6228b56ff2e277">eve::artifact::PublicationView::buildKey</a></div><div class="ttdeci">std::string_view buildKey</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00086">ArtifactPublication.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html_adcc237bc354647c161ab9f1366645aad"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html#adcc237bc354647c161ab9f1366645aad">eve::artifact::PublicationView::bounds</a></div><div class="ttdeci">Bounds bounds</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00087">ArtifactPublication.h:87</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html_ae025d45381caa3d488e0f3fd631e4d93"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html#ae025d45381caa3d488e0f3fd631e4d93">eve::artifact::PublicationView::id</a></div><div class="ttdeci">PersistentId id</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00084">ArtifactPublication.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublishOptions_html"><div class="ttname"><a href="structeve_1_1artifact_1_1PublishOptions.html">eve::artifact::PublishOptions</a></div><div class="ttdoc">Required provider set for one artifact publication transaction.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00171">ArtifactPublication.h:171</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublishReceipt_html"><div class="ttname"><a href="structeve_1_1artifact_1_1PublishReceipt.html">eve::artifact::PublishReceipt</a></div><div class="ttdoc">Observable receipt from a successful provider transaction.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00180">ArtifactPublication.h:180</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublishReceipt_html_a5210c3b5822463ee77a718bba0de5ee9"><div class="ttname"><a href="structeve_1_1artifact_1_1PublishReceipt.html#a5210c3b5822463ee77a718bba0de5ee9">eve::artifact::PublishReceipt::id</a></div><div class="ttdeci">PersistentId id</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00181">ArtifactPublication.h:181</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

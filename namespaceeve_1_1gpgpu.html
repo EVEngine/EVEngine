@@ -1,0 +1,2150 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpgpu 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpgpu.html">gpgpu</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpgpu 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Fluids module — interactive surface fluid simulation.  
+<a href="namespaceeve_1_1gpgpu.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-agnostic compute program. Bind storage buffers then dispatch via <a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html#acf0c575551c055a8b0fbec32b6208c23" title="Record + submit a compute dispatch and wait for completion (sync). groups*: workgroup counts (not thr...">Gpgpu::dispatch</a>. Push constants: float[32] (same size as <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">graphics::Shader</a>).  <a href="classeve_1_1gpgpu_1_1ComputeShader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reusable typed CPU staging for a GPU ECS component stream. Ownership stays with the caller; one workspace must not be used concurrently.  <a href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPGPU module — compute shaders + storage buffers via the active Graphics backend. Uses the graphics queue when no dedicated compute family exists (Apple/MoltenVK).  <a href="classeve_1_1gpgpu_1_1Gpgpu.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived class destroys GPU resources in destructor.  <a href="classeve_1_1gpgpu_1_1GpuBuffer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1Sequence.html">Sequence</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanComputeShader.html">VulkanComputeShader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan 计算着色器（SPIR-V pipeline + descriptor 管理）。  <a href="classeve_1_1gpgpu_1_1VulkanComputeShader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1VulkanGpuBuffer.html">VulkanGpuBuffer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan 计算缓冲区实现（storage/vertex buffer + device memory）。  <a href="classeve_1_1gpgpu_1_1VulkanGpuBuffer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V input is rejected (browsers only accept WGSL at runtime).  <a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage / staging buffer for the WebGPU backend.  <a href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a14323ec876f9dbd5d7ae994b39c25637" id="r_a14323ec876f9dbd5d7ae994b39c25637"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> : uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ae599161956d626eda4cb0a5ffb85271c">Idle</a>
+, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ac5564d2e8b8e0ae08bf4363f2b947166">Recording</a>
+, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a>
+, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637aae94f80b3ce82062a5dd7815daa04f9d">Complete</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a14323ec876f9dbd5d7ae994b39c25637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable lifecycle state of a reusable GPU command sequence.  <a href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">更多...</a><br /></td></tr>
+<tr class="separator:a14323ec876f9dbd5d7ae994b39c25637"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:abb4244978131ff8eae405e50af115c7b" id="r_abb4244978131ff8eae405e50af115c7b"><td class="memTemplParams" colspan="2">template&lt;typename Comp &gt; </td></tr>
+<tr class="memitem:abb4244978131ff8eae405e50af115c7b"><td class="memTemplItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#abb4244978131ff8eae405e50af115c7b">componentFloatCount</a> ()</td></tr>
+<tr class="separator:abb4244978131ff8eae405e50af115c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a834860687ca0b20759d940ebc58fbfdf" id="r_a834860687ca0b20759d940ebc58fbfdf"><td class="memTemplParams" colspan="2">template&lt;typename Base , typename Comp &gt; </td></tr>
+<tr class="memitem:a834860687ca0b20759d940ebc58fbfdf"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a834860687ca0b20759d940ebc58fbfdf">countViewEntities</a> ()</td></tr>
+<tr class="memdesc:a834860687ca0b20759d940ebc58fbfdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count live entities matching View&lt;Base, Comp&gt;.  <br /></td></tr>
+<tr class="separator:a834860687ca0b20759d940ebc58fbfdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6657d6415b45ad818af55e7a361d798e" id="r_a6657d6415b45ad818af55e7a361d798e"><td class="memTemplParams" colspan="2">template&lt;typename Base , typename Comp &gt; </td></tr>
+<tr class="memitem:a6657d6415b45ad818af55e7a361d798e"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a6657d6415b45ad818af55e7a361d798e">packViewComponent</a> (<a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;sys, int binding, <a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a>&lt; Comp &gt; &amp;workspace)</td></tr>
+<tr class="memdesc:a6657d6415b45ad818af55e7a361d798e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack View&lt;Base, Comp&gt; into <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> binding as AoS floats. Returns entity count (0 if empty).  <br /></td></tr>
+<tr class="separator:a6657d6415b45ad818af55e7a361d798e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac0c25e6cf6a9963922370c14267d1e7" id="r_aac0c25e6cf6a9963922370c14267d1e7"><td class="memTemplParams" colspan="2">template&lt;typename Base , typename Comp &gt; </td></tr>
+<tr class="memitem:aac0c25e6cf6a9963922370c14267d1e7"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#aac0c25e6cf6a9963922370c14267d1e7">packViewComponent</a> (<a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;sys, int binding)</td></tr>
+<tr class="memdesc:aac0c25e6cf6a9963922370c14267d1e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility overload that uses a temporary staging workspace.  <br /></td></tr>
+<tr class="separator:aac0c25e6cf6a9963922370c14267d1e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a6d805a55234996ea854fc8359a24c" id="r_a29a6d805a55234996ea854fc8359a24c"><td class="memTemplParams" colspan="2">template&lt;typename Base , typename Comp &gt; </td></tr>
+<tr class="memitem:a29a6d805a55234996ea854fc8359a24c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a29a6d805a55234996ea854fc8359a24c">unpackViewComponent</a> (<a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;sys, int binding, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, <a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a>&lt; Comp &gt; &amp;workspace)</td></tr>
+<tr class="memdesc:a29a6d805a55234996ea854fc8359a24c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> binding floats back into View&lt;Base, Comp&gt; (same order as pack). <code>count</code> should be the value returned by packViewComponent.  <br /></td></tr>
+<tr class="separator:a29a6d805a55234996ea854fc8359a24c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab67e03e0640f9bfebf4f096d96d6b0fe" id="r_ab67e03e0640f9bfebf4f096d96d6b0fe"><td class="memTemplParams" colspan="2">template&lt;typename Base , typename Comp &gt; </td></tr>
+<tr class="memitem:ab67e03e0640f9bfebf4f096d96d6b0fe"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#ab67e03e0640f9bfebf4f096d96d6b0fe">unpackViewComponent</a> (<a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;sys, int binding, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:ab67e03e0640f9bfebf4f096d96d6b0fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility overload that uses a temporary staging workspace.  <br /></td></tr>
+<tr class="separator:ab67e03e0640f9bfebf4f096d96d6b0fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fe7d4353a93b027a7e6cc970b0f497b" id="r_a5fe7d4353a93b027a7e6cc970b0f497b"><td class="memTemplParams" colspan="2">template&lt;typename Base , typename Comp &gt; </td></tr>
+<tr class="memitem:a5fe7d4353a93b027a7e6cc970b0f497b"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a5fe7d4353a93b027a7e6cc970b0f497b">packViewComponentRange</a> (<a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;sys, int binding, int firstEntity, int entityCount, <a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a>&lt; Comp &gt; &amp;workspace)</td></tr>
+<tr class="memdesc:a5fe7d4353a93b027a7e6cc970b0f497b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack a stable contiguous View range into an existing resident buffer. The full buffer must have been allocated by a prior full pack/ensureBuffer.  <br /></td></tr>
+<tr class="separator:a5fe7d4353a93b027a7e6cc970b0f497b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b4037719c25b92bef6a7c2265857c8d" id="r_a9b4037719c25b92bef6a7c2265857c8d"><td class="memTemplParams" colspan="2">template&lt;typename Base , typename Comp &gt; </td></tr>
+<tr class="memitem:a9b4037719c25b92bef6a7c2265857c8d"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a9b4037719c25b92bef6a7c2265857c8d">unpackViewComponentRange</a> (<a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;sys, int binding, int firstEntity, int entityCount, <a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a>&lt; Comp &gt; &amp;workspace)</td></tr>
+<tr class="memdesc:a9b4037719c25b92bef6a7c2265857c8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpack a stable contiguous resident-buffer range into a matching View range.  <br /></td></tr>
+<tr class="separator:a9b4037719c25b92bef6a7c2265857c8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf83e85b8a9de5b31062867d9cd4ac64" id="r_abf83e85b8a9de5b31062867d9cd4ac64"><td class="memTemplParams" colspan="2">template&lt;typename Base , typename Comp &gt; </td></tr>
+<tr class="memitem:abf83e85b8a9de5b31062867d9cd4ac64"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#abf83e85b8a9de5b31062867d9cd4ac64">runViewComponentSystem</a> (<a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;sys, int binding, float dt)</td></tr>
+<tr class="memdesc:abf83e85b8a9de5b31062867d9cd4ac64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack + dispatch + unpack a single-component GPU system. Additional bindings must be uploaded by the caller before this helper, or use <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> manually for multi-buffer systems.  <br /></td></tr>
+<tr class="separator:abf83e85b8a9de5b31062867d9cd4ac64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a223f345d406a62a82f70253c447632cc" id="r_a223f345d406a62a82f70253c447632cc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a223f345d406a62a82f70253c447632cc">packScriptEntityFloats</a> (ssq::Object entities, const std::string &amp;slot, ssq::Object fields, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *buf)</td></tr>
+<tr class="memdesc:a223f345d406a62a82f70253c447632cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack script ECS entities' component number fields into a <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html" title="Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived c...">GpuBuffer</a> (AoS). entities: Squirrel array of entity instances slot: component slot name on the entity (e.g. "pos") fields: Squirrel array of field name strings (e.g. ["x","y"]) Returns entity count packed (0 on empty / error).  <br /></td></tr>
+<tr class="separator:a223f345d406a62a82f70253c447632cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f7c3b03c0dbd71d1aa9fda289744611" id="r_a6f7c3b03c0dbd71d1aa9fda289744611"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a6f7c3b03c0dbd71d1aa9fda289744611">packScriptEntityFloatsRange</a> (ssq::Object entities, const std::string &amp;slot, ssq::Object fields, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *buf, int firstEntity, int entityCount)</td></tr>
+<tr class="memdesc:a6f7c3b03c0dbd71d1aa9fda289744611"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack a contiguous entity range into the matching range of an existing buffer.  <br /></td></tr>
+<tr class="separator:a6f7c3b03c0dbd71d1aa9fda289744611"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a418dfb4af57bbe624da1de8383fab2d8" id="r_a418dfb4af57bbe624da1de8383fab2d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a418dfb4af57bbe624da1de8383fab2d8">unpackScriptEntityFloats</a> (ssq::Object entities, const std::string &amp;slot, ssq::Object fields, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *buf, int entityCount)</td></tr>
+<tr class="memdesc:a418dfb4af57bbe624da1de8383fab2d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inverse of packScriptEntityFloats; entityCount should match pack result.  <br /></td></tr>
+<tr class="separator:a418dfb4af57bbe624da1de8383fab2d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbe56d26ec331988caa5b5c37f55f5db" id="r_acbe56d26ec331988caa5b5c37f55f5db"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#acbe56d26ec331988caa5b5c37f55f5db">unpackScriptEntityFloatsRange</a> (ssq::Object entities, const std::string &amp;slot, ssq::Object fields, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *buf, int firstEntity, int entityCount)</td></tr>
+<tr class="memdesc:acbe56d26ec331988caa5b5c37f55f5db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpack a contiguous buffer range into the matching stable ECS view range.  <br /></td></tr>
+<tr class="separator:acbe56d26ec331988caa5b5c37f55f5db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0225c9a33667166bd44ec2b0338069b2" id="r_a0225c9a33667166bd44ec2b0338069b2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a0225c9a33667166bd44ec2b0338069b2">Module_IMPL</a> (<a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a>, new <a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a>())</td></tr>
+<tr class="separator:a0225c9a33667166bd44ec2b0338069b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ade65064e9ee7f64c216b4dee5876da" id="r_a2ade65064e9ee7f64c216b4dee5876da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a2ade65064e9ee7f64c216b4dee5876da">vulkanGpgpuReady</a> ()</td></tr>
+<tr class="memdesc:a2ade65064e9ee7f64c216b4dee5876da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vulkan 后端是否就绪（设备/队列可用）。  <br /></td></tr>
+<tr class="separator:a2ade65064e9ee7f64c216b4dee5876da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03146dd2f41f65d394446a1b76e5f34d" id="r_a03146dd2f41f65d394446a1b76e5f34d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a03146dd2f41f65d394446a1b76e5f34d">vulkanNewShaderFromSpirv</a> (const std::vector&lt; uint32_t &gt; &amp;spv)</td></tr>
+<tr class="memdesc:a03146dd2f41f65d394446a1b76e5f34d"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 SPIR-V 字节码创建计算着色器。  <br /></td></tr>
+<tr class="separator:a03146dd2f41f65d394446a1b76e5f34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a208fb1668ddd65490d7f15fca125a57b" id="r_a208fb1668ddd65490d7f15fca125a57b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a208fb1668ddd65490d7f15fca125a57b">vulkanNewBuffer</a> (int byteSize, const std::string &amp;<a class="el" href="AssetCommand_8cpp.html#a17b8eeb1abf8e09ef061a057d69577bf">usage</a>)</td></tr>
+<tr class="memdesc:a208fb1668ddd65490d7f15fca125a57b"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建 GPU 存储/传输缓冲区；usage 为 "storage" | "vertex" 等。  <br /></td></tr>
+<tr class="separator:a208fb1668ddd65490d7f15fca125a57b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a753b1f19d28ba33ebe7a972f26970d03" id="r_a753b1f19d28ba33ebe7a972f26970d03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a753b1f19d28ba33ebe7a972f26970d03">vulkanDispatch</a> (<a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, int groupsX, int groupsY, int groupsZ)</td></tr>
+<tr class="memdesc:a753b1f19d28ba33ebe7a972f26970d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">派发计算着色器（groupsX/Y/Z 为线程组数）。  <br /></td></tr>
+<tr class="separator:a753b1f19d28ba33ebe7a972f26970d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af168ec3ae56df146d5b65a2716a68034" id="r_af168ec3ae56df146d5b65a2716a68034"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#af168ec3ae56df146d5b65a2716a68034">vulkanSequenceCreate</a> ()</td></tr>
+<tr class="separator:af168ec3ae56df146d5b65a2716a68034"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7031383759867893ef3c74d0b8eaee8d" id="r_a7031383759867893ef3c74d0b8eaee8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a7031383759867893ef3c74d0b8eaee8d">vulkanSequenceDestroy</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq)</td></tr>
+<tr class="separator:a7031383759867893ef3c74d0b8eaee8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e68eb8434e6e201b2386ec306a39d30" id="r_a2e68eb8434e6e201b2386ec306a39d30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a2e68eb8434e6e201b2386ec306a39d30">vulkanSequenceBegin</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq)</td></tr>
+<tr class="separator:a2e68eb8434e6e201b2386ec306a39d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1af3d5fd979919b0ed8c283ff77d911" id="r_ae1af3d5fd979919b0ed8c283ff77d911"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#ae1af3d5fd979919b0ed8c283ff77d911">vulkanSequenceRecordUpload</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *dst, const void *src, uint64_t nbytes, uint64_t dstOffset)</td></tr>
+<tr class="separator:ae1af3d5fd979919b0ed8c283ff77d911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e9c2f1d73f70c756b8d5ac451fdb843" id="r_a8e9c2f1d73f70c756b8d5ac451fdb843"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a8e9c2f1d73f70c756b8d5ac451fdb843">vulkanSequenceRecordDownload</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *src, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *staging, uint64_t nbytes, uint64_t srcOffset)</td></tr>
+<tr class="separator:a8e9c2f1d73f70c756b8d5ac451fdb843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f847277e599588bdab05b0b7ea4c6c6" id="r_a8f847277e599588bdab05b0b7ea4c6c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a8f847277e599588bdab05b0b7ea4c6c6">vulkanSequenceRecordDispatch</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq, <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, int groupsX, int groupsY, int groupsZ)</td></tr>
+<tr class="separator:a8f847277e599588bdab05b0b7ea4c6c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a068375ee0d0a5fc930e16d5b9d3bfa10" id="r_a068375ee0d0a5fc930e16d5b9d3bfa10"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a068375ee0d0a5fc930e16d5b9d3bfa10">vulkanSequenceSubmit</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq)</td></tr>
+<tr class="separator:a068375ee0d0a5fc930e16d5b9d3bfa10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affa8bce02cfda699f097942492103208" id="r_affa8bce02cfda699f097942492103208"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#affa8bce02cfda699f097942492103208">vulkanSequenceSubmitAsync</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq)</td></tr>
+<tr class="separator:affa8bce02cfda699f097942492103208"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad90bd57c526d7604b405500b341a5894" id="r_ad90bd57c526d7604b405500b341a5894"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#ad90bd57c526d7604b405500b341a5894">vulkanSequencePoll</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq)</td></tr>
+<tr class="separator:ad90bd57c526d7604b405500b341a5894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a361642593e3d126c64dbc6c977b7e788" id="r_a361642593e3d126c64dbc6c977b7e788"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a361642593e3d126c64dbc6c977b7e788">vulkanSequenceWait</a> (<a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq)</td></tr>
+<tr class="separator:a361642593e3d126c64dbc6c977b7e788"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ceceebf9c803b80e8a12b57cf969051" id="r_a8ceceebf9c803b80e8a12b57cf969051"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a8ceceebf9c803b80e8a12b57cf969051">vulkanSequenceStatus</a> (const <a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *seq)</td></tr>
+<tr class="separator:a8ceceebf9c803b80e8a12b57cf969051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b0634665ee2535d28d278ce5b3e5f81" id="r_a9b0634665ee2535d28d278ce5b3e5f81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">graphics::vulkan::Graphics</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a9b0634665ee2535d28d278ce5b3e5f81">requireVulkanGraphics</a> ()</td></tr>
+<tr class="memdesc:a9b0634665ee2535d28d278ce5b3e5f81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve live Vulkan Graphics (throws if missing / not initialized).  <br /></td></tr>
+<tr class="separator:a9b0634665ee2535d28d278ce5b3e5f81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44497ae3aa0656a14559b1affe4773bc" id="r_a44497ae3aa0656a14559b1affe4773bc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a44497ae3aa0656a14559b1affe4773bc">vulkanGraphicsReady</a> ()</td></tr>
+<tr class="memdesc:a44497ae3aa0656a14559b1affe4773bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if Vulkan Graphics device is ready.  <br /></td></tr>
+<tr class="separator:a44497ae3aa0656a14559b1affe4773bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e204ad344cf6aee66723d0c72316040" id="r_a7e204ad344cf6aee66723d0c72316040"><td class="memItemLeft" align="right" valign="top">vk::Queue&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a7e204ad344cf6aee66723d0c72316040">computeQueue</a> (<a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">graphics::vulkan::Graphics</a> *vkg)</td></tr>
+<tr class="separator:a7e204ad344cf6aee66723d0c72316040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0b2bb04dfd39596a383bb94cb5dfe35" id="r_aa0b2bb04dfd39596a383bb94cb5dfe35"><td class="memItemLeft" align="right" valign="top">vk::CommandPool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#aa0b2bb04dfd39596a383bb94cb5dfe35">computeCommandPool</a> (<a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">graphics::vulkan::Graphics</a> *vkg)</td></tr>
+<tr class="separator:aa0b2bb04dfd39596a383bb94cb5dfe35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dbaad5de288c351e2c649086dba01c0" id="r_a4dbaad5de288c351e2c649086dba01c0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a4dbaad5de288c351e2c649086dba01c0">loadSpirvFile</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="separator:a4dbaad5de288c351e2c649086dba01c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600653bd04579b17f9940a8b4d3d873e" id="r_a600653bd04579b17f9940a8b4d3d873e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a600653bd04579b17f9940a8b4d3d873e">compileComputeGlsl</a> (const std::string &amp;glsl)</td></tr>
+<tr class="separator:a600653bd04579b17f9940a8b4d3d873e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fed65def15b16fd27e26bd98c994f1b" id="r_a2fed65def15b16fd27e26bd98c994f1b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a2fed65def15b16fd27e26bd98c994f1b">webgpuGpgpuReady</a> ()</td></tr>
+<tr class="separator:a2fed65def15b16fd27e26bd98c994f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbdec5324b498f8b40dd2fb04059e3c4" id="r_abbdec5324b498f8b40dd2fb04059e3c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#abbdec5324b498f8b40dd2fb04059e3c4">webgpuNewShaderFromWgsl</a> (const std::string &amp;wgsl)</td></tr>
+<tr class="separator:abbdec5324b498f8b40dd2fb04059e3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabec05c308a71d2824c27b27c61dfa09" id="r_aabec05c308a71d2824c27b27c61dfa09"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#aabec05c308a71d2824c27b27c61dfa09">webgpuNewShaderFromSpirv</a> (const std::vector&lt; uint32_t &gt; &amp;spv)</td></tr>
+<tr class="separator:aabec05c308a71d2824c27b27c61dfa09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a434c9d4817f0e14f552ac67be4a655" id="r_a5a434c9d4817f0e14f552ac67be4a655"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a5a434c9d4817f0e14f552ac67be4a655">webgpuNewBuffer</a> (int byteSize, const std::string &amp;<a class="el" href="AssetCommand_8cpp.html#a17b8eeb1abf8e09ef061a057d69577bf">usage</a>)</td></tr>
+<tr class="separator:a5a434c9d4817f0e14f552ac67be4a655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a407eec24dd9fcb0a38b16067f799c0" id="r_a3a407eec24dd9fcb0a38b16067f799c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a3a407eec24dd9fcb0a38b16067f799c0">webgpuDispatch</a> (<a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, int groupsX, int groupsY, int groupsZ)</td></tr>
+<tr class="separator:a3a407eec24dd9fcb0a38b16067f799c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1d48e41c190a13c0b090689bdbe5c39" id="r_ac1d48e41c190a13c0b090689bdbe5c39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#ac1d48e41c190a13c0b090689bdbe5c39">webgpuSequenceCreate</a> ()</td></tr>
+<tr class="separator:ac1d48e41c190a13c0b090689bdbe5c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a7cb08ca461a3f91108ee25e9e0c3e0" id="r_a3a7cb08ca461a3f91108ee25e9e0c3e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a3a7cb08ca461a3f91108ee25e9e0c3e0">webgpuSequenceDestroy</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence)</td></tr>
+<tr class="separator:a3a7cb08ca461a3f91108ee25e9e0c3e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21cf3e7d4ccecef1cf3a9a34b63c0815" id="r_a21cf3e7d4ccecef1cf3a9a34b63c0815"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a21cf3e7d4ccecef1cf3a9a34b63c0815">webgpuSequenceReady</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence)</td></tr>
+<tr class="separator:a21cf3e7d4ccecef1cf3a9a34b63c0815"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bd1a200fba3b85f553861b9d47eeb7b" id="r_a2bd1a200fba3b85f553861b9d47eeb7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a2bd1a200fba3b85f553861b9d47eeb7b">webgpuSequenceBegin</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence)</td></tr>
+<tr class="separator:a2bd1a200fba3b85f553861b9d47eeb7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acde67de5b472bb7c4912213d0671b8a2" id="r_acde67de5b472bb7c4912213d0671b8a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#acde67de5b472bb7c4912213d0671b8a2">webgpuSequenceRecordUpload</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *dst, const void *src, uint64_t nbytes, uint64_t dstOffset)</td></tr>
+<tr class="separator:acde67de5b472bb7c4912213d0671b8a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16213e6709a79ecfad1811d8f3f16416" id="r_a16213e6709a79ecfad1811d8f3f16416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a16213e6709a79ecfad1811d8f3f16416">webgpuSequenceRecordDownload</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *src, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *staging, uint64_t nbytes, uint64_t srcOffset)</td></tr>
+<tr class="separator:a16213e6709a79ecfad1811d8f3f16416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf908883e4dd78251dc05ebef7dc670a" id="r_abf908883e4dd78251dc05ebef7dc670a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#abf908883e4dd78251dc05ebef7dc670a">webgpuSequenceRecordDispatch</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence, <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, int groupsX, int groupsY, int groupsZ)</td></tr>
+<tr class="separator:abf908883e4dd78251dc05ebef7dc670a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5a23f154f7c4cfe0de1d102d363e0a9" id="r_af5a23f154f7c4cfe0de1d102d363e0a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#af5a23f154f7c4cfe0de1d102d363e0a9">webgpuSequenceSubmitAsync</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence)</td></tr>
+<tr class="separator:af5a23f154f7c4cfe0de1d102d363e0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22215a70dee7be6506d5ba2134f564a6" id="r_a22215a70dee7be6506d5ba2134f564a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a22215a70dee7be6506d5ba2134f564a6">webgpuSequencePoll</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence)</td></tr>
+<tr class="separator:a22215a70dee7be6506d5ba2134f564a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c0e6616185ff0ed3e23bdde16528a7d" id="r_a5c0e6616185ff0ed3e23bdde16528a7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#a5c0e6616185ff0ed3e23bdde16528a7d">webgpuSequenceWait</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence)</td></tr>
+<tr class="separator:a5c0e6616185ff0ed3e23bdde16528a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaacb565a64d6887e5b701dd3c76206e9" id="r_aaacb565a64d6887e5b701dd3c76206e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#aaacb565a64d6887e5b701dd3c76206e9">webgpuSequenceStatus</a> (const <a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence)</td></tr>
+<tr class="separator:aaacb565a64d6887e5b701dd3c76206e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8322fe8535b336ed8562b896ca46e8d" id="r_af8322fe8535b336ed8562b896ca46e8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1gpgpu.html#af8322fe8535b336ed8562b896ca46e8d">webgpuSequenceSubmit</a> (<a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *sequence)</td></tr>
+<tr class="separator:af8322fe8535b336ed8562b896ca46e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Fluids module — interactive surface fluid simulation. </p>
+<p>Screen-space fluid surface reconstruction (SSF).</p>
+<p>Particles are constrained to mesh SDFs, flow down the surface under tangential gravity, and (later phases) form droplets through cohesion / surface tension. The solver runs on the GPU through the gpgpu module with a CPU reference fallback; the screen-space surface reconstruction pipeline consumes the same particle buffers.</p>
+<p>Splats particles into a depth/thickness buffer, bilaterally smooths the depth (curvature-flow style), reconstructs normals from depth gradients and shades the result as either water (Fresnel + refraction look) or mud (diffuse, thickness-attenuated). The CPU reference mirrors the GLSL kernels in <a class="el" href="FluidSsfKernels_8h.html">FluidSsfKernels.h</a> 1:1; the GPU path runs on the gpgpu compute queue. </p>
+</div><h2 class="groupheader">枚举类型说明</h2>
+<a id="a14323ec876f9dbd5d7ae994b39c25637" name="a14323ec876f9dbd5d7ae994b39c25637"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14323ec876f9dbd5d7ae994b39c25637">&#9670;&#160;</a></span>SequenceStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">eve::gpgpu::SequenceStatus</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observable lifecycle state of a reusable GPU command sequence. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a14323ec876f9dbd5d7ae994b39c25637ae599161956d626eda4cb0a5ffb85271c" name="a14323ec876f9dbd5d7ae994b39c25637ae599161956d626eda4cb0a5ffb85271c"></a>Idle&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a14323ec876f9dbd5d7ae994b39c25637ac5564d2e8b8e0ae08bf4363f2b947166" name="a14323ec876f9dbd5d7ae994b39c25637ac5564d2e8b8e0ae08bf4363f2b947166"></a>Recording&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4" name="a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4"></a>Submitted&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a14323ec876f9dbd5d7ae994b39c25637aae94f80b3ce82062a5dd7815daa04f9d" name="a14323ec876f9dbd5d7ae994b39c25637aae94f80b3ce82062a5dd7815daa04f9d"></a>Complete&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca" name="a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Sequence_8h_source.html">Sequence.h</a> 第 <a class="el" href="Sequence_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a600653bd04579b17f9940a8b4d3d873e" name="a600653bd04579b17f9940a8b4d3d873e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a600653bd04579b17f9940a8b4d3d873e">&#9670;&#160;</a></span>compileComputeGlsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint32_t &gt; eve::gpgpu::compileComputeGlsl </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>glsl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanUtil_8cpp_source.html">VulkanUtil.cpp</a> 第 <a class="el" href="VulkanUtil_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00024">spawned</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00207">eve::gpgpu::Gpgpu::newShader()</a>.</p>
+
+</div>
+</div>
+<a id="abb4244978131ff8eae405e50af115c7b" name="abb4244978131ff8eae405e50af115c7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb4244978131ff8eae405e50af115c7b">&#9670;&#160;</a></span>componentFloatCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Comp &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::gpgpu::componentFloatCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0b2bb04dfd39596a383bb94cb5dfe35" name="aa0b2bb04dfd39596a383bb94cb5dfe35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0b2bb04dfd39596a383bb94cb5dfe35">&#9670;&#160;</a></span>computeCommandPool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::CommandPool eve::gpgpu::computeCommandPool </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">graphics::vulkan::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>vkg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanUtil_8cpp_source.html">VulkanUtil.cpp</a> 第 <a class="el" href="VulkanUtil_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8h_source.html#l00633">eve::graphics::vulkan::Graphics::getUploadPool()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanGpuBuffer_8cpp_source.html#l00088">eve::gpgpu::VulkanGpuBuffer::downloadBytes()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00033">eve::gpgpu::VulkanSequence::ensureReady()</a>, <a class="el" href="VulkanGpuBuffer_8cpp_source.html#l00048">eve::gpgpu::VulkanGpuBuffer::uploadBytes()</a> , 以及 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00101">vulkanDispatch()</a>.</p>
+
+</div>
+</div>
+<a id="a7e204ad344cf6aee66723d0c72316040" name="a7e204ad344cf6aee66723d0c72316040"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e204ad344cf6aee66723d0c72316040">&#9670;&#160;</a></span>computeQueue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Queue eve::gpgpu::computeQueue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">graphics::vulkan::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>vkg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanUtil_8cpp_source.html">VulkanUtil.cpp</a> 第 <a class="el" href="VulkanUtil_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a> , 以及 <a class="el" href="vulkan_2Graphics_8h_source.html#l00632">eve::graphics::vulkan::Graphics::getDevice()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanGpuBuffer_8cpp_source.html#l00088">eve::gpgpu::VulkanGpuBuffer::downloadBytes()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00033">eve::gpgpu::VulkanSequence::ensureReady()</a>, <a class="el" href="VulkanGpuBuffer_8cpp_source.html#l00048">eve::gpgpu::VulkanGpuBuffer::uploadBytes()</a> , 以及 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00101">vulkanDispatch()</a>.</p>
+
+</div>
+</div>
+<a id="a834860687ca0b20759d940ebc58fbfdf" name="a834860687ca0b20759d940ebc58fbfdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a834860687ca0b20759d940ebc58fbfdf">&#9670;&#160;</a></span>countViewEntities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base , typename Comp &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::countViewEntities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count live entities matching View&lt;Base, Comp&gt;. </p>
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="a4dbaad5de288c351e2c649086dba01c0" name="a4dbaad5de288c351e2c649086dba01c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dbaad5de288c351e2c649086dba01c0">&#9670;&#160;</a></span>loadSpirvFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint32_t &gt; eve::gpgpu::loadSpirvFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanUtil_8cpp_source.html">VulkanUtil.cpp</a> 第 <a class="el" href="VulkanUtil_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00220">eve::gpgpu::Gpgpu::newShaderFromBytecode()</a>.</p>
+
+</div>
+</div>
+<a id="a0225c9a33667166bd44ec2b0338069b2" name="a0225c9a33667166bd44ec2b0338069b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0225c9a33667166bd44ec2b0338069b2">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">Gpgpu</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Gpgpu</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a223f345d406a62a82f70253c447632cc" name="a223f345d406a62a82f70253c447632cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a223f345d406a62a82f70253c447632cc">&#9670;&#160;</a></span>packScriptEntityFloats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::packScriptEntityFloats </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>entitiesObj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>fieldsObj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pack script ECS entities' component number fields into a <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html" title="Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived c...">GpuBuffer</a> (AoS). entities: Squirrel array of entity instances slot: component slot name on the entity (e.g. "pos") fields: Squirrel array of field name strings (e.g. ["x","y"]) Returns entity count packed (0 on empty / error). </p>
+
+<p class="definition">在文件 <a class="el" href="EcsScriptPack_8cpp_source.html">EcsScriptPack.cpp</a> 第 <a class="el" href="EcsScriptPack_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EcsScriptPack_8cpp_source.html#l00127">packScriptEntityFloatsRange()</a>.</p>
+
+</div>
+</div>
+<a id="a6f7c3b03c0dbd71d1aa9fda289744611" name="a6f7c3b03c0dbd71d1aa9fda289744611"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f7c3b03c0dbd71d1aa9fda289744611">&#9670;&#160;</a></span>packScriptEntityFloatsRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::packScriptEntityFloatsRange </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>entities</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>fields</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstEntity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pack a contiguous entity range into the matching range of an existing buffer. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">firstEntity</td><td>First entity in the stable ECS view. </td></tr>
+    <tr><td class="paramname">entityCount</td><td>Number of entities to pack; values past the view are clamped. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of entities packed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EcsScriptPack_8cpp_source.html">EcsScriptPack.cpp</a> 第 <a class="el" href="EcsScriptPack_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a23011e9767e60339b37175d2dccaec05">eve::gpgpu::GpuBuffer::getSize()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="ECS_8cpp_source.html#l00020">vm</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a18eca506cb20e5f3106091de0b46318e">eve::gpgpu::GpuBuffer::writeFloat32s()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EcsScriptPack_8cpp_source.html#l00122">packScriptEntityFloats()</a>.</p>
+
+</div>
+</div>
+<a id="aac0c25e6cf6a9963922370c14267d1e7" name="aac0c25e6cf6a9963922370c14267d1e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0c25e6cf6a9963922370c14267d1e7">&#9670;&#160;</a></span>packViewComponent() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base , typename Comp &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::packViewComponent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"><em>sys</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility overload that uses a temporary staging workspace. </p>
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6657d6415b45ad818af55e7a361d798e" name="a6657d6415b45ad818af55e7a361d798e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6657d6415b45ad818af55e7a361d798e">&#9670;&#160;</a></span>packViewComponent() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base , typename Comp &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::packViewComponent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"><em>sys</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a>&lt; Comp &gt; &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pack View&lt;Base, Comp&gt; into <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> binding as AoS floats. Returns entity count (0 if empty). </p>
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00076">eve::gpgpu::ShaderSystem::upload()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="a5fe7d4353a93b027a7e6cc970b0f497b" name="a5fe7d4353a93b027a7e6cc970b0f497b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fe7d4353a93b027a7e6cc970b0f497b">&#9670;&#160;</a></span>packViewComponentRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base , typename Comp &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::packViewComponentRange </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"><em>sys</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstEntity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a>&lt; Comp &gt; &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pack a stable contiguous View range into an existing resident buffer. The full buffer must have been allocated by a prior full pack/ensureBuffer. </p>
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShaderSystem_8cpp_source.html#l00091">eve::gpgpu::ShaderSystem::uploadRange()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="a9b0634665ee2535d28d278ce5b3e5f81" name="a9b0634665ee2535d28d278ce5b3e5f81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b0634665ee2535d28d278ce5b3e5f81">&#9670;&#160;</a></span>requireVulkanGraphics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">graphics::vulkan::Graphics</a> * eve::gpgpu::requireVulkanGraphics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve live Vulkan Graphics (throws if missing / not initialized). </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanUtil_8cpp_source.html">VulkanUtil.cpp</a> 第 <a class="el" href="VulkanUtil_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanGpuBuffer_8cpp_source.html#l00088">eve::gpgpu::VulkanGpuBuffer::downloadBytes()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00033">eve::gpgpu::VulkanSequence::ensureReady()</a>, <a class="el" href="VulkanGpuBuffer_8cpp_source.html#l00048">eve::gpgpu::VulkanGpuBuffer::uploadBytes()</a>, <a class="el" href="VulkanGpgpu_8cpp_source.html#l00101">vulkanDispatch()</a>, <a class="el" href="VulkanGpgpu_8cpp_source.html#l00066">vulkanNewBuffer()</a> , 以及 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00013">vulkanNewShaderFromSpirv()</a>.</p>
+
+</div>
+</div>
+<a id="abf83e85b8a9de5b31062867d9cd4ac64" name="abf83e85b8a9de5b31062867d9cd4ac64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf83e85b8a9de5b31062867d9cd4ac64">&#9670;&#160;</a></span>runViewComponentSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base , typename Comp &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::runViewComponentSystem </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"><em>sys</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pack + dispatch + unpack a single-component GPU system. Additional bindings must be uploaded by the caller before this helper, or use <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> manually for multi-buffer systems. </p>
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00183">183</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShaderSystem_8cpp_source.html#l00134">eve::gpgpu::ShaderSystem::dispatch()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="a418dfb4af57bbe624da1de8383fab2d8" name="a418dfb4af57bbe624da1de8383fab2d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a418dfb4af57bbe624da1de8383fab2d8">&#9670;&#160;</a></span>unpackScriptEntityFloats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::unpackScriptEntityFloats </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>entitiesObj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>fieldsObj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inverse of packScriptEntityFloats; entityCount should match pack result. </p>
+
+<p class="definition">在文件 <a class="el" href="EcsScriptPack_8cpp_source.html">EcsScriptPack.cpp</a> 第 <a class="el" href="EcsScriptPack_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EcsScriptPack_8cpp_source.html#l00199">unpackScriptEntityFloatsRange()</a>.</p>
+
+</div>
+</div>
+<a id="acbe56d26ec331988caa5b5c37f55f5db" name="acbe56d26ec331988caa5b5c37f55f5db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbe56d26ec331988caa5b5c37f55f5db">&#9670;&#160;</a></span>unpackScriptEntityFloatsRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::unpackScriptEntityFloatsRange </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>entities</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>fields</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstEntity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unpack a contiguous buffer range into the matching stable ECS view range. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">firstEntity</td><td>First entity and first packed record to read. </td></tr>
+    <tr><td class="paramname">entityCount</td><td>Number of entities to unpack; values past the view are clamped. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of entities unpacked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EcsScriptPack_8cpp_source.html">EcsScriptPack.cpp</a> 第 <a class="el" href="EcsScriptPack_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a23011e9767e60339b37175d2dccaec05">eve::gpgpu::GpuBuffer::getSize()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a2f638db95c6f9361bb82f1cd095de635">eve::gpgpu::GpuBuffer::readFloat32s()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EcsScriptPack_8cpp_source.html#l00194">unpackScriptEntityFloats()</a>.</p>
+
+</div>
+</div>
+<a id="ab67e03e0640f9bfebf4f096d96d6b0fe" name="ab67e03e0640f9bfebf4f096d96d6b0fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab67e03e0640f9bfebf4f096d96d6b0fe">&#9670;&#160;</a></span>unpackViewComponent() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base , typename Comp &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::unpackViewComponent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"><em>sys</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility overload that uses a temporary staging workspace. </p>
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="a29a6d805a55234996ea854fc8359a24c" name="a29a6d805a55234996ea854fc8359a24c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29a6d805a55234996ea854fc8359a24c">&#9670;&#160;</a></span>unpackViewComponent() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base , typename Comp &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::unpackViewComponent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"><em>sys</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a>&lt; Comp &gt; &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write <a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> binding floats back into View&lt;Base, Comp&gt; (same order as pack). <code>count</code> should be the value returned by packViewComponent. </p>
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00083">eve::gpgpu::ShaderSystem::download()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="a9b4037719c25b92bef6a7c2265857c8d" name="a9b4037719c25b92bef6a7c2265857c8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b4037719c25b92bef6a7c2265857c8d">&#9670;&#160;</a></span>unpackViewComponentRange()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Base , typename Comp &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::gpgpu::unpackViewComponentRange </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ShaderSystem.html">ShaderSystem</a> &amp;&#160;</td>
+          <td class="paramname"><em>sys</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstEntity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>entityCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1EcsGpuWorkspace.html">EcsGpuWorkspace</a>&lt; Comp &gt; &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unpack a stable contiguous resident-buffer range into a matching View range. </p>
+
+<p class="definition">在文件 <a class="el" href="EcsGpu_8h_source.html">EcsGpu.h</a> 第 <a class="el" href="EcsGpu_8h_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="ShaderSystem_8cpp_source.html#l00102">eve::gpgpu::ShaderSystem::downloadRange()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="a753b1f19d28ba33ebe7a972f26970d03" name="a753b1f19d28ba33ebe7a972f26970d03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a753b1f19d28ba33ebe7a972f26970d03">&#9670;&#160;</a></span>vulkanDispatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::vulkanDispatch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>派发计算着色器（groupsX/Y/Z 为线程组数）。 </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanGpgpu_8cpp_source.html">VulkanGpgpu.cpp</a> 第 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanUtil_8cpp_source.html#l00071">computeCommandPool()</a>, <a class="el" href="VulkanUtil_8cpp_source.html#l00060">computeQueue()</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="ComputeShader_8h_source.html#l00019">eve::gpgpu::ComputeShader::kPushConstantBytes</a>, <a class="el" href="VulkanUtil_8cpp_source.html#l00038">requireVulkanGraphics()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00275">eve::gpgpu::Gpgpu::dispatch()</a> , 以及 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00174">eve::virtualgeometry::vgUpdate()</a>.</p>
+
+</div>
+</div>
+<a id="a2ade65064e9ee7f64c216b4dee5876da" name="a2ade65064e9ee7f64c216b4dee5876da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ade65064e9ee7f64c216b4dee5876da">&#9670;&#160;</a></span>vulkanGpgpuReady()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::gpgpu::vulkanGpgpuReady </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vulkan 后端是否就绪（设备/队列可用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanGpgpu_8cpp_source.html">VulkanGpgpu.cpp</a> 第 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanUtil_8cpp_source.html#l00048">vulkanGraphicsReady()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00197">eve::gpgpu::Gpgpu::isAvailable()</a>.</p>
+
+</div>
+</div>
+<a id="a44497ae3aa0656a14559b1affe4773bc" name="a44497ae3aa0656a14559b1affe4773bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44497ae3aa0656a14559b1affe4773bc">&#9670;&#160;</a></span>vulkanGraphicsReady()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::gpgpu::vulkanGraphicsReady </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True if Vulkan Graphics device is ready. </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanUtil_8cpp_source.html">VulkanUtil.cpp</a> 第 <a class="el" href="VulkanUtil_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00011">vulkanGpgpuReady()</a>.</p>
+
+</div>
+</div>
+<a id="a208fb1668ddd65490d7f15fca125a57b" name="a208fb1668ddd65490d7f15fca125a57b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a208fb1668ddd65490d7f15fca125a57b">&#9670;&#160;</a></span>vulkanNewBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> * eve::gpgpu::vulkanNewBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>byteSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>usage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>创建 GPU 存储/传输缓冲区；usage 为 "storage" | "vertex" 等。 </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanGpgpu_8cpp_source.html">VulkanGpgpu.cpp</a> 第 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="VulkanUtil_8cpp_source.html#l00038">requireVulkanGraphics()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">usage</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00251">eve::gpgpu::Gpgpu::newBuffer()</a>, <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00158">eve::virtualgeometry::vgReset()</a>, <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00099">eve::virtualgeometry::vgUpload()</a> , 以及 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00148">eve::virtualgeometry::vgUploadUniforms()</a>.</p>
+
+</div>
+</div>
+<a id="a03146dd2f41f65d394446a1b76e5f34d" name="a03146dd2f41f65d394446a1b76e5f34d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03146dd2f41f65d394446a1b76e5f34d">&#9670;&#160;</a></span>vulkanNewShaderFromSpirv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> * eve::gpgpu::vulkanNewShaderFromSpirv </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>spv</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>从 SPIR-V 字节码创建计算着色器。 </p>
+
+<p class="definition">在文件 <a class="el" href="VulkanGpgpu_8cpp_source.html">VulkanGpgpu.cpp</a> 第 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>, <a class="el" href="ComputeShader_8h_source.html#l00019">eve::gpgpu::ComputeShader::kPushConstantBytes</a>, <a class="el" href="VulkanUtil_8cpp_source.html#l00038">requireVulkanGraphics()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00207">eve::gpgpu::Gpgpu::newShader()</a> , 以及 <a class="el" href="Gpgpu_8cpp_source.html#l00220">eve::gpgpu::Gpgpu::newShaderFromBytecode()</a>.</p>
+
+</div>
+</div>
+<a id="a2e68eb8434e6e201b2386ec306a39d30" name="a2e68eb8434e6e201b2386ec306a39d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e68eb8434e6e201b2386ec306a39d30">&#9670;&#160;</a></span>vulkanSequenceBegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::vulkanSequenceBegin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanSequence_8cpp_source.html#l00042">eve::gpgpu::VulkanSequence::ensureCommandBuffer()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00033">eve::gpgpu::VulkanSequence::ensureReady()</a> , 以及 <a class="el" href="VulkanSequence_8h_source.html#l00038">eve::gpgpu::VulkanSequence::stagingUsed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00075">eve::gpgpu::Sequence::begin()</a>.</p>
+
+</div>
+</div>
+<a id="af168ec3ae56df146d5b65a2716a68034" name="af168ec3ae56df146d5b65a2716a68034"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af168ec3ae56df146d5b65a2716a68034">&#9670;&#160;</a></span>vulkanSequenceCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> * eve::gpgpu::vulkanSequenceCreate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7031383759867893ef3c74d0b8eaee8d" name="a7031383759867893ef3c74d0b8eaee8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7031383759867893ef3c74d0b8eaee8d">&#9670;&#160;</a></span>vulkanSequenceDestroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::vulkanSequenceDestroy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanSequence_8cpp_source.html#l00061">eve::gpgpu::VulkanSequence::destroy()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00061">eve::gpgpu::Sequence::~Sequence()</a>.</p>
+
+</div>
+</div>
+<a id="ad90bd57c526d7604b405500b341a5894" name="ad90bd57c526d7604b405500b341a5894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad90bd57c526d7604b405500b341a5894">&#9670;&#160;</a></span>vulkanSequencePoll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> eve::gpgpu::vulkanSequencePoll </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637aae94f80b3ce82062a5dd7815daa04f9d">Complete</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="VulkanSequence_8h_source.html#l00040">eve::gpgpu::VulkanSequence::fence</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00632">eve::graphics::vulkan::Graphics::getDevice()</a>, <a class="el" href="VulkanSequence_8h_source.html#l00046">eve::gpgpu::VulkanSequence::status</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a> , 以及 <a class="el" href="VulkanSequence_8h_source.html#l00029">eve::gpgpu::VulkanSequence::vkg</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00095">eve::gpgpu::Sequence::poll()</a>.</p>
+
+</div>
+</div>
+<a id="a8f847277e599588bdab05b0b7ea4c6c6" name="a8f847277e599588bdab05b0b7ea4c6c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f847277e599588bdab05b0b7ea4c6c6">&#9670;&#160;</a></span>vulkanSequenceRecordDispatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::vulkanSequenceRecordDispatch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanSequence_8h_source.html#l00043">eve::gpgpu::VulkanSequence::commandBuffer</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00042">eve::gpgpu::VulkanSequence::ensureCommandBuffer()</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00632">eve::graphics::vulkan::Graphics::getDevice()</a>, <a class="el" href="ComputeShader_8h_source.html#l00019">eve::gpgpu::ComputeShader::kPushConstantBytes</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>, <a class="el" href="VulkanSequence_8h_source.html#l00047">eve::gpgpu::VulkanSequence::usedShaders</a> , 以及 <a class="el" href="VulkanSequence_8h_source.html#l00029">eve::gpgpu::VulkanSequence::vkg</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00087">eve::gpgpu::Sequence::recordDispatch()</a>.</p>
+
+</div>
+</div>
+<a id="a8e9c2f1d73f70c756b8d5ac451fdb843" name="a8e9c2f1d73f70c756b8d5ac451fdb843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e9c2f1d73f70c756b8d5ac451fdb843">&#9670;&#160;</a></span>vulkanSequenceRecordDownload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::vulkanSequenceRecordDownload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>staging</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>nbytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>srcOffset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanSequence_8h_source.html#l00043">eve::gpgpu::VulkanSequence::commandBuffer</a> , 以及 <a class="el" href="VulkanSequence_8cpp_source.html#l00042">eve::gpgpu::VulkanSequence::ensureCommandBuffer()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00082">eve::gpgpu::Sequence::recordDownload()</a>.</p>
+
+</div>
+</div>
+<a id="ae1af3d5fd979919b0ed8c283ff77d911" name="ae1af3d5fd979919b0ed8c283ff77d911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1af3d5fd979919b0ed8c283ff77d911">&#9670;&#160;</a></span>vulkanSequenceRecordUpload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::vulkanSequenceRecordUpload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>nbytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>dstOffset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanSequence_8h_source.html#l00043">eve::gpgpu::VulkanSequence::commandBuffer</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00042">eve::gpgpu::VulkanSequence::ensureCommandBuffer()</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00632">eve::graphics::vulkan::Graphics::getDevice()</a>, <a class="el" href="VulkanSequence_8h_source.html#l00037">eve::gpgpu::VulkanSequence::stagingPool</a>, <a class="el" href="VulkanSequence_8h_source.html#l00038">eve::gpgpu::VulkanSequence::stagingUsed</a> , 以及 <a class="el" href="VulkanSequence_8h_source.html#l00029">eve::gpgpu::VulkanSequence::vkg</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00077">eve::gpgpu::Sequence::recordUpload()</a>.</p>
+
+</div>
+</div>
+<a id="a8ceceebf9c803b80e8a12b57cf969051" name="a8ceceebf9c803b80e8a12b57cf969051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ceceebf9c803b80e8a12b57cf969051">&#9670;&#160;</a></span>vulkanSequenceStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> eve::gpgpu::vulkanSequenceStatus </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a> , 以及 <a class="el" href="VulkanSequence_8h_source.html#l00046">eve::gpgpu::VulkanSequence::status</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00097">eve::gpgpu::Sequence::getStatus()</a>.</p>
+
+</div>
+</div>
+<a id="a068375ee0d0a5fc930e16d5b9d3bfa10" name="a068375ee0d0a5fc930e16d5b9d3bfa10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a068375ee0d0a5fc930e16d5b9d3bfa10">&#9670;&#160;</a></span>vulkanSequenceSubmit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::vulkanSequenceSubmit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637aae94f80b3ce82062a5dd7815daa04f9d">Complete</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00195">vulkanSequenceSubmitAsync()</a> , 以及 <a class="el" href="VulkanSequence_8cpp_source.html#l00247">vulkanSequenceWait()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00092">eve::gpgpu::Sequence::submit()</a>.</p>
+
+</div>
+</div>
+<a id="affa8bce02cfda699f097942492103208" name="affa8bce02cfda699f097942492103208"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affa8bce02cfda699f097942492103208">&#9670;&#160;</a></span>vulkanSequenceSubmitAsync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> eve::gpgpu::vulkanSequenceSubmitAsync </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanSequence_8h_source.html#l00043">eve::gpgpu::VulkanSequence::commandBuffer</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00033">eve::gpgpu::VulkanSequence::ensureReady()</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="VulkanSequence_8h_source.html#l00040">eve::gpgpu::VulkanSequence::fence</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00632">eve::graphics::vulkan::Graphics::getDevice()</a>, <a class="el" href="VulkanSequence_8h_source.html#l00030">eve::gpgpu::VulkanSequence::queue</a>, <a class="el" href="VulkanSequence_8h_source.html#l00045">eve::gpgpu::VulkanSequence::recording</a>, <a class="el" href="VulkanSequence_8h_source.html#l00046">eve::gpgpu::VulkanSequence::status</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a>, <a class="el" href="VulkanSequence_8h_source.html#l00044">eve::gpgpu::VulkanSequence::submittedCommandBuffer</a> , 以及 <a class="el" href="VulkanSequence_8h_source.html#l00029">eve::gpgpu::VulkanSequence::vkg</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sequence_8cpp_source.html#l00094">eve::gpgpu::Sequence::submitAsync()</a> , 以及 <a class="el" href="VulkanSequence_8cpp_source.html#l00189">vulkanSequenceSubmit()</a>.</p>
+
+</div>
+</div>
+<a id="a361642593e3d126c64dbc6c977b7e788" name="a361642593e3d126c64dbc6c977b7e788"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a361642593e3d126c64dbc6c977b7e788">&#9670;&#160;</a></span>vulkanSequenceWait()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> eve::gpgpu::vulkanSequenceWait </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1gpgpu_1_1VulkanSequence.html">VulkanSequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanSequence_8cpp_source.html">VulkanSequence.cpp</a> 第 <a class="el" href="VulkanSequence_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637aae94f80b3ce82062a5dd7815daa04f9d">Complete</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="VulkanSequence_8h_source.html#l00040">eve::gpgpu::VulkanSequence::fence</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00632">eve::graphics::vulkan::Graphics::getDevice()</a>, <a class="el" href="VulkanSequence_8h_source.html#l00046">eve::gpgpu::VulkanSequence::status</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a> , 以及 <a class="el" href="VulkanSequence_8h_source.html#l00029">eve::gpgpu::VulkanSequence::vkg</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VulkanSequence_8cpp_source.html#l00061">eve::gpgpu::VulkanSequence::destroy()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00189">vulkanSequenceSubmit()</a> , 以及 <a class="el" href="Sequence_8cpp_source.html#l00096">eve::gpgpu::Sequence::wait()</a>.</p>
+
+</div>
+</div>
+<a id="a3a407eec24dd9fcb0a38b16067f799c0" name="a3a407eec24dd9fcb0a38b16067f799c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a407eec24dd9fcb0a38b16067f799c0">&#9670;&#160;</a></span>webgpuDispatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::webgpuDispatch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8h_source.html#l00068">eve::gpgpu::WebGpuGpuBuffer::buffer</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>, <a class="el" href="ComputeShader_8h_source.html#l00019">eve::gpgpu::ComputeShader::kPushConstantBytes</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00146">webgpuNewBuffer()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00275">eve::gpgpu::Gpgpu::dispatch()</a>.</p>
+
+</div>
+</div>
+<a id="a2fed65def15b16fd27e26bd98c994f1b" name="a2fed65def15b16fd27e26bd98c994f1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fed65def15b16fd27e26bd98c994f1b">&#9670;&#160;</a></span>webgpuGpgpuReady()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::gpgpu::webgpuGpgpuReady </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00197">eve::gpgpu::Gpgpu::isAvailable()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00382">webgpuSequenceReady()</a>.</p>
+
+</div>
+</div>
+<a id="a5a434c9d4817f0e14f552ac67be4a655" name="a5a434c9d4817f0e14f552ac67be4a655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a434c9d4817f0e14f552ac67be4a655">&#9670;&#160;</a></span>webgpuNewBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuGpuBuffer.html">WebGpuGpuBuffer</a> * eve::gpgpu::webgpuNewBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>byteSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>usage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">usage</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00251">eve::gpgpu::Gpgpu::newBuffer()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00227">webgpuDispatch()</a>.</p>
+
+</div>
+</div>
+<a id="aabec05c308a71d2824c27b27c61dfa09" name="aabec05c308a71d2824c27b27c61dfa09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabec05c308a71d2824c27b27c61dfa09">&#9670;&#160;</a></span>webgpuNewShaderFromSpirv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> * eve::gpgpu::webgpuNewShaderFromSpirv </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>spv</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abbdec5324b498f8b40dd2fb04059e3c4" name="abbdec5324b498f8b40dd2fb04059e3c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbdec5324b498f8b40dd2fb04059e3c4">&#9670;&#160;</a></span>webgpuNewShaderFromWgsl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a> * eve::gpgpu::webgpuNewShaderFromWgsl </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>wgsl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>, <a class="el" href="ComputeShader_8h_source.html#l00019">eve::gpgpu::ComputeShader::kPushConstantBytes</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Gpgpu_8cpp_source.html#l00207">eve::gpgpu::Gpgpu::newShader()</a> , 以及 <a class="el" href="Gpgpu_8cpp_source.html#l00220">eve::gpgpu::Gpgpu::newShaderFromBytecode()</a>.</p>
+
+</div>
+</div>
+<a id="a2bd1a200fba3b85f553861b9d47eeb7b" name="a2bd1a200fba3b85f553861b9d47eeb7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bd1a200fba3b85f553861b9d47eeb7b">&#9670;&#160;</a></span>webgpuSequenceBegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::webgpuSequenceBegin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00371">eve::gpgpu::WebGpuSequence::ops</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ac5564d2e8b8e0ae08bf4363f2b947166">Recording</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00372">eve::gpgpu::WebGpuSequence::status</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00382">webgpuSequenceReady()</a>.</p>
+
+</div>
+</div>
+<a id="ac1d48e41c190a13c0b090689bdbe5c39" name="ac1d48e41c190a13c0b090689bdbe5c39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1d48e41c190a13c0b090689bdbe5c39">&#9670;&#160;</a></span>webgpuSequenceCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> * eve::gpgpu::webgpuSequenceCreate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a7cb08ca461a3f91108ee25e9e0c3e0" name="a3a7cb08ca461a3f91108ee25e9e0c3e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a7cb08ca461a3f91108ee25e9e0c3e0">&#9670;&#160;</a></span>webgpuSequenceDestroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::webgpuSequenceDestroy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00372">eve::gpgpu::WebGpuSequence::status</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00541">webgpuSequenceWait()</a>.</p>
+
+</div>
+</div>
+<a id="a22215a70dee7be6506d5ba2134f564a6" name="a22215a70dee7be6506d5ba2134f564a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22215a70dee7be6506d5ba2134f564a6">&#9670;&#160;</a></span>webgpuSequencePoll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> eve::gpgpu::webgpuSequencePoll </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00528">528</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00373">eve::gpgpu::WebGpuSequence::completion</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00372">eve::gpgpu::WebGpuSequence::status</a> , 以及 <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a>.</p>
+
+</div>
+</div>
+<a id="a21cf3e7d4ccecef1cf3a9a34b63c0815" name="a21cf3e7d4ccecef1cf3a9a34b63c0815"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21cf3e7d4ccecef1cf3a9a34b63c0815">&#9670;&#160;</a></span>webgpuSequenceReady()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::gpgpu::webgpuSequenceReady </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00042">webgpuGpgpuReady()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00384">webgpuSequenceBegin()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00435">webgpuSequenceSubmitAsync()</a>.</p>
+
+</div>
+</div>
+<a id="abf908883e4dd78251dc05ebef7dc670a" name="abf908883e4dd78251dc05ebef7dc670a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf908883e4dd78251dc05ebef7dc670a">&#9670;&#160;</a></span>webgpuSequenceRecordDispatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::webgpuSequenceRecordDispatch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupsZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00419">419</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00364">eve::gpgpu::WebGpuSequence::Dispatch::bindings</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00366">eve::gpgpu::WebGpuSequence::Dispatch::groupsX</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00367">eve::gpgpu::WebGpuSequence::Dispatch::groupsY</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00368">eve::gpgpu::WebGpuSequence::Dispatch::groupsZ</a>, <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>, <a class="el" href="ComputeShader_8h_source.html#l00019">eve::gpgpu::ComputeShader::kPushConstantBytes</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00371">eve::gpgpu::WebGpuSequence::ops</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00365">eve::gpgpu::WebGpuSequence::Dispatch::push</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00363">eve::gpgpu::WebGpuSequence::Dispatch::shader</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+</div>
+</div>
+<a id="a16213e6709a79ecfad1811d8f3f16416" name="a16213e6709a79ecfad1811d8f3f16416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16213e6709a79ecfad1811d8f3f16416">&#9670;&#160;</a></span>webgpuSequenceRecordDownload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::webgpuSequenceRecordDownload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>staging</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>nbytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>srcOffset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00371">eve::gpgpu::WebGpuSequence::ops</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="acde67de5b472bb7c4912213d0671b8a2" name="acde67de5b472bb7c4912213d0671b8a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acde67de5b472bb7c4912213d0671b8a2">&#9670;&#160;</a></span>webgpuSequenceRecordUpload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::webgpuSequenceRecordUpload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>nbytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>dstOffset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00353">eve::gpgpu::WebGpuSequence::Upload::bytes</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00352">eve::gpgpu::WebGpuSequence::Upload::dst</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00354">eve::gpgpu::WebGpuSequence::Upload::offset</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00371">eve::gpgpu::WebGpuSequence::ops</a>.</p>
+
+</div>
+</div>
+<a id="aaacb565a64d6887e5b701dd3c76206e9" name="aaacb565a64d6887e5b701dd3c76206e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaacb565a64d6887e5b701dd3c76206e9">&#9670;&#160;</a></span>webgpuSequenceStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> eve::gpgpu::webgpuSequenceStatus </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00557">557</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00372">eve::gpgpu::WebGpuSequence::status</a>.</p>
+
+</div>
+</div>
+<a id="af8322fe8535b336ed8562b896ca46e8d" name="af8322fe8535b336ed8562b896ca46e8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8322fe8535b336ed8562b896ca46e8d">&#9670;&#160;</a></span>webgpuSequenceSubmit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::webgpuSequenceSubmit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00561">561</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637aae94f80b3ce82062a5dd7815daa04f9d">Complete</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00435">webgpuSequenceSubmitAsync()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00541">webgpuSequenceWait()</a>.</p>
+
+</div>
+</div>
+<a id="af5a23f154f7c4cfe0de1d102d363e0a9" name="af5a23f154f7c4cfe0de1d102d363e0a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5a23f154f7c4cfe0de1d102d363e0a9">&#9670;&#160;</a></span>webgpuSequenceSubmitAsync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> eve::gpgpu::webgpuSequenceSubmitAsync </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00435">435</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8h_source.html#l00068">eve::gpgpu::WebGpuGpuBuffer::buffer</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637aae94f80b3ce82062a5dd7815daa04f9d">Complete</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00373">eve::gpgpu::WebGpuSequence::completion</a>, <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00050">desc</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>, <a class="el" href="ComputeShader_8h_source.html#l00019">eve::gpgpu::ComputeShader::kPushConstantBytes</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00371">eve::gpgpu::WebGpuSequence::ops</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ac5564d2e8b8e0ae08bf4363f2b947166">Recording</a>, <a class="el" href="WebGpuGpgpu_8h_source.html#l00069">eve::gpgpu::WebGpuGpuBuffer::size_</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00372">eve::gpgpu::WebGpuSequence::status</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00382">webgpuSequenceReady()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00561">webgpuSequenceSubmit()</a>.</p>
+
+</div>
+</div>
+<a id="a5c0e6616185ff0ed3e23bdde16528a7d" name="a5c0e6616185ff0ed3e23bdde16528a7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c0e6616185ff0ed3e23bdde16528a7d">&#9670;&#160;</a></span>webgpuSequenceWait()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637">SequenceStatus</a> eve::gpgpu::webgpuSequenceWait </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuSequence.html">WebGpuSequence</a> *&#160;</td>
+          <td class="paramname"><em>sequence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00541">541</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00373">eve::gpgpu::WebGpuSequence::completion</a>, <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00372">eve::gpgpu::WebGpuSequence::status</a> , 以及 <a class="el" href="namespaceeve_1_1gpgpu.html#a14323ec876f9dbd5d7ae994b39c25637a5c835c22429f25992b4371691ecde1a4">Submitted</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00377">webgpuSequenceDestroy()</a> , 以及 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00561">webgpuSequenceSubmit()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

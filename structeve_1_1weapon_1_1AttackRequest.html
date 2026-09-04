@@ -1,0 +1,535 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon::AttackRequest结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li><li class="navelem"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1weapon_1_1AttackRequest-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon::AttackRequest结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>一次攻击请求（C++ 系统 / 脚本发起）。角度均为度。 旧名 FireRequest 保留为别名，向后兼容。  
+ <a href="structeve_1_1weapon_1_1AttackRequest.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ac6352c6e345aa8cf5ddfd4e93c7055fb" id="r_ac6352c6e345aa8cf5ddfd4e93c7055fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#ac6352c6e345aa8cf5ddfd4e93c7055fb">targetX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac6352c6e345aa8cf5ddfd4e93c7055fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae526d1ecdeac4e83ecbd12e54dd282e7" id="r_ae526d1ecdeac4e83ecbd12e54dd282e7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#ae526d1ecdeac4e83ecbd12e54dd282e7">targetY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae526d1ecdeac4e83ecbd12e54dd282e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a986600563abf01182963d5b40f6d36f6" id="r_a986600563abf01182963d5b40f6d36f6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#a986600563abf01182963d5b40f6d36f6">targetZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a986600563abf01182963d5b40f6d36f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af06ea591f2d9be1737bafe284fbe7e83" id="r_af06ea591f2d9be1737bafe284fbe7e83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#af06ea591f2d9be1737bafe284fbe7e83">hasTarget</a> = false</td></tr>
+<tr class="separator:af06ea591f2d9be1737bafe284fbe7e83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2b8c317fe53979fddf8031ccc9b2424" id="r_ab2b8c317fe53979fddf8031ccc9b2424"><td class="memItemLeft" align="right" valign="top">ecs::EntityHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#ab2b8c317fe53979fddf8031ccc9b2424">targetHandle</a></td></tr>
+<tr class="memdesc:ab2b8c317fe53979fddf8031ccc9b2424"><td class="mdescLeft">&#160;</td><td class="mdescRight">可选目标实体（导弹锁定 / 法杖单目标）。  <br /></td></tr>
+<tr class="separator:ab2b8c317fe53979fddf8031ccc9b2424"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34d378b726ee0eed6ac0a0fb597c348a" id="r_a34d378b726ee0eed6ac0a0fb597c348a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#a34d378b726ee0eed6ac0a0fb597c348a">muzzleX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a34d378b726ee0eed6ac0a0fb597c348a"><td class="mdescLeft">&#160;</td><td class="mdescRight">炮口世界位置（未提供时游戏侧自行推断）。  <br /></td></tr>
+<tr class="separator:a34d378b726ee0eed6ac0a0fb597c348a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7f5e3c37eeae08049acd84c7a0cf475" id="r_ae7f5e3c37eeae08049acd84c7a0cf475"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#ae7f5e3c37eeae08049acd84c7a0cf475">muzzleY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae7f5e3c37eeae08049acd84c7a0cf475"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b97ba891b21dc8e1b0423ea870b0458" id="r_a5b97ba891b21dc8e1b0423ea870b0458"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#a5b97ba891b21dc8e1b0423ea870b0458">muzzleZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5b97ba891b21dc8e1b0423ea870b0458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab42e4650ce1d60c9b90ad2829213b44c" id="r_ab42e4650ce1d60c9b90ad2829213b44c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#ab42e4650ce1d60c9b90ad2829213b44c">yaw</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ab42e4650ce1d60c9b90ad2829213b44c"><td class="mdescLeft">&#160;</td><td class="mdescRight">发射方向（度）。  <br /></td></tr>
+<tr class="separator:ab42e4650ce1d60c9b90ad2829213b44c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8382c9a81302246b02bf76fde6b6aa43" id="r_a8382c9a81302246b02bf76fde6b6aa43"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#a8382c9a81302246b02bf76fde6b6aa43">pitch</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8382c9a81302246b02bf76fde6b6aa43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f25951b9ad27955e5a197d8d971a07b" id="r_a7f25951b9ad27955e5a197d8d971a07b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#a7f25951b9ad27955e5a197d8d971a07b">shooterId</a> = 0</td></tr>
+<tr class="memdesc:a7f25951b9ad27955e5a197d8d971a07b"><td class="mdescLeft">&#160;</td><td class="mdescRight">游戏侧实体/玩家 id。  <br /></td></tr>
+<tr class="separator:a7f25951b9ad27955e5a197d8d971a07b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad95f3a54cc302e153c590cf720d57a3e" id="r_ad95f3a54cc302e153c590cf720d57a3e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#ad95f3a54cc302e153c590cf720d57a3e">arcAngle</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ad95f3a54cc302e153c590cf720d57a3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">近战挥击命中弧（度）。  <br /></td></tr>
+<tr class="separator:ad95f3a54cc302e153c590cf720d57a3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6c3a81ca4752dd32ecca59c14b076d3" id="r_ae6c3a81ca4752dd32ecca59c14b076d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#ae6c3a81ca4752dd32ecca59c14b076d3">aoeRadius</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ae6c3a81ca4752dd32ecca59c14b076d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">法术/导弹爆炸半径。  <br /></td></tr>
+<tr class="separator:ae6c3a81ca4752dd32ecca59c14b076d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3901a27ccfe5fbc80f921cc44739d4ba" id="r_a3901a27ccfe5fbc80f921cc44739d4ba"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#a3901a27ccfe5fbc80f921cc44739d4ba">spread</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a3901a27ccfe5fbc80f921cc44739d4ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">本发实际散布（度，散布 bloom 后的当前值）。  <br /></td></tr>
+<tr class="separator:a3901a27ccfe5fbc80f921cc44739d4ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dba0a28f0f1b10c195485730ffb630f" id="r_a2dba0a28f0f1b10c195485730ffb630f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#a2dba0a28f0f1b10c195485730ffb630f">pelletIndex</a> = 0</td></tr>
+<tr class="memdesc:a2dba0a28f0f1b10c195485730ffb630f"><td class="mdescLeft">&#160;</td><td class="mdescRight">多弹丸：本粒序号 / 总粒数（1 = 单弹丸）。  <br /></td></tr>
+<tr class="separator:a2dba0a28f0f1b10c195485730ffb630f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b16db5b2db788114f60dab3b663caaa" id="r_a3b16db5b2db788114f60dab3b663caaa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1weapon_1_1AttackRequest.html#a3b16db5b2db788114f60dab3b663caaa">pelletCount</a> = 1</td></tr>
+<tr class="separator:a3b16db5b2db788114f60dab3b663caaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>一次攻击请求（C++ 系统 / 脚本发起）。角度均为度。 旧名 FireRequest 保留为别名，向后兼容。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00202">202</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ae6c3a81ca4752dd32ecca59c14b076d3" name="ae6c3a81ca4752dd32ecca59c14b076d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6c3a81ca4752dd32ecca59c14b076d3">&#9670;&#160;</a></span>aoeRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::aoeRadius = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>法术/导弹爆炸半径。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00460">eve::weapon::Weapon::attack()</a> , 以及 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="ad95f3a54cc302e153c590cf720d57a3e" name="ad95f3a54cc302e153c590cf720d57a3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad95f3a54cc302e153c590cf720d57a3e">&#9670;&#160;</a></span>arcAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::arcAngle = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>近战挥击命中弧（度）。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00460">eve::weapon::Weapon::attack()</a> , 以及 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="af06ea591f2d9be1737bafe284fbe7e83" name="af06ea591f2d9be1737bafe284fbe7e83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af06ea591f2d9be1737bafe284fbe7e83">&#9670;&#160;</a></span>hasTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::weapon::AttackRequest::hasTarget = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00449">eve::weapon::Weapon::fireAt()</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00138">eve::weapon::WeaponActionAdapter::makeDefinition()</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00122">eve::weapon::WeaponControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a34d378b726ee0eed6ac0a0fb597c348a" name="a34d378b726ee0eed6ac0a0fb597c348a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34d378b726ee0eed6ac0a0fb597c348a">&#9670;&#160;</a></span>muzzleX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::muzzleX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>炮口世界位置（未提供时游戏侧自行推断）。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="ae7f5e3c37eeae08049acd84c7a0cf475" name="ae7f5e3c37eeae08049acd84c7a0cf475"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7f5e3c37eeae08049acd84c7a0cf475">&#9670;&#160;</a></span>muzzleY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::muzzleY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="a5b97ba891b21dc8e1b0423ea870b0458" name="a5b97ba891b21dc8e1b0423ea870b0458"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b97ba891b21dc8e1b0423ea870b0458">&#9670;&#160;</a></span>muzzleZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::muzzleZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="a3b16db5b2db788114f60dab3b663caaa" name="a3b16db5b2db788114f60dab3b663caaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b16db5b2db788114f60dab3b663caaa">&#9670;&#160;</a></span>pelletCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::weapon::AttackRequest::pelletCount = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="a2dba0a28f0f1b10c195485730ffb630f" name="a2dba0a28f0f1b10c195485730ffb630f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dba0a28f0f1b10c195485730ffb630f">&#9670;&#160;</a></span>pelletIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::weapon::AttackRequest::pelletIndex = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>多弹丸：本粒序号 / 总粒数（1 = 单弹丸）。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="a8382c9a81302246b02bf76fde6b6aa43" name="a8382c9a81302246b02bf76fde6b6aa43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8382c9a81302246b02bf76fde6b6aa43">&#9670;&#160;</a></span>pitch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::pitch = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00460">eve::weapon::Weapon::attack()</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00122">eve::weapon::WeaponControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a7f25951b9ad27955e5a197d8d971a07b" name="a7f25951b9ad27955e5a197d8d971a07b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f25951b9ad27955e5a197d8d971a07b">&#9670;&#160;</a></span>shooterId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::weapon::AttackRequest::shooterId = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>游戏侧实体/玩家 id。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00217">217</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00460">eve::weapon::Weapon::attack()</a>, <a class="el" href="Weapon_8cpp_source.html#l00449">eve::weapon::Weapon::fireAt()</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00122">eve::weapon::WeaponControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a3901a27ccfe5fbc80f921cc44739d4ba" name="a3901a27ccfe5fbc80f921cc44739d4ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3901a27ccfe5fbc80f921cc44739d4ba">&#9670;&#160;</a></span>spread</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::spread = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>本发实际散布（度，散布 bloom 后的当前值）。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="ab2b8c317fe53979fddf8031ccc9b2424" name="ab2b8c317fe53979fddf8031ccc9b2424"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2b8c317fe53979fddf8031ccc9b2424">&#9670;&#160;</a></span>targetHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::EntityHandle eve::weapon::AttackRequest::targetHandle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>可选目标实体（导弹锁定 / 法杖单目标）。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="ac6352c6e345aa8cf5ddfd4e93c7055fb" name="ac6352c6e345aa8cf5ddfd4e93c7055fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6352c6e345aa8cf5ddfd4e93c7055fb">&#9670;&#160;</a></span>targetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::targetX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00449">eve::weapon::Weapon::fireAt()</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00122">eve::weapon::WeaponControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="ae526d1ecdeac4e83ecbd12e54dd282e7" name="ae526d1ecdeac4e83ecbd12e54dd282e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae526d1ecdeac4e83ecbd12e54dd282e7">&#9670;&#160;</a></span>targetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::targetY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00449">eve::weapon::Weapon::fireAt()</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00122">eve::weapon::WeaponControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a986600563abf01182963d5b40f6d36f6" name="a986600563abf01182963d5b40f6d36f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a986600563abf01182963d5b40f6d36f6">&#9670;&#160;</a></span>targetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::targetZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00449">eve::weapon::Weapon::fireAt()</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00122">eve::weapon::WeaponControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="ab42e4650ce1d60c9b90ad2829213b44c" name="ab42e4650ce1d60c9b90ad2829213b44c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab42e4650ce1d60c9b90ad2829213b44c">&#9670;&#160;</a></span>yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::weapon::AttackRequest::yaw = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>发射方向（度）。 </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a> 第 <a class="el" href="WeaponTypes_8h_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weapon_8cpp_source.html#l00460">eve::weapon::Weapon::attack()</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00170">eve::weapon::WeaponActionAdapter::makeRequest()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00122">eve::weapon::WeaponControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/weapon/<a class="el" href="WeaponTypes_8h_source.html">WeaponTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

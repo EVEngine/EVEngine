@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tactics/TacticsPath.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4ebec2fa53bc995834833aa7d6151f1e.html">tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TacticsPath.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TacticsPath_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="TacticsTypes_8h.html">tactics/TacticsTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tactics.html">eve::tactics</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">   13</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">CellRangeMetric</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a1834cdf9bf35ea1d737c15eef72e18c7">Manhattan</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a7672163939be25b939905898298d3648">Chebyshev</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a92640bd72988395b326c888614f8937a">Hex</a> };</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1ReachableCell.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1tactics_1_1ReachableCell.html">ReachableCell</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1ReachableCell.html#a5433639c22617d7f492ce3f7a7ae9d2a">   17</a></span>    <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="structeve_1_1tactics_1_1ReachableCell.html#a5433639c22617d7f492ce3f7a7ae9d2a">cell</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1tactics_1_1ReachableCell.html#a5e26a927bd56400a4a2f0b6f766012e6">   18</a></span>    <span class="keywordtype">int</span>  <a class="code hl_variable" href="structeve_1_1tactics_1_1ReachableCell.html#a5e26a927bd56400a4a2f0b6f766012e6">cost</a> = 0;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1Reachability.html">   28</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1tactics_1_1Reachability.html">Reachability</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1Reachability.html#a3dea40338cb31de94ca269691de64991">   31</a></span>    [[nodiscard]] <span class="keyword">const</span> std::vector&lt;ReachableCell&gt;&amp; <a class="code hl_function" href="classeve_1_1tactics_1_1Reachability.html#a3dea40338cb31de94ca269691de64991">cells</a>() const noexcept { <span class="keywordflow">return</span> cells_; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1tactics_1_1Reachability.html#a12f365227f50bca5c745b00d5d89ec3b">contains</a>(<a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>(<a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;Cell&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1tactics_1_1Reachability.html#a60c84ca2807527f78cc5d54ad74a7093">pathTo</a>(<a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1Reachability.html#aa8bbcb1229f028c58e5824ddd8feeb37">   40</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1tactics_1_1PathQuery.html">PathQuery</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a>                 origin_;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::vector&lt;ReachableCell&gt; cells_;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::map&lt;Cell, Cell&gt; predecessor_;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1tactics_1_1PathQuery.html">   53</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1tactics_1_1PathQuery.html">PathQuery</a> final {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Reachability&gt;</a> <a class="code hl_function" href="classeve_1_1tactics_1_1PathQuery.html#adefb631762c56999c507f3caeb9ae7ae">reachable</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> subject, <span class="keywordtype">int</span> budget);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;Cell&gt;</a>&gt; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> subject, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                                        <span class="keywordtype">int</span> budget);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;Cell&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1tactics_1_1PathQuery.html#a42028e3da9d7b4e51958c41267617be1">cellsInRange</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tactics_1_1BoardState.html">BoardState</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a>, <a class="code hl_struct" href="structeve_1_1tactics_1_1Cell.html">Cell</a> origin, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a>,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                                                <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a>, <a class="code hl_enumeration" href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">CellRangeMetric</a> metric);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>};</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}  <span class="comment">// namespace eve::tactics</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00037">DialoguePayment.cpp:37</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a7fbb9ce939bb5d02a2225567b999402c"><div class="ttname"><a href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">maximum</a></div><div class="ttdeci">float maximum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00240">GltfImporter.cpp:240</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a909c88a187a1961fa2765ce3b9cecb24"><div class="ttname"><a href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">minimum</a></div><div class="ttdeci">float minimum[3]</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00239">GltfImporter.cpp:239</a></div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_ac09c70a19f04817cd37f78fe3e752066"><div class="ttname"><a href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00019">TacticsPath.cpp:19</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_afa74608efad845cb4247c533f215f71b"><div class="ttname"><a href="TacticsPersistence_8cpp.html#afa74608efad845cb4247c533f215f71b">board</a></div><div class="ttdeci">BoardState board</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00123">TacticsPersistence.cpp:123</a></div></div>
+<div class="ttc" id="aTacticsTypes_8h_html"><div class="ttname"><a href="TacticsTypes_8h.html">TacticsTypes.h</a></div><div class="ttdoc">Deterministic board values and short-root ECS entities for tactics.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1BoardState_html"><div class="ttname"><a href="classeve_1_1tactics_1_1BoardState.html">eve::tactics::BoardState</a></div><div class="ttdoc">Authoritative board facts and occupancy indexes for one battle.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00092">TacticsTypes.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1PathQuery_html"><div class="ttname"><a href="classeve_1_1tactics_1_1PathQuery.html">eve::tactics::PathQuery</a></div><div class="ttdoc">Pure deterministic board path algorithms.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8h_source.html#l00053">TacticsPath.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1PathQuery_html_a42028e3da9d7b4e51958c41267617be1"><div class="ttname"><a href="classeve_1_1tactics_1_1PathQuery.html#a42028e3da9d7b4e51958c41267617be1">eve::tactics::PathQuery::cellsInRange</a></div><div class="ttdeci">static Result&lt; std::vector&lt; Cell &gt; &gt; cellsInRange(const BoardState &amp;board, Cell origin, int minimum, int maximum, CellRangeMetric metric)</div><div class="ttdoc">Enumerate existing cells whose logical distance is within an inclusive range.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00114">TacticsPath.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1PathQuery_html_adefb631762c56999c507f3caeb9ae7ae"><div class="ttname"><a href="classeve_1_1tactics_1_1PathQuery.html#adefb631762c56999c507f3caeb9ae7ae">eve::tactics::PathQuery::reachable</a></div><div class="ttdeci">static Result&lt; Reachability &gt; reachable(const BoardState &amp;board, SubjectRef subject, int budget)</div><div class="ttdoc">Compute all unoccupied reachable cells for a placed subject.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00060">TacticsPath.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1Reachability_html"><div class="ttname"><a href="classeve_1_1tactics_1_1Reachability.html">eve::tactics::Reachability</a></div><div class="ttdoc">Owning result of one deterministic reachability query.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8h_source.html#l00028">TacticsPath.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1Reachability_html_a12f365227f50bca5c745b00d5d89ec3b"><div class="ttname"><a href="classeve_1_1tactics_1_1Reachability.html#a12f365227f50bca5c745b00d5d89ec3b">eve::tactics::Reachability::contains</a></div><div class="ttdeci">bool contains(Cell cell) const noexcept</div><div class="ttdoc">Return whether a cell is reachable within the queried budget.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00031">TacticsPath.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1Reachability_html_a3dea40338cb31de94ca269691de64991"><div class="ttname"><a href="classeve_1_1tactics_1_1Reachability.html#a3dea40338cb31de94ca269691de64991">eve::tactics::Reachability::cells</a></div><div class="ttdeci">const std::vector&lt; ReachableCell &gt; &amp; cells() const noexcept</div><div class="ttdoc">Return reachable cells in deterministic coordinate order.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8h_source.html#l00031">TacticsPath.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1tactics_1_1Reachability_html_a60c84ca2807527f78cc5d54ad74a7093"><div class="ttname"><a href="classeve_1_1tactics_1_1Reachability.html#a60c84ca2807527f78cc5d54ad74a7093">eve::tactics::Reachability::pathTo</a></div><div class="ttdeci">Result&lt; std::vector&lt; Cell &gt; &gt; pathTo(Cell target) const</div><div class="ttdoc">Reconstruct an origin-to-target path, or NotFound.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00045">TacticsPath.cpp:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html"><div class="ttname"><a href="namespaceeve_1_1tactics.html">eve::tactics</a></div><div class="ttdef"><b>Definition</b> <a href="Tactics_8cpp_source.html#l00014">Tactics.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_aa5126ccf84ac156a65549f81f996ef84"><div class="ttname"><a href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84">eve::tactics::CellRangeMetric</a></div><div class="ttdeci">CellRangeMetric</div><div class="ttdoc">Deterministic logical distance used by cellsInRange.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8h_source.html#l00013">TacticsPath.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_aa5126ccf84ac156a65549f81f996ef84a1834cdf9bf35ea1d737c15eef72e18c7"><div class="ttname"><a href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a1834cdf9bf35ea1d737c15eef72e18c7">eve::tactics::CellRangeMetric::Manhattan</a></div><div class="ttdeci">@ Manhattan</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_aa5126ccf84ac156a65549f81f996ef84a7672163939be25b939905898298d3648"><div class="ttname"><a href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a7672163939be25b939905898298d3648">eve::tactics::CellRangeMetric::Chebyshev</a></div><div class="ttdeci">@ Chebyshev</div></div>
+<div class="ttc" id="anamespaceeve_1_1tactics_html_aa5126ccf84ac156a65549f81f996ef84a92640bd72988395b326c888614f8937a"><div class="ttname"><a href="namespaceeve_1_1tactics.html#aa5126ccf84ac156a65549f81f996ef84a92640bd72988395b326c888614f8937a">eve::tactics::CellRangeMetric::Hex</a></div><div class="ttdeci">@ Hex</div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1Cell_html"><div class="ttname"><a href="structeve_1_1tactics_1_1Cell.html">eve::tactics::Cell</a></div><div class="ttdoc">Logical board coordinate independent of rendering projection.</div><div class="ttdef"><b>Definition</b> <a href="TacticsTypes_8h_source.html#l00027">TacticsTypes.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1ReachableCell_html"><div class="ttname"><a href="structeve_1_1tactics_1_1ReachableCell.html">eve::tactics::ReachableCell</a></div><div class="ttdoc">One reachable cell and its minimum fixed-point movement cost.</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8h_source.html#l00016">TacticsPath.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1ReachableCell_html_a5433639c22617d7f492ce3f7a7ae9d2a"><div class="ttname"><a href="structeve_1_1tactics_1_1ReachableCell.html#a5433639c22617d7f492ce3f7a7ae9d2a">eve::tactics::ReachableCell::cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8h_source.html#l00017">TacticsPath.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1tactics_1_1ReachableCell_html_a5e26a927bd56400a4a2f0b6f766012e6"><div class="ttname"><a href="structeve_1_1tactics_1_1ReachableCell.html#a5e26a927bd56400a4a2f0b6f766012e6">eve::tactics::ReachableCell::cost</a></div><div class="ttdeci">int cost</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8h_source.html#l00018">TacticsPath.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

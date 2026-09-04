@@ -1,0 +1,412 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset::EvaManifest结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset.html">asset</a></li><li class="navelem"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html">EvaManifest</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="structeve_1_1asset_1_1EvaManifest-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset::EvaManifest结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Validated, owning <code>.eva</code> manifest.  
+ <a href="structeve_1_1asset_1_1EvaManifest.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8224a435201db35464ea6a87b8354129" id="r_a8224a435201db35464ea6a87b8354129"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">PersistentId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#a8224a435201db35464ea6a87b8354129">packageId</a></td></tr>
+<tr class="separator:a8224a435201db35464ea6a87b8354129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4a7844e8cda3b7b2f0585a06dc09a7d" id="r_ad4a7844e8cda3b7b2f0585a06dc09a7d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#ad4a7844e8cda3b7b2f0585a06dc09a7d">packageName</a></td></tr>
+<tr class="separator:ad4a7844e8cda3b7b2f0585a06dc09a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaed321f4f5ce625f4ab58611e66f6df5" id="r_aaed321f4f5ce625f4ab58611e66f6df5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#aaed321f4f5ce625f4ab58611e66f6df5">packageVersion</a></td></tr>
+<tr class="separator:aaed321f4f5ce625f4ab58611e66f6df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e410c0a44fdce85a0e2fb5980dc7385" id="r_a0e410c0a44fdce85a0e2fb5980dc7385"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1asset_1_1EvaAssetEntry.html">EvaAssetEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#a0e410c0a44fdce85a0e2fb5980dc7385">assets</a></td></tr>
+<tr class="separator:a0e410c0a44fdce85a0e2fb5980dc7385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1066c923fc9010062e028239f4b7c8fa" id="r_a1066c923fc9010062e028239f4b7c8fa"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1asset_1_1EvaDependency.html">EvaDependency</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#a1066c923fc9010062e028239f4b7c8fa">dependencies</a></td></tr>
+<tr class="separator:a1066c923fc9010062e028239f4b7c8fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe0d55fcf3652322c5d37cb8c8d0fb93" id="r_afe0d55fcf3652322c5d37cb8c8d0fb93"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classeve_1_1AssetRef.html">AssetRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#afe0d55fcf3652322c5d37cb8c8d0fb93">entrypoints</a></td></tr>
+<tr class="separator:afe0d55fcf3652322c5d37cb8c8d0fb93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af75c43a2311058a4d439018eeda91489" id="r_af75c43a2311058a4d439018eeda91489"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#af75c43a2311058a4d439018eeda91489">provenance</a></td></tr>
+<tr class="separator:af75c43a2311058a4d439018eeda91489"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedbaae9354c07a2b7236bf0ac367cced" id="r_aedbaae9354c07a2b7236bf0ac367cced"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#aedbaae9354c07a2b7236bf0ac367cced">extensions</a></td></tr>
+<tr class="separator:aedbaae9354c07a2b7236bf0ac367cced"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a76e49d5d3cd503d9e10633cd097c31c8" id="r_a76e49d5d3cd503d9e10633cd097c31c8"><td class="memItemLeft" align="right" valign="top">static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#a76e49d5d3cd503d9e10633cd097c31c8">kSchema</a> = &quot;eve.asset-archive&quot;</td></tr>
+<tr class="separator:a76e49d5d3cd503d9e10633cd097c31c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf8732ba5083d76a24d288f73ba2bb53" id="r_abf8732ba5083d76a24d288f73ba2bb53"><td class="memItemLeft" align="right" valign="top">static constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset_1_1EvaManifest.html#abf8732ba5083d76a24d288f73ba2bb53">kVersion</a> = 1</td></tr>
+<tr class="separator:abf8732ba5083d76a24d288f73ba2bb53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Validated, owning <code>.eva</code> manifest. </p>
+<p>Known fields are held in typed members. Unknown top-level fields are retained in <code>extensions</code> so a supported reader can rewrite the source archive without erasing newer metadata. <a class="el" href="classeve_1_1Runtime.html">Runtime</a> semantics never branch on those fields. </p>
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00060">60</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a0e410c0a44fdce85a0e2fb5980dc7385" name="a0e410c0a44fdce85a0e2fb5980dc7385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e410c0a44fdce85a0e2fb5980dc7385">&#9670;&#160;</a></span>assets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1asset_1_1EvaAssetEntry.html">EvaAssetEntry</a>&gt; eve::asset::EvaManifest::assets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">eve::asset::cookEvaToEvpack()</a>, <a class="el" href="AssetDiff_8cpp_source.html#l00029">eve::asset::diffEvaManifests()</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00350">eve::asset_import::prepareGltfImport()</a>, <a class="el" href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">eve::editor::publishEvaAssetProjection()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a> , 以及 <a class="el" href="AssetDependency_8cpp_source.html#l00039">eve::asset::validateEvaDependencies()</a>.</p>
+
+</div>
+</div>
+<a id="a1066c923fc9010062e028239f4b7c8fa" name="a1066c923fc9010062e028239f4b7c8fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1066c923fc9010062e028239f4b7c8fa">&#9670;&#160;</a></span>dependencies</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1asset_1_1EvaDependency.html">EvaDependency</a>&gt; eve::asset::EvaManifest::dependencies</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AssetCooker_8cpp_source.html#l00153">eve::asset::cookEvaToEvpack()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">eve::editor::publishEvaAssetProjection()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="afe0d55fcf3652322c5d37cb8c8d0fb93" name="afe0d55fcf3652322c5d37cb8c8d0fb93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe0d55fcf3652322c5d37cb8c8d0fb93">&#9670;&#160;</a></span>entrypoints</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, <a class="el" href="classeve_1_1AssetRef.html">AssetRef</a>&gt; eve::asset::EvaManifest::entrypoints</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00350">eve::asset_import::prepareGltfImport()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="aedbaae9354c07a2b7236bf0ac367cced" name="aedbaae9354c07a2b7236bf0ac367cced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedbaae9354c07a2b7236bf0ac367cced">&#9670;&#160;</a></span>extensions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> eve::asset::EvaManifest::extensions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="a76e49d5d3cd503d9e10633cd097c31c8" name="a76e49d5d3cd503d9e10633cd097c31c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76e49d5d3cd503d9e10633cd097c31c8">&#9670;&#160;</a></span>kSchema</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::asset::EvaManifest::kSchema = &quot;eve.asset-archive&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="abf8732ba5083d76a24d288f73ba2bb53" name="abf8732ba5083d76a24d288f73ba2bb53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf8732ba5083d76a24d288f73ba2bb53">&#9670;&#160;</a></span>kVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint64_t eve::asset::EvaManifest::kVersion = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="a8224a435201db35464ea6a87b8354129" name="a8224a435201db35464ea6a87b8354129"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8224a435201db35464ea6a87b8354129">&#9670;&#160;</a></span>packageId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">PersistentId</a> eve::asset::EvaManifest::packageId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ImportCommon_8h_source.html#l00032">eve::asset_import::detail::baseManifest()</a>, <a class="el" href="AssetCooker_8cpp_source.html#l00153">eve::asset::cookEvaToEvpack()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="AssetPackageStore_8cpp_source.html#l00138">eve::asset::AtomicAssetPackageStore::publishEva()</a>, <a class="el" href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">eve::editor::publishEvaAssetProjection()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="ad4a7844e8cda3b7b2f0585a06dc09a7d" name="ad4a7844e8cda3b7b2f0585a06dc09a7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4a7844e8cda3b7b2f0585a06dc09a7d">&#9670;&#160;</a></span>packageName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::asset::EvaManifest::packageName</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ImportCommon_8h_source.html#l00032">eve::asset_import::detail::baseManifest()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">eve::editor::publishEvaAssetProjection()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="aaed321f4f5ce625f4ab58611e66f6df5" name="aaed321f4f5ce625f4ab58611e66f6df5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaed321f4f5ce625f4ab58611e66f6df5">&#9670;&#160;</a></span>packageVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::asset::EvaManifest::packageVersion</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ImportCommon_8h_source.html#l00032">eve::asset_import::detail::baseManifest()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="EvaAssetDatabaseProjection_8cpp_source.html#l00024">eve::editor::publishEvaAssetProjection()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<a id="af75c43a2311058a4d439018eeda91489" name="af75c43a2311058a4d439018eeda91489"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af75c43a2311058a4d439018eeda91489">&#9670;&#160;</a></span>provenance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> eve::asset::EvaManifest::provenance</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a> 第 <a class="el" href="EvaManifest_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ImportCommon_8h_source.html#l00032">eve::asset_import::detail::baseManifest()</a>, <a class="el" href="ImportReport_8cpp_source.html#l00021">eve::asset_import::detail::finalizeImportReport()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="TerrainImporter_8cpp_source.html#l00049">eve::asset_import::prepareCanonicalTerrainImport()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00350">eve::asset_import::prepareGltfImport()</a>, <a class="el" href="UnrealImporter_8cpp_source.html#l00126">eve::asset_import::prepareUnrealM4Import()</a> , 以及 <a class="el" href="EvaManifest_8cpp_source.html#l00313">eve::asset::serializeEvaManifest()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/asset/<a class="el" href="EvaManifest_8h_source.html">EvaManifest.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

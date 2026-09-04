@@ -1,0 +1,722 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::pixelworld_graphics::PixelWorldAtlasRenderer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1pixelworld__graphics.html">pixelworld_graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::pixelworld_graphics::PixelWorldAtlasRenderer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Render-thread-affine RGBA atlas projection of a rectangular PixelWorld region. @ownership The renderer owns only its CPU atlas; Graphics owns the Texture handle. @lifetime A renderer using a texture must be destroyed before its Graphics backend.  
+ <a href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PixelWorldGraphics_8h_source.html">PixelWorldGraphics.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abf49f33c5280bc0bb2c045a9c58bc750" id="r_abf49f33c5280bc0bb2c045a9c58bc750"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#abf49f33c5280bc0bb2c045a9c58bc750">PixelWorldAtlasRenderer</a> (int <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a5f724a85198b3d170035f208ed98a3ec">originX</a>, int <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#ac8c9e95d86fa74b26c9548263ff0056f">originY</a>, int <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a98023cacc6089027d1a1b0f21728e1a4">width</a>, int <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a8b54dbabf524d6075a9f82d67a65fe2d">height</a>)</td></tr>
+<tr class="memdesc:abf49f33c5280bc0bb2c045a9c58bc750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a transparent atlas for <code>[origin, origin + size)</code>. Throws on invalid size.  <br /></td></tr>
+<tr class="separator:abf49f33c5280bc0bb2c045a9c58bc750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afee433d062079f27f0a98574207fd847" id="r_afee433d062079f27f0a98574207fd847"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#afee433d062079f27f0a98574207fd847">~PixelWorldAtlasRenderer</a> ()</td></tr>
+<tr class="separator:afee433d062079f27f0a98574207fd847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92aecf461cb9bfbda2dac63af2c50213" id="r_a92aecf461cb9bfbda2dac63af2c50213"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a92aecf461cb9bfbda2dac63af2c50213">PixelWorldAtlasRenderer</a> (<a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a92aecf461cb9bfbda2dac63af2c50213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1af599841967ac579e7c25f537b11bcc" id="r_a1af599841967ac579e7c25f537b11bcc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a1af599841967ac579e7c25f537b11bcc">operator=</a> (<a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a1af599841967ac579e7c25f537b11bcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24a12ad0a2fb1bfe9e891d761d0f54a6" id="r_a24a12ad0a2fb1bfe9e891d761d0f54a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a24a12ad0a2fb1bfe9e891d761d0f54a6">PixelWorldAtlasRenderer</a> (const <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;)=delete</td></tr>
+<tr class="separator:a24a12ad0a2fb1bfe9e891d761d0f54a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c463720753b5429c8b11150dcae5766" id="r_a9c463720753b5429c8b11150dcae5766"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a9c463720753b5429c8b11150dcae5766">operator=</a> (const <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;)=delete</td></tr>
+<tr class="separator:a9c463720753b5429c8b11150dcae5766"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add051043d0ac44959855dbc062cfbfed" id="r_add051043d0ac44959855dbc062cfbfed"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#add051043d0ac44959855dbc062cfbfed">sync</a> (<a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">pixelworld::PixelWorld</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *graphics)</td></tr>
+<tr class="memdesc:add051043d0ac44959855dbc062cfbfed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Patch changed CPU chunks and upload the atlas when its world revision advances.  <br /></td></tr>
+<tr class="separator:add051043d0ac44959855dbc062cfbfed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0388cbbe7b9e95361af0d5db97f7209c" id="r_a0388cbbe7b9e95361af0d5db97f7209c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a0388cbbe7b9e95361af0d5db97f7209c">drawDiagnostics</a> (<a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">pixelworld::PixelWorld</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *graphics, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:a0388cbbe7b9e95361af0d5db97f7209c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw Chunk activity/temperature outlines and a bounded step-time graph.  <br /></td></tr>
+<tr class="separator:a0388cbbe7b9e95361af0d5db97f7209c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac809e55e33d500bb407a1959d907a881" id="r_ac809e55e33d500bb407a1959d907a881"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#ac809e55e33d500bb407a1959d907a881">texture</a> () const noexcept</td></tr>
+<tr class="memdesc:ac809e55e33d500bb407a1959d907a881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the stable backend-owned atlas texture, or null before first sync. @ownership Graphics owns the returned pointer; callers must not delete it. @lifetime Valid until the originating Graphics releases textures or is destroyed.  <br /></td></tr>
+<tr class="separator:ac809e55e33d500bb407a1959d907a881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f724a85198b3d170035f208ed98a3ec" id="r_a5f724a85198b3d170035f208ed98a3ec"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a5f724a85198b3d170035f208ed98a3ec">originX</a> () const noexcept</td></tr>
+<tr class="separator:a5f724a85198b3d170035f208ed98a3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8c9e95d86fa74b26c9548263ff0056f" id="r_ac8c9e95d86fa74b26c9548263ff0056f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#ac8c9e95d86fa74b26c9548263ff0056f">originY</a> () const noexcept</td></tr>
+<tr class="separator:ac8c9e95d86fa74b26c9548263ff0056f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98023cacc6089027d1a1b0f21728e1a4" id="r_a98023cacc6089027d1a1b0f21728e1a4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a98023cacc6089027d1a1b0f21728e1a4">width</a> () const noexcept</td></tr>
+<tr class="separator:a98023cacc6089027d1a1b0f21728e1a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b54dbabf524d6075a9f82d67a65fe2d" id="r_a8b54dbabf524d6075a9f82d67a65fe2d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a8b54dbabf524d6075a9f82d67a65fe2d">height</a> () const noexcept</td></tr>
+<tr class="separator:a8b54dbabf524d6075a9f82d67a65fe2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61472cbf9d79f482b6cfcf9979a51e58" id="r_a61472cbf9d79f482b6cfcf9979a51e58"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a61472cbf9d79f482b6cfcf9979a51e58">renderedRevision</a> () const noexcept</td></tr>
+<tr class="separator:a61472cbf9d79f482b6cfcf9979a51e58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eeea86261aa9a8d2a08f8fec5adc691" id="r_a9eeea86261aa9a8d2a08f8fec5adc691"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#a9eeea86261aa9a8d2a08f8fec5adc691">totalUploadedChunks</a> () const noexcept</td></tr>
+<tr class="separator:a9eeea86261aa9a8d2a08f8fec5adc691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae23fb6e844cb3dcb8a90762ea11a97bb" id="r_ae23fb6e844cb3dcb8a90762ea11a97bb"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#ae23fb6e844cb3dcb8a90762ea11a97bb">uploadCount</a> () const noexcept</td></tr>
+<tr class="separator:ae23fb6e844cb3dcb8a90762ea11a97bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Render-thread-affine RGBA atlas projection of a rectangular PixelWorld region. @ownership The renderer owns only its CPU atlas; Graphics owns the Texture handle. @lifetime A renderer using a texture must be destroyed before its Graphics backend. </p>
+<p>The renderer never owns or retains the PixelWorld/Graphics arguments supplied to <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html#add051043d0ac44959855dbc062cfbfed" title="Patch changed CPU chunks and upload the atlas when its world revision advances.">sync()</a>. Its Texture is a borrowed backend-owned handle and must not outlive Graphics. The CPU atlas is authoritative only for presentation and is rebuilt after world revision rollback (clear/restore); gameplay continues to read PixelWorld itself. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8h_source.html">PixelWorldGraphics.h</a> 第 <a class="el" href="PixelWorldGraphics_8h_source.html#l00029">29</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abf49f33c5280bc0bb2c045a9c58bc750" name="abf49f33c5280bc0bb2c045a9c58bc750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf49f33c5280bc0bb2c045a9c58bc750">&#9670;&#160;</a></span>PixelWorldAtlasRenderer() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_graphics::PixelWorldAtlasRenderer::PixelWorldAtlasRenderer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a transparent atlas for <code>[origin, origin + size)</code>. Throws on invalid size. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00208">height()</a>, <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00205">originX()</a>, <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00206">originY()</a> , 以及 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00207">width()</a>.</p>
+
+</div>
+</div>
+<a id="afee433d062079f27f0a98574207fd847" name="afee433d062079f27f0a98574207fd847"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afee433d062079f27f0a98574207fd847">&#9670;&#160;</a></span>~PixelWorldAtlasRenderer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_graphics::PixelWorldAtlasRenderer::~PixelWorldAtlasRenderer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a92aecf461cb9bfbda2dac63af2c50213" name="a92aecf461cb9bfbda2dac63af2c50213"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92aecf461cb9bfbda2dac63af2c50213">&#9670;&#160;</a></span>PixelWorldAtlasRenderer() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_graphics::PixelWorldAtlasRenderer::PixelWorldAtlasRenderer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a24a12ad0a2fb1bfe9e891d761d0f54a6" name="a24a12ad0a2fb1bfe9e891d761d0f54a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24a12ad0a2fb1bfe9e891d761d0f54a6">&#9670;&#160;</a></span>PixelWorldAtlasRenderer() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_graphics::PixelWorldAtlasRenderer::PixelWorldAtlasRenderer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0388cbbe7b9e95361af0d5db97f7209c" name="a0388cbbe7b9e95361af0d5db97f7209c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0388cbbe7b9e95361af0d5db97f7209c">&#9670;&#160;</a></span>drawDiagnostics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::pixelworld_graphics::PixelWorldAtlasRenderer::drawDiagnostics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">pixelworld::PixelWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw Chunk activity/temperature outlines and a bounded step-time graph. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Borrowed authoritative world for this call only. </td></tr>
+    <tr><td class="paramname">graphics</td><td>Borrowed render-thread graphics service for this call only. </td></tr>
+    <tr><td class="paramname">scale</td><td>Screen pixels per simulated cell; must be positive. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of allocated Chunk diagnostics drawn. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l01598">eve::graphics::Graphics::drawSolidRectRGBA()</a>, <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00208">height()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PixelWorld_8h_source.html#l00018">eve::pixelworld::kPixelChunkSize</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="PixelWorldControl_8cpp_source.html#l00147">eve::pixelworld::PixelWorldControlService::performanceSamples()</a>, <a class="el" href="PixelWorldControl_8cpp_source.html#l00038">eve::pixelworld::pixelWorldControlService()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a8b54dbabf524d6075a9f82d67a65fe2d" name="a8b54dbabf524d6075a9f82d67a65fe2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b54dbabf524d6075a9f82d67a65fe2d">&#9670;&#160;</a></span>height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::pixelworld_graphics::PixelWorldAtlasRenderer::height </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00143">drawDiagnostics()</a> , 以及 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00044">PixelWorldAtlasRenderer()</a>.</p>
+
+</div>
+</div>
+<a id="a9c463720753b5429c8b11150dcae5766" name="a9c463720753b5429c8b11150dcae5766"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c463720753b5429c8b11150dcae5766">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp; eve::pixelworld_graphics::PixelWorldAtlasRenderer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1af599841967ac579e7c25f537b11bcc" name="a1af599841967ac579e7c25f537b11bcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1af599841967ac579e7c25f537b11bcc">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp; eve::pixelworld_graphics::PixelWorldAtlasRenderer::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld__graphics_1_1PixelWorldAtlasRenderer.html">PixelWorldAtlasRenderer</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5f724a85198b3d170035f208ed98a3ec" name="a5f724a85198b3d170035f208ed98a3ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f724a85198b3d170035f208ed98a3ec">&#9670;&#160;</a></span>originX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::pixelworld_graphics::PixelWorldAtlasRenderer::originX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00044">PixelWorldAtlasRenderer()</a>.</p>
+
+</div>
+</div>
+<a id="ac8c9e95d86fa74b26c9548263ff0056f" name="ac8c9e95d86fa74b26c9548263ff0056f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8c9e95d86fa74b26c9548263ff0056f">&#9670;&#160;</a></span>originY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::pixelworld_graphics::PixelWorldAtlasRenderer::originY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00044">PixelWorldAtlasRenderer()</a>.</p>
+
+</div>
+</div>
+<a id="a61472cbf9d79f482b6cfcf9979a51e58" name="a61472cbf9d79f482b6cfcf9979a51e58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61472cbf9d79f482b6cfcf9979a51e58">&#9670;&#160;</a></span>renderedRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::pixelworld_graphics::PixelWorldAtlasRenderer::renderedRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add051043d0ac44959855dbc062cfbfed" name="add051043d0ac44959855dbc062cfbfed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add051043d0ac44959855dbc062cfbfed">&#9670;&#160;</a></span>sync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::pixelworld_graphics::PixelWorldAtlasRenderer::sync </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">pixelworld::PixelWorld</a> *&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Patch changed CPU chunks and upload the atlas when its world revision advances. </p>
+<dl class="section return"><dt>返回</dt><dd>Number of changed chunks patched; zero means no GPU upload was issued. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Must run on the render thread. The arguments are borrowed for this call only. @ownership <code>world</code> and <code>graphics</code> remain owned by their callers and are never retained. @lifetime Both arguments need only remain valid for the duration of this call. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="PixelWorld_8h_source.html#l00018">eve::pixelworld::kPixelChunkSize</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="ac809e55e33d500bb407a1959d907a881" name="ac809e55e33d500bb407a1959d907a881"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac809e55e33d500bb407a1959d907a881">&#9670;&#160;</a></span>texture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::pixelworld_graphics::PixelWorldAtlasRenderer::texture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the stable backend-owned atlas texture, or null before first sync. @ownership Graphics owns the returned pointer; callers must not delete it. @lifetime Valid until the originating Graphics releases textures or is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9eeea86261aa9a8d2a08f8fec5adc691" name="a9eeea86261aa9a8d2a08f8fec5adc691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eeea86261aa9a8d2a08f8fec5adc691">&#9670;&#160;</a></span>totalUploadedChunks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::pixelworld_graphics::PixelWorldAtlasRenderer::totalUploadedChunks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae23fb6e844cb3dcb8a90762ea11a97bb" name="ae23fb6e844cb3dcb8a90762ea11a97bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae23fb6e844cb3dcb8a90762ea11a97bb">&#9670;&#160;</a></span>uploadCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::pixelworld_graphics::PixelWorldAtlasRenderer::uploadCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a98023cacc6089027d1a1b0f21728e1a4" name="a98023cacc6089027d1a1b0f21728e1a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98023cacc6089027d1a1b0f21728e1a4">&#9670;&#160;</a></span>width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::pixelworld_graphics::PixelWorldAtlasRenderer::width </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a> 第 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldGraphics_8cpp_source.html#l00044">PixelWorldAtlasRenderer()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/pixelworld_graphics/<a class="el" href="PixelWorldGraphics_8h_source.html">PixelWorldGraphics.h</a></li>
+<li>src/modules/pixelworld_graphics/<a class="el" href="PixelWorldGraphics_8cpp_source.html">PixelWorldGraphics.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

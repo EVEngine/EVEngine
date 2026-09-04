@@ -1,0 +1,259 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveBreakdown.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CaveBreakdown.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CaveBreakdown_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html">    8</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html">CaveBreakdownChamber</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#a59af9e94e8b1b886527a6d57b36eac55">    9</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#a59af9e94e8b1b886527a6d57b36eac55">x</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#ace868b2f7a89c8cd5c76e8a0afeaac8f">y</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#aff9a83ab25b14ea8ddb08c04e647823f">z</a> = 0.f;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#aa43e8fbf974feb822997947799b26509">   10</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#aa43e8fbf974feb822997947799b26509">rx</a> = 0.2f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#ab7a7eac9200e1cacdb7566a49b1531a3">ry</a> = 0.15f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#aeb83d1bfac8911e45e0ec2324bb03520">rz</a> = 0.2f;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>};</div>
+</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html">CaveBreakdownBlock</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#adcbf5273d3c73850713f5cafc94fdab8">   14</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#adcbf5273d3c73850713f5cafc94fdab8">x</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a5744cf810990d329b829bb8548de6ada">y</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#ab7e3e291e920a06cfd0c1b8cfe177269">z</a> = 0.f;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#ac8f6603f640f1351dc2cd0fb9db5acdd">   15</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#ac8f6603f640f1351dc2cd0fb9db5acdd">hx</a> = 0.04f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a07684dc36a44d30fb9508df2baa83c61">hy</a> = 0.025f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a49481735008ce54edb62f3834925c741">hz</a> = 0.04f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a8240c6b2e320d68d88b3d30219800a7f">   16</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a8240c6b2e320d68d88b3d30219800a7f">yaw</a> = 0.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html">   19</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html">CaveBreakdownEvent</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ae4e206e3586f3ca4b195b331b94094b8">   20</a></span>    <span class="keywordtype">float</span>                           <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#af3503d260238ccd8e9d88289bd508b37">x</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ae4e206e3586f3ca4b195b331b94094b8">ceilingY</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#a97dac88b8089865fd0a999753e792b75">z</a> = 0.f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ab492e45da2801f1b49b91f1d0bee6d9a">   21</a></span>    <span class="keywordtype">float</span>                           <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ab492e45da2801f1b49b91f1d0bee6d9a">scarX</a> = 0.1f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#a310aaa003e0c585cb48bf24736b68692">scarY</a> = 0.04f, <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ae47e222c7058daf6c89bbb9b4051e279">scarZ</a> = 0.1f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ad2f64edeb5895dae9ca0d29341c4e0d1">   22</a></span>    <span class="keywordtype">float</span>                           <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ad2f64edeb5895dae9ca0d29341c4e0d1">yaw</a> = 0.f;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ad90728d7785af5c7004cf656d912c950">   23</a></span>    std::vector&lt;CaveBreakdownBlock&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ad90728d7785af5c7004cf656d912c950">blocks</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownSet.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveBreakdownSet.html">CaveBreakdownSet</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownSet.html#a7bd1415a1d6f04fe001820802ef1d5ec">   27</a></span>    std::vector&lt;CaveBreakdownEvent&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownSet.html#a7bd1415a1d6f04fe001820802ef1d5ec">events</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ada0e1d8ecc7d7db6ccb369b4246c7c7f">   28</a></span>    <span class="keywordtype">int</span>                             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ada0e1d8ecc7d7db6ccb369b4246c7c7f">blockCount</a>      = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ab5b99dc26d0ea0bf4a0fa5c0f29309e2">   29</a></span>    <span class="keywordtype">float</span>                           <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ab5b99dc26d0ea0bf4a0fa5c0f29309e2">detachedVolume</a>  = 0.f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ac99333dafb2c0f4a097f7ff4c4c81c39">   30</a></span>    <span class="keywordtype">float</span>                           <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ac99333dafb2c0f4a097f7ff4c4c81c39">depositedVolume</a> = 0.f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveBreakdownSet.html">CaveBreakdownSet</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a428c70e1b021d0d379216883bc4c103a">createCaveBreakdown</a>(<span class="keyword">const</span> std::vector&lt;CaveBreakdownChamber&gt;&amp; chambers, <span class="keywordtype">int</span> eventCount, <span class="keywordtype">float</span> strength,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                     uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a5ebb62347204a384fa35fe528cb5ffe5">carveCaveBreakdownScars</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> current, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveBreakdownSet.html">CaveBreakdownSet</a>&amp; breakdown);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a2cd32996ec28eef4160f0a099edd3b7d">addCaveBreakdownBlocks</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> current, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveBreakdownSet.html">CaveBreakdownSet</a>&amp; breakdown);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#aa9aa7e1c1c629856162802b3cd844443">isCaveBreakdownBlockSurface</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> tolerance, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveBreakdownSet.html">CaveBreakdownSet</a>&amp; breakdown);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a2cd32996ec28eef4160f0a099edd3b7d"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a2cd32996ec28eef4160f0a099edd3b7d">eve::procgen::addCaveBreakdownBlocks</a></div><div class="ttdeci">float addCaveBreakdownBlocks(float x, float y, float z, float current, const CaveBreakdownSet &amp;breakdown)</div><div class="ttdoc">Union the event's landed breakdown blocks into a cave SDF.</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8cpp_source.html#l00090">CaveBreakdown.cpp:90</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a428c70e1b021d0d379216883bc4c103a"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a428c70e1b021d0d379216883bc4c103a">eve::procgen::createCaveBreakdown</a></div><div class="ttdeci">CaveBreakdownSet createCaveBreakdown(const std::vector&lt; CaveBreakdownChamber &gt; &amp;chambers, int eventCount, float strength, uint32_t seed)</div><div class="ttdoc">Create paired ceiling-spall scars and floor blocks from host chambers.</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8cpp_source.html#l00041">CaveBreakdown.cpp:41</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a5ebb62347204a384fa35fe528cb5ffe5"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a5ebb62347204a384fa35fe528cb5ffe5">eve::procgen::carveCaveBreakdownScars</a></div><div class="ttdeci">float carveCaveBreakdownScars(float x, float y, float z, float current, const CaveBreakdownSet &amp;breakdown)</div><div class="ttdoc">Carve the event's shallow ceiling detachment scars from a cave SDF.</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8cpp_source.html#l00084">CaveBreakdown.cpp:84</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aa9aa7e1c1c629856162802b3cd844443"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aa9aa7e1c1c629856162802b3cd844443">eve::procgen::isCaveBreakdownBlockSurface</a></div><div class="ttdeci">bool isCaveBreakdownBlockSurface(float x, float y, float z, float tolerance, const CaveBreakdownSet &amp;breakdown)</div><div class="ttdoc">Test whether a point lies on a generated breakdown block surface.</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8cpp_source.html#l00097">CaveBreakdown.cpp:97</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownBlock_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownBlock.html">eve::procgen::CaveBreakdownBlock</a></div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00013">CaveBreakdown.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownBlock_html_a07684dc36a44d30fb9508df2baa83c61"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a07684dc36a44d30fb9508df2baa83c61">eve::procgen::CaveBreakdownBlock::hy</a></div><div class="ttdeci">float hy</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00015">CaveBreakdown.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownBlock_html_a49481735008ce54edb62f3834925c741"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a49481735008ce54edb62f3834925c741">eve::procgen::CaveBreakdownBlock::hz</a></div><div class="ttdeci">float hz</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00015">CaveBreakdown.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownBlock_html_a5744cf810990d329b829bb8548de6ada"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a5744cf810990d329b829bb8548de6ada">eve::procgen::CaveBreakdownBlock::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00014">CaveBreakdown.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownBlock_html_a8240c6b2e320d68d88b3d30219800a7f"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#a8240c6b2e320d68d88b3d30219800a7f">eve::procgen::CaveBreakdownBlock::yaw</a></div><div class="ttdeci">float yaw</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00016">CaveBreakdown.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownBlock_html_ab7e3e291e920a06cfd0c1b8cfe177269"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#ab7e3e291e920a06cfd0c1b8cfe177269">eve::procgen::CaveBreakdownBlock::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00014">CaveBreakdown.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownBlock_html_ac8f6603f640f1351dc2cd0fb9db5acdd"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#ac8f6603f640f1351dc2cd0fb9db5acdd">eve::procgen::CaveBreakdownBlock::hx</a></div><div class="ttdeci">float hx</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00015">CaveBreakdown.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownBlock_html_adcbf5273d3c73850713f5cafc94fdab8"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownBlock.html#adcbf5273d3c73850713f5cafc94fdab8">eve::procgen::CaveBreakdownBlock::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00014">CaveBreakdown.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownChamber_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownChamber.html">eve::procgen::CaveBreakdownChamber</a></div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00008">CaveBreakdown.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownChamber_html_a59af9e94e8b1b886527a6d57b36eac55"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#a59af9e94e8b1b886527a6d57b36eac55">eve::procgen::CaveBreakdownChamber::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00009">CaveBreakdown.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownChamber_html_aa43e8fbf974feb822997947799b26509"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#aa43e8fbf974feb822997947799b26509">eve::procgen::CaveBreakdownChamber::rx</a></div><div class="ttdeci">float rx</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00010">CaveBreakdown.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownChamber_html_ab7a7eac9200e1cacdb7566a49b1531a3"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#ab7a7eac9200e1cacdb7566a49b1531a3">eve::procgen::CaveBreakdownChamber::ry</a></div><div class="ttdeci">float ry</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00010">CaveBreakdown.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownChamber_html_ace868b2f7a89c8cd5c76e8a0afeaac8f"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#ace868b2f7a89c8cd5c76e8a0afeaac8f">eve::procgen::CaveBreakdownChamber::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00009">CaveBreakdown.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownChamber_html_aeb83d1bfac8911e45e0ec2324bb03520"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#aeb83d1bfac8911e45e0ec2324bb03520">eve::procgen::CaveBreakdownChamber::rz</a></div><div class="ttdeci">float rz</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00010">CaveBreakdown.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownChamber_html_aff9a83ab25b14ea8ddb08c04e647823f"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownChamber.html#aff9a83ab25b14ea8ddb08c04e647823f">eve::procgen::CaveBreakdownChamber::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00009">CaveBreakdown.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html">eve::procgen::CaveBreakdownEvent</a></div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00019">CaveBreakdown.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html_a310aaa003e0c585cb48bf24736b68692"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#a310aaa003e0c585cb48bf24736b68692">eve::procgen::CaveBreakdownEvent::scarY</a></div><div class="ttdeci">float scarY</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00021">CaveBreakdown.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html_a97dac88b8089865fd0a999753e792b75"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#a97dac88b8089865fd0a999753e792b75">eve::procgen::CaveBreakdownEvent::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00020">CaveBreakdown.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html_ab492e45da2801f1b49b91f1d0bee6d9a"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ab492e45da2801f1b49b91f1d0bee6d9a">eve::procgen::CaveBreakdownEvent::scarX</a></div><div class="ttdeci">float scarX</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00021">CaveBreakdown.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html_ad2f64edeb5895dae9ca0d29341c4e0d1"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ad2f64edeb5895dae9ca0d29341c4e0d1">eve::procgen::CaveBreakdownEvent::yaw</a></div><div class="ttdeci">float yaw</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00022">CaveBreakdown.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html_ad90728d7785af5c7004cf656d912c950"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ad90728d7785af5c7004cf656d912c950">eve::procgen::CaveBreakdownEvent::blocks</a></div><div class="ttdeci">std::vector&lt; CaveBreakdownBlock &gt; blocks</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00023">CaveBreakdown.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html_ae47e222c7058daf6c89bbb9b4051e279"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ae47e222c7058daf6c89bbb9b4051e279">eve::procgen::CaveBreakdownEvent::scarZ</a></div><div class="ttdeci">float scarZ</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00021">CaveBreakdown.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html_ae4e206e3586f3ca4b195b331b94094b8"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#ae4e206e3586f3ca4b195b331b94094b8">eve::procgen::CaveBreakdownEvent::ceilingY</a></div><div class="ttdeci">float ceilingY</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00020">CaveBreakdown.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownEvent_html_af3503d260238ccd8e9d88289bd508b37"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownEvent.html#af3503d260238ccd8e9d88289bd508b37">eve::procgen::CaveBreakdownEvent::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00020">CaveBreakdown.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownSet_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownSet.html">eve::procgen::CaveBreakdownSet</a></div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00026">CaveBreakdown.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownSet_html_a7bd1415a1d6f04fe001820802ef1d5ec"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownSet.html#a7bd1415a1d6f04fe001820802ef1d5ec">eve::procgen::CaveBreakdownSet::events</a></div><div class="ttdeci">std::vector&lt; CaveBreakdownEvent &gt; events</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00027">CaveBreakdown.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownSet_html_ab5b99dc26d0ea0bf4a0fa5c0f29309e2"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ab5b99dc26d0ea0bf4a0fa5c0f29309e2">eve::procgen::CaveBreakdownSet::detachedVolume</a></div><div class="ttdeci">float detachedVolume</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00029">CaveBreakdown.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownSet_html_ac99333dafb2c0f4a097f7ff4c4c81c39"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ac99333dafb2c0f4a097f7ff4c4c81c39">eve::procgen::CaveBreakdownSet::depositedVolume</a></div><div class="ttdeci">float depositedVolume</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00030">CaveBreakdown.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveBreakdownSet_html_ada0e1d8ecc7d7db6ccb369b4246c7c7f"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveBreakdownSet.html#ada0e1d8ecc7d7db6ccb369b4246c7c7f">eve::procgen::CaveBreakdownSet::blockCount</a></div><div class="ttdeci">int blockCount</div><div class="ttdef"><b>Definition</b> <a href="CaveBreakdown_8h_source.html#l00028">CaveBreakdown.h:28</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

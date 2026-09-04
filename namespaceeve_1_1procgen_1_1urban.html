@@ -1,0 +1,1770 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::urban 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html">urban</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::urban 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Where a point sits on the polygon boundary: edge <code>edgeIndex</code> at parameter t in [0,1].  <a href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundarySample.html">BoundarySample</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A boundary sample used for field constraints / candidate seeds.  <a href="structeve_1_1procgen_1_1urban_1_1BoundarySample.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1GraphEdge.html">GraphEdge</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undirected edge of the parcel corner graph.  <a href="structeve_1_1procgen_1_1urban_1_1GraphEdge.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Parcel.html">Parcel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One parcel: a CCW ring of indices into <a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a3ffed9e11282ae06a12803d73838ecfd">UrbanLayout::corners</a>.  <a href="structeve_1_1procgen_1_1urban_1_1Parcel.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1SplitCandidate.html">SplitCandidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Candidate splitting lines for a parcel (paper Section 4.1). Each candidate is a polyline from one boundary point to another, strictly inside otherwise, and verified to split the parcel into two simple polygons.  <a href="structeve_1_1procgen_1_1urban_1_1SplitCandidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Street.html">Street</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A street decomposed from the street network graph: consecutive street edges whose included angle is larger than 135° belong to the same street.  <a href="structeve_1_1procgen_1_1urban_1_1Street.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1urban_1_1UrbanGenerator.html">UrbanGenerator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hierarchical co-generation of parcels and streets (paper Section 4) plus the global geometric optimization (paper Section 5).  <a href="classeve_1_1procgen_1_1urban_1_1UrbanGenerator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html">UrbanLayout</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured urban layout produced by the hierarchical co-generation (paper Section 4) plus the geometric optimization (paper Section 5).  <a href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanOptions.html">UrbanOptions</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">All user-facing controls for the urban generator. Defaults follow the paper (λ=0.3/0.5/0.2, γ=0.75/0.25, τ=0.5, I/L-shaped access, cul-de-sac avoidance on).  <a href="structeve_1_1procgen_1_1urban_1_1UrbanOptions.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal 2D vector used by the urban layout algorithms (paper coordinates).  <a href="structeve_1_1procgen_1_1urban_1_1Vec2.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a87d21595a43119e7ad3a669c5e526d79" id="r_a87d21595a43119e7ad3a669c5e526d79"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> = std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &gt;</td></tr>
+<tr class="memdesc:a87d21595a43119e7ad3a669c5e526d79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closed polygon ring, stored CCW, without repeating the first point.  <br /></td></tr>
+<tr class="separator:a87d21595a43119e7ad3a669c5e526d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28c467007a373b1d611ad53183cb097c" id="r_a28c467007a373b1d611ad53183cb097c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> = std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &gt;</td></tr>
+<tr class="memdesc:a28c467007a373b1d611ad53183cb097c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open polyline (e.g. a streamline candidate or a street centerline).  <br /></td></tr>
+<tr class="separator:a28c467007a373b1d611ad53183cb097c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ae21f4d312383915c3adcbb0bd4c17d69" id="r_ae21f4d312383915c3adcbb0bd4c17d69"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1SplitCandidate.html">SplitCandidate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#ae21f4d312383915c3adcbb0bd4c17d69">generateSplitCandidates</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly, int maxCandidates, double minHalfArea)</td></tr>
+<tr class="memdesc:ae21f4d312383915c3adcbb0bd4c17d69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate candidate streamlines for binary partitioning of <code>poly</code>.  <br /></td></tr>
+<tr class="separator:ae21f4d312383915c3adcbb0bd4c17d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2d032dea1baf87ebadcf72801ddbb02" id="r_ab2d032dea1baf87ebadcf72801ddbb02"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#ab2d032dea1baf87ebadcf72801ddbb02">signedArea</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly)</td></tr>
+<tr class="memdesc:ab2d032dea1baf87ebadcf72801ddbb02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the raw (possibly negative) signed area of a polygon ring.  <br /></td></tr>
+<tr class="separator:ab2d032dea1baf87ebadcf72801ddbb02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ad1eacc71833607b585428a717590e2" id="r_a5ad1eacc71833607b585428a717590e2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a5ad1eacc71833607b585428a717590e2">area</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly)</td></tr>
+<tr class="memdesc:a5ad1eacc71833607b585428a717590e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute polygon area.  <br /></td></tr>
+<tr class="separator:a5ad1eacc71833607b585428a717590e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada151ac88430c72fd7623362561d3838" id="r_ada151ac88430c72fd7623362561d3838"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#ada151ac88430c72fd7623362561d3838">polylineLength</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;pl)</td></tr>
+<tr class="memdesc:ada151ac88430c72fd7623362561d3838"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total length of an open polyline.  <br /></td></tr>
+<tr class="separator:ada151ac88430c72fd7623362561d3838"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0456b279e421c73e09ea3f32ff642f7d" id="r_a0456b279e421c73e09ea3f32ff642f7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a0456b279e421c73e09ea3f32ff642f7d">centroid</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly)</td></tr>
+<tr class="memdesc:a0456b279e421c73e09ea3f32ff642f7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Centroid (area-weighted) of a simple polygon.  <br /></td></tr>
+<tr class="separator:a0456b279e421c73e09ea3f32ff642f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa18d6c5770b92f07d70d39b8503005d8" id="r_aa18d6c5770b92f07d70d39b8503005d8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#aa18d6c5770b92f07d70d39b8503005d8">perimeter</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly)</td></tr>
+<tr class="memdesc:aa18d6c5770b92f07d70d39b8503005d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perimeter length of a closed ring.  <br /></td></tr>
+<tr class="separator:aa18d6c5770b92f07d70d39b8503005d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa4d225764791e353de591ea590a05d3" id="r_afa4d225764791e353de591ea590a05d3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#afa4d225764791e353de591ea590a05d3">ensureCCW</a> (<a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly)</td></tr>
+<tr class="memdesc:afa4d225764791e353de591ea590a05d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure the ring is CCW (positive signed area); returns whether it was flipped.  <br /></td></tr>
+<tr class="separator:afa4d225764791e353de591ea590a05d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad832d569e30b82063b1bca103bbb1255" id="r_ad832d569e30b82063b1bca103bbb1255"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#ad832d569e30b82063b1bca103bbb1255">cleanupRing</a> (<a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly, double eps=1e-9)</td></tr>
+<tr class="memdesc:ad832d569e30b82063b1bca103bbb1255"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove consecutive duplicate points (within <code>eps</code>) and points that create zero spikes.  <br /></td></tr>
+<tr class="separator:ad832d569e30b82063b1bca103bbb1255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c7b61d38cda2f8246f70a91d75a0f4c" id="r_a2c7b61d38cda2f8246f70a91d75a0f4c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a2c7b61d38cda2f8246f70a91d75a0f4c">pointInPolygon</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly)</td></tr>
+<tr class="memdesc:a2c7b61d38cda2f8246f70a91d75a0f4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Point-in-polygon test (ray casting; boundary counts as inside).  <br /></td></tr>
+<tr class="separator:a2c7b61d38cda2f8246f70a91d75a0f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4f86366294c2375da199ee9a8e71c29" id="r_ab4f86366294c2375da199ee9a8e71c29"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#ab4f86366294c2375da199ee9a8e71c29">pointOnSegment</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, double eps=1e-9)</td></tr>
+<tr class="memdesc:ab4f86366294c2375da199ee9a8e71c29"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if p lies on segment a-b (within tolerance).  <br /></td></tr>
+<tr class="separator:ab4f86366294c2375da199ee9a8e71c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cd354ae904473265586fd9a1ce7ad23" id="r_a9cd354ae904473265586fd9a1ce7ad23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a9cd354ae904473265586fd9a1ce7ad23">segmentsIntersect</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> *out)</td></tr>
+<tr class="memdesc:a9cd354ae904473265586fd9a1ce7ad23"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the open segments a-b and c-d properly cross; <code>out</code> receives the crossing.  <br /></td></tr>
+<tr class="separator:a9cd354ae904473265586fd9a1ce7ad23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea49479cdf0b5164827feba9faaff74f" id="r_aea49479cdf0b5164827feba9faaff74f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#aea49479cdf0b5164827feba9faaff74f">segmentIntersectsPolyline</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;pl)</td></tr>
+<tr class="memdesc:aea49479cdf0b5164827feba9faaff74f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if a segment crosses any segment of an open polyline (excluding shared endpoints).  <br /></td></tr>
+<tr class="separator:aea49479cdf0b5164827feba9faaff74f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4261ca872ba9ca1c53994478f1a0fd30" id="r_a4261ca872ba9ca1c53994478f1a0fd30"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a4261ca872ba9ca1c53994478f1a0fd30">polylineSelfIntersects</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;pl)</td></tr>
+<tr class="memdesc:a4261ca872ba9ca1c53994478f1a0fd30"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if any two non-adjacent segments of the open polyline cross.  <br /></td></tr>
+<tr class="separator:a4261ca872ba9ca1c53994478f1a0fd30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b6f0d80ac4f106e1e9d9a0663941fa5" id="r_a1b6f0d80ac4f106e1e9d9a0663941fa5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a1b6f0d80ac4f106e1e9d9a0663941fa5">polygonIsSimple</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly)</td></tr>
+<tr class="memdesc:a1b6f0d80ac4f106e1e9d9a0663941fa5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simple polygon test: no self intersections among non-adjacent ring edges.  <br /></td></tr>
+<tr class="separator:a1b6f0d80ac4f106e1e9d9a0663941fa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a516f53e77bb6feb96e14a67d439db442" id="r_a516f53e77bb6feb96e14a67d439db442"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a516f53e77bb6feb96e14a67d439db442">closestPointOnSegment</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> *out)</td></tr>
+<tr class="memdesc:a516f53e77bb6feb96e14a67d439db442"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closest point on segment a-b; returns distance and writes <code>out</code>.  <br /></td></tr>
+<tr class="separator:a516f53e77bb6feb96e14a67d439db442"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57d72490904f4442903b7d28b207755f" id="r_a57d72490904f4442903b7d28b207755f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a57d72490904f4442903b7d28b207755f">closestPointOnBoundary</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a> *<a class="el" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>)</td></tr>
+<tr class="memdesc:a57d72490904f4442903b7d28b207755f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closest point on the polygon boundary; writes edge index + t in [0,1].  <br /></td></tr>
+<tr class="separator:a57d72490904f4442903b7d28b207755f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3304dcdbbe988bd3d0f36bd178cd8c01" id="r_a3304dcdbbe988bd3d0f36bd178cd8c01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a3304dcdbbe988bd3d0f36bd178cd8c01">pointAtBoundaryLength</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly, double <a class="el" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, <a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a> *<a class="el" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>)</td></tr>
+<tr class="memdesc:a3304dcdbbe988bd3d0f36bd178cd8c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate the boundary point at arc length <code>s</code> in [0, perimeter).  <br /></td></tr>
+<tr class="separator:a3304dcdbbe988bd3d0f36bd178cd8c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8dd65b3aa133925edeb21aa4ea22068" id="r_aa8dd65b3aa133925edeb21aa4ea22068"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundarySample.html">BoundarySample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#aa8dd65b3aa133925edeb21aa4ea22068">sampleBoundary</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly, int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:aa8dd65b3aa133925edeb21aa4ea22068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uniformly sample the polygon boundary (approx. <code>count</code> samples, at least 8). Samples are ordered along the boundary; each stores the tangent angle in radians.  <br /></td></tr>
+<tr class="separator:aa8dd65b3aa133925edeb21aa4ea22068"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a57abb309067b9017597cbcac070e75" id="r_a2a57abb309067b9017597cbcac070e75"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a2a57abb309067b9017597cbcac070e75">includedAngleDeg</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="memdesc:a2a57abb309067b9017597cbcac070e75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Included angle in degrees at the shared vertex between edge u (prev-&gt;shared) and v (shared-&gt;next), in [0,180].  <br /></td></tr>
+<tr class="separator:a2a57abb309067b9017597cbcac070e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb48057d8291042eb7725783472fc097" id="r_afb48057d8291042eb7725783472fc097"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#afb48057d8291042eb7725783472fc097">isCollinear</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;prev, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;shared, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;next)</td></tr>
+<tr class="memdesc:afb48057d8291042eb7725783472fc097"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when two consecutive edges are considered collinear (included angle &gt; 135°).  <br /></td></tr>
+<tr class="separator:afb48057d8291042eb7725783472fc097"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa75486b5fa617a1c4d7aea6ac5bc91b3" id="r_aa75486b5fa617a1c4d7aea6ac5bc91b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#aa75486b5fa617a1c4d7aea6ac5bc91b3">approximatePolygon</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;ring)</td></tr>
+<tr class="memdesc:aa75486b5fa617a1c4d7aea6ac5bc91b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simplify a ring to its approximate polygon: consecutive edges with included angle &gt; 135° are merged into a single side (paper Section 3).  <br /></td></tr>
+<tr class="separator:aa75486b5fa617a1c4d7aea6ac5bc91b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc8d10060245ffd56a86f64d95b608b3" id="r_abc8d10060245ffd56a86f64d95b608b3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#abc8d10060245ffd56a86f64d95b608b3">shapeIrregularity</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;approxRing, double gammaAngle=0.75, double gammaSide=0.25)</td></tr>
+<tr class="memdesc:abc8d10060245ffd56a86f64d95b608b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape irregularity metric of Eq. (1) over the <em>approximate</em> polygon: I = γ1·(1/N)·Σ(θi−θ̄)² + γ2·(1/(N·l̄²))·Σ(li−l̄)². Smaller is more regular; 0 for an ideal regular polygon.  <br /></td></tr>
+<tr class="separator:abc8d10060245ffd56a86f64d95b608b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1bf30ade86a6c3ca631ab441d568e3f" id="r_ac1bf30ade86a6c3ca631ab441d568e3f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#ac1bf30ade86a6c3ca631ab441d568e3f">splitPolygonByPolyline</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly, const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;<a class="el" href="CaveMesh_8cpp.html#a6c60dc17b672ec14207e7588641907c6">split</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a> &amp;posA, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a> &amp;posB, <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;outA, <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;outB)</td></tr>
+<tr class="memdesc:ac1bf30ade86a6c3ca631ab441d568e3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Split a CCW simple polygon by a polyline whose endpoints lie on the boundary and whose interior points are strictly inside the polygon. <code>split</code> goes from boundary point A to boundary point B; the two resulting CCW rings are returned in <code>outA</code>/<code>outB</code>. Returns false on degenerate input. Callers verify area constraints afterwards.  <br /></td></tr>
+<tr class="separator:ac1bf30ade86a6c3ca631ab441d568e3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d9736e9704f22239d8f17d574a523ce" id="r_a1d9736e9704f22239d8f17d574a523ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a1d9736e9704f22239d8f17d574a523ce">validSplit</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly, const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;<a class="el" href="CaveMesh_8cpp.html#a6c60dc17b672ec14207e7588641907c6">split</a>, double minHalfArea, <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> *outA, <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> *outB, double *fracA)</td></tr>
+<tr class="memdesc:a1d9736e9704f22239d8f17d574a523ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validity of a candidate split: both halves simple, positive area, inside the original.  <br /></td></tr>
+<tr class="separator:a1d9736e9704f22239d8f17d574a523ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34db807d2c8096098c72ff7aaeb64d88" id="r_a34db807d2c8096098c72ff7aaeb64d88"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a34db807d2c8096098c72ff7aaeb64d88">triangulatePolygon</a> (const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;poly, std::vector&lt; int &gt; &amp;outTriangles)</td></tr>
+<tr class="memdesc:a34db807d2c8096098c72ff7aaeb64d88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Triangulate a simple polygon by ear clipping; returns CCW triangles (3*i..3*i+2).  <br /></td></tr>
+<tr class="separator:a34db807d2c8096098c72ff7aaeb64d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bdffee1ea1e446d0fac01c99dc02413" id="r_a6bdffee1ea1e446d0fac01c99dc02413"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a6bdffee1ea1e446d0fac01c99dc02413">distanceToSegment</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="memdesc:a6bdffee1ea1e446d0fac01c99dc02413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raster helper: does the pixel-center fall within <code>eps</code> of segment a-b?  <br /></td></tr>
+<tr class="separator:a6bdffee1ea1e446d0fac01c99dc02413"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6752f44e45d06df3d6b22ff8a4394ade" id="r_a6752f44e45d06df3d6b22ff8a4394ade"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a6752f44e45d06df3d6b22ff8a4394ade">parseUrbanOptions</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, <a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanOptions.html">UrbanOptions</a> &amp;opts, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:a6752f44e45d06df3d6b22ff8a4394ade"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse <a class="el" href="classeve_1_1procgen_1_1Procgen.html" title="Procedural generation module. Phase A: runtime maps (semantic Grid2D → TileLayer)....">Procgen</a> <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> into urban generator options. <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a>: land/landPoints, minParcelArea, targetParcels, maxLevels, lambdaSize, lambdaRegu, lambdaAcce, lambdaOrient, gammaAngle, gammaSide, accessThreshold, shortEdgeFactor, streetWidth, streetPattern, culDeSacAfterLevel, orientation, boundaryStreet, boundaryStreetFraction, dijkstraJunctionWeight, optimize, optimizeIterations.  <br /></td></tr>
+<tr class="separator:a6752f44e45d06df3d6b22ff8a4394ade"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bac035ed5cae278bc19eb3fc39308eb" id="r_a4bac035ed5cae278bc19eb3fc39308eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a4bac035ed5cae278bc19eb3fc39308eb">generateUrbanGrid</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, <a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;out, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:a4bac035ed5cae278bc19eb3fc39308eb"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> rasterization of the urban layout (<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a331abdb5a6991b65f0ec9912c1f80231">Semantic::Road</a>/Floor/Wall + parcel detail).  <br /></td></tr>
+<tr class="separator:a4bac035ed5cae278bc19eb3fc39308eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a5d7e539d2cc5496c4991d1f6022748" id="r_a4a5d7e539d2cc5496c4991d1f6022748"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a4a5d7e539d2cc5496c4991d1f6022748">generateUrbanMesh</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:a4a5d7e539d2cc5496c4991d1f6022748"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a> of parcel blocks + street ribbons (flat or extruded, Y-up).  <br /></td></tr>
+<tr class="separator:a4a5d7e539d2cc5496c4991d1f6022748"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af301f9bb1eb1c47624335220fc320058" id="r_af301f9bb1eb1c47624335220fc320058"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#af301f9bb1eb1c47624335220fc320058">registerUrbanGenerators</a> (<a class="el" href="classeve_1_1procgen_1_1GeneratorRegistry.html">GeneratorRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:af301f9bb1eb1c47624335220fc320058"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register "urban.parcels" (<a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a>) and "mesh.urban" (<a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a>) builtins.  <br /></td></tr>
+<tr class="separator:af301f9bb1eb1c47624335220fc320058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a025a3c7b2f79a48eddfc74cd183bd297" id="r_a025a3c7b2f79a48eddfc74cd183bd297"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a025a3c7b2f79a48eddfc74cd183bd297">registerUrbanMeshRecipes</a> (<a class="el" href="classeve_1_1procgen_1_1MeshRecipeRegistry.html">MeshRecipeRegistry</a> &amp;registry)</td></tr>
+<tr class="separator:a025a3c7b2f79a48eddfc74cd183bd297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a938dc59eecfd5d9068979e8db608287e" id="r_a938dc59eecfd5d9068979e8db608287e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a938dc59eecfd5d9068979e8db608287e">cross</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a938dc59eecfd5d9068979e8db608287e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a801145dddf90e252b78db277ad210010" id="r_a801145dddf90e252b78db277ad210010"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">dot</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a801145dddf90e252b78db277ad210010"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba72bdae65fe94e1a63b55322763a96f" id="r_aba72bdae65fe94e1a63b55322763a96f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#aba72bdae65fe94e1a63b55322763a96f">length</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)</td></tr>
+<tr class="separator:aba72bdae65fe94e1a63b55322763a96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5a9dbcdb1592daa16984ffb773c83dc" id="r_aa5a9dbcdb1592daa16984ffb773c83dc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#aa5a9dbcdb1592daa16984ffb773c83dc">lengthSq</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)</td></tr>
+<tr class="separator:aa5a9dbcdb1592daa16984ffb773c83dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e72a289370e7236563fd0efdf389a26" id="r_a7e72a289370e7236563fd0efdf389a26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a7e72a289370e7236563fd0efdf389a26">normalize</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)</td></tr>
+<tr class="separator:a7e72a289370e7236563fd0efdf389a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18037652f594ad233c54287902ff6d65" id="r_a18037652f594ad233c54287902ff6d65"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a18037652f594ad233c54287902ff6d65">perpendicular</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)</td></tr>
+<tr class="separator:a18037652f594ad233c54287902ff6d65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36623f8fe86aa1a3b74ed96063365c31" id="r_a36623f8fe86aa1a3b74ed96063365c31"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a36623f8fe86aa1a3b74ed96063365c31">distance</a> (const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a36623f8fe86aa1a3b74ed96063365c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a87d21595a43119e7ad3a669c5e526d79" name="a87d21595a43119e7ad3a669c5e526d79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87d21595a43119e7ad3a669c5e526d79">&#9670;&#160;</a></span>Polygon</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">eve::procgen::urban::Polygon</a> = typedef std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Closed polygon ring, stored CCW, without repeating the first point. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a28c467007a373b1d611ad53183cb097c" name="a28c467007a373b1d611ad53183cb097c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28c467007a373b1d611ad53183cb097c">&#9670;&#160;</a></span>Polyline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">eve::procgen::urban::Polyline</a> = typedef std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Open polyline (e.g. a streamline candidate or a street centerline). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="aa75486b5fa617a1c4d7aea6ac5bc91b3" name="aa75486b5fa617a1c4d7aea6ac5bc91b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa75486b5fa617a1c4d7aea6ac5bc91b3">&#9670;&#160;</a></span>approximatePolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> eve::procgen::urban::approximatePolygon </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>ring</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Simplify a ring to its approximate polygon: consecutive edges with included angle &gt; 135° are merged into a single side (paper Section 3). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00086">cleanupRing()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00273">isCollinear()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGenerator_8cpp_source.html#l00479">eve::procgen::urban::UrbanGenerator::generate()</a>.</p>
+
+</div>
+</div>
+<a id="a5ad1eacc71833607b585428a717590e2" name="a5ad1eacc71833607b585428a717590e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ad1eacc71833607b585428a717590e2">&#9670;&#160;</a></span>area()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::area </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Absolute polygon area. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanGeometry_8cpp_source.html#l00034">signedArea()</a>.</p>
+
+</div>
+</div>
+<a id="a0456b279e421c73e09ea3f32ff642f7d" name="a0456b279e421c73e09ea3f32ff642f7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0456b279e421c73e09ea3f32ff642f7d">&#9670;&#160;</a></span>centroid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> eve::procgen::urban::centroid </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Centroid (area-weighted) of a simple polygon. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanTypes_8h_source.html#l00028">cross()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">generateSplitCandidates()</a> , 以及 <a class="el" href="UrbanOutput_8cpp_source.html#l00160">generateUrbanGrid()</a>.</p>
+
+</div>
+</div>
+<a id="ad832d569e30b82063b1bca103bbb1255" name="ad832d569e30b82063b1bca103bbb1255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad832d569e30b82063b1bca103bbb1255">&#9670;&#160;</a></span>cleanupRing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::urban::cleanupRing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove consecutive duplicate points (within <code>eps</code>) and points that create zero spikes. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00513">distanceToSegment()</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00277">approximatePolygon()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00399">splitPolygonByPolyline()</a>.</p>
+
+</div>
+</div>
+<a id="a57d72490904f4442903b7d28b207755f" name="a57d72490904f4442903b7d28b207755f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57d72490904f4442903b7d28b207755f">&#9670;&#160;</a></span>closestPointOnBoundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> eve::procgen::urban::closestPointOnBoundary </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a> *&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Closest point on the polygon boundary; writes edge index + t in [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="UrbanTypes_8h_source.html#l00038">distance()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00029">dot()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00031">lengthSq()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00425">validSplit()</a>.</p>
+
+</div>
+</div>
+<a id="a516f53e77bb6feb96e14a67d439db442" name="a516f53e77bb6feb96e14a67d439db442"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a516f53e77bb6feb96e14a67d439db442">&#9670;&#160;</a></span>closestPointOnSegment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::closestPointOnSegment </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Closest point on segment a-b; returns distance and writes <code>out</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UrbanTypes_8h_source.html#l00038">distance()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00029">dot()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00031">lengthSq()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00513">distanceToSegment()</a>.</p>
+
+</div>
+</div>
+<a id="a938dc59eecfd5d9068979e8db608287e" name="a938dc59eecfd5d9068979e8db608287e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a938dc59eecfd5d9068979e8db608287e">&#9670;&#160;</a></span>cross()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::cross </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00054">centroid()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00127">segmentsIntersect()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00314">shapeIrregularity()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00034">signedArea()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00462">triangulatePolygon()</a>.</p>
+
+</div>
+</div>
+<a id="a36623f8fe86aa1a3b74ed96063365c31" name="a36623f8fe86aa1a3b74ed96063365c31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36623f8fe86aa1a3b74ed96063365c31">&#9670;&#160;</a></span>distance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::distance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00189">closestPointOnBoundary()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00177">closestPointOnSegment()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">generateSplitCandidates()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00072">perimeter()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00219">pointAtBoundaryLength()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00048">polylineLength()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00314">shapeIrregularity()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00425">validSplit()</a>.</p>
+
+</div>
+</div>
+<a id="a6bdffee1ea1e446d0fac01c99dc02413" name="a6bdffee1ea1e446d0fac01c99dc02413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bdffee1ea1e446d0fac01c99dc02413">&#9670;&#160;</a></span>distanceToSegment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::distanceToSegment </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Raster helper: does the pixel-center fall within <code>eps</code> of segment a-b? </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00513">513</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00177">closestPointOnSegment()</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00086">cleanupRing()</a> , 以及 <a class="el" href="UrbanOutput_8cpp_source.html#l00160">generateUrbanGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a801145dddf90e252b78db277ad210010" name="a801145dddf90e252b78db277ad210010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a801145dddf90e252b78db277ad210010">&#9670;&#160;</a></span>dot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::dot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00189">closestPointOnBoundary()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00177">closestPointOnSegment()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">generateSplitCandidates()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00266">includedAngleDeg()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00030">length()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00031">lengthSq()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00314">shapeIrregularity()</a>.</p>
+
+</div>
+</div>
+<a id="afa4d225764791e353de591ea590a05d3" name="afa4d225764791e353de591ea590a05d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa4d225764791e353de591ea590a05d3">&#9670;&#160;</a></span>ensureCCW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::ensureCCW </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ensure the ring is CCW (positive signed area); returns whether it was flipped. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanGeometry_8cpp_source.html#l00034">signedArea()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanOutput_8cpp_source.html#l00101">parseUrbanOptions()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00399">splitPolygonByPolyline()</a>.</p>
+
+</div>
+</div>
+<a id="ae21f4d312383915c3adcbb0bd4c17d69" name="ae21f4d312383915c3adcbb0bd4c17d69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae21f4d312383915c3adcbb0bd4c17d69">&#9670;&#160;</a></span>generateSplitCandidates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1SplitCandidate.html">SplitCandidate</a> &gt; eve::procgen::urban::generateSplitCandidates </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxCandidates</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minHalfArea</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate candidate streamlines for binary partitioning of <code>poly</code>. </p>
+<p>The paper computes ~20 streamlines following the cross-field approach of Yang et al. 2013: a cross field (two orthogonal directions) is aligned with the parcel boundary and smoothed over the interior; hyperstreamlines are traced from boundary seeds until they re-hit the boundary. We discretize the field on a regular grid. When tracing yields too few usable curves (e.g. very thin parcels), straight chords between boundary samples are added as a fallback so the generator always has candidates.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">poly</td><td>CCW simple parcel polygon. </td></tr>
+    <tr><td class="paramname">maxCandidates</td><td>number of candidates to return (paper: ~20). </td></tr>
+    <tr><td class="paramname">minHalfArea</td><td>minimum area of each resulting half (fraction check is internal). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="UrbanCrossField_8cpp_source.html">UrbanCrossField.cpp</a> 第 <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="Grass_8cpp_source.html#l00065">area</a>, <a class="el" href="UrbanCrossField_8h_source.html#l00017">eve::procgen::urban::SplitCandidate::areaFrac</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00054">centroid()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00038">distance()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00029">dot()</a>, <a class="el" href="UrbanCrossField_8h_source.html#l00016">eve::procgen::urban::SplitCandidate::line</a>, <a class="el" href="UrbanTypes_8h_source.html#l00032">normalize()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00072">perimeter()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00247">sampleBoundary()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00425">validSplit()</a>.</p>
+
+</div>
+</div>
+<a id="a4bac035ed5cae278bc19eb3fc39308eb" name="a4bac035ed5cae278bc19eb3fc39308eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bac035ed5cae278bc19eb3fc39308eb">&#9670;&#160;</a></span>generateUrbanGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::generateUrbanGrid </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> rasterization of the urban layout (<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a331abdb5a6991b65f0ec9912c1f80231">Semantic::Road</a>/Floor/Wall + parcel detail). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanOutput_8cpp_source.html">UrbanOutput.cpp</a> 第 <a class="el" href="UrbanOutput_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grid2D_8cpp_source.html#l00058">eve::procgen::Grid2D::addObjectAt()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00054">centroid()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00054">eve::procgen::Grid2D::clearObjects()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00513">distanceToSegment()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Grid2D_8cpp_source.html#l00033">eve::procgen::Grid2D::fill()</a>, <a class="el" href="Semantic_8h_source.html#l00012">eve::procgen::Semantic::Floor</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00479">eve::procgen::urban::UrbanGenerator::generate()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00103">eve::procgen::urban::UrbanOptions::land</a>, <a class="el" href="UrbanGenerator_8h_source.html#l00029">eve::procgen::urban::UrbanGenerator::layout()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00457">layout</a>, <a class="el" href="UrbanTypes_8h_source.html#l00126">eve::procgen::urban::UrbanOptions::optimize</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00101">parseUrbanOptions()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00112">pointInPolygon()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00013">eve::procgen::Grid2D::resize()</a>, <a class="el" href="Semantic_8h_source.html#l00021">eve::procgen::Semantic::Road</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="UrbanTypes_8h_source.html#l00107">eve::procgen::urban::UrbanOptions::seed</a>, <a class="el" href="Grid2D_8cpp_source.html#l00023">eve::procgen::Grid2D::setCell()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00037">eve::procgen::Grid2D::setDetail()</a>, <a class="el" href="Grid2D_8cpp_source.html#l00047">eve::procgen::Grid2D::setMeta()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00117">eve::procgen::urban::UrbanOptions::streetWidth</a> , 以及 <a class="el" href="Semantic_8h_source.html#l00011">eve::procgen::Semantic::Wall</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanOutput_8cpp_source.html#l00382">registerUrbanGenerators()</a>.</p>
+
+</div>
+</div>
+<a id="a4a5d7e539d2cc5496c4991d1f6022748" name="a4a5d7e539d2cc5496c4991d1f6022748"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a5d7e539d2cc5496c4991d1f6022748">&#9670;&#160;</a></span>generateUrbanMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::generateUrbanMesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a> of parcel blocks + street ribbons (flat or extruded, Y-up). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanOutput_8cpp_source.html">UrbanOutput.cpp</a> 第 <a class="el" href="UrbanOutput_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00043">eve::procgen::MeshBuild::addTriangle()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00031">eve::procgen::MeshBuild::addVertex()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00008">eve::procgen::MeshBuild::clear()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00479">eve::procgen::urban::UrbanGenerator::generate()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00158">eve::procgen::MeshBuild::getVertexCount()</a>, <a class="el" href="UrbanGenerator_8h_source.html#l00029">eve::procgen::urban::UrbanGenerator::layout()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00457">layout</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="UrbanTypes_8h_source.html#l00032">normalize()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00101">parseUrbanOptions()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00037">perpendicular()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="UrbanTypes_8h_source.html#l00107">eve::procgen::urban::UrbanOptions::seed</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00199">eve::procgen::MeshBuild::setMeta()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00462">triangulatePolygon()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanOutput_8cpp_source.html#l00387">registerUrbanMeshRecipes()</a>.</p>
+
+</div>
+</div>
+<a id="a2a57abb309067b9017597cbcac070e75" name="a2a57abb309067b9017597cbcac070e75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a57abb309067b9017597cbcac070e75">&#9670;&#160;</a></span>includedAngleDeg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::includedAngleDeg </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Included angle in degrees at the shared vertex between edge u (prev-&gt;shared) and v (shared-&gt;next), in [0,180]. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00266">266</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanTypes_8h_source.html#l00029">dot()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00032">normalize()</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00273">isCollinear()</a>.</p>
+
+</div>
+</div>
+<a id="afb48057d8291042eb7725783472fc097" name="afb48057d8291042eb7725783472fc097"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb48057d8291042eb7725783472fc097">&#9670;&#160;</a></span>isCollinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::isCollinear </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>prev</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>shared</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>next</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when two consecutive edges are considered collinear (included angle &gt; 135°). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanGeometry_8cpp_source.html#l00266">includedAngleDeg()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00277">approximatePolygon()</a>.</p>
+
+</div>
+</div>
+<a id="aba72bdae65fe94e1a63b55322763a96f" name="aba72bdae65fe94e1a63b55322763a96f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba72bdae65fe94e1a63b55322763a96f">&#9670;&#160;</a></span>length()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::length </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="UrbanTypes_8h_source.html#l00029">dot()</a>.</p>
+
+</div>
+</div>
+<a id="aa5a9dbcdb1592daa16984ffb773c83dc" name="aa5a9dbcdb1592daa16984ffb773c83dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5a9dbcdb1592daa16984ffb773c83dc">&#9670;&#160;</a></span>lengthSq()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::lengthSq </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="UrbanTypes_8h_source.html#l00029">dot()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00189">closestPointOnBoundary()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00177">closestPointOnSegment()</a>.</p>
+
+</div>
+</div>
+<a id="a7e72a289370e7236563fd0efdf389a26" name="a7e72a289370e7236563fd0efdf389a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e72a289370e7236563fd0efdf389a26">&#9670;&#160;</a></span>normalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> eve::procgen::urban::normalize </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">generateSplitCandidates()</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00246">generateUrbanMesh()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00266">includedAngleDeg()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00247">sampleBoundary()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00314">shapeIrregularity()</a>.</p>
+
+</div>
+</div>
+<a id="a6752f44e45d06df3d6b22ff8a4394ade" name="a6752f44e45d06df3d6b22ff8a4394ade"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6752f44e45d06df3d6b22ff8a4394ade">&#9670;&#160;</a></span>parseUrbanOptions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::parseUrbanOptions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanOptions.html">UrbanOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>opts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse <a class="el" href="classeve_1_1procgen_1_1Procgen.html" title="Procedural generation module. Phase A: runtime maps (semantic Grid2D → TileLayer)....">Procgen</a> <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a> into urban generator options. <a class="el" href="classeve_1_1procgen_1_1Params.html" title="Owning, typed generation parameters.">Params</a>: land/landPoints, minParcelArea, targetParcels, maxLevels, lambdaSize, lambdaRegu, lambdaAcce, lambdaOrient, gammaAngle, gammaSide, accessThreshold, shortEdgeFactor, streetWidth, streetPattern, culDeSacAfterLevel, orientation, boundaryStreet, boundaryStreetFraction, dijkstraJunctionWeight, optimize, optimizeIterations. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanOutput_8cpp_source.html">UrbanOutput.cpp</a> 第 <a class="el" href="UrbanOutput_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanTypes_8h_source.html#l00115">eve::procgen::urban::UrbanOptions::accessThreshold</a>, <a class="el" href="UrbanTypes_8h_source.html#l00119">eve::procgen::urban::UrbanOptions::boundaryStreetFraction</a>, <a class="el" href="UrbanTypes_8h_source.html#l00124">eve::procgen::urban::UrbanOptions::boundaryStreetMode</a>, <a class="el" href="UrbanTypes_8h_source.html#l00122">eve::procgen::urban::UrbanOptions::culDeSacAfterLevel</a>, <a class="el" href="UrbanTypes_8h_source.html#l00118">eve::procgen::urban::UrbanOptions::dijkstraJunctionWeight</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00078">ensureCCW()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="UrbanTypes_8h_source.html#l00113">eve::procgen::urban::UrbanOptions::gammaAngle</a>, <a class="el" href="UrbanTypes_8h_source.html#l00114">eve::procgen::urban::UrbanOptions::gammaSide</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="UrbanTypes_8h_source.html#l00111">eve::procgen::urban::UrbanOptions::lambdaAcce</a>, <a class="el" href="UrbanTypes_8h_source.html#l00112">eve::procgen::urban::UrbanOptions::lambdaOrient</a>, <a class="el" href="UrbanTypes_8h_source.html#l00110">eve::procgen::urban::UrbanOptions::lambdaRegu</a>, <a class="el" href="UrbanTypes_8h_source.html#l00109">eve::procgen::urban::UrbanOptions::lambdaSize</a>, <a class="el" href="UrbanTypes_8h_source.html#l00103">eve::procgen::urban::UrbanOptions::land</a>, <a class="el" href="UrbanTypes_8h_source.html#l00106">eve::procgen::urban::UrbanOptions::maxLevels</a>, <a class="el" href="UrbanTypes_8h_source.html#l00104">eve::procgen::urban::UrbanOptions::minParcelArea</a>, <a class="el" href="UrbanTypes_8h_source.html#l00132">eve::procgen::urban::UrbanOptions::optClose</a>, <a class="el" href="UrbanTypes_8h_source.html#l00126">eve::procgen::urban::UrbanOptions::optimize</a>, <a class="el" href="UrbanTypes_8h_source.html#l00127">eve::procgen::urban::UrbanOptions::optimizeIterations</a>, <a class="el" href="UrbanTypes_8h_source.html#l00131">eve::procgen::urban::UrbanOptions::optJunc</a>, <a class="el" href="UrbanTypes_8h_source.html#l00128">eve::procgen::urban::UrbanOptions::optRegu</a>, <a class="el" href="UrbanTypes_8h_source.html#l00129">eve::procgen::urban::UrbanOptions::optSide</a>, <a class="el" href="UrbanTypes_8h_source.html#l00130">eve::procgen::urban::UrbanOptions::optStre</a>, <a class="el" href="UrbanTypes_8h_source.html#l00123">eve::procgen::urban::UrbanOptions::orientation</a>, <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>, <a class="el" href="UrbanTypes_8h_source.html#l00107">eve::procgen::urban::UrbanOptions::seed</a>, <a class="el" href="UrbanTypes_8h_source.html#l00116">eve::procgen::urban::UrbanOptions::shortEdgeFactor</a>, <a class="el" href="UrbanTypes_8h_source.html#l00121">eve::procgen::urban::UrbanOptions::streetPattern</a>, <a class="el" href="UrbanTypes_8h_source.html#l00117">eve::procgen::urban::UrbanOptions::streetWidth</a>, <a class="el" href="UrbanTypes_8h_source.html#l00105">eve::procgen::urban::UrbanOptions::targetParcels</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanOutput_8cpp_source.html#l00160">generateUrbanGrid()</a> , 以及 <a class="el" href="UrbanOutput_8cpp_source.html#l00246">generateUrbanMesh()</a>.</p>
+
+</div>
+</div>
+<a id="aa18d6c5770b92f07d70d39b8503005d8" name="aa18d6c5770b92f07d70d39b8503005d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa18d6c5770b92f07d70d39b8503005d8">&#9670;&#160;</a></span>perimeter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::perimeter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perimeter length of a closed ring. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanTypes_8h_source.html#l00038">distance()</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">generateSplitCandidates()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00219">pointAtBoundaryLength()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00247">sampleBoundary()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00425">validSplit()</a>.</p>
+
+</div>
+</div>
+<a id="a18037652f594ad233c54287902ff6d65" name="a18037652f594ad233c54287902ff6d65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18037652f594ad233c54287902ff6d65">&#9670;&#160;</a></span>perpendicular()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> eve::procgen::urban::perpendicular </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="UrbanTypes_8h_source.html#l00017">eve::procgen::urban::Vec2::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanOutput_8cpp_source.html#l00246">generateUrbanMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a3304dcdbbe988bd3d0f36bd178cd8c01" name="a3304dcdbbe988bd3d0f36bd178cd8c01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3304dcdbbe988bd3d0f36bd178cd8c01">&#9670;&#160;</a></span>pointAtBoundaryLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> eve::procgen::urban::pointAtBoundaryLength </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>s</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a> *&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interpolate the boundary point at arc length <code>s</code> in [0, perimeter). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UrbanTypes_8h_source.html#l00038">distance()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00072">perimeter()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00247">sampleBoundary()</a>.</p>
+
+</div>
+</div>
+<a id="a2c7b61d38cda2f8246f70a91d75a0f4c" name="a2c7b61d38cda2f8246f70a91d75a0f4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c7b61d38cda2f8246f70a91d75a0f4c">&#9670;&#160;</a></span>pointInPolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::pointInPolygon </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Point-in-polygon test (ray casting; boundary counts as inside). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00025">inside</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00125">pointOnSegment()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanOutput_8cpp_source.html#l00160">generateUrbanGrid()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00462">triangulatePolygon()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00425">validSplit()</a>.</p>
+
+</div>
+</div>
+<a id="ab4f86366294c2375da199ee9a8e71c29" name="ab4f86366294c2375da199ee9a8e71c29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4f86366294c2375da199ee9a8e71c29">&#9670;&#160;</a></span>pointOnSegment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::pointOnSegment </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>eps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True if p lies on segment a-b (within tolerance). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00112">pointInPolygon()</a>.</p>
+
+</div>
+</div>
+<a id="a1b6f0d80ac4f106e1e9d9a0663941fa5" name="a1b6f0d80ac4f106e1e9d9a0663941fa5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b6f0d80ac4f106e1e9d9a0663941fa5">&#9670;&#160;</a></span>polygonIsSimple()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::polygonIsSimple </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Simple polygon test: no self intersections among non-adjacent ring edges. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="Grass_8cpp_source.html#l00065">area</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00127">segmentsIntersect()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00399">splitPolygonByPolyline()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00462">triangulatePolygon()</a>.</p>
+
+</div>
+</div>
+<a id="ada151ac88430c72fd7623362561d3838" name="ada151ac88430c72fd7623362561d3838"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada151ac88430c72fd7623362561d3838">&#9670;&#160;</a></span>polylineLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::polylineLength </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;&#160;</td>
+          <td class="paramname"><em>pl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Total length of an open polyline. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanTypes_8h_source.html#l00038">distance()</a>.</p>
+
+</div>
+</div>
+<a id="a4261ca872ba9ca1c53994478f1a0fd30" name="a4261ca872ba9ca1c53994478f1a0fd30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4261ca872ba9ca1c53994478f1a0fd30">&#9670;&#160;</a></span>polylineSelfIntersects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::polylineSelfIntersects </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;&#160;</td>
+          <td class="paramname"><em>pl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True if any two non-adjacent segments of the open polyline cross. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00127">segmentsIntersect()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00425">validSplit()</a>.</p>
+
+</div>
+</div>
+<a id="af301f9bb1eb1c47624335220fc320058" name="af301f9bb1eb1c47624335220fc320058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af301f9bb1eb1c47624335220fc320058">&#9670;&#160;</a></span>registerUrbanGenerators()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::urban::registerUrbanGenerators </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1GeneratorRegistry.html">GeneratorRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register "urban.parcels" (<a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a>) and "mesh.urban" (<a class="el" href="classeve_1_1procgen_1_1MeshBuild.html" title="CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...">MeshBuild</a>) builtins. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanOutput_8cpp_source.html">UrbanOutput.cpp</a> 第 <a class="el" href="UrbanOutput_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanOutput_8cpp_source.html#l00160">generateUrbanGrid()</a> , 以及 <a class="el" href="GeneratorRegistry_8cpp_source.html#l00011">eve::procgen::GeneratorRegistry::registerAlgorithm()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuiltinAlgorithms_8cpp_source.html#l00203">eve::procgen::GeneratorRegistry::registerBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a025a3c7b2f79a48eddfc74cd183bd297" name="a025a3c7b2f79a48eddfc74cd183bd297"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a025a3c7b2f79a48eddfc74cd183bd297">&#9670;&#160;</a></span>registerUrbanMeshRecipes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::urban::registerUrbanMeshRecipes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1MeshRecipeRegistry.html">MeshRecipeRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanOutput_8cpp_source.html">UrbanOutput.cpp</a> 第 <a class="el" href="UrbanOutput_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="ParamSchema_8cpp_source.html#l00033">eve::procgen::ParamDescriptor::floating()</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00246">generateUrbanMesh()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00452">eve::procgen::MeshRecipeRegistry::registerRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="aa8dd65b3aa133925edeb21aa4ea22068" name="aa8dd65b3aa133925edeb21aa4ea22068"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8dd65b3aa133925edeb21aa4ea22068">&#9670;&#160;</a></span>sampleBoundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundarySample.html">BoundarySample</a> &gt; eve::procgen::urban::sampleBoundary </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Uniformly sample the polygon boundary (approx. <code>count</code> samples, at least 8). Samples are ordered along the boundary; each stores the tangent angle in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="UrbanTypes_8h_source.html#l00032">normalize()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00072">perimeter()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00219">pointAtBoundaryLength()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">generateSplitCandidates()</a>.</p>
+
+</div>
+</div>
+<a id="aea49479cdf0b5164827feba9faaff74f" name="aea49479cdf0b5164827feba9faaff74f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea49479cdf0b5164827feba9faaff74f">&#9670;&#160;</a></span>segmentIntersectsPolyline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::segmentIntersectsPolyline </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;&#160;</td>
+          <td class="paramname"><em>pl</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True if a segment crosses any segment of an open polyline (excluding shared endpoints). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00127">segmentsIntersect()</a>.</p>
+
+</div>
+</div>
+<a id="a9cd354ae904473265586fd9a1ce7ad23" name="a9cd354ae904473265586fd9a1ce7ad23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cd354ae904473265586fd9a1ce7ad23">&#9670;&#160;</a></span>segmentsIntersect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::segmentsIntersect </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True if the open segments a-b and c-d properly cross; <code>out</code> receives the crossing. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanTypes_8h_source.html#l00028">cross()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00236">u</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00159">polygonIsSimple()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00149">polylineSelfIntersects()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00141">segmentIntersectsPolyline()</a>.</p>
+
+</div>
+</div>
+<a id="abc8d10060245ffd56a86f64d95b608b3" name="abc8d10060245ffd56a86f64d95b608b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc8d10060245ffd56a86f64d95b608b3">&#9670;&#160;</a></span>shapeIrregularity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::shapeIrregularity </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>approxRing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>gammaAngle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>gammaSide</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Shape irregularity metric of Eq. (1) over the <em>approximate</em> polygon: I = γ1·(1/N)·Σ(θi−θ̄)² + γ2·(1/(N·l̄²))·Σ(li−l̄)². Smaller is more regular; 0 for an ideal regular polygon. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanTypes_8h_source.html#l00028">cross()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00038">distance()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00029">dot()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="UrbanTypes_8h_source.html#l00032">normalize()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00204">sides</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGenerator_8cpp_source.html#l00479">eve::procgen::urban::UrbanGenerator::generate()</a>.</p>
+
+</div>
+</div>
+<a id="ab2d032dea1baf87ebadcf72801ddbb02" name="ab2d032dea1baf87ebadcf72801ddbb02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2d032dea1baf87ebadcf72801ddbb02">&#9670;&#160;</a></span>signedArea()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::signedArea </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the raw (possibly negative) signed area of a polygon ring. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UrbanTypes_8h_source.html#l00028">cross()</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00046">area()</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00078">ensureCCW()</a>.</p>
+
+</div>
+</div>
+<a id="ac1bf30ade86a6c3ca631ab441d568e3f" name="ac1bf30ade86a6c3ca631ab441d568e3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1bf30ade86a6c3ca631ab441d568e3f">&#9670;&#160;</a></span>splitPolygonByPolyline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::splitPolygonByPolyline </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;&#160;</td>
+          <td class="paramname"><em>split</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a> &amp;&#160;</td>
+          <td class="paramname"><em>posA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1urban_1_1BoundaryPosition.html">BoundaryPosition</a> &amp;&#160;</td>
+          <td class="paramname"><em>posB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>outA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>outB</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Split a CCW simple polygon by a polyline whose endpoints lie on the boundary and whose interior points are strictly inside the polygon. <code>split</code> goes from boundary point A to boundary point B; the two resulting CCW rings are returned in <code>outA</code>/<code>outB</code>. Returns false on degenerate input. Callers verify area constraints afterwards. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00399">399</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanGeometry_8cpp_source.html#l00086">cleanupRing()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00138">eve::procgen::urban::BoundaryPosition::edgeIndex</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00078">ensureCCW()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00159">polygonIsSimple()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00123">split</a> , 以及 <a class="el" href="UrbanTypes_8h_source.html#l00139">eve::procgen::urban::BoundaryPosition::t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGeometry_8cpp_source.html#l00425">validSplit()</a>.</p>
+
+</div>
+</div>
+<a id="a34db807d2c8096098c72ff7aaeb64d88" name="a34db807d2c8096098c72ff7aaeb64d88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34db807d2c8096098c72ff7aaeb64d88">&#9670;&#160;</a></span>triangulatePolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::triangulatePolygon </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>outTriangles</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Triangulate a simple polygon by ear clipping; returns CCW triangles (3*i..3*i+2). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00462">462</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="UrbanTypes_8h_source.html#l00028">cross()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00112">pointInPolygon()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00159">polygonIsSimple()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanOutput_8cpp_source.html#l00246">generateUrbanMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a1d9736e9704f22239d8f17d574a523ce" name="a1d9736e9704f22239d8f17d574a523ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d9736e9704f22239d8f17d574a523ce">&#9670;&#160;</a></span>validSplit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::urban::validSplit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> &amp;&#160;</td>
+          <td class="paramname"><em>poly</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a> &amp;&#160;</td>
+          <td class="paramname"><em>split</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minHalfArea</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> *&#160;</td>
+          <td class="paramname"><em>outA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> *&#160;</td>
+          <td class="paramname"><em>outB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>fracA</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validity of a candidate split: both halves simple, positive area, inside the original. </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanGeometry_8cpp_source.html">UrbanGeometry.cpp</a> 第 <a class="el" href="UrbanGeometry_8cpp_source.html#l00425">425</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="Grass_8cpp_source.html#l00065">area</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00189">closestPointOnBoundary()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00038">distance()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00072">perimeter()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00112">pointInPolygon()</a>, <a class="el" href="UrbanGeometry_8cpp_source.html#l00149">polylineSelfIntersects()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00123">split</a> , 以及 <a class="el" href="UrbanGeometry_8cpp_source.html#l00399">splitPolygonByPolyline()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">generateSplitCandidates()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

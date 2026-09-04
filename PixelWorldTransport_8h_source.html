@@ -1,0 +1,336 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/pixelworld_streaming/PixelWorldTransport.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4d172462e3a555fc8e0d5889686688c0.html">pixelworld_streaming</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PixelWorldTransport.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PixelWorldTransport_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="PixelWorld_8h.html">pixelworld/PixelWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="PixelWorldStreaming_8h.html">pixelworld_streaming/PixelWorldStreaming.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1pixelworld__streaming.html">eve::pixelworld_streaming</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">PixelChunkTransportConfig</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#a28cb67941c6f8fb561a99f8e3306b2ca">   16</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#a28cb67941c6f8fb561a99f8e3306b2ca">maximumInFlightTransfers</a> = 8;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#ab7c929cbc19128f07b7a1460e1287b1e">   17</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#ab7c929cbc19128f07b7a1460e1287b1e">maximumChunksPerPart</a> = 1;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#aac4ee09feee36b44faccda1637ed7587">   18</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#aac4ee09feee36b44faccda1637ed7587">maximumPartsPerTransfer</a> = 8192;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#ab8e9681abcf0fdce6bbc96a002900da3">   19</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#ab8e9681abcf0fdce6bbc96a002900da3">maximumBufferedTransfers</a> = 16;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">PixelChunkTransferPart</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#ab5552570065dabc85e79a2b7b5b2ac76">   24</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#ab5552570065dabc85e79a2b7b5b2ac76">streamId</a> = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a4201f51c3918c02a11f6305f1c2ef3b1">   25</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a4201f51c3918c02a11f6305f1c2ef3b1">transferId</a> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a57e19dfa2782ba9543920b1ea1163a4b">   26</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a57e19dfa2782ba9543920b1ea1163a4b">partIndex</a> = 0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#ad43cdba48fba20ac6cfb6cd1f4de385b">   27</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#ad43cdba48fba20ac6cfb6cd1f4de385b">partCount</a> = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a5075d57306560e0fff32d6ce29c9a640">   28</a></span>    <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelChunkRegion.html">eve::pixelworld::PixelChunkRegion</a> <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a5075d57306560e0fff32d6ce29c9a640">interest</a>{};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#aa7be46f69e021163b1acfa4b4d89efd0">   29</a></span>    <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelChunkBatch.html">eve::pixelworld::PixelChunkBatch</a> <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#aa7be46f69e021163b1acfa4b4d89efd0">batch</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a83872b4fca3e34b8bf9d700403991d43">   31</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a83872b4fca3e34b8bf9d700403991d43">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">PixelChunkTransferPart</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">PixelChunkTransferPart</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html">   35</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html">PixelChunkTransferAck</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#ab2c6a7b2696cd140c6f99662e9257b61">   36</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#ab2c6a7b2696cd140c6f99662e9257b61">streamId</a> = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#a8e3a34b2be0cbf9c584fed90c109c60a">   37</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#a8e3a34b2be0cbf9c584fed90c109c60a">acknowledgedThrough</a> = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#ae2a6669393c7edf988207efd2feee2b7">   38</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#ae2a6669393c7edf988207efd2feee2b7">appliedRevision</a> = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html">   42</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html">PixelChunkAckReceipt</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#ab2c30e3144d1aaeee5caee6e1b857600">   43</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#ab2c30e3144d1aaeee5caee6e1b857600">transfersReleased</a> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#a78e49bb82c230a79539e6d92b527c2a7">   44</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#a78e49bb82c230a79539e6d92b527c2a7">tombstonesReleased</a> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#a7187b7d68a49c4e18ae1bf6577fd6855">   45</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#a7187b7d68a49c4e18ae1bf6577fd6855">acknowledgedThrough</a> = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>};</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html">   49</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html">PixelChunkReceiveReceipt</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a6959a2b2dee36742331787042cc4e693">   50</a></span>    <a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html">PixelChunkTransferAck</a> <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a6959a2b2dee36742331787042cc4e693">ack</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a11ab0b6dc02de2eff0f147812066f739">   51</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a11ab0b6dc02de2eff0f147812066f739">transfersApplied</a> = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#aef8e8e8a892c786b61adbf763afe7f3f">   52</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#aef8e8e8a892c786b61adbf763afe7f3f">partsBuffered</a> = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a65fcf6e29528ada86c15fe9114f00563">   53</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a65fcf6e29528ada86c15fe9114f00563">duplicate</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="};">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html">   63</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html">ReliablePixelChunkSender</a> {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ReliablePixelChunkSender&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a80bbe746b926bc7147641b91419db7bb">create</a>(</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        std::uint64_t streamId, <a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">PixelChunkTransportConfig</a> config = {});</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::vector&lt;PixelChunkTransferPart&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a9f413275c0c218197e60fa74a9952565">capture</a>(</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelChunkRegion.html">eve::pixelworld::PixelChunkRegion</a> interest);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[nodiscard]] std::vector&lt;PixelChunkTransferPart&gt; <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a18fe9bfcb005242daf0d6b831cf53249">pendingParts</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PixelChunkAckReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#ac68dacfb0f82b13040c0be6288896d4b">acknowledge</a>(<a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html">PixelChunkTransferAck</a> ack);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#afd1e2b52212b0048453223d1d088d383">inFlightTransferCount</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a96a3a9960f4476ecb8c4840c8a3acf83">retainedTombstoneCount</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_class" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html">ReliablePixelChunkSender</a>(std::uint64_t streamId, <a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">PixelChunkTransportConfig</a> config);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::uint64_t streamId_ = 0;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::uint64_t nextTransferId_ = 1;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::uint64_t acknowledgedThrough_ = 0;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::uint64_t lastEnqueuedRevision_ = 0;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">bool</span> captured_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">PixelChunkTransportConfig</a> config_{};</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classeve_1_1pixelworld__streaming_1_1PixelChunkStreamCursor.html">PixelChunkStreamCursor</a> cursor_;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::map&lt;std::uint64_t, std::vector&lt;PixelChunkTransferPart&gt;&gt; inFlight_;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="};">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html">  103</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html">ReliablePixelChunkReceiver</a> {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ReliablePixelChunkReceiver&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#ac4937999ac38c221c32a2e80d9f7d4ab">create</a>(</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        std::uint64_t streamId, <a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">PixelChunkTransportConfig</a> config = {});</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PixelChunkReceiveReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#a1fd6352094a4516c69d666ed9011a3bc">receive</a>(</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <a class="code hl_struct" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">PixelChunkTransferPart</a> part, <a class="code hl_class" href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a>&amp; replica);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#af0ac4e5368b231cd59d0c9b8b1bd7e6f">  113</a></span>    [[nodiscard]] std::uint64_t <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#af0ac4e5368b231cd59d0c9b8b1bd7e6f">acknowledgedThrough</a>() const noexcept { <span class="keywordflow">return</span> expectedTransferId_ - 1; }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#a5a35bbae21e6224c385719158e5ecf38">bufferedPartCount</a>() const noexcept;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>private:</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    struct Assembly {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        std::uint32_t partCount = 0;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        std::vector&lt;std::unique_ptr&lt;PixelChunkTransferPart&gt;&gt; <a class="code hl_variable" href="ArtifactPublish_8cpp.html#a1555c7fa5d2f470dbef47f6757a9d914">parts</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    };</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    ReliablePixelChunkReceiver(std::uint64_t streamId, PixelChunkTransportConfig config);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    std::uint64_t streamId_ = 0;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    std::uint64_t expectedTransferId_ = 1;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    PixelChunkTransportConfig config_{};</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    std::map&lt;std::uint64_t, Assembly&gt; buffered_;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>};</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}  <span class="comment">// namespace eve::pixelworld_streaming</span></div>
+<div class="ttc" id="aArtifactPublish_8cpp_html_a1555c7fa5d2f470dbef47f6757a9d914"><div class="ttname"><a href="ArtifactPublish_8cpp.html#a1555c7fa5d2f470dbef47f6757a9d914">parts</a></div><div class="ttdeci">std::vector&lt; eve::artifact::PartView &gt; parts</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8cpp_source.html#l00016">ArtifactPublish.cpp:16</a></div></div>
+<div class="ttc" id="aPixelWorldStreaming_8h_html"><div class="ttname"><a href="PixelWorldStreaming_8h.html">PixelWorldStreaming.h</a></div></div>
+<div class="ttc" id="aPixelWorld_8h_html"><div class="ttname"><a href="PixelWorld_8h.html">PixelWorld.h</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1PixelWorld_html"><div class="ttname"><a href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a></div><div class="ttdoc">Sparse, chunked, deterministic 2D falling-material world.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8h_source.html#l00215">PixelWorld.h:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1PixelChunkStreamCursor_html"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1PixelChunkStreamCursor.html">eve::pixelworld_streaming::PixelChunkStreamCursor</a></div><div class="ttdoc">Stateful revision cursor that projects one PixelWorld interest region.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldStreaming_8h_source.html#l00053">PixelWorldStreaming.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver_html"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html">eve::pixelworld_streaming::ReliablePixelChunkReceiver</a></div><div class="ttdoc">Ordered atomic receiver with duplicate suppression and bounded out-of-order buffering.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00103">PixelWorldTransport.h:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver_html_a1fd6352094a4516c69d666ed9011a3bc"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#a1fd6352094a4516c69d666ed9011a3bc">eve::pixelworld_streaming::ReliablePixelChunkReceiver::receive</a></div><div class="ttdeci">eve::Result&lt; PixelChunkReceiveReceipt &gt; receive(PixelChunkTransferPart part, eve::pixelworld::PixelWorld &amp;replica)</div><div class="ttdoc">Buffer one part and atomically apply every newly contiguous complete transfer.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00177">PixelWorldTransport.cpp:177</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver_html_a5a35bbae21e6224c385719158e5ecf38"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#a5a35bbae21e6224c385719158e5ecf38">eve::pixelworld_streaming::ReliablePixelChunkReceiver::bufferedPartCount</a></div><div class="ttdeci">std::size_t bufferedPartCount() const noexcept</div><div class="ttdoc">Count parts retained while waiting for gaps or completion.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00247">PixelWorldTransport.cpp:247</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver_html_ac4937999ac38c221c32a2e80d9f7d4ab"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#ac4937999ac38c221c32a2e80d9f7d4ab">eve::pixelworld_streaming::ReliablePixelChunkReceiver::create</a></div><div class="ttdeci">static eve::Result&lt; ReliablePixelChunkReceiver &gt; create(std::uint64_t streamId, PixelChunkTransportConfig config={})</div><div class="ttdoc">Validate policy and create a receiver for one nonzero stream session.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00168">PixelWorldTransport.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver_html_af0ac4e5368b231cd59d0c9b8b1bd7e6f"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkReceiver.html#af0ac4e5368b231cd59d0c9b8b1bd7e6f">eve::pixelworld_streaming::ReliablePixelChunkReceiver::acknowledgedThrough</a></div><div class="ttdeci">std::uint64_t acknowledgedThrough() const noexcept</div><div class="ttdoc">Last cumulatively applied transfer id.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00113">PixelWorldTransport.h:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender_html"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html">eve::pixelworld_streaming::ReliablePixelChunkSender</a></div><div class="ttdoc">Reliable sender retaining owning transfer parts and tombstones until application ACK.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00063">PixelWorldTransport.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender_html_a18fe9bfcb005242daf0d6b831cf53249"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a18fe9bfcb005242daf0d6b831cf53249">eve::pixelworld_streaming::ReliablePixelChunkSender::pendingParts</a></div><div class="ttdeci">std::vector&lt; PixelChunkTransferPart &gt; pendingParts() const</div><div class="ttdoc">Return every unacknowledged part in canonical transfer/part order for transmission.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00107">PixelWorldTransport.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender_html_a80bbe746b926bc7147641b91419db7bb"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a80bbe746b926bc7147641b91419db7bb">eve::pixelworld_streaming::ReliablePixelChunkSender::create</a></div><div class="ttdeci">static eve::Result&lt; ReliablePixelChunkSender &gt; create(std::uint64_t streamId, PixelChunkTransportConfig config={})</div><div class="ttdoc">Validate policy and create a fresh nonzero stream session.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00040">PixelWorldTransport.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender_html_a96a3a9960f4476ecb8c4840c8a3acf83"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a96a3a9960f4476ecb8c4840c8a3acf83">eve::pixelworld_streaming::ReliablePixelChunkSender::retainedTombstoneCount</a></div><div class="ttdeci">std::size_t retainedTombstoneCount() const noexcept</div><div class="ttdoc">Number of tombstones retained specifically for possible retransmission.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00153">PixelWorldTransport.cpp:153</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender_html_a9f413275c0c218197e60fa74a9952565"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a9f413275c0c218197e60fa74a9952565">eve::pixelworld_streaming::ReliablePixelChunkSender::capture</a></div><div class="ttdeci">eve::Result&lt; std::vector&lt; PixelChunkTransferPart &gt; &gt; capture(const eve::pixelworld::PixelWorld &amp;source, eve::pixelworld::PixelChunkRegion interest)</div><div class="ttdoc">Capture and enqueue one atomic revision transfer, split into bounded owning parts.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00049">PixelWorldTransport.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender_html_ac68dacfb0f82b13040c0be6288896d4b"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#ac68dacfb0f82b13040c0be6288896d4b">eve::pixelworld_streaming::ReliablePixelChunkSender::acknowledge</a></div><div class="ttdeci">eve::Result&lt; PixelChunkAckReceipt &gt; acknowledge(PixelChunkTransferAck ack)</div><div class="ttdoc">Release cumulatively acknowledged transfers and their retained tombstones.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00116">PixelWorldTransport.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender_html_afd1e2b52212b0048453223d1d088d383"><div class="ttname"><a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#afd1e2b52212b0048453223d1d088d383">eve::pixelworld_streaming::ReliablePixelChunkSender::inFlightTransferCount</a></div><div class="ttdeci">std::size_t inFlightTransferCount() const noexcept</div><div class="ttdoc">Number of unacknowledged atomic transfers.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8cpp_source.html#l00149">PixelWorldTransport.cpp:149</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld__streaming_html"><div class="ttname"><a href="namespaceeve_1_1pixelworld__streaming.html">eve::pixelworld_streaming</a></div><div class="ttdef"><b>Definition</b> <a href="PixelWorldArchive_8cpp_source.html#l00012">PixelWorldArchive.cpp:12</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelChunkBatch_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelChunkBatch.html">eve::pixelworld::PixelChunkBatch</a></div><div class="ttdoc">Owning authoritative Chunk correction with source world metadata.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8h_source.html#l00083">PixelWorld.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelChunkRegion_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelChunkRegion.html">eve::pixelworld::PixelChunkRegion</a></div><div class="ttdoc">Inclusive finite rectangle expressed in Chunk coordinates.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8h_source.html#l00097">PixelWorld.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt_html"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html">eve::pixelworld_streaming::PixelChunkAckReceipt</a></div><div class="ttdoc">Counters returned after accepting a cumulative ACK.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00042">PixelWorldTransport.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt_html_a7187b7d68a49c4e18ae1bf6577fd6855"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#a7187b7d68a49c4e18ae1bf6577fd6855">eve::pixelworld_streaming::PixelChunkAckReceipt::acknowledgedThrough</a></div><div class="ttdeci">std::uint64_t acknowledgedThrough</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00045">PixelWorldTransport.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt_html_a78e49bb82c230a79539e6d92b527c2a7"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#a78e49bb82c230a79539e6d92b527c2a7">eve::pixelworld_streaming::PixelChunkAckReceipt::tombstonesReleased</a></div><div class="ttdeci">std::uint32_t tombstonesReleased</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00044">PixelWorldTransport.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt_html_ab2c30e3144d1aaeee5caee6e1b857600"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html#ab2c30e3144d1aaeee5caee6e1b857600">eve::pixelworld_streaming::PixelChunkAckReceipt::transfersReleased</a></div><div class="ttdeci">std::uint32_t transfersReleased</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00043">PixelWorldTransport.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt_html"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html">eve::pixelworld_streaming::PixelChunkReceiveReceipt</a></div><div class="ttdoc">Receiver outcome after one possibly duplicate or out-of-order part.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00049">PixelWorldTransport.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt_html_a11ab0b6dc02de2eff0f147812066f739"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a11ab0b6dc02de2eff0f147812066f739">eve::pixelworld_streaming::PixelChunkReceiveReceipt::transfersApplied</a></div><div class="ttdeci">std::uint32_t transfersApplied</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00051">PixelWorldTransport.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt_html_a65fcf6e29528ada86c15fe9114f00563"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a65fcf6e29528ada86c15fe9114f00563">eve::pixelworld_streaming::PixelChunkReceiveReceipt::duplicate</a></div><div class="ttdeci">bool duplicate</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00053">PixelWorldTransport.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt_html_a6959a2b2dee36742331787042cc4e693"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#a6959a2b2dee36742331787042cc4e693">eve::pixelworld_streaming::PixelChunkReceiveReceipt::ack</a></div><div class="ttdeci">PixelChunkTransferAck ack</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00050">PixelWorldTransport.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt_html_aef8e8e8a892c786b61adbf763afe7f3f"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkReceiveReceipt.html#aef8e8e8a892c786b61adbf763afe7f3f">eve::pixelworld_streaming::PixelChunkReceiveReceipt::partsBuffered</a></div><div class="ttdeci">std::uint32_t partsBuffered</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00052">PixelWorldTransport.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck_html"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html">eve::pixelworld_streaming::PixelChunkTransferAck</a></div><div class="ttdoc">Cumulative application ACK proving transfers were committed to replica authority.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00035">PixelWorldTransport.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck_html_a8e3a34b2be0cbf9c584fed90c109c60a"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#a8e3a34b2be0cbf9c584fed90c109c60a">eve::pixelworld_streaming::PixelChunkTransferAck::acknowledgedThrough</a></div><div class="ttdeci">std::uint64_t acknowledgedThrough</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00037">PixelWorldTransport.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck_html_ab2c6a7b2696cd140c6f99662e9257b61"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#ab2c6a7b2696cd140c6f99662e9257b61">eve::pixelworld_streaming::PixelChunkTransferAck::streamId</a></div><div class="ttdeci">std::uint64_t streamId</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00036">PixelWorldTransport.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck_html_ae2a6669393c7edf988207efd2feee2b7"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html#ae2a6669393c7edf988207efd2feee2b7">eve::pixelworld_streaming::PixelChunkTransferAck::appliedRevision</a></div><div class="ttdeci">std::uint64_t appliedRevision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00038">PixelWorldTransport.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart_html"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">eve::pixelworld_streaming::PixelChunkTransferPart</a></div><div class="ttdoc">One independently retransmittable part of an atomic Chunk transfer.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00023">PixelWorldTransport.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart_html_a4201f51c3918c02a11f6305f1c2ef3b1"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a4201f51c3918c02a11f6305f1c2ef3b1">eve::pixelworld_streaming::PixelChunkTransferPart::transferId</a></div><div class="ttdeci">std::uint64_t transferId</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00025">PixelWorldTransport.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart_html_a5075d57306560e0fff32d6ce29c9a640"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a5075d57306560e0fff32d6ce29c9a640">eve::pixelworld_streaming::PixelChunkTransferPart::interest</a></div><div class="ttdeci">eve::pixelworld::PixelChunkRegion interest</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00028">PixelWorldTransport.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart_html_a57e19dfa2782ba9543920b1ea1163a4b"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a57e19dfa2782ba9543920b1ea1163a4b">eve::pixelworld_streaming::PixelChunkTransferPart::partIndex</a></div><div class="ttdeci">std::uint32_t partIndex</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00026">PixelWorldTransport.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart_html_a83872b4fca3e34b8bf9d700403991d43"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#a83872b4fca3e34b8bf9d700403991d43">eve::pixelworld_streaming::PixelChunkTransferPart::operator==</a></div><div class="ttdeci">friend bool operator==(const PixelChunkTransferPart &amp;, const PixelChunkTransferPart &amp;)=default</div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart_html_aa7be46f69e021163b1acfa4b4d89efd0"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#aa7be46f69e021163b1acfa4b4d89efd0">eve::pixelworld_streaming::PixelChunkTransferPart::batch</a></div><div class="ttdeci">eve::pixelworld::PixelChunkBatch batch</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00029">PixelWorldTransport.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart_html_ab5552570065dabc85e79a2b7b5b2ac76"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#ab5552570065dabc85e79a2b7b5b2ac76">eve::pixelworld_streaming::PixelChunkTransferPart::streamId</a></div><div class="ttdeci">std::uint64_t streamId</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00024">PixelWorldTransport.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart_html_ad43cdba48fba20ac6cfb6cd1f4de385b"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html#ad43cdba48fba20ac6cfb6cd1f4de385b">eve::pixelworld_streaming::PixelChunkTransferPart::partCount</a></div><div class="ttdeci">std::uint32_t partCount</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00027">PixelWorldTransport.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig_html"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">eve::pixelworld_streaming::PixelChunkTransportConfig</a></div><div class="ttdoc">Bounded application-level reliability policy layered over any byte transport.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00015">PixelWorldTransport.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig_html_a28cb67941c6f8fb561a99f8e3306b2ca"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#a28cb67941c6f8fb561a99f8e3306b2ca">eve::pixelworld_streaming::PixelChunkTransportConfig::maximumInFlightTransfers</a></div><div class="ttdeci">std::uint32_t maximumInFlightTransfers</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00016">PixelWorldTransport.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig_html_aac4ee09feee36b44faccda1637ed7587"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#aac4ee09feee36b44faccda1637ed7587">eve::pixelworld_streaming::PixelChunkTransportConfig::maximumPartsPerTransfer</a></div><div class="ttdeci">std::uint32_t maximumPartsPerTransfer</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00018">PixelWorldTransport.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig_html_ab7c929cbc19128f07b7a1460e1287b1e"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#ab7c929cbc19128f07b7a1460e1287b1e">eve::pixelworld_streaming::PixelChunkTransportConfig::maximumChunksPerPart</a></div><div class="ttdeci">std::uint32_t maximumChunksPerPart</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00017">PixelWorldTransport.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig_html_ab8e9681abcf0fdce6bbc96a002900da3"><div class="ttname"><a href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html#ab8e9681abcf0fdce6bbc96a002900da3">eve::pixelworld_streaming::PixelChunkTransportConfig::maximumBufferedTransfers</a></div><div class="ttdeci">std::uint32_t maximumBufferedTransfers</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldTransport_8h_source.html#l00019">PixelWorldTransport.h:19</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

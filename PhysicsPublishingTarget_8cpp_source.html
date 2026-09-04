@@ -1,0 +1,247 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics_editing/PhysicsPublishingTarget.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_616551f4d009688ed331df7a25c669fb.html">physics_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PhysicsPublishingTarget.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PhysicsPublishingTarget_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="PhysicsTarget_8h.html">physics_editing/PhysicsTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics__editing.html">eve::physics_editing</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>EditorResult&lt;T&gt; publishingError(<a class="code hl_typedef" href="namespaceeve_1_1physics__editing.html#a0286f92f2e5ec0aa8e3786695f8dea78">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a86a933633fd9729f926dea28b2c663ef">   13</a></span><a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a86a933633fd9729f926dea28b2c663ef">PhysicsColliderPublishingTarget::PhysicsColliderPublishingTarget</a>(std::string <span class="keywordtype">id</span>, <span class="keywordtype">int</span> dimensions,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>                                                                 <a class="code hl_class" href="classeve_1_1physics__editing_1_1IPhysicsColliderRuntimeSink.html">IPhysicsColliderRuntimeSink</a>* sink)</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    : document_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>), dimensions), sink_(sink) {}</div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#ab6e71b25e51368f143c60fef0930f1d1">   17</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#ab6e71b25e51368f143c60fef0930f1d1">PhysicsColliderPublishingTarget::applyDomainOperation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>&amp; operation) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (staging_) <span class="keywordflow">return</span> document_.<a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a9688fa4024246c8d8ada62f6346e97ea">applyDomainOperation</a>(operation);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">auto</span> candidate = <a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a9c55f828ca54d96c075f41b7557b87b3">cloneDomainState</a>();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">auto</span> applied   = candidate-&gt;applyDomainOperation(operation);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">if</span> (!applied.ok()) <span class="keywordflow">return</span> applied;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a5ae9da9a9ff62db2c59616bde57631a5">commitDomainState</a>(std::move(candidate));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="}">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a9c55f828ca54d96c075f41b7557b87b3">   25</a></span>std::unique_ptr&lt;IDomainOperationTarget&gt; <a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a9c55f828ca54d96c075f41b7557b87b3">PhysicsColliderPublishingTarget::cloneDomainState</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">auto</span> candidate      = std::make_unique&lt;PhysicsColliderPublishingTarget&gt;(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    candidate-&gt;staging_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">return</span> candidate;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a5ae9da9a9ff62db2c59616bde57631a5">   31</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a5ae9da9a9ff62db2c59616bde57631a5">PhysicsColliderPublishingTarget::commitDomainState</a>(</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::unique_ptr&lt;IDomainOperationTarget&gt; candidate) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">auto</span>* typed = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html">PhysicsColliderPublishingTarget</a>*<span class="keyword">&gt;</span>(candidate.get());</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (!typed || typed-&gt;targetId() != <a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a3947c4a4278d6e95bee182fe7e2f709f">targetId</a>() || typed-&gt;sink_ != sink_ || !typed-&gt;staging_ ||</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        typed-&gt;document_.describe().type != document_.<a class="code hl_function" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#acfe6df01856b1478bcf9d8020fc0d61a">describe</a>().<a class="code hl_variable" href="structeve_1_1editing_1_1TargetDescriptor.html#a7b1734d863dd5200d40b650324b08802">type</a>)</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> publishingError&lt;void&gt;(EditorStatus::Conflict, <span class="stringliteral">&quot;editor.physics.publishing-candidate-mismatch&quot;</span>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                     <span class="stringliteral">&quot;Collider candidate belongs to another live target&quot;</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (!sink_)</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">return</span> publishingError&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.physics.publishing-sink-missing&quot;</span>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                     <span class="stringliteral">&quot;Collider publishing target requires a live runtime sink&quot;</span>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> published = sink_-&gt;<a class="code hl_function" href="classeve_1_1physics__editing_1_1IPhysicsColliderRuntimeSink.html#a2d2be90acde429f6337438243a9ebd98">publish</a>(typed-&gt;document_);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (!published.<a class="code hl_function" href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">ok</a>()) <span class="keywordflow">return</span> published;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    document_ = typed-&gt;document_;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}  <span class="comment">// namespace eve::physics_editing</span></div>
+<div class="ttc" id="aPhysicsTarget_8h_html"><div class="ttname"><a href="PhysicsTarget_8h.html">PhysicsTarget.h</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a7441ef0865bcb3db9b8064dd7375c1ea"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a></div><div class="ttdeci">int id</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00162">WorldSnapshot.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_ad6cb7f2de48f0622ee88b180f7fc2c7f"><div class="ttname"><a href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">eve::Result::ok</a></div><div class="ttdeci">bool ok() const noexcept</div><div class="ttdoc">Whether this result represents a non-failure outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00228">Result.h:228</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1IPhysicsColliderRuntimeSink_html"><div class="ttname"><a href="classeve_1_1physics__editing_1_1IPhysicsColliderRuntimeSink.html">eve::physics_editing::IPhysicsColliderRuntimeSink</a></div><div class="ttdoc">Atomic runtime publication boundary for a complete collider candidate.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsTarget_8h_source.html#l00096">PhysicsTarget.h:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1IPhysicsColliderRuntimeSink_html_a2d2be90acde429f6337438243a9ebd98"><div class="ttname"><a href="classeve_1_1physics__editing_1_1IPhysicsColliderRuntimeSink.html#a2d2be90acde429f6337438243a9ebd98">eve::physics_editing::IPhysicsColliderRuntimeSink::publish</a></div><div class="ttdeci">virtual EditorResult&lt; void &gt; publish(const PhysicsColliderTarget &amp;candidate)=0</div><div class="ttdoc">Publish a candidate; failure must preserve the previous live collider.</div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1PhysicsColliderPublishingTarget_html"><div class="ttname"><a href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html">eve::physics_editing::PhysicsColliderPublishingTarget</a></div><div class="ttdoc">Candidate-first collider target whose commit/undo publishes to a live sink.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsTarget_8h_source.html#l00104">PhysicsTarget.h:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1PhysicsColliderPublishingTarget_html_a3947c4a4278d6e95bee182fe7e2f709f"><div class="ttname"><a href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a3947c4a4278d6e95bee182fe7e2f709f">eve::physics_editing::PhysicsColliderPublishingTarget::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="PhysicsTarget_8h_source.html#l00108">PhysicsTarget.h:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1PhysicsColliderPublishingTarget_html_a5ae9da9a9ff62db2c59616bde57631a5"><div class="ttname"><a href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a5ae9da9a9ff62db2c59616bde57631a5">eve::physics_editing::PhysicsColliderPublishingTarget::commitDomainState</a></div><div class="ttdeci">EditorResult&lt; void &gt; commitDomainState(std::unique_ptr&lt; IDomainOperationTarget &gt; candidate) override</div><div class="ttdoc">Atomically publish a validated candidate state.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsPublishingTarget_8cpp_source.html#l00031">PhysicsPublishingTarget.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1PhysicsColliderPublishingTarget_html_a86a933633fd9729f926dea28b2c663ef"><div class="ttname"><a href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a86a933633fd9729f926dea28b2c663ef">eve::physics_editing::PhysicsColliderPublishingTarget::PhysicsColliderPublishingTarget</a></div><div class="ttdeci">PhysicsColliderPublishingTarget(std::string id, int dimensions, IPhysicsColliderRuntimeSink *sink)</div><div class="ttdoc">Create an owned collider document bound to a non-owning runtime sink.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsPublishingTarget_8cpp_source.html#l00013">PhysicsPublishingTarget.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1PhysicsColliderPublishingTarget_html_a9c55f828ca54d96c075f41b7557b87b3"><div class="ttname"><a href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#a9c55f828ca54d96c075f41b7557b87b3">eve::physics_editing::PhysicsColliderPublishingTarget::cloneDomainState</a></div><div class="ttdeci">std::unique_ptr&lt; IDomainOperationTarget &gt; cloneDomainState() const override</div><div class="ttdoc">Clone the complete target state into an owning detached candidate.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsPublishingTarget_8cpp_source.html#l00025">PhysicsPublishingTarget.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1PhysicsColliderPublishingTarget_html_ab6e71b25e51368f143c60fef0930f1d1"><div class="ttname"><a href="classeve_1_1physics__editing_1_1PhysicsColliderPublishingTarget.html#ab6e71b25e51368f143c60fef0930f1d1">eve::physics_editing::PhysicsColliderPublishingTarget::applyDomainOperation</a></div><div class="ttdeci">EditorResult&lt; void &gt; applyDomainOperation(const DomainOperation &amp;operation) override</div><div class="ttdoc">Apply one validated domain operation.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsPublishingTarget_8cpp_source.html#l00017">PhysicsPublishingTarget.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1PhysicsColliderTarget_html_a9688fa4024246c8d8ada62f6346e97ea"><div class="ttname"><a href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a9688fa4024246c8d8ada62f6346e97ea">eve::physics_editing::PhysicsColliderTarget::applyDomainOperation</a></div><div class="ttdeci">EditorResult&lt; void &gt; applyDomainOperation(const DomainOperation &amp;operation) override</div><div class="ttdoc">Apply one validated domain operation.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsTarget_8cpp_source.html#l00050">PhysicsTarget.cpp:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics__editing_1_1PhysicsColliderTarget_html_acfe6df01856b1478bcf9d8020fc0d61a"><div class="ttname"><a href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#acfe6df01856b1478bcf9d8020fc0d61a">eve::physics_editing::PhysicsColliderTarget::describe</a></div><div class="ttdeci">TargetDescriptor describe() const override</div><div class="ttdoc">Describe the target for tools and automation.</div><div class="ttdef"><b>Definition</b> <a href="PhysicsTarget_8cpp_source.html#l00037">PhysicsTarget.cpp:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a71149fce33bc9588696b7d54b72f7f92"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">eve::animation_editing::RuleId</a></div><div class="ttdeci">editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00017">SkeletonOverlay.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics__editing_html"><div class="ttname"><a href="namespaceeve_1_1physics__editing.html">eve::physics_editing</a></div><div class="ttdef"><b>Definition</b> <a href="PhysicsColliderAsset_8cpp_source.html#l00005">PhysicsColliderAsset.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics__editing_html_a0286f92f2e5ec0aa8e3786695f8dea78"><div class="ttname"><a href="namespaceeve_1_1physics__editing.html#a0286f92f2e5ec0aa8e3786695f8dea78">eve::physics_editing::EditorStatus</a></div><div class="ttdeci">editing::Status EditorStatus</div><div class="ttdef"><b>Definition</b> <a href="PhysicsTarget_8h_source.html#l00041">PhysicsTarget.h:41</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TargetDescriptor_html_a7b1734d863dd5200d40b650324b08802"><div class="ttname"><a href="structeve_1_1editing_1_1TargetDescriptor.html#a7b1734d863dd5200d40b650324b08802">eve::editing::TargetDescriptor::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00034">EditableTarget.h:34</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

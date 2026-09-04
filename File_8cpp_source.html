@@ -1,0 +1,253 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/filesystem/File.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_afee26140d46546965aad89686474471.html">filesystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">File.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="File_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="physfs_2File_8h.html">File.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span>filesystem {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1File.html#aa93f974e8e5b7f5bd6b823092315b4c6">    7</a></span><a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#aa93f974e8e5b7f5bd6b823092315b4c6">File::~File</a>() {}</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1File.html#acf0130c123e3afc7c7e27ced6aba1760">    9</a></span><a class="code hl_class" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> *<a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#acf0130c123e3afc7c7e27ced6aba1760">File::read</a>(int64_t size) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordtype">bool</span> isopen = <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#a7624f4981c3c42d2d16767ed1c61fafc">isOpen</a>();</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="comment">// PhysFS backend expects binary modes (&quot;rb&quot;); plain &quot;r&quot; never opens a handle.</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">if</span> (!isopen &amp;&amp; !<a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#ac001bfff71531051d0d65be45528590a">open</a>(<span class="stringliteral">&quot;rb&quot;</span>)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Could not read file %s.&quot;</span>, <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#ad5c2d923e4400ba32a64b56376401033">getFilename</a>().c_str());</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    int64_t max = <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#a1fdf7cb0d0115402e5ff211b5c2652f6">getSize</a>();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    int64_t cur = <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#a51770ae5a81c95ac6e287efd313fbe4a">tell</a>();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    size        = (size == <a class="code hl_variable" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">ALL</a>) ? max : size;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (size &lt; 0) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Invalid read size.&quot;</span>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (cur + size &gt; max) size = max - cur;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_class" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> *fileData  = <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1filesystem_1_1FileData.html">FileData</a>(<a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#ad5c2d923e4400ba32a64b56376401033">getFilename</a>(), size);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    int64_t   bytesRead = <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#acf0130c123e3afc7c7e27ced6aba1760">read</a>(fileData-&gt;<a class="code hl_function" href="classeve_1_1filesystem_1_1FileData.html#a60fb0b432a79068bee896fb48d0cb5da">getData</a>(), size);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (bytesRead &lt; 0 || (bytesRead == 0 &amp;&amp; bytesRead != size)) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">delete</span> fileData;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Could not read from file.&quot;</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (bytesRead &lt; size) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <a class="code hl_class" href="classeve_1_1filesystem_1_1FileData.html">FileData</a> *tmpFileData = <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1filesystem_1_1FileData.html">FileData</a>(<a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#ad5c2d923e4400ba32a64b56376401033">getFilename</a>(), bytesRead);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        memcpy(tmpFileData-&gt;<a class="code hl_function" href="classeve_1_1filesystem_1_1FileData.html#a60fb0b432a79068bee896fb48d0cb5da">getData</a>(), fileData-&gt;<a class="code hl_function" href="classeve_1_1filesystem_1_1FileData.html#a60fb0b432a79068bee896fb48d0cb5da">getData</a>(), (<span class="keywordtype">size_t</span>)bytesRead);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">delete</span> fileData;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        fileData = tmpFileData;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (!isopen) <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#aef3a512bf468c5af59411b91b11730fb">close</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> fileData;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1File.html#a817a8241b579da5f3b4a04224e68dad9">   42</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#acf3a87ee50aec46060e25c4cd480d5b5">File::write</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Data.html">Data</a> *data, int64_t size) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#acf3a87ee50aec46060e25c4cd480d5b5">write</a>(<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getData(), (size == <a class="code hl_variable" href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">ALL</a>) ? <a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>-&gt;getSize() : size);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeve_1_1filesystem_1_1File.html#a343d6e6be2149d8110400ac81863d27c">   46</a></span>std::string <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#a343d6e6be2149d8110400ac81863d27c">File::getExtension</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> std::string &amp;    filename = <a class="code hl_function" href="classeve_1_1filesystem_1_1File.html#ad5c2d923e4400ba32a64b56376401033">getFilename</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::string::size_type <a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a>      = filename.rfind(<span class="charliteral">&#39;.&#39;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a> != std::string::npos)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">return</span> filename.substr(<a class="code hl_variable" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a> + 1);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">return</span> std::string();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}  <span class="comment">// namespace filesystem</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ae40354a1051342eb5a9db005715dcfa9"><div class="ttname"><a href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">idx</a></div><div class="ttdeci">int idx</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00336">Pathfinder.cpp:336</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00192">RenderSystem.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1Data_html"><div class="ttname"><a href="classeve_1_1Data.html">eve::Data</a></div><div class="ttdef"><b>Definition</b> <a href="Data_8h_source.html#l00008">Data.h:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1FileData_html"><div class="ttname"><a href="classeve_1_1filesystem_1_1FileData.html">eve::filesystem::FileData</a></div><div class="ttdoc">Data buffer paired with a filename (used for type identification).</div><div class="ttdef"><b>Definition</b> <a href="FileData_8h_source.html#l00012">FileData.h:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1FileData_html_a60fb0b432a79068bee896fb48d0cb5da"><div class="ttname"><a href="classeve_1_1filesystem_1_1FileData.html#a60fb0b432a79068bee896fb48d0cb5da">eve::filesystem::FileData::getData</a></div><div class="ttdeci">void * getData() const</div><div class="ttdoc">Gets a pointer to the data. This pointer will obviously not be valid if the Data object is destroyed.</div><div class="ttdef"><b>Definition</b> <a href="FileData_8h_source.html#l00023">FileData.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_a1fdf7cb0d0115402e5ff211b5c2652f6"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#a1fdf7cb0d0115402e5ff211b5c2652f6">eve::filesystem::File::getSize</a></div><div class="ttdeci">virtual int64_t getSize()=0</div><div class="ttdoc">Gets the size of the file.</div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_a343d6e6be2149d8110400ac81863d27c"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#a343d6e6be2149d8110400ac81863d27c">eve::filesystem::File::getExtension</a></div><div class="ttdeci">virtual std::string getExtension() const</div><div class="ttdoc">Gets the file extension for this File, or empty string if none.</div><div class="ttdef"><b>Definition</b> <a href="File_8cpp_source.html#l00046">File.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_a51770ae5a81c95ac6e287efd313fbe4a"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#a51770ae5a81c95ac6e287efd313fbe4a">eve::filesystem::File::tell</a></div><div class="ttdeci">virtual int64_t tell()=0</div><div class="ttdoc">Gets the current position in the File.</div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_a7624f4981c3c42d2d16767ed1c61fafc"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#a7624f4981c3c42d2d16767ed1c61fafc">eve::filesystem::File::isOpen</a></div><div class="ttdeci">virtual bool isOpen() const =0</div><div class="ttdoc">Gets whether the file is open.</div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_aa45cdc7b0ea76ba67a7120ab8396ce0d"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#aa45cdc7b0ea76ba67a7120ab8396ce0d">eve::filesystem::File::ALL</a></div><div class="ttdeci">static const int64_t ALL</div><div class="ttdoc">Used to indicate ALL data in a file.</div><div class="ttdef"><b>Definition</b> <a href="File_8h_source.html#l00019">File.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_aa93f974e8e5b7f5bd6b823092315b4c6"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#aa93f974e8e5b7f5bd6b823092315b4c6">eve::filesystem::File::~File</a></div><div class="ttdeci">virtual ~File()</div><div class="ttdoc">Destructor.</div><div class="ttdef"><b>Definition</b> <a href="File_8cpp_source.html#l00007">File.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_ac001bfff71531051d0d65be45528590a"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#ac001bfff71531051d0d65be45528590a">eve::filesystem::File::open</a></div><div class="ttdeci">virtual bool open(std::string mode)=0</div><div class="ttdoc">Opens the file in a certain mode.</div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_acf0130c123e3afc7c7e27ced6aba1760"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#acf0130c123e3afc7c7e27ced6aba1760">eve::filesystem::File::read</a></div><div class="ttdeci">virtual FileData * read(int64_t size=ALL)</div><div class="ttdoc">Reads data from the file and allocates a Data object.</div><div class="ttdef"><b>Definition</b> <a href="File_8cpp_source.html#l00009">File.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_acf3a87ee50aec46060e25c4cd480d5b5"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#acf3a87ee50aec46060e25c4cd480d5b5">eve::filesystem::File::write</a></div><div class="ttdeci">virtual bool write(const void *data, int64_t size)=0</div><div class="ttdoc">Writes data into the File.</div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_ad5c2d923e4400ba32a64b56376401033"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#ad5c2d923e4400ba32a64b56376401033">eve::filesystem::File::getFilename</a></div><div class="ttdeci">virtual std::string getFilename() const =0</div><div class="ttdoc">Gets the filename for this File, or empty string if none.</div></div>
+<div class="ttc" id="aclasseve_1_1filesystem_1_1File_html_aef3a512bf468c5af59411b91b11730fb"><div class="ttname"><a href="classeve_1_1filesystem_1_1File.html#aef3a512bf468c5af59411b91b11730fb">eve::filesystem::File::close</a></div><div class="ttdeci">virtual bool close()=0</div><div class="ttdoc">Closes the file.</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="aphysfs_2File_8h_html"><div class="ttname"><a href="physfs_2File_8h.html">File.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

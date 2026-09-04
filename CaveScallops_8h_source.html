@@ -1,0 +1,261 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveScallops.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CaveScallops.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CaveScallops_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="CaveHydrology_8h.html">procgen/algorithms/CaveHydrology.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveScallopInput.html">CaveScallopInput</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#ad0515cda72a35a71ce5605b7d666a267">   11</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#ad0515cda72a35a71ce5605b7d666a267">along</a>              = 0.f;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a51c940b3f636cfee9922d732295c2a6a">   12</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a51c940b3f636cfee9922d732295c2a6a">angle</a>              = 0.f;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a13c21c134e3d0eecef5f2e3e39f2292b">   13</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a13c21c134e3d0eecef5f2e3e39f2292b">distance</a>           = 0.f;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#aabc6684acf52ea6182d64aa222cc32d7">   14</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#aabc6684acf52ea6182d64aa222cc32d7">radius</a>             = 0.16f;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#ab1c80eddc52901265bee95441741f6f4">   15</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#ab1c80eddc52901265bee95441741f6f4">hydraulicIntensity</a> = 1.f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a50c18ffd85ec85305dce1de114977902">   16</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a50c18ffd85ec85305dce1de114977902">baseScale</a>          = 0.12f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a2c6b6a8a2d23c72e2d66503a19beae99">   17</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a2c6b6a8a2d23c72e2d66503a19beae99">hydraulicScaling</a>   = 0.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a0468b98d4c4260656e2eb9ac9a91f9e3">   18</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a0468b98d4c4260656e2eb9ac9a91f9e3">maturity</a>           = 0.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a99a63d55fd46a1a9235608a19035541e">   19</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a99a63d55fd46a1a9235608a19035541e">bendUndercut</a>       = 0.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#ae7093302c08d5a7c275fe7c3ef0f9f95">   20</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#ae7093302c08d5a7c275fe7c3ef0f9f95">bendStrength</a>       = 0.f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a40d828e90cc0219c4ec0f1cee6c837d6">   21</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a40d828e90cc0219c4ec0f1cee6c837d6">outerBankAngle</a>     = 0.f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a92f926584852b35def2fb95d95b0afcd">   22</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a92f926584852b35def2fb95d95b0afcd">scaleVariability</a>   = 0.f;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a7d8e8c97ad8bbadb3c63f92681d67342">   23</a></span>    <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a7d8e8c97ad8bbadb3c63f92681d67342">flowSeparation</a>     = 0.f;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopInput.html#a2e517380bfb0632a5bf09270121de084">   24</a></span>    uint32_t <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopInput.html#a2e517380bfb0632a5bf09270121de084">seed</a>               = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopSample.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveScallopSample.html">CaveScallopSample</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopSample.html#a14d44c3462316c663ba6b1c9aaeb036c">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#a14d44c3462316c663ba6b1c9aaeb036c">erosion</a>         = 0.f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopSample.html#aa417c2a908b77299b42a08d717def0aa">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#aa417c2a908b77299b42a08d717def0aa">scale</a>           = 0.12f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveScallopSample.html#a572f2fd42203cbf7d8fc2970c7419f77">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveScallopSample.html#a572f2fd42203cbf7d8fc2970c7419f77">scaleMultiplier</a> = 1.f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CavePassageFrame.html">CavePassageFrame</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html#af086e6624cd6556674fee500ff39b128">   34</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#af086e6624cd6556674fee500ff39b128">along</a>              = 0.f;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html#a2af8d06873652e2efa6cf3c7cd2fc5af">   35</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a2af8d06873652e2efa6cf3c7cd2fc5af">angle</a>              = 0.f;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html#a7a49d5bc02f41b9cc2bd7dad0b5d8a94">   36</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a7a49d5bc02f41b9cc2bd7dad0b5d8a94">distance</a>           = 1e9f;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html#a5e65c408c84e58aac95d518e933d4377">   37</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a5e65c408c84e58aac95d518e933d4377">radius</a>             = 0.16f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html#aebed41b179840524a1c90f96a6208e25">   38</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#aebed41b179840524a1c90f96a6208e25">hydraulicIntensity</a> = 1.f;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html#a2e62f8d633f8b49fee6ab8fd238c4e5a">   39</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#a2e62f8d633f8b49fee6ab8fd238c4e5a">bendStrength</a>       = 0.f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html#ab3026b457df5170f5db45ee0b0e4b69f">   40</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#ab3026b457df5170f5db45ee0b0e4b69f">outerBankAngle</a>     = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CavePassageFrame.html#adbfdc46fa92422689bac734379443571">   41</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1CavePassageFrame.html#adbfdc46fa92422689bac734379443571">tangent</a>{1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>CaveScallopSample <a class="code hl_function" href="namespaceeve_1_1procgen.html#a3af2345a0deae60cf5d20e2e5b6da019">sampleCaveScallops</a>(<span class="keyword">const</span> CaveScallopInput&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>CavePassageFrame  <a class="code hl_function" href="namespaceeve_1_1procgen.html#aa8cc3fdc614678669da4e2e8ecb1efe8">nearestCavePassageFrame</a>(<span class="keyword">const</span> CaveHydrologyVec3&amp; <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, <span class="keyword">const</span> std::vector&lt;CaveHydrologyPoint&gt;&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                          <span class="keyword">const</span> std::vector&lt;float&gt;&amp; hydraulicIntensity);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCaveHydrology_8h_html"><div class="ttname"><a href="CaveHydrology_8h.html">CaveHydrology.h</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aRTSSystems_8cpp_html_a8daa8a8d84a130186d9cca31c33e8bae"><div class="ttname"><a href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a></div><div class="ttdeci">WorldPosition point</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8cpp_source.html#l00080">RTSSystems.cpp:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a3af2345a0deae60cf5d20e2e5b6da019"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a3af2345a0deae60cf5d20e2e5b6da019">eve::procgen::sampleCaveScallops</a></div><div class="ttdeci">CaveScallopSample sampleCaveScallops(const CaveScallopInput &amp;input)</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8cpp_source.html#l00036">CaveScallops.cpp:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aa8cc3fdc614678669da4e2e8ecb1efe8"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aa8cc3fdc614678669da4e2e8ecb1efe8">eve::procgen::nearestCavePassageFrame</a></div><div class="ttdeci">CavePassageFrame nearestCavePassageFrame(const CaveHydrologyVec3 &amp;point, const std::vector&lt; CaveHydrologyPoint &gt; &amp;path, const std::vector&lt; float &gt; &amp;hydraulicIntensity)</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8cpp_source.html#l00064">CaveScallops.cpp:64</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">eve::procgen::CaveHydrologyVec3</a></div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00008">CaveHydrology.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html">eve::procgen::CavePassageFrame</a></div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00033">CaveScallops.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_a2af8d06873652e2efa6cf3c7cd2fc5af"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#a2af8d06873652e2efa6cf3c7cd2fc5af">eve::procgen::CavePassageFrame::angle</a></div><div class="ttdeci">float angle</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00035">CaveScallops.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_a2e62f8d633f8b49fee6ab8fd238c4e5a"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#a2e62f8d633f8b49fee6ab8fd238c4e5a">eve::procgen::CavePassageFrame::bendStrength</a></div><div class="ttdeci">float bendStrength</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00039">CaveScallops.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_a5e65c408c84e58aac95d518e933d4377"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#a5e65c408c84e58aac95d518e933d4377">eve::procgen::CavePassageFrame::radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00037">CaveScallops.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_a7a49d5bc02f41b9cc2bd7dad0b5d8a94"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#a7a49d5bc02f41b9cc2bd7dad0b5d8a94">eve::procgen::CavePassageFrame::distance</a></div><div class="ttdeci">float distance</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00036">CaveScallops.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_ab3026b457df5170f5db45ee0b0e4b69f"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#ab3026b457df5170f5db45ee0b0e4b69f">eve::procgen::CavePassageFrame::outerBankAngle</a></div><div class="ttdeci">float outerBankAngle</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00040">CaveScallops.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_adbfdc46fa92422689bac734379443571"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#adbfdc46fa92422689bac734379443571">eve::procgen::CavePassageFrame::tangent</a></div><div class="ttdeci">CaveHydrologyVec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00041">CaveScallops.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_aebed41b179840524a1c90f96a6208e25"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#aebed41b179840524a1c90f96a6208e25">eve::procgen::CavePassageFrame::hydraulicIntensity</a></div><div class="ttdeci">float hydraulicIntensity</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00038">CaveScallops.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CavePassageFrame_html_af086e6624cd6556674fee500ff39b128"><div class="ttname"><a href="structeve_1_1procgen_1_1CavePassageFrame.html#af086e6624cd6556674fee500ff39b128">eve::procgen::CavePassageFrame::along</a></div><div class="ttdeci">float along</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00034">CaveScallops.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html">eve::procgen::CaveScallopInput</a></div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00010">CaveScallops.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a0468b98d4c4260656e2eb9ac9a91f9e3"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a0468b98d4c4260656e2eb9ac9a91f9e3">eve::procgen::CaveScallopInput::maturity</a></div><div class="ttdeci">float maturity</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00018">CaveScallops.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a13c21c134e3d0eecef5f2e3e39f2292b"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a13c21c134e3d0eecef5f2e3e39f2292b">eve::procgen::CaveScallopInput::distance</a></div><div class="ttdeci">float distance</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00013">CaveScallops.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a2c6b6a8a2d23c72e2d66503a19beae99"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a2c6b6a8a2d23c72e2d66503a19beae99">eve::procgen::CaveScallopInput::hydraulicScaling</a></div><div class="ttdeci">float hydraulicScaling</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00017">CaveScallops.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a2e517380bfb0632a5bf09270121de084"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a2e517380bfb0632a5bf09270121de084">eve::procgen::CaveScallopInput::seed</a></div><div class="ttdeci">uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00024">CaveScallops.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a40d828e90cc0219c4ec0f1cee6c837d6"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a40d828e90cc0219c4ec0f1cee6c837d6">eve::procgen::CaveScallopInput::outerBankAngle</a></div><div class="ttdeci">float outerBankAngle</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00021">CaveScallops.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a50c18ffd85ec85305dce1de114977902"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a50c18ffd85ec85305dce1de114977902">eve::procgen::CaveScallopInput::baseScale</a></div><div class="ttdeci">float baseScale</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00016">CaveScallops.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a51c940b3f636cfee9922d732295c2a6a"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a51c940b3f636cfee9922d732295c2a6a">eve::procgen::CaveScallopInput::angle</a></div><div class="ttdeci">float angle</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00012">CaveScallops.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a7d8e8c97ad8bbadb3c63f92681d67342"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a7d8e8c97ad8bbadb3c63f92681d67342">eve::procgen::CaveScallopInput::flowSeparation</a></div><div class="ttdeci">float flowSeparation</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00023">CaveScallops.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a92f926584852b35def2fb95d95b0afcd"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a92f926584852b35def2fb95d95b0afcd">eve::procgen::CaveScallopInput::scaleVariability</a></div><div class="ttdeci">float scaleVariability</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00022">CaveScallops.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_a99a63d55fd46a1a9235608a19035541e"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#a99a63d55fd46a1a9235608a19035541e">eve::procgen::CaveScallopInput::bendUndercut</a></div><div class="ttdeci">float bendUndercut</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00019">CaveScallops.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_aabc6684acf52ea6182d64aa222cc32d7"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#aabc6684acf52ea6182d64aa222cc32d7">eve::procgen::CaveScallopInput::radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00014">CaveScallops.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_ab1c80eddc52901265bee95441741f6f4"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#ab1c80eddc52901265bee95441741f6f4">eve::procgen::CaveScallopInput::hydraulicIntensity</a></div><div class="ttdeci">float hydraulicIntensity</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00015">CaveScallops.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_ad0515cda72a35a71ce5605b7d666a267"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#ad0515cda72a35a71ce5605b7d666a267">eve::procgen::CaveScallopInput::along</a></div><div class="ttdeci">float along</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00011">CaveScallops.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopInput_html_ae7093302c08d5a7c275fe7c3ef0f9f95"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopInput.html#ae7093302c08d5a7c275fe7c3ef0f9f95">eve::procgen::CaveScallopInput::bendStrength</a></div><div class="ttdeci">float bendStrength</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00020">CaveScallops.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopSample.html">eve::procgen::CaveScallopSample</a></div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00027">CaveScallops.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopSample_html_a14d44c3462316c663ba6b1c9aaeb036c"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopSample.html#a14d44c3462316c663ba6b1c9aaeb036c">eve::procgen::CaveScallopSample::erosion</a></div><div class="ttdeci">float erosion</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00028">CaveScallops.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopSample_html_a572f2fd42203cbf7d8fc2970c7419f77"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopSample.html#a572f2fd42203cbf7d8fc2970c7419f77">eve::procgen::CaveScallopSample::scaleMultiplier</a></div><div class="ttdeci">float scaleMultiplier</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00030">CaveScallops.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveScallopSample_html_aa417c2a908b77299b42a08d717def0aa"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveScallopSample.html#aa417c2a908b77299b42a08d717def0aa">eve::procgen::CaveScallopSample::scale</a></div><div class="ttdeci">float scale</div><div class="ttdef"><b>Definition</b> <a href="CaveScallops_8h_source.html#l00029">CaveScallops.h:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,845 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::RuntimeHandle&lt; Tag &gt; 模板类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1RuntimeHandle-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::RuntimeHandle&lt; Tag &gt; 模板类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Process-local slot identity tagged by the registry that owns it.  
+ <a href="classeve_1_1RuntimeHandle.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a17547387e87466ba398b814d65eadcd1" id="r_a17547387e87466ba398b814d65eadcd1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a> = std::uint32_t</td></tr>
+<tr class="memdesc:a17547387e87466ba398b814d65eadcd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unsigned owner-local slot index type.  <br /></td></tr>
+<tr class="separator:a17547387e87466ba398b814d65eadcd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756041fae4ea25e447f88f252b7ce1ee" id="r_a756041fae4ea25e447f88f252b7ce1ee"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a> = std::uint32_t</td></tr>
+<tr class="memdesc:a756041fae4ea25e447f88f252b7ce1ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unsigned owner-local generation type.  <br /></td></tr>
+<tr class="separator:a756041fae4ea25e447f88f252b7ce1ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab302e188a72c7ccf5b3cd586c27edd99" id="r_ab302e188a72c7ccf5b3cd586c27edd99"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#ab302e188a72c7ccf5b3cd586c27edd99">RuntimeHandle</a> () noexcept=default</td></tr>
+<tr class="memdesc:ab302e188a72c7ccf5b3cd586c27edd99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an invalid handle.  <br /></td></tr>
+<tr class="separator:ab302e188a72c7ccf5b3cd586c27edd99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a188c2939d1febfd912a3a90c198ed11a" id="r_a188c2939d1febfd912a3a90c198ed11a"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a188c2939d1febfd912a3a90c198ed11a">RuntimeHandle</a> (<a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a> <a class="el" href="classeve_1_1RuntimeHandle.html#a505b74615986c86dea6e68baa54116f6">index</a>, <a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a> <a class="el" href="classeve_1_1RuntimeHandle.html#a2ea94d5f5f0f0c5bb2696cc059895042">generation</a>) noexcept</td></tr>
+<tr class="memdesc:a188c2939d1febfd912a3a90c198ed11a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a handle from its exact slot coordinates.  <br /></td></tr>
+<tr class="separator:a188c2939d1febfd912a3a90c198ed11a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3af61a1aadfc37cdd8611cc5c57526e2" id="r_a3af61a1aadfc37cdd8611cc5c57526e2"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a3af61a1aadfc37cdd8611cc5c57526e2">isValid</a> () const noexcept</td></tr>
+<tr class="memdesc:a3af61a1aadfc37cdd8611cc5c57526e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether both coordinates are usable handle values.  <br /></td></tr>
+<tr class="separator:a3af61a1aadfc37cdd8611cc5c57526e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a215ff13fe8ce7355648563059491b458" id="r_a215ff13fe8ce7355648563059491b458"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a215ff13fe8ce7355648563059491b458">isInvalid</a> () const noexcept</td></tr>
+<tr class="memdesc:a215ff13fe8ce7355648563059491b458"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether this value is the invalid sentinel.  <br /></td></tr>
+<tr class="separator:a215ff13fe8ce7355648563059491b458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a505b74615986c86dea6e68baa54116f6" id="r_a505b74615986c86dea6e68baa54116f6"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a505b74615986c86dea6e68baa54116f6">index</a> () const noexcept</td></tr>
+<tr class="memdesc:a505b74615986c86dea6e68baa54116f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the owner-local slot index.  <br /></td></tr>
+<tr class="separator:a505b74615986c86dea6e68baa54116f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ea94d5f5f0f0c5bb2696cc059895042" id="r_a2ea94d5f5f0f0c5bb2696cc059895042"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a2ea94d5f5f0f0c5bb2696cc059895042">generation</a> () const noexcept</td></tr>
+<tr class="memdesc:a2ea94d5f5f0f0c5bb2696cc059895042"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the owner-local replacement generation.  <br /></td></tr>
+<tr class="separator:a2ea94d5f5f0f0c5bb2696cc059895042"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a598704261bd2411b38d66ff1202894d5" id="r_a598704261bd2411b38d66ff1202894d5"><td class="memItemLeft" align="right" valign="top">constexpr std::optional&lt; <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a598704261bd2411b38d66ff1202894d5">nextGeneration</a> () const noexcept</td></tr>
+<tr class="memdesc:a598704261bd2411b38d66ff1202894d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this slot at its next generation.  <br /></td></tr>
+<tr class="separator:a598704261bd2411b38d66ff1202894d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aa71889bf143f4ad9b60c17f6780ed1" id="r_a9aa71889bf143f4ad9b60c17f6780ed1"><td class="memItemLeft" align="right" valign="top">constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a9aa71889bf143f4ad9b60c17f6780ed1">packed</a> () const noexcept</td></tr>
+<tr class="memdesc:a9aa71889bf143f4ad9b60c17f6780ed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encodes the two coordinates for a legacy integer boundary.  <br /></td></tr>
+<tr class="separator:a9aa71889bf143f4ad9b60c17f6780ed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad4f1ab6695f0eef5d1c5d84db3b2161a" id="r_ad4f1ab6695f0eef5d1c5d84db3b2161a"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#ad4f1ab6695f0eef5d1c5d84db3b2161a">invalid</a> () noexcept</td></tr>
+<tr class="memdesc:ad4f1ab6695f0eef5d1c5d84db3b2161a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the canonical invalid handle.  <br /></td></tr>
+<tr class="separator:ad4f1ab6695f0eef5d1c5d84db3b2161a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a716bf9338c33d3576801609819323ce7" id="r_a716bf9338c33d3576801609819323ce7"><td class="memItemLeft" align="right" valign="top">static constexpr std::optional&lt; <a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a716bf9338c33d3576801609819323ce7">nextGeneration</a> (<a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a> current) noexcept</td></tr>
+<tr class="memdesc:a716bf9338c33d3576801609819323ce7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next generation without unsigned wraparound.  <br /></td></tr>
+<tr class="separator:a716bf9338c33d3576801609819323ce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2243a81b2b955024fb1a673279a2fd16" id="r_a2243a81b2b955024fb1a673279a2fd16"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a2243a81b2b955024fb1a673279a2fd16">fromPacked</a> (std::uint64_t <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) noexcept</td></tr>
+<tr class="memdesc:a2243a81b2b955024fb1a673279a2fd16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconstructs a handle from an explicit packed boundary value.  <br /></td></tr>
+<tr class="separator:a2243a81b2b955024fb1a673279a2fd16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a8689f8e4367cbfb67bda4e6dbcfe8b5a" id="r_a8689f8e4367cbfb67bda4e6dbcfe8b5a"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a8689f8e4367cbfb67bda4e6dbcfe8b5a">invalidIndex</a> = std::numeric_limits&lt;<a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a>&gt;::max()</td></tr>
+<tr class="memdesc:a8689f8e4367cbfb67bda4e6dbcfe8b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserved index value shared by all invalid handles.  <br /></td></tr>
+<tr class="separator:a8689f8e4367cbfb67bda4e6dbcfe8b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b0481e9f050a5c35dc587fe63c319f4" id="r_a6b0481e9f050a5c35dc587fe63c319f4"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a6b0481e9f050a5c35dc587fe63c319f4">invalidGeneration</a> = 0</td></tr>
+<tr class="memdesc:a6b0481e9f050a5c35dc587fe63c319f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserved generation value shared by all invalid handles.  <br /></td></tr>
+<tr class="separator:a6b0481e9f050a5c35dc587fe63c319f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a0b5c1155fed2b45638826d6f9fce6b6a" id="r_a0b5c1155fed2b45638826d6f9fce6b6a"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a0b5c1155fed2b45638826d6f9fce6b6a">operator==</a> (const <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a> &amp;, const <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a> &amp;) noexcept=default</td></tr>
+<tr class="separator:a0b5c1155fed2b45638826d6f9fce6b6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25be0c6f45e3a083944f3677af0b8e97" id="r_a25be0c6f45e3a083944f3677af0b8e97"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1RuntimeHandle.html#a25be0c6f45e3a083944f3677af0b8e97">operator&lt;=&gt;</a> (const <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a> &amp;, const <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a> &amp;) noexcept=default</td></tr>
+<tr class="separator:a25be0c6f45e3a083944f3677af0b8e97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Tag&gt;<br />
+class eve::RuntimeHandle&lt; Tag &gt;</div><p>Process-local slot identity tagged by the registry that owns it. </p>
+<p>A handle is current only while its owner has an occupied slot at <code><a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index()</a></code> whose generation equals <code><a class="el" href="classeve_1_1RuntimeHandle.html#a2ea94d5f5f0f0c5bb2696cc059895042" title="Returns the owner-local replacement generation.">generation()</a></code>. Generation zero and the all-ones index are reserved for invalid values. Owners must start live slots at generation one, increment the generation on destruction before a slot is reused, and retire a slot instead of wrapping at the generation limit. A handle is therefore stale after destruction, even if its slot is later reused for another object.</p>
+<dl class="tparams"><dt>模板参数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Tag</td><td>An empty owner-specific tag; different tags are never implicitly interchangeable. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00037">37</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a756041fae4ea25e447f88f252b7ce1ee" name="a756041fae4ea25e447f88f252b7ce1ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756041fae4ea25e447f88f252b7ce1ee">&#9670;&#160;</a></span>generation_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::generation_type =  std::uint32_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unsigned owner-local generation type. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a17547387e87466ba398b814d65eadcd1" name="a17547387e87466ba398b814d65eadcd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17547387e87466ba398b814d65eadcd1">&#9670;&#160;</a></span>index_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::index_type =  std::uint32_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unsigned owner-local slot index type. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab302e188a72c7ccf5b3cd586c27edd99" name="ab302e188a72c7ccf5b3cd586c27edd99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab302e188a72c7ccf5b3cd586c27edd99">&#9670;&#160;</a></span>RuntimeHandle() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::RuntimeHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an invalid handle. </p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00115">eve::RuntimeHandle&lt; Tag &gt;::fromPacked()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00094">eve::RuntimeHandle&lt; Tag &gt;::nextGeneration()</a>.</p>
+
+</div>
+</div>
+<a id="a188c2939d1febfd912a3a90c198ed11a" name="a188c2939d1febfd912a3a90c198ed11a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a188c2939d1febfd912a3a90c198ed11a">&#9670;&#160;</a></span>RuntimeHandle() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::RuntimeHandle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a>&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a>&#160;</td>
+          <td class="paramname"><em>generation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs a handle from its exact slot coordinates. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Owner-local slot index. </td></tr>
+    <tr><td class="paramname">generation</td><td>Owner-local generation; zero is invalid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>This constructor does not prove that the owner currently has a live object at the coordinates. Resolution is the owner's responsibility. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2243a81b2b955024fb1a673279a2fd16" name="a2243a81b2b955024fb1a673279a2fd16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2243a81b2b955024fb1a673279a2fd16">&#9670;&#160;</a></span>fromPacked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a> <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::fromPacked </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reconstructs a handle from an explicit packed boundary value. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> previously produced by <a class="el" href="classeve_1_1RuntimeHandle.html#a9aa71889bf143f4ad9b60c17f6780ed1" title="Encodes the two coordinates for a legacy integer boundary.">packed()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The decoded handle; invalid coordinate values remain invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1RuntimeHandle.html#ab302e188a72c7ccf5b3cd586c27edd99">eve::RuntimeHandle&lt; Tag &gt;::RuntimeHandle()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00442">eve::climbing::ClimbingRuntime::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a2ea94d5f5f0f0c5bb2696cc059895042" name="a2ea94d5f5f0f0c5bb2696cc059895042"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ea94d5f5f0f0c5bb2696cc059895042">&#9670;&#160;</a></span>generation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a> <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::generation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the owner-local replacement generation. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8h_source.html#l00034">eve::graphics::PrimitiveHandle::generation()</a>.</p>
+
+</div>
+</div>
+<a id="a505b74615986c86dea6e68baa54116f6" name="a505b74615986c86dea6e68baa54116f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a505b74615986c86dea6e68baa54116f6">&#9670;&#160;</a></span>index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a> <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::index </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the owner-local slot index. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PrimitiveScene_8h_source.html#l00033">eve::graphics::PrimitiveHandle::index()</a>.</p>
+
+</div>
+</div>
+<a id="ad4f1ab6695f0eef5d1c5d84db3b2161a" name="ad4f1ab6695f0eef5d1c5d84db3b2161a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4f1ab6695f0eef5d1c5d84db3b2161a">&#9670;&#160;</a></span>invalid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a> <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::invalid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the canonical invalid handle. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a215ff13fe8ce7355648563059491b458" name="a215ff13fe8ce7355648563059491b458"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a215ff13fe8ce7355648563059491b458">&#9670;&#160;</a></span>isInvalid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::isInvalid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether this value is the invalid sentinel. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00067">eve::RuntimeHandle&lt; Tag &gt;::isValid()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsLink_8cpp_source.html#l00031">eve::physics::PhysicsLink::attach()</a>, <a class="el" href="MeshEffect_8cpp_source.html#l00018">eve::stylize::MeshEffectInstance::bindTarget()</a>, <a class="el" href="World3D_8cpp_source.html#l01256">eve::physics::World3D::rayCastOwned()</a> , 以及 <a class="el" href="World3D_8cpp_source.html#l00937">eve::physics::World3D::registerShapeHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a3af61a1aadfc37cdd8611cc5c57526e2" name="a3af61a1aadfc37cdd8611cc5c57526e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3af61a1aadfc37cdd8611cc5c57526e2">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether both coordinates are usable handle values. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00047">eve::RuntimeHandle&lt; Tag &gt;::invalidGeneration</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00045">eve::RuntimeHandle&lt; Tag &gt;::invalidIndex</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingAnchorGraph_8cpp_source.html#l00384">eve::climbing::ClimbingAnchorGraphInstance::bind()</a>, <a class="el" href="SmartObject_8cpp_source.html#l00149">eve::npc_ai::SmartObjectWorld::claim()</a>, <a class="el" href="World3D_8cpp_source.html#l00644">eve::physics::World3D::forgetJoint()</a>, <a class="el" href="PhysicsLink_8cpp_source.html#l00039">eve::physics::PhysicsLink::fromBody()</a>, <a class="el" href="PhysicsLink_8cpp_source.html#l00047">eve::physics::PhysicsLink::fromBody()</a>, <a class="el" href="PhysicsLink_8cpp_source.html#l00103">eve::physics::PhysicsJointLink::fromJoint()</a>, <a class="el" href="PhysicsLink_8cpp_source.html#l00082">eve::physics::PhysicsShapeLink::fromShape()</a>, <a class="el" href="MeshEffect_8h_source.html#l00053">eve::stylize::MeshEffectInstance::isBound()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00072">eve::RuntimeHandle&lt; Tag &gt;::isInvalid()</a>, <a class="el" href="PrimitiveScene_8h_source.html#l00032">eve::graphics::PrimitiveHandle::isValid()</a>, <a class="el" href="PhysicsLink_8h_source.html#l00038">eve::physics::PhysicsLink::isValid()</a>, <a class="el" href="PhysicsLink_8h_source.html#l00073">eve::physics::PhysicsShapeLink::isValid()</a>, <a class="el" href="PhysicsLink_8h_source.html#l00096">eve::physics::PhysicsJointLink::isValid()</a>, <a class="el" href="NpcAiECS_8cpp_source.html#l00013">eve::npc_ai::NpcAgentState::releaseAgent()</a> , 以及 <a class="el" href="SmartObject_8cpp_source.html#l00214">eve::npc_ai::SmartObjectWorld::releaseAgentClaims()</a>.</p>
+
+</div>
+</div>
+<a id="a598704261bd2411b38d66ff1202894d5" name="a598704261bd2411b38d66ff1202894d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a598704261bd2411b38d66ff1202894d5">&#9670;&#160;</a></span>nextGeneration() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::optional&lt; <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a> &gt; <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::nextGeneration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns this slot at its next generation. </p>
+<dl class="section return"><dt>返回</dt><dd>A bumped handle, or empty for an invalid index or overflow. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00045">eve::RuntimeHandle&lt; Tag &gt;::invalidIndex</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00094">eve::RuntimeHandle&lt; Tag &gt;::nextGeneration()</a> , 以及 <a class="el" href="classeve_1_1RuntimeHandle.html#ab302e188a72c7ccf5b3cd586c27edd99">eve::RuntimeHandle&lt; Tag &gt;::RuntimeHandle()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelOwnership_8h_source.html#l00407">eve::script::RuntimeObjectRegistry&lt; T, Tag &gt;::clear()</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00319">eve::script::RuntimeObjectRegistry&lt; T, Tag &gt;::erase()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00094">eve::RuntimeHandle&lt; Tag &gt;::nextGeneration()</a> , 以及 <a class="el" href="SquirrelOwnership_8h_source.html#l00361">eve::script::RuntimeObjectRegistry&lt; T, Tag &gt;::take()</a>.</p>
+
+</div>
+</div>
+<a id="a716bf9338c33d3576801609819323ce7" name="a716bf9338c33d3576801609819323ce7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a716bf9338c33d3576801609819323ce7">&#9670;&#160;</a></span>nextGeneration() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr std::optional&lt; <a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a> &gt; <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::nextGeneration </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a>&#160;</td>
+          <td class="paramname"><em>current</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the next generation without unsigned wraparound. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">current</td><td>The current slot generation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The next generation, or empty when the slot must be retired. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9aa71889bf143f4ad9b60c17f6780ed1" name="a9aa71889bf143f4ad9b60c17f6780ed1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aa71889bf143f4ad9b60c17f6780ed1">&#9670;&#160;</a></span>packed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint64_t <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::packed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Encodes the two coordinates for a legacy integer boundary. </p>
+<dl class="section return"><dt>返回</dt><dd>A lossless process-local packed representation. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This is an explicit projection only; it is not an integer conversion operator and must not be used as a persistent ID. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00236">eve::ui::DatabasePanel::build()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a25be0c6f45e3a083944f3677af0b8e97" name="a25be0c6f45e3a083944f3677af0b8e97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25be0c6f45e3a083944f3677af0b8e97">&#9670;&#160;</a></span>operator&lt;=&gt;</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto operator&lt;=&gt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0b5c1155fed2b45638826d6f9fce6b6a" name="a0b5c1155fed2b45638826d6f9fce6b6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b5c1155fed2b45638826d6f9fce6b6a">&#9670;&#160;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a>&lt; Tag &gt; &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a6b0481e9f050a5c35dc587fe63c319f4" name="a6b0481e9f050a5c35dc587fe63c319f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b0481e9f050a5c35dc587fe63c319f4">&#9670;&#160;</a></span>invalidGeneration</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1RuntimeHandle.html#a756041fae4ea25e447f88f252b7ce1ee">generation_type</a> <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::invalidGeneration = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reserved generation value shared by all invalid handles. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeHandle_8h_source.html#l00067">eve::RuntimeHandle&lt; Tag &gt;::isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a8689f8e4367cbfb67bda4e6dbcfe8b5a" name="a8689f8e4367cbfb67bda4e6dbcfe8b5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8689f8e4367cbfb67bda4e6dbcfe8b5a">&#9670;&#160;</a></span>invalidIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a> <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; Tag &gt;::invalidIndex = std::numeric_limits&lt;<a class="el" href="classeve_1_1RuntimeHandle.html#a17547387e87466ba398b814d65eadcd1">index_type</a>&gt;::max()</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reserved index value shared by all invalid handles. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a> 第 <a class="el" href="RuntimeHandle_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelOwnership_8h_source.html#l00237">eve::script::RuntimeObjectRegistry&lt; T, Tag &gt;::emplace()</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00067">eve::RuntimeHandle&lt; Tag &gt;::isValid()</a> , 以及 <a class="el" href="RuntimeHandle_8h_source.html#l00094">eve::RuntimeHandle&lt; Tag &gt;::nextGeneration()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="RuntimeHandle_8h_source.html">RuntimeHandle.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

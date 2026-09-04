@@ -1,0 +1,233 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/vehicle/VehicleAttributes.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_67e8cd4d52697e685f77c3533c06f8a6.html">vehicle</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VehicleAttributes.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VehicleAttributes_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="AttributeProjection_8h.html">attributes/AttributeProjection.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1vehicle.html">eve::vehicle</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>VehicleEntity;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html">VehicleAttributeAdapter</a> final {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a119e4b6b84e8b998f6dc513ce7f16bce">   26</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view <a class="code hl_variable" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a119e4b6b84e8b998f6dc513ce7f16bce">healthAttribute</a>    = <span class="stringliteral">&quot;health&quot;</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#ab4c31efb7ad2e3adbd5e2d71fd651341">   27</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view <a class="code hl_variable" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#ab4c31efb7ad2e3adbd5e2d71fd651341">maxHealthAttribute</a> = <span class="stringliteral">&quot;max_health&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#ad8acf3fe7c4a6dd03229e4bd89a5b640">   28</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::string_view <a class="code hl_variable" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#ad8acf3fe7c4a6dd03229e4bd89a5b640">armorAttribute</a>     = <span class="stringliteral">&quot;armor&quot;</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a5dd867416addad422359abd4db1bcbf3">ensure</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; vehicle);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;double&gt;</a> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a22cbcd75e76a797077164dd3b9c8856f">read</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; vehicle, std::string_view attribute);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a75b975ac72870e93be45507627355ef5">setBase</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; vehicle, std::string_view attribute, <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::attributes::ModifierId&gt;</a> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#aea1ec5cccc47a9a17462ac0aa2a9d3d8">addModifier</a>(</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; vehicle, std::string <span class="keywordtype">id</span>, std::string_view attribute, std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <a class="code hl_enumeration" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">eve::attributes::AttributeOperation</a> operation, <span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <a class="code hl_typedef" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">eve::attributes::ModifierPriority</a> <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = eve::attributes::priority::runtime);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a900453091804da34bff752586a8af974">project</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; vehicle);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::attributes::AttributeProjectionSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#aad5c0195fd3dc209306c89e97a9a60a4">snapshot</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp; vehicle);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a39ec40fcf25396800c3e8a91a8a3104d">restore</a>(<a class="code hl_class" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a>&amp;                                      vehicle,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                                   <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a>&amp; <a class="code hl_function" href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#aad5c0195fd3dc209306c89e97a9a60a4">snapshot</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                                   <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::Revision</a> expectedRevision);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}  <span class="comment">// namespace eve::vehicle</span></div>
+<div class="ttc" id="aAttributeProjection_8h_html"><div class="ttname"><a href="AttributeProjection_8h.html">AttributeProjection.h</a></div><div class="ttdoc">Owner-aware canonical attribute state shared by gameplay adapters.</div></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html">eve::vehicle::VehicleAttributeAdapter</a></div><div class="ttdoc">Adapts VehicleEntity health and armor to the common attribute core.</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8h_source.html#l00024">VehicleAttributes.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_a119e4b6b84e8b998f6dc513ce7f16bce"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a119e4b6b84e8b998f6dc513ce7f16bce">eve::vehicle::VehicleAttributeAdapter::healthAttribute</a></div><div class="ttdeci">static constexpr std::string_view healthAttribute</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8h_source.html#l00026">VehicleAttributes.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_a22cbcd75e76a797077164dd3b9c8856f"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a22cbcd75e76a797077164dd3b9c8856f">eve::vehicle::VehicleAttributeAdapter::read</a></div><div class="ttdeci">static eve::Result&lt; double &gt; read(VehicleEntity &amp;vehicle, std::string_view attribute)</div><div class="ttdoc">Read a selected final combat attribute and refresh health projection.</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8cpp_source.html#l00093">VehicleAttributes.cpp:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_a39ec40fcf25396800c3e8a91a8a3104d"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a39ec40fcf25396800c3e8a91a8a3104d">eve::vehicle::VehicleAttributeAdapter::restore</a></div><div class="ttdeci">static eve::Result&lt; void &gt; restore(VehicleEntity &amp;vehicle, const eve::attributes::AttributeProjectionSnapshot &amp;snapshot, eve::Revision expectedRevision)</div><div class="ttdoc">Restore a vehicle attribute snapshot after owner/revision checks.</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8cpp_source.html#l00144">VehicleAttributes.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_a5dd867416addad422359abd4db1bcbf3"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a5dd867416addad422359abd4db1bcbf3">eve::vehicle::VehicleAttributeAdapter::ensure</a></div><div class="ttdeci">static eve::Result&lt; void &gt; ensure(VehicleEntity &amp;vehicle)</div><div class="ttdoc">Bind and seed selected combat attributes exactly once.</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8cpp_source.html#l00059">VehicleAttributes.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_a75b975ac72870e93be45507627355ef5"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a75b975ac72870e93be45507627355ef5">eve::vehicle::VehicleAttributeAdapter::setBase</a></div><div class="ttdeci">static eve::Result&lt; void &gt; setBase(VehicleEntity &amp;vehicle, std::string_view attribute, double value)</div><div class="ttdoc">Set a selected canonical base and refresh the compatibility health fields.</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8cpp_source.html#l00104">VehicleAttributes.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_a900453091804da34bff752586a8af974"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#a900453091804da34bff752586a8af974">eve::vehicle::VehicleAttributeAdapter::project</a></div><div class="ttdeci">static eve::Result&lt; void &gt; project(VehicleEntity &amp;vehicle)</div><div class="ttdoc">Project canonical health values into VehicleEntity::Health.</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8cpp_source.html#l00076">VehicleAttributes.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_aad5c0195fd3dc209306c89e97a9a60a4"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#aad5c0195fd3dc209306c89e97a9a60a4">eve::vehicle::VehicleAttributeAdapter::snapshot</a></div><div class="ttdeci">static eve::Result&lt; eve::attributes::AttributeProjectionSnapshot &gt; snapshot(VehicleEntity &amp;vehicle)</div><div class="ttdoc">Capture health/max_health/armor with owner generation and revision.</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8cpp_source.html#l00135">VehicleAttributes.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_ab4c31efb7ad2e3adbd5e2d71fd651341"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#ab4c31efb7ad2e3adbd5e2d71fd651341">eve::vehicle::VehicleAttributeAdapter::maxHealthAttribute</a></div><div class="ttdeci">static constexpr std::string_view maxHealthAttribute</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8h_source.html#l00027">VehicleAttributes.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_ad8acf3fe7c4a6dd03229e4bd89a5b640"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#ad8acf3fe7c4a6dd03229e4bd89a5b640">eve::vehicle::VehicleAttributeAdapter::armorAttribute</a></div><div class="ttdeci">static constexpr std::string_view armorAttribute</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8h_source.html#l00028">VehicleAttributes.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleAttributeAdapter_html_aea1ec5cccc47a9a17462ac0aa2a9d3d8"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleAttributeAdapter.html#aea1ec5cccc47a9a17462ac0aa2a9d3d8">eve::vehicle::VehicleAttributeAdapter::addModifier</a></div><div class="ttdeci">static eve::Result&lt; eve::attributes::ModifierId &gt; addModifier(VehicleEntity &amp;vehicle, std::string id, std::string_view attribute, std::string source, eve::attributes::AttributeOperation operation, double value, eve::attributes::ModifierPriority priority=eve::attributes::priority::runtime)</div><div class="ttdoc">Add a modifier using the shared operation/priority/sequence contract.</div><div class="ttdef"><b>Definition</b> <a href="VehicleAttributes_8cpp_source.html#l00115">VehicleAttributes.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1vehicle_1_1VehicleEntity_html"><div class="ttname"><a href="classeve_1_1vehicle_1_1VehicleEntity.html">eve::vehicle::VehicleEntity</a></div><div class="ttdoc">载具实体：数据全部在组件里，行为在 VehicleSystem。</div><div class="ttdef"><b>Definition</b> <a href="VehicleTypes_8h_source.html#l00172">VehicleTypes.h:172</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1attributes_html_ad494bfaa5f634564da12d93611415192"><div class="ttname"><a href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">eve::attributes::AttributeOperation</a></div><div class="ttdeci">AttributeOperation</div><div class="ttdoc">Built-in calculation operation for an attribute modifier.</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00022">AttributeSet.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1attributes_html_afd5ec976475059b165f840591ea78b7e"><div class="ttname"><a href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">eve::attributes::ModifierPriority</a></div><div class="ttdeci">std::int32_t ModifierPriority</div><div class="ttdef"><b>Definition</b> <a href="AttributeSet_8h_source.html#l00018">AttributeSet.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1vehicle_html"><div class="ttname"><a href="namespaceeve_1_1vehicle.html">eve::vehicle</a></div><div class="ttdoc">驾驶者接口与玩家控制状态。</div><div class="ttdef"><b>Definition</b> <a href="vehicle_2ContainerAdapters_8cpp_source.html#l00014">ContainerAdapters.cpp:14</a></div></div>
+<div class="ttc" id="astructeve_1_1attributes_1_1AttributeProjectionSnapshot_html"><div class="ttname"><a href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a></div><div class="ttdoc">Transaction-safe snapshot of selected attributes and their modifiers.</div><div class="ttdef"><b>Definition</b> <a href="AttributeProjection_8h_source.html#l00038">AttributeProjection.h:38</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

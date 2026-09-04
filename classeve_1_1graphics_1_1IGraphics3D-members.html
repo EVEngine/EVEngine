@@ -1,0 +1,215 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">IGraphics3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::IGraphics3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#ac01aa9b3eb1014d6af14967d638e8340">begin3DFrame</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a8fd2a9e7fbfd55773363ab52407f31be">begin3DFrameToCanvas</a>(Canvas *canvas)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a73e7293dd95b4f36a29b6662976d507d">beginGBufferPass</a>(int width, int height)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#acbfa79f77e7a55ee9a92e599f3dc096d">beginShadowPass</a>(int cascadeIndex)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a9bd8ab133a8fbb7fe7a278ac2762fab9">drawCanvasRGBA</a>(Canvas *canvas, float x, float y, float w, float h, float r=1.f, float g=1.f, float b=1.f, float a=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#aaf8f23f0e0a1a9de59ed19662b5983cb">drawMesh</a>(Mesh *mesh, const glm::mat4 &amp;model, Texture *texture, const Color &amp;tint)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a8782142a31f2f1aaf41224910ea17e13">drawMeshGBuffer</a>(Mesh *mesh, const glm::mat4 &amp;mvp, const glm::mat4 &amp;model, float nearZ, float farZ, Texture *albedo=nullptr, float tintR=1.f, float tintG=1.f, float tintB=1.f, float motionX=0.f, float motionY=0.f, float roughness=0.45f, float metallic=0.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#abbf61e65c03ad5c717c5ed34aaeb28a4">drawMeshGBufferAlpha</a>(Mesh *mesh, const glm::mat4 &amp;mvp, const glm::mat4 &amp;model, float nearZ, float farZ, Texture *albedo=nullptr, float tintR=1.f, float tintG=1.f, float tintB=1.f, float motionX=0.f, float motionY=0.f, float roughness=0.45f, float metallic=0.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#aed73b8793fd9548cc1112d620d991b47">drawMeshShader</a>(Mesh *mesh, const glm::mat4 &amp;model, Texture *texture, const Color &amp;tint, Shader *shader)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#ab90f9ac7d94f9dbea024fcecdcf2d16a">drawMeshShadow</a>(Mesh *mesh, const glm::mat4 &amp;lightMVP)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#aa4bfb9cf4f39fa0dff32e364ab9b2f22">drawMeshShadowAlpha</a>(Mesh *mesh, const glm::mat4 &amp;lightMVP, Texture *albedo=nullptr)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a5c63423379de3396d19ac922d7a3268e">drawPrimitiveScene</a>(const PrimitiveSceneCanvas3D &amp;canvas)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a6ecf959112e2a2a71a8481f8cb559155">drawScene3DRGBA</a>(float x, float y, float w, float h, float r=1.f, float g=1.f, float b=1.f, float a=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#aa1e91ad21653b2601c39358df22051ec">drawVoxelFaceInstances</a>(const uint32_t *packed, int count, float originX, float originY, float originZ, const std::string &amp;faceDir, Texture *atlas, int tilesPerRow=16, const uint32_t *ao=nullptr)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a7c6f80c8f1a89280ff43126d933c34af">end3DFrameToCanvas</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a9155d900cac08a64c547f08f95b23c9a">endGBufferPass</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a5b9f75dd1faac0840cba815321940fad">endShadowPass</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a19869a5f20c837cd898fc6014db5288a">render3D</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#ae97e187e89281c58ba0a30eba9114a8c">renderScene3DToCanvas</a>(Canvas *canvas, Camera3D *camera)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a7cdca5e29f4a9c1ad617f9e9e420b6f6">setCloudShadows</a>(float strength, float worldCell, float time, float windSpeed, float windAngle, float coverage, float detail)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#aa2472b08347f6dcb0e7f50e1642055ce">setDirectionalLight</a>(float dx, float dy, float dz, float r=1.f, float g=1.f, float b=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a6f16a06dc21dfb5ae0282089575c392d">setMesh3DCameraPos</a>(const glm::vec3 &amp;eye)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#ab896c4cf49264aae5d3a295c0b17acb7">setMesh3DClip</a>(float nearZ, float farZ)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#aaa44f9836748fdb4c4a8be7b733f1a59">setMesh3DClusteredLighting</a>(const ClusteredLightingUpload &amp;upload)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a686d8ff6fd28bc7f4f64c8bbc9a2be4b">setMesh3DEnv</a>(Texture *cube, float intensity)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a3912cb878de23640610ee9fd2c89858e">setMesh3DEnvProbe</a>(const glm::vec3 &amp;center, const glm::vec3 &amp;extent)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a24fe991d3bc064b0242fa3427631c21b">setMesh3DHeightTexture</a>(Texture *height)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#aa4ac8ae55b9e3e7d5a906395251aada5">setMesh3DLight</a>(const glm::vec3 &amp;dir, const glm::vec3 &amp;color)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a534111e50f792b180951e345fade28f8">setMesh3DLighting</a>(const Lighting3DPack &amp;pack)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a68148900c4bd508678960eaa095bf75c">setMesh3DMaterial</a>(float metallic, float roughness)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#ac3b4678ed64cf73df28b9a719899bdfd">setMesh3DNormalTexture</a>(Texture *normal)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#afbf044cf0de0d4f624412e9576385a0b">setMesh3DParallax</a>(float scale, float minLayers=8.f, float maxLayers=32.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a2aaf02ac849b037c2e2ac38e71f5af13">setMesh3DReflectionProbes</a>(const ReflectionProbeUpload &amp;upload)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a513956dcbb872abb3696737851721322">setMesh3DSceneColor</a>(Texture *color)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a0f366da2d6978d6a960dbaac11a98ca4">setMesh3DSceneDepth</a>(Texture *depth)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a94c2e00a45ae2c2c8f62542ee2017320">setMesh3DShadowReceive</a>(bool receive)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#af72f73bc97f15ec917dc6dd544a7d338">setMesh3DShadows</a>(const ShadowUpload &amp;upload)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#accc34ad34a0f5c7e2a066ce38950e42c">setMesh3DTexCellBomb</a>(float cellScale, float strength, float rotAmount=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a0fb9bb15b9f228ca1d204c2927a737b5">setMesh3DView</a>(const glm::mat4 &amp;view)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#aa088624ee651ef04ebda31aaf513c180">setMesh3DViewProj</a>(const glm::mat4 &amp;viewProj)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html#a655e482242279a8ec289860aaa195078">~IGraphics3D</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics3D.html">eve::graphics::IGraphics3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

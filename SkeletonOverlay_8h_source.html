@@ -1,0 +1,288 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation_editing/SkeletonOverlay.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3a11c95fd6ffff214691f99b8cbdfe86.html">animation_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SkeletonOverlay.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SkeletonOverlay_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingGizmo_8h.html">editing/EditingGizmo.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>AnimPose;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation__editing.html">eve::animation_editing</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation__editing.html#afd0d0db2cf6482f938464ca53bd8f54c">   16</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">editing::DiagnosticSeverity</a>; <span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#abd0364993d148fecd66206167e6c0834">Revision</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation__editing.html#a71149fce33bc9588696b7d54b72f7f92">   17</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a>; <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>; <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">editing::StableId</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049">SkeletonRetargetState</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a6fcdc090caeade09d0efd6253932b6f5">Unspecified</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049ab65b6f388bb1788248938a5cff5bad1d">Matched</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a164fe50bf145ff772a4229487cba0b50">Unmatched</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a02266588dfd4e565cc42949d0c73f28c">Ambiguous</a> };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html">SkeletonOverlayBone</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a4e66176621ac4d1bd8fb105c2a8181c6">   24</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a4e66176621ac4d1bd8fb105c2a8181c6">id</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a5785bdb231606daaeae3e3aaf6d82322">   25</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a5785bdb231606daaeae3e3aaf6d82322">parent</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a7693cc6657369a53fd57584895cb9d58">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a7693cc6657369a53fd57584895cb9d58">name</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#ab46ef3bfd39fd904f2e9580926bdede0">   27</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#ab46ef3bfd39fd904f2e9580926bdede0">position</a>{0.0, 0.0, 0.0};</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#abfe7039ed4d73fdea4146fbbcccc8115">   28</a></span>    std::array&lt;double, 4&gt; <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#abfe7039ed4d73fdea4146fbbcccc8115">rotation</a>{0.0, 0.0, 0.0, 1.0};</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a1932b09a801745a210c1de6f22355c65">   29</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a1932b09a801745a210c1de6f22355c65">selected</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#abc2f21d6043780dfb25418442f04eab4">   30</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#abc2f21d6043780dfb25418442f04eab4">constrained</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#ad6fee843628dee7431eb55eddf0ff322">   31</a></span>    std::array&lt;double, 2&gt; <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#ad6fee843628dee7431eb55eddf0ff322">minimumAngles</a>{0.0, 0.0};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a5edb5111842cfb64a021bebc33c0c281">   32</a></span>    std::array&lt;double, 2&gt; <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a5edb5111842cfb64a021bebc33c0c281">maximumAngles</a>{0.0, 0.0};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a6f328928028abedb324bf2c90d97f439">   33</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049">SkeletonRetargetState</a> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a6f328928028abedb324bf2c90d97f439">retarget</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a6fcdc090caeade09d0efd6253932b6f5">SkeletonRetargetState::Unspecified</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a4a9c4b5e231136a91e2581ff097035f3">   34</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a4a9c4b5e231136a91e2581ff097035f3">maskWeight</a> = 1.0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html">SkeletonOverlayOptions</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a6206594e8a6832c545e784d0544ffb8d">   39</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a6206594e8a6832c545e784d0544ffb8d">maximumBones</a> = 4096;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#aa849c4b6a97d3cfebc652f790b67e20d">   40</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#aa849c4b6a97d3cfebc652f790b67e20d">jointRadius</a> = 0.025;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a04e8eb8ebfbb054c19ec33aef1b7a0fa">   41</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a04e8eb8ebfbb054c19ec33aef1b7a0fa">axisLength</a> = 0.15;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a9c9fc2091b72f5b53de4e9809220a1a2">   42</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a9c9fc2091b72f5b53de4e9809220a1a2">showAxes</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#aa7cfc0e2579936c33dc3e6a9700f8f86">   43</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#aa7cfc0e2579936c33dc3e6a9700f8f86">axesForSelectedOnly</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#af5ca0224cd11ebe5f7224e5168cea04a">   44</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#af5ca0224cd11ebe5f7224e5168cea04a">showConstraints</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editing_1_1SkeletonOverlayBuilder.html">   48</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation__editing_1_1SkeletonOverlayBuilder.html">SkeletonOverlayBuilder</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1GizmoSnapshot.html">editing::GizmoSnapshot</a> <a class="code hl_function" href="classeve_1_1animation__editing_1_1SkeletonOverlayBuilder.html#a2b1e51a76ce8954ef0a32caf80f6c333">build</a>(std::string <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#abd0364993d148fecd66206167e6c0834">Revision</a> <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                              <span class="keyword">const</span> std::vector&lt;SkeletonOverlayBone&gt;&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a58fb98effd5fe6180e79cd9cfc3fd6de">bones</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                              <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html">SkeletonOverlayOptions</a>&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter.html">   57</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter.html">AnimationSkeletonOverlayAdapter</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1GizmoSnapshot.html">editing::GizmoSnapshot</a> <a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter.html#a6a4cd5771fdb75295ea2f1ffb37308c2">build</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a>* skeleton, <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a>* pose,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                              std::string <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="code hl_typedef" href="namespaceeve_1_1animation__editing.html#abd0364993d148fecd66206167e6c0834">Revision</a> <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                              <span class="keyword">const</span> std::string&amp; selectedBone = {},</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                              <span class="keyword">const</span> std::map&lt;std::string, std::string&gt;&amp; retarget = {},</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                              <span class="keyword">const</span> std::map&lt;std::string, double&gt;&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a> = {},</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                              <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html">SkeletonOverlayOptions</a>&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}  <span class="comment">// namespace eve::animation_editing</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aBuildingFx_8cpp_html_ab77cc972f3ee899689ba053015472ccd"><div class="ttname"><a href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a></div><div class="ttdeci">int mask</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00064">BuildingFx.cpp:64</a></div></div>
+<div class="ttc" id="aEditingGizmo_8h_html"><div class="ttname"><a href="EditingGizmo_8h.html">EditingGizmo.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a58fb98effd5fe6180e79cd9cfc3fd6de"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a58fb98effd5fe6180e79cd9cfc3fd6de">bones</a></div><div class="ttdeci">std::vector&lt; Bone &gt; bones</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00031">LegacyAnimationImporter.cpp:31</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00017">SquirrelBinding.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00015">AnimPose.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00014">AnimSkeleton.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter_html"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter.html">eve::animation_editing::AnimationSkeletonOverlayAdapter</a></div><div class="ttdoc">Optional bridge extracting an overlay from a real animation pose.</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00057">SkeletonOverlay.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter_html_a6a4cd5771fdb75295ea2f1ffb37308c2"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationSkeletonOverlayAdapter.html#a6a4cd5771fdb75295ea2f1ffb37308c2">eve::animation_editing::AnimationSkeletonOverlayAdapter::build</a></div><div class="ttdeci">editing::GizmoSnapshot build(animation::AnimSkeleton *skeleton, animation::AnimPose *pose, std::string target, Revision revision, const std::string &amp;selectedBone={}, const std::map&lt; std::string, std::string &gt; &amp;retarget={}, const std::map&lt; std::string, double &gt; &amp;mask={}, const SkeletonOverlayOptions &amp;options={}) const</div><div class="ttdoc">Compute pose world cache and build an immutable overlay.</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlayRuntime_8cpp_source.html#l00008">SkeletonOverlayRuntime.cpp:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1SkeletonOverlayBuilder_html"><div class="ttname"><a href="classeve_1_1animation__editing_1_1SkeletonOverlayBuilder.html">eve::animation_editing::SkeletonOverlayBuilder</a></div><div class="ttdoc">Builds bone lines, joints, local axes and constraint arcs without a renderer dependency.</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00048">SkeletonOverlay.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1SkeletonOverlayBuilder_html_a2b1e51a76ce8954ef0a32caf80f6c333"><div class="ttname"><a href="classeve_1_1animation__editing_1_1SkeletonOverlayBuilder.html#a2b1e51a76ce8954ef0a32caf80f6c333">eve::animation_editing::SkeletonOverlayBuilder::build</a></div><div class="ttdeci">editing::GizmoSnapshot build(std::string target, Revision revision, const std::vector&lt; SkeletonOverlayBone &gt; &amp;bones, const SkeletonOverlayOptions &amp;options={}) const</div><div class="ttdoc">Build a deterministic overlay or structured hierarchy/value diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8cpp_source.html#l00057">SkeletonOverlay.cpp:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html">eve::animation_editing</a></div><div class="ttdef"><b>Definition</b> <a href="AnimationClip_8cpp_source.html#l00010">AnimationClip.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a48032e7cd9cf878cd45b382050eb7049"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049">eve::animation_editing::SkeletonRetargetState</a></div><div class="ttdeci">SkeletonRetargetState</div><div class="ttdoc">Retarget state used to color one skeleton overlay bone.</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00020">SkeletonOverlay.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a48032e7cd9cf878cd45b382050eb7049a02266588dfd4e565cc42949d0c73f28c"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a02266588dfd4e565cc42949d0c73f28c">eve::animation_editing::SkeletonRetargetState::Ambiguous</a></div><div class="ttdeci">@ Ambiguous</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a48032e7cd9cf878cd45b382050eb7049a164fe50bf145ff772a4229487cba0b50"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a164fe50bf145ff772a4229487cba0b50">eve::animation_editing::SkeletonRetargetState::Unmatched</a></div><div class="ttdeci">@ Unmatched</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a48032e7cd9cf878cd45b382050eb7049a6fcdc090caeade09d0efd6253932b6f5"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049a6fcdc090caeade09d0efd6253932b6f5">eve::animation_editing::SkeletonRetargetState::Unspecified</a></div><div class="ttdeci">@ Unspecified</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_a48032e7cd9cf878cd45b382050eb7049ab65b6f388bb1788248938a5cff5bad1d"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#a48032e7cd9cf878cd45b382050eb7049ab65b6f388bb1788248938a5cff5bad1d">eve::animation_editing::SkeletonRetargetState::Matched</a></div><div class="ttdeci">@ Matched</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation__editing_html_abd0364993d148fecd66206167e6c0834"><div class="ttname"><a href="namespaceeve_1_1animation__editing.html#abd0364993d148fecd66206167e6c0834">eve::animation_editing::Revision</a></div><div class="ttdeci">editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00016">SkeletonOverlay.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00051">Animation.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a011e7c6c3a26ea959d34a63beca22c19"><div class="ttname"><a href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">eve::editing::DiagnosticSeverity</a></div><div class="ttdeci">eve::Severity DiagnosticSeverity</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00015">EditingResult.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a60962f18b15404d7942fbae13fd833be"><div class="ttname"><a href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">eve::editing::StableId</a></div><div class="ttdeci">StrongId&lt; StableIdTag &gt; StableId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00061">EditingIds.h:61</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Stable severity of a diagnostic, independent of its display text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00020">Diagnostic.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html">eve::animation_editing::SkeletonOverlayBone</a></div><div class="ttdoc">Immutable renderer-neutral world-space bone snapshot.</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00023">SkeletonOverlay.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_a1932b09a801745a210c1de6f22355c65"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a1932b09a801745a210c1de6f22355c65">eve::animation_editing::SkeletonOverlayBone::selected</a></div><div class="ttdeci">bool selected</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00029">SkeletonOverlay.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_a4a9c4b5e231136a91e2581ff097035f3"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a4a9c4b5e231136a91e2581ff097035f3">eve::animation_editing::SkeletonOverlayBone::maskWeight</a></div><div class="ttdeci">double maskWeight</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00034">SkeletonOverlay.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_a4e66176621ac4d1bd8fb105c2a8181c6"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a4e66176621ac4d1bd8fb105c2a8181c6">eve::animation_editing::SkeletonOverlayBone::id</a></div><div class="ttdeci">StableId id</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00024">SkeletonOverlay.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_a5785bdb231606daaeae3e3aaf6d82322"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a5785bdb231606daaeae3e3aaf6d82322">eve::animation_editing::SkeletonOverlayBone::parent</a></div><div class="ttdeci">StableId parent</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00025">SkeletonOverlay.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_a5edb5111842cfb64a021bebc33c0c281"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a5edb5111842cfb64a021bebc33c0c281">eve::animation_editing::SkeletonOverlayBone::maximumAngles</a></div><div class="ttdeci">std::array&lt; double, 2 &gt; maximumAngles</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00032">SkeletonOverlay.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_a6f328928028abedb324bf2c90d97f439"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a6f328928028abedb324bf2c90d97f439">eve::animation_editing::SkeletonOverlayBone::retarget</a></div><div class="ttdeci">SkeletonRetargetState retarget</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00033">SkeletonOverlay.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_a7693cc6657369a53fd57584895cb9d58"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#a7693cc6657369a53fd57584895cb9d58">eve::animation_editing::SkeletonOverlayBone::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00026">SkeletonOverlay.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_ab46ef3bfd39fd904f2e9580926bdede0"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#ab46ef3bfd39fd904f2e9580926bdede0">eve::animation_editing::SkeletonOverlayBone::position</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00027">SkeletonOverlay.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_abc2f21d6043780dfb25418442f04eab4"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#abc2f21d6043780dfb25418442f04eab4">eve::animation_editing::SkeletonOverlayBone::constrained</a></div><div class="ttdeci">bool constrained</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00030">SkeletonOverlay.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_abfe7039ed4d73fdea4146fbbcccc8115"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#abfe7039ed4d73fdea4146fbbcccc8115">eve::animation_editing::SkeletonOverlayBone::rotation</a></div><div class="ttdeci">std::array&lt; double, 4 &gt; rotation</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00028">SkeletonOverlay.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayBone_html_ad6fee843628dee7431eb55eddf0ff322"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayBone.html#ad6fee843628dee7431eb55eddf0ff322">eve::animation_editing::SkeletonOverlayBone::minimumAngles</a></div><div class="ttdeci">std::array&lt; double, 2 &gt; minimumAngles</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00031">SkeletonOverlay.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayOptions_html"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html">eve::animation_editing::SkeletonOverlayOptions</a></div><div class="ttdoc">Overlay density, feature toggles and hard safety budgets.</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00038">SkeletonOverlay.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayOptions_html_a04e8eb8ebfbb054c19ec33aef1b7a0fa"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a04e8eb8ebfbb054c19ec33aef1b7a0fa">eve::animation_editing::SkeletonOverlayOptions::axisLength</a></div><div class="ttdeci">double axisLength</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00041">SkeletonOverlay.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayOptions_html_a6206594e8a6832c545e784d0544ffb8d"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a6206594e8a6832c545e784d0544ffb8d">eve::animation_editing::SkeletonOverlayOptions::maximumBones</a></div><div class="ttdeci">std::size_t maximumBones</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00039">SkeletonOverlay.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayOptions_html_a9c9fc2091b72f5b53de4e9809220a1a2"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#a9c9fc2091b72f5b53de4e9809220a1a2">eve::animation_editing::SkeletonOverlayOptions::showAxes</a></div><div class="ttdeci">bool showAxes</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00042">SkeletonOverlay.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayOptions_html_aa7cfc0e2579936c33dc3e6a9700f8f86"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#aa7cfc0e2579936c33dc3e6a9700f8f86">eve::animation_editing::SkeletonOverlayOptions::axesForSelectedOnly</a></div><div class="ttdeci">bool axesForSelectedOnly</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00043">SkeletonOverlay.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayOptions_html_aa849c4b6a97d3cfebc652f790b67e20d"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#aa849c4b6a97d3cfebc652f790b67e20d">eve::animation_editing::SkeletonOverlayOptions::jointRadius</a></div><div class="ttdeci">double jointRadius</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00040">SkeletonOverlay.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1animation__editing_1_1SkeletonOverlayOptions_html_af5ca0224cd11ebe5f7224e5168cea04a"><div class="ttname"><a href="structeve_1_1animation__editing_1_1SkeletonOverlayOptions.html#af5ca0224cd11ebe5f7224e5168cea04a">eve::animation_editing::SkeletonOverlayOptions::showConstraints</a></div><div class="ttdeci">bool showConstraints</div><div class="ttdef"><b>Definition</b> <a href="SkeletonOverlay_8h_source.html#l00044">SkeletonOverlay.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GizmoSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1GizmoSnapshot.html">eve::editing::GizmoSnapshot</a></div><div class="ttdoc">Immutable revision-tagged overlay snapshot consumed by any viewport renderer.</div><div class="ttdef"><b>Definition</b> <a href="EditingGizmo_8h_source.html#l00025">EditingGizmo.h:25</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

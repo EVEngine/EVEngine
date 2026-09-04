@@ -1,0 +1,512 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::Uri类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1Uri.html">Uri</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1Uri-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::Uri类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>An immutable, canonical URI value.  
+ <a href="classeve_1_1Uri.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Uri_8h_source.html">Uri.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad3f6778f551a2a60889585a3a9c4e01f" id="r_ad3f6778f551a2a60889585a3a9c4e01f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a46de51bc98b116b6a5be7f8edc19eb5d">UriScheme</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Uri.html#ad3f6778f551a2a60889585a3a9c4e01f">scheme</a> () const noexcept</td></tr>
+<tr class="memdesc:ad3f6778f551a2a60889585a3a9c4e01f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the parsed scheme.  <br /></td></tr>
+<tr class="separator:ad3f6778f551a2a60889585a3a9c4e01f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30c485039f6c986e59beb4abfdaecdfb" id="r_a30c485039f6c986e59beb4abfdaecdfb"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Uri.html#a30c485039f6c986e59beb4abfdaecdfb">path</a> () const noexcept</td></tr>
+<tr class="memdesc:a30c485039f6c986e59beb4abfdaecdfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the virtual path, borrowed from this URI until it is moved or destroyed.  <br /></td></tr>
+<tr class="separator:a30c485039f6c986e59beb4abfdaecdfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80ebaf00c86a30f78f13fdbfa3cd320b" id="r_a80ebaf00c86a30f78f13fdbfa3cd320b"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Uri.html#a80ebaf00c86a30f78f13fdbfa3cd320b">query</a> () const noexcept</td></tr>
+<tr class="memdesc:a80ebaf00c86a30f78f13fdbfa3cd320b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the query component without <code>?</code>, borrowed from this URI.  <br /></td></tr>
+<tr class="separator:a80ebaf00c86a30f78f13fdbfa3cd320b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c069935b5b2adf958fa45e303166a22" id="r_a2c069935b5b2adf958fa45e303166a22"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Uri.html#a2c069935b5b2adf958fa45e303166a22">fragment</a> () const noexcept</td></tr>
+<tr class="memdesc:a2c069935b5b2adf958fa45e303166a22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the fragment component without <code>#</code>, borrowed from this URI.  <br /></td></tr>
+<tr class="separator:a2c069935b5b2adf958fa45e303166a22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf3e858c4479860baefab4461969f3c9" id="r_aaf3e858c4479860baefab4461969f3c9"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Uri.html#aaf3e858c4479860baefab4461969f3c9">format</a> () const noexcept</td></tr>
+<tr class="memdesc:aaf3e858c4479860baefab4461969f3c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable canonical URI text owned by this value.  <br /></td></tr>
+<tr class="separator:aaf3e858c4479860baefab4461969f3c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a6565c58f3581475716a38a3adde1a267" id="r_a6565c58f3581475716a38a3adde1a267"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Uri.html">Uri</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Uri.html#a6565c58f3581475716a38a3adde1a267">parse</a> (std::string_view <a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="memdesc:a6565c58f3581475716a38a3adde1a267"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and canonicalize a resource URI.  <br /></td></tr>
+<tr class="separator:a6565c58f3581475716a38a3adde1a267"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac538cc9a37a92fa391f80faaaf8815f1" id="r_ac538cc9a37a92fa391f80faaaf8815f1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Uri.html">Uri</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Uri.html#ac538cc9a37a92fa391f80faaaf8815f1">fromParts</a> (<a class="el" href="namespaceeve.html#a46de51bc98b116b6a5be7f8edc19eb5d">UriScheme</a> <a class="el" href="classeve_1_1Uri.html#ad3f6778f551a2a60889585a3a9c4e01f">scheme</a>, std::string_view <a class="el" href="classeve_1_1Uri.html#a30c485039f6c986e59beb4abfdaecdfb">path</a>, std::string_view <a class="el" href="classeve_1_1Uri.html#a80ebaf00c86a30f78f13fdbfa3cd320b">query</a>={}, std::string_view <a class="el" href="classeve_1_1Uri.html#a2c069935b5b2adf958fa45e303166a22">fragment</a>={})</td></tr>
+<tr class="memdesc:ac538cc9a37a92fa391f80faaaf8815f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a URI from validated components.  <br /></td></tr>
+<tr class="separator:ac538cc9a37a92fa391f80faaaf8815f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a44272be2b11023e8814ade443ce0fe20" id="r_a44272be2b11023e8814ade443ce0fe20"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Uri.html#a44272be2b11023e8814ade443ce0fe20">operator==</a> (const <a class="el" href="classeve_1_1Uri.html">Uri</a> &amp;, const <a class="el" href="classeve_1_1Uri.html">Uri</a> &amp;) noexcept=default</td></tr>
+<tr class="memdesc:a44272be2b11023e8814ade443ce0fe20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare canonical URI values.  <br /></td></tr>
+<tr class="separator:a44272be2b11023e8814ade443ce0fe20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>An immutable, canonical URI value. </p>
+<p>This type accepts only the five engine resource schemes. It deliberately does not accept <code><a href="file://">file://</a></code>, URLs, or a bare path. URI values own their text and are safe to retain across frames; they contain no borrowed pointers and have no thread affinity. </p>
+
+<p class="definition">在文件 <a class="el" href="Uri_8h_source.html">Uri.h</a> 第 <a class="el" href="Uri_8h_source.html#l00044">44</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aaf3e858c4479860baefab4461969f3c9" name="aaf3e858c4479860baefab4461969f3c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf3e858c4479860baefab4461969f3c9">&#9670;&#160;</a></span>format()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::Uri::format </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable canonical URI text owned by this value. </p>
+
+<p class="definition">在文件 <a class="el" href="Uri_8h_source.html">Uri.h</a> 第 <a class="el" href="Uri_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c069935b5b2adf958fa45e303166a22" name="a2c069935b5b2adf958fa45e303166a22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c069935b5b2adf958fa45e303166a22">&#9670;&#160;</a></span>fragment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::Uri::fragment </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the fragment component without <code>#</code>, borrowed from this URI. </p>
+
+<p class="definition">在文件 <a class="el" href="Uri_8h_source.html">Uri.h</a> 第 <a class="el" href="Uri_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac538cc9a37a92fa391f80faaaf8815f1" name="ac538cc9a37a92fa391f80faaaf8815f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac538cc9a37a92fa391f80faaaf8815f1">&#9670;&#160;</a></span>fromParts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Uri.html">Uri</a> &gt; eve::Uri::fromParts </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a46de51bc98b116b6a5be7f8edc19eb5d">UriScheme</a>&#160;</td>
+          <td class="paramname"><em>scheme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>query</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>fragment</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a URI from validated components. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scheme</td><td>One of the supported resource schemes. </td></tr>
+    <tr><td class="paramname">path</td><td>Relative virtual path; <code>.</code> and <code>..</code> segments are forbidden. </td></tr>
+    <tr><td class="paramname">query</td><td>Optional query component without the leading <code>?</code>. </td></tr>
+    <tr><td class="paramname">fragment</td><td>Optional fragment component without the leading <code>#</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A canonical URI or a structured parse diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Uri_8cpp_source.html">Uri.cpp</a> 第 <a class="el" href="Uri_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="a6565c58f3581475716a38a3adde1a267" name="a6565c58f3581475716a38a3adde1a267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6565c58f3581475716a38a3adde1a267">&#9670;&#160;</a></span>parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Uri.html">Uri</a> &gt; eve::Uri::parse </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse and canonicalize a resource URI. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">text</td><td>URI in <code>scheme://path[?query][#fragment]</code> form. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A checked URI value, or a parse diagnostic for malformed, unsupported, absolute, or path-like input. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Uri_8cpp_source.html">Uri.cpp</a> 第 <a class="el" href="Uri_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="a30c485039f6c986e59beb4abfdaecdfb" name="a30c485039f6c986e59beb4abfdaecdfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30c485039f6c986e59beb4abfdaecdfb">&#9670;&#160;</a></span>path()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::Uri::path </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the virtual path, borrowed from this URI until it is moved or destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="Uri_8h_source.html">Uri.h</a> 第 <a class="el" href="Uri_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80ebaf00c86a30f78f13fdbfa3cd320b" name="a80ebaf00c86a30f78f13fdbfa3cd320b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80ebaf00c86a30f78f13fdbfa3cd320b">&#9670;&#160;</a></span>query()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::Uri::query </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the query component without <code>?</code>, borrowed from this URI. </p>
+
+<p class="definition">在文件 <a class="el" href="Uri_8h_source.html">Uri.h</a> 第 <a class="el" href="Uri_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad3f6778f551a2a60889585a3a9c4e01f" name="ad3f6778f551a2a60889585a3a9c4e01f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3f6778f551a2a60889585a3a9c4e01f">&#9670;&#160;</a></span>scheme()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a46de51bc98b116b6a5be7f8edc19eb5d">UriScheme</a> eve::Uri::scheme </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the parsed scheme. </p>
+
+<p class="definition">在文件 <a class="el" href="Uri_8h_source.html">Uri.h</a> 第 <a class="el" href="Uri_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a44272be2b11023e8814ade443ce0fe20" name="a44272be2b11023e8814ade443ce0fe20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44272be2b11023e8814ade443ce0fe20">&#9670;&#160;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Uri.html">Uri</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Uri.html">Uri</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compare canonical URI values. </p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Uri_8h_source.html">Uri.h</a></li>
+<li>src/engine/common/<a class="el" href="Uri_8cpp_source.html">Uri.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

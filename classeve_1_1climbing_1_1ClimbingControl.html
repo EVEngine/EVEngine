@@ -1,0 +1,658 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::climbing::ClimbingControl类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1climbing.html">climbing</a></li><li class="navelem"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1climbing_1_1ClimbingControl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::climbing::ClimbingControl类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Exposes server-probed climbing actions without accepting authored world targets.  
+ <a href="classeve_1_1climbing_1_1ClimbingControl.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ClimbingControl_8h_source.html">ClimbingControl.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::climbing::ClimbingControl 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1climbing_1_1ClimbingControl.png" usemap="#eve::climbing::ClimbingControl_map" alt=""/>
+  <map id="eve::climbing::ClimbingControl_map" name="eve::climbing::ClimbingControl_map">
+<area href="classeve_1_1IGameplayControlProvider.html" title="Multi-provider gameplay boundary consumed by input, scripts and automation." alt="eve::IGameplayControlProvider" shape="rect" coords="0,0,188,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2c160177e09d96990dccf1a3111fe820" id="r_a2c160177e09d96990dccf1a3111fe820"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a2c160177e09d96990dccf1a3111fe820">ClimbingControl</a> (<a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> character, <a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;runtime, <a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;pose)</td></tr>
+<tr class="memdesc:a2c160177e09d96990dccf1a3111fe820"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an adapter over one runtime, world and authoritative character pose.  <br /></td></tr>
+<tr class="separator:a2c160177e09d96990dccf1a3111fe820"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3f7cd4363abf68d59d47b720a3566bc" id="r_aa3f7cd4363abf68d59d47b720a3566bc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#aa3f7cd4363abf68d59d47b720a3566bc">~ClimbingControl</a> () override</td></tr>
+<tr class="memdesc:aa3f7cd4363abf68d59d47b720a3566bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpublish the capability without destroying borrowed authorities.  <br /></td></tr>
+<tr class="separator:aa3f7cd4363abf68d59d47b720a3566bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af719859032125cf6c07a2e1da7097890" id="r_af719859032125cf6c07a2e1da7097890"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#af719859032125cf6c07a2e1da7097890">ClimbingControl</a> (const <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a> &amp;)=delete</td></tr>
+<tr class="separator:af719859032125cf6c07a2e1da7097890"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed2a6a56669d68ffdbdfad606cedadf" id="r_a4ed2a6a56669d68ffdbdfad606cedadf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a4ed2a6a56669d68ffdbdfad606cedadf">operator=</a> (const <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a> &amp;)=delete</td></tr>
+<tr class="separator:a4ed2a6a56669d68ffdbdfad606cedadf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b882353af3b676f14f46c668c68578f" id="r_a3b882353af3b676f14f46c668c68578f"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a3b882353af3b676f14f46c668c68578f">gameplayDomain</a> () const noexcept override</td></tr>
+<tr class="memdesc:a3b882353af3b676f14f46c668c68578f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable provider domain used for discovery and routing.    <br /></td></tr>
+<tr class="separator:a3b882353af3b676f14f46c668c68578f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37c8d5f0ab7fe6dac4a2ea3bcd84337e" id="r_a37c8d5f0ab7fe6dac4a2ea3bcd84337e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a37c8d5f0ab7fe6dac4a2ea3bcd84337e">observeGameplay</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance) const override</td></tr>
+<tr class="memdesc:a37c8d5f0ab7fe6dac4a2ea3bcd84337e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observe one provider-owned gameplay instance without mutation.    <br /></td></tr>
+<tr class="separator:a37c8d5f0ab7fe6dac4a2ea3bcd84337e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a236d6441656d6f8ed16aaf2cff38ce53" id="r_a236d6441656d6f8ed16aaf2cff38ce53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1GameplayActionDescriptor.html">GameplayActionDescriptor</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a236d6441656d6f8ed16aaf2cff38ce53">availableGameplayActions</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> subject) const override</td></tr>
+<tr class="memdesc:a236d6441656d6f8ed16aaf2cff38ce53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discover currently legal player-semantic actions for one subject.    <br /></td></tr>
+<tr class="separator:a236d6441656d6f8ed16aaf2cff38ce53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbfff66f3cab7985d52948cded440613" id="r_afbfff66f3cab7985d52948cded440613"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayCommandReceipt.html">GameplayCommandReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#afbfff66f3cab7985d52948cded440613">submitGameplay</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, const <a class="el" href="structeve_1_1GameplayCommand.html">GameplayCommand</a> &amp;command) override</td></tr>
+<tr class="memdesc:afbfff66f3cab7985d52948cded440613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate authority and atomically submit one domain command.    <br /></td></tr>
+<tr class="separator:afbfff66f3cab7985d52948cded440613"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85c27933de1d1a8b8767d483a1f1fa23" id="r_a85c27933de1d1a8b8767d483a1f1fa23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a85c27933de1d1a8b8767d483a1f1fa23">advanceGameplay</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) override</td></tr>
+<tr class="memdesc:a85c27933de1d1a8b8767d483a1f1fa23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance one provider-owned instance using injected deterministic time.    <br /></td></tr>
+<tr class="separator:a85c27933de1d1a8b8767d483a1f1fa23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a2d5c4fcf6c1674f5b62544ab3bd85c" id="r_a3a2d5c4fcf6c1674f5b62544ab3bd85c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1GameplayEvent.html">GameplayEvent</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html#a3a2d5c4fcf6c1674f5b62544ab3bd85c">gameplayEvents</a> (const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;session, <a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, std::uint64_t afterSequence) const override</td></tr>
+<tr class="memdesc:a3a2d5c4fcf6c1674f5b62544ab3bd85c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return events strictly newer than an instance-local sequence cursor.    <br /></td></tr>
+<tr class="separator:a3a2d5c4fcf6c1674f5b62544ab3bd85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1IGameplayControlProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1IGameplayControlProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1IGameplayControlProvider.html">eve::IGameplayControlProvider</a></td></tr>
+<tr class="memitem:aa35341669f898fd0b827036a1fb7361b inherit pub_methods_classeve_1_1IGameplayControlProvider" id="r_aa35341669f898fd0b827036a1fb7361b"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aa35341669f898fd0b827036a1fb7361b">~IGameplayControlProvider</a> ()=default</td></tr>
+<tr class="separator:aa35341669f898fd0b827036a1fb7361b inherit pub_methods_classeve_1_1IGameplayControlProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1IGameplayControlProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1IGameplayControlProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1IGameplayControlProvider.html">eve::IGameplayControlProvider</a></td></tr>
+<tr class="memitem:aee803ca0d14eadea63f8788e13d10c2b inherit pub_static_attribs_classeve_1_1IGameplayControlProvider" id="r_aee803ca0d14eadea63f8788e13d10c2b"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aee803ca0d14eadea63f8788e13d10c2b">capabilityName</a> = &quot;IGameplayControlProvider&quot;</td></tr>
+<tr class="separator:aee803ca0d14eadea63f8788e13d10c2b inherit pub_static_attribs_classeve_1_1IGameplayControlProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Exposes server-probed climbing actions without accepting authored world targets. </p>
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a>, physics world and pose remain borrowed authoritative collaborators. They must outlive this owner-thread-affine adapter. Commands carry only player semantics; begin always re-probes the borrowed authoritative world. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8h_source.html">ClimbingControl.h</a> 第 <a class="el" href="ClimbingControl_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2c160177e09d96990dccf1a3111fe820" name="a2c160177e09d96990dccf1a3111fe820"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c160177e09d96990dccf1a3111fe820">&#9670;&#160;</a></span>ClimbingControl() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::climbing::ClimbingControl::ClimbingControl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>character</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a> &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an adapter over one runtime, world and authoritative character pose. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instance</td><td>Stable identity of this climbing-control instance. </td></tr>
+    <tr><td class="paramname">character</td><td>Stable player-controllable character identity. </td></tr>
+    <tr><td class="paramname">runtime</td><td>Borrowed authoritative climbing lifecycle. </td></tr>
+    <tr><td class="paramname">world</td><td>Borrowed physics world used synchronously for probing and movement. </td></tr>
+    <tr><td class="paramname">pose</td><td>Borrowed server-owned pose used synchronously for every new probe. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a> 第 <a class="el" href="ClimbingControl_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa3f7cd4363abf68d59d47b720a3566bc" name="aa3f7cd4363abf68d59d47b720a3566bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3f7cd4363abf68d59d47b720a3566bc">&#9670;&#160;</a></span>~ClimbingControl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::climbing::ClimbingControl::~ClimbingControl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unpublish the capability without destroying borrowed authorities. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a> 第 <a class="el" href="ClimbingControl_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af719859032125cf6c07a2e1da7097890" name="af719859032125cf6c07a2e1da7097890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af719859032125cf6c07a2e1da7097890">&#9670;&#160;</a></span>ClimbingControl() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::climbing::ClimbingControl::ClimbingControl </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a85c27933de1d1a8b8767d483a1f1fa23" name="a85c27933de1d1a8b8767d483a1f1fa23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85c27933de1d1a8b8767d483a1f1fa23">&#9670;&#160;</a></span>advanceGameplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> &gt; eve::climbing::ClimbingControl::advanceGameplay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advance one provider-owned instance using injected deterministic time.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IGameplayControlProvider.html#aa46527b85a71c71075efde668dc997bd">eve::IGameplayControlProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a> 第 <a class="el" href="ClimbingControl_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Action_8cpp_source.html#l00385">eve::action::ActionRuntime::advance()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<a id="a236d6441656d6f8ed16aaf2cff38ce53" name="a236d6441656d6f8ed16aaf2cff38ce53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a236d6441656d6f8ed16aaf2cff38ce53">&#9670;&#160;</a></span>availableGameplayActions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1GameplayActionDescriptor.html">GameplayActionDescriptor</a> &gt; &gt; eve::climbing::ClimbingControl::availableGameplayActions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Discover currently legal player-semantic actions for one subject.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IGameplayControlProvider.html#a21c391f621adf61ea07df02d4ad9668e">eve::IGameplayControlProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a> 第 <a class="el" href="ClimbingControl_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1climbing.html#a4db23751bf842aefd0b32fbb13f29dfcaaefea37c8d478f0968d6606e6095beb7">eve::climbing::Hanging</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="ClimbingControl_8cpp_source.html#l00091">observeGameplay()</a>, <a class="el" href="Climbing_8h_source.html#l00771">eve::climbing::ClimbingRuntime::phase()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00058">phase</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>.</p>
+
+</div>
+</div>
+<a id="a3b882353af3b676f14f46c668c68578f" name="a3b882353af3b676f14f46c668c68578f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b882353af3b676f14f46c668c68578f">&#9670;&#160;</a></span>gameplayDomain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::climbing::ClimbingControl::gameplayDomain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable provider domain used for discovery and routing.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IGameplayControlProvider.html#af87a275bcbf73986f4abe3345a5a7ccf">eve::IGameplayControlProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a> 第 <a class="el" href="ClimbingControl_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a2d5c4fcf6c1674f5b62544ab3bd85c" name="a3a2d5c4fcf6c1674f5b62544ab3bd85c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a2d5c4fcf6c1674f5b62544ab3bd85c">&#9670;&#160;</a></span>gameplayEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1GameplayEvent.html">GameplayEvent</a> &gt; &gt; eve::climbing::ClimbingControl::gameplayEvents </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>afterSequence</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return events strictly newer than an instance-local sequence cursor.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IGameplayControlProvider.html#a6bdfb78dac9e74f9e5f639018c3c2d27">eve::IGameplayControlProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a> 第 <a class="el" href="ClimbingControl_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="GameplayControl_8h_source.html#l00072">eve::GameplayEvent::sequence</a> , 以及 <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>.</p>
+
+</div>
+</div>
+<a id="a37c8d5f0ab7fe6dac4a2ea3bcd84337e" name="a37c8d5f0ab7fe6dac4a2ea3bcd84337e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37c8d5f0ab7fe6dac4a2ea3bcd84337e">&#9670;&#160;</a></span>observeGameplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> &gt; eve::climbing::ClimbingControl::observeGameplay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observe one provider-owned gameplay instance without mutation.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IGameplayControlProvider.html#a251767bc64d37a2e5c12f9c8db648df2">eve::IGameplayControlProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a> 第 <a class="el" href="ClimbingControl_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameplayControl_8h_source.html#l00044">eve::GameplayObservation::domain</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="GameplayControl_8h_source.html#l00045">eve::GameplayObservation::instance</a>, <a class="el" href="SubjectRef_8h_source.html#l00038">eve::SubjectRef::isValid()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Climbing_8h_source.html#l00771">eve::climbing::ClimbingRuntime::phase()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="GameplayControl_8h_source.html#l00047">eve::GameplayObservation::revision</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="ClimbingSnapshot_8cpp_source.html#l00396">eve::climbing::ClimbingRuntime::snapshot()</a>, <a class="el" href="GameplayControl_8h_source.html#l00048">eve::GameplayObservation::state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="GameplayControl_8h_source.html#l00046">eve::GameplayObservation::tick</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingControl_8cpp_source.html#l00115">availableGameplayActions()</a>.</p>
+
+</div>
+</div>
+<a id="a4ed2a6a56669d68ffdbdfad606cedadf" name="a4ed2a6a56669d68ffdbdfad606cedadf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ed2a6a56669d68ffdbdfad606cedadf">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a> &amp; eve::climbing::ClimbingControl::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afbfff66f3cab7985d52948cded440613" name="afbfff66f3cab7985d52948cded440613"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbfff66f3cab7985d52948cded440613">&#9670;&#160;</a></span>submitGameplay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1GameplayCommandReceipt.html">GameplayCommandReceipt</a> &gt; eve::climbing::ClimbingControl::submitGameplay </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplaySession.html">GameplaySession</a> &amp;&#160;</td>
+          <td class="paramname"><em>session</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1GameplayCommand.html">GameplayCommand</a> &amp;&#160;</td>
+          <td class="paramname"><em>command</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate authority and atomically submit one domain command.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IGameplayControlProvider.html#a0e07c001dc3c5551e5ea32c46322b22e">eve::IGameplayControlProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a> 第 <a class="el" href="ClimbingControl_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GameplayControl_8h_source.html#l00065">eve::GameplayCommandReceipt::acceptedTick</a>, <a class="el" href="GameplayControl_8h_source.html#l00054">eve::GameplayCommand::action</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Action_8cpp_source.html#l00536">eve::action::ActionRuntime::cancel()</a>, <a class="el" href="GameplayControl_8h_source.html#l00063">eve::GameplayCommandReceipt::commandId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="GameplayControl_8h_source.html#l00067">eve::GameplayCommandReceipt::details</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00026">dropped</a>, <a class="el" href="GameplayControl_8h_source.html#l00064">eve::GameplayCommandReceipt::executionId</a>, <a class="el" href="GameplayControl_8h_source.html#l00057">eve::GameplayCommand::expectedRevision</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GameplayControl_8h_source.html#l00053">eve::GameplayCommand::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="GameplayControl_8h_source.html#l00056">eve::GameplayCommand::observedTick</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="GameplayControl_8h_source.html#l00066">eve::GameplayCommandReceipt::resultingRevision</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="GameplayControl_8h_source.html#l00055">eve::GameplayCommand::subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/climbing/<a class="el" href="ClimbingControl_8h_source.html">ClimbingControl.h</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingControl_8cpp_source.html">ClimbingControl.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

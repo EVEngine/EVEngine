@@ -1,0 +1,2446 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::DistanceField3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">DistanceField3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1DistanceField3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::DistanceField3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Regular 3D signed-distance grid for terrain and voxel collision queries. Negative samples are solid, positive samples are empty. Samples are stored at grid vertices and queried with trilinear interpolation.  
+ <a href="classeve_1_1physics_1_1DistanceField3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8f4e1de07c0483254029390dc671893b" id="r_a8f4e1de07c0483254029390dc671893b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a8f4e1de07c0483254029390dc671893b">DistanceField3D</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, int <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, float cellSize, float originX, float originY, float originZ, float outsideDistance)</td></tr>
+<tr class="separator:a8f4e1de07c0483254029390dc671893b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a491008fa70c6ad149fd59241d5744340" id="r_a491008fa70c6ad149fd59241d5744340"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a491008fa70c6ad149fd59241d5744340">setDistances</a> (const std::vector&lt; float &gt; &amp;distances)</td></tr>
+<tr class="memdesc:a491008fa70c6ad149fd59241d5744340"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace every sample in x-fastest, then y, then z order.  <br /></td></tr>
+<tr class="separator:a491008fa70c6ad149fd59241d5744340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18fec3e071d6c31af79f796cc364bd7e" id="r_a18fec3e071d6c31af79f796cc364bd7e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a18fec3e071d6c31af79f796cc364bd7e">fill</a> (float distance)</td></tr>
+<tr class="memdesc:a18fec3e071d6c31af79f796cc364bd7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set every grid sample to the same finite distance.  <br /></td></tr>
+<tr class="separator:a18fec3e071d6c31af79f796cc364bd7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa698a6f889baf74d0d71a685f626b2da" id="r_aa698a6f889baf74d0d71a685f626b2da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aa698a6f889baf74d0d71a685f626b2da">setDistanceRegion</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, int <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, const std::vector&lt; float &gt; &amp;distances)</td></tr>
+<tr class="memdesc:aa698a6f889baf74d0d71a685f626b2da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace a grid subregion in x-fastest, then y, then z order.  <br /></td></tr>
+<tr class="separator:aa698a6f889baf74d0d71a685f626b2da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f94667415fa4e81f253fabc0313904a" id="r_a2f94667415fa4e81f253fabc0313904a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a2f94667415fa4e81f253fabc0313904a">fillRegion</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, int <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, float distance)</td></tr>
+<tr class="memdesc:a2f94667415fa4e81f253fabc0313904a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill an in-bounds grid subregion with one finite signed distance.  <br /></td></tr>
+<tr class="separator:a2f94667415fa4e81f253fabc0313904a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3a01e3bd2fd0bb4ead1989df35a9625" id="r_ab3a01e3bd2fd0bb4ead1989df35a9625"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab3a01e3bd2fd0bb4ead1989df35a9625">setDistance</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float distance)</td></tr>
+<tr class="memdesc:ab3a01e3bd2fd0bb4ead1989df35a9625"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a signed-distance sample at a grid vertex.  <br /></td></tr>
+<tr class="separator:ab3a01e3bd2fd0bb4ead1989df35a9625"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee56aa2e506a39619ec7c35e4f24f12b" id="r_aee56aa2e506a39619ec7c35e4f24f12b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aee56aa2e506a39619ec7c35e4f24f12b">getDistance</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="memdesc:aee56aa2e506a39619ec7c35e4f24f12b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a grid vertex; out-of-range vertices return the outside distance.  <br /></td></tr>
+<tr class="separator:aee56aa2e506a39619ec7c35e4f24f12b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae364e3757f77579b65a5a1f025c6e407" id="r_ae364e3757f77579b65a5a1f025c6e407"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ae364e3757f77579b65a5a1f025c6e407">sample</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="memdesc:ae364e3757f77579b65a5a1f025c6e407"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trilinearly sample the field in world coordinates.  <br /></td></tr>
+<tr class="separator:ae364e3757f77579b65a5a1f025c6e407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fb8dbdd14c6e965f2ff31372e38f2d6" id="r_a9fb8dbdd14c6e965f2ff31372e38f2d6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a9fb8dbdd14c6e965f2ff31372e38f2d6">getWidth</a> () const</td></tr>
+<tr class="memdesc:a9fb8dbdd14c6e965f2ff31372e38f2d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of grid vertices along the X axis.  <br /></td></tr>
+<tr class="separator:a9fb8dbdd14c6e965f2ff31372e38f2d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70bb21ce0ca9cc4e7ae452cac1db6f85" id="r_a70bb21ce0ca9cc4e7ae452cac1db6f85"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a70bb21ce0ca9cc4e7ae452cac1db6f85">getHeight</a> () const</td></tr>
+<tr class="memdesc:a70bb21ce0ca9cc4e7ae452cac1db6f85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of grid vertices along the Y axis.  <br /></td></tr>
+<tr class="separator:a70bb21ce0ca9cc4e7ae452cac1db6f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0bdc3dda5d4ffda973b9c1027c068d1" id="r_ae0bdc3dda5d4ffda973b9c1027c068d1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ae0bdc3dda5d4ffda973b9c1027c068d1">getDepth</a> () const</td></tr>
+<tr class="memdesc:ae0bdc3dda5d4ffda973b9c1027c068d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of grid vertices along the Z axis.  <br /></td></tr>
+<tr class="separator:ae0bdc3dda5d4ffda973b9c1027c068d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1add73b540ec0183cb8a812dfc2ed655" id="r_a1add73b540ec0183cb8a812dfc2ed655"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1add73b540ec0183cb8a812dfc2ed655">getSampleCount</a> () const</td></tr>
+<tr class="memdesc:a1add73b540ec0183cb8a812dfc2ed655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of signed-distance samples.  <br /></td></tr>
+<tr class="separator:a1add73b540ec0183cb8a812dfc2ed655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cad1bf20dc6c7d089c7725c918f08df" id="r_a6cad1bf20dc6c7d089c7725c918f08df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a6cad1bf20dc6c7d089c7725c918f08df">getCellSize</a> () const</td></tr>
+<tr class="memdesc:a6cad1bf20dc6c7d089c7725c918f08df"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space distance between adjacent grid vertices.  <br /></td></tr>
+<tr class="separator:a6cad1bf20dc6c7d089c7725c918f08df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46f4805dc5aaa5f7935c67738636f20f" id="r_a46f4805dc5aaa5f7935c67738636f20f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a46f4805dc5aaa5f7935c67738636f20f">getOriginX</a> () const</td></tr>
+<tr class="memdesc:a46f4805dc5aaa5f7935c67738636f20f"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space X coordinate of grid vertex (0,0,0).  <br /></td></tr>
+<tr class="separator:a46f4805dc5aaa5f7935c67738636f20f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63f28099b53a3a18569dd9fac44fdf0d" id="r_a63f28099b53a3a18569dd9fac44fdf0d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a63f28099b53a3a18569dd9fac44fdf0d">getOriginY</a> () const</td></tr>
+<tr class="memdesc:a63f28099b53a3a18569dd9fac44fdf0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space Y coordinate of grid vertex (0,0,0).  <br /></td></tr>
+<tr class="separator:a63f28099b53a3a18569dd9fac44fdf0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed867a8652fcb4ba080632e51c053640" id="r_aed867a8652fcb4ba080632e51c053640"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aed867a8652fcb4ba080632e51c053640">getOriginZ</a> () const</td></tr>
+<tr class="memdesc:aed867a8652fcb4ba080632e51c053640"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space Z coordinate of grid vertex (0,0,0).  <br /></td></tr>
+<tr class="separator:aed867a8652fcb4ba080632e51c053640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a714d06141650e65a6af127110d88311f" id="r_a714d06141650e65a6af127110d88311f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a714d06141650e65a6af127110d88311f">getOutsideDistance</a> () const</td></tr>
+<tr class="memdesc:a714d06141650e65a6af127110d88311f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance returned for world samples outside the grid.  <br /></td></tr>
+<tr class="separator:a714d06141650e65a6af127110d88311f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a730d47416ae5811d0171eedf3ab57b31" id="r_a730d47416ae5811d0171eedf3ab57b31"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a730d47416ae5811d0171eedf3ab57b31">getRevision</a> () const</td></tr>
+<tr class="memdesc:a730d47416ae5811d0171eedf3ab57b31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic wrapping counter incremented once after each successful mutation.  <br /></td></tr>
+<tr class="separator:a730d47416ae5811d0171eedf3ab57b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4533b40d9bdf4143537cd847630b9d78" id="r_a4533b40d9bdf4143537cd847630b9d78"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a4533b40d9bdf4143537cd847630b9d78">sampleNormal</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a4533b40d9bdf4143537cd847630b9d78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimate the normalized outward field gradient at a world position.  <br /></td></tr>
+<tr class="separator:a4533b40d9bdf4143537cd847630b9d78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e553e3e56b7ff5e39486b211449b67b" id="r_a7e553e3e56b7ff5e39486b211449b67b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a7e553e3e56b7ff5e39486b211449b67b">getNormalX</a> () const</td></tr>
+<tr class="memdesc:a7e553e3e56b7ff5e39486b211449b67b"><td class="mdescLeft">&#160;</td><td class="mdescRight">X component of the most recently sampled collision normal.  <br /></td></tr>
+<tr class="separator:a7e553e3e56b7ff5e39486b211449b67b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1d6ba3de31ed88f4b5612a141c28c68" id="r_aa1d6ba3de31ed88f4b5612a141c28c68"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aa1d6ba3de31ed88f4b5612a141c28c68">getNormalY</a> () const</td></tr>
+<tr class="memdesc:aa1d6ba3de31ed88f4b5612a141c28c68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y component of the most recently sampled collision normal.  <br /></td></tr>
+<tr class="separator:aa1d6ba3de31ed88f4b5612a141c28c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7153bcbc4dcc1e8fd052a2f5bae9f92e" id="r_a7153bcbc4dcc1e8fd052a2f5bae9f92e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a7153bcbc4dcc1e8fd052a2f5bae9f92e">getNormalZ</a> () const</td></tr>
+<tr class="memdesc:a7153bcbc4dcc1e8fd052a2f5bae9f92e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Z component of the most recently sampled collision normal.  <br /></td></tr>
+<tr class="separator:a7153bcbc4dcc1e8fd052a2f5bae9f92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace405889e90e6cbbc891e5219a18649c" id="r_ace405889e90e6cbbc891e5219a18649c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ace405889e90e6cbbc891e5219a18649c">checkSphere</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:ace405889e90e6cbbc891e5219a18649c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test a sphere against the solid (distance &lt;= radius).  <br /></td></tr>
+<tr class="separator:ace405889e90e6cbbc891e5219a18649c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a7f8bfe19d16d442e71f2a8990bfa72" id="r_a5a7f8bfe19d16d442e71f2a8990bfa72"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a5a7f8bfe19d16d442e71f2a8990bfa72">checkCapsule</a> (float <a class="el" href="CaveMesh_8cpp.html#a327159f1ce9ae4c0a2d0a29441d48d31">ax</a>, float <a class="el" href="CaveMesh_8cpp.html#a34dde8d7b04827487b2a154fa76073e6">ay</a>, float <a class="el" href="CaveMesh_8cpp.html#a7ddaee9a723179884042cbfef87900bd">az</a>, float <a class="el" href="CaveMesh_8cpp.html#a46f366532780059e352ab33e75049072">bx</a>, float <a class="el" href="CaveMesh_8cpp.html#a8d53c4b43e0a77cce8efcd89679e2f8c">by</a>, float <a class="el" href="CaveMesh_8cpp.html#a30130acffcc4a04bff5c8ca2279395d8">bz</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a5a7f8bfe19d16d442e71f2a8990bfa72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test a capsule defined by two sphere centers against the solid.  <br /></td></tr>
+<tr class="separator:a5a7f8bfe19d16d442e71f2a8990bfa72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85f907937365ab5ee0771ec86cf4325e" id="r_a85f907937365ab5ee0771ec86cf4325e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a85f907937365ab5ee0771ec86cf4325e">castSphere</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float deltaX, float deltaY, float deltaZ)</td></tr>
+<tr class="memdesc:a85f907937365ab5ee0771ec86cf4325e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sweep a sphere through the field and cache the earliest contact.  <br /></td></tr>
+<tr class="separator:a85f907937365ab5ee0771ec86cf4325e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c0f44071b5375565ed2a2041b792240" id="r_a7c0f44071b5375565ed2a2041b792240"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a7c0f44071b5375565ed2a2041b792240">castCapsule</a> (float <a class="el" href="CaveMesh_8cpp.html#a327159f1ce9ae4c0a2d0a29441d48d31">ax</a>, float <a class="el" href="CaveMesh_8cpp.html#a34dde8d7b04827487b2a154fa76073e6">ay</a>, float <a class="el" href="CaveMesh_8cpp.html#a7ddaee9a723179884042cbfef87900bd">az</a>, float <a class="el" href="CaveMesh_8cpp.html#a46f366532780059e352ab33e75049072">bx</a>, float <a class="el" href="CaveMesh_8cpp.html#a8d53c4b43e0a77cce8efcd89679e2f8c">by</a>, float <a class="el" href="CaveMesh_8cpp.html#a30130acffcc4a04bff5c8ca2279395d8">bz</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float deltaX, float deltaY, float deltaZ)</td></tr>
+<tr class="memdesc:a7c0f44071b5375565ed2a2041b792240"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sweep a capsule through the field and cache the earliest contact.  <br /></td></tr>
+<tr class="separator:a7c0f44071b5375565ed2a2041b792240"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ed8d6250b16de3e252f2959aaa75231" id="r_a1ed8d6250b16de3e252f2959aaa75231"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1ed8d6250b16de3e252f2959aaa75231">moveCapsule</a> (float <a class="el" href="CaveMesh_8cpp.html#a327159f1ce9ae4c0a2d0a29441d48d31">ax</a>, float <a class="el" href="CaveMesh_8cpp.html#a34dde8d7b04827487b2a154fa76073e6">ay</a>, float <a class="el" href="CaveMesh_8cpp.html#a7ddaee9a723179884042cbfef87900bd">az</a>, float <a class="el" href="CaveMesh_8cpp.html#a46f366532780059e352ab33e75049072">bx</a>, float <a class="el" href="CaveMesh_8cpp.html#a8d53c4b43e0a77cce8efcd89679e2f8c">by</a>, float <a class="el" href="CaveMesh_8cpp.html#a30130acffcc4a04bff5c8ca2279395d8">bz</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float deltaX, float deltaY, float deltaZ)</td></tr>
+<tr class="memdesc:a1ed8d6250b16de3e252f2959aaa75231"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a capsule displacement against the field with sliding and depenetration. The capsule coordinates are not stored; apply getMoverDeltaX/Y/Z to both endpoints.  <br /></td></tr>
+<tr class="separator:a1ed8d6250b16de3e252f2959aaa75231"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d1f85f36a9335bc156436f59b54a180" id="r_a2d1f85f36a9335bc156436f59b54a180"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a2d1f85f36a9335bc156436f59b54a180">setMoverUp</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a2d1f85f36a9335bc156436f59b54a180"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the normalized reference-up direction used for ground classification.  <br /></td></tr>
+<tr class="separator:a2d1f85f36a9335bc156436f59b54a180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75860699f31346ce4d6217b20a5856e0" id="r_a75860699f31346ce4d6217b20a5856e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a75860699f31346ce4d6217b20a5856e0">setMoverSlopeLimit</a> (float <a class="el" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>)</td></tr>
+<tr class="memdesc:a75860699f31346ce4d6217b20a5856e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the maximum walkable slope angle in degrees, clamped to [0, 89.9].  <br /></td></tr>
+<tr class="separator:a75860699f31346ce4d6217b20a5856e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac6cee4eea5a3383620dfab1374824dc" id="r_aac6cee4eea5a3383620dfab1374824dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aac6cee4eea5a3383620dfab1374824dc">setMoverSkinWidth</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>)</td></tr>
+<tr class="memdesc:aac6cee4eea5a3383620dfab1374824dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the non-negative separation retained from surfaces by moveCapsule.  <br /></td></tr>
+<tr class="separator:aac6cee4eea5a3383620dfab1374824dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae104b1376f73ec08b645aa74c86a15c2" id="r_ae104b1376f73ec08b645aa74c86a15c2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ae104b1376f73ec08b645aa74c86a15c2">getMoverSkinWidth</a> () const</td></tr>
+<tr class="memdesc:ae104b1376f73ec08b645aa74c86a15c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current mover separation from collision surfaces.  <br /></td></tr>
+<tr class="separator:ae104b1376f73ec08b645aa74c86a15c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1087b45cd0721bef36c02de0a90a650e" id="r_a1087b45cd0721bef36c02de0a90a650e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1087b45cd0721bef36c02de0a90a650e">setMoverGroundSnap</a> (float distance)</td></tr>
+<tr class="memdesc:a1087b45cd0721bef36c02de0a90a650e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the non-negative distance used to snap onto walkable ground after movement.  <br /></td></tr>
+<tr class="separator:a1087b45cd0721bef36c02de0a90a650e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cf0032dae8ffd54606dcdfd4c2ed00f" id="r_a3cf0032dae8ffd54606dcdfd4c2ed00f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a3cf0032dae8ffd54606dcdfd4c2ed00f">getMoverGroundSnap</a> () const</td></tr>
+<tr class="memdesc:a3cf0032dae8ffd54606dcdfd4c2ed00f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current post-move ground-snap distance.  <br /></td></tr>
+<tr class="separator:a3cf0032dae8ffd54606dcdfd4c2ed00f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb821ab92e25ee057ca0fc4e1dd73a4a" id="r_adb821ab92e25ee057ca0fc4e1dd73a4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#adb821ab92e25ee057ca0fc4e1dd73a4a">setMoverStepHeight</a> (float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:adb821ab92e25ee057ca0fc4e1dd73a4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the maximum non-negative ledge height automatically climbed by moveCapsule.  <br /></td></tr>
+<tr class="separator:adb821ab92e25ee057ca0fc4e1dd73a4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c599d1b704a837801652b7e8cbb14d2" id="r_a4c599d1b704a837801652b7e8cbb14d2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a4c599d1b704a837801652b7e8cbb14d2">getMoverStepHeight</a> () const</td></tr>
+<tr class="memdesc:a4c599d1b704a837801652b7e8cbb14d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current automatic step height; zero disables step climbing.  <br /></td></tr>
+<tr class="separator:a4c599d1b704a837801652b7e8cbb14d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1159e9515bcdb5916ac3618e40374c70" id="r_a1159e9515bcdb5916ac3618e40374c70"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1159e9515bcdb5916ac3618e40374c70">getCollisionDistance</a> () const</td></tr>
+<tr class="memdesc:a1159e9515bcdb5916ac3618e40374c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signed clearance from the last check (negative means penetration).  <br /></td></tr>
+<tr class="separator:a1159e9515bcdb5916ac3618e40374c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91ac87f554371d70ac4d97ea867beaab" id="r_a91ac87f554371d70ac4d97ea867beaab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a91ac87f554371d70ac4d97ea867beaab">getCollisionX</a> () const</td></tr>
+<tr class="memdesc:a91ac87f554371d70ac4d97ea867beaab"><td class="mdescLeft">&#160;</td><td class="mdescRight">X coordinate of the closest sampled point from the last collision check.  <br /></td></tr>
+<tr class="separator:a91ac87f554371d70ac4d97ea867beaab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a281c57dd30b7b5adf6537d2b93a5a6c0" id="r_a281c57dd30b7b5adf6537d2b93a5a6c0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a281c57dd30b7b5adf6537d2b93a5a6c0">getCollisionY</a> () const</td></tr>
+<tr class="memdesc:a281c57dd30b7b5adf6537d2b93a5a6c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate of the closest sampled point from the last collision check.  <br /></td></tr>
+<tr class="separator:a281c57dd30b7b5adf6537d2b93a5a6c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab588e3a8730189fdcc01a8b480411650" id="r_ab588e3a8730189fdcc01a8b480411650"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab588e3a8730189fdcc01a8b480411650">getCollisionZ</a> () const</td></tr>
+<tr class="memdesc:ab588e3a8730189fdcc01a8b480411650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Z coordinate of the closest sampled point from the last collision check.  <br /></td></tr>
+<tr class="separator:ab588e3a8730189fdcc01a8b480411650"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1f103218d7f1a407b5cff48ace68f48" id="r_ab1f103218d7f1a407b5cff48ace68f48"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab1f103218d7f1a407b5cff48ace68f48">getSurfaceX</a> () const</td></tr>
+<tr class="memdesc:ab1f103218d7f1a407b5cff48ace68f48"><td class="mdescLeft">&#160;</td><td class="mdescRight">X coordinate of the projected signed-distance-field surface point.  <br /></td></tr>
+<tr class="separator:ab1f103218d7f1a407b5cff48ace68f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1a649a8d74111a2adef761c4b22bc33" id="r_ad1a649a8d74111a2adef761c4b22bc33"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ad1a649a8d74111a2adef761c4b22bc33">getSurfaceY</a> () const</td></tr>
+<tr class="memdesc:ad1a649a8d74111a2adef761c4b22bc33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate of the projected signed-distance-field surface point.  <br /></td></tr>
+<tr class="separator:ad1a649a8d74111a2adef761c4b22bc33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1525ba23d7597126fe02139f03cd359" id="r_ad1525ba23d7597126fe02139f03cd359"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ad1525ba23d7597126fe02139f03cd359">getSurfaceZ</a> () const</td></tr>
+<tr class="memdesc:ad1525ba23d7597126fe02139f03cd359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Z coordinate of the projected signed-distance-field surface point.  <br /></td></tr>
+<tr class="separator:ad1525ba23d7597126fe02139f03cd359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ac87cad3383d8384cc86e36a996712" id="r_ab5ac87cad3383d8384cc86e36a996712"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab5ac87cad3383d8384cc86e36a996712">getShapeContactX</a> () const</td></tr>
+<tr class="memdesc:ab5ac87cad3383d8384cc86e36a996712"><td class="mdescLeft">&#160;</td><td class="mdescRight">X coordinate on the sphere or capsule surface along the contact normal.  <br /></td></tr>
+<tr class="separator:ab5ac87cad3383d8384cc86e36a996712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7346a05b32f497a0d368de8fd3afc631" id="r_a7346a05b32f497a0d368de8fd3afc631"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a7346a05b32f497a0d368de8fd3afc631">getShapeContactY</a> () const</td></tr>
+<tr class="memdesc:a7346a05b32f497a0d368de8fd3afc631"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y coordinate on the sphere or capsule surface along the contact normal.  <br /></td></tr>
+<tr class="separator:a7346a05b32f497a0d368de8fd3afc631"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fa6a74a6b9758bcf48061fa8acc6f16" id="r_a9fa6a74a6b9758bcf48061fa8acc6f16"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a9fa6a74a6b9758bcf48061fa8acc6f16">getShapeContactZ</a> () const</td></tr>
+<tr class="memdesc:a9fa6a74a6b9758bcf48061fa8acc6f16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Z coordinate on the sphere or capsule surface along the contact normal.  <br /></td></tr>
+<tr class="separator:a9fa6a74a6b9758bcf48061fa8acc6f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfbffd08b6cb6a6b732549c829ae5cde" id="r_acfbffd08b6cb6a6b732549c829ae5cde"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#acfbffd08b6cb6a6b732549c829ae5cde">getPenetrationDepth</a> () const</td></tr>
+<tr class="memdesc:acfbffd08b6cb6a6b732549c829ae5cde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-negative overlap depth from the most recent overlap, cast, or move query.  <br /></td></tr>
+<tr class="separator:acfbffd08b6cb6a6b732549c829ae5cde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab28d1073f2e41ca106c98a21234300eb" id="r_ab28d1073f2e41ca106c98a21234300eb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab28d1073f2e41ca106c98a21234300eb">getCastFraction</a> () const</td></tr>
+<tr class="memdesc:ab28d1073f2e41ca106c98a21234300eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fraction in [0,1] of the requested displacement at the last cast hit.  <br /></td></tr>
+<tr class="separator:ab28d1073f2e41ca106c98a21234300eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1313b605d19ba3a0abe47cc0b2c82d7b" id="r_a1313b605d19ba3a0abe47cc0b2c82d7b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a1313b605d19ba3a0abe47cc0b2c82d7b">getCastDistance</a> () const</td></tr>
+<tr class="memdesc:a1313b605d19ba3a0abe47cc0b2c82d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space travel distance at the last cast hit.  <br /></td></tr>
+<tr class="separator:a1313b605d19ba3a0abe47cc0b2c82d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e7b58c122be07a93a5a382fd752994b" id="r_a8e7b58c122be07a93a5a382fd752994b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a8e7b58c122be07a93a5a382fd752994b">didCastStartInside</a> () const</td></tr>
+<tr class="memdesc:a8e7b58c122be07a93a5a382fd752994b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the most recent cast began overlapping the solid.  <br /></td></tr>
+<tr class="separator:a8e7b58c122be07a93a5a382fd752994b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72cba6201009bbd4fd8c0fa5077f3558" id="r_a72cba6201009bbd4fd8c0fa5077f3558"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a72cba6201009bbd4fd8c0fa5077f3558">getMoverDeltaX</a> () const</td></tr>
+<tr class="memdesc:a72cba6201009bbd4fd8c0fa5077f3558"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolved X displacement from the most recent moveCapsule call.  <br /></td></tr>
+<tr class="separator:a72cba6201009bbd4fd8c0fa5077f3558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2b7989ba11032264c06e76f1dd77542" id="r_ab2b7989ba11032264c06e76f1dd77542"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ab2b7989ba11032264c06e76f1dd77542">getMoverDeltaY</a> () const</td></tr>
+<tr class="memdesc:ab2b7989ba11032264c06e76f1dd77542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolved Y displacement from the most recent moveCapsule call.  <br /></td></tr>
+<tr class="separator:ab2b7989ba11032264c06e76f1dd77542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ae3d2e8faa7948111b158458f613bdb" id="r_a8ae3d2e8faa7948111b158458f613bdb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a8ae3d2e8faa7948111b158458f613bdb">getMoverDeltaZ</a> () const</td></tr>
+<tr class="memdesc:a8ae3d2e8faa7948111b158458f613bdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolved Z displacement from the most recent moveCapsule call.  <br /></td></tr>
+<tr class="separator:a8ae3d2e8faa7948111b158458f613bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a888885e95278b8494e03b13907b5f6ab" id="r_a888885e95278b8494e03b13907b5f6ab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a888885e95278b8494e03b13907b5f6ab">getMoverNormalX</a> () const</td></tr>
+<tr class="memdesc:a888885e95278b8494e03b13907b5f6ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">X component of the most recent blocking or recovery normal.  <br /></td></tr>
+<tr class="separator:a888885e95278b8494e03b13907b5f6ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff18827ddac20cd8fb6008cd2c96b14c" id="r_aff18827ddac20cd8fb6008cd2c96b14c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aff18827ddac20cd8fb6008cd2c96b14c">getMoverNormalY</a> () const</td></tr>
+<tr class="memdesc:aff18827ddac20cd8fb6008cd2c96b14c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Y component of the most recent blocking or recovery normal.  <br /></td></tr>
+<tr class="separator:aff18827ddac20cd8fb6008cd2c96b14c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3e5e67464ad86de551e839158cfd180" id="r_ad3e5e67464ad86de551e839158cfd180"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#ad3e5e67464ad86de551e839158cfd180">getMoverNormalZ</a> () const</td></tr>
+<tr class="memdesc:ad3e5e67464ad86de551e839158cfd180"><td class="mdescLeft">&#160;</td><td class="mdescRight">Z component of the most recent blocking or recovery normal.  <br /></td></tr>
+<tr class="separator:ad3e5e67464ad86de551e839158cfd180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e74576da9307a7611b53c9f91724598" id="r_a9e74576da9307a7611b53c9f91724598"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a9e74576da9307a7611b53c9f91724598">getMoverIterations</a> () const</td></tr>
+<tr class="memdesc:a9e74576da9307a7611b53c9f91724598"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of solver passes used by the most recent moveCapsule call.  <br /></td></tr>
+<tr class="separator:a9e74576da9307a7611b53c9f91724598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fe2bd8f62d9e5320f3d78a45931d0b4" id="r_a2fe2bd8f62d9e5320f3d78a45931d0b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a2fe2bd8f62d9e5320f3d78a45931d0b4">isMoverGrounded</a> () const</td></tr>
+<tr class="memdesc:a2fe2bd8f62d9e5320f3d78a45931d0b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the latest move encountered a normal within the walkable slope limit.  <br /></td></tr>
+<tr class="separator:a2fe2bd8f62d9e5320f3d78a45931d0b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07228b2201b30d7e3ae3ef9385b80341" id="r_a07228b2201b30d7e3ae3ef9385b80341"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#a07228b2201b30d7e3ae3ef9385b80341">getMoverGroundDot</a> () const</td></tr>
+<tr class="memdesc:a07228b2201b30d7e3ae3ef9385b80341"><td class="mdescLeft">&#160;</td><td class="mdescRight">Greatest dot product between mover Up and a normal from the latest move.  <br /></td></tr>
+<tr class="separator:a07228b2201b30d7e3ae3ef9385b80341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa89395b811e99ad11e338d748050659e" id="r_aa89395b811e99ad11e338d748050659e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html#aa89395b811e99ad11e338d748050659e">didMoverHitWall</a> () const</td></tr>
+<tr class="memdesc:aa89395b811e99ad11e338d748050659e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the latest move encountered a non-walkable contact normal.  <br /></td></tr>
+<tr class="separator:aa89395b811e99ad11e338d748050659e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Regular 3D signed-distance grid for terrain and voxel collision queries. Negative samples are solid, positive samples are empty. Samples are stored at grid vertices and queried with trilinear interpolation. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8f4e1de07c0483254029390dc671893b" name="a8f4e1de07c0483254029390dc671893b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f4e1de07c0483254029390dc671893b">&#9670;&#160;</a></span>DistanceField3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::DistanceField3D::DistanceField3D </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>outsideDistance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7c0f44071b5375565ed2a2041b792240" name="a7c0f44071b5375565ed2a2041b792240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c0f44071b5375565ed2a2041b792240">&#9670;&#160;</a></span>castCapsule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::DistanceField3D::castCapsule </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sweep a capsule through the field and cache the earliest contact. </p>
+<dl class="section return"><dt>返回</dt><dd>True when the swept capsule starts in or reaches the solid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00113">ax</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">ay</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">az</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bx</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">by</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bz</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DistanceField3D_8cpp_source.html#l00407">moveCapsule()</a>.</p>
+
+</div>
+</div>
+<a id="a85f907937365ab5ee0771ec86cf4325e" name="a85f907937365ab5ee0771ec86cf4325e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85f907937365ab5ee0771ec86cf4325e">&#9670;&#160;</a></span>castSphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::DistanceField3D::castSphere </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sweep a sphere through the field and cache the earliest contact. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>Initial sphere-center X coordinate. </td></tr>
+    <tr><td class="paramname">y</td><td>Initial sphere-center Y coordinate. </td></tr>
+    <tr><td class="paramname">z</td><td>Initial sphere-center Z coordinate. </td></tr>
+    <tr><td class="paramname">radius</td><td>Sphere radius. </td></tr>
+    <tr><td class="paramname">deltaX</td><td>Sweep displacement along X. </td></tr>
+    <tr><td class="paramname">deltaY</td><td>Sweep displacement along Y. </td></tr>
+    <tr><td class="paramname">deltaZ</td><td>Sweep displacement along Z. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when the swept sphere starts in or reaches the solid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="ImageData_8cpp_source.html#l00686">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">pz</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00126">sample()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a5a7f8bfe19d16d442e71f2a8990bfa72" name="a5a7f8bfe19d16d442e71f2a8990bfa72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a7f8bfe19d16d442e71f2a8990bfa72">&#9670;&#160;</a></span>checkCapsule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::DistanceField3D::checkCapsule </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test a capsule defined by two sphere centers against the solid. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00113">ax</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">ay</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">az</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bx</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">by</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bz</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="DistanceField3D_8cpp_source.html#l00151">sampleNormal()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DistanceField3D_8cpp_source.html#l00407">moveCapsule()</a>.</p>
+
+</div>
+</div>
+<a id="ace405889e90e6cbbc891e5219a18649c" name="ace405889e90e6cbbc891e5219a18649c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace405889e90e6cbbc891e5219a18649c">&#9670;&#160;</a></span>checkSphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::DistanceField3D::checkSphere </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test a sphere against the solid (distance &lt;= radius). </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a8e7b58c122be07a93a5a382fd752994b" name="a8e7b58c122be07a93a5a382fd752994b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e7b58c122be07a93a5a382fd752994b">&#9670;&#160;</a></span>didCastStartInside()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::DistanceField3D::didCastStartInside </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the most recent cast began overlapping the solid. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00148">148</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa89395b811e99ad11e338d748050659e" name="aa89395b811e99ad11e338d748050659e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa89395b811e99ad11e338d748050659e">&#9670;&#160;</a></span>didMoverHitWall()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::DistanceField3D::didMoverHitWall </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the latest move encountered a non-walkable contact normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00168">168</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a18fec3e071d6c31af79f796cc364bd7e" name="a18fec3e071d6c31af79f796cc364bd7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18fec3e071d6c31af79f796cc364bd7e">&#9670;&#160;</a></span>fill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::fill </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set every grid sample to the same finite distance. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2f94667415fa4e81f253fabc0313904a" name="a2f94667415fa4e81f253fabc0313904a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f94667415fa4e81f253fabc0313904a">&#9670;&#160;</a></span>fillRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::fillRegion </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill an in-bounds grid subregion with one finite signed distance. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a1313b605d19ba3a0abe47cc0b2c82d7b" name="a1313b605d19ba3a0abe47cc0b2c82d7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1313b605d19ba3a0abe47cc0b2c82d7b">&#9670;&#160;</a></span>getCastDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getCastDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space travel distance at the last cast hit. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab28d1073f2e41ca106c98a21234300eb" name="ab28d1073f2e41ca106c98a21234300eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab28d1073f2e41ca106c98a21234300eb">&#9670;&#160;</a></span>getCastFraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getCastFraction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fraction in [0,1] of the requested displacement at the last cast hit. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00144">144</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6cad1bf20dc6c7d089c7725c918f08df" name="a6cad1bf20dc6c7d089c7725c918f08df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cad1bf20dc6c7d089c7725c918f08df">&#9670;&#160;</a></span>getCellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getCellSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space distance between adjacent grid vertices. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1159e9515bcdb5916ac3618e40374c70" name="a1159e9515bcdb5916ac3618e40374c70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1159e9515bcdb5916ac3618e40374c70">&#9670;&#160;</a></span>getCollisionDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getCollisionDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Signed clearance from the last check (negative means penetration). </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00122">122</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91ac87f554371d70ac4d97ea867beaab" name="a91ac87f554371d70ac4d97ea867beaab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91ac87f554371d70ac4d97ea867beaab">&#9670;&#160;</a></span>getCollisionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getCollisionX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>X coordinate of the closest sampled point from the last collision check. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00124">124</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a281c57dd30b7b5adf6537d2b93a5a6c0" name="a281c57dd30b7b5adf6537d2b93a5a6c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a281c57dd30b7b5adf6537d2b93a5a6c0">&#9670;&#160;</a></span>getCollisionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getCollisionY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Y coordinate of the closest sampled point from the last collision check. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00126">126</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab588e3a8730189fdcc01a8b480411650" name="ab588e3a8730189fdcc01a8b480411650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab588e3a8730189fdcc01a8b480411650">&#9670;&#160;</a></span>getCollisionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getCollisionZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Z coordinate of the closest sampled point from the last collision check. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00128">128</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae0bdc3dda5d4ffda973b9c1027c068d1" name="ae0bdc3dda5d4ffda973b9c1027c068d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0bdc3dda5d4ffda973b9c1027c068d1">&#9670;&#160;</a></span>getDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::DistanceField3D::getDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of grid vertices along the Z axis. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee56aa2e506a39619ec7c35e4f24f12b" name="aee56aa2e506a39619ec7c35e4f24f12b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee56aa2e506a39619ec7c35e4f24f12b">&#9670;&#160;</a></span>getDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getDistance </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a grid vertex; out-of-range vertices return the outside distance. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DistanceField3D_8cpp_source.html#l00126">sample()</a>.</p>
+
+</div>
+</div>
+<a id="a70bb21ce0ca9cc4e7ae452cac1db6f85" name="a70bb21ce0ca9cc4e7ae452cac1db6f85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70bb21ce0ca9cc4e7ae452cac1db6f85">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::DistanceField3D::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of grid vertices along the Y axis. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72cba6201009bbd4fd8c0fa5077f3558" name="a72cba6201009bbd4fd8c0fa5077f3558"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72cba6201009bbd4fd8c0fa5077f3558">&#9670;&#160;</a></span>getMoverDeltaX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverDeltaX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolved X displacement from the most recent moveCapsule call. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00150">150</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab2b7989ba11032264c06e76f1dd77542" name="ab2b7989ba11032264c06e76f1dd77542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2b7989ba11032264c06e76f1dd77542">&#9670;&#160;</a></span>getMoverDeltaY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverDeltaY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolved Y displacement from the most recent moveCapsule call. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00152">152</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ae3d2e8faa7948111b158458f613bdb" name="a8ae3d2e8faa7948111b158458f613bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ae3d2e8faa7948111b158458f613bdb">&#9670;&#160;</a></span>getMoverDeltaZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverDeltaZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolved Z displacement from the most recent moveCapsule call. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00154">154</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a07228b2201b30d7e3ae3ef9385b80341" name="a07228b2201b30d7e3ae3ef9385b80341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07228b2201b30d7e3ae3ef9385b80341">&#9670;&#160;</a></span>getMoverGroundDot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverGroundDot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Greatest dot product between mover Up and a normal from the latest move. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00166">166</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3cf0032dae8ffd54606dcdfd4c2ed00f" name="a3cf0032dae8ffd54606dcdfd4c2ed00f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cf0032dae8ffd54606dcdfd4c2ed00f">&#9670;&#160;</a></span>getMoverGroundSnap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverGroundSnap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current post-move ground-snap distance. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e74576da9307a7611b53c9f91724598" name="a9e74576da9307a7611b53c9f91724598"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e74576da9307a7611b53c9f91724598">&#9670;&#160;</a></span>getMoverIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::DistanceField3D::getMoverIterations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of solver passes used by the most recent moveCapsule call. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a888885e95278b8494e03b13907b5f6ab" name="a888885e95278b8494e03b13907b5f6ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a888885e95278b8494e03b13907b5f6ab">&#9670;&#160;</a></span>getMoverNormalX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverNormalX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>X component of the most recent blocking or recovery normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00156">156</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff18827ddac20cd8fb6008cd2c96b14c" name="aff18827ddac20cd8fb6008cd2c96b14c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff18827ddac20cd8fb6008cd2c96b14c">&#9670;&#160;</a></span>getMoverNormalY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverNormalY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Y component of the most recent blocking or recovery normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00158">158</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad3e5e67464ad86de551e839158cfd180" name="ad3e5e67464ad86de551e839158cfd180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3e5e67464ad86de551e839158cfd180">&#9670;&#160;</a></span>getMoverNormalZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverNormalZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Z component of the most recent blocking or recovery normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00160">160</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae104b1376f73ec08b645aa74c86a15c2" name="ae104b1376f73ec08b645aa74c86a15c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae104b1376f73ec08b645aa74c86a15c2">&#9670;&#160;</a></span>getMoverSkinWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverSkinWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current mover separation from collision surfaces. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4c599d1b704a837801652b7e8cbb14d2" name="a4c599d1b704a837801652b7e8cbb14d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c599d1b704a837801652b7e8cbb14d2">&#9670;&#160;</a></span>getMoverStepHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getMoverStepHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current automatic step height; zero disables step climbing. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e553e3e56b7ff5e39486b211449b67b" name="a7e553e3e56b7ff5e39486b211449b67b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e553e3e56b7ff5e39486b211449b67b">&#9670;&#160;</a></span>getNormalX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getNormalX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>X component of the most recently sampled collision normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa1d6ba3de31ed88f4b5612a141c28c68" name="aa1d6ba3de31ed88f4b5612a141c28c68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1d6ba3de31ed88f4b5612a141c28c68">&#9670;&#160;</a></span>getNormalY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getNormalY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Y component of the most recently sampled collision normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7153bcbc4dcc1e8fd052a2f5bae9f92e" name="a7153bcbc4dcc1e8fd052a2f5bae9f92e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7153bcbc4dcc1e8fd052a2f5bae9f92e">&#9670;&#160;</a></span>getNormalZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getNormalZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Z component of the most recently sampled collision normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a46f4805dc5aaa5f7935c67738636f20f" name="a46f4805dc5aaa5f7935c67738636f20f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46f4805dc5aaa5f7935c67738636f20f">&#9670;&#160;</a></span>getOriginX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getOriginX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space X coordinate of grid vertex (0,0,0). </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a63f28099b53a3a18569dd9fac44fdf0d" name="a63f28099b53a3a18569dd9fac44fdf0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63f28099b53a3a18569dd9fac44fdf0d">&#9670;&#160;</a></span>getOriginY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getOriginY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space Y coordinate of grid vertex (0,0,0). </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed867a8652fcb4ba080632e51c053640" name="aed867a8652fcb4ba080632e51c053640"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed867a8652fcb4ba080632e51c053640">&#9670;&#160;</a></span>getOriginZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getOriginZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World-space Z coordinate of grid vertex (0,0,0). </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a714d06141650e65a6af127110d88311f" name="a714d06141650e65a6af127110d88311f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a714d06141650e65a6af127110d88311f">&#9670;&#160;</a></span>getOutsideDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getOutsideDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Distance returned for world samples outside the grid. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfbffd08b6cb6a6b732549c829ae5cde" name="acfbffd08b6cb6a6b732549c829ae5cde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfbffd08b6cb6a6b732549c829ae5cde">&#9670;&#160;</a></span>getPenetrationDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getPenetrationDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Non-negative overlap depth from the most recent overlap, cast, or move query. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00142">142</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a730d47416ae5811d0171eedf3ab57b31" name="a730d47416ae5811d0171eedf3ab57b31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a730d47416ae5811d0171eedf3ab57b31">&#9670;&#160;</a></span>getRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int eve::physics::DistanceField3D::getRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic wrapping counter incremented once after each successful mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1add73b540ec0183cb8a812dfc2ed655" name="a1add73b540ec0183cb8a812dfc2ed655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1add73b540ec0183cb8a812dfc2ed655">&#9670;&#160;</a></span>getSampleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::DistanceField3D::getSampleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of signed-distance samples. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5ac87cad3383d8384cc86e36a996712" name="ab5ac87cad3383d8384cc86e36a996712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ac87cad3383d8384cc86e36a996712">&#9670;&#160;</a></span>getShapeContactX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getShapeContactX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>X coordinate on the sphere or capsule surface along the contact normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7346a05b32f497a0d368de8fd3afc631" name="a7346a05b32f497a0d368de8fd3afc631"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7346a05b32f497a0d368de8fd3afc631">&#9670;&#160;</a></span>getShapeContactY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getShapeContactY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Y coordinate on the sphere or capsule surface along the contact normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00138">138</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9fa6a74a6b9758bcf48061fa8acc6f16" name="a9fa6a74a6b9758bcf48061fa8acc6f16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fa6a74a6b9758bcf48061fa8acc6f16">&#9670;&#160;</a></span>getShapeContactZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getShapeContactZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Z coordinate on the sphere or capsule surface along the contact normal. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00140">140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1f103218d7f1a407b5cff48ace68f48" name="ab1f103218d7f1a407b5cff48ace68f48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1f103218d7f1a407b5cff48ace68f48">&#9670;&#160;</a></span>getSurfaceX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getSurfaceX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>X coordinate of the projected signed-distance-field surface point. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00130">130</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1a649a8d74111a2adef761c4b22bc33" name="ad1a649a8d74111a2adef761c4b22bc33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1a649a8d74111a2adef761c4b22bc33">&#9670;&#160;</a></span>getSurfaceY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getSurfaceY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Y coordinate of the projected signed-distance-field surface point. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00132">132</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1525ba23d7597126fe02139f03cd359" name="ad1525ba23d7597126fe02139f03cd359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1525ba23d7597126fe02139f03cd359">&#9670;&#160;</a></span>getSurfaceZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::getSurfaceZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Z coordinate of the projected signed-distance-field surface point. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9fb8dbdd14c6e965f2ff31372e38f2d6" name="a9fb8dbdd14c6e965f2ff31372e38f2d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fb8dbdd14c6e965f2ff31372e38f2d6">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::DistanceField3D::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of grid vertices along the X axis. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2fe2bd8f62d9e5320f3d78a45931d0b4" name="a2fe2bd8f62d9e5320f3d78a45931d0b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fe2bd8f62d9e5320f3d78a45931d0b4">&#9670;&#160;</a></span>isMoverGrounded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::DistanceField3D::isMoverGrounded </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the latest move encountered a normal within the walkable slope limit. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a> 第 <a class="el" href="DistanceField3D_8h_source.html#l00164">164</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ed8d6250b16de3e252f2959aaa75231" name="a1ed8d6250b16de3e252f2959aaa75231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ed8d6250b16de3e252f2959aaa75231">&#9670;&#160;</a></span>moveCapsule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::DistanceField3D::moveCapsule </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a capsule displacement against the field with sliding and depenetration. The capsule coordinates are not stored; apply getMoverDeltaX/Y/Z to both endpoints. </p>
+<dl class="section return"><dt>返回</dt><dd>True when solid geometry constrained or depenetrated the capsule. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">ax</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">ay</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00113">az</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bx</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">by</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bz</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00313">castCapsule()</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00210">checkCapsule()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00193">iterations</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00407">moveCapsule()</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00057">planes</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DistanceField3D_8cpp_source.html#l00407">moveCapsule()</a>.</p>
+
+</div>
+</div>
+<a id="ae364e3757f77579b65a5a1f025c6e407" name="ae364e3757f77579b65a5a1f025c6e407"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae364e3757f77579b65a5a1f025c6e407">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::DistanceField3D::sample </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Trilinearly sample the field in world coordinates. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00122">getDistance()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DistanceField3D_8cpp_source.html#l00265">castSphere()</a> , 以及 <a class="el" href="DistanceField3D_8cpp_source.html#l00151">sampleNormal()</a>.</p>
+
+</div>
+</div>
+<a id="a4533b40d9bdf4143537cd847630b9d78" name="a4533b40d9bdf4143537cd847630b9d78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4533b40d9bdf4143537cd847630b9d78">&#9670;&#160;</a></span>sampleNormal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::sampleNormal </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Estimate the normalized outward field gradient at a world position. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00126">sample()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DistanceField3D_8cpp_source.html#l00210">checkCapsule()</a>.</p>
+
+</div>
+</div>
+<a id="ab3a01e3bd2fd0bb4ead1989df35a9625" name="ab3a01e3bd2fd0bb4ead1989df35a9625"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3a01e3bd2fd0bb4ead1989df35a9625">&#9670;&#160;</a></span>setDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::setDistance </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a signed-distance sample at a grid vertex. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aa698a6f889baf74d0d71a685f626b2da" name="aa698a6f889baf74d0d71a685f626b2da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa698a6f889baf74d0d71a685f626b2da">&#9670;&#160;</a></span>setDistanceRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::setDistanceRegion </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>distances</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace a grid subregion in x-fastest, then y, then z order. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>First grid-vertex X index. </td></tr>
+    <tr><td class="paramname">y</td><td>First grid-vertex Y index. </td></tr>
+    <tr><td class="paramname">z</td><td>First grid-vertex Z index. </td></tr>
+    <tr><td class="paramname">width</td><td>Number of vertices along X; must be positive and in bounds. </td></tr>
+    <tr><td class="paramname">height</td><td>Number of vertices along Y; must be positive and in bounds. </td></tr>
+    <tr><td class="paramname">depth</td><td>Number of vertices along Z; must be positive and in bounds. </td></tr>
+    <tr><td class="paramname">distances</td><td>Exactly width*height*depth finite samples. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a491008fa70c6ad149fd59241d5744340" name="a491008fa70c6ad149fd59241d5744340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a491008fa70c6ad149fd59241d5744340">&#9670;&#160;</a></span>setDistances()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::setDistances </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>distances</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace every sample in x-fastest, then y, then z order. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1087b45cd0721bef36c02de0a90a650e" name="a1087b45cd0721bef36c02de0a90a650e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1087b45cd0721bef36c02de0a90a650e">&#9670;&#160;</a></span>setMoverGroundSnap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::setMoverGroundSnap </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the non-negative distance used to snap onto walkable ground after movement. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00393">393</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac6cee4eea5a3383620dfab1374824dc" name="aac6cee4eea5a3383620dfab1374824dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac6cee4eea5a3383620dfab1374824dc">&#9670;&#160;</a></span>setMoverSkinWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::setMoverSkinWidth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the non-negative separation retained from surfaces by moveCapsule. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="a75860699f31346ce4d6217b20a5856e0" name="a75860699f31346ce4d6217b20a5856e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75860699f31346ce4d6217b20a5856e0">&#9670;&#160;</a></span>setMoverSlopeLimit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::setMoverSlopeLimit </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>degrees</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the maximum walkable slope angle in degrees, clamped to [0, 89.9]. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00380">380</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00035">degrees</a>.</p>
+
+</div>
+</div>
+<a id="adb821ab92e25ee057ca0fc4e1dd73a4a" name="adb821ab92e25ee057ca0fc4e1dd73a4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb821ab92e25ee057ca0fc4e1dd73a4a">&#9670;&#160;</a></span>setMoverStepHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::setMoverStepHeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the maximum non-negative ledge height automatically climbed by moveCapsule. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>.</p>
+
+</div>
+</div>
+<a id="a2d1f85f36a9335bc156436f59b54a180" name="a2d1f85f36a9335bc156436f59b54a180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d1f85f36a9335bc156436f59b54a180">&#9670;&#160;</a></span>setMoverUp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::DistanceField3D::setMoverUp </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the normalized reference-up direction used for ground classification. </p>
+
+<p class="definition">在文件 <a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a> 第 <a class="el" href="DistanceField3D_8cpp_source.html#l00369">369</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/<a class="el" href="DistanceField3D_8h_source.html">DistanceField3D.h</a></li>
+<li>src/modules/physics/<a class="el" href="DistanceField3D_8cpp_source.html">DistanceField3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/ArtifactProvider.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ArtifactProvider.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="graphics_2ArtifactProvider_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ArtifactPublication_8h.html">common/ArtifactPublication.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeHandle_8h.html">common/RuntimeHandle.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactHandleTag.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GraphicsArtifactHandleTag.html">GraphicsArtifactHandleTag</a> {};</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#acaa7838deafdb72389ce8875566a081b">   25</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1RuntimeHandle.html">GraphicsArtifactHandle</a> = <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt;GraphicsArtifactHandleTag&gt;</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html">GraphicsArtifactDescriptor</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a6da47c289ba61e6bb5d060b048cc1d32">   29</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a6da47c289ba61e6bb5d060b048cc1d32">id</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a3bc36fee32dfac3bd48b4aa6d6919f13">   30</a></span>    std::string       <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a3bc36fee32dfac3bd48b4aa6d6919f13">buildKey</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#ae3ed281b5e0466f70b618308e377019e">   31</a></span>    std::string       <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#ae3ed281b5e0466f70b618308e377019e">role</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#af3e8128d7db32b701fb5438111163726">   32</a></span>    std::size_t       <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#af3e8128d7db32b701fb5438111163726">vertexCount</a> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a53c556ec68200ab3022857c8ef76ad59">   33</a></span>    std::size_t       <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a53c556ec68200ab3022857c8ef76ad59">indexCount</a>  = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a782c90fa2e4eded3eab8d459cad75432">   34</a></span>    std::uint64_t     <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a782c90fa2e4eded3eab8d459cad75432">checksum</a>    = 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a917184b7b679cc7dffe04233d7fc95fc">   36</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a917184b7b679cc7dffe04233d7fc95fc">backendVertexStride</a> = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#aca11421014ab8487ee459e49083acd79">   38</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#aca11421014ab8487ee459e49083acd79">backendIndexElementSize</a> = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a59f440755384f0f555349c0f875a32f3">   40</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a59f440755384f0f555349c0f875a32f3">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html">GraphicsArtifactDescriptor</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html">GraphicsArtifactDescriptor</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html">   44</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html">GraphicsArtifactResource</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a4c29153e673b7e5c80530d81765f4fc3">   45</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a>          <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a4c29153e673b7e5c80530d81765f4fc3">id</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#aa5f61d462883dc6b42d525ecad25a537">   46</a></span>    std::string                <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#aa5f61d462883dc6b42d525ecad25a537">buildKey</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a9b1a00e253d906831d3f426b1a415c7f">   47</a></span>    <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">GraphicsArtifactHandle</a>     <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a9b1a00e253d906831d3f426b1a415c7f">handle</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a530d5589abd60e7b702fed42b6672a96">   48</a></span>    std::string                <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a530d5589abd60e7b702fed42b6672a96">role</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a336bcc9d1a1d982540eca86e79a8090a">   49</a></span>    std::vector&lt;float&gt;         <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a336bcc9d1a1d982540eca86e79a8090a">positions</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a0a88792145b5630b7e1ffb16d39e3771">   50</a></span>    std::vector&lt;float&gt;         <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a0a88792145b5630b7e1ffb16d39e3771">normals</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a870e84c78a5e753d47e4cfe3dc93f179">   51</a></span>    std::vector&lt;float&gt;         <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a870e84c78a5e753d47e4cfe3dc93f179">uvs</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a2b4383b52ecb066ec9c4f0e7e1f0aeb8">   52</a></span>    std::vector&lt;std::uint32_t&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a2b4383b52ecb066ec9c4f0e7e1f0aeb8">indices</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a165f56248709c009eeb179063e5aa3c0">   54</a></span>    std::string <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a165f56248709c009eeb179063e5aa3c0">backendName</a> = <span class="stringliteral">&quot;cpu&quot;</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#ad75184e344dd8c0c3e8e57f0e703646d">   56</a></span>    std::string <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#ad75184e344dd8c0c3e8e57f0e703646d">uploadState</a> = <span class="stringliteral">&quot;not-attempted&quot;</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a7eabfaa850b107a40e5dfdc350f63fdd">   58</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a7eabfaa850b107a40e5dfdc350f63fdd">gpuResident</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a00c9508adc5f9fc490eadf32755dcaa9">   60</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a00c9508adc5f9fc490eadf32755dcaa9">backendVertexStride</a> = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a623b00e7c38367d26017f53b26a49d93">   62</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a623b00e7c38367d26017f53b26a49d93">backendIndexElementSize</a> = 0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1WebGpuArtifactDescriptorAdapter.html">   71</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1WebGpuArtifactDescriptorAdapter.html">WebGpuArtifactDescriptorAdapter</a> final {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <span class="keyword">static</span> std::optional&lt;GraphicsArtifactDescriptor&gt; <a class="code hl_function" href="classeve_1_1graphics_1_1WebGpuArtifactDescriptorAdapter.html#a882b21621c7d0e6d7f922e9c66318012">describe</a>(</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a>&amp; publication);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="};">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html">   86</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html">GraphicsArtifactProvider</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">eve::artifact::IGraphicsArtifactAdapter</a> {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;eve::artifact::PreparedPublication&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a9b5a53c2eb17eb62ebf312f743fb099e">prepare</a>(</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a>&amp; publication) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Value&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a3d557273ea8e0ee4ac6d1eda460fe895">snapshotState</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a2a76aa309a4b229edfc511166d6b8c05">restoreState</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a783cacce51851062d1b6a454f813a561">   96</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a783cacce51851062d1b6a454f813a561">emptyState</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> resources_.empty(); }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a87b435406b41d1313647d7a896922e6a">   98</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a87b435406b41d1313647d7a896922e6a">clearState</a>() noexcept<span class="keyword"> override </span>{ <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a826e519041920fdeb49599c6e30e3dca">clear</a>(); }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html">GraphicsArtifactResource</a>* <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a7f483f94c7482b65dcd1197aa64adb00">find</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a3e544174e0508d08d3998c5258378366">  111</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a3e544174e0508d08d3998c5258378366">size</a>() const noexcept { <span class="keywordflow">return</span> resources_.size(); }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    [[nodiscard]] std::uint64_t <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#aba07c61ae7f65fe078dadcc0f88cc03b">checksum</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] std::optional&lt;GraphicsArtifactDescriptor&gt; <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#aa38f7e76d5de5bd5c051d0d4e75b57e1">isGpuResident</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a826e519041920fdeb49599c6e30e3dca">clear</a>() noexcept;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a205219047dc568bb0a0d0d14c1a3a75c">  121</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a205219047dc568bb0a0d0d14c1a3a75c">setPrepareFailure</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) noexcept { failPrepare_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>; }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a560e89a559a67cf3f7c2ea4223fea313">bindGraphics</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>* graphics) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#ace3a8d5c2ef76ffa073dc5e853b93b1b">detachGraphics</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>* graphics) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#ae48153a42e8b0e31d7e238266c3d52e6">  129</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1GraphicsArtifactStage.html">GraphicsArtifactStage</a>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">struct </span>RuntimeResource {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1GraphicsArtifactResource.html">GraphicsArtifactResource</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a>*                    uploadedMesh = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    };</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">static</span> <span class="keywordtype">void</span>                  uploadIfAvailable(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>* graphics, RuntimeResource&amp; resource) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">void</span>                         commit(RuntimeResource resource) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">void</span>                         <a class="code hl_variable" href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a>(RuntimeResource&amp; resource) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    std::vector&lt;RuntimeResource&gt; resources_;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>*                    graphics_    = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::uint32_t                nextIndex_   = 0;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordtype">bool</span>                         failPrepare_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>};</div>
+</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>[[nodiscard]] GraphicsArtifactProvider&amp; <a class="code hl_function" href="namespaceeve_1_1graphics.html#a9887b151b215c25e5c44b2f2aa0eb27a">graphicsArtifactProvider</a>() noexcept;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1graphics.html#a754f29b269ce9efd288965838324569f">registerGraphicsArtifactProvider</a>(Graphics* graphics = <span class="keywordtype">nullptr</span>);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1graphics.html#aa395e1fcef1bb299a392c7e2a90259fb">detachGraphicsArtifactProvider</a>(Graphics* graphics) noexcept;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aArtifactPublication_8h_html"><div class="ttname"><a href="ArtifactPublication_8h.html">ArtifactPublication.h</a></div><div class="ttdoc">Low-level capability contracts for publishing backend-neutral artifacts.</div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aProcgen_8cpp_html_a9ec61e0d400a00436d584301088ae052"><div class="ttname"><a href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; void &gt;()&gt; release</div><div class="ttdef"><b>Definition</b> <a href="Procgen_8cpp_source.html#l00074">Procgen.cpp:74</a></div></div>
+<div class="ttc" id="aRuntimeHandle_8h_html"><div class="ttname"><a href="RuntimeHandle_8h.html">RuntimeHandle.h</a></div><div class="ttdoc">Strong generation-qualified handles for non-ECS runtime registries.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; GraphicsArtifactHandleTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IGraphicsArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">eve::artifact::IGraphicsArtifactAdapter</a></div><div class="ttdoc">Graphics resource publication capability, implemented by graphics.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00157">ArtifactPublication.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html">eve::graphics::GraphicsArtifactProvider</a></div><div class="ttdoc">Real graphics-module provider for generated mesh publication.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00086">ArtifactProvider.h:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a205219047dc568bb0a0d0d14c1a3a75c"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a205219047dc568bb0a0d0d14c1a3a75c">eve::graphics::GraphicsArtifactProvider::setPrepareFailure</a></div><div class="ttdeci">void setPrepareFailure(bool enabled) noexcept</div><div class="ttdoc">Inject a prepare failure for composition tests.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00121">ArtifactProvider.h:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a2a76aa309a4b229edfc511166d6b8c05"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a2a76aa309a4b229edfc511166d6b8c05">eve::graphics::GraphicsArtifactProvider::restoreState</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreState(const eve::Value &amp;state) override</div><div class="ttdoc">Replace resources from validated backend-neutral CPU descriptors.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00387">ArtifactProvider.cpp:387</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a3d557273ea8e0ee4ac6d1eda460fe895"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a3d557273ea8e0ee4ac6d1eda460fe895">eve::graphics::GraphicsArtifactProvider::snapshotState</a></div><div class="ttdeci">eve::Result&lt; eve::Value &gt; snapshotState() const override</div><div class="ttdoc">Export resource identity, build keys, handles and CPU descriptors.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00355">ArtifactProvider.cpp:355</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a3e544174e0508d08d3998c5258378366"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a3e544174e0508d08d3998c5258378366">eve::graphics::GraphicsArtifactProvider::size</a></div><div class="ttdeci">std::size_t size() const noexcept</div><div class="ttdoc">Return the number of committed graphics resources.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00111">ArtifactProvider.h:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a560e89a559a67cf3f7c2ea4223fea313"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a560e89a559a67cf3f7c2ea4223fea313">eve::graphics::GraphicsArtifactProvider::bindGraphics</a></div><div class="ttdeci">void bindGraphics(Graphics *graphics) noexcept</div><div class="ttdoc">Bind a live Graphics resource factory without transferring ownership.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00341">ArtifactProvider.cpp:341</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a783cacce51851062d1b6a454f813a561"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a783cacce51851062d1b6a454f813a561">eve::graphics::GraphicsArtifactProvider::emptyState</a></div><div class="ttdeci">bool emptyState() const noexcept override</div><div class="ttdoc">Return whether the graphics registry has no committed resources.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00096">ArtifactProvider.h:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a7f483f94c7482b65dcd1197aa64adb00"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a7f483f94c7482b65dcd1197aa64adb00">eve::graphics::GraphicsArtifactProvider::find</a></div><div class="ttdeci">const GraphicsArtifactResource * find(eve::PersistentId id) const noexcept</div><div class="ttdoc">Find a committed resource; the pointer is borrowed. @ownership Borrowed from this provider; callers m...</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00305">ArtifactProvider.cpp:305</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a826e519041920fdeb49599c6e30e3dca"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a826e519041920fdeb49599c6e30e3dca">eve::graphics::GraphicsArtifactProvider::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Remove all resources and reset the local handle allocator.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00334">ArtifactProvider.cpp:334</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a87b435406b41d1313647d7a896922e6a"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a87b435406b41d1313647d7a896922e6a">eve::graphics::GraphicsArtifactProvider::clearState</a></div><div class="ttdeci">void clearState() noexcept override</div><div class="ttdoc">Clear provider state through the common restore-cleanup hook.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00098">ArtifactProvider.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_a9b5a53c2eb17eb62ebf312f743fb099e"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#a9b5a53c2eb17eb62ebf312f743fb099e">eve::graphics::GraphicsArtifactProvider::prepare</a></div><div class="ttdeci">eve::Result&lt; std::unique_ptr&lt; eve::artifact::PreparedPublication &gt; &gt; prepare(const eve::artifact::PublicationView &amp;publication) override</div><div class="ttdoc">Stage and copy the mesh leaf from a generated publication.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00233">ArtifactProvider.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_aa38f7e76d5de5bd5c051d0d4e75b57e1"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#aa38f7e76d5de5bd5c051d0d4e75b57e1">eve::graphics::GraphicsArtifactProvider::isGpuResident</a></div><div class="ttdeci">bool isGpuResident(eve::PersistentId id) const noexcept</div><div class="ttdoc">Return whether a resource was backed by the live Graphics upload boundary.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00329">ArtifactProvider.cpp:329</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_aba07c61ae7f65fe078dadcc0f88cc03b"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#aba07c61ae7f65fe078dadcc0f88cc03b">eve::graphics::GraphicsArtifactProvider::checksum</a></div><div class="ttdeci">std::uint64_t checksum(eve::PersistentId id) const noexcept</div><div class="ttdoc">Return a deterministic checksum of one resource's CPU descriptor.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00311">ArtifactProvider.cpp:311</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactProvider_html_ace3a8d5c2ef76ffa073dc5e853b93b1b"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactProvider.html#ace3a8d5c2ef76ffa073dc5e853b93b1b">eve::graphics::GraphicsArtifactProvider::detachGraphics</a></div><div class="ttdeci">void detachGraphics(Graphics *graphics) noexcept</div><div class="ttdoc">Detach the expected backend and release its provider-owned meshes.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00349">ArtifactProvider.cpp:349</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1GraphicsArtifactStage_html"><div class="ttname"><a href="classeve_1_1graphics_1_1GraphicsArtifactStage.html">eve::graphics::GraphicsArtifactStage</a></div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00198">ArtifactProvider.cpp:198</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00020">Mesh.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1WebGpuArtifactDescriptorAdapter_html"><div class="ttname"><a href="classeve_1_1graphics_1_1WebGpuArtifactDescriptorAdapter.html">eve::graphics::WebGpuArtifactDescriptorAdapter</a></div><div class="ttdoc">Computes the same descriptor a WebGPU backend would expose without a device.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00071">ArtifactProvider.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1WebGpuArtifactDescriptorAdapter_html_a882b21621c7d0e6d7f922e9c66318012"><div class="ttname"><a href="classeve_1_1graphics_1_1WebGpuArtifactDescriptorAdapter.html#a882b21621c7d0e6d7f922e9c66318012">eve::graphics::WebGpuArtifactDescriptorAdapter::describe</a></div><div class="ttdeci">static std::optional&lt; GraphicsArtifactDescriptor &gt; describe(const eve::artifact::PublicationView &amp;publication)</div><div class="ttdoc">Describe the selected mesh part, or return empty for invalid input.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00219">ArtifactProvider.cpp:219</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a754f29b269ce9efd288965838324569f"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a754f29b269ce9efd288965838324569f">eve::graphics::registerGraphicsArtifactProvider</a></div><div class="ttdeci">void registerGraphicsArtifactProvider(Graphics *graphics)</div><div class="ttdoc">Register the graphics provider in the common capability registry.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00482">ArtifactProvider.cpp:482</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a9887b151b215c25e5c44b2f2aa0eb27a"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a9887b151b215c25e5c44b2f2aa0eb27a">eve::graphics::graphicsArtifactProvider</a></div><div class="ttdeci">GraphicsArtifactProvider &amp; graphicsArtifactProvider() noexcept</div><div class="ttdoc">Return the process-owned graphics artifact provider singleton.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00477">ArtifactProvider.cpp:477</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aa395e1fcef1bb299a392c7e2a90259fb"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aa395e1fcef1bb299a392c7e2a90259fb">eve::graphics::detachGraphicsArtifactProvider</a></div><div class="ttdeci">void detachGraphicsArtifactProvider(Graphics *graphics) noexcept</div><div class="ttdoc">Detach a Graphics instance before its derived backend is destroyed.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8cpp_source.html#l00487">ArtifactProvider.cpp:487</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a></div><div class="ttdoc">Borrowed immutable view of one complete generated publication.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00083">ArtifactPublication.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html">eve::graphics::GraphicsArtifactDescriptor</a></div><div class="ttdoc">Backend-neutral mesh descriptor shared by Vulkan and WebGPU adapters.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00028">ArtifactProvider.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_a3bc36fee32dfac3bd48b4aa6d6919f13"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a3bc36fee32dfac3bd48b4aa6d6919f13">eve::graphics::GraphicsArtifactDescriptor::buildKey</a></div><div class="ttdeci">std::string buildKey</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00030">ArtifactProvider.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_a53c556ec68200ab3022857c8ef76ad59"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a53c556ec68200ab3022857c8ef76ad59">eve::graphics::GraphicsArtifactDescriptor::indexCount</a></div><div class="ttdeci">std::size_t indexCount</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00033">ArtifactProvider.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_a59f440755384f0f555349c0f875a32f3"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a59f440755384f0f555349c0f875a32f3">eve::graphics::GraphicsArtifactDescriptor::operator==</a></div><div class="ttdeci">friend bool operator==(const GraphicsArtifactDescriptor &amp;, const GraphicsArtifactDescriptor &amp;)=default</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_a6da47c289ba61e6bb5d060b048cc1d32"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a6da47c289ba61e6bb5d060b048cc1d32">eve::graphics::GraphicsArtifactDescriptor::id</a></div><div class="ttdeci">eve::PersistentId id</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00029">ArtifactProvider.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_a782c90fa2e4eded3eab8d459cad75432"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a782c90fa2e4eded3eab8d459cad75432">eve::graphics::GraphicsArtifactDescriptor::checksum</a></div><div class="ttdeci">std::uint64_t checksum</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00034">ArtifactProvider.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_a917184b7b679cc7dffe04233d7fc95fc"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#a917184b7b679cc7dffe04233d7fc95fc">eve::graphics::GraphicsArtifactDescriptor::backendVertexStride</a></div><div class="ttdeci">std::uint32_t backendVertexStride</div><div class="ttdoc">Actual backend vertex stride when a live upload exists.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00036">ArtifactProvider.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_aca11421014ab8487ee459e49083acd79"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#aca11421014ab8487ee459e49083acd79">eve::graphics::GraphicsArtifactDescriptor::backendIndexElementSize</a></div><div class="ttdeci">std::uint32_t backendIndexElementSize</div><div class="ttdoc">Actual backend index element size when a live upload exists.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00038">ArtifactProvider.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_ae3ed281b5e0466f70b618308e377019e"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#ae3ed281b5e0466f70b618308e377019e">eve::graphics::GraphicsArtifactDescriptor::role</a></div><div class="ttdeci">std::string role</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00031">ArtifactProvider.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactDescriptor_html_af3e8128d7db32b701fb5438111163726"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactDescriptor.html#af3e8128d7db32b701fb5438111163726">eve::graphics::GraphicsArtifactDescriptor::vertexCount</a></div><div class="ttdeci">std::size_t vertexCount</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00032">ArtifactProvider.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactHandleTag_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactHandleTag.html">eve::graphics::GraphicsArtifactHandleTag</a></div><div class="ttdoc">Owner tag for graphics artifact runtime handles.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00023">ArtifactProvider.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html">eve::graphics::GraphicsArtifactResource</a></div><div class="ttdoc">Queryable backend-neutral mesh resource owned by the graphics module.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00044">ArtifactProvider.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a00c9508adc5f9fc490eadf32755dcaa9"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a00c9508adc5f9fc490eadf32755dcaa9">eve::graphics::GraphicsArtifactResource::backendVertexStride</a></div><div class="ttdeci">std::uint32_t backendVertexStride</div><div class="ttdoc">Actual backend vertex stride, zero when no upload exists.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00060">ArtifactProvider.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a0a88792145b5630b7e1ffb16d39e3771"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a0a88792145b5630b7e1ffb16d39e3771">eve::graphics::GraphicsArtifactResource::normals</a></div><div class="ttdeci">std::vector&lt; float &gt; normals</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00050">ArtifactProvider.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a165f56248709c009eeb179063e5aa3c0"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a165f56248709c009eeb179063e5aa3c0">eve::graphics::GraphicsArtifactResource::backendName</a></div><div class="ttdeci">std::string backendName</div><div class="ttdoc">Backend name observed when upload was attempted, or cpu.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00054">ArtifactProvider.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a2b4383b52ecb066ec9c4f0e7e1f0aeb8"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a2b4383b52ecb066ec9c4f0e7e1f0aeb8">eve::graphics::GraphicsArtifactResource::indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00052">ArtifactProvider.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a336bcc9d1a1d982540eca86e79a8090a"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a336bcc9d1a1d982540eca86e79a8090a">eve::graphics::GraphicsArtifactResource::positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00049">ArtifactProvider.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a4c29153e673b7e5c80530d81765f4fc3"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a4c29153e673b7e5c80530d81765f4fc3">eve::graphics::GraphicsArtifactResource::id</a></div><div class="ttdeci">eve::PersistentId id</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00045">ArtifactProvider.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a530d5589abd60e7b702fed42b6672a96"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a530d5589abd60e7b702fed42b6672a96">eve::graphics::GraphicsArtifactResource::role</a></div><div class="ttdeci">std::string role</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00048">ArtifactProvider.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a623b00e7c38367d26017f53b26a49d93"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a623b00e7c38367d26017f53b26a49d93">eve::graphics::GraphicsArtifactResource::backendIndexElementSize</a></div><div class="ttdeci">std::uint32_t backendIndexElementSize</div><div class="ttdoc">Actual backend index element size, zero when no upload exists.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00062">ArtifactProvider.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a7eabfaa850b107a40e5dfdc350f63fdd"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a7eabfaa850b107a40e5dfdc350f63fdd">eve::graphics::GraphicsArtifactResource::gpuResident</a></div><div class="ttdeci">bool gpuResident</div><div class="ttdoc">Whether the provider currently owns a backend resource for this descriptor.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00058">ArtifactProvider.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a870e84c78a5e753d47e4cfe3dc93f179"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a870e84c78a5e753d47e4cfe3dc93f179">eve::graphics::GraphicsArtifactResource::uvs</a></div><div class="ttdeci">std::vector&lt; float &gt; uvs</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00051">ArtifactProvider.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_a9b1a00e253d906831d3f426b1a415c7f"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#a9b1a00e253d906831d3f426b1a415c7f">eve::graphics::GraphicsArtifactResource::handle</a></div><div class="ttdeci">GraphicsArtifactHandle handle</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00047">ArtifactProvider.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_aa5f61d462883dc6b42d525ecad25a537"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#aa5f61d462883dc6b42d525ecad25a537">eve::graphics::GraphicsArtifactResource::buildKey</a></div><div class="ttdeci">std::string buildKey</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00046">ArtifactProvider.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1GraphicsArtifactResource_html_ad75184e344dd8c0c3e8e57f0e703646d"><div class="ttname"><a href="structeve_1_1graphics_1_1GraphicsArtifactResource.html#ad75184e344dd8c0c3e8e57f0e703646d">eve::graphics::GraphicsArtifactResource::uploadState</a></div><div class="ttdeci">std::string uploadState</div><div class="ttdoc">Explicit upload outcome: not-attempted, uploaded, or capability-degraded.</div><div class="ttdef"><b>Definition</b> <a href="graphics_2ArtifactProvider_8h_source.html#l00056">ArtifactProvider.h:56</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

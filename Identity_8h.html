@@ -1,0 +1,297 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/Identity.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">Identity.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Strong identity values shared by persistence, content and logical-name APIs.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="Export_8h_source.html">common/Export.h</a>&quot;</code><br />
+<code>#include &lt;array&gt;</code><br />
+<code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;compare&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div>
+<p><a href="Identity_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1PersistentIdTag.html">eve::detail::PersistentIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1ContentIdTag.html">eve::detail::ContentIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1AssetGuidTag.html">eve::detail::AssetGuidTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1DocumentIdTag.html">eve::detail::DocumentIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1SceneObjectIdTag.html">eve::detail::SceneObjectIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1ArtifactIdTag.html">eve::detail::ArtifactIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1EventIdTag.html">eve::detail::EventIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1CommandIdTag.html">eve::detail::CommandIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1TransactionIdTag.html">eve::detail::TransactionIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1OperationIdTag.html">eve::detail::OperationIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1detail_1_1EffectIdTag.html">eve::detail::EffectIdTag</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128&lt; Tag &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter&lt; Tag &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">UUID-backed identifier adapter for legacy textual boundaries.  <a href="classeve_1_1UuidIdAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1LogicalId.html">eve::LogicalId</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable, scoped identifier in the form <code>namespace:name</code>.  <a href="classeve_1_1LogicalId.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1UuidV7Generator.html">eve::UuidV7Generator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Injectable UUIDv7 generator.  <a href="classeve_1_1UuidV7Generator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1detail" id="r_namespaceeve_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1detail.html">eve::detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacestd" id="r_namespacestd"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestd.html">std</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:ab2340b505475f784d5d493b096862887" id="r_ab2340b505475f784d5d493b096862887"><td class="memTemplParams" colspan="2">template&lt;typename Tag &gt; </td></tr>
+<tr class="memitem:ab2340b505475f784d5d493b096862887"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">eve::StrongUuid</a> = <a class="el" href="classeve_1_1detail_1_1Id128.html">detail::Id128</a>&lt; Tag &gt;</td></tr>
+<tr class="memdesc:ab2340b505475f784d5d493b096862887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Public alias for a tag-safe 128-bit UUID identity.  <br /></td></tr>
+<tr class="separator:ab2340b505475f784d5d493b096862887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cc2fec4f4bc26901dd5e4f2f5891828" id="r_a2cc2fec4f4bc26901dd5e4f2f5891828"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1PersistentIdTag.html">detail::PersistentIdTag</a> &gt;</td></tr>
+<tr class="memdesc:a2cc2fec4f4bc26901dd5e4f2f5891828"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable instance identity for persistence, networking and process boundaries.  <br /></td></tr>
+<tr class="separator:a2cc2fec4f4bc26901dd5e4f2f5891828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaf0d65059bd675715fff4063c9ca9b2" id="r_aaaf0d65059bd675715fff4063c9ca9b2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#aaaf0d65059bd675715fff4063c9ca9b2">eve::ContentId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1ContentIdTag.html">detail::ContentIdTag</a> &gt;</td></tr>
+<tr class="memdesc:aaaf0d65059bd675715fff4063c9ca9b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic identity of equivalent canonical content.  <br /></td></tr>
+<tr class="separator:aaaf0d65059bd675715fff4063c9ca9b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4290005bdf7323f774c74481dd8436d9" id="r_a4290005bdf7323f774c74481dd8436d9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a4290005bdf7323f774c74481dd8436d9">eve::AssetGuid</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1AssetGuidTag.html">detail::AssetGuidTag</a> &gt;</td></tr>
+<tr class="memdesc:a4290005bdf7323f774c74481dd8436d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable asset identity used by sidecars, package manifests and caches.  <br /></td></tr>
+<tr class="separator:a4290005bdf7323f774c74481dd8436d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c0ecb7656c2bc9736d80b0dcf1fca77" id="r_a6c0ecb7656c2bc9736d80b0dcf1fca77"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a6c0ecb7656c2bc9736d80b0dcf1fca77">eve::DocumentId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1DocumentIdTag.html">detail::DocumentIdTag</a> &gt;</td></tr>
+<tr class="memdesc:a6c0ecb7656c2bc9736d80b0dcf1fca77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable document identity for persisted/editor-facing documents.  <br /></td></tr>
+<tr class="separator:a6c0ecb7656c2bc9736d80b0dcf1fca77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74c1df79187160b80844be412da6b014" id="r_a74c1df79187160b80844be412da6b014"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a74c1df79187160b80844be412da6b014">eve::SceneObjectId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1SceneObjectIdTag.html">detail::SceneObjectIdTag</a> &gt;</td></tr>
+<tr class="memdesc:a74c1df79187160b80844be412da6b014"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable persisted scene-object identity; distinct from an ECS handle.  <br /></td></tr>
+<tr class="separator:a74c1df79187160b80844be412da6b014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b3eefe49d7b85c70771c7aa3fd70f6a" id="r_a9b3eefe49d7b85c70771c7aa3fd70f6a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a9b3eefe49d7b85c70771c7aa3fd70f6a">eve::ArtifactId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1ArtifactIdTag.html">detail::ArtifactIdTag</a> &gt;</td></tr>
+<tr class="memdesc:a9b3eefe49d7b85c70771c7aa3fd70f6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable generated-artifact identity; content equivalence remains ContentId.  <br /></td></tr>
+<tr class="separator:a9b3eefe49d7b85c70771c7aa3fd70f6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae05510c8567fac1aa84c26f032b6afdc" id="r_ae05510c8567fac1aa84c26f032b6afdc"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#ae05510c8567fac1aa84c26f032b6afdc">eve::EventId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1EventIdTag.html">detail::EventIdTag</a> &gt;</td></tr>
+<tr class="memdesc:ae05510c8567fac1aa84c26f032b6afdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable event identity for event envelopes and causal references.  <br /></td></tr>
+<tr class="separator:ae05510c8567fac1aa84c26f032b6afdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a591170a0f6375a8ffe00842572e31bf9" id="r_a591170a0f6375a8ffe00842572e31bf9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a591170a0f6375a8ffe00842572e31bf9">eve::CommandId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1CommandIdTag.html">detail::CommandIdTag</a> &gt;</td></tr>
+<tr class="memdesc:a591170a0f6375a8ffe00842572e31bf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable command identity for causal references.  <br /></td></tr>
+<tr class="separator:a591170a0f6375a8ffe00842572e31bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bd8ab16bf04395f6a2b68a3b4c42755" id="r_a4bd8ab16bf04395f6a2b68a3b4c42755"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a4bd8ab16bf04395f6a2b68a3b4c42755">eve::TransactionId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1TransactionIdTag.html">detail::TransactionIdTag</a> &gt;</td></tr>
+<tr class="memdesc:a4bd8ab16bf04395f6a2b68a3b4c42755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable transaction identity for cross-module coordination and snapshots.  <br /></td></tr>
+<tr class="separator:a4bd8ab16bf04395f6a2b68a3b4c42755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeedf20f530c2a65b5b1024b672c8a161" id="r_aeedf20f530c2a65b5b1024b672c8a161"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#aeedf20f530c2a65b5b1024b672c8a161">eve::OperationId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1OperationIdTag.html">detail::OperationIdTag</a> &gt;</td></tr>
+<tr class="memdesc:aeedf20f530c2a65b5b1024b672c8a161"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable operation identity inside a persisted transaction plan.  <br /></td></tr>
+<tr class="separator:aeedf20f530c2a65b5b1024b672c8a161"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af528b6450aef4dce9e9ad9211a6d20c3" id="r_af528b6450aef4dce9e9ad9211a6d20c3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#af528b6450aef4dce9e9ad9211a6d20c3">eve::EffectId</a> = <a class="el" href="namespaceeve.html#ab2340b505475f784d5d493b096862887">StrongUuid</a>&lt; <a class="el" href="structeve_1_1detail_1_1EffectIdTag.html">detail::EffectIdTag</a> &gt;</td></tr>
+<tr class="memdesc:af528b6450aef4dce9e9ad9211a6d20c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable effect-instance identity when an effect crosses a persistence/event boundary.  <br /></td></tr>
+<tr class="separator:af528b6450aef4dce9e9ad9211a6d20c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4bdb66d9fd10b7e35d2e17e0f637b8d" id="r_aa4bdb66d9fd10b7e35d2e17e0f637b8d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#aa4bdb66d9fd10b7e35d2e17e0f637b8d">eve::UuidEntropySource</a> = std::function&lt; bool(std::span&lt; std::uint8_t &gt; bytes)&gt;</td></tr>
+<tr class="memdesc:aa4bdb66d9fd10b7e35d2e17e0f637b8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Entropy callback used by UUIDv7 generation.  <br /></td></tr>
+<tr class="separator:aa4bdb66d9fd10b7e35d2e17e0f637b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5642ef25c9d9b43e265f5d2db7a4c580" id="r_a5642ef25c9d9b43e265f5d2db7a4c580"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a5642ef25c9d9b43e265f5d2db7a4c580">eve::UuidClock</a> = std::function&lt; std::chrono::system_clock::time_point()&gt;</td></tr>
+<tr class="memdesc:a5642ef25c9d9b43e265f5d2db7a4c580"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clock callback used by the injectable UUIDv7 generator.  <br /></td></tr>
+<tr class="separator:a5642ef25c9d9b43e265f5d2db7a4c580"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ab4bbdaaa1d1f25c793d9595ed187d7e9" id="r_ab4bbdaaa1d1f25c793d9595ed187d7e9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">PersistentId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#ab4bbdaaa1d1f25c793d9595ed187d7e9">eve::generateUuidV7</a> (std::chrono::system_clock::time_point timestamp, const <a class="el" href="namespaceeve.html#aa4bdb66d9fd10b7e35d2e17e0f637b8d">UuidEntropySource</a> &amp;entropy)</td></tr>
+<tr class="memdesc:ab4bbdaaa1d1f25c793d9595ed187d7e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a UUIDv7 without owning a clock or generator object.  <br /></td></tr>
+<tr class="separator:ab4bbdaaa1d1f25c793d9595ed187d7e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Strong identity values shared by persistence, content and logical-name APIs. </p>
+<p>The types in this file deliberately do not replace runtime handles. A PersistentId or ContentId can cross a process boundary, while an ECS or registry handle remains local to its owner and generation domain. </p>
+
+<p class="definition">在文件 <a class="el" href="Identity_8h_source.html">Identity.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

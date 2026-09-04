@@ -1,0 +1,360 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorExtension.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorExtension.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorExtension_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EditorExtension_8h.html">editor/EditorExtension.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#aab5e6bbe84b29da107b1d92f19eba770">    8</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#aab5e6bbe84b29da107b1d92f19eba770">EditorExtensionRegistry::load</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IGameEditorExtension.html">IGameEditorExtension</a>&amp; extension) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">if</span> (!commands_)</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.missing-command-service&quot;</span>, <span class="stringliteral">&quot;Extension registry has no command service&quot;</span>);</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">const</span> std::string owner = extension.ownerModule();</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (owner.empty()) <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.missing-owner&quot;</span>, <span class="stringliteral">&quot;Game editor extension owner is required&quot;</span>);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">if</span> (std::any_of(commandVisibility_.begin(), commandVisibility_.end(),</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>                    [&amp;](<span class="keyword">const</span> CommandVisibility&amp; command) { return command.ownerModule == owner; }) ||</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        std::any_of(tools_.begin(), tools_.end(),</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                    [&amp;](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1ExtensionToolDescriptor.html">ExtensionToolDescriptor</a>&amp; tool) { return tool.ownerModule == owner; }))</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.duplicate-owner&quot;</span>, <span class="stringliteral">&quot;Game editor extension owner is already loaded&quot;</span>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    activeOwner_ = owner;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        extension.registerEditor(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; exception) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#acb8bd792672306b36c5ff8d88459f0fe">unload</a>(owner);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        activeOwner_.clear();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.exception&quot;</span>, exception.what());</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#acb8bd792672306b36c5ff8d88459f0fe">unload</a>(owner);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        activeOwner_.clear();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.exception&quot;</span>, <span class="stringliteral">&quot;Game editor extension threw an unknown exception&quot;</span>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    activeOwner_.clear();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#acb8bd792672306b36c5ff8d88459f0fe">   34</a></span>std::size_t <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#acb8bd792672306b36c5ff8d88459f0fe">EditorExtensionRegistry::unload</a>(<span class="keyword">const</span> std::string&amp; ownerModule) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::size_t <a class="code hl_variable" href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a>    = commands_ ? commands_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1EditorCommandService.html#a02bb49f3147aecc8b6a4050196dcc98d">unregisterOwner</a>(ownerModule) : 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">auto</span>        eraseOwner = [&amp;](<span class="keyword">auto</span>&amp; <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">const</span> std::size_t before = <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.size();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        std::erase_if(<a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>, [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.ownerModule == ownerModule; });</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <a class="code hl_variable" href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a> += before - <a class="code hl_variable" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>.size();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    };</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    eraseOwner(commandVisibility_);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    eraseOwner(tools_);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    eraseOwner(palettes_);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    eraseOwner(rules_);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#af573527db83ac2944c80420c4778fa2d">   48</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#af573527db83ac2944c80420c4778fa2d">EditorExtensionRegistry::configureProfile</a>(<a class="code hl_class" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&amp; profile)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6">ExtensionAudience</a> audience = audienceFor(profile);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> CommandVisibility&amp; command : commandVisibility_)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1editor.html#a5007f1921b5016cdffea32faad7bec07">hasAudience</a>(command.audiences, audience)) profile.<a class="code hl_function" href="classeve_1_1editor_1_1HostProfile.html#accd7322be9a571425c75d75d435f28a8">allowCommand</a>(command.id);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a742f5ca1a50be66bb52a9bc455126f9c">   54</a></span>std::vector&lt;ExtensionToolDescriptor&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a742f5ca1a50be66bb52a9bc455126f9c">EditorExtensionRegistry::tools</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&amp; profile)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::vector&lt;ExtensionToolDescriptor&gt; result;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6">ExtensionAudience</a>              audience = audienceFor(profile);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1ExtensionToolDescriptor.html">ExtensionToolDescriptor</a>&amp; tool : tools_)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1editor.html#a5007f1921b5016cdffea32faad7bec07">hasAudience</a>(tool.audiences, audience)) result.push_back(tool);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#abcd1d536a5e1057aed3250f64c18fadc">   62</a></span>std::vector&lt;ExtensionPaletteDescriptor&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#abcd1d536a5e1057aed3250f64c18fadc">EditorExtensionRegistry::palettes</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&amp; profile)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::vector&lt;ExtensionPaletteDescriptor&gt; result;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6">ExtensionAudience</a>                 audience = audienceFor(profile);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1ExtensionPaletteDescriptor.html">ExtensionPaletteDescriptor</a>&amp; palette : palettes_)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1editor.html#a5007f1921b5016cdffea32faad7bec07">hasAudience</a>(palette.audiences, audience)) result.push_back(palette);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#aa4554563c4d31f6142564ec16bb3930c">   70</a></span>std::vector&lt;ExtensionRuleDescriptor&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#aa4554563c4d31f6142564ec16bb3930c">EditorExtensionRegistry::rules</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&amp; profile)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::vector&lt;ExtensionRuleDescriptor&gt; result;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6">ExtensionAudience</a>              audience = audienceFor(profile);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1ExtensionRuleDescriptor.html">ExtensionRuleDescriptor</a>&amp; rule : rules_)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1editor.html#a5007f1921b5016cdffea32faad7bec07">hasAudience</a>(rule.audiences, audience)) result.push_back(rule);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a9c78bb492031c00f37a872f809de4041">   78</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EditorValue&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a9c78bb492031c00f37a872f809de4041">EditorExtensionRegistry::registerCommand</a>(<a class="code hl_struct" href="structeve_1_1editor_1_1CommandDescriptor.html">CommandDescriptor</a>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                                                                   <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a1b52046bec5fd053af3e1ee0c3a590c6">EditorCommandHandler</a> handler,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                                                   <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6">ExtensionAudience</a>    audiences) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">if</span> (activeOwner_.empty())</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;EditorValue&gt;(EditorStatus::Rejected,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                                <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.extension.registration-outside-load&quot;</span>),</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                                <span class="stringliteral">&quot;Commands may only be registered while loading an extension&quot;</span>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.ownerModule           = activeOwner_;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EditorValue&gt;</a> result = commands_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1EditorCommandService.html#aca50f2574b803c83a76fa0cbbdf545df">registerCommand</a>(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, std::move(handler));</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (result.<a class="code hl_function" href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">ok</a>()) commandVisibility_.push_back({<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.id, activeOwner_, audiences});</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a3d288f65d279db898dd4e9864bfbc84b">   91</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a3d288f65d279db898dd4e9864bfbc84b">EditorExtensionRegistry::registerTool</a>(<a class="code hl_struct" href="structeve_1_1editor_1_1ExtensionToolDescriptor.html">ExtensionToolDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (activeOwner_.empty() || <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.id.empty())</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.invalid-tool&quot;</span>, <span class="stringliteral">&quot;Tool registration requires an active owner and id&quot;</span>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (std::any_of(tools_.begin(), tools_.end(),</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    [&amp;](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1ExtensionToolDescriptor.html">ExtensionToolDescriptor</a>&amp; tool) { return tool.id == descriptor.id; }))</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.duplicate-tool&quot;</span>, <span class="stringliteral">&quot;Tool id is already registered&quot;</span>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.ownerModule = activeOwner_;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    tools_.push_back(std::move(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>));</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#afa0f8793e3a3391fa18c7fb92ad4cba3">  102</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#afa0f8793e3a3391fa18c7fb92ad4cba3">EditorExtensionRegistry::registerPalette</a>(<a class="code hl_struct" href="structeve_1_1editor_1_1ExtensionPaletteDescriptor.html">ExtensionPaletteDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (activeOwner_.empty() || <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.id.empty())</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.invalid-palette&quot;</span>, <span class="stringliteral">&quot;Palette registration requires an active owner and id&quot;</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.ownerModule = activeOwner_;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    palettes_.push_back(std::move(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>));</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a1103395f5dd5a0ce0655561c017521d7">  110</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a1103395f5dd5a0ce0655561c017521d7">EditorExtensionRegistry::registerRule</a>(<a class="code hl_struct" href="structeve_1_1editor_1_1ExtensionRuleDescriptor.html">ExtensionRuleDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (activeOwner_.empty() || <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.id.empty())</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">return</span> invalid(<span class="stringliteral">&quot;editor.extension.invalid-rule&quot;</span>, <span class="stringliteral">&quot;Rule registration requires an active owner and id&quot;</span>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.ownerModule = activeOwner_;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    rules_.push_back(std::move(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>));</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><a class="code hl_enumeration" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6">ExtensionAudience</a> EditorExtensionRegistry::audienceFor(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&amp; profile) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">switch</span> (profile.<a class="code hl_function" href="classeve_1_1editor_1_1HostProfile.html#ad3157914befe38eb3f801bb3d843b6c8">kind</a>()) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">case</span> HostKind::Developer: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6a672caf27f5363dc833bda5099775e891">ExtensionAudience::Developer</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">case</span> HostKind::RuntimeBuilder: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6a636da1d35e805b00eae0fcd8333f9234">ExtensionAudience::Player</a>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">case</span> HostKind::RuntimeAdmin: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6ae3afed0047b08059d0fada10f400c1e5">ExtensionAudience::Admin</a>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">case</span> HostKind::Automation: <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6acaea8340e2d186a540518d08602aa065">ExtensionAudience::Automation</a>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6a6adf97f83acf6453d4a6a4b1070f3754">ExtensionAudience::None</a>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>EditorResult&lt;void&gt; EditorExtensionRegistry::invalid(<span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;void&gt;(EditorStatus::Rejected, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aEditorExtension_8h_html"><div class="ttname"><a href="EditorExtension_8h.html">EditorExtension.h</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a127467c202a16db28ed73fe86239cfd3"><div class="ttname"><a href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a></div><div class="ttdeci">std::map&lt; std::string, Var &gt; values</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00459">EditorHost.cpp:459</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aSceneCapabilities_8cpp_html_aa72a7853b4a4529a809c8ecd8b06ce9b"><div class="ttname"><a href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a></div><div class="ttdeci">int removed</div><div class="ttdef"><b>Definition</b> <a href="SceneCapabilities_8cpp_source.html#l00592">SceneCapabilities.cpp:592</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_ad6cb7f2de48f0622ee88b180f7fc2c7f"><div class="ttname"><a href="classeve_1_1Result.html#ad6cb7f2de48f0622ee88b180f7fc2c7f">eve::Result::ok</a></div><div class="ttdeci">bool ok() const noexcept</div><div class="ttdoc">Whether this result represents a non-failure outcome.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00228">Result.h:228</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCommandService_html_a02bb49f3147aecc8b6a4050196dcc98d"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCommandService.html#a02bb49f3147aecc8b6a4050196dcc98d">eve::editor::EditorCommandService::unregisterOwner</a></div><div class="ttdeci">size_t unregisterOwner(const std::string &amp;ownerModule)</div><div class="ttdoc">Remove every command registered by a module.</div><div class="ttdef"><b>Definition</b> <a href="EditorCommandService_8cpp_source.html#l00097">EditorCommandService.cpp:97</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCommandService_html_aca50f2574b803c83a76fa0cbbdf545df"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCommandService.html#aca50f2574b803c83a76fa0cbbdf545df">eve::editor::EditorCommandService::registerCommand</a></div><div class="ttdeci">EditorResult&lt; EditorValue &gt; registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler, bool replace=false)</div><div class="ttdoc">Register one command.</div><div class="ttdef"><b>Definition</b> <a href="EditorCommandService_8cpp_source.html#l00044">EditorCommandService.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_a1103395f5dd5a0ce0655561c017521d7"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a1103395f5dd5a0ce0655561c017521d7">eve::editor::EditorExtensionRegistry::registerRule</a></div><div class="ttdeci">EditorResult&lt; void &gt; registerRule(ExtensionRuleDescriptor descriptor) override</div><div class="ttdoc">Register gameplay validation metadata.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00110">EditorExtension.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_a3d288f65d279db898dd4e9864bfbc84b"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a3d288f65d279db898dd4e9864bfbc84b">eve::editor::EditorExtensionRegistry::registerTool</a></div><div class="ttdeci">EditorResult&lt; void &gt; registerTool(ExtensionToolDescriptor descriptor) override</div><div class="ttdoc">Register semantic tool metadata.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00091">EditorExtension.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_a742f5ca1a50be66bb52a9bc455126f9c"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a742f5ca1a50be66bb52a9bc455126f9c">eve::editor::EditorExtensionRegistry::tools</a></div><div class="ttdeci">std::vector&lt; ExtensionToolDescriptor &gt; tools(const HostProfile &amp;profile) const</div><div class="ttdoc">Return tool descriptors visible to a host.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00054">EditorExtension.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_a9c78bb492031c00f37a872f809de4041"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#a9c78bb492031c00f37a872f809de4041">eve::editor::EditorExtensionRegistry::registerCommand</a></div><div class="ttdeci">EditorResult&lt; EditorValue &gt; registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler, ExtensionAudience audiences) override</div><div class="ttdoc">Register a command; the registry overwrites ownerModule with the active extension owner.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00078">EditorExtension.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_aa4554563c4d31f6142564ec16bb3930c"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#aa4554563c4d31f6142564ec16bb3930c">eve::editor::EditorExtensionRegistry::rules</a></div><div class="ttdeci">std::vector&lt; ExtensionRuleDescriptor &gt; rules(const HostProfile &amp;profile) const</div><div class="ttdoc">Return validation descriptors visible to a host.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00070">EditorExtension.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_aab5e6bbe84b29da107b1d92f19eba770"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#aab5e6bbe84b29da107b1d92f19eba770">eve::editor::EditorExtensionRegistry::load</a></div><div class="ttdeci">EditorResult&lt; void &gt; load(IGameEditorExtension &amp;extension)</div><div class="ttdoc">Load one extension under its stable owner module.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00008">EditorExtension.cpp:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_abcd1d536a5e1057aed3250f64c18fadc"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#abcd1d536a5e1057aed3250f64c18fadc">eve::editor::EditorExtensionRegistry::palettes</a></div><div class="ttdeci">std::vector&lt; ExtensionPaletteDescriptor &gt; palettes(const HostProfile &amp;profile) const</div><div class="ttdoc">Return palette descriptors visible to a host.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00062">EditorExtension.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_acb8bd792672306b36c5ff8d88459f0fe"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#acb8bd792672306b36c5ff8d88459f0fe">eve::editor::EditorExtensionRegistry::unload</a></div><div class="ttdeci">std::size_t unload(const std::string &amp;ownerModule)</div><div class="ttdoc">Remove every component registered by an owner module.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00034">EditorExtension.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_af573527db83ac2944c80420c4778fa2d"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#af573527db83ac2944c80420c4778fa2d">eve::editor::EditorExtensionRegistry::configureProfile</a></div><div class="ttdeci">void configureProfile(HostProfile &amp;profile) const</div><div class="ttdoc">Add player/admin/automation extension commands to a deny-by-default profile.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00048">EditorExtension.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorExtensionRegistry_html_afa0f8793e3a3391fa18c7fb92ad4cba3"><div class="ttname"><a href="classeve_1_1editor_1_1EditorExtensionRegistry.html#afa0f8793e3a3391fa18c7fb92ad4cba3">eve::editor::EditorExtensionRegistry::registerPalette</a></div><div class="ttdeci">EditorResult&lt; void &gt; registerPalette(ExtensionPaletteDescriptor descriptor) override</div><div class="ttdoc">Register a host-specific palette for existing tools/commands.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8cpp_source.html#l00102">EditorExtension.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1HostProfile_html"><div class="ttname"><a href="classeve_1_1editor_1_1HostProfile.html">eve::editor::HostProfile</a></div><div class="ttdoc">Upper capability boundary for one editor host.</div><div class="ttdef"><b>Definition</b> <a href="EditorHostProfile_8h_source.html#l00046">EditorHostProfile.h:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1HostProfile_html_accd7322be9a571425c75d75d435f28a8"><div class="ttname"><a href="classeve_1_1editor_1_1HostProfile.html#accd7322be9a571425c75d75d435f28a8">eve::editor::HostProfile::allowCommand</a></div><div class="ttdeci">void allowCommand(CommandId id)</div><div class="ttdef"><b>Definition</b> <a href="EditorHostProfile_8cpp_source.html#l00030">EditorHostProfile.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1HostProfile_html_ad3157914befe38eb3f801bb3d843b6c8"><div class="ttname"><a href="classeve_1_1editor_1_1HostProfile.html#ad3157914befe38eb3f801bb3d843b6c8">eve::editor::HostProfile::kind</a></div><div class="ttdeci">HostKind kind() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHostProfile_8h_source.html#l00058">EditorHostProfile.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IGameEditorExtension_html"><div class="ttname"><a href="classeve_1_1editor_1_1IGameEditorExtension.html">eve::editor::IGameEditorExtension</a></div><div class="ttdoc">Entry point implemented by a gameplay module to inject editor behavior.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8h_source.html#l00074">EditorExtension.h:74</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a1b52046bec5fd053af3e1ee0c3a590c6"><div class="ttname"><a href="namespaceeve_1_1editor.html#a1b52046bec5fd053af3e1ee0c3a590c6">eve::editor::EditorCommandHandler</a></div><div class="ttdeci">std::function&lt; EditorResult&lt; EditorValue &gt;(const CommandContext &amp;, const EditorValue &amp;)&gt; EditorCommandHandler</div><div class="ttdef"><b>Definition</b> <a href="EditorCommandService_8h_source.html#l00037">EditorCommandService.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a5007f1921b5016cdffea32faad7bec07"><div class="ttname"><a href="namespaceeve_1_1editor.html#a5007f1921b5016cdffea32faad7bec07">eve::editor::hasAudience</a></div><div class="ttdeci">constexpr bool hasAudience(ExtensionAudience value, ExtensionAudience audience)</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8h_source.html#l00027">EditorExtension.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_acdb79b68efcca13a4d8609aecd41e2c6"><div class="ttname"><a href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6">eve::editor::ExtensionAudience</a></div><div class="ttdeci">ExtensionAudience</div><div class="ttdoc">Host audiences to which a game-provided editor extension may be published.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8h_source.html#l00013">EditorExtension.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_acdb79b68efcca13a4d8609aecd41e2c6a636da1d35e805b00eae0fcd8333f9234"><div class="ttname"><a href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6a636da1d35e805b00eae0fcd8333f9234">eve::editor::ExtensionAudience::Player</a></div><div class="ttdeci">@ Player</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_acdb79b68efcca13a4d8609aecd41e2c6a672caf27f5363dc833bda5099775e891"><div class="ttname"><a href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6a672caf27f5363dc833bda5099775e891">eve::editor::ExtensionAudience::Developer</a></div><div class="ttdeci">@ Developer</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_acdb79b68efcca13a4d8609aecd41e2c6a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6a6adf97f83acf6453d4a6a4b1070f3754">eve::editor::ExtensionAudience::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_acdb79b68efcca13a4d8609aecd41e2c6acaea8340e2d186a540518d08602aa065"><div class="ttname"><a href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6acaea8340e2d186a540518d08602aa065">eve::editor::ExtensionAudience::Automation</a></div><div class="ttdeci">@ Automation</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_acdb79b68efcca13a4d8609aecd41e2c6ae3afed0047b08059d0fada10f400c1e5"><div class="ttname"><a href="namespaceeve_1_1editor.html#acdb79b68efcca13a4d8609aecd41e2c6ae3afed0047b08059d0fada10f400c1e5">eve::editor::ExtensionAudience::Admin</a></div><div class="ttdeci">@ Admin</div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1CommandDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1CommandDescriptor.html">eve::editor::CommandDescriptor</a></div><div class="ttdoc">Presentation and execution metadata for a registered command.</div><div class="ttdef"><b>Definition</b> <a href="EditorCommandService_8h_source.html#l00027">EditorCommandService.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ExtensionPaletteDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1ExtensionPaletteDescriptor.html">eve::editor::ExtensionPaletteDescriptor</a></div><div class="ttdoc">Semantic palette that can place the same tool differently per audience.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8h_source.html#l00042">EditorExtension.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ExtensionRuleDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1ExtensionRuleDescriptor.html">eve::editor::ExtensionRuleDescriptor</a></div><div class="ttdoc">Discoverable gameplay validation rule registered by a game extension.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8h_source.html#l00052">EditorExtension.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ExtensionToolDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1ExtensionToolDescriptor.html">eve::editor::ExtensionToolDescriptor</a></div><div class="ttdoc">Host-neutral metadata for a game-provided editor tool.</div><div class="ttdef"><b>Definition</b> <a href="EditorExtension_8h_source.html#l00032">EditorExtension.h:32</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

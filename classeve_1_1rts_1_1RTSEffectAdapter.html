@@ -1,0 +1,592 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::RTSEffectAdapter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html">RTSEffectAdapter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1rts_1_1RTSEffectAdapter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::RTSEffectAdapter类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> adapter that keeps the common container as the sole instance owner.  
+ <a href="classeve_1_1rts_1_1RTSEffectAdapter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSEffects_8h_source.html">RTSEffects.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:afd0c43129c1926ceedd815a8a3cc3f0a" id="r_afd0c43129c1926ceedd815a8a3cc3f0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#afd0c43129c1926ceedd815a8a3cc3f0a">apply</a> (const <a class="el" href="structeve_1_1rts_1_1RTSEffectDefinition.html">RTSEffectDefinition</a> &amp;definition, <a class="el" href="classeve_1_1SubjectRef.html">eve::SubjectRef</a> subject)</td></tr>
+<tr class="memdesc:afd0c43129c1926ceedd815a8a3cc3f0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one typed effect to a stable subject.  <br /></td></tr>
+<tr class="separator:afd0c43129c1926ceedd815a8a3cc3f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af960e7933eb1351fc6eafbbb8eb4bcc6" id="r_af960e7933eb1351fc6eafbbb8eb4bcc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#af960e7933eb1351fc6eafbbb8eb4bcc6">remove</a> (<a class="el" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:af960e7933eb1351fc6eafbbb8eb4bcc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one generation-qualified effect handle.  <br /></td></tr>
+<tr class="separator:af960e7933eb1351fc6eafbbb8eb4bcc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacf1fea17ef181c85f8530ef20b3976b" id="r_aacf1fea17ef181c85f8530ef20b3976b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rts_1_1RTSEffectUpdate.html">RTSEffectUpdate</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#aacf1fea17ef181c85f8530ef20b3976b">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:aacf1fea17ef181c85f8530ef20b3976b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance and settle <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> effects atomically.  <br /></td></tr>
+<tr class="separator:aacf1fea17ef181c85f8530ef20b3976b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dee6493d76550a81efcfb3e673e27e2" id="r_a5dee6493d76550a81efcfb3e673e27e2"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#a5dee6493d76550a81efcfb3e673e27e2">count</a> () const noexcept</td></tr>
+<tr class="memdesc:a5dee6493d76550a81efcfb3e673e27e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of active effect instances.  <br /></td></tr>
+<tr class="separator:a5dee6493d76550a81efcfb3e673e27e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a228ffc8eb03f96c2b5517c0d0808d144" id="r_a228ffc8eb03f96c2b5517c0d0808d144"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1RTSEffectSnapshot.html">RTSEffectSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#a228ffc8eb03f96c2b5517c0d0808d144">snapshot</a> () const</td></tr>
+<tr class="memdesc:a228ffc8eb03f96c2b5517c0d0808d144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture effects and domain target state.  <br /></td></tr>
+<tr class="separator:a228ffc8eb03f96c2b5517c0d0808d144"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade63d96d345fd26938524d82a13081fe" id="r_ade63d96d345fd26938524d82a13081fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#ade63d96d345fd26938524d82a13081fe">restore</a> (const <a class="el" href="structeve_1_1rts_1_1RTSEffectSnapshot.html">RTSEffectSnapshot</a> &amp;<a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#a228ffc8eb03f96c2b5517c0d0808d144">snapshot</a>)</td></tr>
+<tr class="memdesc:ade63d96d345fd26938524d82a13081fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore effects and target state, invalidating prior handles.  <br /></td></tr>
+<tr class="separator:ade63d96d345fd26938524d82a13081fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af964555dca5f320dac8b1ed7cc5bd069" id="r_af964555dca5f320dac8b1ed7cc5bd069"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#af964555dca5f320dac8b1ed7cc5bd069">restoreSchedulerTick</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>) noexcept</td></tr>
+<tr class="memdesc:af964555dca5f320dac8b1ed7cc5bd069"><td class="mdescLeft">&#160;</td><td class="mdescRight">Align the contained lifecycle scheduler with an owning world checkpoint.  <br /></td></tr>
+<tr class="separator:af964555dca5f320dac8b1ed7cc5bd069"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bf7dfe2eb6bd812b2e505d85ec4e326" id="r_a5bf7dfe2eb6bd812b2e505d85ec4e326"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; const <a class="el" href="structeve_1_1effects_1_1EffectInstance.html">effects::EffectInstance</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#a5bf7dfe2eb6bd812b2e505d85ec4e326">resolve</a> (<a class="el" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:a5bf7dfe2eb6bd812b2e505d85ec4e326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a live handle as a borrowed observation.  <br /></td></tr>
+<tr class="separator:a5bf7dfe2eb6bd812b2e505d85ec4e326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a266c859e3af6ae13de1fbb0646c658e5" id="r_a266c859e3af6ae13de1fbb0646c658e5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#a266c859e3af6ae13de1fbb0646c658e5">multiplier</a> (std::string_view field) const noexcept</td></tr>
+<tr class="memdesc:a266c859e3af6ae13de1fbb0646c658e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiply one numeric payload across all active canonical effect instances.  <br /></td></tr>
+<tr class="separator:a266c859e3af6ae13de1fbb0646c658e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a677762e859f4325a108d0b002ca68be9" id="r_a677762e859f4325a108d0b002ca68be9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#a677762e859f4325a108d0b002ca68be9">additive</a> (std::string_view field) const noexcept</td></tr>
+<tr class="memdesc:a677762e859f4325a108d0b002ca68be9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sum one numeric payload across all active canonical effect instances.  <br /></td></tr>
+<tr class="separator:a677762e859f4325a108d0b002ca68be9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d7026409329fceede550eec7e5176f2" id="r_a9d7026409329fceede550eec7e5176f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1RTSEffectTarget.html">RTSEffectTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#a9d7026409329fceede550eec7e5176f2">target</a> () noexcept</td></tr>
+<tr class="memdesc:a9d7026409329fceede550eec7e5176f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the adapter-owned <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> target state.  <br /></td></tr>
+<tr class="separator:a9d7026409329fceede550eec7e5176f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae34b9ecb632a5fa586b8b4759ff2bd99" id="r_ae34b9ecb632a5fa586b8b4759ff2bd99"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1rts_1_1RTSEffectTarget.html">RTSEffectTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1RTSEffectAdapter.html#ae34b9ecb632a5fa586b8b4759ff2bd99">target</a> () const noexcept</td></tr>
+<tr class="memdesc:ae34b9ecb632a5fa586b8b4759ff2bd99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the adapter-owned <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> target state.  <br /></td></tr>
+<tr class="separator:ae34b9ecb632a5fa586b8b4759ff2bd99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> adapter that keeps the common container as the sole instance owner. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8h_source.html">RTSEffects.h</a> 第 <a class="el" href="RTSEffects_8h_source.html#l00075">75</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a677762e859f4325a108d0b002ca68be9" name="a677762e859f4325a108d0b002ca68be9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a677762e859f4325a108d0b002ca68be9">&#9670;&#160;</a></span>additive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rts::RTSEffectAdapter::additive </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sum one numeric payload across all active canonical effect instances. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8h_source.html#l00141">eve::rts::RTSEffectComponent::additive()</a>.</p>
+
+</div>
+</div>
+<a id="aacf1fea17ef181c85f8530ef20b3976b" name="aacf1fea17ef181c85f8530ef20b3976b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacf1fea17ef181c85f8530ef20b3976b">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1rts_1_1RTSEffectUpdate.html">RTSEffectUpdate</a> &gt; eve::rts::RTSEffectAdapter::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance and settle <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> effects atomically. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectContainer_8cpp_source.html#l00569">eve::effects::EffectExecutor::advance()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00136">eve::effects::EffectContainer::clone()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00037">eve::rts::RTSEffectExecutor::settle()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8cpp_source.html#l00193">eve::rts::RTSEffectComponent::advance()</a>.</p>
+
+</div>
+</div>
+<a id="afd0c43129c1926ceedd815a8a3cc3f0a" name="afd0c43129c1926ceedd815a8a3cc3f0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd0c43129c1926ceedd815a8a3cc3f0a">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a> &gt; eve::rts::RTSEffectAdapter::apply </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rts_1_1RTSEffectDefinition.html">RTSEffectDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1SubjectRef.html">eve::SubjectRef</a>&#160;</td>
+          <td class="paramname"><em>subject</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one typed effect to a stable subject. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="RTSEffects_8cpp_source.html#l00029">eve::rts::RTSEffectExecutor::applyImmediate()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00136">eve::effects::EffectContainer::clone()</a>, <a class="el" href="EffectTypes_8h_source.html#l00102">eve::effects::EffectDefinition::duration</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SubjectRef_8h_source.html#l00044">eve::SubjectRef::format()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="EffectTypes_8h_source.html#l00099">eve::effects::EffectDefinition::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="SubjectRef_8h_source.html#l00038">eve::SubjectRef::isValid()</a>, <a class="el" href="EffectTypes_8h_source.html#l00105">eve::effects::EffectDefinition::magnitude</a>, <a class="el" href="EffectTypes_8h_source.html#l00108">eve::effects::EffectDefinition::payload</a>, <a class="el" href="EffectTypes_8h_source.html#l00104">eve::effects::EffectDefinition::period</a>, <a class="el" href="EffectTypes_8h_source.html#l00107">eve::effects::EffectDefinition::policy</a>, <a class="el" href="EffectTypes_8cpp_source.html#l00020">eve::effects::EffectPayload::setNumber()</a>, <a class="el" href="EffectTypes_8h_source.html#l00100">eve::effects::EffectDefinition::stackKey</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="EffectTypes_8h_source.html#l00109">eve::effects::EffectDefinition::tags</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="EffectTypes_8cpp_source.html#l00067">eve::effects::EffectDefinition::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8cpp_source.html#l00184">eve::rts::RTSEffectComponent::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a5dee6493d76550a81efcfb3e673e27e2" name="a5dee6493d76550a81efcfb3e673e27e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dee6493d76550a81efcfb3e673e27e2">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::rts::RTSEffectAdapter::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of active effect instances. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectContainer_8cpp_source.html#l00502">eve::effects::EffectContainer::effectCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8cpp_source.html#l00172">eve::rts::RTSEffectComponent::bindSubject()</a> , 以及 <a class="el" href="RTSEffects_8h_source.html#l00127">eve::rts::RTSEffectComponent::count()</a>.</p>
+
+</div>
+</div>
+<a id="a266c859e3af6ae13de1fbb0646c658e5" name="a266c859e3af6ae13de1fbb0646c658e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a266c859e3af6ae13de1fbb0646c658e5">&#9670;&#160;</a></span>multiplier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rts::RTSEffectAdapter::multiplier </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Multiply one numeric payload across all active canonical effect instances. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8h_source.html#l00139">eve::rts::RTSEffectComponent::multiplier()</a>.</p>
+
+</div>
+</div>
+<a id="af960e7933eb1351fc6eafbbb8eb4bcc6" name="af960e7933eb1351fc6eafbbb8eb4bcc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af960e7933eb1351fc6eafbbb8eb4bcc6">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rts::RTSEffectAdapter::remove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one generation-qualified effect handle. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00375">eve::effects::EffectContainer::remove()</a> , 以及 <a class="el" href="EffectContainer_8cpp_source.html#l00344">eve::effects::EffectContainer::resolve()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8cpp_source.html#l00191">eve::rts::RTSEffectComponent::remove()</a>.</p>
+
+</div>
+</div>
+<a id="a5bf7dfe2eb6bd812b2e505d85ec4e326" name="a5bf7dfe2eb6bd812b2e505d85ec4e326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bf7dfe2eb6bd812b2e505d85ec4e326">&#9670;&#160;</a></span>resolve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; const <a class="el" href="structeve_1_1effects_1_1EffectInstance.html">effects::EffectInstance</a> * &gt; eve::rts::RTSEffectAdapter::resolve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1effects_1_1EffectHandle.html">effects::EffectHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a live handle as a borrowed observation. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a> , 以及 <a class="el" href="EffectContainer_8cpp_source.html#l00344">eve::effects::EffectContainer::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="ade63d96d345fd26938524d82a13081fe" name="ade63d96d345fd26938524d82a13081fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade63d96d345fd26938524d82a13081fe">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rts::RTSEffectAdapter::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rts_1_1RTSEffectSnapshot.html">RTSEffectSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore effects and target state, invalidating prior handles. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="RTSEffects_8h_source.html#l00057">eve::rts::RTSEffectSnapshot::effects</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00140">eve::effects::EffectContainer::restore()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="RTSEffects_8h_source.html#l00058">eve::rts::RTSEffectSnapshot::target</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="RTSEffects_8cpp_source.html#l00022">eve::rts::RTSEffectExecutor::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8h_source.html#l00131">eve::rts::RTSEffectComponent::restore()</a> , 以及 <a class="el" href="RTSSnapshot_8cpp_source.html#l00670">eve::rts::RTS::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="af964555dca5f320dac8b1ed7cc5bd069" name="af964555dca5f320dac8b1ed7cc5bd069"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af964555dca5f320dac8b1ed7cc5bd069">&#9670;&#160;</a></span>restoreSchedulerTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rts::RTSEffectAdapter::restoreSchedulerTick </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Align the contained lifecycle scheduler with an owning world checkpoint. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tick</td><td>Completed tick. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8h_source.html">RTSEffects.h</a> 第 <a class="el" href="RTSEffects_8h_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectContainer_8h_source.html#l00245">eve::effects::EffectContainer::restoreSchedulerTick()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8h_source.html#l00133">eve::rts::RTSEffectComponent::restoreSchedulerTick()</a>.</p>
+
+</div>
+</div>
+<a id="a228ffc8eb03f96c2b5517c0d0808d144" name="a228ffc8eb03f96c2b5517c0d0808d144"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a228ffc8eb03f96c2b5517c0d0808d144">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1RTSEffectSnapshot.html">RTSEffectSnapshot</a> eve::rts::RTSEffectAdapter::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture effects and domain target state. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a> 第 <a class="el" href="RTSEffects_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EffectContainer_8cpp_source.html#l00138">eve::effects::EffectContainer::snapshot()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8h_source.html#l00129">eve::rts::RTSEffectComponent::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="ae34b9ecb632a5fa586b8b4759ff2bd99" name="ae34b9ecb632a5fa586b8b4759ff2bd99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae34b9ecb632a5fa586b8b4759ff2bd99">&#9670;&#160;</a></span>target() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1rts_1_1RTSEffectTarget.html">RTSEffectTarget</a> &amp; eve::rts::RTSEffectAdapter::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read the adapter-owned <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> target state. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8h_source.html">RTSEffects.h</a> 第 <a class="el" href="RTSEffects_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d7026409329fceede550eec7e5176f2" name="a9d7026409329fceede550eec7e5176f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d7026409329fceede550eec7e5176f2">&#9670;&#160;</a></span>target() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1RTSEffectTarget.html">RTSEffectTarget</a> &amp; eve::rts::RTSEffectAdapter::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Access the adapter-owned <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> target state. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSEffects_8h_source.html">RTSEffects.h</a> 第 <a class="el" href="RTSEffects_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSEffects_8h_source.html#l00137">eve::rts::RTSEffectComponent::target()</a> , 以及 <a class="el" href="RTSEffects_8h_source.html#l00135">eve::rts::RTSEffectComponent::target()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSEffects_8h_source.html">RTSEffects.h</a></li>
+<li>src/modules/rts/<a class="el" href="RTSEffects_8cpp_source.html">RTSEffects.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

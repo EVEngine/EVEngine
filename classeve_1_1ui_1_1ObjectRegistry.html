@@ -1,0 +1,630 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::ObjectRegistry类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1ObjectRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::ObjectRegistry类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Reflectable script-object registry backing the database panel.  
+ <a href="classeve_1_1ui_1_1ObjectRegistry.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ObjectRegistry_8h_source.html">ObjectRegistry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a42535049aa02db13dd8f20b060d0e78f" id="r_a42535049aa02db13dd8f20b060d0e78f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a42535049aa02db13dd8f20b060d0e78f">ObjectRegistry</a> (const <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> &amp;)=delete</td></tr>
+<tr class="separator:a42535049aa02db13dd8f20b060d0e78f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9604e5bd21a59a7aa2bad54d648b20d5" id="r_a9604e5bd21a59a7aa2bad54d648b20d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a9604e5bd21a59a7aa2bad54d648b20d5">operator=</a> (const <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> &amp;)=delete</td></tr>
+<tr class="separator:a9604e5bd21a59a7aa2bad54d648b20d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01f7ee718d80f9bee1922a45cf8647a5" id="r_a01f7ee718d80f9bee1922a45cf8647a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a01f7ee718d80f9bee1922a45cf8647a5">create</a> (const std::string &amp;className)</td></tr>
+<tr class="memdesc:a01f7ee718d80f9bee1922a45cf8647a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a class instance through the active <a class="el" href="classeve_1_1Runtime.html">Runtime</a> and registers it.  <br /></td></tr>
+<tr class="separator:a01f7ee718d80f9bee1922a45cf8647a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad353642549bc6c790066300dd8368628" id="r_ad353642549bc6c790066300dd8368628"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#ad353642549bc6c790066300dd8368628">registerObject</a> (const std::string &amp;className, const ssq::Object &amp;<a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, const std::string &amp;label={})</td></tr>
+<tr class="memdesc:ad353642549bc6c790066300dd8368628"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers an existing live script instance.  <br /></td></tr>
+<tr class="separator:ad353642549bc6c790066300dd8368628"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aad852b1c6f071c781f16cbba3a3a70" id="r_a9aad852b1c6f071c781f16cbba3a3a70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a9aad852b1c6f071c781f16cbba3a3a70">unregister</a> (<a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:a9aad852b1c6f071c781f16cbba3a3a70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a live entry and advances its slot generation.  <br /></td></tr>
+<tr class="separator:a9aad852b1c6f071c781f16cbba3a3a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a937c17f4f453b5a7391a4a3a283848c5" id="r_a937c17f4f453b5a7391a4a3a283848c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a937c17f4f453b5a7391a4a3a283848c5">clear</a> (const std::string &amp;className)</td></tr>
+<tr class="memdesc:a937c17f4f453b5a7391a4a3a283848c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes every entry of a class.  <br /></td></tr>
+<tr class="separator:a937c17f4f453b5a7391a4a3a283848c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25013d406a8b0c60ed8431921df48afd" id="r_a25013d406a8b0c60ed8431921df48afd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a25013d406a8b0c60ed8431921df48afd">clearAll</a> ()</td></tr>
+<tr class="memdesc:a25013d406a8b0c60ed8431921df48afd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes every entry.  <br /></td></tr>
+<tr class="separator:a25013d406a8b0c60ed8431921df48afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88e3f5db4b3737e94992c77eb8fbaa5e" id="r_a88e3f5db4b3737e94992c77eb8fbaa5e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a88e3f5db4b3737e94992c77eb8fbaa5e">classNames</a> () const</td></tr>
+<tr class="memdesc:a88e3f5db4b3737e94992c77eb8fbaa5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class names with at least one entry, sorted.  <br /></td></tr>
+<tr class="separator:a88e3f5db4b3737e94992c77eb8fbaa5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa71d9a6cffbc00c9d1997a6d18d0e87e" id="r_aa71d9a6cffbc00c9d1997a6d18d0e87e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#aa71d9a6cffbc00c9d1997a6d18d0e87e">entries</a> (const std::string &amp;className) const</td></tr>
+<tr class="memdesc:aa71d9a6cffbc00c9d1997a6d18d0e87e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Entries of a class, in registration order.  <br /></td></tr>
+<tr class="separator:aa71d9a6cffbc00c9d1997a6d18d0e87e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c95b4ec31826465f5828df17e41133e" id="r_a0c95b4ec31826465f5828df17e41133e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a0c95b4ec31826465f5828df17e41133e">entry</a> (<a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const noexcept</td></tr>
+<tr class="memdesc:a0c95b4ec31826465f5828df17e41133e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up a live entry without transferring ownership.  <br /></td></tr>
+<tr class="separator:a0c95b4ec31826465f5828df17e41133e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af983b8979154bca655ecbd0316fe4091" id="r_af983b8979154bca655ecbd0316fe4091"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#af983b8979154bca655ecbd0316fe4091">isStale</a> (<a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> <a class="el" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const noexcept</td></tr>
+<tr class="memdesc:af983b8979154bca655ecbd0316fe4091"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports whether a valid handle is stale in this registry.  <br /></td></tr>
+<tr class="separator:af983b8979154bca655ecbd0316fe4091"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b290e894ddd623bbded199a7f40987e" id="r_a5b290e894ddd623bbded199a7f40987e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a5b290e894ddd623bbded199a7f40987e">count</a> (const std::string &amp;className) const</td></tr>
+<tr class="memdesc:a5b290e894ddd623bbded199a7f40987e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of entries of a class.  <br /></td></tr>
+<tr class="separator:a5b290e894ddd623bbded199a7f40987e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a7b6721c7536edf4dd51bade916c8a6c2" id="r_a7b6721c7536edf4dd51bade916c8a6c2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a7b6721c7536edf4dd51bade916c8a6c2">instance</a> ()</td></tr>
+<tr class="memdesc:a7b6721c7536edf4dd51bade916c8a6c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the process-local singleton owned by the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> module.  <br /></td></tr>
+<tr class="separator:a7b6721c7536edf4dd51bade916c8a6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Reflectable script-object registry backing the database panel. </p>
+<p>Holds rooted references to script class instances grouped by class name. The database panel lists entries per class, creates instances through the active <a class="el" href="classeve_1_1Runtime.html">Runtime</a> and edits their reflected properties; scripts register their own live objects through <code>ui.dbRegister(obj)</code>.</p>
+<p>All methods are main/UI-thread-affine. The registry owns the rooted script object while its slot is live. Callbacks must retain ObjectHandle values and resolve them again at invocation time; pointers and copied entries are observations and do not extend an entry's lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8h_source.html">ObjectRegistry.h</a> 第 <a class="el" href="ObjectRegistry_8h_source.html#l00055">55</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a42535049aa02db13dd8f20b060d0e78f" name="a42535049aa02db13dd8f20b060d0e78f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42535049aa02db13dd8f20b060d0e78f">&#9670;&#160;</a></span>ObjectRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ui::ObjectRegistry::ObjectRegistry </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a88e3f5db4b3737e94992c77eb8fbaa5e" name="a88e3f5db4b3737e94992c77eb8fbaa5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88e3f5db4b3737e94992c77eb8fbaa5e">&#9670;&#160;</a></span>classNames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::ui::ObjectRegistry::classNames </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Class names with at least one entry, sorted. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a937c17f4f453b5a7391a4a3a283848c5" name="a937c17f4f453b5a7391a4a3a283848c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a937c17f4f453b5a7391a4a3a283848c5">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ObjectRegistry::clear </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>className</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes every entry of a class. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a> , 以及 <a class="el" href="ObjectRegistry_8cpp_source.html#l00142">unregister()</a>.</p>
+
+</div>
+</div>
+<a id="a25013d406a8b0c60ed8431921df48afd" name="a25013d406a8b0c60ed8431921df48afd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25013d406a8b0c60ed8431921df48afd">&#9670;&#160;</a></span>clearAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::ObjectRegistry::clearAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes every entry. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a> , 以及 <a class="el" href="ObjectRegistry_8cpp_source.html#l00142">unregister()</a>.</p>
+
+</div>
+</div>
+<a id="a5b290e894ddd623bbded199a7f40987e" name="a5b290e894ddd623bbded199a7f40987e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b290e894ddd623bbded199a7f40987e">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::ui::ObjectRegistry::count </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>className</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of entries of a class. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01f7ee718d80f9bee1922a45cf8647a5" name="a01f7ee718d80f9bee1922a45cf8647a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01f7ee718d80f9bee1922a45cf8647a5">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> &gt; eve::ui::ObjectRegistry::create </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>className</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a class instance through the active <a class="el" href="classeve_1_1Runtime.html">Runtime</a> and registers it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">className</td><td>Reflected script class name. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A live ObjectHandle, or a structured failure when the class is unknown, the <a class="el" href="classeve_1_1Runtime.html">Runtime</a> is unavailable, or construction fails. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00058">registerObject()</a> , 以及 <a class="el" href="Module_8cpp_source.html#l00292">eve::ModuleManager::runtime()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00105">eve::ui::DatabasePanel::createInstance()</a>.</p>
+
+</div>
+</div>
+<a id="aa71d9a6cffbc00c9d1997a6d18d0e87e" name="aa71d9a6cffbc00c9d1997a6d18d0e87e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa71d9a6cffbc00c9d1997a6d18d0e87e">&#9670;&#160;</a></span>entries()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a> &gt; eve::ui::ObjectRegistry::entries </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>className</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Entries of a class, in registration order. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ObjectRegistry_8cpp_source.html#l00232">entry()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a0c95b4ec31826465f5828df17e41133e" name="a0c95b4ec31826465f5828df17e41133e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c95b4ec31826465f5828df17e41133e">&#9670;&#160;</a></span>entry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1ui_1_1ObjectEntry.html">ObjectEntry</a> * eve::ui::ObjectRegistry::entry </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Looks up a live entry without transferring ownership. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>Candidate generation-qualified handle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable entry for a live handle. @ownership <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html" title="Reflectable script-object registry backing the database panel.">ObjectRegistry</a> owns the rooted entry; callers must not delete or mutate the result. @lifetime Valid only until <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a9aad852b1c6f071c781f16cbba3a3a70" title="Removes a live entry and advances its slot generation.">unregister()</a>, <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a937c17f4f453b5a7391a4a3a283848c5" title="Removes every entry of a class.">clear()</a>, or another registry mutation. @thread Call on the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> thread owning this registry. @reentrancy The lookup invokes no callbacks and is invalid across registry mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectRegistry_8cpp_source.html#l00220">entries()</a>.</p>
+
+</div>
+</div>
+<a id="a7b6721c7536edf4dd51bade916c8a6c2" name="a7b6721c7536edf4dd51bade916c8a6c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b6721c7536edf4dd51bade916c8a6c2">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> &amp; eve::ui::ObjectRegistry::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the process-local singleton owned by the <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> module. </p>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DatabasePanel_8cpp_source.html#l00105">eve::ui::DatabasePanel::createInstance()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00120">eve::ui::DatabasePanel::registerObject()</a> , 以及 <a class="el" href="DatabasePanel_8cpp_source.html#l00131">eve::ui::DatabasePanel::unregister()</a>.</p>
+
+</div>
+</div>
+<a id="af983b8979154bca655ecbd0316fe4091" name="af983b8979154bca655ecbd0316fe4091"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af983b8979154bca655ecbd0316fe4091">&#9670;&#160;</a></span>isStale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::ObjectRegistry::isStale </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reports whether a valid handle is stale in this registry. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>Candidate handle; invalid() is not classified as stale. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="a9604e5bd21a59a7aa2bad54d648b20d5" name="a9604e5bd21a59a7aa2bad54d648b20d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9604e5bd21a59a7aa2bad54d648b20d5">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> &amp; eve::ui::ObjectRegistry::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html">ObjectRegistry</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad353642549bc6c790066300dd8368628" name="ad353642549bc6c790066300dd8368628"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad353642549bc6c790066300dd8368628">&#9670;&#160;</a></span>registerObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a> &gt; eve::ui::ObjectRegistry::registerObject </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>className</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers an existing live script instance. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">className</td><td>Class name used for grouping (auto-derived when empty). </td></tr>
+    <tr><td class="paramname">object</td><td>Live script instance (rooted while registered). </td></tr>
+    <tr><td class="paramname">label</td><td>Optional display label (defaults to "Class #n"). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A live ObjectHandle, or a structured failure for an invalid object, unavailable <a class="el" href="classeve_1_1Runtime.html">Runtime</a>, or allocation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelOwnership_8h_source.html#l00143">eve::script::borrowSquirrelObject()</a>, <a class="el" href="ObjectRegistry_8h_source.html#l00035">eve::ui::ObjectEntry::className</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00254">group</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="ObjectRegistry_8h_source.html#l00033">eve::ui::ObjectEntry::handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00045">eve::RuntimeHandle&lt; UiObjectHandleTag &gt;::invalidIndex</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="ObjectRegistry_8h_source.html#l00037">eve::ui::ObjectEntry::label</a>, <a class="el" href="ObjectRegistry_8h_source.html#l00039">eve::ui::ObjectEntry::object</a>, <a class="el" href="SquirrelOwnership_8h_source.html#l00181">eve::script::ownSquirrelObject()</a>, <a class="el" href="Module_8cpp_source.html#l00292">eve::ModuleManager::runtime()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectRegistry_8cpp_source.html#l00036">create()</a> , 以及 <a class="el" href="DatabasePanel_8cpp_source.html#l00120">eve::ui::DatabasePanel::registerObject()</a>.</p>
+
+</div>
+</div>
+<a id="a9aad852b1c6f071c781f16cbba3a3a70" name="a9aad852b1c6f071c781f16cbba3a3a70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aad852b1c6f071c781f16cbba3a3a70">&#9670;&#160;</a></span>unregister()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::ui::ObjectRegistry::unregister </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1ui.html#aa52e4072fb4efb017bf04cf36ce140a5">ObjectHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a live entry and advances its slot generation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>Handle returned by <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#a01f7ee718d80f9bee1922a45cf8647a5" title="Creates a class instance through the active Runtime and registers it.">create()</a> or <a class="el" href="classeve_1_1ui_1_1ObjectRegistry.html#ad353642549bc6c790066300dd8368628" title="Registers an existing live script instance.">registerObject()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; StaleHandle, NotFound, or InvalidArgument when the handle cannot identify the live entry. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a> 第 <a class="el" href="ObjectRegistry_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00094">eve::RuntimeHandle&lt; UiObjectHandleTag &gt;::nextGeneration()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ObjectRegistry_8cpp_source.html#l00192">clear()</a>, <a class="el" href="ObjectRegistry_8cpp_source.html#l00202">clearAll()</a> , 以及 <a class="el" href="DatabasePanel_8cpp_source.html#l00131">eve::ui::DatabasePanel::unregister()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="ObjectRegistry_8h_source.html">ObjectRegistry.h</a></li>
+<li>src/modules/ui/<a class="el" href="ObjectRegistry_8cpp_source.html">ObjectRegistry.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

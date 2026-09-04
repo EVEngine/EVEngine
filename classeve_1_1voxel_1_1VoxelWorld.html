@@ -1,0 +1,2231 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::voxel::VoxelWorld类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1voxel.html">voxel</a></li><li class="navelem"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">VoxelWorld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1voxel_1_1VoxelWorld-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::voxel::VoxelWorld类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Sparse chunk map + visibility selection (frustum + distance + face orientation). Meshing is neighbor-aware (cross-chunk seam culling), parallel-capable and script-friendly via getVisible getters and raycast helpers.  
+ <a href="classeve_1_1voxel_1_1VoxelWorld.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aac2f2e2d25312cd547a0f133e715d76d" id="r_aac2f2e2d25312cd547a0f133e715d76d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#aac2f2e2d25312cd547a0f133e715d76d">VoxelWorld</a> ()</td></tr>
+<tr class="separator:aac2f2e2d25312cd547a0f133e715d76d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d884cee3628bde869f5c1ec6e04c402" id="r_a3d884cee3628bde869f5c1ec6e04c402"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a3d884cee3628bde869f5c1ec6e04c402">~VoxelWorld</a> ()</td></tr>
+<tr class="separator:a3d884cee3628bde869f5c1ec6e04c402"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4057381767827fe8ecc7f3f360baa676" id="r_a4057381767827fe8ecc7f3f360baa676"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a4057381767827fe8ecc7f3f360baa676">VoxelWorld</a> (const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;types)</td></tr>
+<tr class="separator:a4057381767827fe8ecc7f3f360baa676"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4504d0cf863ba7d76e4b2ad55b96d297" id="r_a4504d0cf863ba7d76e4b2ad55b96d297"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a4504d0cf863ba7d76e4b2ad55b96d297">getOrCreateChunk</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int cz)</td></tr>
+<tr class="separator:a4504d0cf863ba7d76e4b2ad55b96d297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd8f2d0cb643890e7502837a70591be2" id="r_abd8f2d0cb643890e7502837a70591be2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">getChunk</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int cz)</td></tr>
+<tr class="separator:abd8f2d0cb643890e7502837a70591be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26886f9bbe11ae14609c4b61a04a98ab" id="r_a26886f9bbe11ae14609c4b61a04a98ab"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a26886f9bbe11ae14609c4b61a04a98ab">getChunk</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int cz) const</td></tr>
+<tr class="separator:a26886f9bbe11ae14609c4b61a04a98ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0759862af32015880433bd7683e0bb5" id="r_ac0759862af32015880433bd7683e0bb5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ac0759862af32015880433bd7683e0bb5">hasChunk</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int cz) const</td></tr>
+<tr class="separator:ac0759862af32015880433bd7683e0bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6676ac6a61fdfa6cc35491fed213255" id="r_ab6676ac6a61fdfa6cc35491fed213255"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ab6676ac6a61fdfa6cc35491fed213255">removeChunk</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int cz)</td></tr>
+<tr class="separator:ab6676ac6a61fdfa6cc35491fed213255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af81bbb01fbd6123bc43b6c1f3e9e74bd" id="r_af81bbb01fbd6123bc43b6c1f3e9e74bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#af81bbb01fbd6123bc43b6c1f3e9e74bd">clear</a> ()</td></tr>
+<tr class="separator:af81bbb01fbd6123bc43b6c1f3e9e74bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a825b7f27b465410fac61e675a97095b7" id="r_a825b7f27b465410fac61e675a97095b7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a825b7f27b465410fac61e675a97095b7">getChunkCount</a> () const</td></tr>
+<tr class="separator:a825b7f27b465410fac61e675a97095b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a961b585b9707a36c313a5c49bb1f527f" id="r_a961b585b9707a36c313a5c49bb1f527f"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a961b585b9707a36c313a5c49bb1f527f">getRevision</a> () const</td></tr>
+<tr class="memdesc:a961b585b9707a36c313a5c49bb1f527f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic content revision incremented by voxel/chunk mutations.  <br /></td></tr>
+<tr class="separator:a961b585b9707a36c313a5c49bb1f527f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae550c82894b168308b1232bac84f1b06" id="r_ae550c82894b168308b1232bac84f1b06"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ae550c82894b168308b1232bac84f1b06">unloadChunksOutside</a> (int centerX, int centerY, int centerZ, int radiusChunks)</td></tr>
+<tr class="memdesc:ae550c82894b168308b1232bac84f1b06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Streaming eviction: drop chunks whose center is farther than <code>radiusChunks</code> chunk units from (centerX, centerY, centerZ). Radius &lt; 0 is a no-op. Returns the number of chunks evicted.  <br /></td></tr>
+<tr class="separator:ae550c82894b168308b1232bac84f1b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fb6fd02a1b10aeee452b9aa4a9ae7ed" id="r_a1fb6fd02a1b10aeee452b9aa4a9ae7ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1voxel_1_1StreamStats.html">StreamStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a1fb6fd02a1b10aeee452b9aa4a9ae7ed">streamAround</a> (int centerX, int centerY, int centerZ, int radiusChunks, const std::function&lt; void(<a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> &amp;, int, int, int)&gt; &amp;generator={})</td></tr>
+<tr class="memdesc:a1fb6fd02a1b10aeee452b9aa4a9ae7ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Player-centered streaming: evict chunks outside <code>radiusChunks</code>, then allocate + fill + mesh missing chunks inside it (sphere, chunk coords). <code>generator</code> is called for each new chunk (chunk, cx, cy, cz); when null the stored terrain sampler (<a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html" title="Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).">procgen::TerrainSampler</a>) is used if enabled, otherwise chunks stay empty. Radius &lt; 0 is a no-op.  <br /></td></tr>
+<tr class="separator:a1fb6fd02a1b10aeee452b9aa4a9ae7ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24f28ab50dd31716c8a08d6bfd1268aa" id="r_a24f28ab50dd31716c8a08d6bfd1268aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a24f28ab50dd31716c8a08d6bfd1268aa">setTerrainParams</a> (uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, uint8_t <a class="el" href="WorldAnchorProjection_8cpp.html#aec3f3270b9c9a786c01326e81db15681">top</a>, uint8_t sub, uint8_t stone, float baseHeight, float amplitude, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:a24f28ab50dd31716c8a08d6bfd1268aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the built-in terrain generator used by <a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a1fb6fd02a1b10aeee452b9aa4a9ae7ed" title="Player-centered streaming: evict chunks outside radiusChunks, then allocate + fill + mesh missing chu...">streamAround()</a>. The sampling itself lives in <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html" title="Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).">procgen::TerrainSampler</a> (deterministic Perlin fBm); voxel only adapts it to 32³ chunk filling.  <br /></td></tr>
+<tr class="separator:a24f28ab50dd31716c8a08d6bfd1268aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb1b18687b59c436dcbc9b8db2cb97c5" id="r_aeb1b18687b59c436dcbc9b8db2cb97c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#aeb1b18687b59c436dcbc9b8db2cb97c5">setTerrainParam</a> (const std::string &amp;key, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:aeb1b18687b59c436dcbc9b8db2cb97c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">细粒度地形参数配置（脚本用）。key 支持： seed/top/sub/stone/sand/base/amplitude/scale(=frequency)/ octaves/lacunarity/gain/ridge/warp/exponent/continent/island/coast/ worldWidth/worldHeight/sandLevel/enable 所有参数以 float 传入（整数在内部取整）。sandLevel ∈ (0,1] 时， 采样高度 ≤ sandLevel 的柱子顶层用 sand 纹理（沙滩带）；0 或负值关闭。 enable=1 打开地形（默认流式生成开启），enable=0 关闭。  <br /></td></tr>
+<tr class="separator:aeb1b18687b59c436dcbc9b8db2cb97c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa6f60d93e235382c30097e658d9159d" id="r_aaa6f60d93e235382c30097e658d9159d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#aaa6f60d93e235382c30097e658d9159d">disableTerrain</a> ()</td></tr>
+<tr class="separator:aaa6f60d93e235382c30097e658d9159d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d7b76e02e9349c99903071b36c41c26" id="r_a1d7b76e02e9349c99903071b36c41c26"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a1d7b76e02e9349c99903071b36c41c26">terrainEnabled</a> () const</td></tr>
+<tr class="separator:a1d7b76e02e9349c99903071b36c41c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dd0ea2e459a9718da19f5e731e9cb80" id="r_a0dd0ea2e459a9718da19f5e731e9cb80"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a0dd0ea2e459a9718da19f5e731e9cb80">loadTerrainAsset</a> (<a class="el" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *bytes, float heightOffset=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float heightScale=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a0dd0ea2e459a9718da19f5e731e9cb80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation that opens baked EVTR terrain data.  <br /></td></tr>
+<tr class="separator:a0dd0ea2e459a9718da19f5e731e9cb80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63baedb0831e6a440f411a2f1860c4c4" id="r_a63baedb0831e6a440f411a2f1860c4c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1TerrainStreamStats.html">procgen::TerrainStreamStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a63baedb0831e6a440f411a2f1860c4c4">streamTerrainAssetAround</a> (int worldX, int worldZ, int radiusChunks, int maxLoads=0)</td></tr>
+<tr class="memdesc:a63baedb0831e6a440f411a2f1860c4c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode/evict EVTR chunks around a world-space column with an optional load budget.  <br /></td></tr>
+<tr class="separator:a63baedb0831e6a440f411a2f1860c4c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade551512ddee9c2509c67c626e3408d8" id="r_ade551512ddee9c2509c67c626e3408d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ade551512ddee9c2509c67c626e3408d8">setTerrainAssetMaterials</a> (uint8_t vegetation, uint8_t sand, uint8_t snow, uint8_t alpine, uint8_t riverbed)</td></tr>
+<tr class="memdesc:ade551512ddee9c2509c67c626e3408d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure biome surface ids: vegetation, sand, snow, alpine rock, river bed.  <br /></td></tr>
+<tr class="separator:ade551512ddee9c2509c67c626e3408d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25767bc34bb9ccca4a73b0516e78ac6a" id="r_a25767bc34bb9ccca4a73b0516e78ac6a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a25767bc34bb9ccca4a73b0516e78ac6a">getTerrainAssetResidentCount</a> () const</td></tr>
+<tr class="separator:a25767bc34bb9ccca4a73b0516e78ac6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a174d480945288faa19b21460fd10aacf" id="r_a174d480945288faa19b21460fd10aacf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a174d480945288faa19b21460fd10aacf">terrainHeightAt</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, int <a class="el" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>) const</td></tr>
+<tr class="memdesc:a174d480945288faa19b21460fd10aacf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terrain height (world blocks) at a column for the configured seed.  <br /></td></tr>
+<tr class="separator:a174d480945288faa19b21460fd10aacf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9e8749766e5e4949fee1b70ff452d43" id="r_af9e8749766e5e4949fee1b70ff452d43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#af9e8749766e5e4949fee1b70ff452d43">serializeWorld</a> (std::vector&lt; uint8_t &gt; &amp;out) const</td></tr>
+<tr class="memdesc:af9e8749766e5e4949fee1b70ff452d43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persistence: serialize every chunk (coords + raw voxels) into <code>out</code>. Format is portable little-endian: "EVVX" + version + count + per-chunk (cx, cy, cz, 32³ voxels). Meshes are rebuilt on demand after loading.  <br /></td></tr>
+<tr class="separator:af9e8749766e5e4949fee1b70ff452d43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756358459772894265cf8c10ba30e16f" id="r_a756358459772894265cf8c10ba30e16f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a756358459772894265cf8c10ba30e16f">deserializeWorld</a> (const uint8_t *data, size_t size)</td></tr>
+<tr class="separator:a756358459772894265cf8c10ba30e16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11f8769ce11ce31b375daac8fad29ca7" id="r_a11f8769ce11ce31b375daac8fad29ca7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a11f8769ce11ce31b375daac8fad29ca7">saveWorld</a> () const</td></tr>
+<tr class="memdesc:a11f8769ce11ce31b375daac8fad29ca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-facing wrappers around serialize/deserialize.  <br /></td></tr>
+<tr class="separator:a11f8769ce11ce31b375daac8fad29ca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6c4e648ee402c3ad08fa4f6335bf08d" id="r_aa6c4e648ee402c3ad08fa4f6335bf08d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#aa6c4e648ee402c3ad08fa4f6335bf08d">loadWorld</a> (<a class="el" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *bytes)</td></tr>
+<tr class="separator:aa6c4e648ee402c3ad08fa4f6335bf08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8718b00b3b9130b91d490cc6b539ab2" id="r_af8718b00b3b9130b91d490cc6b539ab2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#af8718b00b3b9130b91d490cc6b539ab2">remeshDirty</a> (int maxThreads=0)</td></tr>
+<tr class="memdesc:af8718b00b3b9130b91d490cc6b539ab2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remesh every dirty chunk. Returns number remeshed.  <br /></td></tr>
+<tr class="separator:af8718b00b3b9130b91d490cc6b539ab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab44721e5ac826f8e2625c2eb450a46a8" id="r_ab44721e5ac826f8e2625c2eb450a46a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ab44721e5ac826f8e2625c2eb450a46a8">selectVisible</a> (const float *viewProj16, float eyeX, float eyeY, float eyeZ, float viewRange, bool faceCull=true)</td></tr>
+<tr class="memdesc:ab44721e5ac826f8e2625c2eb450a46a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select chunks/faces to draw.  <br /></td></tr>
+<tr class="separator:ab44721e5ac826f8e2625c2eb450a46a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dec5eda542ab3ea8b5e56d1f5996711" id="r_a7dec5eda542ab3ea8b5e56d1f5996711"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a7dec5eda542ab3ea8b5e56d1f5996711">getVisibleBatchCount</a> () const</td></tr>
+<tr class="separator:a7dec5eda542ab3ea8b5e56d1f5996711"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4bb5d968e694201be3d34c4d9bd17e9" id="r_ad4bb5d968e694201be3d34c4d9bd17e9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1voxel_1_1DrawBatch.html">DrawBatch</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ad4bb5d968e694201be3d34c4d9bd17e9">getVisibleBatch</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ad4bb5d968e694201be3d34c4d9bd17e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a571be123358c15c17ce4b97cf86d09b3" id="r_a571be123358c15c17ce4b97cf86d09b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a571be123358c15c17ce4b97cf86d09b3">getVisibleChunkCount</a> () const</td></tr>
+<tr class="memdesc:a571be123358c15c17ce4b97cf86d09b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script accessors for the last selectVisible result.  <br /></td></tr>
+<tr class="separator:a571be123358c15c17ce4b97cf86d09b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac040fc403acb113c73725dbd2b743b97" id="r_ac040fc403acb113c73725dbd2b743b97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ac040fc403acb113c73725dbd2b743b97">getVisibleChunkCoord</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, int &amp;<a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int &amp;<a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int &amp;cz) const</td></tr>
+<tr class="separator:ac040fc403acb113c73725dbd2b743b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad30442d5043bc3fd9079c330aed2545b" id="r_ad30442d5043bc3fd9079c330aed2545b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ad30442d5043bc3fd9079c330aed2545b">getVisibleRectCount</a> () const</td></tr>
+<tr class="separator:ad30442d5043bc3fd9079c330aed2545b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a346a110de00f6bdcf7af32fd24d15ca9" id="r_a346a110de00f6bdcf7af32fd24d15ca9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a346a110de00f6bdcf7af32fd24d15ca9">drawVisible</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *atlas, int tilesPerRow=16)</td></tr>
+<tr class="memdesc:a346a110de00f6bdcf7af32fd24d15ca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Issue Graphics::drawVoxelFaceInstances for every visible batch. Requires begin3DFrame + setMesh3DViewProj already done. 参数用主类 Graphics*（而非 IGraphics3D*）：脚本绑定对接口指针 不做次基类偏移调整，经接口的虚调用会错位到别的 vtable 槽位。  <br /></td></tr>
+<tr class="separator:a346a110de00f6bdcf7af32fd24d15ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fb346bb73fd9750d9c79a96d5856250" id="r_a2fb346bb73fd9750d9c79a96d5856250"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">getVoxel</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, int <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, int <a class="el" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>) const</td></tr>
+<tr class="memdesc:a2fb346bb73fd9750d9c79a96d5856250"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space voxel get/set. Air (0) never allocates a chunk; a border edit also invalidates the adjacent chunk's mesh.  <br /></td></tr>
+<tr class="separator:a2fb346bb73fd9750d9c79a96d5856250"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a775041b7658fbf350885aebb6a1a31e2" id="r_a775041b7658fbf350885aebb6a1a31e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a775041b7658fbf350885aebb6a1a31e2">setVoxel</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, int <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, int <a class="el" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>, uint8_t texId)</td></tr>
+<tr class="separator:a775041b7658fbf350885aebb6a1a31e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6df7659ee62c5baccaf94707f84f7ddc" id="r_a6df7659ee62c5baccaf94707f84f7ddc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a6df7659ee62c5baccaf94707f84f7ddc">raycast</a> (float <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, float <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, float oz, float dx, float dy, float dz, float maxDist, int &amp;hitX, int &amp;hitY, int &amp;hitZ, int &amp;prevX, int &amp;prevY, int &amp;prevZ, int &amp;faceX, int &amp;faceY, int &amp;faceZ) const</td></tr>
+<tr class="memdesc:a6df7659ee62c5baccaf94707f84f7ddc"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1voxel_1_1Voxel.html" title="High-performance voxel rendering module.">Voxel</a> raycast (Amanatides &amp; Woo DDA). Returns true when a solid voxel is found within <code>maxDist</code> world units along the ray; fills hit/prev coords and the face normal of the surface the ray entered. <code>prev</code> is the last air voxel before the hit (equals hit when the ray starts inside solid).  <br /></td></tr>
+<tr class="separator:a6df7659ee62c5baccaf94707f84f7ddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79a62848a45e43c515fd2f0c1239c666" id="r_a79a62848a45e43c515fd2f0c1239c666"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a79a62848a45e43c515fd2f0c1239c666">raycastScript</a> (float <a class="el" href="UrbanCrossField_8cpp.html#afc4e3a3e65efe3b49e37f2168bc9295d">ox</a>, float <a class="el" href="UrbanCrossField_8cpp.html#a19a570f18d48a461a6e612b886dd2925">oy</a>, float oz, float dx, float dy, float dz, float maxDist)</td></tr>
+<tr class="memdesc:a79a62848a45e43c515fd2f0c1239c666"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-facing raycast: stores the last result, returns hit/miss.  <br /></td></tr>
+<tr class="separator:a79a62848a45e43c515fd2f0c1239c666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3749f51831186b5da0ba6caf252896ed" id="r_a3749f51831186b5da0ba6caf252896ed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a3749f51831186b5da0ba6caf252896ed">lastRaycastHit</a> () const</td></tr>
+<tr class="separator:a3749f51831186b5da0ba6caf252896ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fd0c89a4bbb15425ba81dab963ec855" id="r_a6fd0c89a4bbb15425ba81dab963ec855"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a6fd0c89a4bbb15425ba81dab963ec855">lastRaycastHitX</a> () const</td></tr>
+<tr class="separator:a6fd0c89a4bbb15425ba81dab963ec855"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a037ebffd5a49f2394d2c959e6b66548c" id="r_a037ebffd5a49f2394d2c959e6b66548c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a037ebffd5a49f2394d2c959e6b66548c">lastRaycastHitY</a> () const</td></tr>
+<tr class="separator:a037ebffd5a49f2394d2c959e6b66548c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c771236afbb38ccab4b6722f63f1de1" id="r_a2c771236afbb38ccab4b6722f63f1de1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a2c771236afbb38ccab4b6722f63f1de1">lastRaycastHitZ</a> () const</td></tr>
+<tr class="separator:a2c771236afbb38ccab4b6722f63f1de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab200ad4957fc704f0f6600aa9acc9e15" id="r_ab200ad4957fc704f0f6600aa9acc9e15"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ab200ad4957fc704f0f6600aa9acc9e15">lastRaycastPrevX</a> () const</td></tr>
+<tr class="separator:ab200ad4957fc704f0f6600aa9acc9e15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9136538f95c50a5c8ecd1f5db04d062d" id="r_a9136538f95c50a5c8ecd1f5db04d062d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a9136538f95c50a5c8ecd1f5db04d062d">lastRaycastPrevY</a> () const</td></tr>
+<tr class="separator:a9136538f95c50a5c8ecd1f5db04d062d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae12a3f9d8c55f7752d1d126e6e95c4e3" id="r_ae12a3f9d8c55f7752d1d126e6e95c4e3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ae12a3f9d8c55f7752d1d126e6e95c4e3">lastRaycastPrevZ</a> () const</td></tr>
+<tr class="separator:ae12a3f9d8c55f7752d1d126e6e95c4e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fe6de5a0ceed98ce984f0857beff934" id="r_a8fe6de5a0ceed98ce984f0857beff934"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a8fe6de5a0ceed98ce984f0857beff934">lastRaycastFaceX</a> () const</td></tr>
+<tr class="separator:a8fe6de5a0ceed98ce984f0857beff934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7ff4d47035cd8e97a78a23301eead85" id="r_ac7ff4d47035cd8e97a78a23301eead85"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ac7ff4d47035cd8e97a78a23301eead85">lastRaycastFaceY</a> () const</td></tr>
+<tr class="separator:ac7ff4d47035cd8e97a78a23301eead85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95669323bf049523989f5e7f2a23859a" id="r_a95669323bf049523989f5e7f2a23859a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a95669323bf049523989f5e7f2a23859a">lastRaycastFaceZ</a> () const</td></tr>
+<tr class="separator:a95669323bf049523989f5e7f2a23859a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22f71e96a1aee7f00653be3fe9d5aa06" id="r_a22f71e96a1aee7f00653be3fe9d5aa06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a22f71e96a1aee7f00653be3fe9d5aa06">setVoxelByName</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, int <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, int <a class="el" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int orientation=0)</td></tr>
+<tr class="memdesc:a22f71e96a1aee7f00653be3fe9d5aa06"><td class="mdescLeft">&#160;</td><td class="mdescRight">按方块名 + orientation(0..3) 设置体素；内部解析为具体类型 id 后写 Chunk。 未注册的名字按空气(0)处理。  <br /></td></tr>
+<tr class="separator:a22f71e96a1aee7f00653be3fe9d5aa06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b55d1fdea1514b748fa1b8ce74a9eb1" id="r_a9b55d1fdea1514b748fa1b8ce74a9eb1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a9b55d1fdea1514b748fa1b8ce74a9eb1">getCubeTypeName</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, int <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, int <a class="el" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>) const</td></tr>
+<tr class="memdesc:a9b55d1fdea1514b748fa1b8ce74a9eb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">该体素所属方块类型名（未注册或空气返回空串）。  <br /></td></tr>
+<tr class="separator:a9b55d1fdea1514b748fa1b8ce74a9eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a257c615f5a61cb7ea9e1b0a7e4e4902a" id="r_a257c615f5a61cb7ea9e1b0a7e4e4902a"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a257c615f5a61cb7ea9e1b0a7e4e4902a">getCubeTypeTex</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, int <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, int <a class="el" href="WorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>, const std::string &amp;faceDir) const</td></tr>
+<tr class="memdesc:a257c615f5a61cb7ea9e1b0a7e4e4902a"><td class="mdescLeft">&#160;</td><td class="mdescRight">该体素在某面方向上的纹理 id（faceDir 如 "posX"/"+y"/"negZ"）。  <br /></td></tr>
+<tr class="separator:a257c615f5a61cb7ea9e1b0a7e4e4902a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb440856b3e8d431b5248d2c048b7def" id="r_afb440856b3e8d431b5248d2c048b7def"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#afb440856b3e8d431b5248d2c048b7def">cubeTypes</a> () const</td></tr>
+<tr class="memdesc:afb440856b3e8d431b5248d2c048b7def"><td class="mdescLeft">&#160;</td><td class="mdescRight">本世界持有的方块类型注册表（副本）。  <br /></td></tr>
+<tr class="separator:afb440856b3e8d431b5248d2c048b7def"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Sparse chunk map + visibility selection (frustum + distance + face orientation). Meshing is neighbor-aware (cross-chunk seam culling), parallel-capable and script-friendly via getVisible getters and raycast helpers. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00053">53</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aac2f2e2d25312cd547a0f133e715d76d" name="aac2f2e2d25312cd547a0f133e715d76d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac2f2e2d25312cd547a0f133e715d76d">&#9670;&#160;</a></span>VoxelWorld() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::voxel::VoxelWorld::VoxelWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3d884cee3628bde869f5c1ec6e04c402" name="a3d884cee3628bde869f5c1ec6e04c402"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d884cee3628bde869f5c1ec6e04c402">&#9670;&#160;</a></span>~VoxelWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::voxel::VoxelWorld::~VoxelWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4057381767827fe8ecc7f3f360baa676" name="a4057381767827fe8ecc7f3f360baa676"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4057381767827fe8ecc7f3f360baa676">&#9670;&#160;</a></span>VoxelWorld() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::voxel::VoxelWorld::VoxelWorld </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>types</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af81bbb01fbd6123bc43b6c1f3e9e74bd" name="af81bbb01fbd6123bc43b6c1f3e9e74bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af81bbb01fbd6123bc43b6c1f3e9e74bd">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00349">deserializeWorld()</a>.</p>
+
+</div>
+</div>
+<a id="afb440856b3e8d431b5248d2c048b7def" name="afb440856b3e8d431b5248d2c048b7def"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb440856b3e8d431b5248d2c048b7def">&#9670;&#160;</a></span>cubeTypes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1voxel_1_1CubeTypeRegistry.html">CubeTypeRegistry</a> &amp; eve::voxel::VoxelWorld::cubeTypes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>本世界持有的方块类型注册表（副本）。 </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00210">210</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a756358459772894265cf8c10ba30e16f" name="a756358459772894265cf8c10ba30e16f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756358459772894265cf8c10ba30e16f">&#9670;&#160;</a></span>deserializeWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::VoxelWorld::deserializeWorld </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00349">349</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00136">clear()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00108">getOrCreateChunk()</a>, <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00378">loadWorld()</a>.</p>
+
+</div>
+</div>
+<a id="aaa6f60d93e235382c30097e658d9159d" name="aaa6f60d93e235382c30097e658d9159d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa6f60d93e235382c30097e658d9159d">&#9670;&#160;</a></span>disableTerrain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::disableTerrain </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8cpp_source.html#l00022">eve::procgen::TerrainStreamingCache::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a346a110de00f6bdcf7af32fd24d15ca9" name="a346a110de00f6bdcf7af32fd24d15ca9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a346a110de00f6bdcf7af32fd24d15ca9">&#9670;&#160;</a></span>drawVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::drawVisible </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>atlas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tilesPerRow</em> = <code>16</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Issue Graphics::drawVoxelFaceInstances for every visible batch. Requires begin3DFrame + setMesh3DViewProj already done. 参数用主类 Graphics*（而非 IGraphics3D*）：脚本绑定对接口指针 不做次基类偏移调整，经接口的虚调用会错位到别的 vtable 槽位。 </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00513">513</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a96f4e55e1c755bb1cdc9fe30f68a99da">eve::graphics::Graphics::drawVoxelFaceInstances()</a> , 以及 <a class="el" href="FaceDir_8h_source.html#l00029">eve::voxel::faceDirName()</a>.</p>
+
+</div>
+</div>
+<a id="abd8f2d0cb643890e7502837a70591be2" name="abd8f2d0cb643890e7502837a70591be2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd8f2d0cb643890e7502837a70591be2">&#9670;&#160;</a></span>getChunk() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> * eve::voxel::VoxelWorld::getChunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00523">getVoxel()</a> , 以及 <a class="el" href="VoxelWorld_8cpp_source.html#l00532">setVoxel()</a>.</p>
+
+</div>
+</div>
+<a id="a26886f9bbe11ae14609c4b61a04a98ab" name="a26886f9bbe11ae14609c4b61a04a98ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26886f9bbe11ae14609c4b61a04a98ab">&#9670;&#160;</a></span>getChunk() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> * eve::voxel::VoxelWorld::getChunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a825b7f27b465410fac61e675a97095b7" name="a825b7f27b465410fac61e675a97095b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a825b7f27b465410fac61e675a97095b7">&#9670;&#160;</a></span>getChunkCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::getChunkCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b55d1fdea1514b748fa1b8ce74a9eb1" name="a9b55d1fdea1514b748fa1b8ce74a9eb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b55d1fdea1514b748fa1b8ce74a9eb1">&#9670;&#160;</a></span>getCubeTypeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::voxel::VoxelWorld::getCubeTypeName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>该体素所属方块类型名（未注册或空气返回空串）。 </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00667">667</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00098">eve::voxel::CubeTypeRegistry::find()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00523">getVoxel()</a>, <a class="el" href="CubeType_8h_source.html#l00015">eve::voxel::CubeType::name</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a>.</p>
+
+</div>
+</div>
+<a id="a257c615f5a61cb7ea9e1b0a7e4e4902a" name="a257c615f5a61cb7ea9e1b0a7e4e4902a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a257c615f5a61cb7ea9e1b0a7e4e4902a">&#9670;&#160;</a></span>getCubeTypeTex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::voxel::VoxelWorld::getCubeTypeTex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>faceDir</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>该体素在某面方向上的纹理 id（faceDir 如 "posX"/"+y"/"negZ"）。 </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00672">672</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="FaceDir_8h_source.html#l00041">eve::voxel::faceDirFromName()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00523">getVoxel()</a>, <a class="el" href="CubeTypeRegistry_8h_source.html#l00066">eve::voxel::resolveFaceTex()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a>.</p>
+
+</div>
+</div>
+<a id="a4504d0cf863ba7d76e4b2ad55b96d297" name="a4504d0cf863ba7d76e4b2ad55b96d297"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4504d0cf863ba7d76e4b2ad55b96d297">&#9670;&#160;</a></span>getOrCreateChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> * eve::voxel::VoxelWorld::getOrCreateChunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="Chunk_8h_source.html#l00042">eve::voxel::Chunk::get()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00349">deserializeWorld()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00532">setVoxel()</a> , 以及 <a class="el" href="VoxelWorld_8cpp_source.html#l00229">streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="a961b585b9707a36c313a5c49bb1f527f" name="a961b585b9707a36c313a5c49bb1f527f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a961b585b9707a36c313a5c49bb1f527f">&#9670;&#160;</a></span>getRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::voxel::VoxelWorld::getRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic content revision incremented by voxel/chunk mutations. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorldTarget_8cpp_source.html#l00010">eve::voxel_editing::VoxelWorldTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a25767bc34bb9ccca4a73b0516e78ac6a" name="a25767bc34bb9ccca4a73b0516e78ac6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25767bc34bb9ccca4a73b0516e78ac6a">&#9670;&#160;</a></span>getTerrainAssetResidentCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::getTerrainAssetResidentCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8h_source.html#l00088">eve::procgen::TerrainStreamingCache::getResidentCount()</a>.</p>
+
+</div>
+</div>
+<a id="ad4bb5d968e694201be3d34c4d9bd17e9" name="ad4bb5d968e694201be3d34c4d9bd17e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4bb5d968e694201be3d34c4d9bd17e9">&#9670;&#160;</a></span>getVisibleBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1voxel_1_1DrawBatch.html">DrawBatch</a> &amp; eve::voxel::VoxelWorld::getVisibleBatch </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7dec5eda542ab3ea8b5e56d1f5996711" name="a7dec5eda542ab3ea8b5e56d1f5996711"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dec5eda542ab3ea8b5e56d1f5996711">&#9670;&#160;</a></span>getVisibleBatchCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::getVisibleBatchCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00154">154</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac040fc403acb113c73725dbd2b743b97" name="ac040fc403acb113c73725dbd2b743b97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac040fc403acb113c73725dbd2b743b97">&#9670;&#160;</a></span>getVisibleChunkCoord()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::getVisibleChunkCoord </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>cz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00499">499</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a571be123358c15c17ce4b97cf86d09b3" name="a571be123358c15c17ce4b97cf86d09b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a571be123358c15c17ce4b97cf86d09b3">&#9670;&#160;</a></span>getVisibleChunkCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::getVisibleChunkCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Script accessors for the last selectVisible result. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00158">158</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad30442d5043bc3fd9079c330aed2545b" name="ad30442d5043bc3fd9079c330aed2545b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad30442d5043bc3fd9079c330aed2545b">&#9670;&#160;</a></span>getVisibleRectCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::getVisibleRectCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00507">507</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="a2fb346bb73fd9750d9c79a96d5856250" name="a2fb346bb73fd9750d9c79a96d5856250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fb346bb73fd9750d9c79a96d5856250">&#9670;&#160;</a></span>getVoxel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t eve::voxel::VoxelWorld::getVoxel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World-space voxel get/set. Air (0) never allocates a chunk; a border edit also invalidates the adjacent chunk's mesh. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00523">523</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00118">getChunk()</a>, <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00667">getCubeTypeName()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00672">getCubeTypeTex()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00575">raycast()</a> , 以及 <a class="el" href="VoxelWorldTarget_8cpp_source.html#l00019">eve::voxel_editing::VoxelWorldTarget::readInt3()</a>.</p>
+
+</div>
+</div>
+<a id="ac0759862af32015880433bd7683e0bb5" name="ac0759862af32015880433bd7683e0bb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0759862af32015880433bd7683e0bb5">&#9670;&#160;</a></span>hasChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::VoxelWorld::hasChunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00229">streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="a8fe6de5a0ceed98ce984f0857beff934" name="a8fe6de5a0ceed98ce984f0857beff934"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fe6de5a0ceed98ce984f0857beff934">&#9670;&#160;</a></span>lastRaycastFaceX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastFaceX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00194">194</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac7ff4d47035cd8e97a78a23301eead85" name="ac7ff4d47035cd8e97a78a23301eead85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7ff4d47035cd8e97a78a23301eead85">&#9670;&#160;</a></span>lastRaycastFaceY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastFaceY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00195">195</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a95669323bf049523989f5e7f2a23859a" name="a95669323bf049523989f5e7f2a23859a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95669323bf049523989f5e7f2a23859a">&#9670;&#160;</a></span>lastRaycastFaceZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastFaceZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00196">196</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3749f51831186b5da0ba6caf252896ed" name="a3749f51831186b5da0ba6caf252896ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3749f51831186b5da0ba6caf252896ed">&#9670;&#160;</a></span>lastRaycastHit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::VoxelWorld::lastRaycastHit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00187">187</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6fd0c89a4bbb15425ba81dab963ec855" name="a6fd0c89a4bbb15425ba81dab963ec855"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fd0c89a4bbb15425ba81dab963ec855">&#9670;&#160;</a></span>lastRaycastHitX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastHitX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a037ebffd5a49f2394d2c959e6b66548c" name="a037ebffd5a49f2394d2c959e6b66548c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a037ebffd5a49f2394d2c959e6b66548c">&#9670;&#160;</a></span>lastRaycastHitY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastHitY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00189">189</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c771236afbb38ccab4b6722f63f1de1" name="a2c771236afbb38ccab4b6722f63f1de1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c771236afbb38ccab4b6722f63f1de1">&#9670;&#160;</a></span>lastRaycastHitZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastHitZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00190">190</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab200ad4957fc704f0f6600aa9acc9e15" name="ab200ad4957fc704f0f6600aa9acc9e15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab200ad4957fc704f0f6600aa9acc9e15">&#9670;&#160;</a></span>lastRaycastPrevX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastPrevX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00191">191</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9136538f95c50a5c8ecd1f5db04d062d" name="a9136538f95c50a5c8ecd1f5db04d062d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9136538f95c50a5c8ecd1f5db04d062d">&#9670;&#160;</a></span>lastRaycastPrevY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastPrevY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00192">192</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae12a3f9d8c55f7752d1d126e6e95c4e3" name="ae12a3f9d8c55f7752d1d126e6e95c4e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae12a3f9d8c55f7752d1d126e6e95c4e3">&#9670;&#160;</a></span>lastRaycastPrevZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::lastRaycastPrevZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00193">193</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0dd0ea2e459a9718da19f5e731e9cb80" name="a0dd0ea2e459a9718da19f5e731e9cb80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dd0ea2e459a9718da19f5e731e9cb80">&#9670;&#160;</a></span>loadTerrainAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::VoxelWorld::loadTerrainAsset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightOffset</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heightScale</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility operation that opens baked EVTR terrain data. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="ByteData_8cpp_source.html#l00047">eve::data::ByteData::getData()</a>, <a class="el" href="ByteData_8cpp_source.html#l00049">eve::data::ByteData::getSize()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00014">eve::procgen::TerrainStreamingCache::open()</a>.</p>
+
+</div>
+</div>
+<a id="aa6c4e648ee402c3ad08fa4f6335bf08d" name="aa6c4e648ee402c3ad08fa4f6335bf08d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6c4e648ee402c3ad08fa4f6335bf08d">&#9670;&#160;</a></span>loadWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::VoxelWorld::loadWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> *&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00378">378</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelWorld_8cpp_source.html#l00349">deserializeWorld()</a>, <a class="el" href="ByteData_8cpp_source.html#l00047">eve::data::ByteData::getData()</a> , 以及 <a class="el" href="ByteData_8cpp_source.html#l00049">eve::data::ByteData::getSize()</a>.</p>
+
+</div>
+</div>
+<a id="a6df7659ee62c5baccaf94707f84f7ddc" name="a6df7659ee62c5baccaf94707f84f7ddc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6df7659ee62c5baccaf94707f84f7ddc">&#9670;&#160;</a></span>raycast()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::VoxelWorld::raycast </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxDist</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>hitX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>hitY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>hitZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>prevX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>prevY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>prevZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>faceX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>faceY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>faceZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1voxel_1_1Voxel.html" title="High-performance voxel rendering module.">Voxel</a> raycast (Amanatides &amp; Woo DDA). Returns true when a solid voxel is found within <code>maxDist</code> world units along the ray; fills hit/prev coords and the face normal of the surface the ray entered. <code>prev</code> is the last air voxel before the hit (equals hit when the ray starts inside solid). </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00575">575</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelWorld_8cpp_source.html#l00523">getVoxel()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00652">raycastScript()</a>.</p>
+
+</div>
+</div>
+<a id="a79a62848a45e43c515fd2f0c1239c666" name="a79a62848a45e43c515fd2f0c1239c666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79a62848a45e43c515fd2f0c1239c666">&#9670;&#160;</a></span>raycastScript()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::VoxelWorld::raycastScript </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>oz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxDist</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script-facing raycast: stores the last result, returns hit/miss. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00652">652</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a> , 以及 <a class="el" href="VoxelWorld_8cpp_source.html#l00575">raycast()</a>.</p>
+
+</div>
+</div>
+<a id="af8718b00b3b9130b91d490cc6b539ab2" name="af8718b00b3b9130b91d490cc6b539ab2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8718b00b3b9130b91d490cc6b539ab2">&#9670;&#160;</a></span>remeshDirty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::remeshDirty </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxThreads</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remesh every dirty chunk. Returns number remeshed. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">maxThreads</td><td>0 = auto (parallel up to an internal cap on desktop), 1 = serial, &gt;1 = that many workers. Falls back to serial when threads are unavailable. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00383">383</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00154">dirty</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="NinePatch_8cpp_source.html#l00022">last</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a> , 以及 <a class="el" href="classeve_1_1thread_1_1Job.html#acbd69143b51b29e45da0f6dd7647f7c2">eve::thread::Job::wait()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00229">streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="ab6676ac6a61fdfa6cc35491fed213255" name="ab6676ac6a61fdfa6cc35491fed213255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6676ac6a61fdfa6cc35491fed213255">&#9670;&#160;</a></span>removeChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::removeChunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a11f8769ce11ce31b375daac8fad29ca7" name="a11f8769ce11ce31b375daac8fad29ca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11f8769ce11ce31b375daac8fad29ca7">&#9670;&#160;</a></span>saveWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1data_1_1ByteData.html">data::ByteData</a> * eve::voxel::VoxelWorld::saveWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Script-facing wrappers around serialize/deserialize. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelWorld_8cpp_source.html#l00325">serializeWorld()</a>.</p>
+
+</div>
+</div>
+<a id="ab44721e5ac826f8e2625c2eb450a46a8" name="ab44721e5ac826f8e2625c2eb450a46a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab44721e5ac826f8e2625c2eb450a46a8">&#9670;&#160;</a></span>selectVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::selectVisible </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>viewProj16</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>viewRange</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>faceCull</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select chunks/faces to draw. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewProj16</td><td>column-major 4x4 RH+ZO view-projection (16 floats) </td></tr>
+    <tr><td class="paramname">eyeX/Y/Z</td><td>camera eye world position </td></tr>
+    <tr><td class="paramname">viewRange</td><td>max distance from eye to chunk center (world units; ≤0 disables) </td></tr>
+    <tr><td class="paramname">faceCull</td><td>when true, conservatively drop face-direction buffers that are back-facing from every possible face plane in the chunk </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00431">431</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VoxelWorld_8h_source.html#l00044">eve::voxel::DrawBatch::ao</a>, <a class="el" href="VoxelWorld_8h_source.html#l00041">eve::voxel::DrawBatch::chunk</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877ae93f994f01c537c4e2f7d8528c3eb5e9">eve::voxel::Count</a>, <a class="el" href="VoxelWorld_8h_source.html#l00045">eve::voxel::DrawBatch::count</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00121">dir</a>, <a class="el" href="VoxelWorld_8h_source.html#l00042">eve::voxel::DrawBatch::dir</a>, <a class="el" href="Chunk_8h_source.html#l00082">eve::voxel::Chunk::ensureMeshed()</a>, <a class="el" href="Chunk_8h_source.html#l00103">eve::voxel::Chunk::faceAOPackedData()</a>, <a class="el" href="FaceDir_8h_source.html#l00027">eve::voxel::faceDirCount()</a>, <a class="el" href="Chunk_8h_source.html#l00094">eve::voxel::Chunk::facePackedData()</a>, <a class="el" href="Chunk_8h_source.html#l00092">eve::voxel::Chunk::faceRectCount()</a>, <a class="el" href="Frustum_8h_source.html#l00015">eve::voxel::Frustum::fromViewProjColumnMajor()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00686">frustum</a>, <a class="el" href="Chunk_8h_source.html#l00042">eve::voxel::Chunk::get()</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877a5276b74ca8086b2184730591f7d35caf">eve::voxel::NegX</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877a3cc799b6d11892251fa390549c833e06">eve::voxel::NegY</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877ac5be1c63c2e2a9df2f563ce95b35f422">eve::voxel::NegZ</a>, <a class="el" href="VoxelWorld_8h_source.html#l00043">eve::voxel::DrawBatch::packed</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877a05695693370a026c84acf4d674a62fd5">eve::voxel::PosX</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877a7e75cf965eba430083929d0ec26c12a7">eve::voxel::PosY</a>, <a class="el" href="namespaceeve_1_1voxel.html#af3d82bdb81c03035006348742ee8e877afddb9fb1311023128eeb738f978ce061">eve::voxel::PosZ</a> , 以及 <a class="el" href="Chunk_8h_source.html#l00032">eve::voxel::Chunk::worldAABB()</a>.</p>
+
+</div>
+</div>
+<a id="af9e8749766e5e4949fee1b70ff452d43" name="af9e8749766e5e4949fee1b70ff452d43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9e8749766e5e4949fee1b70ff452d43">&#9670;&#160;</a></span>serializeWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::serializeWorld </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Persistence: serialize every chunk (coords + raw voxels) into <code>out</code>. Format is portable little-endian: "EVVX" + version + count + per-chunk (cx, cy, cz, 32³ voxels). Meshes are rebuilt on demand after loading. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00372">saveWorld()</a>.</p>
+
+</div>
+</div>
+<a id="ade551512ddee9c2509c67c626e3408d8" name="ade551512ddee9c2509c67c626e3408d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade551512ddee9c2509c67c626e3408d8">&#9670;&#160;</a></span>setTerrainAssetMaterials()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::setTerrainAssetMaterials </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>vegetation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>sand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>snow</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>alpine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>riverbed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure biome surface ids: vegetation, sand, snow, alpine rock, river bed. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb1b18687b59c436dcbc9b8db2cb97c5" name="aeb1b18687b59c436dcbc9b8db2cb97c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb1b18687b59c436dcbc9b8db2cb97c5">&#9670;&#160;</a></span>setTerrainParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::setTerrainParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>细粒度地形参数配置（脚本用）。key 支持： seed/top/sub/stone/sand/base/amplitude/scale(=frequency)/ octaves/lacunarity/gain/ridge/warp/exponent/continent/island/coast/ worldWidth/worldHeight/sandLevel/enable 所有参数以 float 传入（整数在内部取整）。sandLevel ∈ (0,1] 时， 采样高度 ≤ sandLevel 的柱子顶层用 sand 纹理（沙滩带）；0 或负值关闭。 enable=1 打开地形（默认流式生成开启），enable=0 关闭。 </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a24f28ab50dd31716c8a08d6bfd1268aa" name="a24f28ab50dd31716c8a08d6bfd1268aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24f28ab50dd31716c8a08d6bfd1268aa">&#9670;&#160;</a></span>setTerrainParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::setTerrainParams </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>top</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>sub</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>stone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>baseHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amplitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the built-in terrain generator used by <a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a1fb6fd02a1b10aeee452b9aa4a9ae7ed" title="Player-centered streaming: evict chunks outside radiusChunks, then allocate + fill + mesh missing chu...">streamAround()</a>. The sampling itself lives in <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html" title="Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).">procgen::TerrainSampler</a> (deterministic Perlin fBm); voxel only adapts it to 32³ chunk filling. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>.</p>
+
+</div>
+</div>
+<a id="a775041b7658fbf350885aebb6a1a31e2" name="a775041b7658fbf350885aebb6a1a31e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a775041b7658fbf350885aebb6a1a31e2">&#9670;&#160;</a></span>setVoxel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::setVoxel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>texId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00532">532</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00118">getChunk()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00108">getOrCreateChunk()</a>, <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00660">setVoxelByName()</a> , 以及 <a class="el" href="VoxelWorldTarget_8cpp_source.html#l00022">eve::voxel_editing::VoxelWorldTarget::writeInt3()</a>.</p>
+
+</div>
+</div>
+<a id="a22f71e96a1aee7f00653be3fe9d5aa06" name="a22f71e96a1aee7f00653be3fe9d5aa06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f71e96a1aee7f00653be3fe9d5aa06">&#9670;&#160;</a></span>setVoxelByName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::voxel::VoxelWorld::setVoxelByName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>orientation</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>按方块名 + orientation(0..3) 设置体素；内部解析为具体类型 id 后写 Chunk。 未注册的名字按空气(0)处理。 </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00660">660</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00098">eve::voxel::CubeTypeRegistry::find()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00532">setVoxel()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="CubeTypeRegistry_8cpp_source.html#l00109">eve::voxel::CubeTypeRegistry::variantId()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a>.</p>
+
+</div>
+</div>
+<a id="a1fb6fd02a1b10aeee452b9aa4a9ae7ed" name="a1fb6fd02a1b10aeee452b9aa4a9ae7ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fb6fd02a1b10aeee452b9aa4a9ae7ed">&#9670;&#160;</a></span>streamAround()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1voxel_1_1StreamStats.html">StreamStats</a> eve::voxel::VoxelWorld::streamAround </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>centerX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>centerY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>centerZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radiusChunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; void(<a class="el" href="classeve_1_1voxel_1_1Chunk.html">Chunk</a> &amp;, int, int, int)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>generator</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Player-centered streaming: evict chunks outside <code>radiusChunks</code>, then allocate + fill + mesh missing chunks inside it (sphere, chunk coords). <code>generator</code> is called for each new chunk (chunk, cx, cy, cz); when null the stored terrain sampler (<a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html" title="Deterministic terrain height sampling (Red Blob Games / Perlin fBm recipe).">procgen::TerrainSampler</a>) is used if enabled, otherwise chunks stay empty. Radius &lt; 0 is a no-op. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8h_source.html#l00089">eve::procgen::TerrainStreamingCache::asset()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="VoxelWorld_8h_source.html#l00035">eve::voxel::StreamStats::created</a>, <a class="el" href="VoxelWorld_8h_source.html#l00036">eve::voxel::StreamStats::evicted</a>, <a class="el" href="TerrainAsset_8h_source.html#l00058">eve::procgen::TerrainAsset::getChunkSize()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00108">getOrCreateChunk()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00128">hasChunk()</a>, <a class="el" href="VoxelPack_8h_source.html#l00008">eve::voxel::kChunkSize</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00383">remeshDirty()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00024">eve::procgen::TerrainStreamingCache::streamAround()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00171">terrainHeightAt()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00206">unloadChunksOutside()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a>.</p>
+
+</div>
+</div>
+<a id="a63baedb0831e6a440f411a2f1860c4c4" name="a63baedb0831e6a440f411a2f1860c4c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63baedb0831e6a440f411a2f1860c4c4">&#9670;&#160;</a></span>streamTerrainAssetAround()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1TerrainStreamStats.html">procgen::TerrainStreamStats</a> eve::voxel::VoxelWorld::streamTerrainAssetAround </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>worldZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radiusChunks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxLoads</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode/evict EVTR chunks around a world-space column with an optional load budget. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8cpp_source.html#l00024">eve::procgen::TerrainStreamingCache::streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="a1d7b76e02e9349c99903071b36c41c26" name="a1d7b76e02e9349c99903071b36c41c26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d7b76e02e9349c99903071b36c41c26">&#9670;&#160;</a></span>terrainEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::voxel::VoxelWorld::terrainEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a> 第 <a class="el" href="VoxelWorld_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a174d480945288faa19b21460fd10aacf" name="a174d480945288faa19b21460fd10aacf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a174d480945288faa19b21460fd10aacf">&#9670;&#160;</a></span>terrainHeightAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::terrainHeightAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Terrain height (world blocks) at a column for the configured seed. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainStreaming_8cpp_source.html#l00163">eve::procgen::TerrainStreamingCache::sampleHeight()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wz</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00229">streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="ae550c82894b168308b1232bac84f1b06" name="ae550c82894b168308b1232bac84f1b06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae550c82894b168308b1232bac84f1b06">&#9670;&#160;</a></span>unloadChunksOutside()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::voxel::VoxelWorld::unloadChunksOutside </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>centerX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>centerY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>centerZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>radiusChunks</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Streaming eviction: drop chunks whose center is farther than <code>radiusChunks</code> chunk units from (centerX, centerY, centerZ). Radius &lt; 0 is a no-op. Returns the number of chunks evicted. </p>
+
+<p class="definition">在文件 <a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a> 第 <a class="el" href="VoxelWorld_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a> , 以及 <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VoxelWorld_8cpp_source.html#l00229">streamAround()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/voxel/<a class="el" href="VoxelWorld_8h_source.html">VoxelWorld.h</a></li>
+<li>src/modules/voxel/<a class="el" href="VoxelWorld_8cpp_source.html">VoxelWorld.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

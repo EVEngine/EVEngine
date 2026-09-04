@@ -1,0 +1,931 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::decision::Condition类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1decision.html">decision</a></li><li class="navelem"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1decision_1_1Condition-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::decision::Condition类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Immutable condition AST node.  
+ <a href="classeve_1_1decision_1_1Condition.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Condition_8h_source.html">Condition.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a5a6c01fb6ca49e08c457ad341fae63ee" id="r_a5a6c01fb6ca49e08c457ad341fae63ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a5a6c01fb6ca49e08c457ad341fae63ee">Condition</a> ()=default</td></tr>
+<tr class="memdesc:a5a6c01fb6ca49e08c457ad341fae63ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty All node, which passes vacuously.  <br /></td></tr>
+<tr class="separator:a5a6c01fb6ca49e08c457ad341fae63ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9052fd66f31f8bdec3a1a57b3adc1e6" id="r_aa9052fd66f31f8bdec3a1a57b3adc1e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0">ConditionKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#aa9052fd66f31f8bdec3a1a57b3adc1e6">kind</a> () const noexcept</td></tr>
+<tr class="memdesc:aa9052fd66f31f8bdec3a1a57b3adc1e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return this node's kind.  <br /></td></tr>
+<tr class="separator:aa9052fd66f31f8bdec3a1a57b3adc1e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d48c9861137606b6019853d10ebfa9" id="r_a17d48c9861137606b6019853d10ebfa9"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a17d48c9861137606b6019853d10ebfa9">children</a> () const noexcept</td></tr>
+<tr class="memdesc:a17d48c9861137606b6019853d10ebfa9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return owned children; empty for a leaf node.  <br /></td></tr>
+<tr class="separator:a17d48c9861137606b6019853d10ebfa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e606bf1997de0ac638d0a29ba355861" id="r_a6e606bf1997de0ac638d0a29ba355861"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a6e606bf1997de0ac638d0a29ba355861">key</a> () const noexcept</td></tr>
+<tr class="memdesc:a6e606bf1997de0ac638d0a29ba355861"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the key/tag/scope/name used by a leaf, if applicable.  <br /></td></tr>
+<tr class="separator:a6e606bf1997de0ac638d0a29ba355861"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa1804e11cf7781a4446e7841fb29718" id="r_afa1804e11cf7781a4446e7841fb29718"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decision.html#a3e173eb479c3ae3ca214637ce90f2114">CompareOperator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#afa1804e11cf7781a4446e7841fb29718">compareOperator</a> () const noexcept</td></tr>
+<tr class="memdesc:afa1804e11cf7781a4446e7841fb29718"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the comparison operator used by Compare.  <br /></td></tr>
+<tr class="separator:afa1804e11cf7781a4446e7841fb29718"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab32a222afcaeb00ae1f5972e15ccfd70" id="r_ab32a222afcaeb00ae1f5972e15ccfd70"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#ab32a222afcaeb00ae1f5972e15ccfd70">expected</a> () const noexcept</td></tr>
+<tr class="memdesc:ab32a222afcaeb00ae1f5972e15ccfd70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the expected value owned by Compare/StateEquals.  <br /></td></tr>
+<tr class="separator:ab32a222afcaeb00ae1f5972e15ccfd70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1ea865aa527f2702c509fc05ed51443" id="r_ac1ea865aa527f2702c509fc05ed51443"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#ac1ea865aa527f2702c509fc05ed51443">arguments</a> () const noexcept</td></tr>
+<tr class="memdesc:ac1ea865aa527f2702c509fc05ed51443"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return owned PolicyCall arguments.  <br /></td></tr>
+<tr class="separator:ac1ea865aa527f2702c509fc05ed51443"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a049a3181ec8785869c7a215ff7d39e53" id="r_a049a3181ec8785869c7a215ff7d39e53"><td class="memItemLeft" align="right" valign="top">const std::optional&lt; <a class="el" href="structeve_1_1decision_1_1ScriptConditionDeclaration.html">ScriptConditionDeclaration</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a049a3181ec8785869c7a215ff7d39e53">scriptDeclaration</a> () const noexcept</td></tr>
+<tr class="memdesc:a049a3181ec8785869c7a215ff7d39e53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an optional script dependency/determinism declaration.  <br /></td></tr>
+<tr class="separator:a049a3181ec8785869c7a215ff7d39e53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9d0630cf3a1f829683c5efa8804d4c9" id="r_aa9d0630cf3a1f829683c5efa8804d4c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#aa9d0630cf3a1f829683c5efa8804d4c9">isValid</a> () const noexcept</td></tr>
+<tr class="memdesc:aa9d0630cf3a1f829683c5efa8804d4c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the factory invariants for this node hold.  <br /></td></tr>
+<tr class="separator:aa9d0630cf3a1f829683c5efa8804d4c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68238f3f9be88f7acd2c0fc24e7d23af" id="r_a68238f3f9be88f7acd2c0fc24e7d23af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1decision_1_1ConditionResult.html">ConditionResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a68238f3f9be88f7acd2c0fc24e7d23af">evaluate</a> (const <a class="el" href="classeve_1_1decision_1_1EvaluationContext.html">EvaluationContext</a> &amp;context) const</td></tr>
+<tr class="memdesc:a68238f3f9be88f7acd2c0fc24e7d23af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate this tree against a read-only context.  <br /></td></tr>
+<tr class="separator:a68238f3f9be88f7acd2c0fc24e7d23af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a11a29f28eb5de6814b62b0ea2dd498af" id="r_a11a29f28eb5de6814b62b0ea2dd498af"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a11a29f28eb5de6814b62b0ea2dd498af">all</a> (std::vector&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> &gt; <a class="el" href="classeve_1_1decision_1_1Condition.html#a17d48c9861137606b6019853d10ebfa9">children</a>)</td></tr>
+<tr class="memdesc:a11a29f28eb5de6814b62b0ea2dd498af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a conjunction of child conditions.  <br /></td></tr>
+<tr class="separator:a11a29f28eb5de6814b62b0ea2dd498af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaf7bbc223b4941afcaf44516a1c89a5" id="r_afaf7bbc223b4941afcaf44516a1c89a5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#afaf7bbc223b4941afcaf44516a1c89a5">any</a> (std::vector&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> &gt; <a class="el" href="classeve_1_1decision_1_1Condition.html#a17d48c9861137606b6019853d10ebfa9">children</a>)</td></tr>
+<tr class="memdesc:afaf7bbc223b4941afcaf44516a1c89a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a disjunction of child conditions.  <br /></td></tr>
+<tr class="separator:afaf7bbc223b4941afcaf44516a1c89a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a393079f5ff7dc4a62ed7ba720e1d24c6" id="r_a393079f5ff7dc4a62ed7ba720e1d24c6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a393079f5ff7dc4a62ed7ba720e1d24c6">not_</a> (<a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> child)</td></tr>
+<tr class="memdesc:a393079f5ff7dc4a62ed7ba720e1d24c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a logical negation of one child condition.  <br /></td></tr>
+<tr class="separator:a393079f5ff7dc4a62ed7ba720e1d24c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9058d566e78fbd13fb75ebb8c6a9bca" id="r_ad9058d566e78fbd13fb75ebb8c6a9bca"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#ad9058d566e78fbd13fb75ebb8c6a9bca">compare</a> (std::string <a class="el" href="classeve_1_1decision_1_1Condition.html#a6e606bf1997de0ac638d0a29ba355861">key</a>, <a class="el" href="namespaceeve_1_1decision.html#a3e173eb479c3ae3ca214637ce90f2114">CompareOperator</a> op, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="classeve_1_1decision_1_1Condition.html#ab32a222afcaeb00ae1f5972e15ccfd70">expected</a>)</td></tr>
+<tr class="memdesc:ad9058d566e78fbd13fb75ebb8c6a9bca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compare a context value against an expected scalar value.  <br /></td></tr>
+<tr class="separator:ad9058d566e78fbd13fb75ebb8c6a9bca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a975406c6a96c859371e0b22e2ea3dad7" id="r_a975406c6a96c859371e0b22e2ea3dad7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a975406c6a96c859371e0b22e2ea3dad7">hasTag</a> (std::string tag)</td></tr>
+<tr class="memdesc:a975406c6a96c859371e0b22e2ea3dad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Require a tag to be present.  <br /></td></tr>
+<tr class="separator:a975406c6a96c859371e0b22e2ea3dad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08ba89471a04d5eb13555059dcac5d71" id="r_a08ba89471a04d5eb13555059dcac5d71"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#a08ba89471a04d5eb13555059dcac5d71">hasAttribute</a> (std::string attribute)</td></tr>
+<tr class="memdesc:a08ba89471a04d5eb13555059dcac5d71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Require an attribute to exist.  <br /></td></tr>
+<tr class="separator:a08ba89471a04d5eb13555059dcac5d71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff44beb044d979a3fd4a1140dfa677f3" id="r_aff44beb044d979a3fd4a1140dfa677f3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#aff44beb044d979a3fd4a1140dfa677f3">hasResource</a> (std::string resource)</td></tr>
+<tr class="memdesc:aff44beb044d979a3fd4a1140dfa677f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Require a resource to exist.  <br /></td></tr>
+<tr class="separator:aff44beb044d979a3fd4a1140dfa677f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa0b3220a81dfff8ed46b26f8a880a9a" id="r_aaa0b3220a81dfff8ed46b26f8a880a9a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#aaa0b3220a81dfff8ed46b26f8a880a9a">stateEquals</a> (std::string <a class="el" href="classeve_1_1decision_1_1Condition.html#a6e606bf1997de0ac638d0a29ba355861">key</a>, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="classeve_1_1decision_1_1Condition.html#ab32a222afcaeb00ae1f5972e15ccfd70">expected</a>)</td></tr>
+<tr class="memdesc:aaa0b3220a81dfff8ed46b26f8a880a9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Require a named state value to equal the expected value.  <br /></td></tr>
+<tr class="separator:aaa0b3220a81dfff8ed46b26f8a880a9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8e808dc39140ba90e5d89e77b97822a" id="r_ae8e808dc39140ba90e5d89e77b97822a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#ae8e808dc39140ba90e5d89e77b97822a">authorityCheck</a> (std::string <a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>)</td></tr>
+<tr class="memdesc:ae8e808dc39140ba90e5d89e77b97822a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Require read-only authority for a scope.  <br /></td></tr>
+<tr class="separator:ae8e808dc39140ba90e5d89e77b97822a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab1c0b07422c5480e7ad48c6d94a12cb" id="r_aab1c0b07422c5480e7ad48c6d94a12cb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decision_1_1Condition.html#aab1c0b07422c5480e7ad48c6d94a12cb">policyCall</a> (std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="classeve_1_1decision_1_1Condition.html#ac1ea865aa527f2702c509fc05ed51443">arguments</a>=<a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{}, std::optional&lt; <a class="el" href="structeve_1_1decision_1_1ScriptConditionDeclaration.html">ScriptConditionDeclaration</a> &gt; <a class="el" href="classeve_1_1decision_1_1Condition.html#a049a3181ec8785869c7a215ff7d39e53">scriptDeclaration</a>=std::nullopt)</td></tr>
+<tr class="memdesc:aab1c0b07422c5480e7ad48c6d94a12cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call a named read-only policy and use its <a class="el" href="classeve_1_1decision_1_1ConditionResult.html" title="Explain one condition evaluation in a UI- and log-friendly form.">ConditionResult</a>.  <br /></td></tr>
+<tr class="separator:aab1c0b07422c5480e7ad48c6d94a12cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Immutable condition AST node. </p>
+<p>Construct nodes through the named factories. A node owns all child nodes, keys and values; it keeps no pointers into a domain object. Evaluation is synchronous, const, and side-effect free. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00189">189</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a5a6c01fb6ca49e08c457ad341fae63ee" name="a5a6c01fb6ca49e08c457ad341fae63ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a6c01fb6ca49e08c457ad341fae63ee">&#9670;&#160;</a></span>Condition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::decision::Condition::Condition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty All node, which passes vacuously. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a11a29f28eb5de6814b62b0ea2dd498af" name="a11a29f28eb5de6814b62b0ea2dd498af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11a29f28eb5de6814b62b0ea2dd498af">&#9670;&#160;</a></span>all()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::all </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a conjunction of child conditions. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0ab1c94ca2fbc3e78fc30069c8d0f01680">eve::decision::All</a> , 以及 <a class="el" href="Condition_8h_source.html#l00225">children()</a>.</p>
+
+</div>
+</div>
+<a id="afaf7bbc223b4941afcaf44516a1c89a5" name="afaf7bbc223b4941afcaf44516a1c89a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaf7bbc223b4941afcaf44516a1c89a5">&#9670;&#160;</a></span>any()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::any </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> &gt;&#160;</td>
+          <td class="paramname"><em>children</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a disjunction of child conditions. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0aed36a1ef76a59ee3f15180e0441188ad">eve::decision::Any</a> , 以及 <a class="el" href="Condition_8h_source.html#l00225">children()</a>.</p>
+
+</div>
+</div>
+<a id="ac1ea865aa527f2702c509fc05ed51443" name="ac1ea865aa527f2702c509fc05ed51443"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1ea865aa527f2702c509fc05ed51443">&#9670;&#160;</a></span>arguments()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp; eve::decision::Condition::arguments </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return owned PolicyCall arguments. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillConditionCodec_8cpp_source.html#l00211">eve::rpg::encodeSkillCondition()</a> , 以及 <a class="el" href="Condition_8cpp_source.html#l00198">policyCall()</a>.</p>
+
+</div>
+</div>
+<a id="ae8e808dc39140ba90e5d89e77b97822a" name="ae8e808dc39140ba90e5d89e77b97822a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8e808dc39140ba90e5d89e77b97822a">&#9670;&#160;</a></span>authorityCheck()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::authorityCheck </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>scope</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Require read-only authority for a scope. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a41013e856b4887b685d39372b15af3d1">eve::decision::AuthorityCheck</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+</div>
+</div>
+<a id="a17d48c9861137606b6019853d10ebfa9" name="a17d48c9861137606b6019853d10ebfa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17d48c9861137606b6019853d10ebfa9">&#9670;&#160;</a></span>children()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> &gt; &amp; eve::decision::Condition::children </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return owned children; empty for a leaf node. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Condition_8cpp_source.html#l00141">all()</a>, <a class="el" href="Condition_8cpp_source.html#l00147">any()</a> , 以及 <a class="el" href="SkillConditionCodec_8cpp_source.html#l00211">eve::rpg::encodeSkillCondition()</a>.</p>
+
+</div>
+</div>
+<a id="ad9058d566e78fbd13fb75ebb8c6a9bca" name="ad9058d566e78fbd13fb75ebb8c6a9bca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9058d566e78fbd13fb75ebb8c6a9bca">&#9670;&#160;</a></span>compare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::compare </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1decision.html#a3e173eb479c3ae3ca214637ce90f2114">CompareOperator</a>&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>expected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compare a context value against an expected scalar value. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a7eece51cf3938103677db7a5051ef8f5">eve::decision::Compare</a>, <a class="el" href="Condition_8h_source.html#l00231">expected()</a> , 以及 <a class="el" href="Condition_8h_source.html#l00227">key()</a>.</p>
+
+</div>
+</div>
+<a id="afa1804e11cf7781a4446e7841fb29718" name="afa1804e11cf7781a4446e7841fb29718"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa1804e11cf7781a4446e7841fb29718">&#9670;&#160;</a></span>compareOperator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decision.html#a3e173eb479c3ae3ca214637ce90f2114">CompareOperator</a> eve::decision::Condition::compareOperator </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the comparison operator used by Compare. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillConditionCodec_8cpp_source.html#l00211">eve::rpg::encodeSkillCondition()</a>.</p>
+
+</div>
+</div>
+<a id="a68238f3f9be88f7acd2c0fc24e7d23af" name="a68238f3f9be88f7acd2c0fc24e7d23af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68238f3f9be88f7acd2c0fc24e7d23af">&#9670;&#160;</a></span>evaluate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1ConditionResult.html">ConditionResult</a> eve::decision::Condition::evaluate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1decision_1_1EvaluationContext.html">EvaluationContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate this tree against a read-only context. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0ab1c94ca2fbc3e78fc30069c8d0f01680">eve::decision::All</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0aed36a1ef76a59ee3f15180e0441188ad">eve::decision::Any</a>, <a class="el" href="namespaceeve_1_1decision.html#aff15ece9a76b8b7509e781dab57faa73ac6a4d2be5a192beb4531d90c0040dd73">eve::decision::ChildFailed</a>, <a class="el" href="Condition_8cpp_source.html#l00137">eve::decision::ConditionResult::failed()</a>, <a class="el" href="namespaceeve_1_1decision.html#aff15ece9a76b8b7509e781dab57faa73a4498a7f08eb4929c885812815341a6ac">eve::decision::InvalidCondition</a>, <a class="el" href="Condition_8cpp_source.html#l00207">isValid()</a>, <a class="el" href="namespaceeve_1_1decision.html#aff15ece9a76b8b7509e781dab57faa73a23c3352eab618a7e0fc823e3376108e1">eve::decision::Negated</a>, <a class="el" href="namespaceeve_1_1decision.html#aff15ece9a76b8b7509e781dab57faa73a493f1387b4e71639ff0e76ff61e6a5a1">eve::decision::NoChildPassed</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0aa74c05d080620f087c4e523977230666">eve::decision::Not</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a> , 以及 <a class="el" href="Condition_8cpp_source.html#l00133">eve::decision::ConditionResult::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardPlay_8cpp_source.html#l00068">eve::card::CardPlayConditionAdapter::evaluate()</a>, <a class="el" href="DialogueState_8cpp_source.html#l00336">eve::dialogue::DialogueStateContext::evaluate()</a> , 以及 <a class="el" href="SkillCondition_8cpp_source.html#l00070">eve::rpg::SkillConditionAdapter::evaluate()</a>.</p>
+
+</div>
+</div>
+<a id="ab32a222afcaeb00ae1f5972e15ccfd70" name="ab32a222afcaeb00ae1f5972e15ccfd70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab32a222afcaeb00ae1f5972e15ccfd70">&#9670;&#160;</a></span>expected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp; eve::decision::Condition::expected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the expected value owned by Compare/StateEquals. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Condition_8cpp_source.html#l00159">compare()</a>, <a class="el" href="SkillConditionCodec_8cpp_source.html#l00211">eve::rpg::encodeSkillCondition()</a> , 以及 <a class="el" href="Condition_8cpp_source.html#l00185">stateEquals()</a>.</p>
+
+</div>
+</div>
+<a id="a08ba89471a04d5eb13555059dcac5d71" name="a08ba89471a04d5eb13555059dcac5d71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08ba89471a04d5eb13555059dcac5d71">&#9670;&#160;</a></span>hasAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::hasAttribute </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>attribute</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Require an attribute to exist. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a2ea28f8831441529ba95aea51fc5f19d">eve::decision::HasAttribute</a>.</p>
+
+</div>
+</div>
+<a id="aff44beb044d979a3fd4a1140dfa677f3" name="aff44beb044d979a3fd4a1140dfa677f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff44beb044d979a3fd4a1140dfa677f3">&#9670;&#160;</a></span>hasResource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::hasResource </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>resource</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Require a resource to exist. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a82fa947f14933f74c8c906798d087a3e">eve::decision::HasResource</a>.</p>
+
+</div>
+</div>
+<a id="a975406c6a96c859371e0b22e2ea3dad7" name="a975406c6a96c859371e0b22e2ea3dad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a975406c6a96c859371e0b22e2ea3dad7">&#9670;&#160;</a></span>hasTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::hasTag </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Require a tag to be present. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a90606097e959064225074a4c4e472b8e">eve::decision::HasTag</a>.</p>
+
+</div>
+</div>
+<a id="aa9d0630cf3a1f829683c5efa8804d4c9" name="aa9d0630cf3a1f829683c5efa8804d4c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9d0630cf3a1f829683c5efa8804d4c9">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::decision::Condition::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the factory invariants for this node hold. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0ab1c94ca2fbc3e78fc30069c8d0f01680">eve::decision::All</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0aed36a1ef76a59ee3f15180e0441188ad">eve::decision::Any</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a41013e856b4887b685d39372b15af3d1">eve::decision::AuthorityCheck</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a7eece51cf3938103677db7a5051ef8f5">eve::decision::Compare</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a2ea28f8831441529ba95aea51fc5f19d">eve::decision::HasAttribute</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a82fa947f14933f74c8c906798d087a3e">eve::decision::HasResource</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a90606097e959064225074a4c4e472b8e">eve::decision::HasTag</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0aa74c05d080620f087c4e523977230666">eve::decision::Not</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0afc2839f51a295abec3870b6f3547eb0d">eve::decision::PolicyCall</a> , 以及 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a3f1c6980bfe952f6fe7e1a52aa2d8bc8">eve::decision::StateEquals</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillConditionCodec_8cpp_source.html#l00211">eve::rpg::encodeSkillCondition()</a>, <a class="el" href="Condition_8cpp_source.html#l00228">evaluate()</a>, <a class="el" href="Card_8cpp_source.html#l00219">eve::card::Card::setCardPlayCondition()</a> , 以及 <a class="el" href="Action_8cpp_source.html#l00070">eve::action::ActionDefinition::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a6e606bf1997de0ac638d0a29ba355861" name="a6e606bf1997de0ac638d0a29ba355861"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e606bf1997de0ac638d0a29ba355861">&#9670;&#160;</a></span>key()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::decision::Condition::key </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the key/tag/scope/name used by a leaf, if applicable. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Condition_8cpp_source.html#l00159">compare()</a>, <a class="el" href="SkillConditionCodec_8cpp_source.html#l00211">eve::rpg::encodeSkillCondition()</a> , 以及 <a class="el" href="Condition_8cpp_source.html#l00185">stateEquals()</a>.</p>
+
+</div>
+</div>
+<a id="aa9052fd66f31f8bdec3a1a57b3adc1e6" name="aa9052fd66f31f8bdec3a1a57b3adc1e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9052fd66f31f8bdec3a1a57b3adc1e6">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0">ConditionKind</a> eve::decision::Condition::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return this node's kind. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillConditionCodec_8cpp_source.html#l00211">eve::rpg::encodeSkillCondition()</a>.</p>
+
+</div>
+</div>
+<a id="a393079f5ff7dc4a62ed7ba720e1d24c6" name="a393079f5ff7dc4a62ed7ba720e1d24c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a393079f5ff7dc4a62ed7ba720e1d24c6">&#9670;&#160;</a></span>not_()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::not_ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a>&#160;</td>
+          <td class="paramname"><em>child</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a logical negation of one child condition. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0aa74c05d080620f087c4e523977230666">eve::decision::Not</a>.</p>
+
+</div>
+</div>
+<a id="aab1c0b07422c5480e7ad48c6d94a12cb" name="aab1c0b07422c5480e7ad48c6d94a12cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab1c0b07422c5480e7ad48c6d94a12cb">&#9670;&#160;</a></span>policyCall()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::policyCall </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>arguments</em> = <code><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="structeve_1_1decision_1_1ScriptConditionDeclaration.html">ScriptConditionDeclaration</a> &gt;&#160;</td>
+          <td class="paramname"><em>scriptDeclaration</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Call a named read-only policy and use its <a class="el" href="classeve_1_1decision_1_1ConditionResult.html" title="Explain one condition evaluation in a UI- and log-friendly form.">ConditionResult</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Stable policy/script name. </td></tr>
+    <tr><td class="paramname">arguments</td><td>Owning policy arguments; defaults to an empty object. </td></tr>
+    <tr><td class="paramname">scriptDeclaration</td><td>Optional dependency/determinism declaration for a script-backed policy. Its name must match <code>name</code> when supplied. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Condition_8h_source.html#l00233">arguments()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0afc2839f51a295abec3870b6f3547eb0d">eve::decision::PolicyCall</a> , 以及 <a class="el" href="Condition_8h_source.html#l00235">scriptDeclaration()</a>.</p>
+
+</div>
+</div>
+<a id="a049a3181ec8785869c7a215ff7d39e53" name="a049a3181ec8785869c7a215ff7d39e53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a049a3181ec8785869c7a215ff7d39e53">&#9670;&#160;</a></span>scriptDeclaration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::optional&lt; <a class="el" href="structeve_1_1decision_1_1ScriptConditionDeclaration.html">ScriptConditionDeclaration</a> &gt; &amp; eve::decision::Condition::scriptDeclaration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return an optional script dependency/determinism declaration. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillConditionCodec_8cpp_source.html#l00211">eve::rpg::encodeSkillCondition()</a> , 以及 <a class="el" href="Condition_8cpp_source.html#l00198">policyCall()</a>.</p>
+
+</div>
+</div>
+<a id="aaa0b3220a81dfff8ed46b26f8a880a9a" name="aaa0b3220a81dfff8ed46b26f8a880a9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa0b3220a81dfff8ed46b26f8a880a9a">&#9670;&#160;</a></span>stateEquals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decision_1_1Condition.html">Condition</a> eve::decision::Condition::stateEquals </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>expected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Require a named state value to equal the expected value. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Condition_8h_source.html#l00231">expected()</a>, <a class="el" href="Condition_8h_source.html#l00227">key()</a> , 以及 <a class="el" href="namespaceeve_1_1decision.html#a66e7916dc0ddea9770ff7bf5cbb2b8f0a3f1c6980bfe952f6fe7e1a52aa2d8bc8">eve::decision::StateEquals</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/decision/<a class="el" href="Condition_8h_source.html">Condition.h</a></li>
+<li>src/modules/decision/<a class="el" href="Condition_8cpp_source.html">Condition.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/Class.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Class.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Class_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassLearnSkill.html">   18</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1ClassLearnSkill.html">ClassLearnSkill</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassLearnSkill.html#ab4def91f84892c702293afb0aad95ae8">   19</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1ClassLearnSkill.html#ab4def91f84892c702293afb0aad95ae8">skillId</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassLearnSkill.html#a1b2d7f660240d5a698003af15b162eca">   20</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1ClassLearnSkill.html#a1b2d7f660240d5a698003af15b162eca">level</a> = 1;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>};</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassDefinition.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1ClassDefinition.html">ClassDefinition</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassDefinition.html#a3aca79dddb379ac1f68f105bc0a20f6d">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1ClassDefinition.html#a3aca79dddb379ac1f68f105bc0a20f6d">id</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassDefinition.html#ad9c101eef62c8f52b723010b62e8ffec">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1ClassDefinition.html#ad9c101eef62c8f52b723010b62e8ffec">displayName</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassDefinition.html#ab0da03cdcc718194628d72e7fca495fd">   27</a></span>    std::vector&lt;ClassLearnSkill&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1ClassDefinition.html#ab0da03cdcc718194628d72e7fca495fd">learnSkills</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassDefinition.html#a408fa196417a078d21c7b32e837fa60f">   28</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1ClassDefinition.html#a408fa196417a078d21c7b32e837fa60f">traits</a>;  </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassDefinition.html#a743c96b849d96b35f66f74c10a396f24">   29</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1ClassDefinition.html#a743c96b849d96b35f66f74c10a396f24">tags</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1ClassDefinition.html#a89ddfaf466d6b0f4afb7a93f024d4f30">   30</a></span>    std::unordered_map&lt;std::string, std::string&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1ClassDefinition.html#a89ddfaf466d6b0f4afb7a93f024d4f30">extra</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1rpg_1_1ClassDefinition.html#a165a76a38cd45f7d153d6fb8f5c60121">hasTag</a>(<span class="keyword">const</span> std::string &amp;tag) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::string <a class="code hl_function" href="structeve_1_1rpg_1_1ClassDefinition.html#a755cb907cd7bba45e64007edaf4fd181">getExtra</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <span class="keyword">const</span> std::string &amp;fallback = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1ClassRegistry.html">   37</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1ClassRegistry.html">ClassRegistry</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1ClassRegistry.html#a41d5756978b439daa0e210890e45b42f">registerClass</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1ClassDefinition.html">ClassDefinition</a> &amp;def);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1ClassDefinition.html">ClassDefinition</a> *<a class="code hl_function" href="classeve_1_1rpg_1_1ClassRegistry.html#a09fba0df30e3681f4bc7bca7178383c6">find</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1ClassRegistry.html#adb8bcaa22184fa6aafbffc61ef6cd15f">remove</a>(<span class="keyword">const</span> std::string &amp;<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1ClassRegistry.html#a82b31e16165fb37344a66c133c3f3fff">clear</a>();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1ClassRegistry.html#af508966dbbaff4f284a10e6f7df9417b">count</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1ClassRegistry.html#ac85b784b0dce7067868feaed188deb04">loadFromJson</a>(<span class="keyword">const</span> std::string &amp;json, std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ClassRegistry_html"><div class="ttname"><a href="classeve_1_1rpg_1_1ClassRegistry.html">eve::rpg::ClassRegistry</a></div><div class="ttdoc">进程级职业定义注册表。</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00037">Class.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ClassRegistry_html_a09fba0df30e3681f4bc7bca7178383c6"><div class="ttname"><a href="classeve_1_1rpg_1_1ClassRegistry.html#a09fba0df30e3681f4bc7bca7178383c6">eve::rpg::ClassRegistry::find</a></div><div class="ttdeci">static const ClassDefinition * find(const std::string &amp;id)</div><div class="ttdoc">Find a registered class definition by id.</div><div class="ttdef"><b>Definition</b> <a href="Class_8cpp_source.html#l00032">Class.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ClassRegistry_html_a41d5756978b439daa0e210890e45b42f"><div class="ttname"><a href="classeve_1_1rpg_1_1ClassRegistry.html#a41d5756978b439daa0e210890e45b42f">eve::rpg::ClassRegistry::registerClass</a></div><div class="ttdeci">static void registerClass(const ClassDefinition &amp;def)</div><div class="ttdef"><b>Definition</b> <a href="Class_8cpp_source.html#l00027">Class.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ClassRegistry_html_a82b31e16165fb37344a66c133c3f3fff"><div class="ttname"><a href="classeve_1_1rpg_1_1ClassRegistry.html#a82b31e16165fb37344a66c133c3f3fff">eve::rpg::ClassRegistry::clear</a></div><div class="ttdeci">static void clear()</div><div class="ttdef"><b>Definition</b> <a href="Class_8cpp_source.html#l00040">Class.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ClassRegistry_html_ac85b784b0dce7067868feaed188deb04"><div class="ttname"><a href="classeve_1_1rpg_1_1ClassRegistry.html#ac85b784b0dce7067868feaed188deb04">eve::rpg::ClassRegistry::loadFromJson</a></div><div class="ttdeci">static int loadFromJson(const std::string &amp;json, std::string *error=nullptr)</div><div class="ttdoc">从 JSON 数组/对象批量注册。元素形如： { &quot;id&quot;:&quot;warrior&quot;,&quot;displayName&quot;:&quot;战士&quot;, &quot;traits&quot;:[&quot;mighty&quot;], &quot;learnSkills&quot;:[{&quot;ski...</div><div class="ttdef"><b>Definition</b> <a href="Class_8cpp_source.html#l00044">Class.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ClassRegistry_html_adb8bcaa22184fa6aafbffc61ef6cd15f"><div class="ttname"><a href="classeve_1_1rpg_1_1ClassRegistry.html#adb8bcaa22184fa6aafbffc61ef6cd15f">eve::rpg::ClassRegistry::remove</a></div><div class="ttdeci">static bool remove(const std::string &amp;id)</div><div class="ttdoc">Remove a class by id (compatibility facade returning whether it was present).</div><div class="ttdef"><b>Definition</b> <a href="Class_8cpp_source.html#l00038">Class.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1ClassRegistry_html_af508966dbbaff4f284a10e6f7df9417b"><div class="ttname"><a href="classeve_1_1rpg_1_1ClassRegistry.html#af508966dbbaff4f284a10e6f7df9417b">eve::rpg::ClassRegistry::count</a></div><div class="ttdeci">static int count()</div><div class="ttdef"><b>Definition</b> <a href="Class_8cpp_source.html#l00042">Class.cpp:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html">eve::rpg::ClassDefinition</a></div><div class="ttdoc">数据驱动的职业模板。</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00024">Class.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html_a165a76a38cd45f7d153d6fb8f5c60121"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html#a165a76a38cd45f7d153d6fb8f5c60121">eve::rpg::ClassDefinition::hasTag</a></div><div class="ttdeci">bool hasTag(const std::string &amp;tag) const</div><div class="ttdef"><b>Definition</b> <a href="Class_8cpp_source.html#l00011">Class.cpp:11</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html_a3aca79dddb379ac1f68f105bc0a20f6d"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html#a3aca79dddb379ac1f68f105bc0a20f6d">eve::rpg::ClassDefinition::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00025">Class.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html_a408fa196417a078d21c7b32e837fa60f"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html#a408fa196417a078d21c7b32e837fa60f">eve::rpg::ClassDefinition::traits</a></div><div class="ttdeci">std::vector&lt; std::string &gt; traits</div><div class="ttdoc">职业基础特征 id（施加于 actor）</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00028">Class.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html_a743c96b849d96b35f66f74c10a396f24"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html#a743c96b849d96b35f66f74c10a396f24">eve::rpg::ClassDefinition::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00029">Class.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html_a755cb907cd7bba45e64007edaf4fd181"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html#a755cb907cd7bba45e64007edaf4fd181">eve::rpg::ClassDefinition::getExtra</a></div><div class="ttdeci">std::string getExtra(const std::string &amp;key, const std::string &amp;fallback={}) const</div><div class="ttdef"><b>Definition</b> <a href="Class_8cpp_source.html#l00015">Class.cpp:15</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html_a89ddfaf466d6b0f4afb7a93f024d4f30"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html#a89ddfaf466d6b0f4afb7a93f024d4f30">eve::rpg::ClassDefinition::extra</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::string &gt; extra</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00030">Class.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html_ab0da03cdcc718194628d72e7fca495fd"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html#ab0da03cdcc718194628d72e7fca495fd">eve::rpg::ClassDefinition::learnSkills</a></div><div class="ttdeci">std::vector&lt; ClassLearnSkill &gt; learnSkills</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00027">Class.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassDefinition_html_ad9c101eef62c8f52b723010b62e8ffec"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassDefinition.html#ad9c101eef62c8f52b723010b62e8ffec">eve::rpg::ClassDefinition::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00026">Class.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassLearnSkill_html"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassLearnSkill.html">eve::rpg::ClassLearnSkill</a></div><div class="ttdoc">一条&quot;升到 level 级可学 skillId&quot;的规格。</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00018">Class.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassLearnSkill_html_a1b2d7f660240d5a698003af15b162eca"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassLearnSkill.html#a1b2d7f660240d5a698003af15b162eca">eve::rpg::ClassLearnSkill::level</a></div><div class="ttdeci">int level</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00020">Class.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1ClassLearnSkill_html_ab4def91f84892c702293afb0aad95ae8"><div class="ttname"><a href="structeve_1_1rpg_1_1ClassLearnSkill.html#ab4def91f84892c702293afb0aad95ae8">eve::rpg::ClassLearnSkill::skillId</a></div><div class="ttdeci">std::string skillId</div><div class="ttdef"><b>Definition</b> <a href="Class_8h_source.html#l00019">Class.h:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

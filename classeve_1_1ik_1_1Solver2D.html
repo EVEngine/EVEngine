@@ -1,0 +1,803 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ik::Solver2D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ik.html">ik</a></li><li class="navelem"><a class="el" href="classeve_1_1ik_1_1Solver2D.html">Solver2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ik_1_1Solver2D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ik::Solver2D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>FABRIK solver for <a class="el" href="classeve_1_1ik_1_1Skeleton2D.html" title="Script-facing 2D skeleton + pose state (ik::skeleton2d + ik::ecs2d). Bone indices are stable after ea...">Skeleton2D</a>. Script type: <code><a class="el" href="classeve_1_1ik_1_1Solver2D.html" title="FABRIK solver for Skeleton2D. Script type: Solver2D.">Solver2D</a></code>.  
+ <a href="classeve_1_1ik_1_1Solver2D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Solver2D_8h_source.html">Solver2D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aac0e3d491c2c12e726ee3e23163611cc" id="r_aac0e3d491c2c12e726ee3e23163611cc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#aac0e3d491c2c12e726ee3e23163611cc">Solver2D</a> ()=default</td></tr>
+<tr class="separator:aac0e3d491c2c12e726ee3e23163611cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bea865f884914db7d081ac7630ef667" id="r_a2bea865f884914db7d081ac7630ef667"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a2bea865f884914db7d081ac7630ef667">~Solver2D</a> ()=default</td></tr>
+<tr class="separator:a2bea865f884914db7d081ac7630ef667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb74c76e42b1802e2185ef88e9eb21b8" id="r_aeb74c76e42b1802e2185ef88e9eb21b8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#aeb74c76e42b1802e2185ef88e9eb21b8">Solver2D</a> (const <a class="el" href="classeve_1_1ik_1_1Solver2D.html">Solver2D</a> &amp;)=delete</td></tr>
+<tr class="separator:aeb74c76e42b1802e2185ef88e9eb21b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab81b1db279de4fd672c8ae0070f8a712" id="r_ab81b1db279de4fd672c8ae0070f8a712"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ik_1_1Solver2D.html">Solver2D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#ab81b1db279de4fd672c8ae0070f8a712">operator=</a> (const <a class="el" href="classeve_1_1ik_1_1Solver2D.html">Solver2D</a> &amp;)=delete</td></tr>
+<tr class="separator:ab81b1db279de4fd672c8ae0070f8a712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a445b8ac1843f160d87052445fbe2b2" id="r_a8a445b8ac1843f160d87052445fbe2b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a8a445b8ac1843f160d87052445fbe2b2">setKeepTrace</a> (bool keep)</td></tr>
+<tr class="separator:a8a445b8ac1843f160d87052445fbe2b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ff1404639e8f9f4e57a0a21a15d0d68" id="r_a0ff1404639e8f9f4e57a0a21a15d0d68"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a0ff1404639e8f9f4e57a0a21a15d0d68">getKeepTrace</a> () const</td></tr>
+<tr class="separator:a0ff1404639e8f9f4e57a0a21a15d0d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f522e5b8022ce46c2ec68140daa1972" id="r_a1f522e5b8022ce46c2ec68140daa1972"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a1f522e5b8022ce46c2ec68140daa1972">setMaxIterations</a> (int <a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>)</td></tr>
+<tr class="separator:a1f522e5b8022ce46c2ec68140daa1972"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074246cadf03bc15ef22dc26a0525b60" id="r_a074246cadf03bc15ef22dc26a0525b60"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a074246cadf03bc15ef22dc26a0525b60">getMaxIterations</a> () const</td></tr>
+<tr class="separator:a074246cadf03bc15ef22dc26a0525b60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6264a4657e0e7399d09d8e9fe33c4e69" id="r_a6264a4657e0e7399d09d8e9fe33c4e69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a6264a4657e0e7399d09d8e9fe33c4e69">setTolerance</a> (float tol)</td></tr>
+<tr class="separator:a6264a4657e0e7399d09d8e9fe33c4e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad58a5c7b8ecb0601cd021156cab91fca" id="r_ad58a5c7b8ecb0601cd021156cab91fca"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#ad58a5c7b8ecb0601cd021156cab91fca">getTolerance</a> () const</td></tr>
+<tr class="separator:ad58a5c7b8ecb0601cd021156cab91fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f36e118c168bb9f97ee8fe6dec9c0c1" id="r_a0f36e118c168bb9f97ee8fe6dec9c0c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a0f36e118c168bb9f97ee8fe6dec9c0c1">setForce</a> (float force)</td></tr>
+<tr class="separator:a0f36e118c168bb9f97ee8fe6dec9c0c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8ea48a95631fe8691c66a47f1f22558" id="r_ac8ea48a95631fe8691c66a47f1f22558"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#ac8ea48a95631fe8691c66a47f1f22558">getForce</a> () const</td></tr>
+<tr class="separator:ac8ea48a95631fe8691c66a47f1f22558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac516427f32e8652e864416d3b1c79c3e" id="r_ac516427f32e8652e864416d3b1c79c3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#ac516427f32e8652e864416d3b1c79c3e">setInfluence</a> (float influence)</td></tr>
+<tr class="memdesc:ac516427f32e8652e864416d3b1c79c3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overall pose blend: 0 = keep the input pose, 1 = full solve (default).  <br /></td></tr>
+<tr class="separator:ac516427f32e8652e864416d3b1c79c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcf13c777648977f12f585300e7543cd" id="r_afcf13c777648977f12f585300e7543cd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#afcf13c777648977f12f585300e7543cd">getInfluence</a> () const</td></tr>
+<tr class="separator:afcf13c777648977f12f585300e7543cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75af8801d850661824c73083bf0bcff9" id="r_a75af8801d850661824c73083bf0bcff9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a75af8801d850661824c73083bf0bcff9">clearTargets</a> ()</td></tr>
+<tr class="separator:a75af8801d850661824c73083bf0bcff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8ed3a98d6bd347bc5530cc3ce52e8c4" id="r_ac8ed3a98d6bd347bc5530cc3ce52e8c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#ac8ed3a98d6bd347bc5530cc3ce52e8c4">addTarget</a> (int boneId, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float weight=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ac8ed3a98d6bd347bc5530cc3ce52e8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0aa7cc41f7aeae8a6e44f3fdb7f8345e" id="r_a0aa7cc41f7aeae8a6e44f3fdb7f8345e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a0aa7cc41f7aeae8a6e44f3fdb7f8345e">getTargetCount</a> () const</td></tr>
+<tr class="separator:a0aa7cc41f7aeae8a6e44f3fdb7f8345e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd129166694a7fa3494aefaf670e9510" id="r_acd129166694a7fa3494aefaf670e9510"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#acd129166694a7fa3494aefaf670e9510">solve</a> (<a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a> *skeleton)</td></tr>
+<tr class="memdesc:acd129166694a7fa3494aefaf670e9510"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if every target is within tolerance.  <br /></td></tr>
+<tr class="separator:acd129166694a7fa3494aefaf670e9510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a415079234aef68e67c896c5804d2968e" id="r_a415079234aef68e67c896c5804d2968e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a415079234aef68e67c896c5804d2968e">step</a> (<a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a> *skeleton, float dt=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a415079234aef68e67c896c5804d2968e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad035c453f3e4b89d3d76f34b1e41790c" id="r_ad035c453f3e4b89d3d76f34b1e41790c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#ad035c453f3e4b89d3d76f34b1e41790c">solveChain</a> (<a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a> *skeleton, int rootBoneId, int tipBoneId)</td></tr>
+<tr class="memdesc:ad035c453f3e4b89d3d76f34b1e41790c"><td class="mdescLeft">&#160;</td><td class="mdescRight">FABRIK solve restricted to the bone chain rootBoneId..tipBoneId. The chain root stays pinned and bones outside the chain are untouched; only targets on the chain participate. See <a class="el" href="ChainSolver_8h.html">ChainSolver.h</a> for details.  <br /></td></tr>
+<tr class="separator:ad035c453f3e4b89d3d76f34b1e41790c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2cc9c07464204d95163d908951e38a5" id="r_ad2cc9c07464204d95163d908951e38a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#ad2cc9c07464204d95163d908951e38a5">stepChain</a> (<a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a> *skeleton, int rootBoneId, int tipBoneId, float dt=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ad2cc9c07464204d95163d908951e38a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73bb191e2712c6a32d97730e1c354093" id="r_a73bb191e2712c6a32d97730e1c354093"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#a73bb191e2712c6a32d97730e1c354093">getTraceSize</a> () const</td></tr>
+<tr class="separator:a73bb191e2712c6a32d97730e1c354093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2e71026ecba58747c1379f8647becae" id="r_af2e71026ecba58747c1379f8647becae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ik_1_1Solver2D.html#af2e71026ecba58747c1379f8647becae">clearTrace</a> ()</td></tr>
+<tr class="separator:af2e71026ecba58747c1379f8647becae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>FABRIK solver for <a class="el" href="classeve_1_1ik_1_1Skeleton2D.html" title="Script-facing 2D skeleton + pose state (ik::skeleton2d + ik::ecs2d). Bone indices are stable after ea...">Skeleton2D</a>. Script type: <code><a class="el" href="classeve_1_1ik_1_1Solver2D.html" title="FABRIK solver for Skeleton2D. Script type: Solver2D.">Solver2D</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8h_source.html">Solver2D.h</a> 第 <a class="el" href="Solver2D_8h_source.html#l00011">11</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aac0e3d491c2c12e726ee3e23163611cc" name="aac0e3d491c2c12e726ee3e23163611cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0e3d491c2c12e726ee3e23163611cc">&#9670;&#160;</a></span>Solver2D() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Solver2D::Solver2D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2bea865f884914db7d081ac7630ef667" name="a2bea865f884914db7d081ac7630ef667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bea865f884914db7d081ac7630ef667">&#9670;&#160;</a></span>~Solver2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Solver2D::~Solver2D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb74c76e42b1802e2185ef88e9eb21b8" name="aeb74c76e42b1802e2185ef88e9eb21b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb74c76e42b1802e2185ef88e9eb21b8">&#9670;&#160;</a></span>Solver2D() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::ik::Solver2D::Solver2D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ik_1_1Solver2D.html">Solver2D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac8ed3a98d6bd347bc5530cc3ce52e8c4" name="ac8ed3a98d6bd347bc5530cc3ce52e8c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8ed3a98d6bd347bc5530cc3ce52e8c4">&#9670;&#160;</a></span>addTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::addTarget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>boneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a75af8801d850661824c73083bf0bcff9" name="a75af8801d850661824c73083bf0bcff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75af8801d850661824c73083bf0bcff9">&#9670;&#160;</a></span>clearTargets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::clearTargets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2e71026ecba58747c1379f8647becae" name="af2e71026ecba58747c1379f8647becae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2e71026ecba58747c1379f8647becae">&#9670;&#160;</a></span>clearTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::clearTrace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac8ea48a95631fe8691c66a47f1f22558" name="ac8ea48a95631fe8691c66a47f1f22558"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8ea48a95631fe8691c66a47f1f22558">&#9670;&#160;</a></span>getForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Solver2D::getForce </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afcf13c777648977f12f585300e7543cd" name="afcf13c777648977f12f585300e7543cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcf13c777648977f12f585300e7543cd">&#9670;&#160;</a></span>getInfluence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Solver2D::getInfluence </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0ff1404639e8f9f4e57a0a21a15d0d68" name="a0ff1404639e8f9f4e57a0a21a15d0d68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ff1404639e8f9f4e57a0a21a15d0d68">&#9670;&#160;</a></span>getKeepTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ik::Solver2D::getKeepTrace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a074246cadf03bc15ef22dc26a0525b60" name="a074246cadf03bc15ef22dc26a0525b60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a074246cadf03bc15ef22dc26a0525b60">&#9670;&#160;</a></span>getMaxIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Solver2D::getMaxIterations </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0aa7cc41f7aeae8a6e44f3fdb7f8345e" name="a0aa7cc41f7aeae8a6e44f3fdb7f8345e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0aa7cc41f7aeae8a6e44f3fdb7f8345e">&#9670;&#160;</a></span>getTargetCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Solver2D::getTargetCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad58a5c7b8ecb0601cd021156cab91fca" name="ad58a5c7b8ecb0601cd021156cab91fca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad58a5c7b8ecb0601cd021156cab91fca">&#9670;&#160;</a></span>getTolerance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ik::Solver2D::getTolerance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73bb191e2712c6a32d97730e1c354093" name="a73bb191e2712c6a32d97730e1c354093"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73bb191e2712c6a32d97730e1c354093">&#9670;&#160;</a></span>getTraceSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ik::Solver2D::getTraceSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab81b1db279de4fd672c8ae0070f8a712" name="ab81b1db279de4fd672c8ae0070f8a712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab81b1db279de4fd672c8ae0070f8a712">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ik_1_1Solver2D.html">Solver2D</a> &amp; eve::ik::Solver2D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1ik_1_1Solver2D.html">Solver2D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0f36e118c168bb9f97ee8fe6dec9c0c1" name="a0f36e118c168bb9f97ee8fe6dec9c0c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f36e118c168bb9f97ee8fe6dec9c0c1">&#9670;&#160;</a></span>setForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::setForce </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>force</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac516427f32e8652e864416d3b1c79c3e" name="ac516427f32e8652e864416d3b1c79c3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac516427f32e8652e864416d3b1c79c3e">&#9670;&#160;</a></span>setInfluence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::setInfluence </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>influence</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Overall pose blend: 0 = keep the input pose, 1 = full solve (default). </p>
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a445b8ac1843f160d87052445fbe2b2" name="a8a445b8ac1843f160d87052445fbe2b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a445b8ac1843f160d87052445fbe2b2">&#9670;&#160;</a></span>setKeepTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::setKeepTrace </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>keep</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f522e5b8022ce46c2ec68140daa1972" name="a1f522e5b8022ce46c2ec68140daa1972"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f522e5b8022ce46c2ec68140daa1972">&#9670;&#160;</a></span>setMaxIterations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::setMaxIterations </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iterations</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00193">iterations</a>.</p>
+
+</div>
+</div>
+<a id="a6264a4657e0e7399d09d8e9fe33c4e69" name="a6264a4657e0e7399d09d8e9fe33c4e69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6264a4657e0e7399d09d8e9fe33c4e69">&#9670;&#160;</a></span>setTolerance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::setTolerance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tol</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd129166694a7fa3494aefaf670e9510" name="acd129166694a7fa3494aefaf670e9510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd129166694a7fa3494aefaf670e9510">&#9670;&#160;</a></span>solve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ik::Solver2D::solve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns true if every target is within tolerance. </p>
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Skeleton2D_8h_source.html#l00056">eve::ik::Skeleton2D::native()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Skeleton2D_8h_source.html#l00057">eve::ik::Skeleton2D::state()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="ad035c453f3e4b89d3d76f34b1e41790c" name="ad035c453f3e4b89d3d76f34b1e41790c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad035c453f3e4b89d3d76f34b1e41790c">&#9670;&#160;</a></span>solveChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ik::Solver2D::solveChain </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rootBoneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tipBoneId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>FABRIK solve restricted to the bone chain rootBoneId..tipBoneId. The chain root stays pinned and bones outside the chain are untouched; only targets on the chain participate. See <a class="el" href="ChainSolver_8h.html">ChainSolver.h</a> for details. </p>
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a> , 以及 <a class="el" href="ChainSolver_8h_source.html#l00019">eve::ik::detail::ChainOptions&lt; D &gt;::tolerance</a>.</p>
+
+</div>
+</div>
+<a id="a415079234aef68e67c896c5804d2968e" name="a415079234aef68e67c896c5804d2968e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a415079234aef68e67c896c5804d2968e">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::step </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Skeleton2D_8h_source.html#l00056">eve::ik::Skeleton2D::native()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Skeleton2D_8h_source.html#l00057">eve::ik::Skeleton2D::state()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="ad2cc9c07464204d95163d908951e38a5" name="ad2cc9c07464204d95163d908951e38a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2cc9c07464204d95163d908951e38a5">&#9670;&#160;</a></span>stepChain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ik::Solver2D::stepChain </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">Skeleton2D</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rootBoneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tipBoneId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a> 第 <a class="el" href="Solver2D_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00017">options</a> , 以及 <a class="el" href="ChainSolver_8h_source.html#l00019">eve::ik::detail::ChainOptions&lt; D &gt;::tolerance</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ik/<a class="el" href="Solver2D_8h_source.html">Solver2D.h</a></li>
+<li>src/modules/ik/<a class="el" href="Solver2D_8cpp_source.html">Solver2D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

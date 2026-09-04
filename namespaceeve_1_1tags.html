@@ -1,0 +1,444 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tags 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tags.html">tags</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::tags 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tags_1_1GameplayTagDefinition.html">GameplayTagDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An owning gameplay-tag definition shared by runtime and editor tools.  <a href="structeve_1_1tags_1_1GameplayTagDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1GameplayTagRegistry.html">GameplayTagRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical owner of versioned gameplay-tag definitions.  <a href="classeve_1_1tags_1_1GameplayTagRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tags_1_1TagChangeEvent.html">TagChangeEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable description of one tag or capability mutation.  <a href="structeve_1_1tags_1_1TagChangeEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html">Tags</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-facing module for generic tags and capabilities.  <a href="classeve_1_1tags_1_1Tags.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1TagStore.html">TagStore</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic storage for generic tags and capabilities.  <a href="classeve_1_1tags_1_1TagStore.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1TagStoreStateAdapter.html">TagStoreStateAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapts one <a class="el" href="classeve_1_1tags_1_1TagStore.html" title="Deterministic storage for generic tags and capabilities.">TagStore</a> to read tags and apply volatile tag mutations.  <a href="classeve_1_1tags_1_1TagStoreStateAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a08a0a94b6be55851117bb880398170a6" id="r_a08a0a94b6be55851117bb880398170a6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tags.html#a08a0a94b6be55851117bb880398170a6">GameplayTagId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt; GameplayTagIdTag &gt;</td></tr>
+<tr class="memdesc:a08a0a94b6be55851117bb880398170a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable FNV-1a identifier derived from a canonical gameplay-tag name.  <br /></td></tr>
+<tr class="separator:a08a0a94b6be55851117bb880398170a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add1b7ad10cda2b36950e64a64a33ec12" id="r_add1b7ad10cda2b36950e64a64a33ec12"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tags.html#add1b7ad10cda2b36950e64a64a33ec12">SubjectId</a> = std::string</td></tr>
+<tr class="memdesc:add1b7ad10cda2b36950e64a64a33ec12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable, game-defined identifier for an object carrying tags.  <br /></td></tr>
+<tr class="separator:add1b7ad10cda2b36950e64a64a33ec12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a0645e1cb7ff56bfe64632dd4ddd0a9d4" id="r_a0645e1cb7ff56bfe64632dd4ddd0a9d4"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4">GameplayTagMatch</a> { <a class="el" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4a1649aed298f99d587e2eb30c1db5946b">Exact</a>
+, <a class="el" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4ae67aaac8adf27fe6459d698c4ef39075">IncludeDescendants</a>
+ }</td></tr>
+<tr class="memdesc:a0645e1cb7ff56bfe64632dd4ddd0a9d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects exact or hierarchical descendant matching.  <a href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4">更多...</a><br /></td></tr>
+<tr class="separator:a0645e1cb7ff56bfe64632dd4ddd0a9d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a71ca41741fbaa34644e8d3245d1f71e7" id="r_a71ca41741fbaa34644e8d3245d1f71e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tags.html#a71ca41741fbaa34644e8d3245d1f71e7">isValidGameplayTagName</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) noexcept</td></tr>
+<tr class="memdesc:a71ca41741fbaa34644e8d3245d1f71e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a name is a canonical dot-separated gameplay tag.  <br /></td></tr>
+<tr class="separator:a71ca41741fbaa34644e8d3245d1f71e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17c6aba829d4917150cd4edf3957ad98" id="r_a17c6aba829d4917150cd4edf3957ad98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1tags.html#a08a0a94b6be55851117bb880398170a6">GameplayTagId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tags.html#a17c6aba829d4917150cd4edf3957ad98">gameplayTagId</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) noexcept</td></tr>
+<tr class="memdesc:a17c6aba829d4917150cd4edf3957ad98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the stable 64-bit FNV-1a identifier of a canonical name.  <br /></td></tr>
+<tr class="separator:a17c6aba829d4917150cd4edf3957ad98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84fb940822f61b77edfc1ba4d5d681ae" id="r_a84fb940822f61b77edfc1ba4d5d681ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tags.html#a84fb940822f61b77edfc1ba4d5d681ae">gameplayTagMatches</a> (std::string_view candidate, std::string_view query, <a class="el" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4">GameplayTagMatch</a> match) noexcept</td></tr>
+<tr class="memdesc:a84fb940822f61b77edfc1ba4d5d681ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests exact or dot-boundary descendant membership.  <br /></td></tr>
+<tr class="separator:a84fb940822f61b77edfc1ba4d5d681ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2d95cd4bc0162b3efa4057395d9738f" id="r_ae2d95cd4bc0162b3efa4057395d9738f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1tags.html#ae2d95cd4bc0162b3efa4057395d9738f">Module_IMPL</a> (<a class="el" href="classeve_1_1tags_1_1Tags.html">Tags</a>, new <a class="el" href="classeve_1_1tags_1_1Tags.html">Tags</a>())</td></tr>
+<tr class="separator:ae2d95cd4bc0162b3efa4057395d9738f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a08a0a94b6be55851117bb880398170a6" name="a08a0a94b6be55851117bb880398170a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08a0a94b6be55851117bb880398170a6">&#9670;&#160;</a></span>GameplayTagId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1tags.html#a08a0a94b6be55851117bb880398170a6">eve::tags::GameplayTagId</a> = typedef <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64</a>&lt;GameplayTagIdTag&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable FNV-1a identifier derived from a canonical gameplay-tag name. </p>
+
+<p class="definition">在文件 <a class="el" href="GameplayTag_8h_source.html">GameplayTag.h</a> 第 <a class="el" href="GameplayTag_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add1b7ad10cda2b36950e64a64a33ec12" name="add1b7ad10cda2b36950e64a64a33ec12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add1b7ad10cda2b36950e64a64a33ec12">&#9670;&#160;</a></span>SubjectId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1tags.html#add1b7ad10cda2b36950e64a64a33ec12">eve::tags::SubjectId</a> = typedef std::string</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable, game-defined identifier for an object carrying tags. </p>
+
+<p class="definition">在文件 <a class="el" href="TagStore_8h_source.html">TagStore.h</a> 第 <a class="el" href="TagStore_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a0645e1cb7ff56bfe64632dd4ddd0a9d4" name="a0645e1cb7ff56bfe64632dd4ddd0a9d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0645e1cb7ff56bfe64632dd4ddd0a9d4">&#9670;&#160;</a></span>GameplayTagMatch</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4">eve::tags::GameplayTagMatch</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Selects exact or hierarchical descendant matching. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a0645e1cb7ff56bfe64632dd4ddd0a9d4a1649aed298f99d587e2eb30c1db5946b" name="a0645e1cb7ff56bfe64632dd4ddd0a9d4a1649aed298f99d587e2eb30c1db5946b"></a>Exact&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a0645e1cb7ff56bfe64632dd4ddd0a9d4ae67aaac8adf27fe6459d698c4ef39075" name="a0645e1cb7ff56bfe64632dd4ddd0a9d4ae67aaac8adf27fe6459d698c4ef39075"></a>IncludeDescendants&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="GameplayTag_8h_source.html">GameplayTag.h</a> 第 <a class="el" href="GameplayTag_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a17c6aba829d4917150cd4edf3957ad98" name="a17c6aba829d4917150cd4edf3957ad98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17c6aba829d4917150cd4edf3957ad98">&#9670;&#160;</a></span>gameplayTagId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1tags.html#a08a0a94b6be55851117bb880398170a6">GameplayTagId</a> eve::tags::gameplayTagId </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes the stable 64-bit FNV-1a identifier of a canonical name. </p>
+
+<p class="definition">在文件 <a class="el" href="GameplayTag_8cpp_source.html">GameplayTag.cpp</a> 第 <a class="el" href="GameplayTag_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Evpack_8cpp_source.html#l00177">hash</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameplayTag_8cpp_source.html#l00120">eve::tags::GameplayTagRegistry::fromValue()</a> , 以及 <a class="el" href="GameplayTag_8cpp_source.html#l00064">eve::tags::GameplayTagRegistry::registerTag()</a>.</p>
+
+</div>
+</div>
+<a id="a84fb940822f61b77edfc1ba4d5d681ae" name="a84fb940822f61b77edfc1ba4d5d681ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84fb940822f61b77edfc1ba4d5d681ae">&#9670;&#160;</a></span>gameplayTagMatches()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::gameplayTagMatches </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>candidate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>query</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4">GameplayTagMatch</a>&#160;</td>
+          <td class="paramname"><em>match</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tests exact or dot-boundary descendant membership. </p>
+
+<p class="definition">在文件 <a class="el" href="GameplayTag_8cpp_source.html">GameplayTag.cpp</a> 第 <a class="el" href="GameplayTag_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4ae67aaac8adf27fe6459d698c4ef39075">IncludeDescendants</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameplayTag_8cpp_source.html#l00098">eve::tags::GameplayTagRegistry::search()</a> , 以及 <a class="el" href="TagStore_8cpp_source.html#l00075">eve::tags::TagStore::subjectsWithTagMatching()</a>.</p>
+
+</div>
+</div>
+<a id="a71ca41741fbaa34644e8d3245d1f71e7" name="a71ca41741fbaa34644e8d3245d1f71e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71ca41741fbaa34644e8d3245d1f71e7">&#9670;&#160;</a></span>isValidGameplayTagName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::isValidGameplayTagName </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether a name is a canonical dot-separated gameplay tag. </p>
+
+<p class="definition">在文件 <a class="el" href="GameplayTag_8cpp_source.html">GameplayTag.cpp</a> 第 <a class="el" href="GameplayTag_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GameplayTag_8cpp_source.html#l00064">eve::tags::GameplayTagRegistry::registerTag()</a>, <a class="el" href="GameplayTagPicker_8cpp_source.html#l00007">eve::editor::GameplayTagPicker::setRoot()</a>, <a class="el" href="AbilitySystem_8cpp_source.html#l00033">eve::action::AbilityDefinition::validate()</a>, <a class="el" href="CombatAttributes_8cpp_source.html#l00020">eve::combat::CombatAttributeDefinition::validate()</a> , 以及 <a class="el" href="Damage_8cpp_source.html#l00043">eve::combat::DamageRequest::validate()</a>.</p>
+
+</div>
+</div>
+<a id="ae2d95cd4bc0162b3efa4057395d9738f" name="ae2d95cd4bc0162b3efa4057395d9738f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2d95cd4bc0162b3efa4057395d9738f">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tags::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tags_1_1Tags.html">Tags</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Tags</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

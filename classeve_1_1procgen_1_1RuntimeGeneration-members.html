@@ -1,0 +1,239 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">RuntimeGeneration</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen::RuntimeGeneration 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a348571590be7e16e0a6e312c2afddcc4">addLevel</a>(float cellSize, float generationRadius, float cleanupMultiplier)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a755310f0bf56258a93a32a2780419dca">applyCellUpdate</a>(int level, int x, int z, uint64_t expectedRevision, const PointSet &amp;output)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a325a8622d5b5cbeca337db6ef239fc1f">beginFrame</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#af97d89d20303a105d7095753af56b00a">clear</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a4b283d1fdf7981f6f8ef92b0abf9a045">clearGenerationSources</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ab70ea7de94d528f5e3fc0f6af54c03e5">completeCleanup</a>(ProcgenCellRequest *request)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a9bc6dd0374a4627783513c98106436c4">completeCleanupsAtomic</a>(const std::vector&lt; const ProcgenCellRequest * &gt; &amp;requests)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a023d38fd483c7ea2a527bf66b70a0902">completeGeneration</a>(ProcgenCellRequest *request, PointSet *output)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ab63b92204b5a05aba56b2d598f957da9">continueGenerationRefresh</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ad8e235039bfbd8b070a461435ae6958c">debugReport</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a112ac0bc952de54d4630e1829e951f7a">deserializeCell</a>(const std::string &amp;definition)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7035112c4abb58a327de567c3f8cae6e">failGeneration</a>(ProcgenCellRequest *request)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a3b2c4c206cae67cfbb171d2f9bccda5d">getActiveCellCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a35941e3aa8f32a3564364a1f84d29203">getCancelledGenerationCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#aad07de5e53c55b1478a558bcb99b57c9">getCellDelta</a>(int level, int x, int z) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a89bd027bba4c75517a9a2bf489c6be80">getCellOutput</a>(int level, int x, int z) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a6d04c6ce6ecad182237521acc86b7347">getCellRevision</a>(int level, int x, int z) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a648333710b18b9693601e7805691d64f">getCommittedRefreshRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a4ec452547881679f2898f6d6e9dc2a47">getDirectionWeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a8d25526ac0e7b538a01c7f7097f00e49">getFailedCellCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ac8f1dc00eda269a0ce8db043b7f54bd2">getFrameTimeBudget</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a1413a4db6700de159caa0dc40efc315b">getFrustumBehindRadius</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#aa8968cef3587f08a5d824feaa2eaa032">getFrustumHalfAngle</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a5498b3a7103ccdf1004d4fb88cdce708">getGeneratingCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a895d034d9b883b5f28df7c0cf4270edc">getGenerationSourceCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ab5d03232b5515fa4151f205bbbc3e0bf">getGenerationSourceId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a33fb9e90e988368a24de7f3fd4af2ee5">getLevelCellSize</a>(int level) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a427ce9d675e75a2768f5b6caadc511de">getLevelCleanupRadius</a>(int level) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a3c4fceff2c683392aac0ae0cc8066a7d">getLevelCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a8c26707903d7cb26a255d91a05273898">getLevelGenerationRadius</a>(int level) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#af67135b008893bd609c5eea14078d980">getMaxActiveCells</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a9bc0608aa0885bd000c053817b950b76">getMaxGenerating</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a615b25371b385d5ef477b99fdc351a66">getMaxGenerationRetries</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ad5b3fe7b26f86ac341d90729996d9763">getMaxPointsPerCell</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7de7643f8df1875cace80402683554a1">getMaxResidentPoints</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a4b829cb6dc5b0fce1a03e749957446c6">getPendingCleanupCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a22373d771c65219765244d4e506bee2b">getPendingGenerateCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7a4b417598bb26fc7a773d8cb8ca73c5">getRefreshWorkBudget</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ad749db2999548d5b474e9d7d46fb9c80">getRejectedOutputCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ae7dc9ad9e4e9ac2b86460f47f3ddb984">getResidentPointCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a48a2889d7ba875d32394cc9e7102dc2a">hasCell</a>(int level, int x, int z) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a067a3fa7a071f6fc132c0b16a28ed5e5">isFrustumCullingEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a6a05e4b07db1a365e2685677da059d51">isRefreshPending</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a2b318ee92a9fb9bb3c2078e3d1d30693">isRequestCurrent</a>(const ProcgenCellRequest *request) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a3c282a8cf5f64500866e3f5dbc151898">migrateCellPointIds</a>(int level, int x, int z, uint64_t expectedRevision)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ae9153ac2a51a9f99ff14fe79a4e347c9">nextCleanup</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7da3d736c435de28eefcc204220c6d3b">nextGenerate</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7aa57056cc280bc42ccfb7d86fbda393">Procgen</a></td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#af5931665e5662d6646413cf2aad3a45a">refreshGenerationSources</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a885cb0f258cd1a529367aa14b8df7bf5">removeGenerationSource</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a9b0652bf4b2c755dffc1b082ffa09982">retryFailedCells</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#af7f2b5da6b83680f750779f072db42f4">RuntimeGeneration</a>(uint32_t worldSeed=1)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a5d4b76eea06d411abd6c12ce8b8f16f3">serializeCell</a>(int level, int x, int z) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ae41e8fe324c562a9ef27e567772ad30a">setDirectionWeight</a>(float weight)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7028e360b3631f683eb3499318f303c3">setFrameTimeBudget</a>(float milliseconds)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a51683b0d7175336bc5d2db3754d8ca18">setFrustumCulling</a>(bool enabled, float halfAngleDegrees, float behindRadius)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#aaf49ba6aba684a8163628b7853037584">setGenerationSource</a>(const std::string &amp;id, float x, float z, float directionX, float directionZ, float radiusScale=1.f)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ac8376395d99d2e2bf233cc3bd98c7659">setMaxActiveCells</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#abe4afdfedfed3678f1ca5c772fb5cae6">setMaxGenerating</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ad3fbece7bb65d7af5f3aac78cb4935d9">setMaxGenerationRetries</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a019d34b67afefdd0046b8152e31c839e">setMaxPointsPerCell</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#afe643f11b3ebcd3fce392750549121ff">setMaxResidentPoints</a>(int count)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#aeb4b7c9b4088d9548c3293e1824d7459">setRefreshWorkBudget</a>(int candidateCells)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a250c2124a4b08ffdcb6290baa1c697dc">trimToResidentPoints</a>(int target)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ab52dcc5b96a31ddc0af7876a1626a3db">updateSource</a>(float x, float z, float directionX, float directionZ)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">eve::procgen::RuntimeGeneration</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

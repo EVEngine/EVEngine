@@ -1,0 +1,406 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::CommandSpec结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html">CommandSpec</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1rts_1_1CommandSpec-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::CommandSpec结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One domain-neutral command submitted to a unit's generic order queue.  
+ <a href="structeve_1_1rts_1_1CommandSpec.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4ec8c6b47ac4218fcca76cd21e85520e" id="r_a4ec8c6b47ac4218fcca76cd21e85520e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#a4ec8c6b47ac4218fcca76cd21e85520e">validate</a> () const</td></tr>
+<tr class="memdesc:a4ec8c6b47ac4218fcca76cd21e85520e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate coordinates and command metadata without mutating state.  <br /></td></tr>
+<tr class="separator:a4ec8c6b47ac4218fcca76cd21e85520e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8c32ba05e077b4b60a2897240275a31a" id="r_a8c32ba05e077b4b60a2897240275a31a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884">OrderKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#a8c32ba05e077b4b60a2897240275a31a">kind</a> = <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a6bc362dbf494c61ea117fe3c71ca48a5">OrderKind::Move</a></td></tr>
+<tr class="separator:a8c32ba05e077b4b60a2897240275a31a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89781f8111ea24a7093ea09419adb18c" id="r_a89781f8111ea24a7093ea09419adb18c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#a89781f8111ea24a7093ea09419adb18c">target</a></td></tr>
+<tr class="separator:a89781f8111ea24a7093ea09419adb18c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fbe15dd99831a1b37eb087b9f3e9efe" id="r_a0fbe15dd99831a1b37eb087b9f3e9efe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#a0fbe15dd99831a1b37eb087b9f3e9efe">definitionId</a></td></tr>
+<tr class="separator:a0fbe15dd99831a1b37eb087b9f3e9efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a615b4eb196941699bdf5dc92bb21d488" id="r_a615b4eb196941699bdf5dc92bb21d488"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#a615b4eb196941699bdf5dc92bb21d488">priority</a> = 0</td></tr>
+<tr class="separator:a615b4eb196941699bdf5dc92bb21d488"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc8685ee5d1fe122341c45f04f16adbe" id="r_adc8685ee5d1fe122341c45f04f16adbe"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#adc8685ee5d1fe122341c45f04f16adbe">timeoutSeconds</a> = 0.0</td></tr>
+<tr class="separator:adc8685ee5d1fe122341c45f04f16adbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c4b40b0e26cc6714d0012a8d578906" id="r_a47c4b40b0e26cc6714d0012a8d578906"><td class="memItemLeft" align="right" valign="top">ecs::EntityHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#a47c4b40b0e26cc6714d0012a8d578906">targetEntity</a> {}</td></tr>
+<tr class="separator:a47c4b40b0e26cc6714d0012a8d578906"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adae419ebced1abcd40b0aea32cfb0dbe" id="r_adae419ebced1abcd40b0aea32cfb0dbe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#adae419ebced1abcd40b0aea32cfb0dbe">secondaryTarget</a></td></tr>
+<tr class="separator:adae419ebced1abcd40b0aea32cfb0dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30427ea6aa7d38f4499d949bb41edf23" id="r_a30427ea6aa7d38f4499d949bb41edf23"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#a30427ea6aa7d38f4499d949bb41edf23">radius</a> = 0.0f</td></tr>
+<tr class="separator:a30427ea6aa7d38f4499d949bb41edf23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac72481aa8d82d9e8b93c88164d4d5f92" id="r_ac72481aa8d82d9e8b93c88164d4d5f92"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CommandSpec.html#ac72481aa8d82d9e8b93c88164d4d5f92">append</a> = false</td></tr>
+<tr class="separator:ac72481aa8d82d9e8b93c88164d4d5f92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One domain-neutral command submitted to a unit's generic order queue. </p>
+<p>The definition id is a logical recipe/action id. It is not an ECS handle and is intentionally copied into the order payload. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00099">99</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a4ec8c6b47ac4218fcca76cd21e85520e" name="a4ec8c6b47ac4218fcca76cd21e85520e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ec8c6b47ac4218fcca76cd21e85520e">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::CommandSpec::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate coordinates and command metadata without mutating state. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884adcfafcb4323b102c7e204555d313ba0a">eve::rts::Attack</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a35db188480259c34ae5486b4ad2a7947">eve::rts::AttackGround</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a364dce30a8b9b040a3938b09d9932a4a">eve::rts::AttackMove</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a0356cb7e28c60ca83ef8b744295ccc9c">eve::rts::BoardTransport</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884ac74c1f42f141c011ca6bd8b1114fc3d0">eve::rts::Build</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a44a50f07b4bdc57740901280f9eddaf5">eve::rts::Capture</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a354a48d83bee6c11cca5402bf943be6f">eve::rts::Escort</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a107773a1c506b594d38ad905efda865c">eve::rts::Garrison</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884aad22c799930d644e8468fe44c0312d53">eve::rts::Gather</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a2a7ecc75944da3985961c6796d4c85bf">eve::rts::HoldPosition</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RTSTypes_8h_source.html#l00100">kind</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a6bc362dbf494c61ea117fe3c71ca48a5">eve::rts::Move</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884adf7a8712303eeadde5d19f0e2955085c">eve::rts::Patrol</a>, <a class="el" href="RTSTypes_8h_source.html#l00107">radius</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a0493d27e20d11e356e53e0a730b0ad08">eve::rts::Repair</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884afc9a7062a22d0487934d1c2d748c7727">eve::rts::Resupply</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a13483792b4bf0763c48f2dff15ee20f8">eve::rts::ReturnCargo</a>, <a class="el" href="RTSTypes_8h_source.html#l00106">secondaryTarget</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a11a755d598c0c417f9a36758c3da7481">eve::rts::Stop</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884af0fbb31eee4ed28df45c944acd79969b">eve::rts::SupplyRelay</a>, <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884ac83a842878f19ca919e3ba58ae4e95d9">eve::rts::SuppressArea</a>, <a class="el" href="RTSTypes_8h_source.html#l00101">target</a> , 以及 <a class="el" href="RTSTypes_8h_source.html#l00104">timeoutSeconds</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00504">eve::rts::CommandFanOutSystem::fanOut()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00036">eve::rts::RTSCommandLog::queue()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a> , 以及 <a class="el" href="RTS_8cpp_source.html#l02733">eve::rts::RTS::setBuildingRally()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ac72481aa8d82d9e8b93c88164d4d5f92" name="ac72481aa8d82d9e8b93c88164d4d5f92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac72481aa8d82d9e8b93c88164d4d5f92">&#9670;&#160;</a></span>append</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::CommandSpec::append = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00504">eve::rts::CommandFanOutSystem::fanOut()</a> , 以及 <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a>.</p>
+
+</div>
+</div>
+<a id="a0fbe15dd99831a1b37eb087b9f3e9efe" name="a0fbe15dd99831a1b37eb087b9f3e9efe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fbe15dd99831a1b37eb087b9f3e9efe">&#9670;&#160;</a></span>definitionId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rts::CommandSpec::definitionId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a> , 以及 <a class="el" href="RTS_8cpp_source.html#l00440">eve::rts::RTS::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a8c32ba05e077b4b60a2897240275a31a" name="a8c32ba05e077b4b60a2897240275a31a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c32ba05e077b4b60a2897240275a31a">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884">OrderKind</a> eve::rts::CommandSpec::kind = <a class="el" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a6bc362dbf494c61ea117fe3c71ca48a5">OrderKind::Move</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTS_8cpp_source.html#l01063">eve::rts::RTS::assignBuilder()</a>, <a class="el" href="RTS_8cpp_source.html#l00969">eve::rts::RTS::assignWorker()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="RTS_8cpp_source.html#l01214">eve::rts::RTS::escortUnits()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03957">eve::rts::FireSupportSystem::request()</a>, <a class="el" href="RTS_8cpp_source.html#l02733">eve::rts::RTS::setBuildingRally()</a>, <a class="el" href="RTS_8cpp_source.html#l02364">eve::rts::RTS::startScriptConstruction()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02078">eve::rts::WorkerAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02268">eve::rts::WorkforceAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01227">eve::rts::AISystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02783">eve::rts::SupplySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02135">eve::rts::MiningSystem::step()</a>, <a class="el" href="RTS_8cpp_source.html#l00440">eve::rts::RTS::submitGameplay()</a>, <a class="el" href="RTS_8cpp_source.html#l01177">eve::rts::RTS::suppressArea()</a> , 以及 <a class="el" href="RTSTypes_8cpp_source.html#l00215">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a615b4eb196941699bdf5dc92bb21d488" name="a615b4eb196941699bdf5dc92bb21d488"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a615b4eb196941699bdf5dc92bb21d488">&#9670;&#160;</a></span>priority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rts::CommandSpec::priority = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a> , 以及 <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a>.</p>
+
+</div>
+</div>
+<a id="a30427ea6aa7d38f4499d949bb41edf23" name="a30427ea6aa7d38f4499d949bb41edf23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30427ea6aa7d38f4499d949bb41edf23">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rts::CommandSpec::radius = 0.0f</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00036">eve::rts::RTSCommandLog::queue()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03957">eve::rts::FireSupportSystem::request()</a>, <a class="el" href="RTS_8cpp_source.html#l01177">eve::rts::RTS::suppressArea()</a> , 以及 <a class="el" href="RTSTypes_8cpp_source.html#l00215">validate()</a>.</p>
+
+</div>
+</div>
+<a id="adae419ebced1abcd40b0aea32cfb0dbe" name="adae419ebced1abcd40b0aea32cfb0dbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adae419ebced1abcd40b0aea32cfb0dbe">&#9670;&#160;</a></span>secondaryTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> eve::rts::CommandSpec::secondaryTarget</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00036">eve::rts::RTSCommandLog::queue()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03957">eve::rts::FireSupportSystem::request()</a>, <a class="el" href="RTS_8cpp_source.html#l01177">eve::rts::RTS::suppressArea()</a> , 以及 <a class="el" href="RTSTypes_8cpp_source.html#l00215">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a89781f8111ea24a7093ea09419adb18c" name="a89781f8111ea24a7093ea09419adb18c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89781f8111ea24a7093ea09419adb18c">&#9670;&#160;</a></span>target</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> eve::rts::CommandSpec::target</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTS_8cpp_source.html#l01063">eve::rts::RTS::assignBuilder()</a>, <a class="el" href="RTS_8cpp_source.html#l00969">eve::rts::RTS::assignWorker()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="RTS_8cpp_source.html#l01214">eve::rts::RTS::escortUnits()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00504">eve::rts::CommandFanOutSystem::fanOut()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00036">eve::rts::RTSCommandLog::queue()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03957">eve::rts::FireSupportSystem::request()</a>, <a class="el" href="RTS_8cpp_source.html#l02364">eve::rts::RTS::startScriptConstruction()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02078">eve::rts::WorkerAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02268">eve::rts::WorkforceAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01227">eve::rts::AISystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02783">eve::rts::SupplySystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02135">eve::rts::MiningSystem::step()</a>, <a class="el" href="RTS_8cpp_source.html#l00440">eve::rts::RTS::submitGameplay()</a>, <a class="el" href="RTS_8cpp_source.html#l01177">eve::rts::RTS::suppressArea()</a> , 以及 <a class="el" href="RTSTypes_8cpp_source.html#l00215">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a47c4b40b0e26cc6714d0012a8d578906" name="a47c4b40b0e26cc6714d0012a8d578906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47c4b40b0e26cc6714d0012a8d578906">&#9670;&#160;</a></span>targetEntity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ecs::EntityHandle eve::rts::CommandSpec::targetEntity {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTS_8cpp_source.html#l01063">eve::rts::RTS::assignBuilder()</a>, <a class="el" href="RTS_8cpp_source.html#l00969">eve::rts::RTS::assignWorker()</a>, <a class="el" href="RTS_8cpp_source.html#l01214">eve::rts::RTS::escortUnits()</a>, <a class="el" href="RTSReplay_8cpp_source.html#l00036">eve::rts::RTSCommandLog::queue()</a>, <a class="el" href="RTS_8cpp_source.html#l02364">eve::rts::RTS::startScriptConstruction()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02078">eve::rts::WorkerAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02268">eve::rts::WorkforceAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02783">eve::rts::SupplySystem::step()</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l02135">eve::rts::MiningSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="adc8685ee5d1fe122341c45f04f16adbe" name="adc8685ee5d1fe122341c45f04f16adbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc8685ee5d1fe122341c45f04f16adbe">&#9670;&#160;</a></span>timeoutSeconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rts::CommandSpec::timeoutSeconds = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00378">eve::rts::OrderComponent::enqueue()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00401">eve::rts::OrderComponent::replace()</a> , 以及 <a class="el" href="RTSTypes_8cpp_source.html#l00215">validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a></li>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

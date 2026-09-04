@@ -1,0 +1,610 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::Party类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1Party.html">Party</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1rpg_1_1Party-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::Party类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoritative ordered relationship between stable party member IDs and <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> actors. @ownership <a class="el" href="classeve_1_1rpg_1_1Party.html" title="Authoritative ordered relationship between stable party member IDs and RPG actors....">Party</a> owns only stable IDs and generation-qualified links; the <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> ECS world owns actors. @thread Use on the actors' owning simulation thread.  
+ <a href="classeve_1_1rpg_1_1Party.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Party_8h_source.html">Party.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:afd146f6c3e270bca1992b282c0b03826" id="r_afd146f6c3e270bca1992b282c0b03826"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#afd146f6c3e270bca1992b282c0b03826">addMember</a> (const std::string &amp;memberId, <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor)</td></tr>
+<tr class="memdesc:afd146f6c3e270bca1992b282c0b03826"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append one unique stable member ID and live actor as one atomic roster mutation.  <br /></td></tr>
+<tr class="separator:afd146f6c3e270bca1992b282c0b03826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a915a8485579ddef30c8297efae38bfd5" id="r_a915a8485579ddef30c8297efae38bfd5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#a915a8485579ddef30c8297efae38bfd5">removeMember</a> (const std::string &amp;memberId)</td></tr>
+<tr class="memdesc:a915a8485579ddef30c8297efae38bfd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one member ID without destroying its actor.  <br /></td></tr>
+<tr class="separator:a915a8485579ddef30c8297efae38bfd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90b3d376c2a09161d2bc94c28eaca86d" id="r_a90b3d376c2a09161d2bc94c28eaca86d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#a90b3d376c2a09161d2bc94c28eaca86d">clear</a> ()</td></tr>
+<tr class="memdesc:a90b3d376c2a09161d2bc94c28eaca86d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear every relationship without destroying actors.  <br /></td></tr>
+<tr class="separator:a90b3d376c2a09161d2bc94c28eaca86d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa10f68e6152658a8b5fea906f91ba3e1" id="r_aa10f68e6152658a8b5fea906f91ba3e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#aa10f68e6152658a8b5fea906f91ba3e1">count</a> () const</td></tr>
+<tr class="separator:aa10f68e6152658a8b5fea906f91ba3e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab00db956ddf95e64b6325562c9749c24" id="r_ab00db956ddf95e64b6325562c9749c24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#ab00db956ddf95e64b6325562c9749c24">contains</a> (const std::string &amp;memberId) const</td></tr>
+<tr class="separator:ab00db956ddf95e64b6325562c9749c24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb2bc1d8976e436809676ac129c1beff" id="r_aeb2bc1d8976e436809676ac129c1beff"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#aeb2bc1d8976e436809676ac129c1beff">hasStaleMembers</a> () const</td></tr>
+<tr class="separator:aeb2bc1d8976e436809676ac129c1beff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba9b3ecdab014c55c15e2bc413ba5722" id="r_aba9b3ecdab014c55c15e2bc413ba5722"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#aba9b3ecdab014c55c15e2bc413ba5722">getMemberId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aba9b3ecdab014c55c15e2bc413ba5722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00269010f9f04e1fbba1f8f26fdcc72d" id="r_a00269010f9f04e1fbba1f8f26fdcc72d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#a00269010f9f04e1fbba1f8f26fdcc72d">getMemberActor</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a00269010f9f04e1fbba1f8f26fdcc72d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a member by ordered index.  <br /></td></tr>
+<tr class="separator:a00269010f9f04e1fbba1f8f26fdcc72d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e1eb6ebad74f13cb2e71877d9201c06" id="r_a7e1eb6ebad74f13cb2e71877d9201c06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#a7e1eb6ebad74f13cb2e71877d9201c06">findMemberActor</a> (const std::string &amp;memberId) const</td></tr>
+<tr class="memdesc:a7e1eb6ebad74f13cb2e71877d9201c06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a member by stable ID.  <br /></td></tr>
+<tr class="separator:a7e1eb6ebad74f13cb2e71877d9201c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56c78d302a19d0f88ccce86cafadc3bb" id="r_a56c78d302a19d0f88ccce86cafadc3bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#a56c78d302a19d0f88ccce86cafadc3bb">addToBattle</a> (<a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a> *battle, int <a class="el" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>) const</td></tr>
+<tr class="memdesc:a56c78d302a19d0f88ccce86cafadc3bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add every live roster member to a battle side after validating the complete roster.  <br /></td></tr>
+<tr class="separator:a56c78d302a19d0f88ccce86cafadc3bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3228151b1b0583486fee19647e7f2645" id="r_a3228151b1b0583486fee19647e7f2645"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#a3228151b1b0583486fee19647e7f2645">recoverAtCheckpoint</a> (const std::string &amp;healthResource, double healthRatio, const std::string &amp;secondaryResource={}, double secondaryRatio=0.0)</td></tr>
+<tr class="memdesc:a3228151b1b0583486fee19647e7f2645"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically restore every live member at a safe checkpoint.  <br /></td></tr>
+<tr class="separator:a3228151b1b0583486fee19647e7f2645"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab107c6093aa7f96d81868469360c65c5" id="r_ab107c6093aa7f96d81868469360c65c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#ab107c6093aa7f96d81868469360c65c5">checkpointJson</a> () const</td></tr>
+<tr class="memdesc:ab107c6093aa7f96d81868469360c65c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture ordered member IDs and every actor safe checkpoint into one versioned document.  <br /></td></tr>
+<tr class="separator:ab107c6093aa7f96d81868469360c65c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4198cb0fbf7ad60b6f89f84821dfc04f" id="r_a4198cb0fbf7ad60b6f89f84821dfc04f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#a4198cb0fbf7ad60b6f89f84821dfc04f">restoreCheckpointJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a4198cb0fbf7ad60b6f89f84821dfc04f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically restore every existing party member actor.  <br /></td></tr>
+<tr class="separator:a4198cb0fbf7ad60b6f89f84821dfc04f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a0b73581db5c1d678ab66b11676d065c2" id="r_a0b73581db5c1d678ab66b11676d065c2"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Party.html#a0b73581db5c1d678ab66b11676d065c2">RPGSaveSession</a></td></tr>
+<tr class="separator:a0b73581db5c1d678ab66b11676d065c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoritative ordered relationship between stable party member IDs and <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> actors. @ownership <a class="el" href="classeve_1_1rpg_1_1Party.html" title="Authoritative ordered relationship between stable party member IDs and RPG actors....">Party</a> owns only stable IDs and generation-qualified links; the <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> ECS world owns actors. @thread Use on the actors' owning simulation thread. </p>
+
+<p class="definition">在文件 <a class="el" href="Party_8h_source.html">Party.h</a> 第 <a class="el" href="Party_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="afd146f6c3e270bca1992b282c0b03826" name="afd146f6c3e270bca1992b282c0b03826"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd146f6c3e270bca1992b282c0b03826">&#9670;&#160;</a></span>addMember()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::Party::addMember </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>memberId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append one unique stable member ID and live actor as one atomic roster mutation. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, or a structured failure preserving the roster. @ownership The actor remains ECS-owned and must outlive its membership or be detected as stale. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a56c78d302a19d0f88ccce86cafadc3bb" name="a56c78d302a19d0f88ccce86cafadc3bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56c78d302a19d0f88ccce86cafadc3bb">&#9670;&#160;</a></span>addToBattle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::rpg::Party::addToBattle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a> *&#160;</td>
+          <td class="paramname"><em>battle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>side</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add every live roster member to a battle side after validating the complete roster. </p>
+<dl class="section return"><dt>返回</dt><dd>Member count, or a structured failure without changing the battle. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Empty or stale rosters are rejected before the first <a class="el" href="classeve_1_1rpg_1_1Battle.html" title="一场回合制战斗（任意阵营数）。 @ownership 由调用方创建/销毁；Battle 不持有参与者的所有权（参与者为借用 ECS actor）。 @thread 在单一模拟线程上驱动整场战斗。">Battle</a> mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Battle_8cpp_source.html#l00015">eve::rpg::Battle::addActor()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab107c6093aa7f96d81868469360c65c5" name="ab107c6093aa7f96d81868469360c65c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab107c6093aa7f96d81868469360c65c5">&#9670;&#160;</a></span>checkpointJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::rpg::Party::checkpointJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture ordered member IDs and every actor safe checkpoint into one versioned document. </p>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGSaveSession_8cpp_source.html#l00338">eve::rpg::RPGSaveSession::snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a90b3d376c2a09161d2bc94c28eaca86d" name="a90b3d376c2a09161d2bc94c28eaca86d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90b3d376c2a09161d2bc94c28eaca86d">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Party::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear every relationship without destroying actors. </p>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab00db956ddf95e64b6325562c9749c24" name="ab00db956ddf95e64b6325562c9749c24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab00db956ddf95e64b6325562c9749c24">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Party::contains </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>memberId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa10f68e6152658a8b5fea906f91ba3e1" name="aa10f68e6152658a8b5fea906f91ba3e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa10f68e6152658a8b5fea906f91ba3e1">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Party::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e1eb6ebad74f13cb2e71877d9201c06" name="a7e1eb6ebad74f13cb2e71877d9201c06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e1eb6ebad74f13cb2e71877d9201c06">&#9670;&#160;</a></span>findMemberActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * eve::rpg::Party::findMemberActor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>memberId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a member by stable ID. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable actor; null means unknown ID or stale generation. @ownership The <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> ECS world owns the actor. @lifetime Valid until actor/world destruction; do not retain beyond structural mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a00269010f9f04e1fbba1f8f26fdcc72d" name="a00269010f9f04e1fbba1f8f26fdcc72d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00269010f9f04e1fbba1f8f26fdcc72d">&#9670;&#160;</a></span>getMemberActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * eve::rpg::Party::getMemberActor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a member by ordered index. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable actor; null means invalid index or stale generation. @ownership The <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> ECS world owns the actor. @lifetime Valid until actor/world destruction; do not retain beyond structural mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aba9b3ecdab014c55c15e2bc413ba5722" name="aba9b3ecdab014c55c15e2bc413ba5722"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba9b3ecdab014c55c15e2bc413ba5722">&#9670;&#160;</a></span>getMemberId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Party::getMemberId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aeb2bc1d8976e436809676ac129c1beff" name="aeb2bc1d8976e436809676ac129c1beff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb2bc1d8976e436809676ac129c1beff">&#9670;&#160;</a></span>hasStaleMembers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Party::hasStaleMembers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3228151b1b0583486fee19647e7f2645" name="a3228151b1b0583486fee19647e7f2645"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3228151b1b0583486fee19647e7f2645">&#9670;&#160;</a></span>recoverAtCheckpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::rpg::Party::recoverAtCheckpoint </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>healthResource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>healthRatio</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>secondaryResource</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>secondaryRatio</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically restore every live member at a safe checkpoint. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">healthResource</td><td>Required resource used for defeat/revival (for example <code>hp</code>). </td></tr>
+    <tr><td class="paramname">healthRatio</td><td>Target fraction of each member's current maximum, in (0, 1]. </td></tr>
+    <tr><td class="paramname">secondaryResource</td><td>Optional secondary resource (for example <code>mp</code>), or empty to skip. </td></tr>
+    <tr><td class="paramname">secondaryRatio</td><td>Target secondary fraction in [0, 1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Recovered member count, or a structured failure leaving every member unchanged. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The complete roster and all resource maxima are validated before any mutation. @reentrancy Does not invoke callbacks or scripts; Vitals events are appended during commit. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a915a8485579ddef30c8297efae38bfd5" name="a915a8485579ddef30c8297efae38bfd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a915a8485579ddef30c8297efae38bfd5">&#9670;&#160;</a></span>removeMember()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::Party::removeMember </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>memberId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one member ID without destroying its actor. </p>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a4198cb0fbf7ad60b6f89f84821dfc04f" name="a4198cb0fbf7ad60b6f89f84821dfc04f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4198cb0fbf7ad60b6f89f84821dfc04f">&#9670;&#160;</a></span>restoreCheckpointJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::Party::restoreCheckpointJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically restore every existing party member actor. </p>
+<dl class="section remark"><dt>备注</dt><dd>Member IDs and order must exactly match the live roster; roster relationships are not recreated. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Party_8cpp_source.html">Party.cpp</a> 第 <a class="el" href="Party_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a0b73581db5c1d678ab66b11676d065c2" name="a0b73581db5c1d678ab66b11676d065c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b73581db5c1d678ab66b11676d065c2">&#9670;&#160;</a></span>RPGSaveSession</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html">RPGSaveSession</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Party_8h_source.html">Party.h</a> 第 <a class="el" href="Party_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="Party_8h_source.html">Party.h</a></li>
+<li>src/modules/rpg/<a class="el" href="Party_8cpp_source.html">Party.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

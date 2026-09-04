@@ -1,0 +1,309 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editing/EditingGraph.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_c30fd2ccc85dff25828f75fb0f9ea243.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditingGraph.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditingGraph_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProtocol_8h.html">editing/EditingProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editing.html">eve::editing</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">   12</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">GraphPinDirection</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6eaa324118a6721dd6b8a9b9f4e327df2bf5">Input</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6eaa29c2c02a361c9d7028472e5d92cd4a54">Output</a> };</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphPinRecord.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphPinRecord.html#aac8d1ea98bb5d50078e338914093ea1b">   16</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphPinId</a>        <a class="code hl_variable" href="structeve_1_1editing_1_1GraphPinRecord.html#aac8d1ea98bb5d50078e338914093ea1b">id</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphPinRecord.html#aed0b4d411a4fe5d0457ddf8ae90d121c">   17</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphNodeId</a>       <a class="code hl_variable" href="structeve_1_1editing_1_1GraphPinRecord.html#aed0b4d411a4fe5d0457ddf8ae90d121c">node</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphPinRecord.html#ae2757ae3613813b17d8953e28b07be29">   18</a></span>    std::string       <a class="code hl_variable" href="structeve_1_1editing_1_1GraphPinRecord.html#ae2757ae3613813b17d8953e28b07be29">type</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphPinRecord.html#a9b90aa5d97946a3accf684361a029d47">   19</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">GraphPinDirection</a> <a class="code hl_variable" href="structeve_1_1editing_1_1GraphPinRecord.html#a9b90aa5d97946a3accf684361a029d47">direction</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6eaa324118a6721dd6b8a9b9f4e327df2bf5">GraphPinDirection::Input</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphNodeRecord.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphNodeRecord.html#a119c867928020899b337ddce7a9b4ade">   24</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphNodeId</a>                 <a class="code hl_variable" href="structeve_1_1editing_1_1GraphNodeRecord.html#a119c867928020899b337ddce7a9b4ade">id</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphNodeRecord.html#ac8be311622124a1ad1fcf7c69a3983be">   25</a></span>    std::string                 <a class="code hl_variable" href="structeve_1_1editing_1_1GraphNodeRecord.html#ac8be311622124a1ad1fcf7c69a3983be">type</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphNodeRecord.html#a1fdba2b921d82325f98c71493fb73ee2">   26</a></span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>                       <a class="code hl_variable" href="structeve_1_1editing_1_1GraphNodeRecord.html#a1fdba2b921d82325f98c71493fb73ee2">properties</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphNodeRecord.html#ab46034027afc72919658f357014884bf">   27</a></span>    std::vector&lt;GraphPinRecord&gt; <a class="code hl_variable" href="structeve_1_1editing_1_1GraphNodeRecord.html#ab46034027afc72919658f357014884bf">pins</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphEdgeRecord.html">   31</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1GraphEdgeRecord.html">GraphEdgeRecord</a> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphEdgeRecord.html#a02fda6a326cfb8b67cbf5f196a1b1f71">   32</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>   <a class="code hl_variable" href="structeve_1_1editing_1_1GraphEdgeRecord.html#a02fda6a326cfb8b67cbf5f196a1b1f71">id</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphEdgeRecord.html#ac4b3f986eeffd88fbc59a4cfc2e16a43">   33</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphPinId</a> <a class="code hl_variable" href="structeve_1_1editing_1_1GraphEdgeRecord.html#ac4b3f986eeffd88fbc59a4cfc2e16a43">from</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphEdgeRecord.html#a543944e95b65da9ffa651eaac900604e">   34</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphPinId</a> <a class="code hl_variable" href="structeve_1_1editing_1_1GraphEdgeRecord.html#a543944e95b65da9ffa651eaac900604e">to</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphDocumentData.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphDocumentData.html#ae5047be3871859f0838a99c2f172f303">   39</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1editing_1_1GraphDocumentData.html#ae5047be3871859f0838a99c2f172f303">domain</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphDocumentData.html#a45581deabf1850dcebf37aab713c729f">   40</a></span>    std::uint32_t                <a class="code hl_variable" href="structeve_1_1editing_1_1GraphDocumentData.html#a45581deabf1850dcebf37aab713c729f">schemaVersion</a> = 1;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphDocumentData.html#a37ceeb0e7d847d990343026b83683c00">   41</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">Revision</a>                     <a class="code hl_variable" href="structeve_1_1editing_1_1GraphDocumentData.html#a37ceeb0e7d847d990343026b83683c00">revision</a>      = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphDocumentData.html#aaf5c5512beb6861cdec194399e66c184">   42</a></span>    std::vector&lt;GraphNodeRecord&gt; <a class="code hl_variable" href="structeve_1_1editing_1_1GraphDocumentData.html#aaf5c5512beb6861cdec194399e66c184">nodes</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphDocumentData.html#ae6f2fb00757a7d4ab514666692fe17da">   43</a></span>    std::vector&lt;GraphEdgeRecord&gt; <a class="code hl_variable" href="structeve_1_1editing_1_1GraphDocumentData.html#ae6f2fb00757a7d4ab514666692fe17da">edges</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphDocumentData.html#a50aa27fad3f9c0eeab3a8bbf8b416a90">   44</a></span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>                        <a class="code hl_variable" href="structeve_1_1editing_1_1GraphDocumentData.html#a50aa27fad3f9c0eeab3a8bbf8b416a90">parameters</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphConnectionDecision.html">   48</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphConnectionDecision.html#a57aac18d1a7635d0a60a795bba5fb50b">   49</a></span>    <span class="keywordtype">bool</span>                    <a class="code hl_variable" href="structeve_1_1editing_1_1GraphConnectionDecision.html#a57aac18d1a7635d0a60a795bba5fb50b">allowed</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1GraphConnectionDecision.html#a11ffbed883a03eeae2167f1f13a49a87">   50</a></span>    std::vector&lt;Diagnostic&gt; <a class="code hl_variable" href="structeve_1_1editing_1_1GraphConnectionDecision.html#a11ffbed883a03eeae2167f1f13a49a87">diagnostics</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1GraphDocument.html">   54</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editing_1_1GraphDocument.html">GraphDocument</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#ae71feac080d717b7310fc8e4b1f14011">createNode</a>(<a class="code hl_struct" href="structeve_1_1editing_1_1GraphNodeRecord.html">GraphNodeRecord</a> node);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#a9b3d4e69c6e07fbc52c86d8d0649f9dd">deleteNode</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphNodeId</a>&amp; node);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#a0687a4b0ffb85ecdf0680247099f6c8a">connect</a>(<a class="code hl_struct" href="structeve_1_1editing_1_1GraphEdgeRecord.html">GraphEdgeRecord</a> edge, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a>&amp; decision);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#a4f90501501df15e5119f9e6b2723764d">disconnect</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>&amp; edge);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#a2bf93a50be9f2eec1593e8de808556ea">setNodeProperties</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphNodeId</a>&amp; node, <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a> <a class="code hl_variable" href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#a45a6a3bdfce7c5f92888a4a7d0b4e2aa">setParameters</a>(<a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a> parameters);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a> <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#a52b9caa193b9f5e5611fc9e8ca88cb68">snapshot</a>(std::string domain) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1GraphDocument.html#a75d60316f04c31952a077be97fedbe2a">   63</a></span>    [[nodiscard]] <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">Revision</a> <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#a75d60316f04c31952a077be97fedbe2a">revision</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a>* <a class="code hl_function" href="classeve_1_1editing_1_1GraphDocument.html#a44930566e997fba821f83c14eeb1e24b">findPin</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphPinId</a>&amp; pin) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::map&lt;GraphNodeId, GraphNodeRecord&gt; nodes_;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::map&lt;StableId, GraphEdgeRecord&gt;    edges_;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">Value</a>                                  parameters_;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">Revision</a>                               revision_ = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="};">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IGraphDomainProvider.html">   75</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editing_1_1IGraphDomainProvider.html">IGraphDomainProvider</a> {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IGraphDomainProvider.html#a93e9722dc346f927854cf2a8eb8bbc25">   77</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editing_1_1IGraphDomainProvider.html#a93e9722dc346f927854cf2a8eb8bbc25">~IGraphDomainProvider</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IGraphDomainProvider.html#ae057c0ef4047a3fe46c377ab8cea6eba">   78</a></span>    [[nodiscard]] <span class="keyword">virtual</span> std::string <a class="code hl_function" href="classeve_1_1editing_1_1IGraphDomainProvider.html#ae057c0ef4047a3fe46c377ab8cea6eba">domain</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1IGraphDomainProvider.html#ab948d421c547534a0708c1ce47923f4d">   79</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a> <a class="code hl_function" href="classeve_1_1editing_1_1IGraphDomainProvider.html#ab948d421c547534a0708c1ce47923f4d">canConnect</a>(</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a>&amp; <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>};</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}  <span class="comment">// namespace eve::editing</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aEditingProtocol_8h_html"><div class="ttname"><a href="EditingProtocol_8h.html">EditingProtocol.h</a></div></div>
+<div class="ttc" id="aMapObjectContract_8cpp_html_a40e5a3359abf90a92f01ea7be31f0178"><div class="ttname"><a href="MapObjectContract_8cpp.html#a40e5a3359abf90a92f01ea7be31f0178">properties</a></div><div class="ttdeci">std::map&lt; std::string, PropertyRule &gt; properties</div><div class="ttdef"><b>Definition</b> <a href="MapObjectContract_8cpp_source.html#l00077">MapObjectContract.cpp:77</a></div></div>
+<div class="ttc" id="aPixelWorldPhysics_8cpp_html_a4951cbf0b20c4996ed09481097db841f"><div class="ttname"><a href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a></div><div class="ttdeci">GridPoint to</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldPhysics_8cpp_source.html#l00094">PixelWorldPhysics.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html">eve::editing::GraphDocument</a></div><div class="ttdoc">Generic mutable graph model with one authoritative revision clock.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00054">EditingGraph.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_a0687a4b0ffb85ecdf0680247099f6c8a"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#a0687a4b0ffb85ecdf0680247099f6c8a">eve::editing::GraphDocument::connect</a></div><div class="ttdeci">Result&lt; void &gt; connect(GraphEdgeRecord edge, const GraphConnectionDecision &amp;decision)</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8cpp_source.html#l00044">EditingGraph.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_a2bf93a50be9f2eec1593e8de808556ea"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#a2bf93a50be9f2eec1593e8de808556ea">eve::editing::GraphDocument::setNodeProperties</a></div><div class="ttdeci">Result&lt; void &gt; setNodeProperties(const GraphNodeId &amp;node, Value properties)</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8cpp_source.html#l00068">EditingGraph.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_a44930566e997fba821f83c14eeb1e24b"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#a44930566e997fba821f83c14eeb1e24b">eve::editing::GraphDocument::findPin</a></div><div class="ttdeci">const GraphPinRecord * findPin(const GraphPinId &amp;pin) const</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8cpp_source.html#l00108">EditingGraph.cpp:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_a45a6a3bdfce7c5f92888a4a7d0b4e2aa"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#a45a6a3bdfce7c5f92888a4a7d0b4e2aa">eve::editing::GraphDocument::setParameters</a></div><div class="ttdeci">Result&lt; void &gt; setParameters(Value parameters)</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8cpp_source.html#l00080">EditingGraph.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_a4f90501501df15e5119f9e6b2723764d"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#a4f90501501df15e5119f9e6b2723764d">eve::editing::GraphDocument::disconnect</a></div><div class="ttdeci">Result&lt; void &gt; disconnect(const StableId &amp;edge)</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8cpp_source.html#l00061">EditingGraph.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_a52b9caa193b9f5e5611fc9e8ca88cb68"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#a52b9caa193b9f5e5611fc9e8ca88cb68">eve::editing::GraphDocument::snapshot</a></div><div class="ttdeci">GraphDocumentData snapshot(std::string domain) const</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8cpp_source.html#l00092">EditingGraph.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_a75d60316f04c31952a077be97fedbe2a"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#a75d60316f04c31952a077be97fedbe2a">eve::editing::GraphDocument::revision</a></div><div class="ttdeci">Revision revision() const</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00063">EditingGraph.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_a9b3d4e69c6e07fbc52c86d8d0649f9dd"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#a9b3d4e69c6e07fbc52c86d8d0649f9dd">eve::editing::GraphDocument::deleteNode</a></div><div class="ttdeci">Result&lt; void &gt; deleteNode(const GraphNodeId &amp;node)</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8cpp_source.html#l00030">EditingGraph.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1GraphDocument_html_ae71feac080d717b7310fc8e4b1f14011"><div class="ttname"><a href="classeve_1_1editing_1_1GraphDocument.html#ae71feac080d717b7310fc8e4b1f14011">eve::editing::GraphDocument::createNode</a></div><div class="ttdeci">Result&lt; void &gt; createNode(GraphNodeRecord node)</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8cpp_source.html#l00014">EditingGraph.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IGraphDomainProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IGraphDomainProvider.html">eve::editing::IGraphDomainProvider</a></div><div class="ttdoc">Domain-owned typed connection policy.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00075">EditingGraph.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IGraphDomainProvider_html_a93e9722dc346f927854cf2a8eb8bbc25"><div class="ttname"><a href="classeve_1_1editing_1_1IGraphDomainProvider.html#a93e9722dc346f927854cf2a8eb8bbc25">eve::editing::IGraphDomainProvider::~IGraphDomainProvider</a></div><div class="ttdeci">virtual ~IGraphDomainProvider()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IGraphDomainProvider_html_ab948d421c547534a0708c1ce47923f4d"><div class="ttname"><a href="classeve_1_1editing_1_1IGraphDomainProvider.html#ab948d421c547534a0708c1ce47923f4d">eve::editing::IGraphDomainProvider::canConnect</a></div><div class="ttdeci">virtual GraphConnectionDecision canConnect(const GraphPinRecord &amp;from, const GraphPinRecord &amp;to) const =0</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IGraphDomainProvider_html_ae057c0ef4047a3fe46c377ab8cea6eba"><div class="ttname"><a href="classeve_1_1editing_1_1IGraphDomainProvider.html#ae057c0ef4047a3fe46c377ab8cea6eba">eve::editing::IGraphDomainProvider::domain</a></div><div class="ttdeci">virtual std::string domain() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html"><div class="ttname"><a href="namespaceeve_1_1editing.html">eve::editing</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00007">EditableTarget.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a221db3c7c688755f69f7707f6f44b6ea"><div class="ttname"><a href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6ea">eve::editing::GraphPinDirection</a></div><div class="ttdeci">GraphPinDirection</div><div class="ttdoc">Direction of a typed graph pin.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00012">EditingGraph.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a221db3c7c688755f69f7707f6f44b6eaa29c2c02a361c9d7028472e5d92cd4a54"><div class="ttname"><a href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6eaa29c2c02a361c9d7028472e5d92cd4a54">eve::editing::GraphPinDirection::Output</a></div><div class="ttdeci">@ Output</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a221db3c7c688755f69f7707f6f44b6eaa324118a6721dd6b8a9b9f4e327df2bf5"><div class="ttname"><a href="namespaceeve_1_1editing.html#a221db3c7c688755f69f7707f6f44b6eaa324118a6721dd6b8a9b9f4e327df2bf5">eve::editing::GraphPinDirection::Input</a></div><div class="ttdeci">@ Input</div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphConnectionDecision_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphConnectionDecision.html">eve::editing::GraphConnectionDecision</a></div><div class="ttdoc">Result of domain-specific connection validation.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00048">EditingGraph.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphConnectionDecision_html_a11ffbed883a03eeae2167f1f13a49a87"><div class="ttname"><a href="structeve_1_1editing_1_1GraphConnectionDecision.html#a11ffbed883a03eeae2167f1f13a49a87">eve::editing::GraphConnectionDecision::diagnostics</a></div><div class="ttdeci">std::vector&lt; Diagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00050">EditingGraph.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphConnectionDecision_html_a57aac18d1a7635d0a60a795bba5fb50b"><div class="ttname"><a href="structeve_1_1editing_1_1GraphConnectionDecision.html#a57aac18d1a7635d0a60a795bba5fb50b">eve::editing::GraphConnectionDecision::allowed</a></div><div class="ttdeci">bool allowed</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00049">EditingGraph.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html">eve::editing::GraphDocumentData</a></div><div class="ttdoc">Immutable graph document value sent to a domain compiler.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00038">EditingGraph.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html_a37ceeb0e7d847d990343026b83683c00"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html#a37ceeb0e7d847d990343026b83683c00">eve::editing::GraphDocumentData::revision</a></div><div class="ttdeci">Revision revision</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00041">EditingGraph.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html_a45581deabf1850dcebf37aab713c729f"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html#a45581deabf1850dcebf37aab713c729f">eve::editing::GraphDocumentData::schemaVersion</a></div><div class="ttdeci">std::uint32_t schemaVersion</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00040">EditingGraph.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html_a50aa27fad3f9c0eeab3a8bbf8b416a90"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html#a50aa27fad3f9c0eeab3a8bbf8b416a90">eve::editing::GraphDocumentData::parameters</a></div><div class="ttdeci">Value parameters</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00044">EditingGraph.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html_aaf5c5512beb6861cdec194399e66c184"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html#aaf5c5512beb6861cdec194399e66c184">eve::editing::GraphDocumentData::nodes</a></div><div class="ttdeci">std::vector&lt; GraphNodeRecord &gt; nodes</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00042">EditingGraph.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html_ae5047be3871859f0838a99c2f172f303"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html#ae5047be3871859f0838a99c2f172f303">eve::editing::GraphDocumentData::domain</a></div><div class="ttdeci">std::string domain</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00039">EditingGraph.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html_ae6f2fb00757a7d4ab514666692fe17da"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html#ae6f2fb00757a7d4ab514666692fe17da">eve::editing::GraphDocumentData::edges</a></div><div class="ttdeci">std::vector&lt; GraphEdgeRecord &gt; edges</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00043">EditingGraph.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphEdgeRecord_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphEdgeRecord.html">eve::editing::GraphEdgeRecord</a></div><div class="ttdoc">Directed connection between an output and input pin.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00031">EditingGraph.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphEdgeRecord_html_a02fda6a326cfb8b67cbf5f196a1b1f71"><div class="ttname"><a href="structeve_1_1editing_1_1GraphEdgeRecord.html#a02fda6a326cfb8b67cbf5f196a1b1f71">eve::editing::GraphEdgeRecord::id</a></div><div class="ttdeci">StableId id</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00032">EditingGraph.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphEdgeRecord_html_a543944e95b65da9ffa651eaac900604e"><div class="ttname"><a href="structeve_1_1editing_1_1GraphEdgeRecord.html#a543944e95b65da9ffa651eaac900604e">eve::editing::GraphEdgeRecord::to</a></div><div class="ttdeci">GraphPinId to</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00034">EditingGraph.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphEdgeRecord_html_ac4b3f986eeffd88fbc59a4cfc2e16a43"><div class="ttname"><a href="structeve_1_1editing_1_1GraphEdgeRecord.html#ac4b3f986eeffd88fbc59a4cfc2e16a43">eve::editing::GraphEdgeRecord::from</a></div><div class="ttdeci">GraphPinId from</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00033">EditingGraph.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphNodeRecord_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphNodeRecord.html">eve::editing::GraphNodeRecord</a></div><div class="ttdoc">Generic graph node independent of its domain.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00023">EditingGraph.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphNodeRecord_html_a119c867928020899b337ddce7a9b4ade"><div class="ttname"><a href="structeve_1_1editing_1_1GraphNodeRecord.html#a119c867928020899b337ddce7a9b4ade">eve::editing::GraphNodeRecord::id</a></div><div class="ttdeci">GraphNodeId id</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00024">EditingGraph.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphNodeRecord_html_a1fdba2b921d82325f98c71493fb73ee2"><div class="ttname"><a href="structeve_1_1editing_1_1GraphNodeRecord.html#a1fdba2b921d82325f98c71493fb73ee2">eve::editing::GraphNodeRecord::properties</a></div><div class="ttdeci">Value properties</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00026">EditingGraph.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphNodeRecord_html_ab46034027afc72919658f357014884bf"><div class="ttname"><a href="structeve_1_1editing_1_1GraphNodeRecord.html#ab46034027afc72919658f357014884bf">eve::editing::GraphNodeRecord::pins</a></div><div class="ttdeci">std::vector&lt; GraphPinRecord &gt; pins</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00027">EditingGraph.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphNodeRecord_html_ac8be311622124a1ad1fcf7c69a3983be"><div class="ttname"><a href="structeve_1_1editing_1_1GraphNodeRecord.html#ac8be311622124a1ad1fcf7c69a3983be">eve::editing::GraphNodeRecord::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00025">EditingGraph.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphPinRecord_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphPinRecord.html">eve::editing::GraphPinRecord</a></div><div class="ttdoc">Stable typed pin owned by a graph node.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00015">EditingGraph.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphPinRecord_html_a9b90aa5d97946a3accf684361a029d47"><div class="ttname"><a href="structeve_1_1editing_1_1GraphPinRecord.html#a9b90aa5d97946a3accf684361a029d47">eve::editing::GraphPinRecord::direction</a></div><div class="ttdeci">GraphPinDirection direction</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00019">EditingGraph.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphPinRecord_html_aac8d1ea98bb5d50078e338914093ea1b"><div class="ttname"><a href="structeve_1_1editing_1_1GraphPinRecord.html#aac8d1ea98bb5d50078e338914093ea1b">eve::editing::GraphPinRecord::id</a></div><div class="ttdeci">GraphPinId id</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00016">EditingGraph.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphPinRecord_html_ae2757ae3613813b17d8953e28b07be29"><div class="ttname"><a href="structeve_1_1editing_1_1GraphPinRecord.html#ae2757ae3613813b17d8953e28b07be29">eve::editing::GraphPinRecord::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00018">EditingGraph.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphPinRecord_html_aed0b4d411a4fe5d0457ddf8ae90d121c"><div class="ttname"><a href="structeve_1_1editing_1_1GraphPinRecord.html#aed0b4d411a4fe5d0457ddf8ae90d121c">eve::editing::GraphPinRecord::node</a></div><div class="ttdeci">GraphNodeId node</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00017">EditingGraph.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

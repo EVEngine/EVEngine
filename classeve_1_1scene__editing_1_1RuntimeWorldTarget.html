@@ -1,0 +1,347 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene_editing::RuntimeWorldTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene__editing.html">scene_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1scene__editing_1_1RuntimeWorldTarget.html">RuntimeWorldTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1scene__editing_1_1RuntimeWorldTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene_editing::RuntimeWorldTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Live game-world backend exposing the same standard scene capabilities.  
+ <a href="classeve_1_1scene__editing_1_1RuntimeWorldTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SceneTarget_8h_source.html">SceneTarget.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::scene_editing::RuntimeWorldTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1scene__editing_1_1RuntimeWorldTarget.png" usemap="#eve::scene_5Fediting::RuntimeWorldTarget_map" alt=""/>
+  <map id="eve::scene_5Fediting::RuntimeWorldTarget_map" name="eve::scene_5Fediting::RuntimeWorldTarget_map">
+<area href="classeve_1_1scene__editing_1_1SceneTargetBase.html" title="Shared in-memory scene target implementation for document/runtime adapters." alt="eve::scene_editing::SceneTargetBase" shape="rect" coords="715,112,991,136"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,276,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="286,56,562,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="572,56,848,80"/>
+<area href="classeve_1_1editing_1_1IEditingSnapshotProvider.html" title="Optional capability exposing a deterministic, persistence-safe editing snapshot." alt="eve::editing::IEditingSnapshotProvider" shape="rect" coords="858,56,1134,80"/>
+<area href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html" title="Stable hierarchy capability implemented by document and runtime targets." alt="eve::scene_editing::ISceneHierarchyEditTarget" shape="rect" coords="1144,56,1420,80"/>
+<area href="classeve_1_1scene__editing_1_1ITransformEditTarget.html" title="Capability implemented by document and live scene targets." alt="eve::scene_editing::ITransformEditTarget" shape="rect" coords="1430,56,1706,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="286,0,562,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4683fcfbf5d71390708057a15871294a" id="r_a4683fcfbf5d71390708057a15871294a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1RuntimeWorldTarget.html#a4683fcfbf5d71390708057a15871294a">RuntimeWorldTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a4683fcfbf5d71390708057a15871294a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html">eve::scene_editing::SceneTargetBase</a></td></tr>
+<tr class="memitem:a7daf18879d36ec61b462a0bc28e06d34 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a7daf18879d36ec61b462a0bc28e06d34"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a7daf18879d36ec61b462a0bc28e06d34">SceneTargetBase</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="separator:a7daf18879d36ec61b462a0bc28e06d34 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7db35cd757191dcf02e5989d554ba6f6 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a7db35cd757191dcf02e5989d554ba6f6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a7db35cd757191dcf02e5989d554ba6f6">~SceneTargetBase</a> () override=default</td></tr>
+<tr class="separator:a7db35cd757191dcf02e5989d554ba6f6 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4b83e757378c4c4810873f9dd4ac768 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_ac4b83e757378c4c4810873f9dd4ac768"><td class="memItemLeft" align="right" valign="top">TargetId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#ac4b83e757378c4c4810873f9dd4ac768">targetId</a> () const override</td></tr>
+<tr class="separator:ac4b83e757378c4c4810873f9dd4ac768 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b2a01ea141e6d2ca7f6758afe4b2e58 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a5b2a01ea141e6d2ca7f6758afe4b2e58"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a5b2a01ea141e6d2ca7f6758afe4b2e58">revision</a> () const override</td></tr>
+<tr class="separator:a5b2a01ea141e6d2ca7f6758afe4b2e58 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a642ef448f02eab2f5969e74f58a0ef78 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a642ef448f02eab2f5969e74f58a0ef78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a642ef448f02eab2f5969e74f58a0ef78">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:a642ef448f02eab2f5969e74f58a0ef78 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7d7e976180f9f190d02540240c7d7a2 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_af7d7e976180f9f190d02540240c7d7a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#af7d7e976180f9f190d02540240c7d7a2">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:af7d7e976180f9f190d02540240c7d7a2 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a34709153e9585e4427b0b0869b0c8f inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a1a34709153e9585e4427b0b0869b0c8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a1a34709153e9585e4427b0b0869b0c8f">describe</a> () const override</td></tr>
+<tr class="memdesc:a1a34709153e9585e4427b0b0869b0c8f inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:a1a34709153e9585e4427b0b0869b0c8f inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69645a079e18526b8c0fda8acec8b061 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a69645a079e18526b8c0fda8acec8b061"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a69645a079e18526b8c0fda8acec8b061">queryCapability</a> (const CapabilityId &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="separator:a69645a079e18526b8c0fda8acec8b061 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac91c54c4d21de758f87c69848ed00dab inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_ac91c54c4d21de758f87c69848ed00dab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#ac91c54c4d21de758f87c69848ed00dab">applyDomainOperation</a> (const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;operation) override</td></tr>
+<tr class="memdesc:ac91c54c4d21de758f87c69848ed00dab inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:ac91c54c4d21de758f87c69848ed00dab inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae292101ec4d91daa539cae69030f4f17 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_ae292101ec4d91daa539cae69030f4f17"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#ae292101ec4d91daa539cae69030f4f17">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:ae292101ec4d91daa539cae69030f4f17 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:ae292101ec4d91daa539cae69030f4f17 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65bf7d4bab6fc3a7f6ab83814baec8a9 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a65bf7d4bab6fc3a7f6ab83814baec8a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a65bf7d4bab6fc3a7f6ab83814baec8a9">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:a65bf7d4bab6fc3a7f6ab83814baec8a9 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:a65bf7d4bab6fc3a7f6ab83814baec8a9 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee82971088939faff7a898570a4961db inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_aee82971088939faff7a898570a4961db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneObjectSnapshot.html">SceneObjectSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#aee82971088939faff7a898570a4961db">sceneObject</a> (const ObjectId &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const override</td></tr>
+<tr class="memdesc:aee82971088939faff7a898570a4961db inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an immutable object snapshot.  <br /></td></tr>
+<tr class="separator:aee82971088939faff7a898570a4961db inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afacd32fbd62aba42cd63f158b1abc869 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_afacd32fbd62aba42cd63f158b1abc869"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ObjectId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#afacd32fbd62aba42cd63f158b1abc869">sceneChildren</a> (const ObjectId &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>) const override</td></tr>
+<tr class="memdesc:afacd32fbd62aba42cd63f158b1abc869 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return child identities in deterministic order.  <br /></td></tr>
+<tr class="separator:afacd32fbd62aba42cd63f158b1abc869 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaa7c183fe1e68bcc89589fd1f4fec92 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_aeaa7c183fe1e68bcc89589fd1f4fec92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#aeaa7c183fe1e68bcc89589fd1f4fec92">makeCreate</a> (const <a class="el" href="structeve_1_1scene__editing_1_1CreateSceneObjectRequest.html">CreateSceneObjectRequest</a> &amp;request) const override</td></tr>
+<tr class="memdesc:aeaa7c183fe1e68bcc89589fd1f4fec92 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a reversible create operation without applying it.  <br /></td></tr>
+<tr class="separator:aeaa7c183fe1e68bcc89589fd1f4fec92 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb9bab3fa9dbe69e806264deed5cb9f6 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_abb9bab3fa9dbe69e806264deed5cb9f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#abb9bab3fa9dbe69e806264deed5cb9f6">makeDelete</a> (const ObjectId &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const override</td></tr>
+<tr class="memdesc:abb9bab3fa9dbe69e806264deed5cb9f6 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a reversible delete operation for a leaf object.  <br /></td></tr>
+<tr class="separator:abb9bab3fa9dbe69e806264deed5cb9f6 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac894bf8cc08c95c94307217317e3af0f inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_ac894bf8cc08c95c94307217317e3af0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#ac894bf8cc08c95c94307217317e3af0f">makeRename</a> (const ObjectId &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const override</td></tr>
+<tr class="memdesc:ac894bf8cc08c95c94307217317e3af0f inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a reversible object rename operation.  <br /></td></tr>
+<tr class="separator:ac894bf8cc08c95c94307217317e3af0f inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0116d6e2181dcffd571cd09ae54e151b inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a0116d6e2181dcffd571cd09ae54e151b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a0116d6e2181dcffd571cd09ae54e151b">makeReparent</a> (const ObjectId &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const ObjectId &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>) const override</td></tr>
+<tr class="memdesc:a0116d6e2181dcffd571cd09ae54e151b inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a reversible hierarchy reparent operation.  <br /></td></tr>
+<tr class="separator:a0116d6e2181dcffd571cd09ae54e151b inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec108413f549306d5dfe66d6c8658aec inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_aec108413f549306d5dfe66d6c8658aec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneTransformValue.html">SceneTransformValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#aec108413f549306d5dfe66d6c8658aec">readTransform</a> (const ObjectId &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const override</td></tr>
+<tr class="separator:aec108413f549306d5dfe66d6c8658aec inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1b86a16f4550aa97b39f626c4577db6 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_ae1b86a16f4550aa97b39f626c4577db6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#adedf701ba7aaa5d751453af1300966d1">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#ae1b86a16f4550aa97b39f626c4577db6">makeSetTransform</a> (const ObjectId &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const <a class="el" href="structeve_1_1scene__editing_1_1SceneTransformValue.html">SceneTransformValue</a> &amp;transform) const override</td></tr>
+<tr class="separator:ae1b86a16f4550aa97b39f626c4577db6 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21579330efad4030ff2bda418571dc02 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_a21579330efad4030ff2bda418571dc02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#a21579330efad4030ff2bda418571dc02">bindComponentPayloads</a> (<a class="el" href="classeve_1_1scene__editing_1_1SceneComponentPayloadRegistry.html">SceneComponentPayloadRegistry</a> *registry)</td></tr>
+<tr class="memdesc:a21579330efad4030ff2bda418571dc02 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind an optional non-owning registry used by component inspectors.  <br /></td></tr>
+<tr class="separator:a21579330efad4030ff2bda418571dc02 inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7c6ddcd07a2ab6de5485d49f49fe7cb inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase" id="r_ac7c6ddcd07a2ab6de5485d49f49fe7cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1scene__editing.html#a6a0262a9187dbe53742b23b25e875c35">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html#ac7c6ddcd07a2ab6de5485d49f49fe7cb">snapshotValue</a> () const override</td></tr>
+<tr class="memdesc:ac7c6ddcd07a2ab6de5485d49f49fe7cb inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture deterministic scene content for document persistence.  <br /></td></tr>
+<tr class="separator:ac7c6ddcd07a2ab6de5485d49f49fe7cb inherit pub_methods_classeve_1_1scene__editing_1_1SceneTargetBase"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a3e202dd6b1ca3b75e726a90a82081653"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">queryCapability</a> (const <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>)</td></tr>
+<tr class="memdesc:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional stable capability.  <br /></td></tr>
+<tr class="separator:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="memitem:aa00a32f2caa4773935cb1e420cb556f4 inherit pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider" id="r_aa00a32f2caa4773935cb1e420cb556f4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#aa00a32f2caa4773935cb1e420cb556f4">~IEditingSnapshotProvider</a> ()=default</td></tr>
+<tr class="separator:aa00a32f2caa4773935cb1e420cb556f4 inherit pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html">eve::scene_editing::ISceneHierarchyEditTarget</a></td></tr>
+<tr class="memitem:abd5c306386b6cbcc94947d7cb2d593b2 inherit pub_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget" id="r_abd5c306386b6cbcc94947d7cb2d593b2"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html#abd5c306386b6cbcc94947d7cb2d593b2">~ISceneHierarchyEditTarget</a> ()=default</td></tr>
+<tr class="separator:abd5c306386b6cbcc94947d7cb2d593b2 inherit pub_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1scene__editing_1_1ITransformEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1scene__editing_1_1ITransformEditTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1scene__editing_1_1ITransformEditTarget.html">eve::scene_editing::ITransformEditTarget</a></td></tr>
+<tr class="memitem:ab2fde02bb65a2e016f2dbd8f208b1165 inherit pub_methods_classeve_1_1scene__editing_1_1ITransformEditTarget" id="r_ab2fde02bb65a2e016f2dbd8f208b1165"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ITransformEditTarget.html#ab2fde02bb65a2e016f2dbd8f208b1165">~ITransformEditTarget</a> ()=default</td></tr>
+<tr class="separator:ab2fde02bb65a2e016f2dbd8f208b1165 inherit pub_methods_classeve_1_1scene__editing_1_1ITransformEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a294ae82d55e4daadb7d8a316c3558fa8 inherit pub_methods_classeve_1_1scene__editing_1_1ITransformEditTarget" id="r_a294ae82d55e4daadb7d8a316c3558fa8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneTransformValue.html">SceneTransformValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ITransformEditTarget.html#a294ae82d55e4daadb7d8a316c3558fa8">readTransform</a> (const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const =0</td></tr>
+<tr class="separator:a294ae82d55e4daadb7d8a316c3558fa8 inherit pub_methods_classeve_1_1scene__editing_1_1ITransformEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7fc473bbce123d31c2b5852e7f69a6f inherit pub_methods_classeve_1_1scene__editing_1_1ITransformEditTarget" id="r_ac7fc473bbce123d31c2b5852e7f69a6f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ITransformEditTarget.html#ac7fc473bbce123d31c2b5852e7f69a6f">makeSetTransform</a> (const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const <a class="el" href="structeve_1_1scene__editing_1_1SceneTransformValue.html">SceneTransformValue</a> &amp;transform) const =0</td></tr>
+<tr class="separator:ac7fc473bbce123d31c2b5852e7f69a6f inherit pub_methods_classeve_1_1scene__editing_1_1ITransformEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="memitem:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider" id="r_a4662234a5db91e86c8be8df9d88ebd53"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a4662234a5db91e86c8be8df9d88ebd53">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity shared by every editable domain target.  <br /></td></tr>
+<tr class="separator:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html">eve::scene_editing::ISceneHierarchyEditTarget</a></td></tr>
+<tr class="memitem:a384e646227df87e02f1c45c617ffa2f9 inherit pub_static_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget" id="r_a384e646227df87e02f1c45c617ffa2f9"><td class="memItemLeft" align="right" valign="top">static CapabilityId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html#a384e646227df87e02f1c45c617ffa2f9">editorCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a384e646227df87e02f1c45c617ffa2f9 inherit pub_static_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity used instead of cross-module RTTI.  <br /></td></tr>
+<tr class="separator:a384e646227df87e02f1c45c617ffa2f9 inherit pub_static_methods_classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1scene__editing_1_1ITransformEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1scene__editing_1_1ITransformEditTarget')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1scene__editing_1_1ITransformEditTarget.html">eve::scene_editing::ITransformEditTarget</a></td></tr>
+<tr class="memitem:a6f48923684d9e472916d9914e0852228 inherit pub_static_methods_classeve_1_1scene__editing_1_1ITransformEditTarget" id="r_a6f48923684d9e472916d9914e0852228"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ITransformEditTarget.html#a6f48923684d9e472916d9914e0852228">editingCapabilityId</a> ()</td></tr>
+<tr class="separator:a6f48923684d9e472916d9914e0852228 inherit pub_static_methods_classeve_1_1scene__editing_1_1ITransformEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d875334f8847aae874cc21303a72eab inherit pub_static_methods_classeve_1_1scene__editing_1_1ITransformEditTarget" id="r_a2d875334f8847aae874cc21303a72eab"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ITransformEditTarget.html#a2d875334f8847aae874cc21303a72eab">editorCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a2d875334f8847aae874cc21303a72eab inherit pub_static_methods_classeve_1_1scene__editing_1_1ITransformEditTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility spelling retained for existing editor tools.  <br /></td></tr>
+<tr class="separator:a2d875334f8847aae874cc21303a72eab inherit pub_static_methods_classeve_1_1scene__editing_1_1ITransformEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Live game-world backend exposing the same standard scene capabilities. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneTarget_8h_source.html">SceneTarget.h</a> 第 <a class="el" href="SceneTarget_8h_source.html#l00132">132</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4683fcfbf5d71390708057a15871294a" name="a4683fcfbf5d71390708057a15871294a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4683fcfbf5d71390708057a15871294a">&#9670;&#160;</a></span>RuntimeWorldTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editing::RuntimeWorldTarget::RuntimeWorldTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneTarget_8h_source.html">SceneTarget.h</a> 第 <a class="el" href="SceneTarget_8h_source.html#l00134">134</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/scene_editing/<a class="el" href="SceneTarget_8h_source.html">SceneTarget.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

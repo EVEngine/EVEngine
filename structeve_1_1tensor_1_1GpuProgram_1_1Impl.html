@@ -1,0 +1,522 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tensor::GpuProgram::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tensor.html">tensor</a></li><li class="navelem"><a class="el" href="classeve_1_1tensor_1_1GpuProgram.html">GpuProgram</a></li><li class="navelem"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1tensor_1_1GpuProgram_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tensor::GpuProgram::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl_1_1GroupRuntime.html">GroupRuntime</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a356cf5b4d04bb1fc85b9babd1cac96ea" id="r_a356cf5b4d04bb1fc85b9babd1cac96ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a356cf5b4d04bb1fc85b9babd1cac96ea">alloc</a> (int byteSize)</td></tr>
+<tr class="separator:a356cf5b4d04bb1fc85b9babd1cac96ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68c14263ae3bc2a2c3c1152afb98b389" id="r_a68c14263ae3bc2a2c3c1152afb98b389"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a68c14263ae3bc2a2c3c1152afb98b389">bindGroup</a> (const <a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl_1_1GroupRuntime.html">GroupRuntime</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>) const</td></tr>
+<tr class="separator:a68c14263ae3bc2a2c3c1152afb98b389"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aae8a7f2a747d2f8ff0cfc5b56667f5" id="r_a9aae8a7f2a747d2f8ff0cfc5b56667f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a9aae8a7f2a747d2f8ff0cfc5b56667f5">recordGroup</a> (const <a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl_1_1GroupRuntime.html">GroupRuntime</a> &amp;<a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, <a class="el" href="classeve_1_1gpgpu_1_1Sequence.html">gpgpu::Sequence</a> *seq) const</td></tr>
+<tr class="separator:a9aae8a7f2a747d2f8ff0cfc5b56667f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8010b75a200b823b4e987654511a1470" id="r_a8010b75a200b823b4e987654511a1470"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">gpgpu::Gpgpu</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a8010b75a200b823b4e987654511a1470">gpgpu</a> = nullptr</td></tr>
+<tr class="separator:a8010b75a200b823b4e987654511a1470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11c9b43321a2bfe073188c59982cdc76" id="r_a11c9b43321a2bfe073188c59982cdc76"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl_1_1GroupRuntime.html">GroupRuntime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a11c9b43321a2bfe073188c59982cdc76">groups</a></td></tr>
+<tr class="separator:a11c9b43321a2bfe073188c59982cdc76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71b1a3a4c49e6f3ca7e261e19d8a6739" id="r_a71b1a3a4c49e6f3ca7e261e19d8a6739"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a71b1a3a4c49e6f3ca7e261e19d8a6739">slotBuffer</a></td></tr>
+<tr class="separator:a71b1a3a4c49e6f3ca7e261e19d8a6739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f098554f0abe25e8f7bb35f9c74215c" id="r_a2f098554f0abe25e8f7bb35f9c74215c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a2f098554f0abe25e8f7bb35f9c74215c">placeholderBuffers</a></td></tr>
+<tr class="separator:a2f098554f0abe25e8f7bb35f9c74215c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22beb47c2c98a4437d6c1006bc694c91" id="r_a22beb47c2c98a4437d6c1006bc694c91"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a22beb47c2c98a4437d6c1006bc694c91">placeholderSizes</a></td></tr>
+<tr class="separator:a22beb47c2c98a4437d6c1006bc694c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62b2697c849cc9acad952ac0782adbe2" id="r_a62b2697c849cc9acad952ac0782adbe2"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a62b2697c849cc9acad952ac0782adbe2">ownedBuffers</a></td></tr>
+<tr class="separator:a62b2697c849cc9acad952ac0782adbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abeb43d7f804d5b8e49c3e68f567d79b7" id="r_abeb43d7f804d5b8e49c3e68f567d79b7"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#abeb43d7f804d5b8e49c3e68f567d79b7">qScalesByNode</a></td></tr>
+<tr class="separator:abeb43d7f804d5b8e49c3e68f567d79b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5886a0207c6317124b5c80f2fb785285" id="r_a5886a0207c6317124b5c80f2fb785285"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a5886a0207c6317124b5c80f2fb785285">outputBuffer</a> = nullptr</td></tr>
+<tr class="separator:a5886a0207c6317124b5c80f2fb785285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71e1b29d1638b42f82146c7bca2d9c81" id="r_a71e1b29d1638b42f82146c7bca2d9c81"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a71e1b29d1638b42f82146c7bca2d9c81">outputSize</a> = 0</td></tr>
+<tr class="separator:a71e1b29d1638b42f82146c7bca2d9c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a238ab57d4374bc9d970fa2d45f9f67a7" id="r_a238ab57d4374bc9d970fa2d45f9f67a7"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1gpgpu_1_1Sequence.html">gpgpu::Sequence</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#a238ab57d4374bc9d970fa2d45f9f67a7">sequence</a></td></tr>
+<tr class="separator:a238ab57d4374bc9d970fa2d45f9f67a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abad772dd27cb39f3a7efcddb87c27630" id="r_abad772dd27cb39f3a7efcddb87c27630"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl.html#abad772dd27cb39f3a7efcddb87c27630">outputStaging</a></td></tr>
+<tr class="separator:abad772dd27cb39f3a7efcddb87c27630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00101">101</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a356cf5b4d04bb1fc85b9babd1cac96ea" name="a356cf5b4d04bb1fc85b9babd1cac96ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a356cf5b4d04bb1fc85b9babd1cac96ea">&#9670;&#160;</a></span>alloc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> * eve::tensor::GpuProgram::Impl::alloc </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>byteSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GpuBackend_8cpp_source.html#l00112">gpgpu</a>, <a class="el" href="Gpgpu_8cpp_source.html#l00251">eve::gpgpu::Gpgpu::newBuffer()</a> , 以及 <a class="el" href="GpuBackend_8cpp_source.html#l00117">ownedBuffers</a>.</p>
+
+</div>
+</div>
+<a id="a68c14263ae3bc2a2c3c1152afb98b389" name="a68c14263ae3bc2a2c3c1152afb98b389"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68c14263ae3bc2a2c3c1152afb98b389">&#9670;&#160;</a></span>bindGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::GpuProgram::Impl::bindGroup </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl_1_1GroupRuntime.html">GroupRuntime</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Bind real arena buffers once at build time; bindings persist across runs. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<a id="a9aae8a7f2a747d2f8ff0cfc5b56667f5" name="a9aae8a7f2a747d2f8ff0cfc5b56667f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aae8a7f2a747d2f8ff0cfc5b56667f5">&#9670;&#160;</a></span>recordGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tensor::GpuProgram::Impl::recordGroup </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl_1_1GroupRuntime.html">GroupRuntime</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1Sequence.html">gpgpu::Sequence</a> *&#160;</td>
+          <td class="paramname"><em>seq</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Record all dispatches of one fused group into the shared sequence. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="Sequence_8cpp_source.html#l00087">eve::gpgpu::Sequence::recordDispatch()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00310">eve::tensor::GpuProgram::run()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a8010b75a200b823b4e987654511a1470" name="a8010b75a200b823b4e987654511a1470"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8010b75a200b823b4e987654511a1470">&#9670;&#160;</a></span>gpgpu</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1Gpgpu.html">gpgpu::Gpgpu</a>* eve::tensor::GpuProgram::Impl::gpgpu = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00124">alloc()</a>.</p>
+
+</div>
+</div>
+<a id="a11c9b43321a2bfe073188c59982cdc76" name="a11c9b43321a2bfe073188c59982cdc76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11c9b43321a2bfe073188c59982cdc76">&#9670;&#160;</a></span>groups</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1tensor_1_1GpuProgram_1_1Impl_1_1GroupRuntime.html">GroupRuntime</a>&gt; eve::tensor::GpuProgram::Impl::groups</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00310">eve::tensor::GpuProgram::run()</a>.</p>
+
+</div>
+</div>
+<a id="a5886a0207c6317124b5c80f2fb785285" name="a5886a0207c6317124b5c80f2fb785285"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5886a0207c6317124b5c80f2fb785285">&#9670;&#160;</a></span>outputBuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a>* eve::tensor::GpuProgram::Impl::outputBuffer = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00310">eve::tensor::GpuProgram::run()</a>.</p>
+
+</div>
+</div>
+<a id="a71e1b29d1638b42f82146c7bca2d9c81" name="a71e1b29d1638b42f82146c7bca2d9c81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71e1b29d1638b42f82146c7bca2d9c81">&#9670;&#160;</a></span>outputSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tensor::GpuProgram::Impl::outputSize = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00310">eve::tensor::GpuProgram::run()</a>.</p>
+
+</div>
+</div>
+<a id="abad772dd27cb39f3a7efcddb87c27630" name="abad772dd27cb39f3a7efcddb87c27630"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abad772dd27cb39f3a7efcddb87c27630">&#9670;&#160;</a></span>outputStaging</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a>&gt; eve::tensor::GpuProgram::Impl::outputStaging</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00310">eve::tensor::GpuProgram::run()</a>.</p>
+
+</div>
+</div>
+<a id="a62b2697c849cc9acad952ac0782adbe2" name="a62b2697c849cc9acad952ac0782adbe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62b2697c849cc9acad952ac0782adbe2">&#9670;&#160;</a></span>ownedBuffers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> *&gt; eve::tensor::GpuProgram::Impl::ownedBuffers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00124">alloc()</a>.</p>
+
+</div>
+</div>
+<a id="a2f098554f0abe25e8f7bb35f9c74215c" name="a2f098554f0abe25e8f7bb35f9c74215c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f098554f0abe25e8f7bb35f9c74215c">&#9670;&#160;</a></span>placeholderBuffers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> *&gt; eve::tensor::GpuProgram::Impl::placeholderBuffers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00310">eve::tensor::GpuProgram::run()</a>.</p>
+
+</div>
+</div>
+<a id="a22beb47c2c98a4437d6c1006bc694c91" name="a22beb47c2c98a4437d6c1006bc694c91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22beb47c2c98a4437d6c1006bc694c91">&#9670;&#160;</a></span>placeholderSizes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; eve::tensor::GpuProgram::Impl::placeholderSizes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00310">eve::tensor::GpuProgram::run()</a>.</p>
+
+</div>
+</div>
+<a id="abeb43d7f804d5b8e49c3e68f567d79b7" name="abeb43d7f804d5b8e49c3e68f567d79b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abeb43d7f804d5b8e49c3e68f567d79b7">&#9670;&#160;</a></span>qScalesByNode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;int, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> *&gt; eve::tensor::GpuProgram::Impl::qScalesByNode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a238ab57d4374bc9d970fa2d45f9f67a7" name="a238ab57d4374bc9d970fa2d45f9f67a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a238ab57d4374bc9d970fa2d45f9f67a7">&#9670;&#160;</a></span>sequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeve_1_1gpgpu_1_1Sequence.html">gpgpu::Sequence</a>&gt; eve::tensor::GpuProgram::Impl::sequence</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GpuBackend_8cpp_source.html#l00310">eve::tensor::GpuProgram::run()</a>.</p>
+
+</div>
+</div>
+<a id="a71b1a3a4c49e6f3ca7e261e19d8a6739" name="a71b1a3a4c49e6f3ca7e261e19d8a6739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71b1a3a4c49e6f3ca7e261e19d8a6739">&#9670;&#160;</a></span>slotBuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">gpgpu::GpuBuffer</a> *&gt; eve::tensor::GpuProgram::Impl::slotBuffer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a> 第 <a class="el" href="GpuBackend_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/tensor/<a class="el" href="GpuBackend_8cpp_source.html">GpuBackend.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

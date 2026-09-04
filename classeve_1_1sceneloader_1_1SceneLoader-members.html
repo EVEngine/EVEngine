@@ -1,0 +1,218 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sceneloader.html">sceneloader</a></li><li class="navelem"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">SceneLoader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::sceneloader::SceneLoader 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a4c6bb73ec0f592b748ded54a475de061">animationCount</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a117d12fa176212cb2501695d3dec5c65">applyTreeDiff</a>(scene::SceneHost *host, const scene::NodeDesc &amp;newRoot, const SceneDiff &amp;diff, graphics::Graphics *gfx, const MeshSlotMap *slots)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a958330c0eee2520cee0d1aa8cbfdc070">buildNodeDesc</a>(const aiScene *scene, MeshSlotMap *slotsOut=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac976ad10c0b9088cb9cd339d4d946be4">camera</a>(const std::string &amp;path, int index)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#afd6e47cc2050500aa6c261537244d9dc">cameraCount</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a32bd3ce19626caf016f492d7c89be4f8">clearPrewarm</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a9162d011e61721a112cb411597be1dca">clip</a>(const std::string &amp;path, int index)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a156b8f9234f48ee2ae0cae0211c5b5a9">collisionCount</a>(const std::string &amp;path) const</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5daac4d3435f1bb0102c1f1e57c1249b">collisionName</a>(const std::string &amp;path, int index) const</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a60da3b4482a28c694ef5a251dd3753ef">CpuImageMap</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a61b46c1e62efec726ae1683572dd79d7">diff</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#abea55f236223151fa9d1a1044c5aacb3">diffTree</a>(scene::SceneHost *host, const scene::NodeDesc &amp;newRoot)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#abe56d4ba994c2b28c7e0619adfb964c9">fillSceneBounds</a>(scene::SceneHost *host, const MeshSlotMap &amp;slots)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6c5a56515982531a1eae081386f1de96">host</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a2284c00059b11f86162765c54aa9731e">inspect</a>(const std::string &amp;path, const LoadOptions &amp;options={})</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a31a3a26e66ade7a670a868e83e26ae2b">light</a>(const std::string &amp;path, int index)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a3a8e9426a9c795ff401423183327ebbe">lightCount</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5cb975ba484fd4cc7a9e0712b173e80e">load</a>(const std::string &amp;path, bool linkRenderables=true, const LoadOptions &amp;options={})</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a2c7007f1a8aaff29855265389ae9a8a9">load</a>(const std::string &amp;path, const LoadOptions &amp;options)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a007b1d4ac4eb8861635ea20a0605cdfb">loadAsync</a>(const std::string &amp;path, const LoadOptions &amp;options={}, std::function&lt; void(scene::SceneHost *)&gt; done=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#aad533a0956e25babdf66c88cbabb3aae">loadAsyncDefault</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac3b9e1e8d56412dbbd4d782a2ec76929">loadAsyncPreset</a>(const std::string &amp;path, const std::string &amp;preset)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a83f1fcd956ae7b18b6f7dee208fe24b9">loaded</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#aee020554685ffa81615af2f26aee7eb9">loadPreset</a>(const std::string &amp;path, const std::string &amp;preset)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a205e2c9195db963d95b8695fbeb686ea">MeshCache</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a017ac8fad179bebc2a0889221394773e">Module_REG</a>(SceneLoader)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac7d1cd366a79b65f250eaa0e77dd8e77">nodeCount</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a063026e11a6030ecf753c29ab3f8c8f7">pendingAsyncCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ae8b6a62c7ae5d89b28b4e059d1277370">pollAsync</a>()</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a49169c1c5082cb6cc4cc6153fa2731b9">prewarm</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a5c0e8341bbd8459e6132e88099d22ae6">prewarmAsync</a>(const std::string &amp;path, const LoadOptions &amp;options={})</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac4dec923708f6389131ea70d5c26e58b">prewarmed</a>(const std::string &amp;path) const</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a3eda984e88936b93e11bdefc091b08fd">reload</a>(const std::string &amp;path, SceneDiff *out=nullptr, const LoadOptions &amp;options={})</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#aa04b8dd73a301565ff4962a067fdb3ad">setLod</a>(const std::string &amp;path, int level)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a7df1751c157e0e30cae69572315ba793">skeleton</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a843b805b9e258ddf86de845a4daf23cd">socketCount</a>(const std::string &amp;path) const</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#a6eccf6fafddf56bc4071d0efa35f1422">socketName</a>(const std::string &amp;path, int index) const</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#afbdf250e29612a51c32fafeec878121f">TextureCache</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac45f0c558e514c68e3b1544e5c9a14d7">unload</a>(const std::string &amp;path)</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#abfe0320e0be4f3aa5ac4e50bd94580c2">warning</a>(const std::string &amp;path, int index) const</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac526a5b1a1ce0f33cd3d919f4f1c88fe">warningCount</a>(const std::string &amp;path) const</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html#ac0544ab2e290e64a27f58f9f1fd5490c">~SceneLoader</a>() override</td><td class="entry"><a class="el" href="classeve_1_1sceneloader_1_1SceneLoader.html">eve::sceneloader::SceneLoader</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

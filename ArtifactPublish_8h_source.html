@@ -1,0 +1,263 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/ArtifactPublish.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ArtifactPublish.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ArtifactPublish_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Snapshot_8h.html">common/Snapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="GeneratedArtifact_8h.html">procgen/GeneratedArtifact.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">// The low-level contracts live in common so scene/map/graphics/physics can</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">// implement them without a reverse include of procgen. These aliases preserve</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// the established procgen-facing source API.</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#ae8b00a815a1738d67c07055beb3ab416">   19</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1artifact_1_1PreparedPublication.html">PreparedArtifactPublish</a>  = <a class="code hl_class" href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a1865e46430fd33d05e98452dd117a377">   20</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">ISceneArtifactAdapter</a>    = <a class="code hl_class" href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">eve::artifact::ISceneArtifactAdapter</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#adcf427fc94bfbf4a67cf2c2f10640930">   21</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1artifact_1_1IMapArtifactAdapter.html">IMapArtifactAdapter</a>      = <a class="code hl_class" href="classeve_1_1artifact_1_1IMapArtifactAdapter.html">eve::artifact::IMapArtifactAdapter</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a446b5a1fae9deeb6e93681076ebcfbfb">   22</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">IGraphicsArtifactAdapter</a> = <a class="code hl_class" href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">eve::artifact::IGraphicsArtifactAdapter</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a218662b99d799db23e87b1814a5685b1">   23</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html">IPhysicsArtifactAdapter</a>  = <a class="code hl_class" href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html">eve::artifact::IPhysicsArtifactAdapter</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a856c18d5980249663a08059e57107aba">   24</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1artifact_1_1PublishOptions.html">ArtifactPublishOptions</a>   = <a class="code hl_struct" href="structeve_1_1artifact_1_1PublishOptions.html">eve::artifact::PublishOptions</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html">ArtifactPublishReceipt</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a9072bfd95cbde981a9e6bf80790e374f">   28</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">ArtifactId</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a9072bfd95cbde981a9e6bf80790e374f">id</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#ab96ba19933cf2fe3792f4b6bec1a94ea">   29</a></span>    <span class="keywordtype">bool</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#ab96ba19933cf2fe3792f4b6bec1a94ea">scenePublished</a>    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#ac7331397779d0700047ef7ccbb431732">   30</a></span>    <span class="keywordtype">bool</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#ac7331397779d0700047ef7ccbb431732">graphicsPublished</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a7dedc57d62662afc1c4ddc17e1acd77f">   31</a></span>    <span class="keywordtype">bool</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a7dedc57d62662afc1c4ddc17e1acd77f">physicsPublished</a>  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a490b0409053aafafa301524b859901cf">   32</a></span>    <span class="keywordtype">bool</span>       <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a490b0409053aafafa301524b859901cf">mapPublished</a>      = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html">ArtifactSnapshotContext</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a544d97169f6c4c9f044261352dc91fb0">   37</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a>         <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a544d97169f6c4c9f044261352dc91fb0">instanceId</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a092e4af944dbd0043e6921f7d75646c8">   38</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::Revision</a>             <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a092e4af944dbd0043e6921f7d75646c8">revision</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#aba039775b77b283b47f4a133c72cdb8b">   39</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a>       <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#aba039775b77b283b47f4a133c72cdb8b">tick</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a69e95a05772b7a03835520cbed1b5433">   40</a></span>    <a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a69e95a05772b7a03835520cbed1b5433">hashProvider</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1ArtifactPublisher.html">   48</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1ArtifactPublisher.html">ArtifactPublisher</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1ArtifactPublisher.html#a034e70deca6c924bc0d665ea9e77a62d">   51</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1procgen_1_1ArtifactPublisher.html#a034e70deca6c924bc0d665ea9e77a62d">ArtifactPublisher</a>(<a class="code hl_class" href="classeve_1_1procgen_1_1ArtifactStore.html">ArtifactStore</a>&amp; store) noexcept : store_(store) {}</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ArtifactPublishReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1ArtifactPublisher.html#a6b2b16a255667bf89575ca1a8b163f38">publish</a>(<a class="code hl_struct" href="structeve_1_1procgen_1_1GeneratedArtifact.html">GeneratedArtifact</a>      artifact,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                                              <a class="code hl_struct" href="structeve_1_1artifact_1_1PublishOptions.html">ArtifactPublishOptions</a> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::SnapshotEnvelope&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1ArtifactPublisher.html#a66caefa4b15c807fd5d42a25644470f5">snapshot</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html">ArtifactSnapshotContext</a>&amp; context) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1ArtifactPublisher.html#a7482c68d7349f3b4be6a098fcc2fb325">restore</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a>&amp;     <a class="code hl_function" href="classeve_1_1procgen_1_1ArtifactPublisher.html#a66caefa4b15c807fd5d42a25644470f5">snapshot</a>,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                                            <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a>&amp; hashProvider);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1ArtifactStore.html">ArtifactStore</a>&amp; store_;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>};</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aGeneratedArtifact_8h_html"><div class="ttname"><a href="GeneratedArtifact_8h.html">GeneratedArtifact.h</a></div><div class="ttdoc">Owning, backend-neutral products published by procedural generation.</div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSnapshot_8h_html"><div class="ttname"><a href="Snapshot_8h.html">Snapshot.h</a></div><div class="ttdoc">Versioned, integrity-checked persistence envelopes.</div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00017">SquirrelBinding.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IGraphicsArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1IGraphicsArtifactAdapter.html">eve::artifact::IGraphicsArtifactAdapter</a></div><div class="ttdoc">Graphics resource publication capability, implemented by graphics.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00157">ArtifactPublication.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IMapArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1IMapArtifactAdapter.html">eve::artifact::IMapArtifactAdapter</a></div><div class="ttdoc">Tile/map publication capability, implemented by the map module.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00150">ArtifactPublication.h:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IPhysicsArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1IPhysicsArtifactAdapter.html">eve::artifact::IPhysicsArtifactAdapter</a></div><div class="ttdoc">Collider publication capability, implemented by physics.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00164">ArtifactPublication.h:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1ISceneArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1ISceneArtifactAdapter.html">eve::artifact::ISceneArtifactAdapter</a></div><div class="ttdoc">Scene graph publication capability, implemented by the scene module.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00143">ArtifactPublication.h:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1PreparedPublication_html"><div class="ttname"><a href="classeve_1_1artifact_1_1PreparedPublication.html">eve::artifact::PreparedPublication</a></div><div class="ttdoc">A prepared consumer mutation with a non-throwing visibility boundary.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00100">ArtifactPublication.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ArtifactPublisher_html"><div class="ttname"><a href="classeve_1_1procgen_1_1ArtifactPublisher.html">eve::procgen::ArtifactPublisher</a></div><div class="ttdoc">Coordinates adapter preparation and atomic CPU-store publication.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00048">ArtifactPublish.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ArtifactPublisher_html_a034e70deca6c924bc0d665ea9e77a62d"><div class="ttname"><a href="classeve_1_1procgen_1_1ArtifactPublisher.html#a034e70deca6c924bc0d665ea9e77a62d">eve::procgen::ArtifactPublisher::ArtifactPublisher</a></div><div class="ttdeci">ArtifactPublisher(ArtifactStore &amp;store) noexcept</div><div class="ttdoc">Bind a publisher to a store it does not own.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00051">ArtifactPublish.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ArtifactPublisher_html_a66caefa4b15c807fd5d42a25644470f5"><div class="ttname"><a href="classeve_1_1procgen_1_1ArtifactPublisher.html#a66caefa4b15c807fd5d42a25644470f5">eve::procgen::ArtifactPublisher::snapshot</a></div><div class="ttdeci">eve::Result&lt; eve::SnapshotEnvelope &gt; snapshot(const ArtifactSnapshotContext &amp;context) const</div><div class="ttdoc">Capture store and registered provider state in a sealed snapshot.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8cpp_source.html#l00475">ArtifactPublish.cpp:475</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ArtifactPublisher_html_a6b2b16a255667bf89575ca1a8b163f38"><div class="ttname"><a href="classeve_1_1procgen_1_1ArtifactPublisher.html#a6b2b16a255667bf89575ca1a8b163f38">eve::procgen::ArtifactPublisher::publish</a></div><div class="ttdeci">eve::Result&lt; ArtifactPublishReceipt &gt; publish(GeneratedArtifact artifact, ArtifactPublishOptions options)</div><div class="ttdoc">Publish through required capabilities and then atomically into the store.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8cpp_source.html#l00418">ArtifactPublish.cpp:418</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ArtifactPublisher_html_a7482c68d7349f3b4be6a098fcc2fb325"><div class="ttname"><a href="classeve_1_1procgen_1_1ArtifactPublisher.html#a7482c68d7349f3b4be6a098fcc2fb325">eve::procgen::ArtifactPublisher::restore</a></div><div class="ttdeci">eve::Result&lt; void &gt; restore(const eve::SnapshotEnvelope &amp;snapshot, const eve::SnapshotHashProvider &amp;hashProvider)</div><div class="ttdoc">Restore store and provider state transactionally from a sealed snapshot.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8cpp_source.html#l00512">ArtifactPublish.cpp:512</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ArtifactStore_html"><div class="ttname"><a href="classeve_1_1procgen_1_1ArtifactStore.html">eve::procgen::ArtifactStore</a></div><div class="ttdoc">In-memory owner and publisher for generated artifacts.</div><div class="ttdef"><b>Definition</b> <a href="GeneratedArtifact_8h_source.html#l00228">GeneratedArtifact.h:228</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_html_af5cd4beecd29f95341ebc417b792f16c"><div class="ttname"><a href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a></div><div class="ttdeci">std::function&lt; Result&lt; ContentId &gt;(std::string_view canonicalInput)&gt; SnapshotHashProvider</div><div class="ttdoc">Injected content-digest implementation used by snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00036">Snapshot.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1SnapshotEnvelope_html"><div class="ttname"><a href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a></div><div class="ttdoc">Stable outer format shared by persistence and cross-process snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00046">Snapshot.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublishOptions_html"><div class="ttname"><a href="structeve_1_1artifact_1_1PublishOptions.html">eve::artifact::PublishOptions</a></div><div class="ttdoc">Required provider set for one artifact publication transaction.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00171">ArtifactPublication.h:171</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactPublishReceipt_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html">eve::procgen::ArtifactPublishReceipt</a></div><div class="ttdoc">Compatibility receipt retaining procgen ArtifactId at this boundary.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00027">ArtifactPublish.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactPublishReceipt_html_a490b0409053aafafa301524b859901cf"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a490b0409053aafafa301524b859901cf">eve::procgen::ArtifactPublishReceipt::mapPublished</a></div><div class="ttdeci">bool mapPublished</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00032">ArtifactPublish.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactPublishReceipt_html_a7dedc57d62662afc1c4ddc17e1acd77f"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a7dedc57d62662afc1c4ddc17e1acd77f">eve::procgen::ArtifactPublishReceipt::physicsPublished</a></div><div class="ttdeci">bool physicsPublished</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00031">ArtifactPublish.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactPublishReceipt_html_a9072bfd95cbde981a9e6bf80790e374f"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#a9072bfd95cbde981a9e6bf80790e374f">eve::procgen::ArtifactPublishReceipt::id</a></div><div class="ttdeci">ArtifactId id</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00028">ArtifactPublish.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactPublishReceipt_html_ab96ba19933cf2fe3792f4b6bec1a94ea"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#ab96ba19933cf2fe3792f4b6bec1a94ea">eve::procgen::ArtifactPublishReceipt::scenePublished</a></div><div class="ttdeci">bool scenePublished</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00029">ArtifactPublish.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactPublishReceipt_html_ac7331397779d0700047ef7ccbb431732"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactPublishReceipt.html#ac7331397779d0700047ef7ccbb431732">eve::procgen::ArtifactPublishReceipt::graphicsPublished</a></div><div class="ttdeci">bool graphicsPublished</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00030">ArtifactPublish.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactSnapshotContext_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html">eve::procgen::ArtifactSnapshotContext</a></div><div class="ttdoc">Snapshot context supplied by the caller; time and hashing are injected.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00036">ArtifactPublish.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactSnapshotContext_html_a092e4af944dbd0043e6921f7d75646c8"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a092e4af944dbd0043e6921f7d75646c8">eve::procgen::ArtifactSnapshotContext::revision</a></div><div class="ttdeci">eve::Revision revision</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00038">ArtifactPublish.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactSnapshotContext_html_a544d97169f6c4c9f044261352dc91fb0"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a544d97169f6c4c9f044261352dc91fb0">eve::procgen::ArtifactSnapshotContext::instanceId</a></div><div class="ttdeci">eve::PersistentId instanceId</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00037">ArtifactPublish.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactSnapshotContext_html_a69e95a05772b7a03835520cbed1b5433"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#a69e95a05772b7a03835520cbed1b5433">eve::procgen::ArtifactSnapshotContext::hashProvider</a></div><div class="ttdeci">eve::SnapshotHashProvider hashProvider</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00040">ArtifactPublish.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ArtifactSnapshotContext_html_aba039775b77b283b47f4a133c72cdb8b"><div class="ttname"><a href="structeve_1_1procgen_1_1ArtifactSnapshotContext.html#aba039775b77b283b47f4a133c72cdb8b">eve::procgen::ArtifactSnapshotContext::tick</a></div><div class="ttdeci">eve::SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublish_8h_source.html#l00039">ArtifactPublish.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GeneratedArtifact_html"><div class="ttname"><a href="structeve_1_1procgen_1_1GeneratedArtifact.html">eve::procgen::GeneratedArtifact</a></div><div class="ttdoc">Complete immutable-once-published artifact record.</div><div class="ttdef"><b>Definition</b> <a href="GeneratedArtifact_8h_source.html#l00179">GeneratedArtifact.h:179</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

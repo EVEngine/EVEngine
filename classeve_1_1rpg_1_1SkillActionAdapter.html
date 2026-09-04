@@ -1,0 +1,376 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::SkillActionAdapter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1SkillActionAdapter.html">SkillActionAdapter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1SkillActionAdapter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::SkillActionAdapter类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Translates a <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> into the common gameplay action model.  
+ <a href="classeve_1_1rpg_1_1SkillActionAdapter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SkillAction_8h_source.html">SkillAction.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aab1007e3906cf7e053d424ea37be53c3" id="r_aab1007e3906cf7e053d424ea37be53c3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillActionAdapter.html#aab1007e3906cf7e053d424ea37be53c3">makeDefinition</a> (const <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> &amp;skill)</td></tr>
+<tr class="memdesc:aab1007e3906cf7e053d424ea37be53c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the common definition for one <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> skill.  <br /></td></tr>
+<tr class="separator:aab1007e3906cf7e053d424ea37be53c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e6a1eaf42cb122ed5cf15924dbd02d7" id="r_a6e6a1eaf42cb122ed5cf15924dbd02d7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillActionAdapter.html#a6e6a1eaf42cb122ed5cf15924dbd02d7">makeRequest</a> (const <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> &amp;skill, std::optional&lt; ecs::EntityHandle &gt; <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=std::nullopt, std::optional&lt; ecs::EntityHandle &gt; <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>=std::nullopt, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> requestedTick=<a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>())</td></tr>
+<tr class="memdesc:a6e6a1eaf42cb122ed5cf15924dbd02d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a request for one skill invocation.  <br /></td></tr>
+<tr class="separator:a6e6a1eaf42cb122ed5cf15924dbd02d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c3779bec41ddfc99b6fe6ca73ee149" id="r_a71c3779bec41ddfc99b6fe6ca73ee149"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1SkillActionAdapter.html#a71c3779bec41ddfc99b6fe6ca73ee149">submit</a> (<a class="el" href="classeve_1_1action_1_1ActionRuntime.html">action::ActionRuntime</a> &amp;runtime, const <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> &amp;skill, std::optional&lt; ecs::EntityHandle &gt; <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=std::nullopt, std::optional&lt; ecs::EntityHandle &gt; <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>=std::nullopt, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> requestedTick=<a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>())</td></tr>
+<tr class="memdesc:a71c3779bec41ddfc99b6fe6ca73ee149"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translate and submit one skill to an existing lifecycle owner.  <br /></td></tr>
+<tr class="separator:a71c3779bec41ddfc99b6fe6ca73ee149"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Translates a <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> into the common gameplay action model. </p>
+<p>This adapter owns no cast timer, phase or target lifecycle. The caller owns one ActionRuntime and may submit the produced values to it. <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> condition, resource-account and effect providers are injected into that runtime. </p>
+
+<p class="definition">在文件 <a class="el" href="SkillAction_8h_source.html">SkillAction.h</a> 第 <a class="el" href="SkillAction_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aab1007e3906cf7e053d424ea37be53c3" name="aab1007e3906cf7e053d424ea37be53c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab1007e3906cf7e053d424ea37be53c3">&#9670;&#160;</a></span>makeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a> &gt; eve::rpg::SkillActionAdapter::makeDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>skill</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build the common definition for one <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> skill. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">skill</td><td>Borrowed definition observed during this call only. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An action definition or a structured mapping failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkillAction_8cpp_source.html">SkillAction.cpp</a> 第 <a class="el" href="SkillAction_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Skill_8h_source.html#l00035">eve::rpg::SkillDefinition::castCondition</a>, <a class="el" href="Skill_8h_source.html#l00028">eve::rpg::SkillDefinition::castTime</a>, <a class="el" href="Skill_8h_source.html#l00027">eve::rpg::SkillDefinition::cooldown</a>, <a class="el" href="Skill_8h_source.html#l00031">eve::rpg::SkillDefinition::cost</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a9d71760e2dd451db2df354d0fd29cd7f">eve::action::Explicit</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Skill_8h_source.html#l00032">eve::rpg::SkillDefinition::grantedEffects</a>, <a class="el" href="Skill_8h_source.html#l00026">eve::rpg::SkillDefinition::id</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754">eve::action::None</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Skill_8h_source.html#l00029">eve::rpg::SkillDefinition::targetType</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillAction_8cpp_source.html#l00066">makeRequest()</a> , 以及 <a class="el" href="SkillAction_8cpp_source.html#l00091">submit()</a>.</p>
+
+</div>
+</div>
+<a id="a6e6a1eaf42cb122ed5cf15924dbd02d7" name="a6e6a1eaf42cb122ed5cf15924dbd02d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e6a1eaf42cb122ed5cf15924dbd02d7">&#9670;&#160;</a></span>makeRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt; eve::rpg::SkillActionAdapter::makeRequest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>skill</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; ecs::EntityHandle &gt;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>std::nullopt</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; ecs::EntityHandle &gt;&#160;</td>
+          <td class="paramname"><em>target</em> = <code>std::nullopt</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>requestedTick</em> = <code><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a request for one skill invocation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">skill</td><td>Borrowed definition observed during this call only. </td></tr>
+    <tr><td class="paramname">source</td><td>Optional source ECS handle; no raw pointer is retained. </td></tr>
+    <tr><td class="paramname">target</td><td>Optional target ECS handle for non-self skills. </td></tr>
+    <tr><td class="paramname">requestedTick</td><td>Deterministic simulation tick of the request. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An owning action request or a structured mapping failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkillAction_8cpp_source.html">SkillAction.cpp</a> 第 <a class="el" href="SkillAction_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Action_8h_source.html#l00127">eve::action::ActionRequest::actionId</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a9d71760e2dd451db2df354d0fd29cd7f">eve::action::Explicit</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SkillAction_8cpp_source.html#l00038">makeDefinition()</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754">eve::action::None</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Action_8h_source.html#l00143">eve::action::ActionRequest::requestedTick</a>, <a class="el" href="Action_8h_source.html#l00129">eve::action::ActionRequest::source</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="Action_8h_source.html#l00131">eve::action::ActionRequest::targetEntities</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="Action_8cpp_source.html#l00118">eve::action::ActionRequest::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SkillAction_8cpp_source.html#l00091">submit()</a>.</p>
+
+</div>
+</div>
+<a id="a71c3779bec41ddfc99b6fe6ca73ee149" name="a71c3779bec41ddfc99b6fe6ca73ee149"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c3779bec41ddfc99b6fe6ca73ee149">&#9670;&#160;</a></span>submit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> &gt; eve::rpg::SkillActionAdapter::submit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1action_1_1ActionRuntime.html">action::ActionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rpg_1_1SkillDefinition.html">SkillDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>skill</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; ecs::EntityHandle &gt;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>std::nullopt</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; ecs::EntityHandle &gt;&#160;</td>
+          <td class="paramname"><em>target</em> = <code>std::nullopt</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>requestedTick</em> = <code><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Translate and submit one skill to an existing lifecycle owner. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">runtime</td><td>Caller-owned ActionRuntime; it remains the sole state owner. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>New execution identity or a checked validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SkillAction_8cpp_source.html">SkillAction.cpp</a> 第 <a class="el" href="SkillAction_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SkillAction_8cpp_source.html#l00038">makeDefinition()</a>, <a class="el" href="SkillAction_8cpp_source.html#l00066">makeRequest()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="SkillAction_8h_source.html">SkillAction.h</a></li>
+<li>src/modules/rpg/<a class="el" href="SkillAction_8cpp_source.html">SkillAction.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

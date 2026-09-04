@@ -1,0 +1,233 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: RTS composition profile</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">RTS composition profile</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p><code>rts</code> is EVEngine's deterministic high-level RTS composition layer. It does not own a second economy, order queue, combat runtime, crowd solver, definition registry, or pathfinder. Instead, RTS roots carry typed links and adapters to the canonical engine modules, and <code><a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">eve::rts::RTS</a></code> coordinates their fixed-step systems.</p>
+<h1>Current systems</h1>
+<ul>
+<li>Unit, building, player, faction, resource-node, and match ECS roots with stable <code>SubjectRef</code> identities and generation-checked relationships.</li>
+<li>Selection command fan-out, queued orders, deterministic grid/line/wedge formations, canonical A* navigation, traffic priorities, and crowd avoidance.</li>
+<li>Construction, repair, capture, mining, worker allocation, production, rally points, transport, garrisoning, supply, power, income, research, and AI policy.</li>
+<li>Fog, radar/detection, automatic combat, weapon-role target selection, shared armor-aware damage commitments, projectiles, splash damage, suppression, artillery fire support, and safe shoot-and-scoot relocation.</li>
+<li>Automatic ammunition dispatch, reservations, multi-vehicle convoys, moving relay interception, hostile-coverage-aware rendezvous, convoy pacing, and convoy-wide escort screens.</li>
+<li>Match victory/surrender, canonical snapshots and hashes, command logs, replay, and lockstep coordination.</li>
+</ul>
+<h1>Integration outline</h1>
+<p>Create roots through <code><a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">eve::rts::RTS</a></code>, then install the game-owned provider boundaries required by the scenario:</p>
+<div class="fragment"><div class="line"><a class="code hl_class" href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a> simulation;</div>
+<div class="line">simulation.<a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#a86b9d5b6a8ffbd3d0d58b0a5781534cd">setNavigationProvider</a>(&amp;pathfinder, navigationGrid);</div>
+<div class="line">simulation.<a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#af8e7f2f842320f867c680f40f0c807ad">setCrowdProvider</a>(&amp;crowd);</div>
+<div class="line">simulation.<a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#a4ef61effdcdf8b5a003bcf037100dcec">setCombatProviders</a>(&amp;sensing, &amp;damage);</div>
+<div class="line">simulation.<a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#ae2cf9960932d513f2353cf45fc4cd696">setResourceCredit</a>(creditResources);</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">auto</span> faction = simulation.<a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#a720cc34503b0040511aafd8dd1e8402d">newFaction</a>(factionSubject);</div>
+<div class="line"><span class="keyword">auto</span> worker = simulation.<a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#a9221f78d85bbbf87dabc852ecc2fabb2">newUnit</a>(workerSubject, workerDefinition);</div>
+<div class="line"><span class="keyword">auto</span> minerals = simulation.<a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#a7e75c3cdcc4833bfe0e5dab513440b6f">newResourceNode</a>(nodeSubject, <span class="stringliteral">&quot;minerals&quot;</span>, 1500.0f,</div>
+<div class="line">                                            {8.0f, 0.0f}, 3);</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_class" href="classeve_1_1action_1_1ActionRuntime.html">eve::action::ActionRuntime</a> actions;</div>
+<div class="line"><a class="code hl_class" href="classeve_1_1rts_1_1ActionAdapter.html">eve::rts::ActionAdapter</a> actionAdapter(actions);</div>
+<div class="line">simulation.<a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#a2d2ce6b709ec0c7f2742456bb6834854">step</a>(fixedStep, actionAdapter);</div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionRuntime_html"><div class="ttname"><a href="classeve_1_1action_1_1ActionRuntime.html">eve::action::ActionRuntime</a></div><div class="ttdoc">Deterministic action lifecycle coordinator.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00474">Action.h:474</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1ActionAdapter_html"><div class="ttname"><a href="classeve_1_1rts_1_1ActionAdapter.html">eve::rts::ActionAdapter</a></div><div class="ttdoc">Adapter that maps RTS orders to the existing action::ActionRuntime.</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8h_source.html#l00058">RTSAction.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html">eve::rts::RTS</a></div><div class="ttdoc">Owns RTS root entities and coordinates the phase-one systems.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8h_source.html#l00060">RTS.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_a2d2ce6b709ec0c7f2742456bb6834854"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#a2d2ce6b709ec0c7f2742456bb6834854">eve::rts::RTS::step</a></div><div class="ttdeci">Result&lt; std::size_t &gt; step(const SimulationStep &amp;step, IRTSActionExecutor &amp;executor)</div><div class="ttdoc">Run phase-one simulation systems in deterministic order.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l01674">RTS.cpp:1674</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_a4ef61effdcdf8b5a003bcf037100dcec"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#a4ef61effdcdf8b5a003bcf037100dcec">eve::rts::RTS::setCombatProviders</a></div><div class="ttdeci">void setCombatProviders(sensing::SensingWorld *sensing, combat::DamageRuntime *damage) noexcept</div><div class="ttdoc">Attach canonical sensing and damage coordinators used by automatic combat.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00341">RTS.cpp:341</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_a720cc34503b0040511aafd8dd1e8402d"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#a720cc34503b0040511aafd8dd1e8402d">eve::rts::RTS::newFaction</a></div><div class="ttdeci">Result&lt; Faction * &gt; newFaction(SubjectRef subject)</div><div class="ttdoc">Create and own one Faction root with a valid subject identity.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00622">RTS.cpp:622</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_a7e75c3cdcc4833bfe0e5dab513440b6f"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#a7e75c3cdcc4833bfe0e5dab513440b6f">eve::rts::RTS::newResourceNode</a></div><div class="ttdeci">Result&lt; ResourceNode * &gt; newResourceNode(SubjectRef subject, std::string resourceType, float amount, WorldPosition position, std::size_t workerCapacity=1)</div><div class="ttdoc">Create and own one harvestable resource node.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00586">RTS.cpp:586</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_a86b9d5b6a8ffbd3d0d58b0a5781534cd"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#a86b9d5b6a8ffbd3d0d58b0a5781534cd">eve::rts::RTS::setNavigationProvider</a></div><div class="ttdeci">void setNavigationProvider(map::Pathfinder *pathfinder, NavigationGrid grid={}, NavigationEvent unreachable={}) noexcept</div><div class="ttdoc">Attach the canonical map pathfinder and world/grid conversion used by unit navigation.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00365">RTS.cpp:365</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_a9221f78d85bbbf87dabc852ecc2fabb2"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#a9221f78d85bbbf87dabc852ecc2fabb2">eve::rts::RTS::newUnit</a></div><div class="ttdeci">Result&lt; Unit * &gt; newUnit(SubjectRef subject, LogicalId definition={})</div><div class="ttdoc">Create and own one Unit root.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00540">RTS.cpp:540</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_ae2cf9960932d513f2353cf45fc4cd696"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#ae2cf9960932d513f2353cf45fc4cd696">eve::rts::RTS::setResourceCredit</a></div><div class="ttdeci">void setResourceCredit(ResourceCredit credit)</div><div class="ttdoc">Install the game-owned economy credit boundary used by mining deliveries.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8h_source.html#l00281">RTS.h:281</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_af8e7f2f842320f867c680f40f0c807ad"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#af8e7f2f842320f867c680f40f0c807ad">eve::rts::RTS::setCrowdProvider</a></div><div class="ttdeci">void setCrowdProvider(crowd::Crowd *crowd) noexcept</div><div class="ttdoc">Attach the canonical Crowd provider used by Units with a bound Unit::Crowd link.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00352">RTS.cpp:352</a></div></div>
+</div><!-- fragment --><p>Provider objects remain authoritative. For example, <code>map::Pathfinder</code> owns path search, <code>crowd::Crowd</code> owns local collision avoidance, <code>orders::OrderQueue</code> owns order lifecycle, and <code>combat::DamageRuntime</code> owns damage prediction/application. RTS state stores only its domain projections and typed links to those providers.</p>
+<h1>Content and synchronization</h1>
+<p><code>RTSContentLoader</code> atomically publishes RTS archetypes into the canonical <code>definitions::DefinitionRegistry</code>; invalid references reject the whole import. <code>snapshotState</code>, <code>restoreState</code>, and <code>rebuildState</code> serialize stable subjects and rebind runtime handles after topology restoration. <code>canonicalStateJson</code> and <code>stateHash</code> expose the deterministic synchronization projection used by replay and lockstep checks. The self-contained script profile also provides named in-memory checkpoints that restore root components, faction economies, navigation costs and blockers, fog memory, pending production subjects, command history, and the fixed simulation tick as one state boundary. When production or destruction changed root topology, restore pre-validates the stable graph, rebuilds the roots and provider links, and rolls back the live graph if rebuilding fails.</p>
+<h1>Legacy migration map</h1>
+<p>The former monolithic <code>RTSWorld</code> is migrated by behavior rather than by copying its numeric-id state store. Stable <code>SubjectRef</code> identities replace legacy process-local entity integers. The current ownership mapping is:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Legacy behavior family   </th><th class="markdownTableHeadNone">Composition authority    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Movement, formations, queued commands   </td><td class="markdownTableBodyNone">RTS order components plus <code>orders</code>; <code>map::Pathfinder</code> owns paths    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Local avoidance and traffic   </td><td class="markdownTableBodyNone"><code>crowd::Crowd</code> plus RTS generation-checked crowd links    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Mining, resource spending and refunds   </td><td class="markdownTableBodyNone">RTS worker policies plus caller-owned economy accounts    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Construction, repair, capture and production   </td><td class="markdownTableBodyNone">RTS building projections plus <code>building</code>, <code>production</code>, <code>transaction</code> and <code>action</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Visibility, radar and target acquisition   </td><td class="markdownTableBodyNone"><code>map</code> FOV and <code>sensing::SensingWorld</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Damage, weapons and projectiles   </td><td class="markdownTableBodyNone"><code>combat::DamageRuntime</code> and <code>weapon</code> runtimes    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Teams and alliances   </td><td class="markdownTableBodyNone"><code>Match::Participants</code> plus <code>FactionRelationSystem</code>; no parallel diplomacy table    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Content, upgrades and persistence   </td><td class="markdownTableBodyNone"><code>definitions</code>, RTS tech projection, stable snapshots and replay   </td></tr>
+</table>
+<p>The Squirrel boundary creates and materializes data-defined roots by stable <code>SubjectRef</code>, issues batched movement, attack, patrol, repair, capture, garrison, transport, stance, traffic-priority and cloak commands, binds workers to compatible resource nodes/dropoffs, controls deterministic idle-worker assignment, configures faction-wide automatic construction/repair reserves and assigns additional builders, adjusts authoritative weapon reserve ammunition and mobile/depot supply stock, toggles automatic resupply with active-mission cleanup, heals live unit/building combat roots and applies canonical data-defined status effects, assigns finite or persistent suppression corridors and stable escort rings, queues the same tactical commands at exact replay ticks, including appended movement, attack-ground, stop, hold, patrol, repair, capture, garrison and transport orders, queues construction/production/research, casts abilities, advances a fixed step through a canonical <code>ActionRuntime</code>, and returns owning <code>inspectState</code> and transient <code>inspectFrameEvents</code> projections for UI, audio and debug rendering. Frame events observe committed weapon firing, projectile launch, complete reload lifecycles, dry weapons, edge-triggered blocked fire and deterministic miss feedback alongside canonical damage outcomes from abilities, projectiles and direct weapons; all three damage routes also award hostile kill experience through one shared veterancy settlement. Events are cleared at the next step boundary and intentionally excluded from snapshots and hashes. Its self-contained lifecycle stream also reports suppression recovery, full shield recharge, construction completion, blocked/cleared production exits and produced units through the same ordered frame projection. Building capture, ability cast/channel transitions and canonical status application/expiry use that stream as well; commands applied at a lockstep tick retain their pre-simulation lifecycle events in the same frame. Ammunition production, supply dispatch, relay transfer, recipient refill and supplier return are projected through the same deterministic stream. Its self-contained sandbox composes real Pathfinder, Crowd, SensingWorld, DamageRuntime, DefinitionRegistry and EconomyLedger instances and routes RTS systems through their normal provider callbacks. Native games can continue to inject externally owned instances instead.</p>
+<p>The script profile also owns one canonical <code>map::Fov</code> per faction and one <code>RTSCommandLog</code>. Scripts can query visible/explored cells and stable last-known contacts, schedule commands for exact future ticks, and import/export the same portable command-log format used by native lockstep tooling. The sandbox renders unexplored and remembered fog and no longer exposes live hostile roots through its presentation layer. Explicit entity attacks and hostile targeted abilities are authorized against the same current visible-and-detected contact projection; point/ground-fire commands remain available for firing into fog. Navigation blockers also drive the default fire-line and swept-projectile collision adapters: obstacle-aware hitscan cannot fire through blocked cells, while blockers introduced after launch intercept a projectile on its next swept segment. A finite per-cell terrain elevation field feeds heightmap FOV and interpolated direct-fire profiles; data-defined units and buildings provide independent muzzle and target heights. Terrain elevation is script-readable, writable, and restored with named checkpoints. Linear and ballistic projectiles launch at those absolute heights, expose both endpoint heights to swept collision adapters, and perform three-dimensional target impact tests; their vertical position and launch target height survive snapshot restore. Match roots are likewise script-accessible through stable identities: setup rules, teams, start, surrender, retained lifecycle events and final outcomes all route through <code>MatchSystem</code>. The sandbox runs a headquarters-destruction match rather than maintaining a parallel win condition. Fog authorization has an explicit persisted <code>Faction::Intel::enabled</code> state; an enabled faction with no contacts sees no targetable enemies, while native integrations that deliberately omit a fog provider retain unrestricted entity targeting. This avoids treating an empty first-contact state as disabled fog.</p>
+<p>The migration intentionally does not preserve legacy getter-per-field and selection-mutating APIs. <code>inspectState</code> is the owning query projection, <code>commandUnits</code> is the stable-identity command boundary, and snapshot/replay use the deterministic root serializers. This keeps one authoritative state path while preserving the gameplay behavior of the former sandbox. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

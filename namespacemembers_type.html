@@ -1,0 +1,226 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 命名空间成员</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">&#160;</div>
+
+<h3><a id="index_a" name="index_a"></a>- a -</h3><ul>
+<li>AbilityActivationId&#160;:&#160;<a class="el" href="namespaceeve_1_1action.html#a67a1486cf04a869dd2782fa654a66459">eve::action</a></li>
+<li>AbilityGrantId&#160;:&#160;<a class="el" href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">eve::action</a></li>
+<li>AbilityInstanceId&#160;:&#160;<a class="el" href="namespaceeve_1_1action.html#adf891268bb000725eaa662a94251193e">eve::action</a></li>
+<li>AbilityResourceDebit&#160;:&#160;<a class="el" href="namespaceeve_1_1rts.html#a124b46591ec4cc73cc0536245105e1cd">eve::rts</a></li>
+<li>AcceptedCondition&#160;:&#160;<a class="el" href="namespaceeve_1_1container.html#a38774bd1a822ce1c4a11720b86d0f8eb">eve::container</a></li>
+<li>ActionExecutionId&#160;:&#160;<a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">eve::action</a></li>
+<li>ActionLink&#160;:&#160;<a class="el" href="namespaceeve_1_1rts.html#a116d7607c05514008bd163d2aa4ab73b">eve::rts</a></li>
+<li>ActionOrigin&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a005df46ee6d55ee77f5e15aa4c165243">eve::editor</a></li>
+<li>AgentHandle&#160;:&#160;<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">eve::npc_ai</a></li>
+<li>AIProductionRequest&#160;:&#160;<a class="el" href="namespaceeve_1_1rts.html#acb1f8833cdf7bb2901eff7a6c67d3ad5">eve::rts</a></li>
+<li>AmmoProductionPurchase&#160;:&#160;<a class="el" href="namespaceeve_1_1rts.html#ae7b438a40045cb4494a9d4b31002b823">eve::rts</a></li>
+<li>AnimationBoneTrack&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a5126a3678a8373be3371744e18d24a51">eve::editor</a></li>
+<li>AnimationClipDocumentTarget&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a0d19898259cb46aab57f3a88b7d3868e">eve::editor</a></li>
+<li>AnimationClipPreview&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a8643536e403849393b5f73cf807856d3">eve::editor</a></li>
+<li>AnimationClipRuntimeBuilder&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a23d0a296ba0e6bf132f6d949834214af">eve::editor</a></li>
+<li>AnimationEventRecord&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a92b9fdaadb2c0514aed8729050e4c5b9">eve::editor</a></li>
+<li>AnimationGraphCompileResult&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#ac9fd09a9e98f7a0f1ca1c24941b0b06b">eve::editor</a></li>
+<li>AnimationMaskEntry&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a2d4bc1103f2b35f2d5202b3dcdc6c531">eve::editor</a></li>
+<li>AnimationRetargetPreview&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a3184e2aad279bb0ccc15634c77a0c106">eve::editor</a></li>
+<li>AnimationSampledBone&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a47460a6b3f5a25c2fcc6192bcf83fbf8">eve::editor</a></li>
+<li>AnimationSkeletonOverlayAdapter&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#ad5a3f112785592869e57bf331b25b70e">eve::editor</a></li>
+<li>AnimationStateGraphDomain&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#ad382753ce716c91133c4ea9b13c29673">eve::editor</a></li>
+<li>AnimationStateGraphRuntimeBuilder&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a31448387f9f476ccea4973f67ea95556">eve::editor</a></li>
+<li>AnimationTransformKey&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a44d79a25493698951f2bc3010b29508a">eve::editor</a></li>
+<li>ArchetypeWeaponFactory&#160;:&#160;<a class="el" href="namespaceeve_1_1rts.html#a921f9adaa836dd73083f3a43236c27b9">eve::rts</a></li>
+<li>ArtifactId&#160;:&#160;<a class="el" href="namespaceeve.html#a9b3eefe49d7b85c70771c7aa3fd70f6a">eve</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">eve::procgen</a></li>
+<li>ArtifactLeafPayload&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#ac9bdba549c00f91c451310753c4d1479">eve::procgen</a></li>
+<li>ArtifactPublishOptions&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen.html#a856c18d5980249663a08059e57107aba">eve::procgen</a></li>
+<li>AssetGuid&#160;:&#160;<a class="el" href="namespaceeve.html#a4290005bdf7323f774c74481dd8436d9">eve</a>, <a class="el" href="namespaceeve_1_1editing.html#a39e0554f8a5dce7fdebf1fe770b8c078">eve::editing</a>, <a class="el" href="namespaceeve_1_1editor.html#acc02156a7f46022e25968c48ad92852b">eve::editor</a></li>
+<li>AttributeId&#160;:&#160;<a class="el" href="namespaceeve_1_1attributes.html#aafa90e326b7b2f241ed8b42c45adf860">eve::attributes</a>, <a class="el" href="namespaceeve_1_1rpg.html#a0e5a10e9ab8f4efc389c858618132b85">eve::rpg</a></li>
+<li>AttributeModifier&#160;:&#160;<a class="el" href="namespaceeve_1_1rpg.html#a415cdce866c34776546fa583cea5ec4e">eve::rpg</a></li>
+<li>AttributeOperation&#160;:&#160;<a class="el" href="namespaceeve_1_1rpg.html#a5e051c4209fd269326ec9f40304543f5">eve::rpg</a></li>
+<li>AttributeOpTable&#160;:&#160;<a class="el" href="namespaceeve_1_1rpg.html#aa92917c3879c4d1b8d727222c80563b2">eve::rpg</a></li>
+<li>AttributeValue&#160;:&#160;<a class="el" href="namespaceeve_1_1rpg.html#aa56bf52da2434b985ad608f18a72edee">eve::rpg</a></li>
+<li>AudioAuditionTransport&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#af4f7bff3fe3b8d7d4b91d806a2414ea3">eve::editor</a></li>
+<li>AudioBusSnapshot&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a757bb8b286d391fc3dc9697c68f9d226">eve::editor</a></li>
+<li>AudioChannelInspection&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a1f33a1ec6a588fcfc2825cc0609c25ee">eve::editor</a></li>
+<li>AudioEffectChainPublisher&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#ae0041cafa3c5688376f15bc78fdb1c70">eve::editor</a></li>
+<li>AudioEffectChainTarget&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a5bf990b53465c1d6252b6d5282e96023">eve::editor</a></li>
+<li>AudioEffectRecord&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a6e64de6f697aac183d26c5c9d7ecc12a">eve::editor</a></li>
+<li>AudioImportDiagnosticsService&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a1504141cc759d385ec88c8c6757bf6ca">eve::editor</a></li>
+<li>AudioImportInspectionRequest&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a40644f3f588702084d8fc0a64c713cae">eve::editor</a></li>
+<li>AudioImportInspectionResult&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a8863bd8f1b37679c677a061954209607">eve::editor</a></li>
+<li>AudioMixerTarget&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#ad10a178a888a23ce4aa03eadb18409da">eve::editor</a></li>
+<li>AudioSourcePublishingTarget&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a9d8ab7a28969e469fc1fc899ddf86ca3">eve::editor</a></li>
+<li>AudioSourceRuntimeApplier&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a007de0877fb154e2026fc4f68d31cc93">eve::editor</a></li>
+<li>AudioSourceRuntimeSink&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#ae899d796d01d06bdcf82f7e5682a8d9d">eve::editor</a></li>
+<li>AudioSourceTarget&#160;:&#160;<a class="el" href="namespaceeve_1_1domain__gizmo__editing.html#a62c5c2c25372b76938d2e7446428ec70">eve::domain_gizmo_editing</a>, <a class="el" href="namespaceeve_1_1editor.html#a938b7a135cf39ba1b2dbba134a34a8bc">eve::editor</a></li>
+<li>AudioSourceTransportBackend&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#ad4f8dace74d45899cfa8c0a27799c848">eve::editor</a></li>
+<li>AudioTransportSnapshot&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a63f3e94af98181553e19b68c85e529e4">eve::editor</a></li>
+<li>AudioTransportState&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a29c3f0d3e4df07d47882be8fcd429476">eve::editor</a></li>
+<li>AudioWaveformBucket&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a3a54f1794dffcf58a4155b063b362d0f">eve::editor</a></li>
+<li>AudioWaveformRequest&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a85f522fcaa8d6740f66c360a932cd7f1">eve::editor</a></li>
+<li>AudioWaveformResult&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a1240a3f753d85826e10acf25bc5bce2a">eve::editor</a></li>
+<li>AudioWaveformService&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#a3cc6a2976221cb2ed8decd938c88d8d6">eve::editor</a></li>
+<li>AuthorityLink&#160;:&#160;<a class="el" href="namespaceeve_1_1rts.html#a69302a6ce6283b90653fe2fe3f666305">eve::rts</a></li>
+<li>AuthorityPlan&#160;:&#160;<a class="el" href="namespaceeve_1_1editor.html#aff933b6e15c9c34dff043ee4bcc579b0">eve::editor</a></li>
+<li>AuthorityStoreHandleRef&#160;:&#160;<a class="el" href="namespaceeve_1_1authority.html#a465f4a8e6a86c027d16ab4e073aac52c">eve::authority</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

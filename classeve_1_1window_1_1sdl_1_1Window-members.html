@@ -1,0 +1,225 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1window.html">window</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1window_1_1sdl.html">sdl</a></li><li class="navelem"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">Window</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::window::sdl::Window 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ae3db8ddeae8e6ccc4b4738ccd56a5ec6">close</a>() override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad77e384b9a230c8861d554218c156c92">DPIToWindowCoords</a>(double *x, double *y) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a75f70d42fe480b8344199f269e146bce">fromPixels</a>(double x) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a811bfaf4b7435da7b749f5faae887104">fromPixelsXY</a>(double px, double py, double &amp;wx, double &amp;wy) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a0f1464e376f479d0c3db24e73f3a617d">getDesktopDimensions</a>(int display, int &amp;outWidth, int &amp;outHeight) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ac5b9b1fb32bd625f2f87849389407922">getDisplayCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad18562ac4cc2b97b24449ba136445e3b">getDisplayName</a>(int display) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a615454ab1f689bc0604de91994cad541">getDisplayOrientation</a>(int display) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a54ddc84563dbd55d5f1d716a6ca580cb">getDPIScale</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a96e1b34b3fa41b714c5fe4302d1ee991">getFullscreenSizes</a>(int display) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a099e008296bee06cdf51a634cbfee7a2">getHandle</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a43b7225e2ddcfbda2a7f7cbbe29fe22f">getHeight</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a9db6c9e74eb1fb28b89e88d12e897fdb">getNativeDPIScale</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a5b0de7d96316349c2227547c27f14e22">getPixelHeight</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aad9a2f9fa37e1d3385a34d78f6f4e81a">getPixelWidth</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad4b54c6b5213d937aa30d8c5ea1d7b73">getPosition</a>(int &amp;x, int &amp;y, int &amp;display) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a319af4a319354727f85bb3769978a15c">getVSync</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a77033bea64bc31ff81fcf95639f31858">getWidth</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#adcdddc1c70d86e03e54a419234246226">getWindowSettings</a>() override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af36747f4cb8650b198fabfe521c9a462">getWindowTitle</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a662286a12d32f4ab6ad197bd5c206d87">hasFocus</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a113c8477c1872c8b344971c4b80787b3">hasMouseFocus</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1d75884aae81b9461cfb30cfde67796b">isMaximized</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a784212943e8ddb5b11572a368ef7e322">isMinimized</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aaf37cb2433dd9e2d78d76c18d8a14816">isOpen</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1ea52a8d58e775c4b2b67055087481b2">isVisible</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a255e81919f261575eb27a99ed0c0d5b7">maximize</a>() override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ae9963e84e0005369e07ea09270db87ad">minimize</a>() override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html#aadefa9b3bb4766e78b05c7ca9e7180ff">Module_REG</a>(Window)</td><td class="entry"><a class="el" href="classeve_1_1window_1_1Window.html">eve::window::Window</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aac66cbb3ce2d418189e298d4a77ca395">pixelToWindowCoords</a>(double *x, double *y) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a92fa05b53286d56669e8c82db46639a1">requestAttention</a>(bool continuous) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a5006434fceb8be0df191192b36d05e26">restore</a>() override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#acadd7190e5f8b156b61a65cb732c44e7">setFullscreenDesktop</a>(bool fullscreen) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a1892debfca56e8cd533e2b1aa808fe14">setFullscreenExclusive</a>(bool fullscreen) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a2a582b026ac08966bf6db6913d6bf20c">setIconRGBA</a>(const uint8_t *rgba, int w, int h) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aca7d667412c151606ea60b1c16af409a">setPosition</a>(int x, int y, int display) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af556ef9a9098106603bd184e082152db">setSize</a>(int w, int h) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a309bd22078ba61b48095e987436298dc">setVSync</a>(int vsync) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a788013e18e076a9b033b80fa5f550ba3">setWindowSettings</a>(WindowSettings settings) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a7c3d793b0ab5166a4d29e25641f66410">setWindowTitle</a>(const std::string &amp;title) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#af673952b9d9493ff69f375c52e40ca34">showMessageBox</a>(const std::string &amp;caption, const std::string &amp;message, const std::string &amp;type, bool attachToWindow) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a34a7a8ed208e21a3772061be8c0c309d">showMessageBoxData</a>(const MessageBoxData &amp;data) override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#abc2f0a2c39e3fcfabc2701ab46dc04af">toPixels</a>(double x) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#acbb3112c317b2041ae430ba8337ca0e1">toPixelsXY</a>(double wx, double wy, double &amp;px, double &amp;py) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a9ce13679c447d676376cce2678ba8f39">updateSettings</a>(const WindowSettings &amp;newsettings, bool updateGraphicsViewport)</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#aeac0e3ae979e19bfdac85a6e49ddf577">Window</a>()</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#a9d0b40fd24815ea2fa5644b9bd7744a1">windowToDPICoords</a>(double *x, double *y) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#ad84dfa1a3601225ba4c525a9159c3ed1">windowToPixelCoords</a>(double *x, double *y) const override</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html#afa47fa19b5671692bb85f0e6d9564711">~Window</a>()</td><td class="entry"><a class="el" href="classeve_1_1window_1_1sdl_1_1Window.html">eve::window::sdl::Window</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

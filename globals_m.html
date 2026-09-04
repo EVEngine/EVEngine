@@ -1,0 +1,205 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 文件成员</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">这里列出了所有文件成员,并附带其所属的文件:</div>
+
+<h3><a id="index_m" name="index_m"></a>- m -</h3><ul>
+<li>m&#160;:&#160;<a class="el" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">VirtualGeometryRenderer.cpp</a></li>
+<li>M_PI&#160;:&#160;<a class="el" href="SpineAnim_8cpp.html#ae71449b1cc6e6250b91f539153a7a0d3">SpineAnim.cpp</a>, <a class="el" href="Math_8cpp.html#ae71449b1cc6e6250b91f539153a7a0d3">Math.cpp</a>, <a class="el" href="Crowd_8cpp.html#ae71449b1cc6e6250b91f539153a7a0d3">Crowd.cpp</a>, <a class="el" href="SpineSkeleton_8cpp.html#ae71449b1cc6e6250b91f539153a7a0d3">SpineSkeleton.cpp</a>, <a class="el" href="Tween_8cpp.html#ae71449b1cc6e6250b91f539153a7a0d3">Tween.cpp</a></li>
+<li>main()&#160;:&#160;<a class="el" href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627">main.cpp</a></li>
+<li>margin&#160;:&#160;<a class="el" href="TileConfig_8cpp.html#a863a6ce49a581dba9da9e7def06f2e1c">TileConfig.cpp</a></li>
+<li>markers&#160;:&#160;<a class="el" href="LegacyAnimationImporter_8cpp.html#a34b5f68b115e758a2074c7f677434f08">LegacyAnimationImporter.cpp</a></li>
+<li>mask&#160;:&#160;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">BuildingFx.cpp</a>, <a class="el" href="RenderSystem3D_8cpp.html#ad3bee21df6875eeccd25d3c577e0600a">RenderSystem3D.cpp</a></li>
+<li>material&#160;:&#160;<a class="el" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">RenderSystem3D.cpp</a></li>
+<li>materialCounts&#160;:&#160;<a class="el" href="PixelWorld_8cpp.html#a69250140434ffc8f22e04f23ddc59f76">PixelWorld.cpp</a></li>
+<li>materialOverflow&#160;:&#160;<a class="el" href="PixelWorld_8cpp.html#a6fcc6fa2e156a81e57eaedb948d8c49c">PixelWorld.cpp</a></li>
+<li>maxChildren&#160;:&#160;<a class="el" href="TreeMesh_8cpp.html#a503ac5cd59094dc1a43333be9735d9b7">TreeMesh.cpp</a></li>
+<li>maxCumulativeAngle&#160;:&#160;<a class="el" href="TreeMesh_8cpp.html#a49bac7723b24baf699ea2cf0324168d8">TreeMesh.cpp</a></li>
+<li>maxError&#160;:&#160;<a class="el" href="McpServer_8cpp.html#a30a236d06b33d6a65b39276f3a4343f3">McpServer.cpp</a></li>
+<li>maximum&#160;:&#160;<a class="el" href="GltfImporter_8cpp.html#a7fbb9ce939bb5d02a2225567b999402c">GltfImporter.cpp</a>, <a class="el" href="MapObjectContract_8cpp.html#a350f47f4068d319915665c40303503c1">MapObjectContract.cpp</a></li>
+<li>maximumTemperature&#160;:&#160;<a class="el" href="PixelWorld_8cpp.html#a3a6a25c0668d51bafdecd319da33bcab">PixelWorld.cpp</a></li>
+<li>maxTurnAngle&#160;:&#160;<a class="el" href="TreeMesh_8cpp.html#a05f20eb0a3a7292f565cfe00d4e3dae2">TreeMesh.cpp</a></li>
+<li>memberAccess&#160;:&#160;<a class="el" href="devtools_2LanguageServer_8cpp.html#ae22f043655f8b1e412c610dbfdfca418">LanguageServer.cpp</a></li>
+<li>mesh&#160;:&#160;<a class="el" href="PrototypeKit_8cpp.html#a1fef657275c49855d65cb71e4914b6b4">PrototypeKit.cpp</a>, <a class="el" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">RenderSystem3D.cpp</a>, <a class="el" href="CastleMesh_8cpp.html#aa6d16a7a564a24f8cd6bccc92b0d4e4a">CastleMesh.cpp</a></li>
+<li>metallic&#160;:&#160;<a class="el" href="ModelRenderer_8cpp.html#abf199fccc6834e86bd7ca4693eba27bb">ModelRenderer.cpp</a></li>
+<li>method&#160;:&#160;<a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">EvaArchive.cpp</a></li>
+<li>migrateAnimationCommand&#160;:&#160;<a class="el" href="AssetCommand_8cpp.html#aa6a1e1fa7dc25f1d6d99cf4ded5ae04c">AssetCommand.cpp</a></li>
+<li>migrateCommand&#160;:&#160;<a class="el" href="AssetCommand_8cpp.html#ab4cf413a4b79fd6942f2952b122747a3">AssetCommand.cpp</a></li>
+<li>minimum&#160;:&#160;<a class="el" href="GltfImporter_8cpp.html#a909c88a187a1961fa2765ce3b9cecb24">GltfImporter.cpp</a>, <a class="el" href="MapObjectContract_8cpp.html#a3d344009b542947b3e3963727a37d256">MapObjectContract.cpp</a></li>
+<li>minimumTemperature&#160;:&#160;<a class="el" href="PixelWorld_8cpp.html#a9409820938aad67ecb60fc8432b5a82c">PixelWorld.cpp</a></li>
+<li>mipmap&#160;:&#160;<a class="el" href="SceneLoader_8cpp.html#a7ff9ea9faba6452397840da54a677bfe">SceneLoader.cpp</a></li>
+<li>mips&#160;:&#160;<a class="el" href="SceneLoader_8cpp.html#a8c34ae73f544019ca5309411c2399bf8">SceneLoader.cpp</a></li>
+<li>mirrorX&#160;:&#160;<a class="el" href="BuildingFx_8cpp.html#a7da98276550b9c266249efb3b42b2670">BuildingFx.cpp</a></li>
+<li>mirrorZ&#160;:&#160;<a class="el" href="BuildingFx_8cpp.html#a417c3103b931bb910ae2cf5739457135">BuildingFx.cpp</a></li>
+<li>mismatches&#160;:&#160;<a class="el" href="McpServer_8cpp.html#a354538c3d6bd0ce90a576fa7ceb33ecc">McpServer.cpp</a></li>
+<li>missed&#160;:&#160;<a class="el" href="RTSSystems_8cpp.html#ab8fe183646a0728fa47901967cc53b7e">RTSSystems.cpp</a></li>
+<li>mobile&#160;:&#160;<a class="el" href="PixelWorld_8cpp.html#a308e2e18e1557a4a23c7cf4e70c0286f">PixelWorld.cpp</a></li>
+<li>model&#160;:&#160;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">RenderSystem3D.cpp</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#ade56622421c713a8290c025626759118">GraphicsGpuDriven.cpp</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp.html#ade56622421c713a8290c025626759118">GraphicsVirtualGeometry.cpp</a></li>
+<li>Module_IMPL&#160;:&#160;<a class="el" href="Module_8h.html#a91ade12cb7684447c2302317e2203fc4">Module.h</a></li>
+<li>Module_REG&#160;:&#160;<a class="el" href="Module_8h.html#a0be1c64d3f0b35e474d94444ca7a4bbf">Module.h</a></li>
+<li>moisture&#160;:&#160;<a class="el" href="HexTerrain_8cpp.html#a910fab66e07cdf0c63d6e58b11738a17">HexTerrain.cpp</a></li>
+<li>mr&#160;:&#160;<a class="el" href="RenderSystem3D_8cpp.html#a36e5cf87735a845c3dce5817abf63e69">RenderSystem3D.cpp</a></li>
+<li>mu&#160;:&#160;<a class="el" href="vulkan_2Graphics_8cpp.html#a9e631d74e28c39bc9af0c6c59cb97998">Graphics.cpp</a></li>
+<li>mvp&#160;:&#160;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a9cdea29155fe8c0d154ec6dedba24319">GraphicsVirtualGeometry.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

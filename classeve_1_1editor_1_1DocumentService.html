@@ -1,0 +1,520 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::DocumentService类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1DocumentService.html">DocumentService</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1DocumentService-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::DocumentService类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Document coordinator with revision-safe requestSave/executeSave sequencing.  
+ <a href="classeve_1_1editor_1_1DocumentService.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorDocumentService_8h_source.html">EditorDocumentService.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acfed048b8b1a20e298a43f1838bbd440" id="r_acfed048b8b1a20e298a43f1838bbd440"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#acfed048b8b1a20e298a43f1838bbd440">DocumentService</a> (<a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html">IAtomicDocumentStore</a> *store)</td></tr>
+<tr class="separator:acfed048b8b1a20e298a43f1838bbd440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c4b20d3406782cde2c97d84f8059a55" id="r_a7c4b20d3406782cde2c97d84f8059a55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#a7c4b20d3406782cde2c97d84f8059a55">open</a> (<a class="el" href="structeve_1_1editor_1_1DocumentKey.html">DocumentKey</a> <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, std::string <a class="el" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>, std::string resourceUri, <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> initialContent={})</td></tr>
+<tr class="memdesc:a7c4b20d3406782cde2c97d84f8059a55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an asset-backed document, loading existing persisted content when present.  <br /></td></tr>
+<tr class="separator:a7c4b20d3406782cde2c97d84f8059a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7a7dc158a2e66e884619eed274f966" id="r_abc7a7dc158a2e66e884619eed274f966"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#abc7a7dc158a2e66e884619eed274f966">edit</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document, <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> <a class="el" href="classeve_1_1editor_1_1DocumentService.html#a7dfd790282577abaa39e5667049dc3ec">content</a>, std::optional&lt; <a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> &gt; expectedRevision=std::nullopt)</td></tr>
+<tr class="memdesc:abc7a7dc158a2e66e884619eed274f966"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the working content using an optional expected edit revision.  <br /></td></tr>
+<tr class="separator:abc7a7dc158a2e66e884619eed274f966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49c78920bdd90c6e29fced8016e4227a" id="r_a49c78920bdd90c6e29fced8016e4227a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1SaveTicket.html">SaveTicket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#a49c78920bdd90c6e29fced8016e4227a">requestSave</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document)</td></tr>
+<tr class="memdesc:a49c78920bdd90c6e29fced8016e4227a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture an exact content/revision pair for a later CAS save.  <br /></td></tr>
+<tr class="separator:a49c78920bdd90c6e29fced8016e4227a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2166780b0724851620cdfbf82a058b2e" id="r_a2166780b0724851620cdfbf82a058b2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#a2166780b0724851620cdfbf82a058b2e">executeSave</a> (const <a class="el" href="structeve_1_1editor_1_1SaveTicket.html">SaveTicket</a> &amp;ticket)</td></tr>
+<tr class="memdesc:a2166780b0724851620cdfbf82a058b2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a captured save ticket without reading newer working content.  <br /></td></tr>
+<tr class="separator:a2166780b0724851620cdfbf82a058b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dfd790282577abaa39e5667049dc3ec" id="r_a7dfd790282577abaa39e5667049dc3ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#a7dfd790282577abaa39e5667049dc3ec">content</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document) const</td></tr>
+<tr class="memdesc:a7dfd790282577abaa39e5667049dc3ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current working content snapshot.  <br /></td></tr>
+<tr class="separator:a7dfd790282577abaa39e5667049dc3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52731847591febaa54cfee87c5ec561e" id="r_a52731847591febaa54cfee87c5ec561e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#a52731847591febaa54cfee87c5ec561e">snapshot</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document) const</td></tr>
+<tr class="memdesc:a52731847591febaa54cfee87c5ec561e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one metadata snapshot.  <br /></td></tr>
+<tr class="separator:a52731847591febaa54cfee87c5ec561e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94a390d625bfc2f99fa561de0ae835ec" id="r_a94a390d625bfc2f99fa561de0ae835ec"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#a94a390d625bfc2f99fa561de0ae835ec">documents</a> () const</td></tr>
+<tr class="memdesc:a94a390d625bfc2f99fa561de0ae835ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all open documents in stable id order.  <br /></td></tr>
+<tr class="separator:a94a390d625bfc2f99fa561de0ae835ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4a8b4cbdd631714920b19eee008fde8" id="r_ab4a8b4cbdd631714920b19eee008fde8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#ab4a8b4cbdd631714920b19eee008fde8">reconcileExternal</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document)</td></tr>
+<tr class="memdesc:ab4a8b4cbdd631714920b19eee008fde8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconcile one open document with the latest store value. Clean documents adopt external content; dirty documents enter Conflict without losing their working content.  <br /></td></tr>
+<tr class="separator:ab4a8b4cbdd631714920b19eee008fde8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f4aac404b4cc860f414e2c262232db3" id="r_a6f4aac404b4cc860f414e2c262232db3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1DocumentService.html#a6f4aac404b4cc860f414e2c262232db3">close</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document)</td></tr>
+<tr class="memdesc:a6f4aac404b4cc860f414e2c262232db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close and discard in-memory state; persisted content is unchanged.  <br /></td></tr>
+<tr class="separator:a6f4aac404b4cc860f414e2c262232db3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Document coordinator with revision-safe requestSave/executeSave sequencing. </p>
+<p>The store is non-owning and must outlive this service. A successful old save ticket advances <code>saved</code> only to its captured edit revision, preserving dirty state for edits made while the save was pending. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8h_source.html">EditorDocumentService.h</a> 第 <a class="el" href="EditorDocumentService_8h_source.html#l00111">111</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="acfed048b8b1a20e298a43f1838bbd440" name="acfed048b8b1a20e298a43f1838bbd440"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfed048b8b1a20e298a43f1838bbd440">&#9670;&#160;</a></span>DocumentService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::DocumentService::DocumentService </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html">IAtomicDocumentStore</a> *&#160;</td>
+          <td class="paramname"><em>store</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8h_source.html">EditorDocumentService.h</a> 第 <a class="el" href="EditorDocumentService_8h_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6f4aac404b4cc860f414e2c262232db3" name="a6f4aac404b4cc860f414e2c262232db3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f4aac404b4cc860f414e2c262232db3">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::DocumentService::close </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Close and discard in-memory state; persisted content is unchanged. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7dfd790282577abaa39e5667049dc3ec" name="a7dfd790282577abaa39e5667049dc3ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dfd790282577abaa39e5667049dc3ec">&#9670;&#160;</a></span>content()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &gt; eve::editor::DocumentService::content </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current working content snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00330">eve::editor::EditorSession::autosaveDocument()</a> , 以及 <a class="el" href="EditorDocumentService_8cpp_source.html#l00065">edit()</a>.</p>
+
+</div>
+</div>
+<a id="a94a390d625bfc2f99fa561de0ae835ec" name="a94a390d625bfc2f99fa561de0ae835ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94a390d625bfc2f99fa561de0ae835ec">&#9670;&#160;</a></span>documents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::DocumentService::documents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return all open documents in stable id order. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>.</p>
+
+</div>
+</div>
+<a id="abc7a7dc158a2e66e884619eed274f966" name="abc7a7dc158a2e66e884619eed274f966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc7a7dc158a2e66e884619eed274f966">&#9670;&#160;</a></span>edit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::DocumentService::edit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>&#160;</td>
+          <td class="paramname"><em>content</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> &gt;&#160;</td>
+          <td class="paramname"><em>expectedRevision</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the working content using an optional expected edit revision. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDocumentService_8cpp_source.html#l00118">content()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">eve::editor::Ready</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00306">eve::editor::EditorSession::editDocument()</a>.</p>
+
+</div>
+</div>
+<a id="a2166780b0724851620cdfbf82a058b2e" name="a2166780b0724851620cdfbf82a058b2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2166780b0724851620cdfbf82a058b2e">&#9670;&#160;</a></span>executeSave()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::DocumentService::executeSave </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1SaveTicket.html">SaveTicket</a> &amp;&#160;</td>
+          <td class="paramname"><em>ticket</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute a captured save ticket without reading newer working content. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDocumentService_8h_source.html#l00068">eve::editor::SaveTicket::capturedEditRevision</a>, <a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#a1a258756aba633b97ce6087a40436038">eve::editor::IAtomicDocumentStore::compareAndSwap()</a>, <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4">eve::editor::Conflict</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00067">eve::editor::SaveTicket::document</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00070">eve::editor::SaveTicket::expectedContentHash</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00069">eve::editor::SaveTicket::expectedDiskRevision</a>, <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::editor::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00066">eve::editor::SaveTicket::id</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00026">pending</a>, <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">eve::editor::Ready</a>, <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156a4e11db406c6c9f234fe8579cc9bc5ef6">eve::editor::Saving</a> , 以及 <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00315">eve::editor::EditorSession::saveDocument()</a>.</p>
+
+</div>
+</div>
+<a id="a7c4b20d3406782cde2c97d84f8059a55" name="a7c4b20d3406782cde2c97d84f8059a55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c4b20d3406782cde2c97d84f8059a55">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::DocumentService::open </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1editor_1_1DocumentKey.html">DocumentKey</a>&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>resourceUri</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>&#160;</td>
+          <td class="paramname"><em>initialContent</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Open an asset-backed document, loading existing persisted content when present. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#aee640a6d7bb1d4c94dd8d18b30212432">eve::editor::IAtomicDocumentStore::read()</a>, <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">eve::editor::Ready</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00126">snapshot()</a>, <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a> , 以及 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="ab4a8b4cbdd631714920b19eee008fde8" name="ab4a8b4cbdd631714920b19eee008fde8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4a8b4cbdd631714920b19eee008fde8">&#9670;&#160;</a></span>reconcileExternal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::DocumentService::reconcileExternal </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconcile one open document with the latest store value. Clean documents adopt external content; dirty documents enter Conflict without losing their working content. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">document</td><td>Stable identity of the open document to inspect. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Updated snapshot or a structured conflict/failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156af1d4ac54357cc0932f385d56814ba7e4">eve::editor::Conflict</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::editor::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="classeve_1_1editor_1_1IAtomicDocumentStore.html#aee640a6d7bb1d4c94dd8d18b30212432">eve::editor::IAtomicDocumentStore::read()</a>, <a class="el" href="namespaceeve_1_1editor.html#a3d18229db9da6f8df2cf192dedc2f156ae7d31fc0602fb2ede144d18cdffd816b">eve::editor::Ready</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a> , 以及 <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00349">eve::editor::EditorSession::pollDocumentChanges()</a>.</p>
+
+</div>
+</div>
+<a id="a49c78920bdd90c6e29fced8016e4227a" name="a49c78920bdd90c6e29fced8016e4227a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49c78920bdd90c6e29fced8016e4227a">&#9670;&#160;</a></span>requestSave()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1SaveTicket.html">SaveTicket</a> &gt; eve::editor::DocumentService::requestSave </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture an exact content/revision pair for a later CAS save. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDocumentService_8h_source.html#l00068">eve::editor::SaveTicket::capturedEditRevision</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00067">eve::editor::SaveTicket::document</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00070">eve::editor::SaveTicket::expectedContentHash</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00069">eve::editor::SaveTicket::expectedDiskRevision</a>, <a class="el" href="EditorDocumentService_8h_source.html#l00066">eve::editor::SaveTicket::id</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00315">eve::editor::EditorSession::saveDocument()</a>.</p>
+
+</div>
+</div>
+<a id="a52731847591febaa54cfee87c5ec561e" name="a52731847591febaa54cfee87c5ec561e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52731847591febaa54cfee87c5ec561e">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::DocumentService::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one metadata snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a> 第 <a class="el" href="EditorDocumentService_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00330">eve::editor::EditorSession::autosaveDocument()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00285">eve::editor::EditorSession::bindDocument()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00034">open()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00463">eve::editor::EditorSession::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorDocumentService_8h_source.html">EditorDocumentService.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorDocumentService_8cpp_source.html">EditorDocumentService.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

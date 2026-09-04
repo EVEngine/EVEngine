@@ -1,0 +1,319 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building_editor/EditorBuildingTarget.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6a744201a9a7b43104ef4d53421c119b.html">building_editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorBuildingTarget.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorBuildingTarget_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="BuildingTarget_8h.html">building_editing/BuildingTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorPresentation_8h.html">editor/EditorPresentation.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorTool_8h.html">editor/EditorTool.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#ac024bb2710d8553b4e4ca4416875e323">   10</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingGarrisonMemberRecord.html">BuildingGarrisonMemberRecord</a>=<a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingGarrisonMemberRecord.html">eve::building_editing::BuildingGarrisonMemberRecord</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#ac5f364e5c48022f9a9fd897bcc3b4132">   11</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a>=<a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingInstanceSnapshot.html">eve::building_editing::BuildingInstanceSnapshot</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a9313b0e2539cb7b628846ce0925f3435">   12</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingFootprintCell.html">BuildingFootprintCell</a>=<a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingFootprintCell.html">eve::building_editing::BuildingFootprintCell</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a4d0f280a9b1618a07f7aaa21e3ee3ffa">   13</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingPlacementPreview.html">BuildingPlacementPreview</a>=<a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingPlacementPreview.html">eve::building_editing::BuildingPlacementPreview</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a4dcd8ec54e7054726739edd4039c9ff1">   14</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1building__editing_1_1BuildingPlacementTarget.html">BuildingPlacementTarget</a>=<a class="code hl_class" href="classeve_1_1building__editing_1_1BuildingPlacementTarget.html">eve::building_editing::BuildingPlacementTarget</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingViewportRay.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1BuildingViewportRay.html">BuildingViewportRay</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingViewportRay.html#a53d86c0ac7ea0f8fb3dea0d0ecb5f649">   18</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1BuildingViewportRay.html#a53d86c0ac7ea0f8fb3dea0d0ecb5f649">origin</a>{0.0, 0.0, 0.0};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingViewportRay.html#a06fe41d1f0b70a373b45dcafb0435381">   19</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1BuildingViewportRay.html#a06fe41d1f0b70a373b45dcafb0435381">direction</a>{0.0, 0.0, -1.0};</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html">   28</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html">IBuildingViewportAdapter</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#ad7ffa3c6d537cd37756e4d59c4126f2e">   30</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#ad7ffa3c6d537cd37756e4d59c4126f2e">~IBuildingViewportAdapter</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#af291d043a17c9e31cace126d809da754">   33</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;BuildingViewportRay&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#af291d043a17c9e31cace126d809da754">pointerRay</a>(</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a>&amp; event) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#a6db2eca30dd3ab04cde064b82eb8b146">   36</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;OverlayPoint&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#a6db2eca30dd3ab04cde064b82eb8b146">projectWorld</a>(</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">const</span> std::array&lt;double, 3&gt;&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html">   41</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html">BuildingEdgeCurveToolSelection</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a87bf8465e234eb957d194aae9bc6b562">   42</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a87bf8465e234eb957d194aae9bc6b562">buildingId</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#ae6afe705e8b60f3e112778b47e5ad2d6">   43</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#ae6afe705e8b60f3e112778b47e5ad2d6">memberInstanceId</a> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#afd092d369a943a9c5c124000911271d6">   44</a></span>    std::vector&lt;building_editing::BuildingEdgeCurvePoint&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#afd092d369a943a9c5c124000911271d6">controlPoints</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a3f4e38ebcbd24bdddcad509356a6bbdf">   45</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a3f4e38ebcbd24bdddcad509356a6bbdf">subdivisions</a> = 16;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a6cba35e82b2c009ce9f0225a899da50a">   46</a></span>    std::string <a class="code hl_variable" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a6cba35e82b2c009ce9f0225a899da50a">surfaceName</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html">   57</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html">BuildingEdgeCurveTool</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_class" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html">BuildingEdgeCurveTool</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html">IBuildingViewportAdapter</a>* viewport,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                          <a class="code hl_class" href="classeve_1_1editing_1_1IEditAuthority.html">editing::IEditAuthority</a>* authority);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ab77f0d3923b043c0a3dd485a4118cfe2">   62</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1ToolDescriptor.html">ToolDescriptor</a>&amp; <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ab77f0d3923b043c0a3dd485a4118cfe2">descriptor</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> descriptor_; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a794d8a02a8836bb7750a8ede0b8251ec">setViewportAdapter</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IBuildingViewportAdapter.html">IBuildingViewportAdapter</a>* viewport);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a3f3602c34910faa32d753ab1d73f07e9">setAuthority</a>(<a class="code hl_class" href="classeve_1_1editing_1_1IEditAuthority.html">editing::IEditAuthority</a>* authority);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a73a35d1a6d3fd86c62ac5ef2f9d6706a">setSelection</a>(<a class="code hl_struct" href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html">BuildingEdgeCurveToolSelection</a> selection);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a78b5f36c38307a72f2c5ab6e276b4055">clearSelection</a>();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a23274965428384467bb60dd81659bcfc">pointerEvent</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                              <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a>&amp; event) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ae4de99bfbc2795818cf027c04674ce57">deactivate</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#aa1ca8357690d766e9aa71ce747ff66f4">cancel</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a2ef6b975df89544309cd21b2e3cab9fd">drawOverlay</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context, <a class="code hl_class" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a>&amp; overlay) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">isDragging</a>() <span class="keyword">const</span>;</div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ad6311be6359b3efe5495642a7b54a07a">   81</a></span>    <span class="keyword">const</span> std::optional&lt;building_editing::BuildingEdgeCurveDragPreview&gt;&amp; <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ad6311be6359b3efe5495642a7b54a07a">preview</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">return</span> preview_;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a4b5dc0016c1e6a2daeea21c1e385a625">   85</a></span>    <span class="keyword">const</span> std::optional&lt;editing::TransactionReceipt&gt;&amp; <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a4b5dc0016c1e6a2daeea21c1e385a625">lastReceipt</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">return</span> lastReceipt_;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a21bc2c5d3c5ec6464c2ec662d87c7d74">   89</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a21bc2c5d3c5ec6464c2ec662d87c7d74">lastStatus</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastStatus_; }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a537e14a2472b1dd428b0af18d59ab055">   91</a></span>    <span class="keyword">const</span> std::vector&lt;editing::Diagnostic&gt;&amp; <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a537e14a2472b1dd428b0af18d59ab055">diagnostics</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> diagnostics_; }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">void</span> recordFailure(<span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                       <span class="keyword">const</span> std::vector&lt;editing::Diagnostic&gt;&amp; <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a537e14a2472b1dd428b0af18d59ab055">diagnostics</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">void</span> recordPreview(<a class="code hl_struct" href="structeve_1_1building__editing_1_1BuildingEdgeCurveDragPreview.html">building_editing::BuildingEdgeCurveDragPreview</a> <a class="code hl_function" href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ad6311be6359b3efe5495642a7b54a07a">preview</a>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a>&amp; event);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> move(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a>&amp; event);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> finish(<a class="code hl_class" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a>&amp; context, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a>&amp; event);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1ToolDescriptor.html">ToolDescriptor</a> descriptor_{<span class="stringliteral">&quot;building.edge-curve&quot;</span>, <span class="stringliteral">&quot;Edit Building Curve&quot;</span>, {}};</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    IBuildingViewportAdapter* viewport_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    editing::IEditAuthority* authority_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::optional&lt;BuildingEdgeCurveToolSelection&gt; selection_;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    std::unique_ptr&lt;building_editing::BuildingEdgeCurveDragSession&gt; drag_;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::optional&lt;building_editing::BuildingEdgeCurveDragPreview&gt; preview_;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::optional&lt;editing::TransactionReceipt&gt; lastReceipt_;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">editing::Status</a> lastStatus_ = editing::Status::NotFound;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::vector&lt;editing::Diagnostic&gt; diagnostics_;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::uint64_t transactionSequence_ = 0;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>};</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+<div class="ttc" id="aBuildingTarget_8h_html"><div class="ttname"><a href="BuildingTarget_8h.html">BuildingTarget.h</a></div></div>
+<div class="ttc" id="aEditorPresentation_8h_html"><div class="ttname"><a href="EditorPresentation_8h.html">EditorPresentation.h</a></div></div>
+<div class="ttc" id="aEditorTool_8h_html"><div class="ttname"><a href="EditorTool_8h.html">EditorTool.h</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1building__editing_1_1BuildingPlacementTarget_html"><div class="ttname"><a href="classeve_1_1building__editing_1_1BuildingPlacementTarget.html">eve::building_editing::BuildingPlacementTarget</a></div><div class="ttdoc">Live PlacementWorld target with reversible place/move/remove operations.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8h_source.html#l00154">BuildingTarget.h:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditAuthority_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditAuthority.html">eve::editing::IEditAuthority</a></div><div class="ttdoc">Final validation and commit boundary for editor mutations.</div><div class="ttdef"><b>Definition</b> <a href="EditingAuthority_8h_source.html#l00014">EditingAuthority.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html">eve::editor::BuildingEdgeCurveTool</a></div><div class="ttdoc">EditorSession tool that turns one curve-handle drag into one authority transaction.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00057">EditorBuildingTarget.h:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a21bc2c5d3c5ec6464c2ec662d87c7d74"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a21bc2c5d3c5ec6464c2ec662d87c7d74">eve::editor::BuildingEdgeCurveTool::lastStatus</a></div><div class="ttdeci">editing::Status lastStatus() const</div><div class="ttdoc">Status of the latest tool operation.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00089">EditorBuildingTarget.h:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a23274965428384467bb60dd81659bcfc"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a23274965428384467bb60dd81659bcfc">eve::editor::BuildingEdgeCurveTool::pointerEvent</a></div><div class="ttdeci">ToolResponse pointerEvent(EditorContext &amp;context, const EditorPointerEvent &amp;event) override</div><div class="ttdoc">Handle normalized pointer input.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00201">BuildingEdgeCurveTool.cpp:201</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a2ef6b975df89544309cd21b2e3cab9fd"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a2ef6b975df89544309cd21b2e3cab9fd">eve::editor::BuildingEdgeCurveTool::drawOverlay</a></div><div class="ttdeci">void drawOverlay(EditorContext &amp;context, IEditorOverlay &amp;overlay) override</div><div class="ttdoc">Emit renderer-independent feedback for the active viewport.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00219">BuildingEdgeCurveTool.cpp:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a3f3602c34910faa32d753ab1d73f07e9"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a3f3602c34910faa32d753ab1d73f07e9">eve::editor::BuildingEdgeCurveTool::setAuthority</a></div><div class="ttdeci">void setAuthority(editing::IEditAuthority *authority)</div><div class="ttdoc">Replace the transaction authority and cancel any active gesture.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00040">BuildingEdgeCurveTool.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a4b5dc0016c1e6a2daeea21c1e385a625"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a4b5dc0016c1e6a2daeea21c1e385a625">eve::editor::BuildingEdgeCurveTool::lastReceipt</a></div><div class="ttdeci">const std::optional&lt; editing::TransactionReceipt &gt; &amp; lastReceipt() const</div><div class="ttdoc">Last committed authority receipt.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00085">EditorBuildingTarget.h:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a537e14a2472b1dd428b0af18d59ab055"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a537e14a2472b1dd428b0af18d59ab055">eve::editor::BuildingEdgeCurveTool::diagnostics</a></div><div class="ttdeci">const std::vector&lt; editing::Diagnostic &gt; &amp; diagnostics() const</div><div class="ttdoc">Diagnostics from the latest preview, adapter or authority operation.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00091">EditorBuildingTarget.h:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a58bb3a138b8414bff335b9b7c0e96873"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a58bb3a138b8414bff335b9b7c0e96873">eve::editor::BuildingEdgeCurveTool::isDragging</a></div><div class="ttdeci">bool isDragging() const</div><div class="ttdoc">Whether a handle currently owns pointer-drag state.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00074">BuildingEdgeCurveTool.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a73a35d1a6d3fd86c62ac5ef2f9d6706a"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a73a35d1a6d3fd86c62ac5ef2f9d6706a">eve::editor::BuildingEdgeCurveTool::setSelection</a></div><div class="ttdeci">editing::Result&lt; void &gt; setSelection(BuildingEdgeCurveToolSelection selection)</div><div class="ttdoc">Select one authoritative curve group member for handle editing.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00046">BuildingEdgeCurveTool.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a78b5f36c38307a72f2c5ab6e276b4055"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a78b5f36c38307a72f2c5ab6e276b4055">eve::editor::BuildingEdgeCurveTool::clearSelection</a></div><div class="ttdeci">void clearSelection()</div><div class="ttdoc">Clear selection and any uncommitted gesture.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00065">BuildingEdgeCurveTool.cpp:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_a794d8a02a8836bb7750a8ede0b8251ec"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#a794d8a02a8836bb7750a8ede0b8251ec">eve::editor::BuildingEdgeCurveTool::setViewportAdapter</a></div><div class="ttdeci">void setViewportAdapter(IBuildingViewportAdapter *viewport)</div><div class="ttdoc">Replace the host viewport adapter and cancel any active gesture.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00034">BuildingEdgeCurveTool.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_aa1ca8357690d766e9aa71ce747ff66f4"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#aa1ca8357690d766e9aa71ce747ff66f4">eve::editor::BuildingEdgeCurveTool::cancel</a></div><div class="ttdeci">void cancel(EditorContext &amp;context) override</div><div class="ttdoc">Cancel the active gesture while keeping the tool selected.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00214">BuildingEdgeCurveTool.cpp:214</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_ab77f0d3923b043c0a3dd485a4118cfe2"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ab77f0d3923b043c0a3dd485a4118cfe2">eve::editor::BuildingEdgeCurveTool::descriptor</a></div><div class="ttdeci">const ToolDescriptor &amp; descriptor() const override</div><div class="ttdoc">Stable tool identity and presentation metadata.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00062">EditorBuildingTarget.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_ad6311be6359b3efe5495642a7b54a07a"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ad6311be6359b3efe5495642a7b54a07a">eve::editor::BuildingEdgeCurveTool::preview</a></div><div class="ttdeci">const std::optional&lt; building_editing::BuildingEdgeCurveDragPreview &gt; &amp; preview() const</div><div class="ttdoc">Last valid transient preview.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00081">EditorBuildingTarget.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1BuildingEdgeCurveTool_html_ae4de99bfbc2795818cf027c04674ce57"><div class="ttname"><a href="classeve_1_1editor_1_1BuildingEdgeCurveTool.html#ae4de99bfbc2795818cf027c04674ce57">eve::editor::BuildingEdgeCurveTool::deactivate</a></div><div class="ttdeci">void deactivate(EditorContext &amp;context) override</div><div class="ttdoc">Called exactly once before this tool stops being active.</div><div class="ttdef"><b>Definition</b> <a href="BuildingEdgeCurveTool_8cpp_source.html#l00212">BuildingEdgeCurveTool.cpp:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorContext_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorContext.html">eve::editor::EditorContext</a></div><div class="ttdoc">Context supplied by EditorSession to tools.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00064">EditorTool.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IBuildingViewportAdapter_html"><div class="ttname"><a href="classeve_1_1editor_1_1IBuildingViewportAdapter.html">eve::editor::IBuildingViewportAdapter</a></div><div class="ttdoc">Host-owned conversion boundary between pointer coordinates and a 2D/3D viewport.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00028">EditorBuildingTarget.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IBuildingViewportAdapter_html_a6db2eca30dd3ab04cde064b82eb8b146"><div class="ttname"><a href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#a6db2eca30dd3ab04cde064b82eb8b146">eve::editor::IBuildingViewportAdapter::projectWorld</a></div><div class="ttdeci">virtual editing::Result&lt; OverlayPoint &gt; projectWorld(const std::array&lt; double, 3 &gt; &amp;world) const =0</div><div class="ttdoc">Project a world position into the coordinate space accepted by IEditorOverlay.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IBuildingViewportAdapter_html_ad7ffa3c6d537cd37756e4d59c4126f2e"><div class="ttname"><a href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#ad7ffa3c6d537cd37756e4d59c4126f2e">eve::editor::IBuildingViewportAdapter::~IBuildingViewportAdapter</a></div><div class="ttdeci">virtual ~IBuildingViewportAdapter()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IBuildingViewportAdapter_html_af291d043a17c9e31cace126d809da754"><div class="ttname"><a href="classeve_1_1editor_1_1IBuildingViewportAdapter.html#af291d043a17c9e31cace126d809da754">eve::editor::IBuildingViewportAdapter::pointerRay</a></div><div class="ttdeci">virtual editing::Result&lt; BuildingViewportRay &gt; pointerRay(const EditorPointerEvent &amp;event) const =0</div><div class="ttdoc">Build a world ray for one normalized pointer event.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorOverlay_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorOverlay.html">eve::editor::IEditorOverlay</a></div><div class="ttdoc">Sink implemented by a 2D or 3D viewport to render tool feedback.</div><div class="ttdef"><b>Definition</b> <a href="EditorPresentation_8h_source.html#l00027">EditorPresentation.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorTool_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorTool.html">eve::editor::IEditorTool</a></div><div class="ttdoc">Protocol implemented by every editor tool.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00100">EditorTool.h:100</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1building__editing_1_1BuildingEdgeCurveDragPreview_html"><div class="ttname"><a href="structeve_1_1building__editing_1_1BuildingEdgeCurveDragPreview.html">eve::building_editing::BuildingEdgeCurveDragPreview</a></div><div class="ttdoc">Immutable result of one curve-handle pointer update.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8h_source.html#l00249">BuildingTarget.h:249</a></div></div>
+<div class="ttc" id="astructeve_1_1building__editing_1_1BuildingFootprintCell_html"><div class="ttname"><a href="structeve_1_1building__editing_1_1BuildingFootprintCell.html">eve::building_editing::BuildingFootprintCell</a></div><div class="ttdoc">One occupied or rejected footprint cell in a placement preview.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8h_source.html#l00088">BuildingTarget.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1building__editing_1_1BuildingGarrisonMemberRecord_html"><div class="ttname"><a href="structeve_1_1building__editing_1_1BuildingGarrisonMemberRecord.html">eve::building_editing::BuildingGarrisonMemberRecord</a></div><div class="ttdoc">Persistent garrison member copied through building editor undo.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8h_source.html#l00026">BuildingTarget.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1building__editing_1_1BuildingInstanceSnapshot_html"><div class="ttname"><a href="structeve_1_1building__editing_1_1BuildingInstanceSnapshot.html">eve::building_editing::BuildingInstanceSnapshot</a></div><div class="ttdoc">Complete runtime-neutral placed-building snapshot.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8h_source.html#l00033">BuildingTarget.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1building__editing_1_1BuildingPlacementPreview_html"><div class="ttname"><a href="structeve_1_1building__editing_1_1BuildingPlacementPreview.html">eve::building_editing::BuildingPlacementPreview</a></div><div class="ttdoc">Structured footprint/snap preview tied to a world revision.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8h_source.html#l00140">BuildingTarget.h:140</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html">eve::editor::BuildingEdgeCurveToolSelection</a></div><div class="ttdoc">Immutable selection/configuration consumed by BuildingEdgeCurveTool.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00041">EditorBuildingTarget.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_a3f4e38ebcbd24bdddcad509356a6bbdf"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a3f4e38ebcbd24bdddcad509356a6bbdf">eve::editor::BuildingEdgeCurveToolSelection::subdivisions</a></div><div class="ttdeci">int subdivisions</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00045">EditorBuildingTarget.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_a6cba35e82b2c009ce9f0225a899da50a"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a6cba35e82b2c009ce9f0225a899da50a">eve::editor::BuildingEdgeCurveToolSelection::surfaceName</a></div><div class="ttdeci">std::string surfaceName</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00046">EditorBuildingTarget.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_a87bf8465e234eb957d194aae9bc6b562"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#a87bf8465e234eb957d194aae9bc6b562">eve::editor::BuildingEdgeCurveToolSelection::buildingId</a></div><div class="ttdeci">std::string buildingId</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00042">EditorBuildingTarget.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_ae6afe705e8b60f3e112778b47e5ad2d6"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#ae6afe705e8b60f3e112778b47e5ad2d6">eve::editor::BuildingEdgeCurveToolSelection::memberInstanceId</a></div><div class="ttdeci">int memberInstanceId</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00043">EditorBuildingTarget.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingEdgeCurveToolSelection_html_afd092d369a943a9c5c124000911271d6"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingEdgeCurveToolSelection.html#afd092d369a943a9c5c124000911271d6">eve::editor::BuildingEdgeCurveToolSelection::controlPoints</a></div><div class="ttdeci">std::vector&lt; building_editing::BuildingEdgeCurvePoint &gt; controlPoints</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00044">EditorBuildingTarget.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingViewportRay_html"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingViewportRay.html">eve::editor::BuildingViewportRay</a></div><div class="ttdoc">World-space ray produced by a building editor viewport.</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00017">EditorBuildingTarget.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingViewportRay_html_a06fe41d1f0b70a373b45dcafb0435381"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingViewportRay.html#a06fe41d1f0b70a373b45dcafb0435381">eve::editor::BuildingViewportRay::direction</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; direction</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00019">EditorBuildingTarget.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1BuildingViewportRay_html_a53d86c0ac7ea0f8fb3dea0d0ecb5f649"><div class="ttname"><a href="structeve_1_1editor_1_1BuildingViewportRay.html#a53d86c0ac7ea0f8fb3dea0d0ecb5f649">eve::editor::BuildingViewportRay::origin</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; origin</div><div class="ttdef"><b>Definition</b> <a href="EditorBuildingTarget_8h_source.html#l00018">EditorBuildingTarget.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorPointerEvent_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorPointerEvent.html">eve::editor::EditorPointerEvent</a></div><div class="ttdoc">Pointer input normalized by an editor viewport adapter.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00018">EditorTool.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1ToolDescriptor.html">eve::editor::ToolDescriptor</a></div><div class="ttdoc">UI-facing metadata supplied by a tool implementation.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00088">EditorTool.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1ToolResponse_html"><div class="ttname"><a href="structeve_1_1editor_1_1ToolResponse.html">eve::editor::ToolResponse</a></div><div class="ttdoc">Result returned by a tool after processing input.</div><div class="ttdef"><b>Definition</b> <a href="EditorTool_8h_source.html#l00047">EditorTool.h:47</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

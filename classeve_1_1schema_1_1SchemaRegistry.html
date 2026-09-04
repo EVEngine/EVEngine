@@ -1,0 +1,1215 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::schema::SchemaRegistry类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1schema.html">schema</a></li><li class="navelem"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html">SchemaRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1schema_1_1SchemaRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::schema::SchemaRegistry类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Process-wide registry for runtime gameplay schemas.  
+ <a href="classeve_1_1schema_1_1SchemaRegistry.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SchemaRegistry_8h_source.html">SchemaRegistry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a610f1af032f0a9b09ec67053f480c6c3" id="r_a610f1af032f0a9b09ec67053f480c6c3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1schema.html#ad94594c303ebc9a5204479117a5d7faa">SchemaRegistrationStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a610f1af032f0a9b09ec67053f480c6c3">registerSchema</a> (const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> &amp;definition)</td></tr>
+<tr class="memdesc:a610f1af032f0a9b09ec67053f480c6c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers or replaces the exact <code>(id, version)</code> entry.  <br /></td></tr>
+<tr class="separator:a610f1af032f0a9b09ec67053f480c6c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af331e6e25e9c2cfb35e3bbd890ddad9e" id="r_af331e6e25e9c2cfb35e3bbd890ddad9e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1schema.html#ad94594c303ebc9a5204479117a5d7faa">SchemaRegistrationStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#af331e6e25e9c2cfb35e3bbd890ddad9e">registerFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:af331e6e25e9c2cfb35e3bbd890ddad9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and registers or replaces one schema definition from JSON.  <br /></td></tr>
+<tr class="separator:af331e6e25e9c2cfb35e3bbd890ddad9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b55914a652ff35a7a8bc73b8fe46fd9" id="r_a0b55914a652ff35a7a8bc73b8fe46fd9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1schema.html#ad94594c303ebc9a5204479117a5d7faa">SchemaRegistrationStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a0b55914a652ff35a7a8bc73b8fe46fd9">registerVersioned</a> (const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> &amp;definition)</td></tr>
+<tr class="memdesc:a0b55914a652ff35a7a8bc73b8fe46fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a new exact <code>(id, version)</code> entry without replacing it.  <br /></td></tr>
+<tr class="separator:a0b55914a652ff35a7a8bc73b8fe46fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9543f96c07db3943f9b61ebce85b6ae4" id="r_a9543f96c07db3943f9b61ebce85b6ae4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1schema.html#ad94594c303ebc9a5204479117a5d7faa">SchemaRegistrationStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a9543f96c07db3943f9b61ebce85b6ae4">registerFromJsonVersioned</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a9543f96c07db3943f9b61ebce85b6ae4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and registers a new exact <code>(id, schemaVersion)</code> entry.  <br /></td></tr>
+<tr class="separator:a9543f96c07db3943f9b61ebce85b6ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a1ea8feafc2719ac3911b81693ac114" id="r_a0a1ea8feafc2719ac3911b81693ac114"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a0a1ea8feafc2719ac3911b81693ac114">find</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a0a1ea8feafc2719ac3911b81693ac114"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the highest registered version for an id, or nullptr.  <br /></td></tr>
+<tr class="separator:a0a1ea8feafc2719ac3911b81693ac114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f1c986a962228da4ee19cac3b803520" id="r_a8f1c986a962228da4ee19cac3b803520"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a8f1c986a962228da4ee19cac3b803520">resolve</a> (const std::string &amp;schemaId, int schemaVersion)</td></tr>
+<tr class="memdesc:a8f1c986a962228da4ee19cac3b803520"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves one exact <code>(schemaId, schemaVersion)</code> pair, or nullptr.  <br /></td></tr>
+<tr class="separator:a8f1c986a962228da4ee19cac3b803520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bf3f583c7f93acf9b7563aa5e2154bb" id="r_a2bf3f583c7f93acf9b7563aa5e2154bb"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a2bf3f583c7f93acf9b7563aa5e2154bb">versions</a> (const std::string &amp;schemaId)</td></tr>
+<tr class="memdesc:a2bf3f583c7f93acf9b7563aa5e2154bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all registered versions for an id in ascending order.  <br /></td></tr>
+<tr class="separator:a2bf3f583c7f93acf9b7563aa5e2154bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a6cdef11d22f4dcc0c091fddb55b4ed" id="r_a9a6cdef11d22f4dcc0c091fddb55b4ed"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a9a6cdef11d22f4dcc0c091fddb55b4ed">remove</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a9a6cdef11d22f4dcc0c091fddb55b4ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all registered versions for a stable id.  <br /></td></tr>
+<tr class="separator:a9a6cdef11d22f4dcc0c091fddb55b4ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaef9cf9fb9e7aef196c2958494fa1879" id="r_aaef9cf9fb9e7aef196c2958494fa1879"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#aaef9cf9fb9e7aef196c2958494fa1879">remove</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int schemaVersion)</td></tr>
+<tr class="memdesc:aaef9cf9fb9e7aef196c2958494fa1879"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes one exact schema version.  <br /></td></tr>
+<tr class="separator:aaef9cf9fb9e7aef196c2958494fa1879"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4de3187c7ea48c7d1df20074fb2fe05d" id="r_a4de3187c7ea48c7d1df20074fb2fe05d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a4de3187c7ea48c7d1df20074fb2fe05d">clear</a> ()</td></tr>
+<tr class="memdesc:a4de3187c7ea48c7d1df20074fb2fe05d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all registered schemas.  <br /></td></tr>
+<tr class="separator:a4de3187c7ea48c7d1df20074fb2fe05d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecef5b9ecd20c9dcf16e6fa1c1c42596" id="r_aecef5b9ecd20c9dcf16e6fa1c1c42596"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#aecef5b9ecd20c9dcf16e6fa1c1c42596">count</a> ()</td></tr>
+<tr class="memdesc:aecef5b9ecd20c9dcf16e6fa1c1c42596"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of registered schema ids.  <br /></td></tr>
+<tr class="separator:aecef5b9ecd20c9dcf16e6fa1c1c42596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac31fe114af41092422c66a1b8ca98f92" id="r_ac31fe114af41092422c66a1b8ca98f92"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#ac31fe114af41092422c66a1b8ca98f92">versionCount</a> ()</td></tr>
+<tr class="memdesc:ac31fe114af41092422c66a1b8ca98f92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of registered <code>(id, version)</code> entries.  <br /></td></tr>
+<tr class="separator:ac31fe114af41092422c66a1b8ca98f92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed7d8efcff51685864df5ed9b2c331e6" id="r_aed7d8efcff51685864df5ed9b2c331e6"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#aed7d8efcff51685864df5ed9b2c331e6">ids</a> ()</td></tr>
+<tr class="memdesc:aed7d8efcff51685864df5ed9b2c331e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns registered schema ids, unique and in deterministic lexical order.  <br /></td></tr>
+<tr class="separator:aed7d8efcff51685864df5ed9b2c331e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ba62ce5ce7e60dac925ce6517255c26" id="r_a8ba62ce5ce7e60dac925ce6517255c26"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structeve_1_1schema_1_1ValidationError.html">ValidationError</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a8ba62ce5ce7e60dac925ce6517255c26">validate</a> (const std::string &amp;schemaId, const std::string &amp;json)</td></tr>
+<tr class="memdesc:a8ba62ce5ce7e60dac925ce6517255c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates JSON text against the highest registered schema version.  <br /></td></tr>
+<tr class="separator:a8ba62ce5ce7e60dac925ce6517255c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc5cba0a5acd0ae27c93ba9f1f7ccfd2" id="r_abc5cba0a5acd0ae27c93ba9f1f7ccfd2"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="structeve_1_1schema_1_1ValidationError.html">ValidationError</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#abc5cba0a5acd0ae27c93ba9f1f7ccfd2">validate</a> (const std::string &amp;schemaId, int schemaVersion, const std::string &amp;json)</td></tr>
+<tr class="memdesc:abc5cba0a5acd0ae27c93ba9f1f7ccfd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates JSON against one exact schema version.  <br /></td></tr>
+<tr class="separator:abc5cba0a5acd0ae27c93ba9f1f7ccfd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfaca8320725f17b9e3d071320685967" id="r_acfaca8320725f17b9e3d071320685967"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#acfaca8320725f17b9e3d071320685967">registerMigration</a> (const std::string &amp;schemaId, int fromVersion, int <a class="el" href="SchemaRegistry_8cpp.html#a886c2183fbf199d1e8dc21a1858ae9a8">toVersion</a>, <a class="el" href="namespaceeve_1_1schema.html#af6a0d4edd4d12d2782b63eed71bc9e87">MigrationFunction</a> migration)</td></tr>
+<tr class="memdesc:acfaca8320725f17b9e3d071320685967"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers one explicit forward migration edge.  <br /></td></tr>
+<tr class="separator:acfaca8320725f17b9e3d071320685967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaed5ff17450effaca68b0d5be30a70f7" id="r_aaed5ff17450effaca68b0d5be30a70f7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1schema_1_1SchemaCompatibility.html">SchemaCompatibility</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#aaed5ff17450effaca68b0d5be30a70f7">queryCompatibility</a> (const std::string &amp;schemaId, int fromVersion, int <a class="el" href="SchemaRegistry_8cpp.html#a886c2183fbf199d1e8dc21a1858ae9a8">toVersion</a>)</td></tr>
+<tr class="memdesc:aaed5ff17450effaca68b0d5be30a70f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves an exact compatibility path without executing migrations.  <br /></td></tr>
+<tr class="separator:aaed5ff17450effaca68b0d5be30a70f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75852f088e383ef9c3881a1735ae2c2c" id="r_a75852f088e383ef9c3881a1735ae2c2c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a75852f088e383ef9c3881a1735ae2c2c">migrate</a> (const std::string &amp;schemaId, int fromVersion, int <a class="el" href="SchemaRegistry_8cpp.html#a886c2183fbf199d1e8dc21a1858ae9a8">toVersion</a>, const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>)</td></tr>
+<tr class="memdesc:a75852f088e383ef9c3881a1735ae2c2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies an explicit migration chain to an owning payload.  <br /></td></tr>
+<tr class="separator:a75852f088e383ef9c3881a1735ae2c2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0993eb3bd6ae78c67d957bf341ffc9f1" id="r_a0993eb3bd6ae78c67d957bf341ffc9f1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a0993eb3bd6ae78c67d957bf341ffc9f1">migrateJson</a> (const std::string &amp;schemaId, int fromVersion, int <a class="el" href="SchemaRegistry_8cpp.html#a886c2183fbf199d1e8dc21a1858ae9a8">toVersion</a>, const std::string &amp;json)</td></tr>
+<tr class="memdesc:a0993eb3bd6ae78c67d957bf341ffc9f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses, migrates and serializes a JSON payload through the chain.  <br /></td></tr>
+<tr class="separator:a0993eb3bd6ae78c67d957bf341ffc9f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31d7b6935ae6ce10a6308ba47fb20e68" id="r_a31d7b6935ae6ce10a6308ba47fb20e68"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a31d7b6935ae6ce10a6308ba47fb20e68">generateDocumentation</a> (const std::string &amp;schemaId, int schemaVersion)</td></tr>
+<tr class="memdesc:a31d7b6935ae6ce10a6308ba47fb20e68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produce stable Markdown for one exact registered schema.  <br /></td></tr>
+<tr class="separator:a31d7b6935ae6ce10a6308ba47fb20e68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0db6fb03a2eb8b59c0227d46239a19f" id="r_ad0db6fb03a2eb8b59c0227d46239a19f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#ad0db6fb03a2eb8b59c0227d46239a19f">generateBindingContract</a> (const std::string &amp;schemaId, int schemaVersion)</td></tr>
+<tr class="memdesc:ad0db6fb03a2eb8b59c0227d46239a19f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produce a stable JSON binding contract for one exact schema.  <br /></td></tr>
+<tr class="separator:ad0db6fb03a2eb8b59c0227d46239a19f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Process-wide registry for runtime gameplay schemas. </p>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8h_source.html">SchemaRegistry.h</a> 第 <a class="el" href="SchemaRegistry_8h_source.html#l00034">34</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a4de3187c7ea48c7d1df20074fb2fe05d" name="a4de3187c7ea48c7d1df20074fb2fe05d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4de3187c7ea48c7d1df20074fb2fe05d">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::schema::SchemaRegistry::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears all registered schemas. </p>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00936">936</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00286">eve::schema::Schema::clear()</a>.</p>
+
+</div>
+</div>
+<a id="aecef5b9ecd20c9dcf16e6fa1c1c42596" name="aecef5b9ecd20c9dcf16e6fa1c1c42596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecef5b9ecd20c9dcf16e6fa1c1c42596">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::SchemaRegistry::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the number of registered schema ids. </p>
+<dl class="section return"><dt>返回</dt><dd>Unique id count, independent of how many versions each id has. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00941">941</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00295">eve::schema::Schema::getSchemaCount()</a>.</p>
+
+</div>
+</div>
+<a id="a0a1ea8feafc2719ac3911b81693ac114" name="a0a1ea8feafc2719ac3911b81693ac114"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a1ea8feafc2719ac3911b81693ac114">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> * eve::schema::SchemaRegistry::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Finds the highest registered version for an id, or nullptr. </p>
+<p>This is the legacy id-only resolution rule. Use <a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html#a8f1c986a962228da4ee19cac3b803520" title="Resolves one exact (schemaId, schemaVersion) pair, or nullptr.">resolve()</a> when the caller has a persisted schema version and must not silently select a newer definition. </p><dl class="section return"><dt>返回</dt><dd>Borrowed nullable schema definition owned by the registry. @ownership <a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html" title="Process-wide registry for runtime gameplay schemas.">SchemaRegistry</a> owns the entry; callers must not delete or mutate it. @lifetime Valid until any registry mutation or destruction; copy data before registering another version. @thread Call on the schema registry thread. @reentrancy The lookup invokes no callbacks and is invalid across re-entrant mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">864</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00335">eve::schema::Schema::getFieldCount()</a>, <a class="el" href="Schema_8cpp_source.html#l00324">eve::schema::Schema::getSchemaAdditionalProperties()</a>, <a class="el" href="Schema_8cpp_source.html#l00319">eve::schema::Schema::getSchemaDescription()</a>, <a class="el" href="Schema_8cpp_source.html#l00314">eve::schema::Schema::getSchemaTitle()</a>, <a class="el" href="Schema_8cpp_source.html#l00309">eve::schema::Schema::getSchemaVersion()</a>, <a class="el" href="Schema_8cpp_source.html#l00291">eve::schema::Schema::has()</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00960">validate()</a>.</p>
+
+</div>
+</div>
+<a id="ad0db6fb03a2eb8b59c0227d46239a19f" name="ad0db6fb03a2eb8b59c0227d46239a19f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0db6fb03a2eb8b59c0227d46239a19f">&#9670;&#160;</a></span>generateBindingContract()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::schema::SchemaRegistry::generateBindingContract </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>schemaVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Produce a stable JSON binding contract for one exact schema. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">schemaVersion</td><td>Exact schema version. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Canonical contract consumed by tooling/binding generators. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaDocumentation_8cpp_source.html">SchemaDocumentation.cpp</a> 第 <a class="el" href="SchemaDocumentation_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00884">resolve()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+</div>
+</div>
+<a id="a31d7b6935ae6ce10a6308ba47fb20e68" name="a31d7b6935ae6ce10a6308ba47fb20e68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31d7b6935ae6ce10a6308ba47fb20e68">&#9670;&#160;</a></span>generateDocumentation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::schema::SchemaRegistry::generateDocumentation </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>schemaVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Produce stable Markdown for one exact registered schema. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">schemaVersion</td><td>Exact schema version. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Minimal generated schema documentation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaDocumentation_8cpp_source.html">SchemaDocumentation.cpp</a> 第 <a class="el" href="SchemaDocumentation_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00884">resolve()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+</div>
+</div>
+<a id="aed7d8efcff51685864df5ed9b2c331e6" name="aed7d8efcff51685864df5ed9b2c331e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed7d8efcff51685864df5ed9b2c331e6">&#9670;&#160;</a></span>ids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::schema::SchemaRegistry::ids </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns registered schema ids, unique and in deterministic lexical order. </p>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00952">952</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00304">eve::schema::Schema::getSchemaId()</a>.</p>
+
+</div>
+</div>
+<a id="a75852f088e383ef9c3881a1735ae2c2c" name="a75852f088e383ef9c3881a1735ae2c2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75852f088e383ef9c3881a1735ae2c2c">&#9670;&#160;</a></span>migrate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt; eve::schema::SchemaRegistry::migrate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fromVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>toVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>input</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Applies an explicit migration chain to an owning payload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">fromVersion</td><td>Exact version of <code>input</code>. </td></tr>
+    <tr><td class="paramname">toVersion</td><td>Exact target version. </td></tr>
+    <tr><td class="paramname">input</td><td>Source payload; never modified by this operation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Migrated owning payload, validated against the target schema. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Migration callbacks receive const input and must return a new value. Callback or validation failure leaves both input and the registry unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l01069">1069</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00124">eve::Value::find()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l01021">queryCompatibility()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00033">toVersion</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00960">validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SchemaRegistry_8cpp_source.html#l01115">migrateJson()</a>.</p>
+
+</div>
+</div>
+<a id="a0993eb3bd6ae78c67d957bf341ffc9f1" name="a0993eb3bd6ae78c67d957bf341ffc9f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0993eb3bd6ae78c67d957bf341ffc9f1">&#9670;&#160;</a></span>migrateJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::schema::SchemaRegistry::migrateJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fromVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>toVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parses, migrates and serializes a JSON payload through the chain. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">fromVersion</td><td>Exact source version. </td></tr>
+    <tr><td class="paramname">toVersion</td><td>Exact target version. </td></tr>
+    <tr><td class="paramname">json</td><td>Source JSON payload. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Canonical migrated JSON, or a structured failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l01115">1115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l01069">migrate()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00033">toVersion</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aaed5ff17450effaca68b0d5be30a70f7" name="aaed5ff17450effaca68b0d5be30a70f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaed5ff17450effaca68b0d5be30a70f7">&#9670;&#160;</a></span>queryCompatibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1schema_1_1SchemaCompatibility.html">SchemaCompatibility</a> &gt; eve::schema::SchemaRegistry::queryCompatibility </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fromVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>toVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves an exact compatibility path without executing migrations. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">fromVersion</td><td>Persisted source version. </td></tr>
+    <tr><td class="paramname">toVersion</td><td>Supported target version. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Exact or explicitly chained compatibility path. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Missing versions/links, cycles and downgrade requests are failures; the registry is never mutated by this query. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l01021">1021</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="SchemaRegistry_8h_source.html#l00025">eve::schema::SchemaCompatibility::fromVersion</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00884">resolve()</a>, <a class="el" href="SchemaRegistry_8h_source.html#l00024">eve::schema::SchemaCompatibility::schemaId</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00033">toVersion</a>, <a class="el" href="SchemaRegistry_8h_source.html#l00026">eve::schema::SchemaCompatibility::toVersion</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="SchemaRegistry_8h_source.html#l00027">eve::schema::SchemaCompatibility::versions</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SchemaRegistry_8cpp_source.html#l01069">migrate()</a>.</p>
+
+</div>
+</div>
+<a id="af331e6e25e9c2cfb35e3bbd890ddad9e" name="af331e6e25e9c2cfb35e3bbd890ddad9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af331e6e25e9c2cfb35e3bbd890ddad9e">&#9670;&#160;</a></span>registerFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1schema.html#ad94594c303ebc9a5204479117a5d7faa">SchemaRegistrationStatus</a> &gt; eve::schema::SchemaRegistry::registerFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parses and registers or replaces one schema definition from JSON. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>JSON schema definition. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Registered or Replaced, or a structured parse/validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00855">855</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00019">eve::schema::Schema::registerJson()</a>.</p>
+
+</div>
+</div>
+<a id="a9543f96c07db3943f9b61ebce85b6ae4" name="a9543f96c07db3943f9b61ebce85b6ae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9543f96c07db3943f9b61ebce85b6ae4">&#9670;&#160;</a></span>registerFromJsonVersioned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1schema.html#ad94594c303ebc9a5204479117a5d7faa">SchemaRegistrationStatus</a> &gt; eve::schema::SchemaRegistry::registerFromJsonVersioned </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parses and registers a new exact <code>(id, schemaVersion)</code> entry. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>JSON schema definition. <code>schemaVersion</code> is canonical; <code>version</code> is accepted for compatibility. Supplying both with different values is rejected as a version conflict. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Registered, or a structured parse/conflict/validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00874">874</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00869">registerVersioned()</a>.</p>
+
+</div>
+</div>
+<a id="acfaca8320725f17b9e3d071320685967" name="acfaca8320725f17b9e3d071320685967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfaca8320725f17b9e3d071320685967">&#9670;&#160;</a></span>registerMigration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::schema::SchemaRegistry::registerMigration </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fromVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>toVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1schema.html#af6a0d4edd4d12d2782b63eed71bc9e87">MigrationFunction</a>&#160;</td>
+          <td class="paramname"><em>migration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Registers one explicit forward migration edge. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id whose payload is transformed. </td></tr>
+    <tr><td class="paramname">fromVersion</td><td>Exact source version. </td></tr>
+    <tr><td class="paramname">toVersion</td><td>Exact target version; it must be greater than source. </td></tr>
+    <tr><td class="paramname">migration</td><td>Pure function returning a new owning payload. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured invalid/conflict failure. The registry is unchanged on every failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>One outgoing edge per source version is allowed. This makes a migration chain unambiguous and lets missing links be reported. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00992">992</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00033">toVersion</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="a610f1af032f0a9b09ec67053f480c6c3" name="a610f1af032f0a9b09ec67053f480c6c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a610f1af032f0a9b09ec67053f480c6c3">&#9670;&#160;</a></span>registerSchema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1schema.html#ad94594c303ebc9a5204479117a5d7faa">SchemaRegistrationStatus</a> &gt; eve::schema::SchemaRegistry::registerSchema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Registers or replaces the exact <code>(id, version)</code> entry. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">definition</td><td><a class="el" href="classeve_1_1schema_1_1Schema.html" title="Script-facing facade for runtime schema registration and validation.">Schema</a> to copy into the registry. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Registered or Replaced, or a structured validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00850">850</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00196">eve::schema::Schema::registerFromClass()</a>.</p>
+
+</div>
+</div>
+<a id="a0b55914a652ff35a7a8bc73b8fe46fd9" name="a0b55914a652ff35a7a8bc73b8fe46fd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b55914a652ff35a7a8bc73b8fe46fd9">&#9670;&#160;</a></span>registerVersioned()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1schema.html#ad94594c303ebc9a5204479117a5d7faa">SchemaRegistrationStatus</a> &gt; eve::schema::SchemaRegistry::registerVersioned </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Registers a new exact <code>(id, version)</code> entry without replacing it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">definition</td><td><a class="el" href="classeve_1_1schema_1_1Schema.html" title="Script-facing facade for runtime schema registration and validation.">Schema</a> to copy into the registry. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Registered, or a structured conflict/validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00869">869</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SchemaRegistry_8cpp_source.html#l00874">registerFromJsonVersioned()</a>.</p>
+
+</div>
+</div>
+<a id="a9a6cdef11d22f4dcc0c091fddb55b4ed" name="a9a6cdef11d22f4dcc0c091fddb55b4ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a6cdef11d22f4dcc0c091fddb55b4ed">&#9670;&#160;</a></span>remove() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::schema::SchemaRegistry::remove </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes all registered versions for a stable id. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable schema id. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or NotFound when no version is registered. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00903">903</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aaef9cf9fb9e7aef196c2958494fa1879" name="aaef9cf9fb9e7aef196c2958494fa1879"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaef9cf9fb9e7aef196c2958494fa1879">&#9670;&#160;</a></span>remove() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::schema::SchemaRegistry::remove </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>schemaVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes one exact schema version. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">schemaVersion</td><td>Exact version to remove. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or NotFound when that version is not registered. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00917">917</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a8f1c986a962228da4ee19cac3b803520" name="a8f1c986a962228da4ee19cac3b803520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f1c986a962228da4ee19cac3b803520">&#9670;&#160;</a></span>resolve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1schema_1_1SchemaDefinition.html">SchemaDefinition</a> * eve::schema::SchemaRegistry::resolve </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>schemaVersion</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves one exact <code>(schemaId, schemaVersion)</code> pair, or nullptr. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id. </td></tr>
+    <tr><td class="paramname">schemaVersion</td><td>Exact positive schema version. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable registry entry. @ownership <a class="el" href="classeve_1_1schema_1_1SchemaRegistry.html" title="Process-wide registry for runtime gameplay schemas.">SchemaRegistry</a> owns the entry; callers must not delete or mutate it. @lifetime Valid until any registry mutation or destruction. @thread Call on the schema registry thread. @reentrancy The lookup invokes no callbacks and is invalid across re-entrant mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00884">884</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SchemaDocumentation_8cpp_source.html#l00133">generateBindingContract()</a>, <a class="el" href="SchemaDocumentation_8cpp_source.html#l00114">generateDocumentation()</a>, <a class="el" href="Schema_8cpp_source.html#l00292">eve::schema::Schema::hasVersion()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l01021">queryCompatibility()</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00970">validate()</a>.</p>
+
+</div>
+</div>
+<a id="a8ba62ce5ce7e60dac925ce6517255c26" name="a8ba62ce5ce7e60dac925ce6517255c26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ba62ce5ce7e60dac925ce6517255c26">&#9670;&#160;</a></span>validate() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1schema_1_1ValidationError.html">ValidationError</a> &gt; eve::schema::SchemaRegistry::validate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validates JSON text against the highest registered schema version. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable id of the schema to use. </td></tr>
+    <tr><td class="paramname">json</td><td>JSON-compatible value to validate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>All discovered failures; empty means valid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00960">960</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00864">find()</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00960">validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SchemaRegistry_8cpp_source.html#l01069">migrate()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00960">validate()</a>, <a class="el" href="Schema_8cpp_source.html#l00398">eve::schema::Schema::validateJson()</a> , 以及 <a class="el" href="Schema_8cpp_source.html#l00405">eve::schema::Schema::validateJsonVersioned()</a>.</p>
+
+</div>
+</div>
+<a id="abc5cba0a5acd0ae27c93ba9f1f7ccfd2" name="abc5cba0a5acd0ae27c93ba9f1f7ccfd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc5cba0a5acd0ae27c93ba9f1f7ccfd2">&#9670;&#160;</a></span>validate() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1schema_1_1ValidationError.html">ValidationError</a> &gt; eve::schema::SchemaRegistry::validate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>schemaVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validates JSON against one exact schema version. </p>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00970">970</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="SchemaRegistry_8cpp_source.html#l00884">resolve()</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>.</p>
+
+</div>
+</div>
+<a id="ac31fe114af41092422c66a1b8ca98f92" name="ac31fe114af41092422c66a1b8ca98f92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac31fe114af41092422c66a1b8ca98f92">&#9670;&#160;</a></span>versionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::schema::SchemaRegistry::versionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the number of registered <code>(id, version)</code> entries. </p>
+<dl class="section return"><dt>返回</dt><dd>Total number of schema versions across all ids. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00943">943</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SchemaRegistry_8cpp_source.html#l00891">versions()</a>.</p>
+
+</div>
+</div>
+<a id="a2bf3f583c7f93acf9b7563aa5e2154bb" name="a2bf3f583c7f93acf9b7563aa5e2154bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bf3f583c7f93acf9b7563aa5e2154bb">&#9670;&#160;</a></span>versions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; int &gt; eve::schema::SchemaRegistry::versions </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>schemaId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns all registered versions for an id in ascending order. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaId</td><td>Stable schema id. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Empty when the id is absent. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a> 第 <a class="el" href="SchemaRegistry_8cpp_source.html#l00891">891</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Schema_8cpp_source.html#l00299">eve::schema::Schema::getSchemaVersionAt()</a>, <a class="el" href="Schema_8cpp_source.html#l00296">eve::schema::Schema::getSchemaVersionCount()</a> , 以及 <a class="el" href="SchemaRegistry_8cpp_source.html#l00943">versionCount()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/schema/<a class="el" href="SchemaRegistry_8h_source.html">SchemaRegistry.h</a></li>
+<li>src/modules/schema/<a class="el" href="SchemaDocumentation_8cpp_source.html">SchemaDocumentation.cpp</a></li>
+<li>src/modules/schema/<a class="el" href="SchemaRegistry_8cpp_source.html">SchemaRegistry.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

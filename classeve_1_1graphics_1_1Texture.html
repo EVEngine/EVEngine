@@ -1,0 +1,867 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Texture类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="classeve_1_1graphics_1_1Texture-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Texture类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>GPU texture created via <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">Graphics::newTexture</a>. Owns GPU resources through an opaque backend handle.  
+ <a href="classeve_1_1graphics_1_1Texture.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Texture_8h_source.html">Texture.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::Texture 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1Texture.png" usemap="#eve::graphics::Texture_map" alt=""/>
+  <map id="eve::graphics::Texture_map" name="eve::graphics::Texture_map">
+<area href="classeve_1_1graphics_1_1Drawable.html" title="Drawable base (textures, meshes, canvases)." alt="eve::graphics::Drawable" shape="rect" coords="0,0,148,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a943fdd389fa6984fdb5113c9f1579dff" id="r_a943fdd389fa6984fdb5113c9f1579dff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a943fdd389fa6984fdb5113c9f1579dff">Texture</a> ()</td></tr>
+<tr class="separator:a943fdd389fa6984fdb5113c9f1579dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c2b946e4c572fcfc274ca314fbab466" id="r_a3c2b946e4c572fcfc274ca314fbab466"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a3c2b946e4c572fcfc274ca314fbab466">~Texture</a> () override</td></tr>
+<tr class="separator:a3c2b946e4c572fcfc274ca314fbab466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e59d325bb64721d2761c8de88b70c0a" id="r_a5e59d325bb64721d2761c8de88b70c0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a5e59d325bb64721d2761c8de88b70c0a">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, const glm::mat4 &amp;matrix) const override</td></tr>
+<tr class="memdesc:a5e59d325bb64721d2761c8de88b70c0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws the object with the specified transformation matrix.  <br /></td></tr>
+<tr class="separator:a5e59d325bb64721d2761c8de88b70c0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8596152e42006cb79c3456b7602d7b02" id="r_a8596152e42006cb79c3456b7602d7b02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a8596152e42006cb79c3456b7602d7b02">drawOcclusion</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, const glm::mat4 &amp;matrix) const override</td></tr>
+<tr class="memdesc:a8596152e42006cb79c3456b7602d7b02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Black silhouette using texture alpha (volumetric occlusion map).  <br /></td></tr>
+<tr class="separator:a8596152e42006cb79c3456b7602d7b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0b2e8bb89592cb32b0d9aa8b39e52e7" id="r_af0b2e8bb89592cb32b0d9aa8b39e52e7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#af0b2e8bb89592cb32b0d9aa8b39e52e7">getWidth</a> () const</td></tr>
+<tr class="separator:af0b2e8bb89592cb32b0d9aa8b39e52e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af57bd6f9a156caae806f7ed5481d7716" id="r_af57bd6f9a156caae806f7ed5481d7716"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#af57bd6f9a156caae806f7ed5481d7716">getHeight</a> () const</td></tr>
+<tr class="separator:af57bd6f9a156caae806f7ed5481d7716"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab385b1e310f8d6e9f784b7e8297c1d4" id="r_aab385b1e310f8d6e9f784b7e8297c1d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#aab385b1e310f8d6e9f784b7e8297c1d4">getPixelWidth</a> () const</td></tr>
+<tr class="separator:aab385b1e310f8d6e9f784b7e8297c1d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adef54544cf5aabfff4079dd3e62028c5" id="r_adef54544cf5aabfff4079dd3e62028c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#adef54544cf5aabfff4079dd3e62028c5">getPixelHeight</a> () const</td></tr>
+<tr class="separator:adef54544cf5aabfff4079dd3e62028c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a278e3ecb1e291dc2f772ee25b241d31c" id="r_a278e3ecb1e291dc2f772ee25b241d31c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a278e3ecb1e291dc2f772ee25b241d31c">getMipmapCount</a> () const</td></tr>
+<tr class="separator:a278e3ecb1e291dc2f772ee25b241d31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ffac0913d165dbb887329539e14cb1d" id="r_a7ffac0913d165dbb887329539e14cb1d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a7ffac0913d165dbb887329539e14cb1d">getSampler</a> () const</td></tr>
+<tr class="separator:a7ffac0913d165dbb887329539e14cb1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2fa237844e7f1020cb86012b0262b8d" id="r_ad2fa237844e7f1020cb86012b0262b8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#ad2fa237844e7f1020cb86012b0262b8d">setAlphaConvention</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ad2fa237844e7f1020cb86012b0262b8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declare whether RGB is straight or already multiplied by alpha.  <br /></td></tr>
+<tr class="separator:ad2fa237844e7f1020cb86012b0262b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1589c44a450eb2831550f2844d5f8f8" id="r_ab1589c44a450eb2831550f2844d5f8f8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#ab1589c44a450eb2831550f2844d5f8f8">getAlphaConvention</a> () const</td></tr>
+<tr class="separator:ab1589c44a450eb2831550f2844d5f8f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab094220afafb91c0fad17e84a71f707f" id="r_ab094220afafb91c0fad17e84a71f707f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#ab094220afafb91c0fad17e84a71f707f">hasPremultipliedAlpha</a> () const</td></tr>
+<tr class="separator:ab094220afafb91c0fad17e84a71f707f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34c6b298508b80b83b06e4fae76422f7" id="r_a34c6b298508b80b83b06e4fae76422f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a34c6b298508b80b83b06e4fae76422f7">markDeferredFilePixels</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *graphics)</td></tr>
+<tr class="separator:a34c6b298508b80b83b06e4fae76422f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2026edcf4265a72f532480ad88d6ab28" id="r_a2026edcf4265a72f532480ad88d6ab28"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a2026edcf4265a72f532480ad88d6ab28">clearDeferredFilePixels</a> ()</td></tr>
+<tr class="separator:a2026edcf4265a72f532480ad88d6ab28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b004f96d8087d5b51be33a2ce8042e2" id="r_a6b004f96d8087d5b51be33a2ce8042e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a6b004f96d8087d5b51be33a2ce8042e2">hasDeferredFilePixels</a> () const</td></tr>
+<tr class="separator:a6b004f96d8087d5b51be33a2ce8042e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1graphics_1_1Drawable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1graphics_1_1Drawable')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1graphics_1_1Drawable.html">eve::graphics::Drawable</a></td></tr>
+<tr class="memitem:aceeba99f4da23b12baf616fd57639c5d inherit pub_methods_classeve_1_1graphics_1_1Drawable" id="r_aceeba99f4da23b12baf616fd57639c5d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#aceeba99f4da23b12baf616fd57639c5d">~Drawable</a> ()</td></tr>
+<tr class="separator:aceeba99f4da23b12baf616fd57639c5d inherit pub_methods_classeve_1_1graphics_1_1Drawable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84e1f90d6c78c65e64f2d74b36a3fbf2 inherit pub_methods_classeve_1_1graphics_1_1Drawable" id="r_a84e1f90d6c78c65e64f2d74b36a3fbf2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#a84e1f90d6c78c65e64f2d74b36a3fbf2">getCastOcclusion</a> () const</td></tr>
+<tr class="memdesc:a84e1f90d6c78c65e64f2d74b36a3fbf2 inherit pub_methods_classeve_1_1graphics_1_1Drawable"><td class="mdescLeft">&#160;</td><td class="mdescRight">When false, skipped by <a class="el" href="classeve_1_1graphics_1_1Graphics.html#accadbc9e8f42c43cd11ea78ad32980dc" title="Volumetric occlusion helpers (shadow-pass analogue for light shafts). drawOcclusion skips drawables w...">Graphics::drawOcclusion</a> / volumetric occluder passes.  <br /></td></tr>
+<tr class="separator:a84e1f90d6c78c65e64f2d74b36a3fbf2 inherit pub_methods_classeve_1_1graphics_1_1Drawable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab42dd0f3ecbccdd65fe4accdd924871 inherit pub_methods_classeve_1_1graphics_1_1Drawable" id="r_aab42dd0f3ecbccdd65fe4accdd924871"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Drawable.html#aab42dd0f3ecbccdd65fe4accdd924871">setCastOcclusion</a> (bool cast)</td></tr>
+<tr class="separator:aab42dd0f3ecbccdd65fe4accdd924871 inherit pub_methods_classeve_1_1graphics_1_1Drawable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8b10e44e09a2cf465a7e890d14943556" id="r_a8b10e44e09a2cf465a7e890d14943556"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a8b10e44e09a2cf465a7e890d14943556">gpuHandle</a> = nullptr</td></tr>
+<tr class="separator:a8b10e44e09a2cf465a7e890d14943556"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c974b9f53e1f5c350432300a71367dc" id="r_a6c974b9f53e1f5c350432300a71367dc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a6c974b9f53e1f5c350432300a71367dc">width</a> = 0</td></tr>
+<tr class="separator:a6c974b9f53e1f5c350432300a71367dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad215629d80497f8815785a178ad519eb" id="r_ad215629d80497f8815785a178ad519eb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#ad215629d80497f8815785a178ad519eb">height</a> = 0</td></tr>
+<tr class="separator:ad215629d80497f8815785a178ad519eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dc26d8182ec45995de8551e05871b0a" id="r_a3dc26d8182ec45995de8551e05871b0a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a3dc26d8182ec45995de8551e05871b0a">depth</a> = 1</td></tr>
+<tr class="separator:a3dc26d8182ec45995de8551e05871b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a049534a4065a1d6e8d3c7962270d81bc" id="r_a049534a4065a1d6e8d3c7962270d81bc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a049534a4065a1d6e8d3c7962270d81bc">layers</a> = 1</td></tr>
+<tr class="separator:a049534a4065a1d6e8d3c7962270d81bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e9fd3b6e952596b6809ae9c72022142" id="r_a6e9fd3b6e952596b6809ae9c72022142"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a6e9fd3b6e952596b6809ae9c72022142">mipmapCount</a> = 1</td></tr>
+<tr class="separator:a6e9fd3b6e952596b6809ae9c72022142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ac59c481ffebf2085b88435c0ca34fa" id="r_a7ac59c481ffebf2085b88435c0ca34fa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a7ac59c481ffebf2085b88435c0ca34fa">pixelWidth</a> = 0</td></tr>
+<tr class="separator:a7ac59c481ffebf2085b88435c0ca34fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36de1a5934b9bc9ef3b0d73b7e7cd302" id="r_a36de1a5934b9bc9ef3b0d73b7e7cd302"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#a36de1a5934b9bc9ef3b0d73b7e7cd302">pixelHeight</a> = 0</td></tr>
+<tr class="separator:a36de1a5934b9bc9ef3b0d73b7e7cd302"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af385d374ed6c1fb791a536862dd5d393" id="r_af385d374ed6c1fb791a536862dd5d393"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Texture.html#af385d374ed6c1fb791a536862dd5d393">sampler</a> {}</td></tr>
+<tr class="separator:af385d374ed6c1fb791a536862dd5d393"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>GPU texture created via <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">Graphics::newTexture</a>. Owns GPU resources through an opaque backend handle. </p>
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a943fdd389fa6984fdb5113c9f1579dff" name="a943fdd389fa6984fdb5113c9f1579dff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a943fdd389fa6984fdb5113c9f1579dff">&#9670;&#160;</a></span>Texture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Texture::Texture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3c2b946e4c572fcfc274ca314fbab466" name="a3c2b946e4c572fcfc274ca314fbab466"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c2b946e4c572fcfc274ca314fbab466">&#9670;&#160;</a></span>~Texture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Texture::~Texture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00041">gpuHandle</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2026edcf4265a72f532480ad88d6ab28" name="a2026edcf4265a72f532480ad88d6ab28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2026edcf4265a72f532480ad88d6ab28">&#9670;&#160;</a></span>clearDeferredFilePixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Texture::clearDeferredFilePixels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01670">eve::graphics::Graphics::dropDeferredFileTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a5e59d325bb64721d2761c8de88b70c0a" name="a5e59d325bb64721d2761c8de88b70c0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e59d325bb64721d2761c8de88b70c0a">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Texture::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Draws the object with the specified transformation matrix. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1graphics_1_1Drawable.html#a1c0894d4411b877fd948bbc24ab108f6">eve::graphics::Drawable</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8596152e42006cb79c3456b7602d7b02" name="a8596152e42006cb79c3456b7602d7b02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8596152e42006cb79c3456b7602d7b02">&#9670;&#160;</a></span>drawOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Texture::drawOcclusion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Black silhouette using texture alpha (volumetric occlusion map). </p>
+
+<p>重载 <a class="el" href="classeve_1_1graphics_1_1Drawable.html#a1ab585bd5bbc4b9b903001ee28014db5">eve::graphics::Drawable</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8cpp_source.html#l01589">eve::graphics::Graphics::drawOcclusionTexture()</a>, <a class="el" href="Drawable_8h_source.html#l00027">eve::graphics::Drawable::getCastOcclusion()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="ab1589c44a450eb2831550f2844d5f8f8" name="ab1589c44a450eb2831550f2844d5f8f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1589c44a450eb2831550f2844d5f8f8">&#9670;&#160;</a></span>getAlphaConvention()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Texture::getAlphaConvention </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af57bd6f9a156caae806f7ed5481d7716" name="af57bd6f9a156caae806f7ed5481d7716"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af57bd6f9a156caae806f7ed5481d7716">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00044">height</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l01119">eve::avatar::AvatarInstance::addLayer()</a>, <a class="el" href="GlobalIllumination_8cpp_source.html#l00315">eve::graphics::GlobalIllumination::applyFromDepth()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00434">eve::graphics::AmbientOcclusion::applyFromGBuffer()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00327">eve::graphics::ScreenSpaceReflection::applyFromScene()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00394">eve::graphics::AmbientOcclusion::blur()</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00277">eve::graphics::RenderSystem::collectSprites()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00378">eve::graphics::AmbientOcclusion::compute()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l01138">eve::avatar::AvatarInstance::setLayerTexture()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00733">eve::graphics::Volumetric::uploadFroxel()</a>.</p>
+
+</div>
+</div>
+<a id="a278e3ecb1e291dc2f772ee25b241d31c" name="a278e3ecb1e291dc2f772ee25b241d31c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a278e3ecb1e291dc2f772ee25b241d31c">&#9670;&#160;</a></span>getMipmapCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::getMipmapCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00047">mipmapCount</a>.</p>
+
+</div>
+</div>
+<a id="adef54544cf5aabfff4079dd3e62028c5" name="adef54544cf5aabfff4079dd3e62028c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adef54544cf5aabfff4079dd3e62028c5">&#9670;&#160;</a></span>getPixelHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::getPixelHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00049">pixelHeight</a>.</p>
+
+</div>
+</div>
+<a id="aab385b1e310f8d6e9f784b7e8297c1d4" name="aab385b1e310f8d6e9f784b7e8297c1d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab385b1e310f8d6e9f784b7e8297c1d4">&#9670;&#160;</a></span>getPixelWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::getPixelWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00048">pixelWidth</a>.</p>
+
+</div>
+</div>
+<a id="a7ffac0913d165dbb887329539e14cb1d" name="a7ffac0913d165dbb887329539e14cb1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ffac0913d165dbb887329539e14cb1d">&#9670;&#160;</a></span>getSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> &amp; eve::graphics::Texture::getSampler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00050">sampler</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01757">eve::graphics::Graphics::setTextureSampler()</a>.</p>
+
+</div>
+</div>
+<a id="af0b2e8bb89592cb32b0d9aa8b39e52e7" name="af0b2e8bb89592cb32b0d9aa8b39e52e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0b2e8bb89592cb32b0d9aa8b39e52e7">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8h_source.html#l00043">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l01119">eve::avatar::AvatarInstance::addLayer()</a>, <a class="el" href="GlobalIllumination_8cpp_source.html#l00315">eve::graphics::GlobalIllumination::applyFromDepth()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00434">eve::graphics::AmbientOcclusion::applyFromGBuffer()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00327">eve::graphics::ScreenSpaceReflection::applyFromScene()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00394">eve::graphics::AmbientOcclusion::blur()</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00277">eve::graphics::RenderSystem::collectSprites()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00378">eve::graphics::AmbientOcclusion::compute()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l01138">eve::avatar::AvatarInstance::setLayerTexture()</a> , 以及 <a class="el" href="Volumetric_8cpp_source.html#l00733">eve::graphics::Volumetric::uploadFroxel()</a>.</p>
+
+</div>
+</div>
+<a id="a6b004f96d8087d5b51be33a2ce8042e2" name="a6b004f96d8087d5b51be33a2ce8042e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b004f96d8087d5b51be33a2ce8042e2">&#9670;&#160;</a></span>hasDeferredFilePixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Texture::hasDeferredFilePixels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l01119">eve::avatar::AvatarInstance::addLayer()</a> , 以及 <a class="el" href="AvatarInstance_8cpp_source.html#l01138">eve::avatar::AvatarInstance::setLayerTexture()</a>.</p>
+
+</div>
+</div>
+<a id="ab094220afafb91c0fad17e84a71f707f" name="ab094220afafb91c0fad17e84a71f707f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab094220afafb91c0fad17e84a71f707f">&#9670;&#160;</a></span>hasPremultipliedAlpha()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Texture::hasPremultipliedAlpha </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Material_8cpp_source.html#l00162">eve::graphics::Material::bind()</a>.</p>
+
+</div>
+</div>
+<a id="a34c6b298508b80b83b06e4fae76422f7" name="a34c6b298508b80b83b06e4fae76422f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34c6b298508b80b83b06e4fae76422f7">&#9670;&#160;</a></span>markDeferredFilePixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Texture::markDeferredFilePixels </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>graphics</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8cpp_source.html">Texture.cpp</a> 第 <a class="el" href="Texture_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad2fa237844e7f1020cb86012b0262b8d" name="ad2fa237844e7f1020cb86012b0262b8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2fa237844e7f1020cb86012b0262b8d">&#9670;&#160;</a></span>setAlphaConvention()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Texture::setAlphaConvention </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Declare whether RGB is straight or already multiplied by alpha. </p>
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3dc26d8182ec45995de8551e05871b0a" name="a3dc26d8182ec45995de8551e05871b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dc26d8182ec45995de8551e05871b0a">&#9670;&#160;</a></span>depth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::depth = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics2D_8cpp_source.html#l00804">eve::graphics::vulkan::Graphics::drawTexturedRectShaderUV()</a> , 以及 <a class="el" href="Graphics2D_8cpp_source.html#l00821">eve::graphics::vulkan::Graphics::drawTexturedRectShaderUVRotated()</a>.</p>
+
+</div>
+</div>
+<a id="a8b10e44e09a2cf465a7e890d14943556" name="a8b10e44e09a2cf465a7e890d14943556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b10e44e09a2cf465a7e890d14943556">&#9670;&#160;</a></span>gpuHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* eve::graphics::Texture::gpuHandle = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Backend-private GPU object (<a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html">vulkan::GpuTexture</a>*). </p>
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsTexture_8cpp_source.html#l00350">eve::graphics::vulkan::Graphics::copyHDRCanvasesToCubemap()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02006">eve::graphics::webgpu::Graphics::copyHDRCanvasesToCubemap()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00283">eve::graphics::vulkan::Graphics::copyHDRCanvasToCubemapFace()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l01976">eve::graphics::webgpu::Graphics::copyHDRCanvasToCubemapFace()</a>, <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l02024">eve::graphics::vulkan::Graphics::debugBindlessIndex()</a>, <a class="el" href="GraphicsMesh_8cpp_source.html#l00574">eve::graphics::vulkan::Graphics::drawMeshShader()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l00570">eve::graphics::vulkan::Graphics::drawVoxelFaceInstances()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00438">eve::graphics::vulkan::Graphics::filterHDRReflectionCubemap()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02046">eve::graphics::webgpu::Graphics::filterHDRReflectionCubemap()</a>, <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l00593">eve::graphics::vulkan::Graphics::gpuDrivenReflectionProbeSlot()</a>, <a class="el" href="webgpu_2Canvas_8cpp_source.html#l00012">eve::graphics::webgpu::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00616">eve::graphics::vulkan::Graphics::releaseTexture()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02311">eve::graphics::webgpu::Graphics::releaseTexture()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l00365">eve::graphics::vulkan::Graphics::renderEntityIdMask()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00599">eve::graphics::vulkan::Graphics::setTextureSampler()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00694">eve::graphics::vulkan::Graphics::updateTextureRegions()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02266">eve::graphics::webgpu::Graphics::uploadDeferredFileTexture()</a>, <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00059">eve::graphics::vulkan::OffscreenCanvas::~OffscreenCanvas()</a> , 以及 <a class="el" href="Texture_8cpp_source.html#l00012">~Texture()</a>.</p>
+
+</div>
+</div>
+<a id="ad215629d80497f8815785a178ad519eb" name="ad215629d80497f8815785a178ad519eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad215629d80497f8815785a178ad519eb">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::height = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Texture_8cpp_source.html#l00033">getHeight()</a>, <a class="el" href="webgpu_2Canvas_8cpp_source.html#l00012">eve::graphics::webgpu::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00680">eve::graphics::vulkan::Graphics::updateTexture()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02365">eve::graphics::webgpu::Graphics::updateTexture()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00694">eve::graphics::vulkan::Graphics::updateTextureRegions()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02387">eve::graphics::webgpu::Graphics::updateTextureRegions()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02266">eve::graphics::webgpu::Graphics::uploadDeferredFileTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a049534a4065a1d6e8d3c7962270d81bc" name="a049534a4065a1d6e8d3c7962270d81bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a049534a4065a1d6e8d3c7962270d81bc">&#9670;&#160;</a></span>layers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::layers = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e9fd3b6e952596b6809ae9c72022142" name="a6e9fd3b6e952596b6809ae9c72022142"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e9fd3b6e952596b6809ae9c72022142">&#9670;&#160;</a></span>mipmapCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::mipmapCount = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Texture_8cpp_source.html#l00048">getMipmapCount()</a>, <a class="el" href="webgpu_2Canvas_8cpp_source.html#l00012">eve::graphics::webgpu::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00694">eve::graphics::vulkan::Graphics::updateTextureRegions()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02387">eve::graphics::webgpu::Graphics::updateTextureRegions()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02266">eve::graphics::webgpu::Graphics::uploadDeferredFileTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a36de1a5934b9bc9ef3b0d73b7e7cd302" name="a36de1a5934b9bc9ef3b0d73b7e7cd302"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36de1a5934b9bc9ef3b0d73b7e7cd302">&#9670;&#160;</a></span>pixelHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::pixelHeight = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Texture_8cpp_source.html#l00043">getPixelHeight()</a>, <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02266">eve::graphics::webgpu::Graphics::uploadDeferredFileTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a7ac59c481ffebf2085b88435c0ca34fa" name="a7ac59c481ffebf2085b88435c0ca34fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac59c481ffebf2085b88435c0ca34fa">&#9670;&#160;</a></span>pixelWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::pixelWidth = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Texture_8cpp_source.html#l00038">getPixelWidth()</a>, <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02266">eve::graphics::webgpu::Graphics::uploadDeferredFileTexture()</a>.</p>
+
+</div>
+</div>
+<a id="af385d374ed6c1fb791a536862dd5d393" name="af385d374ed6c1fb791a536862dd5d393"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af385d374ed6c1fb791a536862dd5d393">&#9670;&#160;</a></span>sampler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> eve::graphics::Texture::sampler {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Texture_8h_source.html#l00030">getSampler()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00599">eve::graphics::vulkan::Graphics::setTextureSampler()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02226">eve::graphics::webgpu::Graphics::setTextureSampler()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02266">eve::graphics::webgpu::Graphics::uploadDeferredFileTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a6c974b9f53e1f5c350432300a71367dc" name="a6c974b9f53e1f5c350432300a71367dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c974b9f53e1f5c350432300a71367dc">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Texture::width = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Texture_8h_source.html">Texture.h</a> 第 <a class="el" href="Texture_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l01119">eve::avatar::AvatarInstance::addLayer()</a>, <a class="el" href="Texture_8cpp_source.html#l00028">getWidth()</a>, <a class="el" href="webgpu_2Canvas_8cpp_source.html#l00012">eve::graphics::webgpu::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l01138">eve::avatar::AvatarInstance::setLayerTexture()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00680">eve::graphics::vulkan::Graphics::updateTexture()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02365">eve::graphics::webgpu::Graphics::updateTexture()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00694">eve::graphics::vulkan::Graphics::updateTextureRegions()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02387">eve::graphics::webgpu::Graphics::updateTextureRegions()</a> , 以及 <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02266">eve::graphics::webgpu::Graphics::uploadDeferredFileTexture()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Texture_8h_source.html">Texture.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Texture_8cpp_source.html">Texture.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

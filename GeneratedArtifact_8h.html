@@ -1,0 +1,297 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/GeneratedArtifact.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">GeneratedArtifact.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning, backend-neutral products published by procedural generation.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ArtifactPublication_8h_source.html">common/ArtifactPublication.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Generation_8h_source.html">common/Generation.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Identity_8h_source.html">common/Identity.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SchemaVersion_8h_source.html">common/SchemaVersion.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Snapshot_8h_source.html">common/Snapshot.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">common/Value.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Grid2D_8h_source.html">procgen/Grid2D.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="MeshBuild_8h_source.html">procgen/MeshBuild.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Params_8h_source.html">procgen/Params.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PointSet_8h_source.html">procgen/PointSet.h</a>&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;variant&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="GeneratedArtifact_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BuildKey.html">eve::procgen::BuildKey</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable key for deterministic-equivalent generation inputs.  <a href="classeve_1_1procgen_1_1BuildKey.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Bounds.html">eve::procgen::Bounds</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axis-aligned bounds in the artifact's declared world coordinate space.  <a href="structeve_1_1procgen_1_1Bounds.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ImageData.html">eve::procgen::ImageData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Small owning image product; raw pixels stay out of JSON metadata.  <a href="structeve_1_1procgen_1_1ImageData.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Collider.html">eve::procgen::Collider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral collider product, normally a triangle mesh or hull.  <a href="structeve_1_1procgen_1_1Collider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ArtifactPart.html">eve::procgen::ArtifactPart</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One typed, role-named child product inside a composite artifact.  <a href="structeve_1_1procgen_1_1ArtifactPart.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1CompositeArtifact.html">eve::procgen::CompositeArtifact</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A coherent set of products published from one deterministic build.  <a href="structeve_1_1procgen_1_1CompositeArtifact.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1GeneratedArtifact.html">eve::procgen::GeneratedArtifact</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete immutable-once-published artifact record.  <a href="structeve_1_1procgen_1_1GeneratedArtifact.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1ArtifactStore.html">eve::procgen::ArtifactStore</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-memory owner and publisher for generated artifacts.  <a href="classeve_1_1procgen_1_1ArtifactStore.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacestd" id="r_namespacestd"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestd.html">std</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:ab3f114904341c531b6c573ba1de343df" id="r_ab3f114904341c531b6c573ba1de343df"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">eve::procgen::ArtifactId</a> = <a class="el" href="namespaceeve.html#a9b3eefe49d7b85c70771c7aa3fd70f6a">eve::ArtifactId</a></td></tr>
+<tr class="memdesc:ab3f114904341c531b6c573ba1de343df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Common strong UUID identity for one published procedural artifact.  <br /></td></tr>
+<tr class="separator:ab3f114904341c531b6c573ba1de343df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5b7529f8592f767ff5ccd613843dafa" id="r_aa5b7529f8592f767ff5ccd613843dafa"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aa5b7529f8592f767ff5ccd613843dafa">eve::procgen::MeshData</a> = <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a></td></tr>
+<tr class="memdesc:aa5b7529f8592f767ff5ccd613843dafa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Existing dense CPU mesh type under the artifact vocabulary.  <br /></td></tr>
+<tr class="separator:aa5b7529f8592f767ff5ccd613843dafa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9bdba549c00f91c451310753c4d1479" id="r_ac9bdba549c00f91c451310753c4d1479"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac9bdba549c00f91c451310753c4d1479">eve::procgen::ArtifactLeafPayload</a> = std::variant&lt; <a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a>, <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>, <a class="el" href="namespaceeve_1_1procgen.html#aa5b7529f8592f767ff5ccd613843dafa">MeshData</a>, <a class="el" href="structeve_1_1procgen_1_1ImageData.html">ImageData</a>, <a class="el" href="structeve_1_1procgen_1_1Collider.html">Collider</a> &gt;</td></tr>
+<tr class="memdesc:ac9bdba549c00f91c451310753c4d1479"><td class="mdescLeft">&#160;</td><td class="mdescRight">Leaf payloads used by a <a class="el" href="structeve_1_1procgen_1_1CompositeArtifact.html" title="A coherent set of products published from one deterministic build.">CompositeArtifact</a>.  <br /></td></tr>
+<tr class="separator:ac9bdba549c00f91c451310753c4d1479"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:aab65b55df066306684f6fe692be73127" id="r_aab65b55df066306684f6fe692be73127"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127">eve::procgen::ArtifactType</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127a5174d1309f275ba6f275db3af9eb3e18">eve::procgen::Grid</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127aaedf8f48dfa5b704b6c12b415707a1da">eve::procgen::PointSet</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127a2fb9f97ae851e5999f38d760c395f3a7">eve::procgen::MeshData</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127a0b8750f7fc77e85ea234f510496da886">eve::procgen::ImageData</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127a39e1450275f6b9c731ff9faafab3f44c">eve::procgen::Collider</a>
+, <a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127a141a5b46e2087dc7a80a43710c2dacfb">eve::procgen::Composite</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:aab65b55df066306684f6fe692be73127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runtime payload kind; it is checked against the variant on publish.  <a href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127">更多...</a><br /></td></tr>
+<tr class="separator:aab65b55df066306684f6fe692be73127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a395bd063e737cf68c73b69c1a9d17d4f" id="r_a395bd063e737cf68c73b69c1a9d17d4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127">ArtifactType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a395bd063e737cf68c73b69c1a9d17d4f">eve::procgen::artifactType</a> (const <a class="el" href="structeve_1_1procgen_1_1GeneratedArtifact.html#a152407f197b193c54353494c3c133a3e">GeneratedArtifact::Payload</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>) noexcept</td></tr>
+<tr class="memdesc:a395bd063e737cf68c73b69c1a9d17d4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the variant kind for a payload.  <br /></td></tr>
+<tr class="separator:a395bd063e737cf68c73b69c1a9d17d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55189e1b50dae4e0d7c74f52586e2438" id="r_a55189e1b50dae4e0d7c74f52586e2438"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a55189e1b50dae4e0d7c74f52586e2438">eve::procgen::artifactTypeName</a> (<a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127">ArtifactType</a> <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) noexcept</td></tr>
+<tr class="memdesc:a55189e1b50dae4e0d7c74f52586e2438"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable textual spelling of an artifact kind.  <br /></td></tr>
+<tr class="separator:a55189e1b50dae4e0d7c74f52586e2438"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7a45a548b8bb10b8d7b6a9b254a01b1" id="r_aa7a45a548b8bb10b8d7b6a9b254a01b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1GeneratedArtifact.html">GeneratedArtifact</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#aa7a45a548b8bb10b8d7b6a9b254a01b1">eve::procgen::makeArtifact</a> (<a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">ArtifactId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127">ArtifactType</a> <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">eve::SchemaVersion</a> schemaVersion, <a class="el" href="classeve_1_1procgen_1_1BuildKey.html">BuildKey</a> buildKey, <a class="el" href="structeve_1_1procgen_1_1Bounds.html">Bounds</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a940cebe82cc3421a1b665752b3131564">bounds</a>, std::vector&lt; <a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">ArtifactId</a> &gt; dependencies, <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> metadata, <a class="el" href="structeve_1_1procgen_1_1GeneratedArtifact.html#a152407f197b193c54353494c3c133a3e">GeneratedArtifact::Payload</a> <a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)</td></tr>
+<tr class="memdesc:aa7a45a548b8bb10b8d7b6a9b254a01b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and construct one artifact record.  <br /></td></tr>
+<tr class="separator:aa7a45a548b8bb10b8d7b6a9b254a01b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84652bf0d94a2d01759c8d5620390765" id="r_a84652bf0d94a2d01759c8d5620390765"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1ArtifactPart.html">ArtifactPart</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a84652bf0d94a2d01759c8d5620390765">eve::procgen::makeArtifactPart</a> (std::string role, <a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">ArtifactId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="namespaceeve_1_1procgen.html#aab65b55df066306684f6fe692be73127">ArtifactType</a> <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">eve::SchemaVersion</a> schemaVersion, <a class="el" href="classeve_1_1procgen_1_1BuildKey.html">BuildKey</a> buildKey, <a class="el" href="structeve_1_1procgen_1_1Bounds.html">Bounds</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a940cebe82cc3421a1b665752b3131564">bounds</a>, std::vector&lt; <a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">ArtifactId</a> &gt; dependencies, <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> metadata, <a class="el" href="namespaceeve_1_1procgen.html#ac9bdba549c00f91c451310753c4d1479">ArtifactLeafPayload</a> <a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)</td></tr>
+<tr class="memdesc:a84652bf0d94a2d01759c8d5620390765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and construct a leaf part for a composite artifact.  <br /></td></tr>
+<tr class="separator:a84652bf0d94a2d01759c8d5620390765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac40466dfc2bcb9126431c44f0e7b55f4" id="r_ac40466dfc2bcb9126431c44f0e7b55f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1GeneratedArtifact.html">GeneratedArtifact</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac40466dfc2bcb9126431c44f0e7b55f4">eve::procgen::generateHexTerrainArtifact</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">ArtifactId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:ac40466dfc2bcb9126431c44f0e7b55f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a hex-terrain composite containing mesh, collider, topology and world anchors.  <br /></td></tr>
+<tr class="separator:ac40466dfc2bcb9126431c44f0e7b55f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b5dcb23e9aa08431fcd465ed990413c" id="r_a5b5dcb23e9aa08431fcd465ed990413c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1GeneratedArtifact.html">GeneratedArtifact</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a5b5dcb23e9aa08431fcd465ed990413c">eve::procgen::generateCastleArtifact</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">ArtifactId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a5b5dcb23e9aa08431fcd465ed990413c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a castle composite containing mesh, collider, ring topology and gate/keep anchors.  <br /></td></tr>
+<tr class="separator:a5b5dcb23e9aa08431fcd465ed990413c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac52ebf3daf91e068bfac1969e5fbe74a" id="r_ac52ebf3daf91e068bfac1969e5fbe74a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1GeneratedArtifact.html">GeneratedArtifact</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac52ebf3daf91e068bfac1969e5fbe74a">eve::procgen::generateMeshArtifact</a> (std::string_view recipeId, const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>, <a class="el" href="namespaceeve_1_1procgen.html#ab3f114904341c531b6c573ba1de343df">ArtifactId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:ac52ebf3daf91e068bfac1969e5fbe74a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate any registered mesh recipe as a CPU artifact.  <br /></td></tr>
+<tr class="separator:ac52ebf3daf91e068bfac1969e5fbe74a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning, backend-neutral products published by procedural generation. </p>
+<p>Generated artifacts are the boundary between deterministic CPU generation and optional map, scene, graphics or physics adapters. The payload keeps dense data in typed values; metadata is deliberately small and dynamic. </p>
+
+<p class="definition">在文件 <a class="el" href="GeneratedArtifact_8h_source.html">GeneratedArtifact.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

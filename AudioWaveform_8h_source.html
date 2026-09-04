@@ -1,0 +1,267 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/audio_editing/AudioWaveform.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e054def7dbc521ffca26c2cf90850a73.html">audio_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AudioWaveform.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AudioWaveform_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AudioEditingTypes_8h.html">audio_editing/AudioEditingTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1audio__editing.html">eve::audio_editing</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html">   11</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html">EditorAudioPcm</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a5e9081eef2a777598dd7e96a9bedc61d">   12</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a5e9081eef2a777598dd7e96a9bedc61d">sampleRate</a> = 0;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">   13</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">channels</a> = 0;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">   14</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">samples</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>};</div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html">   18</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html">AudioWaveformRequest</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#ad5788e7db12a87fd3f0ea67f7b5c9c65">   19</a></span>    std::string <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#ad5788e7db12a87fd3f0ea67f7b5c9c65">asset</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a82e32472d23ece422fe0614f94407486">   20</a></span>    <a class="code hl_typedef" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a82e32472d23ece422fe0614f94407486">sourceRevision</a> = 0;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a068936bd3f3e9e25922b739f9ddb03b8">   21</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a068936bd3f3e9e25922b739f9ddb03b8">pixelWidth</a> = 0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a65a076f8fef3157235656b32be98ea72">   22</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a65a076f8fef3157235656b32be98ea72">loopStart</a> = 0.0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a8deee0a8561a204601d742d0c3503dfd">   23</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a8deee0a8561a204601d742d0c3503dfd">loopEnd</a> = 0.0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html">AudioWaveformBucket</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#a3bc1851124feed00fbcddc5c8f3e0b1d">   28</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#a3bc1851124feed00fbcddc5c8f3e0b1d">startTime</a> = 0.0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#adc9b2229c2e8163e7fedcdeec4494475">   29</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#adc9b2229c2e8163e7fedcdeec4494475">endTime</a> = 0.0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#aad4dd9cf3597dc8f5936fd1d670bc06c">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#aad4dd9cf3597dc8f5936fd1d670bc06c">minimum</a> = 0.0F;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#a7ede40307e5e14ace8f1257b6f3307bc">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#a7ede40307e5e14ace8f1257b6f3307bc">maximum</a> = 0.0F;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#ab9032ab75d86888db7f6806c0b805873">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#ab9032ab75d86888db7f6806c0b805873">rms</a> = 0.0F;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html">AudioWaveformResult</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#ab22793659b72f44ddcb3b4b3b4a72be7">   37</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#ab22793659b72f44ddcb3b4b3b4a72be7">status</a> = EditorStatus::Failed;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a2967d9ead80fd30ba1734f9e957beae0">   38</a></span>    std::string <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a2967d9ead80fd30ba1734f9e957beae0">asset</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a181b651e05548e47694f9fa658510d81">   39</a></span>    <a class="code hl_typedef" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a181b651e05548e47694f9fa658510d81">sourceRevision</a> = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a1aea2857e1a8b0702da735570bf5255c">   40</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a1aea2857e1a8b0702da735570bf5255c">sampleRate</a> = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a19cb7b2b3494cdb86d8e1d14525a6cf4">   41</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a19cb7b2b3494cdb86d8e1d14525a6cf4">channels</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a6e6d384e2a7d2f617de809bcf4c155ed">   42</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a6e6d384e2a7d2f617de809bcf4c155ed">duration</a> = 0.0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a7afe85078d40575a4aac5e2876704a68">   43</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a7afe85078d40575a4aac5e2876704a68">loopStartBucket</a> = -1;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a79bc062d0965f20c325c9e94905f6961">   44</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a79bc062d0965f20c325c9e94905f6961">loopEndBucket</a> = -1;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a56ce905a0a8560ebccfd8723c73bc724">   45</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a56ce905a0a8560ebccfd8723c73bc724">loopSeamDelta</a> = 0.0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a85ff4915365d05c6c838168e2c6273a7">   46</a></span>    std::vector&lt;std::vector&lt;AudioWaveformBucket&gt;&gt; <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a85ff4915365d05c6c838168e2c6273a7">envelopes</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#ae22df6abc2532e2800825a4bf33e7a77">   47</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#ae22df6abc2532e2800825a4bf33e7a77">diagnostics</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1audio__editing_1_1AudioWaveformService.html">   51</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1audio__editing_1_1AudioWaveformService.html">AudioWaveformService</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioWaveformResult.html">AudioWaveformResult</a> <a class="code hl_function" href="classeve_1_1audio__editing_1_1AudioWaveformService.html#a6edbf81713338e9c9bc01f126a37494b">generate</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html">AudioWaveformRequest</a>&amp; request, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1audio__editing_1_1EditorAudioPcm.html">EditorAudioPcm</a>&amp; pcm,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                 <span class="keywordtype">int</span> maxPixels = 16384, std::size_t maxSamples = 100000000) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}  <span class="comment">// namespace eve::audio_editing</span></div>
+<div class="ttc" id="aAudioEditingTypes_8h_html"><div class="ttname"><a href="AudioEditingTypes_8h.html">AudioEditingTypes.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioWaveformService_html"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioWaveformService.html">eve::audio_editing::AudioWaveformService</a></div><div class="ttdoc">Codec-neutral waveform generation and loop QA service.</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00051">AudioWaveform.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio__editing_1_1AudioWaveformService_html_a6edbf81713338e9c9bc01f126a37494b"><div class="ttname"><a href="classeve_1_1audio__editing_1_1AudioWaveformService.html#a6edbf81713338e9c9bc01f126a37494b">eve::audio_editing::AudioWaveformService::generate</a></div><div class="ttdeci">AudioWaveformResult generate(const AudioWaveformRequest &amp;request, const EditorAudioPcm &amp;pcm, int maxPixels=16384, std::size_t maxSamples=100000000) const</div><div class="ttdoc">Build bounded per-channel envelopes from already-decoded PCM.</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8cpp_source.html#l00009">AudioWaveform.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1audio__editing_html"><div class="ttname"><a href="namespaceeve_1_1audio__editing.html">eve::audio_editing</a></div><div class="ttdef"><b>Definition</b> <a href="AudioEditingCommands_8cpp_source.html#l00007">AudioEditingCommands.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_html_acbdd173177eb4f86203c023106f67a84"><div class="ttname"><a href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a></div><div class="ttdeci">detail::StrongUint64&lt; detail::RevisionTag &gt; Revision</div><div class="ttdoc">Monotonic content/state revision used for optimistic-concurrency checks.</div><div class="ttdef"><b>Definition</b> <a href="Revision_8h_source.html#l00012">Revision.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformBucket_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html">eve::audio_editing::AudioWaveformBucket</a></div><div class="ttdoc">One min/max/RMS envelope bucket for a single channel.</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00027">AudioWaveform.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformBucket_html_a3bc1851124feed00fbcddc5c8f3e0b1d"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#a3bc1851124feed00fbcddc5c8f3e0b1d">eve::audio_editing::AudioWaveformBucket::startTime</a></div><div class="ttdeci">double startTime</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00028">AudioWaveform.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformBucket_html_a7ede40307e5e14ace8f1257b6f3307bc"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#a7ede40307e5e14ace8f1257b6f3307bc">eve::audio_editing::AudioWaveformBucket::maximum</a></div><div class="ttdeci">float maximum</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00031">AudioWaveform.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformBucket_html_aad4dd9cf3597dc8f5936fd1d670bc06c"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#aad4dd9cf3597dc8f5936fd1d670bc06c">eve::audio_editing::AudioWaveformBucket::minimum</a></div><div class="ttdeci">float minimum</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00030">AudioWaveform.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformBucket_html_ab9032ab75d86888db7f6806c0b805873"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#ab9032ab75d86888db7f6806c0b805873">eve::audio_editing::AudioWaveformBucket::rms</a></div><div class="ttdeci">float rms</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00032">AudioWaveform.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformBucket_html_adc9b2229c2e8163e7fedcdeec4494475"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformBucket.html#adc9b2229c2e8163e7fedcdeec4494475">eve::audio_editing::AudioWaveformBucket::endTime</a></div><div class="ttdeci">double endTime</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00029">AudioWaveform.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformRequest_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html">eve::audio_editing::AudioWaveformRequest</a></div><div class="ttdoc">Immutable waveform request tied to an audio document revision.</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00018">AudioWaveform.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformRequest_html_a068936bd3f3e9e25922b739f9ddb03b8"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a068936bd3f3e9e25922b739f9ddb03b8">eve::audio_editing::AudioWaveformRequest::pixelWidth</a></div><div class="ttdeci">int pixelWidth</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00021">AudioWaveform.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformRequest_html_a65a076f8fef3157235656b32be98ea72"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a65a076f8fef3157235656b32be98ea72">eve::audio_editing::AudioWaveformRequest::loopStart</a></div><div class="ttdeci">double loopStart</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00022">AudioWaveform.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformRequest_html_a82e32472d23ece422fe0614f94407486"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a82e32472d23ece422fe0614f94407486">eve::audio_editing::AudioWaveformRequest::sourceRevision</a></div><div class="ttdeci">Revision sourceRevision</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00020">AudioWaveform.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformRequest_html_a8deee0a8561a204601d742d0c3503dfd"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#a8deee0a8561a204601d742d0c3503dfd">eve::audio_editing::AudioWaveformRequest::loopEnd</a></div><div class="ttdeci">double loopEnd</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00023">AudioWaveform.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformRequest_html_ad5788e7db12a87fd3f0ea67f7b5c9c65"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformRequest.html#ad5788e7db12a87fd3f0ea67f7b5c9c65">eve::audio_editing::AudioWaveformRequest::asset</a></div><div class="ttdeci">std::string asset</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00019">AudioWaveform.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html">eve::audio_editing::AudioWaveformResult</a></div><div class="ttdoc">Revision-tagged waveform and loop-preview diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00036">AudioWaveform.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a181b651e05548e47694f9fa658510d81"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a181b651e05548e47694f9fa658510d81">eve::audio_editing::AudioWaveformResult::sourceRevision</a></div><div class="ttdeci">Revision sourceRevision</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00039">AudioWaveform.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a19cb7b2b3494cdb86d8e1d14525a6cf4"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a19cb7b2b3494cdb86d8e1d14525a6cf4">eve::audio_editing::AudioWaveformResult::channels</a></div><div class="ttdeci">int channels</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00041">AudioWaveform.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a1aea2857e1a8b0702da735570bf5255c"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a1aea2857e1a8b0702da735570bf5255c">eve::audio_editing::AudioWaveformResult::sampleRate</a></div><div class="ttdeci">int sampleRate</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00040">AudioWaveform.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a2967d9ead80fd30ba1734f9e957beae0"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a2967d9ead80fd30ba1734f9e957beae0">eve::audio_editing::AudioWaveformResult::asset</a></div><div class="ttdeci">std::string asset</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00038">AudioWaveform.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a56ce905a0a8560ebccfd8723c73bc724"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a56ce905a0a8560ebccfd8723c73bc724">eve::audio_editing::AudioWaveformResult::loopSeamDelta</a></div><div class="ttdeci">double loopSeamDelta</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00045">AudioWaveform.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a6e6d384e2a7d2f617de809bcf4c155ed"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a6e6d384e2a7d2f617de809bcf4c155ed">eve::audio_editing::AudioWaveformResult::duration</a></div><div class="ttdeci">double duration</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00042">AudioWaveform.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a79bc062d0965f20c325c9e94905f6961"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a79bc062d0965f20c325c9e94905f6961">eve::audio_editing::AudioWaveformResult::loopEndBucket</a></div><div class="ttdeci">int loopEndBucket</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00044">AudioWaveform.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a7afe85078d40575a4aac5e2876704a68"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a7afe85078d40575a4aac5e2876704a68">eve::audio_editing::AudioWaveformResult::loopStartBucket</a></div><div class="ttdeci">int loopStartBucket</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00043">AudioWaveform.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_a85ff4915365d05c6c838168e2c6273a7"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#a85ff4915365d05c6c838168e2c6273a7">eve::audio_editing::AudioWaveformResult::envelopes</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; AudioWaveformBucket &gt; &gt; envelopes</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00046">AudioWaveform.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_ab22793659b72f44ddcb3b4b3b4a72be7"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#ab22793659b72f44ddcb3b4b3b4a72be7">eve::audio_editing::AudioWaveformResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00037">AudioWaveform.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1AudioWaveformResult_html_ae22df6abc2532e2800825a4bf33e7a77"><div class="ttname"><a href="structeve_1_1audio__editing_1_1AudioWaveformResult.html#ae22df6abc2532e2800825a4bf33e7a77">eve::audio_editing::AudioWaveformResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00047">AudioWaveform.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1EditorAudioPcm_html"><div class="ttname"><a href="structeve_1_1audio__editing_1_1EditorAudioPcm.html">eve::audio_editing::EditorAudioPcm</a></div><div class="ttdoc">Decoded interleaved PCM supplied by an audio importer or codec plugin.</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00011">AudioWaveform.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1EditorAudioPcm_html_a2de207e8a0ee129c061cc5df26c269f8"><div class="ttname"><a href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a2de207e8a0ee129c061cc5df26c269f8">eve::audio_editing::EditorAudioPcm::samples</a></div><div class="ttdeci">std::vector&lt; float &gt; samples</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00014">AudioWaveform.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1EditorAudioPcm_html_a5e9081eef2a777598dd7e96a9bedc61d"><div class="ttname"><a href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a5e9081eef2a777598dd7e96a9bedc61d">eve::audio_editing::EditorAudioPcm::sampleRate</a></div><div class="ttdeci">int sampleRate</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00012">AudioWaveform.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1audio__editing_1_1EditorAudioPcm_html_a63c17070e759568ea063f4e82ab60099"><div class="ttname"><a href="structeve_1_1audio__editing_1_1EditorAudioPcm.html#a63c17070e759568ea063f4e82ab60099">eve::audio_editing::EditorAudioPcm::channels</a></div><div class="ttdeci">int channels</div><div class="ttdef"><b>Definition</b> <a href="AudioWaveform_8h_source.html#l00013">AudioWaveform.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

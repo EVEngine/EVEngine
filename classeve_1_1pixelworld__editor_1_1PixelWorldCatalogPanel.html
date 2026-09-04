@@ -1,0 +1,1172 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::pixelworld_editor::PixelWorldCatalogPanel类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1pixelworld__editor.html">pixelworld_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::pixelworld_editor::PixelWorldCatalogPanel类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Dedicated visual material/reaction Catalog editor with transactional draft admission.  
+ <a href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1bbe812442e7a395fb1fa02dae61dcb7" id="r_a1bbe812442e7a395fb1fa02dae61dcb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a1bbe812442e7a395fb1fa02dae61dcb7">~PixelWorldCatalogPanel</a> ()</td></tr>
+<tr class="separator:a1bbe812442e7a395fb1fa02dae61dcb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47824cf2883e9de074c624b6cdf168b6" id="r_a47824cf2883e9de074c624b6cdf168b6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a47824cf2883e9de074c624b6cdf168b6">PixelWorldCatalogPanel</a> (const <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;)=delete</td></tr>
+<tr class="separator:a47824cf2883e9de074c624b6cdf168b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3dc31e7d0d03837b914f9309d430e09" id="r_ad3dc31e7d0d03837b914f9309d430e09"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#ad3dc31e7d0d03837b914f9309d430e09">operator=</a> (const <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;)=delete</td></tr>
+<tr class="separator:ad3dc31e7d0d03837b914f9309d430e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57c2a4fe2946d9cae16575e3df068667" id="r_a57c2a4fe2946d9cae16575e3df068667"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a57c2a4fe2946d9cae16575e3df068667">PixelWorldCatalogPanel</a> (<a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;&amp;other)</td></tr>
+<tr class="separator:a57c2a4fe2946d9cae16575e3df068667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e1ed492038b87e99269d57a0b90fd92" id="r_a2e1ed492038b87e99269d57a0b90fd92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a2e1ed492038b87e99269d57a0b90fd92">operator=</a> (<a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;&amp;other)</td></tr>
+<tr class="separator:a2e1ed492038b87e99269d57a0b90fd92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae543838a04683113dacb14c00081f7e1" id="r_ae543838a04683113dacb14c00081f7e1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">eve::pixelworld::MaterialCatalog</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#ae543838a04683113dacb14c00081f7e1">draft</a> () const noexcept</td></tr>
+<tr class="memdesc:ae543838a04683113dacb14c00081f7e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current validated immutable draft.  <br /></td></tr>
+<tr class="separator:ae543838a04683113dacb14c00081f7e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aced68ac2e283fdbe8e05edc69e01d93a" id="r_aced68ac2e283fdbe8e05edc69e01d93a"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#aced68ac2e283fdbe8e05edc69e01d93a">revision</a> () const noexcept</td></tr>
+<tr class="memdesc:aced68ac2e283fdbe8e05edc69e01d93a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic local draft revision, advanced only by accepted mutations.  <br /></td></tr>
+<tr class="separator:aced68ac2e283fdbe8e05edc69e01d93a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a294d3aba9faa8bc8e79410f4133580b0" id="r_a294d3aba9faa8bc8e79410f4133580b0"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a294d3aba9faa8bc8e79410f4133580b0">selectedMaterialIndex</a> () const noexcept</td></tr>
+<tr class="memdesc:a294d3aba9faa8bc8e79410f4133580b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selected material index, always valid for the current nonempty draft.  <br /></td></tr>
+<tr class="separator:a294d3aba9faa8bc8e79410f4133580b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7233c470a26704233f09e851893ae086" id="r_a7233c470a26704233f09e851893ae086"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a7233c470a26704233f09e851893ae086">selectedReactionIndex</a> () const noexcept</td></tr>
+<tr class="memdesc:a7233c470a26704233f09e851893ae086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selected reaction index when at least one binary rule exists.  <br /></td></tr>
+<tr class="separator:a7233c470a26704233f09e851893ae086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f5a01514228ba38c435f0fddf247d2b" id="r_a8f5a01514228ba38c435f0fddf247d2b"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a8f5a01514228ba38c435f0fddf247d2b">selectedPhaseIndex</a> () const noexcept</td></tr>
+<tr class="memdesc:a8f5a01514228ba38c435f0fddf247d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selected phase-rule index when at least one transition exists.  <br /></td></tr>
+<tr class="separator:a8f5a01514228ba38c435f0fddf247d2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b23b45743a5a4bd6ad58bee18b80daa" id="r_a4b23b45743a5a4bd6ad58bee18b80daa"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1MaterialCard.html">MaterialCard</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a4b23b45743a5a4bd6ad58bee18b80daa">materialCards</a> () const</td></tr>
+<tr class="memdesc:a4b23b45743a5a4bd6ad58bee18b80daa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project deterministic cards for the material browser.  <br /></td></tr>
+<tr class="separator:a4b23b45743a5a4bd6ad58bee18b80daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58521e1488b8334cc0ebbeac38d5bb16" id="r_a58521e1488b8334cc0ebbeac38d5bb16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a58521e1488b8334cc0ebbeac38d5bb16">selectMaterial</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a58521e1488b8334cc0ebbeac38d5bb16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select a material by canonical index without mutating the Catalog.  <br /></td></tr>
+<tr class="separator:a58521e1488b8334cc0ebbeac38d5bb16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a624872c277fdbda682417ccc3b25542e" id="r_a624872c277fdbda682417ccc3b25542e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a624872c277fdbda682417ccc3b25542e">selectReaction</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a624872c277fdbda682417ccc3b25542e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select a binary reaction rule by canonical index.  <br /></td></tr>
+<tr class="separator:a624872c277fdbda682417ccc3b25542e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51da343268d6b721398e9f326c44822e" id="r_a51da343268d6b721398e9f326c44822e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a51da343268d6b721398e9f326c44822e">selectPhase</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a51da343268d6b721398e9f326c44822e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select a phase-transition rule by canonical index.  <br /></td></tr>
+<tr class="separator:a51da343268d6b721398e9f326c44822e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e6d83ba4a85a095cb1e6e99513dc8cd" id="r_a8e6d83ba4a85a095cb1e6e99513dc8cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a8e6d83ba4a85a095cb1e6e99513dc8cd">replaceMaterial</a> (<a class="el" href="structeve_1_1pixelworld_1_1MaterialDefinition.html">eve::pixelworld::MaterialDefinition</a> definition)</td></tr>
+<tr class="memdesc:a8e6d83ba4a85a095cb1e6e99513dc8cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace one material definition after validating the entire reconstructed Catalog.  <br /></td></tr>
+<tr class="separator:a8e6d83ba4a85a095cb1e6e99513dc8cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c03cab304edf79314c53b950272fee5" id="r_a3c03cab304edf79314c53b950272fee5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a3c03cab304edf79314c53b950272fee5">replaceReaction</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, <a class="el" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html">eve::pixelworld::MaterialReactionRule</a> rule)</td></tr>
+<tr class="memdesc:a3c03cab304edf79314c53b950272fee5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace one binary rule after validating the entire reconstructed Catalog.  <br /></td></tr>
+<tr class="separator:a3c03cab304edf79314c53b950272fee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07a6dcbbb7a3169635b385cfd2b7cee4" id="r_a07a6dcbbb7a3169635b385cfd2b7cee4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a07a6dcbbb7a3169635b385cfd2b7cee4">addReaction</a> (<a class="el" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html">eve::pixelworld::MaterialReactionRule</a> rule)</td></tr>
+<tr class="memdesc:a07a6dcbbb7a3169635b385cfd2b7cee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a binary rule and select its canonical post-validation position.  <br /></td></tr>
+<tr class="separator:a07a6dcbbb7a3169635b385cfd2b7cee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22da1a0deed523bd03e5e5db74f173fc" id="r_a22da1a0deed523bd03e5e5db74f173fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a22da1a0deed523bd03e5e5db74f173fc">removeReaction</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a22da1a0deed523bd03e5e5db74f173fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one binary rule transactionally.  <br /></td></tr>
+<tr class="separator:a22da1a0deed523bd03e5e5db74f173fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad29268f94fa485efdbaea31c86acf078" id="r_ad29268f94fa485efdbaea31c86acf078"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#ad29268f94fa485efdbaea31c86acf078">replacePhase</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, <a class="el" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html">eve::pixelworld::MaterialPhaseRule</a> rule)</td></tr>
+<tr class="memdesc:ad29268f94fa485efdbaea31c86acf078"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace one phase rule after validating the entire reconstructed Catalog.  <br /></td></tr>
+<tr class="separator:ad29268f94fa485efdbaea31c86acf078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad38b14191f2a4ceee2bce7aa5642f6fc" id="r_ad38b14191f2a4ceee2bce7aa5642f6fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#ad38b14191f2a4ceee2bce7aa5642f6fc">addPhase</a> (<a class="el" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html">eve::pixelworld::MaterialPhaseRule</a> rule)</td></tr>
+<tr class="memdesc:ad38b14191f2a4ceee2bce7aa5642f6fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a phase rule and select its canonical post-validation position.  <br /></td></tr>
+<tr class="separator:ad38b14191f2a4ceee2bce7aa5642f6fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1175147b2c259764ac38d07671752c00" id="r_a1175147b2c259764ac38d07671752c00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a1175147b2c259764ac38d07671752c00">removePhase</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a1175147b2c259764ac38d07671752c00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one phase rule transactionally.  <br /></td></tr>
+<tr class="separator:a1175147b2c259764ac38d07671752c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afff2c5a138998ab050e564aa8543922a" id="r_afff2c5a138998ab050e564aa8543922a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#afff2c5a138998ab050e564aa8543922a">document</a> () const</td></tr>
+<tr class="memdesc:afff2c5a138998ab050e564aa8543922a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the current validated draft using the canonical versioned JSON codec.  <br /></td></tr>
+<tr class="separator:afff2c5a138998ab050e564aa8543922a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a32e28822d43b035d78ea7f9728ba14" id="r_a5a32e28822d43b035d78ea7f9728ba14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a5a32e28822d43b035d78ea7f9728ba14">loadDocument</a> (std::string_view catalogJson)</td></tr>
+<tr class="memdesc:a5a32e28822d43b035d78ea7f9728ba14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the draft from a validated document; failure leaves all panel state intact.  <br /></td></tr>
+<tr class="separator:a5a32e28822d43b035d78ea7f9728ba14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3d3f2b34c2719d5ebd614d78e09dbfc" id="r_ab3d3f2b34c2719d5ebd614d78e09dbfc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld_1_1PixelCatalogReloadReceipt.html">eve::pixelworld::PixelCatalogReloadReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#ab3d3f2b34c2719d5ebd614d78e09dbfc">apply</a> (<a class="el" href="classeve_1_1pixelworld_1_1PixelWorldControlService.html">eve::pixelworld::PixelWorldControlService</a> &amp;control, std::uint64_t worldId, std::uint64_t expectedFingerprint) const</td></tr>
+<tr class="memdesc:ab3d3f2b34c2719d5ebd614d78e09dbfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the draft through the canonical paused-world authority path.  <br /></td></tr>
+<tr class="separator:ab3d3f2b34c2719d5ebd614d78e09dbfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee1bfc8eecf041a3cd0d604f8eca6549" id="r_aee1bfc8eecf041a3cd0d604f8eca6549"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">eve::ui::UIHostHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#aee1bfc8eecf041a3cd0d604f8eca6549">open</a> ()</td></tr>
+<tr class="memdesc:aee1bfc8eecf041a3cd0d604f8eca6549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mount or reveal the panel in the UI ECS world and publish its current tree.  <br /></td></tr>
+<tr class="separator:aee1bfc8eecf041a3cd0d604f8eca6549"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80f52b4aeb6429bb7b8530736a01bcf5" id="r_a80f52b4aeb6429bb7b8530736a01bcf5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a80f52b4aeb6429bb7b8530736a01bcf5">close</a> ()</td></tr>
+<tr class="memdesc:a80f52b4aeb6429bb7b8530736a01bcf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hide the mounted panel without discarding its validated draft.  <br /></td></tr>
+<tr class="separator:a80f52b4aeb6429bb7b8530736a01bcf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea1d8f47ea91709ba6e2ab0f4dfb77af" id="r_aea1d8f47ea91709ba6e2ab0f4dfb77af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#aea1d8f47ea91709ba6e2ab0f4dfb77af">isOpen</a> () const</td></tr>
+<tr class="memdesc:aea1d8f47ea91709ba6e2ab0f4dfb77af"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while the panel has a live, visible UI host.  <br /></td></tr>
+<tr class="separator:aea1d8f47ea91709ba6e2ab0f4dfb77af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd2a74e670d0b36e4d9e644913563279" id="r_afd2a74e670d0b36e4d9e644913563279"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#afd2a74e670d0b36e4d9e644913563279">refresh</a> ()</td></tr>
+<tr class="memdesc:afd2a74e670d0b36e4d9e644913563279"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconcile the mounted host with the latest draft and selection state.  <br /></td></tr>
+<tr class="separator:afd2a74e670d0b36e4d9e644913563279"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebada82a99b5a7dc8a4646841e6664c9" id="r_aebada82a99b5a7dc8a4646841e6664c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">eve::ui::UIHostHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#aebada82a99b5a7dc8a4646841e6664c9">host</a> () const noexcept</td></tr>
+<tr class="memdesc:aebada82a99b5a7dc8a4646841e6664c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mounted UI host handle, or an empty handle before <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#aee1bfc8eecf041a3cd0d604f8eca6549" title="Mount or reveal the panel in the UI ECS world and publish its current tree.">open()</a>.  <br /></td></tr>
+<tr class="separator:aebada82a99b5a7dc8a4646841e6664c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0096cfeefa1e1d16f8d7d40c478103e3" id="r_a0096cfeefa1e1d16f8d7d40c478103e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a0096cfeefa1e1d16f8d7d40c478103e3">buildWidgetTree</a> ()</td></tr>
+<tr class="memdesc:a0096cfeefa1e1d16f8d7d40c478103e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a dedicated material browser, property inspector and rule editor visual tree.  <br /></td></tr>
+<tr class="separator:a0096cfeefa1e1d16f8d7d40c478103e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13e38116ca05c6a940d07ce355631856" id="r_a13e38116ca05c6a940d07ce355631856"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a13e38116ca05c6a940d07ce355631856">statusText</a> () const noexcept</td></tr>
+<tr class="memdesc:a13e38116ca05c6a940d07ce355631856"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last callback diagnostic rendered in the panel status bar.  <br /></td></tr>
+<tr class="separator:a13e38116ca05c6a940d07ce355631856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a29210347d5c92f023c2b459998ad5e04" id="r_a29210347d5c92f023c2b459998ad5e04"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#a29210347d5c92f023c2b459998ad5e04">create</a> (std::string_view catalogJson)</td></tr>
+<tr class="memdesc:a29210347d5c92f023c2b459998ad5e04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode and validate a versioned Catalog document into a fresh panel draft.  <br /></td></tr>
+<tr class="separator:a29210347d5c92f023c2b459998ad5e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5e7afb692a8c4f62f565d0dbea9ab61" id="r_af5e7afb692a8c4f62f565d0dbea9ab61"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#af5e7afb692a8c4f62f565d0dbea9ab61">builtIn</a> ()</td></tr>
+<tr class="memdesc:af5e7afb692a8c4f62f565d0dbea9ab61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a panel over the canonical built-in Catalog.  <br /></td></tr>
+<tr class="separator:af5e7afb692a8c4f62f565d0dbea9ab61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Dedicated visual material/reaction Catalog editor with transactional draft admission. </p>
+<p>The panel owns an immutable validated draft and never owns or retains a PixelWorld pointer. Every edit reconstructs a complete candidate Catalog and publishes it only after validation. <code><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#ab3d3f2b34c2719d5ebd614d78e09dbfc" title="Apply the draft through the canonical paused-world authority path.">apply()</a></code> borrows the control service synchronously and reaches the runtime authority through its generation-aware world registry. All methods are owner-thread-only and invoke no unknown callbacks except callbacks explicitly embedded in a returned WidgetDesc tree. The panel must outlive any mounted tree because those callbacks borrow <code>this</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a> 第 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00045">45</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1bbe812442e7a395fb1fa02dae61dcb7" name="a1bbe812442e7a395fb1fa02dae61dcb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bbe812442e7a395fb1fa02dae61dcb7">&#9670;&#160;</a></span>~PixelWorldCatalogPanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_editor::PixelWorldCatalogPanel::~PixelWorldCatalogPanel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00116">host()</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00266">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="a47824cf2883e9de074c624b6cdf168b6" name="a47824cf2883e9de074c624b6cdf168b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47824cf2883e9de074c624b6cdf168b6">&#9670;&#160;</a></span>PixelWorldCatalogPanel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_editor::PixelWorldCatalogPanel::PixelWorldCatalogPanel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57c2a4fe2946d9cae16575e3df068667" name="a57c2a4fe2946d9cae16575e3df068667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57c2a4fe2946d9cae16575e3df068667">&#9670;&#160;</a></span>PixelWorldCatalogPanel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::pixelworld_editor::PixelWorldCatalogPanel::PixelWorldCatalogPanel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00350">refresh()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad38b14191f2a4ceee2bce7aa5642f6fc" name="ad38b14191f2a4ceee2bce7aa5642f6fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad38b14191f2a4ceee2bce7aa5642f6fc">&#9670;&#160;</a></span>addPhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::addPhase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html">eve::pixelworld::MaterialPhaseRule</a>&#160;</td>
+          <td class="paramname"><em>rule</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a phase rule and select its canonical post-validation position. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterial_8h_source.html#l00060">eve::pixelworld::MaterialPhaseRule::id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00241">eve::pixelworld::MaterialCatalog::phaseRules()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>.</p>
+
+</div>
+</div>
+<a id="a07a6dcbbb7a3169635b385cfd2b7cee4" name="a07a6dcbbb7a3169635b385cfd2b7cee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07a6dcbbb7a3169635b385cfd2b7cee4">&#9670;&#160;</a></span>addReaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::addReaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html">eve::pixelworld::MaterialReactionRule</a>&#160;</td>
+          <td class="paramname"><em>rule</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a binary rule and select its canonical post-validation position. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterial_8h_source.html#l00071">eve::pixelworld::MaterialReactionRule::id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00240">eve::pixelworld::MaterialCatalog::reactions()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>.</p>
+
+</div>
+</div>
+<a id="ab3d3f2b34c2719d5ebd614d78e09dbfc" name="ab3d3f2b34c2719d5ebd614d78e09dbfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3d3f2b34c2719d5ebd614d78e09dbfc">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld_1_1PixelCatalogReloadReceipt.html">PixelCatalogReloadReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld_1_1PixelWorldControlService.html">eve::pixelworld::PixelWorldControlService</a> &amp;&#160;</td>
+          <td class="paramname"><em>control</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>worldId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>expectedFingerprint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply the draft through the canonical paused-world authority path. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00292">document()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="PixelWorldControl_8cpp_source.html#l00128">eve::pixelworld::PixelWorldControlService::reloadMaterialCatalog()</a>.</p>
+
+</div>
+</div>
+<a id="a0096cfeefa1e1d16f8d7d40c478103e3" name="a0096cfeefa1e1d16f8d7d40c478103e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0096cfeefa1e1d16f8d7d40c478103e3">&#9670;&#160;</a></span>buildWidgetTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a> eve::pixelworld_editor::PixelWorldCatalogPanel::buildWidgetTree </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a dedicated material browser, property inspector and rule editor visual tree. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterial_8h_source.html#l00048">eve::pixelworld::MaterialDefinition::blastResistance</a>, <a class="el" href="PixelMaterial_8h_source.html#l00044">eve::pixelworld::MaterialDefinition::boilingTemperature</a>, <a class="el" href="Widget_8h_source.html#l00024">eve::ui::WidgetDesc::checked</a>, <a class="el" href="PixelMaterial_8h_source.html#l00045">eve::pixelworld::MaterialDefinition::defaultLifetime</a>, <a class="el" href="PixelMaterial_8h_source.html#l00047">eve::pixelworld::MaterialDefinition::defaultTemperature</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00234">eve::pixelworld::MaterialCatalog::definition()</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00239">eve::pixelworld::MaterialCatalog::definitions()</a>, <a class="el" href="PixelMaterial_8h_source.html#l00038">eve::pixelworld::MaterialDefinition::density</a>, <a class="el" href="PixelMaterial_8h_source.html#l00050">eve::pixelworld::MaterialDefinition::displayRgba</a>, <a class="el" href="PixelMaterial_8h_source.html#l00046">eve::pixelworld::MaterialDefinition::flammable</a>, <a class="el" href="PixelMaterial_8h_source.html#l00041">eve::pixelworld::MaterialDefinition::heatCapacity</a>, <a class="el" href="PixelMaterial_8h_source.html#l00035">eve::pixelworld::MaterialDefinition::id</a>, <a class="el" href="PixelMaterial_8h_source.html#l00042">eve::pixelworld::MaterialDefinition::ignitionTemperature</a>, <a class="el" href="TileConfig_8cpp_source.html#l00129">image</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00732">material</a>, <a class="el" href="PixelMaterial_8h_source.html#l00043">eve::pixelworld::MaterialDefinition::meltingTemperature</a>, <a class="el" href="PixelMaterial_8h_source.html#l00036">eve::pixelworld::MaterialDefinition::name</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00218">replaceMaterial()</a>, <a class="el" href="PixelMaterial_8h_source.html#l00037">eve::pixelworld::MaterialDefinition::state</a>, <a class="el" href="PixelMaterial_8h_source.html#l00052">eve::pixelworld::MaterialDefinition::tags</a>, <a class="el" href="PixelMaterial_8h_source.html#l00040">eve::pixelworld::MaterialDefinition::thermalConductivity</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="PixelMaterial_8h_source.html#l00039">eve::pixelworld::MaterialDefinition::viscosity</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00350">refresh()</a>.</p>
+
+</div>
+</div>
+<a id="af5e7afb692a8c4f62f565d0dbea9ab61" name="af5e7afb692a8c4f62f565d0dbea9ab61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5e7afb692a8c4f62f565d0dbea9ab61">&#9670;&#160;</a></span>builtIn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> eve::pixelworld_editor::PixelWorldCatalogPanel::builtIn </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a panel over the canonical built-in Catalog. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterial_8cpp_source.html#l00151">eve::pixelworld::MaterialCatalog::builtIn()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldEditorModule_8cpp_source.html#l00011">eve::pixelworld_editor::PixelWorldEditorModule::openCatalog()</a>.</p>
+
+</div>
+</div>
+<a id="a80f52b4aeb6429bb7b8530736a01bcf5" name="a80f52b4aeb6429bb7b8530736a01bcf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80f52b4aeb6429bb7b8530736a01bcf5">&#9670;&#160;</a></span>close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::pixelworld_editor::PixelWorldCatalogPanel::close </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hide the mounted panel without discarding its validated draft. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00116">host()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="a29210347d5c92f023c2b459998ad5e04" name="a29210347d5c92f023c2b459998ad5e04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29210347d5c92f023c2b459998ad5e04">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::create </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>catalogJson</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Decode and validate a versioned Catalog document into a fresh panel draft. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterialCatalogCodec_8cpp_source.html#l00172">eve::pixelworld::decodeMaterialCatalogJson()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="afff2c5a138998ab050e564aa8543922a" name="afff2c5a138998ab050e564aa8543922a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afff2c5a138998ab050e564aa8543922a">&#9670;&#160;</a></span>document()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::document </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode the current validated draft using the canonical versioned JSON codec. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterialCatalogCodec_8cpp_source.html#l00131">eve::pixelworld::encodeMaterialCatalogJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00305">apply()</a>.</p>
+
+</div>
+</div>
+<a id="ae543838a04683113dacb14c00081f7e1" name="ae543838a04683113dacb14c00081f7e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae543838a04683113dacb14c00081f7e1">&#9670;&#160;</a></span>draft()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1pixelworld_1_1MaterialCatalog.html">eve::pixelworld::MaterialCatalog</a> &amp; eve::pixelworld_editor::PixelWorldCatalogPanel::draft </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current validated immutable draft. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a> 第 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aebada82a99b5a7dc8a4646841e6664c9" name="aebada82a99b5a7dc8a4646841e6664c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebada82a99b5a7dc8a4646841e6664c9">&#9670;&#160;</a></span>host()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">eve::ui::UIHostHandle</a> eve::pixelworld_editor::PixelWorldCatalogPanel::host </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mounted UI host handle, or an empty handle before <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html#aee1bfc8eecf041a3cd0d604f8eca6549" title="Mount or reveal the panel in the UI ECS world and publish its current tree.">open()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a> 第 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00341">close()</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00345">isOpen()</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00314">open()</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00129">operator=()</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00350">refresh()</a> , 以及 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00110">~PixelWorldCatalogPanel()</a>.</p>
+
+</div>
+</div>
+<a id="aea1d8f47ea91709ba6e2ab0f4dfb77af" name="aea1d8f47ea91709ba6e2ab0f4dfb77af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea1d8f47ea91709ba6e2ab0f4dfb77af">&#9670;&#160;</a></span>isOpen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::pixelworld_editor::PixelWorldCatalogPanel::isOpen </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True while the panel has a live, visible UI host. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00116">host()</a> , 以及 <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="a5a32e28822d43b035d78ea7f9728ba14" name="a5a32e28822d43b035d78ea7f9728ba14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a32e28822d43b035d78ea7f9728ba14">&#9670;&#160;</a></span>loadDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::loadDocument </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>catalogJson</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the draft from a validated document; failure leaves all panel state intact. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterialCatalogCodec_8cpp_source.html#l00172">eve::pixelworld::decodeMaterialCatalogJson()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>.</p>
+
+</div>
+</div>
+<a id="a4b23b45743a5a4bd6ad58bee18b80daa" name="a4b23b45743a5a4bd6ad58bee18b80daa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b23b45743a5a4bd6ad58bee18b80daa">&#9670;&#160;</a></span>materialCards()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1MaterialCard.html">MaterialCard</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::materialCards </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Project deterministic cards for the material browser. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterial_8cpp_source.html#l00246">eve::pixelworld::MaterialCatalog::canPhaseTransition()</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00242">eve::pixelworld::MaterialCatalog::canReact()</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00239">eve::pixelworld::MaterialCatalog::definitions()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aee1bfc8eecf041a3cd0d604f8eca6549" name="aee1bfc8eecf041a3cd0d604f8eca6549"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee1bfc8eecf041a3cd0d604f8eca6549">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">eve::ui::UIHostHandle</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::open </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mount or reveal the panel in the UI ECS world and publish its current tree. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UIHost_8cpp_source.html#l00047">eve::ui::UIHost::createHost()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00116">host()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00350">refresh()</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad3dc31e7d0d03837b914f9309d430e09" name="ad3dc31e7d0d03837b914f9309d430e09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3dc31e7d0d03837b914f9309d430e09">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp; eve::pixelworld_editor::PixelWorldCatalogPanel::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e1ed492038b87e99269d57a0b90fd92" name="a2e1ed492038b87e99269d57a0b90fd92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e1ed492038b87e99269d57a0b90fd92">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp; eve::pixelworld_editor::PixelWorldCatalogPanel::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1pixelworld__editor_1_1PixelWorldCatalogPanel.html">PixelWorldCatalogPanel</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00116">host()</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00350">refresh()</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a> , 以及 <a class="el" href="Widget_8cpp_source.html#l00266">eve::ui::window()</a>.</p>
+
+</div>
+</div>
+<a id="afd2a74e670d0b36e4d9e644913563279" name="afd2a74e670d0b36e4d9e644913563279"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd2a74e670d0b36e4d9e644913563279">&#9670;&#160;</a></span>refresh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::refresh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconcile the mounted host with the latest draft and selection state. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00372">buildWidgetTree()</a>, <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00116">host()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="UIHost_8cpp_source.html#l00060">eve::ui::UIHost::resolve()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00314">open()</a>, <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00129">operator=()</a> , 以及 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00117">PixelWorldCatalogPanel()</a>.</p>
+
+</div>
+</div>
+<a id="a1175147b2c259764ac38d07671752c00" name="a1175147b2c259764ac38d07671752c00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1175147b2c259764ac38d07671752c00">&#9670;&#160;</a></span>removePhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::removePhase </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one phase rule transactionally. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00241">eve::pixelworld::MaterialCatalog::phaseRules()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>.</p>
+
+</div>
+</div>
+<a id="a22da1a0deed523bd03e5e5db74f173fc" name="a22da1a0deed523bd03e5e5db74f173fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22da1a0deed523bd03e5e5db74f173fc">&#9670;&#160;</a></span>removeReaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::removeReaction </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one binary rule transactionally. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00240">eve::pixelworld::MaterialCatalog::reactions()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>.</p>
+
+</div>
+</div>
+<a id="a8e6d83ba4a85a095cb1e6e99513dc8cd" name="a8e6d83ba4a85a095cb1e6e99513dc8cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e6d83ba4a85a095cb1e6e99513dc8cd">&#9670;&#160;</a></span>replaceMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::replaceMaterial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld_1_1MaterialDefinition.html">eve::pixelworld::MaterialDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace one material definition after validating the entire reconstructed Catalog. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterial_8cpp_source.html#l00239">eve::pixelworld::MaterialCatalog::definitions()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00372">buildWidgetTree()</a>.</p>
+
+</div>
+</div>
+<a id="ad29268f94fa485efdbaea31c86acf078" name="ad29268f94fa485efdbaea31c86acf078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad29268f94fa485efdbaea31c86acf078">&#9670;&#160;</a></span>replacePhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::replacePhase </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld_1_1MaterialPhaseRule.html">eve::pixelworld::MaterialPhaseRule</a>&#160;</td>
+          <td class="paramname"><em>rule</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace one phase rule after validating the entire reconstructed Catalog. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00261">261</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00241">eve::pixelworld::MaterialCatalog::phaseRules()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>.</p>
+
+</div>
+</div>
+<a id="a3c03cab304edf79314c53b950272fee5" name="a3c03cab304edf79314c53b950272fee5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c03cab304edf79314c53b950272fee5">&#9670;&#160;</a></span>replaceReaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__editor_1_1CatalogDraftReceipt.html">CatalogDraftReceipt</a> &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::replaceReaction </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld_1_1MaterialReactionRule.html">eve::pixelworld::MaterialReactionRule</a>&#160;</td>
+          <td class="paramname"><em>rule</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace one binary rule after validating the entire reconstructed Catalog. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00240">eve::pixelworld::MaterialCatalog::reactions()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00136">reactions</a>.</p>
+
+</div>
+</div>
+<a id="aced68ac2e283fdbe8e05edc69e01d93a" name="aced68ac2e283fdbe8e05edc69e01d93a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aced68ac2e283fdbe8e05edc69e01d93a">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::pixelworld_editor::PixelWorldCatalogPanel::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic local draft revision, advanced only by accepted mutations. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a> 第 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a294d3aba9faa8bc8e79410f4133580b0" name="a294d3aba9faa8bc8e79410f4133580b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a294d3aba9faa8bc8e79410f4133580b0">&#9670;&#160;</a></span>selectedMaterialIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::pixelworld_editor::PixelWorldCatalogPanel::selectedMaterialIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Selected material index, always valid for the current nonempty draft. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a> 第 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f5a01514228ba38c435f0fddf247d2b" name="a8f5a01514228ba38c435f0fddf247d2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f5a01514228ba38c435f0fddf247d2b">&#9670;&#160;</a></span>selectedPhaseIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::size_t &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::selectedPhaseIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Selected phase-rule index when at least one transition exists. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a> 第 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7233c470a26704233f09e851893ae086" name="a7233c470a26704233f09e851893ae086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7233c470a26704233f09e851893ae086">&#9670;&#160;</a></span>selectedReactionIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::size_t &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::selectedReactionIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Selected reaction index when at least one binary rule exists. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a> 第 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58521e1488b8334cc0ebbeac38d5bb16" name="a58521e1488b8334cc0ebbeac38d5bb16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58521e1488b8334cc0ebbeac38d5bb16">&#9670;&#160;</a></span>selectMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::selectMaterial </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select a material by canonical index without mutating the Catalog. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelMaterial_8cpp_source.html#l00239">eve::pixelworld::MaterialCatalog::definitions()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a51da343268d6b721398e9f326c44822e" name="a51da343268d6b721398e9f326c44822e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51da343268d6b721398e9f326c44822e">&#9670;&#160;</a></span>selectPhase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::selectPhase </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select a phase-transition rule by canonical index. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00241">eve::pixelworld::MaterialCatalog::phaseRules()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a624872c277fdbda682417ccc3b25542e" name="a624872c277fdbda682417ccc3b25542e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a624872c277fdbda682417ccc3b25542e">&#9670;&#160;</a></span>selectReaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::pixelworld_editor::PixelWorldCatalogPanel::selectReaction </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select a binary reaction rule by canonical index. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a> 第 <a class="el" href="PixelWorldCatalogPanel_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PixelMaterial_8cpp_source.html#l00240">eve::pixelworld::MaterialCatalog::reactions()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a13e38116ca05c6a940d07ce355631856" name="a13e38116ca05c6a940d07ce355631856"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13e38116ca05c6a940d07ce355631856">&#9670;&#160;</a></span>statusText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::pixelworld_editor::PixelWorldCatalogPanel::statusText </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last callback diagnostic rendered in the panel status bar. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a> 第 <a class="el" href="PixelWorldCatalogPanel_8h_source.html#l00121">121</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/pixelworld_editor/<a class="el" href="PixelWorldCatalogPanel_8h_source.html">PixelWorldCatalogPanel.h</a></li>
+<li>src/modules/pixelworld_editor/<a class="el" href="PixelWorldCatalogPanel_8cpp_source.html">PixelWorldCatalogPanel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

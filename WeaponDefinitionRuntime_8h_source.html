@@ -1,0 +1,321 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/weapon/WeaponDefinitionRuntime.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3549d6d40925778ea7fe373869498ee4.html">weapon</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WeaponDefinitionRuntime.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WeaponDefinitionRuntime_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Snapshot_8h.html">common/Snapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="DefinitionRuntime_8h.html">common/definitions/DefinitionRuntime.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeSnapshot_8h.html">common/definitions/RuntimeSnapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="Definitions_8h.html">definitions/Definitions.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="WeaponTypes_8h.html">weapon/WeaponTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weapon.html">eve::weapon</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#a2126ba09892aa7a804c370f890675990a18c83669920215a818638ad0e5421e4b">Weapon</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;WeaponDefinition&gt;</a> <a class="code hl_function" href="namespaceeve_1_1weapon.html#a3bbe9ef7ddb6534c3df6d2908bd15641">parseWeaponDefinition</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1definitions_1_1Definition.html">eve::definitions::Definition</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">   42</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#af3a7802891b4d97851d28d1eb1cd0ab7">   43</a></span>    <a class="code hl_struct" href="structeve_1_1weapon_1_1Resource.html">Resource</a>    <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#af3a7802891b4d97851d28d1eb1cd0ab7">resource</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ada1eed06275d03cb2672398d625d4d87">   44</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ada1eed06275d03cb2672398d625d4d87">cooldown</a>       = 0.f;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ace7249f6ffcf1f1895cd30d8d15a5752">   45</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ace7249f6ffcf1f1895cd30d8d15a5752">burstRemaining</a> = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aead09cff88ec6a0601c4e86953c6640d">   46</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aead09cff88ec6a0601c4e86953c6640d">burstTimer</a>     = 0.f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ac79860ece99cba3c568281e81932cbf4">   47</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ac79860ece99cba3c568281e81932cbf4">jammed</a>         = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ab346d16a9d310db14b9db01a1ba59c54">   48</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085">AttackStage</a> <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ab346d16a9d310db14b9db01a1ba59c54">stage</a>          = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c">AttackStage::Idle</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#adf0e36764cacc1282dc0c6e7755f4d1e">   49</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#adf0e36764cacc1282dc0c6e7755f4d1e">stageTimer</a>     = 0.f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aea8557475743ef5fb383b53f8db038c9">   50</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aea8557475743ef5fb383b53f8db038c9">currentSpread</a>  = 0.f;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#a216b997d069828c6b01f6a14dcaece2f">   51</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#a216b997d069828c6b01f6a14dcaece2f">recoilPitch</a>    = 0.f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#a2881c68b9b28380f559cf7f9ea842a4d">   52</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#a2881c68b9b28380f559cf7f9ea842a4d">recoilYaw</a>      = 0.f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#af299807ae7073f6e23533bc7138c141f">   53</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">FireMode</a>    <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#af299807ae7073f6e23533bc7138c141f">selector</a>       = <a class="code hl_enumvalue" href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7a66ba162102bbf6ae31b522aec561735e">FireMode::Single</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aeee84ebe08ece854c17db98e0069e7f1">   54</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aeee84ebe08ece854c17db98e0069e7f1">aiming</a>         = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="};">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">   66</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a> final {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;WeaponDefinitionRuntime&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ae5757d6382b4dd17d880dc115ffdd9ae">create</a>(</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>&amp; registry, <a class="code hl_class" href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>, <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> instanceId,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;WeaponDefinitionRuntime&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ae5757d6382b4dd17d880dc115ffdd9ae">create</a>(</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>&amp; registry, std::string_view definitionId, <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> instanceId,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;WeaponDefinitionRuntime&gt;</a> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ae5757d6382b4dd17d880dc115ffdd9ae">create</a>(</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <a class="code hl_class" href="classeve_1_1weapon_1_1Weapon.html">Weapon</a>&amp; module, std::string_view definitionId, <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> instanceId,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a53d3631f66d1ae8bfbe2ac8d990e37cb">   90</a></span>    <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a53d3631f66d1ae8bfbe2ac8d990e37cb">WeaponDefinitionRuntime</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>&amp;&amp;) noexcept            = default;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a52363fe1021e40b09404c5a367e3fe9f">   91</a></span>    <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>&amp;&amp;) noexcept = default;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a624548d58c5cfb4937bda821e72429c3">   92</a></span>    <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>(const <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>&amp;)                = delete;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a7312736be1473ab97061f88e24d939a3">   93</a></span>    <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>&amp; operator=(const <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>&amp;)     = delete;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ab95a424c05c9d6ae39ef4d52b3a59cba">   94</a></span>    ~<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>()                                             = default;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>::InstanceIdentity&amp; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#af82b1c028f7e8edfe9cb283d3a0bdc7b">identity</a>() const noexcept;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] const <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a>&amp; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a0fc5e22361e4386304ded1b860145c21">state</a>() const noexcept;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a>&amp; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a0fc5e22361e4386304ded1b860145c21">state</a>() noexcept;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>::DefinitionHandle <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aece3fe1647fc0bb038ea69a293cc605a">definitionHandle</a>() const noexcept;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a>&gt; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>() const;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a31e4556995ee5d61afc10152b5a9ac92">  107</a></span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>::ReloadPolicy <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a31e4556995ee5d61afc10152b5a9ac92">reloadPolicy</a>() const noexcept { <span class="keywordflow">return</span> policy_; }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ae36983686568a6d5e85ecf56cff8a589">setActive</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aee68951dfcac5336dda5a75dee3c22a5">isActive</a>() const noexcept;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a08f8cd0b78cbebb5c51045a1a86d54bb">applyTo</a>(<a class="code hl_class" href="classeve_1_1weapon_1_1WeaponEntity.html">WeaponEntity</a>* entity) const;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>::ReloadOutcome&gt; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a84c4de56f84d8cacd3c720143a4a24b7">reload</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>::ReloadPolicy <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_struct" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a>&gt; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a97fc9eaf5806466c377a942409cdb06a">snapshot</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a> <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                                                              const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider) const;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&gt; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aa517411642a245104781909ca160e04b">snapshotJson</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">Revision</a> <a class="code hl_variable" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                                                        const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider) const;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac3c024e5192eab95fcd53dc6e35ddfce">restore</a>(const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_struct" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a>&amp;     <a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a97fc9eaf5806466c377a942409cdb06a">snapshot</a>,</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                                            const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a>&amp; hashProvider);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>private:</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <a class="code hl_class" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">WeaponDefinitionRuntime</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::definitions::DefinitionRegistry&amp;                registry,</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                            <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>::RuntimeInstance&lt;<a class="code hl_struct" href="structeve_1_1weapon_1_1WeaponRuntimeState.html">WeaponRuntimeState</a>&gt; runtime,</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                            <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_function" href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">definition</a>::ReloadPolicy                        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        : registry_(&amp;registry), runtime_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(runtime)), policy_(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>) {}</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a>*                registry_ = <span class="keyword">nullptr</span>;  <span class="comment">// borrowed</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <a class="code hl_class" href="classeve_1_1definition_1_1RuntimeInstance.html">eve::definition::RuntimeInstance&lt;WeaponRuntimeState&gt;</a> runtime_;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <a class="code hl_enumeration" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a>                        policy_ = <a class="code hl_enumvalue" href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>};</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}  <span class="comment">// namespace eve::weapon</span></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a03c996f9fcf0e10baeb3e700be0c409a"><div class="ttname"><a href="CardTypes_8cpp.html#a03c996f9fcf0e10baeb3e700be0c409a">active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00036">CardTypes.cpp:36</a></div></div>
+<div class="ttc" id="aDefinitionRuntime_8h_html"><div class="ttname"><a href="DefinitionRuntime_8h.html">DefinitionRuntime.h</a></div><div class="ttdoc">Common identity and hot-reload contract for typed runtime instances.</div></div>
+<div class="ttc" id="aDefinitions_8h_html"><div class="ttname"><a href="Definitions_8h.html">Definitions.h</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00062">PixelWorld.cpp:62</a></div></div>
+<div class="ttc" id="aRuntimeSnapshot_8h_html"><div class="ttname"><a href="RuntimeSnapshot_8h.html">RuntimeSnapshot.h</a></div><div class="ttdoc">Shared SnapshotEnvelope codec for typed definition runtime instances.</div></div>
+<div class="ttc" id="aSnapshot_8h_html"><div class="ttname"><a href="Snapshot_8h.html">Snapshot.h</a></div><div class="ttdoc">Versioned, integrity-checked persistence envelopes.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a8c7b8e11631dda51846983f7b37eb2fe"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a></div><div class="ttdeci">TurnPolicyKind policy</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00127">TacticsPersistence.cpp:127</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aWeaponTypes_8h_html"><div class="ttname"><a href="WeaponTypes_8h.html">WeaponTypes.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1DefinitionRef_html"><div class="ttname"><a href="classeve_1_1DefinitionRef.html">eve::DefinitionRef</a></div><div class="ttdoc">Stable definition reference backed by LogicalId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00083">ResourceRef.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1definition_1_1RuntimeInstance_html"><div class="ttname"><a href="classeve_1_1definition_1_1RuntimeInstance.html">eve::definition::RuntimeInstance</a></div><div class="ttdoc">Owns one strongly typed runtime state and its definition identity.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8h_source.html#l00163">DefinitionRuntime.h:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions_1_1DefinitionRegistry_html"><div class="ttname"><a href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a></div><div class="ttdoc">Deterministic registry of topic-neutral, versioned JSON definitions.</div><div class="ttdef"><b>Definition</b> <a href="Definitions_8h_source.html#l00056">Definitions.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::RevisionTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html">eve::weapon::WeaponDefinitionRuntime</a></div><div class="ttdoc">Binds a typed WeaponDefinition to one mutable runtime instance.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00066">WeaponDefinitionRuntime.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_a08f8cd0b78cbebb5c51045a1a86d54bb"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a08f8cd0b78cbebb5c51045a1a86d54bb">eve::weapon::WeaponDefinitionRuntime::applyTo</a></div><div class="ttdeci">eve::Result&lt; void &gt; applyTo(WeaponEntity *entity) const</div><div class="ttdoc">Atomically project this runtime into a borrowed WeaponEntity.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00428">WeaponDefinitionRuntime.cpp:428</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_a0fc5e22361e4386304ded1b860145c21"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a0fc5e22361e4386304ded1b860145c21">eve::weapon::WeaponDefinitionRuntime::state</a></div><div class="ttdeci">const WeaponRuntimeState &amp; state() const noexcept</div><div class="ttdoc">Borrow mutable typed firing/resource state.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00411">WeaponDefinitionRuntime.cpp:411</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_a31e4556995ee5d61afc10152b5a9ac92"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a31e4556995ee5d61afc10152b5a9ac92">eve::weapon::WeaponDefinitionRuntime::reloadPolicy</a></div><div class="ttdeci">eve::definition::ReloadPolicy reloadPolicy() const noexcept</div><div class="ttdoc">Return the policy used by the next reload call.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00107">WeaponDefinitionRuntime.h:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_a53d3631f66d1ae8bfbe2ac8d990e37cb"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a53d3631f66d1ae8bfbe2ac8d990e37cb">eve::weapon::WeaponDefinitionRuntime::WeaponDefinitionRuntime</a></div><div class="ttdeci">WeaponDefinitionRuntime(WeaponDefinitionRuntime &amp;&amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_a84c4de56f84d8cacd3c720143a4a24b7"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a84c4de56f84d8cacd3c720143a4a24b7">eve::weapon::WeaponDefinitionRuntime::reload</a></div><div class="ttdeci">eve::Result&lt; eve::definition::ReloadOutcome &gt; reload(eve::definition::ReloadPolicy policy)</div><div class="ttdoc">Reload the registry's current generation using a typed policy.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00471">WeaponDefinitionRuntime.cpp:471</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_a97fc9eaf5806466c377a942409cdb06a"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#a97fc9eaf5806466c377a942409cdb06a">eve::weapon::WeaponDefinitionRuntime::snapshot</a></div><div class="ttdeci">eve::Result&lt; eve::SnapshotEnvelope &gt; snapshot(eve::Revision revision, eve::SimulationTick tick, const eve::SnapshotHashProvider &amp;hashProvider) const</div><div class="ttdoc">Capture stable typed runtime state in the common SnapshotEnvelope.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00507">WeaponDefinitionRuntime.cpp:507</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_aa517411642a245104781909ca160e04b"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aa517411642a245104781909ca160e04b">eve::weapon::WeaponDefinitionRuntime::snapshotJson</a></div><div class="ttdeci">eve::Result&lt; std::string &gt; snapshotJson(eve::Revision revision, eve::SimulationTick tick, const eve::SnapshotHashProvider &amp;hashProvider) const</div><div class="ttdoc">Serialize snapshot() as canonical deterministic JSON.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00516">WeaponDefinitionRuntime.cpp:516</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_ac3c024e5192eab95fcd53dc6e35ddfce"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac3c024e5192eab95fcd53dc6e35ddfce">eve::weapon::WeaponDefinitionRuntime::restore</a></div><div class="ttdeci">eve::Result&lt; void &gt; restore(const eve::SnapshotEnvelope &amp;snapshot, const eve::SnapshotHashProvider &amp;hashProvider)</div><div class="ttdoc">Verify and restore a same-generation snapshot transactionally.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00524">WeaponDefinitionRuntime.cpp:524</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_ac6a288d89ba4c68bd85a47077f0d15f6"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ac6a288d89ba4c68bd85a47077f0d15f6">eve::weapon::WeaponDefinitionRuntime::definition</a></div><div class="ttdeci">eve::Result&lt; WeaponDefinition &gt; definition() const</div><div class="ttdoc">Resolve the current strongly typed WeaponDefinition projection.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00419">WeaponDefinitionRuntime.cpp:419</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_ae36983686568a6d5e85ecf56cff8a589"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ae36983686568a6d5e85ecf56cff8a589">eve::weapon::WeaponDefinitionRuntime::setActive</a></div><div class="ttdeci">void setActive(bool active) noexcept</div><div class="ttdoc">Set the active guard used by RejectWhileActive.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00424">WeaponDefinitionRuntime.cpp:424</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_ae5757d6382b4dd17d880dc115ffdd9ae"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#ae5757d6382b4dd17d880dc115ffdd9ae">eve::weapon::WeaponDefinitionRuntime::create</a></div><div class="ttdeci">static eve::Result&lt; WeaponDefinitionRuntime &gt; create(eve::definitions::DefinitionRegistry &amp;registry, eve::DefinitionRef definition, eve::PersistentId instanceId, eve::definition::ReloadPolicy policy=eve::definition::ReloadPolicy::RebuildInstance)</div><div class="ttdoc">Create from a common weapon:&lt;name&gt; definition reference.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00373">WeaponDefinitionRuntime.cpp:373</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_aece3fe1647fc0bb038ea69a293cc605a"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aece3fe1647fc0bb038ea69a293cc605a">eve::weapon::WeaponDefinitionRuntime::definitionHandle</a></div><div class="ttdeci">eve::definition::DefinitionHandle definitionHandle() const noexcept</div><div class="ttdoc">Return the exact generation-qualified definition handle.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00415">WeaponDefinitionRuntime.cpp:415</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_aee68951dfcac5336dda5a75dee3c22a5"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#aee68951dfcac5336dda5a75dee3c22a5">eve::weapon::WeaponDefinitionRuntime::isActive</a></div><div class="ttdeci">bool isActive() const noexcept</div><div class="ttdoc">Return whether the instance is active.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00426">WeaponDefinitionRuntime.cpp:426</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponDefinitionRuntime_html_af82b1c028f7e8edfe9cb283d3a0bdc7b"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponDefinitionRuntime.html#af82b1c028f7e8edfe9cb283d3a0bdc7b">eve::weapon::WeaponDefinitionRuntime::identity</a></div><div class="ttdeci">const eve::definition::InstanceIdentity &amp; identity() const noexcept</div><div class="ttdoc">Borrow the common instance identity and exact definition generation.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00407">WeaponDefinitionRuntime.cpp:407</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WeaponEntity_html"><div class="ttname"><a href="classeve_1_1weapon_1_1WeaponEntity.html">eve::weapon::WeaponEntity</a></div><div class="ttdoc">武器实体：数据全部在组件里，行为在 WeaponSystem。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00274">WeaponTypes.h:274</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1Weapon_html"><div class="ttname"><a href="classeve_1_1weapon_1_1Weapon.html">eve::weapon::Weapon</a></div><div class="ttdoc">武器模块（eve.Weapon）。</div><div class="ttdef"><b>Definition</b> <a href="Weapon_8h_source.html#l00022">Weapon.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definition_html_a3d64f47e218ceb4a83d17f201372b9a8"><div class="ttname"><a href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8">eve::definition::ReloadPolicy</a></div><div class="ttdeci">ReloadPolicy</div><div class="ttdoc">Policy used when a live definition is replaced.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8h_source.html#l00029">DefinitionRuntime.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definition_html_a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373"><div class="ttname"><a href="namespaceeve_1_1definition.html#a3d64f47e218ceb4a83d17f201372b9a8a94ff701218b4c831310b588590a40373">eve::definition::ReloadPolicy::RebuildInstance</a></div><div class="ttdeci">@ RebuildInstance</div><div class="ttdoc">Let the consumer atomically construct a new state from the new definition.</div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_a2126ba09892aa7a804c370f890675990a18c83669920215a818638ad0e5421e4b"><div class="ttname"><a href="namespaceeve_1_1rts.html#a2126ba09892aa7a804c370f890675990a18c83669920215a818638ad0e5421e4b">eve::rts::DamageChannel::Weapon</a></div><div class="ttdeci">@ Weapon</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html"><div class="ttname"><a href="namespaceeve_1_1weapon.html">eve::weapon</a></div><div class="ttdoc">载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="RTSArchetype_8h_source.html#l00010">RTSArchetype.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a3bbe9ef7ddb6534c3df6d2908bd15641"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a3bbe9ef7ddb6534c3df6d2908bd15641">eve::weapon::parseWeaponDefinition</a></div><div class="ttdeci">eve::Result&lt; WeaponDefinition &gt; parseWeaponDefinition(const eve::definitions::Definition &amp;source)</div><div class="ttdoc">Parse one canonical registry definition into an owning typed snapshot.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8cpp_source.html#l00364">WeaponDefinitionRuntime.cpp:364</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a647c29c945407d369c4a0e3c7f230085"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085">eve::weapon::AttackStage</a></div><div class="ttdeci">AttackStage</div><div class="ttdoc">攻击阶段。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00060">WeaponTypes.h:60</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c"><div class="ttname"><a href="namespaceeve_1_1weapon.html#a647c29c945407d369c4a0e3c7f230085ae599161956d626eda4cb0a5ffb85271c">eve::weapon::AttackStage::Idle</a></div><div class="ttdeci">@ Idle</div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_aba7ea637e06387da21efa5ff908528f7"><div class="ttname"><a href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7">eve::weapon::FireMode</a></div><div class="ttdeci">FireMode</div><div class="ttdoc">开火模式（热武器保留字段）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00080">WeaponTypes.h:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html_aba7ea637e06387da21efa5ff908528f7a66ba162102bbf6ae31b522aec561735e"><div class="ttname"><a href="namespaceeve_1_1weapon.html#aba7ea637e06387da21efa5ff908528f7a66ba162102bbf6ae31b522aec561735e">eve::weapon::FireMode::Single</a></div><div class="ttdeci">@ Single</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_af5cd4beecd29f95341ebc417b792f16c"><div class="ttname"><a href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a></div><div class="ttdeci">std::function&lt; Result&lt; ContentId &gt;(std::string_view canonicalInput)&gt; SnapshotHashProvider</div><div class="ttdoc">Injected content-digest implementation used by snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00036">Snapshot.h:36</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1SnapshotEnvelope_html"><div class="ttname"><a href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a></div><div class="ttdoc">Stable outer format shared by persistence and cross-process snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00046">Snapshot.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1definitions_1_1Definition_html"><div class="ttname"><a href="structeve_1_1definitions_1_1Definition.html">eve::definitions::Definition</a></div><div class="ttdoc">One immutable view of a registered versioned JSON definition.</div><div class="ttdef"><b>Definition</b> <a href="Definitions_8h_source.html#l00029">Definitions.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1Resource_html"><div class="ttname"><a href="structeve_1_1weapon_1_1Resource.html">eve::weapon::Resource</a></div><div class="ttdoc">运行时触发资源（实体组件）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00260">WeaponTypes.h:260</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponDefinition_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponDefinition.html">eve::weapon::WeaponDefinition</a></div><div class="ttdoc">武器模板（registerWeaponsFromJson 注册，进程级注册表）。</div><div class="ttdef"><b>Definition</b> <a href="WeaponTypes_8h_source.html#l00130">WeaponTypes.h:130</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html">eve::weapon::WeaponRuntimeState</a></div><div class="ttdoc">Mutable state owned by one typed weapon runtime instance.</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00042">WeaponDefinitionRuntime.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_a216b997d069828c6b01f6a14dcaece2f"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#a216b997d069828c6b01f6a14dcaece2f">eve::weapon::WeaponRuntimeState::recoilPitch</a></div><div class="ttdeci">float recoilPitch</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00051">WeaponDefinitionRuntime.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_a2881c68b9b28380f559cf7f9ea842a4d"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#a2881c68b9b28380f559cf7f9ea842a4d">eve::weapon::WeaponRuntimeState::recoilYaw</a></div><div class="ttdeci">float recoilYaw</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00052">WeaponDefinitionRuntime.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_ab346d16a9d310db14b9db01a1ba59c54"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ab346d16a9d310db14b9db01a1ba59c54">eve::weapon::WeaponRuntimeState::stage</a></div><div class="ttdeci">AttackStage stage</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00048">WeaponDefinitionRuntime.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_ac79860ece99cba3c568281e81932cbf4"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ac79860ece99cba3c568281e81932cbf4">eve::weapon::WeaponRuntimeState::jammed</a></div><div class="ttdeci">bool jammed</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00047">WeaponDefinitionRuntime.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_ace7249f6ffcf1f1895cd30d8d15a5752"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ace7249f6ffcf1f1895cd30d8d15a5752">eve::weapon::WeaponRuntimeState::burstRemaining</a></div><div class="ttdeci">int burstRemaining</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00045">WeaponDefinitionRuntime.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_ada1eed06275d03cb2672398d625d4d87"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#ada1eed06275d03cb2672398d625d4d87">eve::weapon::WeaponRuntimeState::cooldown</a></div><div class="ttdeci">float cooldown</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00044">WeaponDefinitionRuntime.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_adf0e36764cacc1282dc0c6e7755f4d1e"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#adf0e36764cacc1282dc0c6e7755f4d1e">eve::weapon::WeaponRuntimeState::stageTimer</a></div><div class="ttdeci">float stageTimer</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00049">WeaponDefinitionRuntime.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_aea8557475743ef5fb383b53f8db038c9"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aea8557475743ef5fb383b53f8db038c9">eve::weapon::WeaponRuntimeState::currentSpread</a></div><div class="ttdeci">float currentSpread</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00050">WeaponDefinitionRuntime.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_aead09cff88ec6a0601c4e86953c6640d"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aead09cff88ec6a0601c4e86953c6640d">eve::weapon::WeaponRuntimeState::burstTimer</a></div><div class="ttdeci">float burstTimer</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00046">WeaponDefinitionRuntime.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_aeee84ebe08ece854c17db98e0069e7f1"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#aeee84ebe08ece854c17db98e0069e7f1">eve::weapon::WeaponRuntimeState::aiming</a></div><div class="ttdeci">bool aiming</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00054">WeaponDefinitionRuntime.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_af299807ae7073f6e23533bc7138c141f"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#af299807ae7073f6e23533bc7138c141f">eve::weapon::WeaponRuntimeState::selector</a></div><div class="ttdeci">FireMode selector</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00053">WeaponDefinitionRuntime.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1WeaponRuntimeState_html_af3a7802891b4d97851d28d1eb1cd0ab7"><div class="ttname"><a href="structeve_1_1weapon_1_1WeaponRuntimeState.html#af3a7802891b4d97851d28d1eb1cd0ab7">eve::weapon::WeaponRuntimeState::resource</a></div><div class="ttdeci">Resource resource</div><div class="ttdef"><b>Definition</b> <a href="WeaponDefinitionRuntime_8h_source.html#l00043">WeaponDefinitionRuntime.h:43</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1112 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::Battle类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1rpg_1_1Battle-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::Battle类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>一场回合制战斗（任意阵营数）。 @ownership 由调用方创建/销毁；Battle 不持有参与者的所有权（参与者为借用 ECS actor）。 @thread 在单一模拟线程上驱动整场战斗。  
+ <a href="classeve_1_1rpg_1_1Battle.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Battle_8h_source.html">Battle.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8ddf7019ce56827b9f6fe745059c34d3" id="r_a8ddf7019ce56827b9f6fe745059c34d3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a8ddf7019ce56827b9f6fe745059c34d3">Battle</a> ()=default</td></tr>
+<tr class="separator:a8ddf7019ce56827b9f6fe745059c34d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf25af084c4bf0090d2c493bc458236c" id="r_acf25af084c4bf0090d2c493bc458236c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#acf25af084c4bf0090d2c493bc458236c">~Battle</a> ()=default</td></tr>
+<tr class="separator:acf25af084c4bf0090d2c493bc458236c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42174b8456818f5490c1145d679d9e35" id="r_a42174b8456818f5490c1145d679d9e35"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a42174b8456818f5490c1145d679d9e35">Battle</a> (const <a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp;)=delete</td></tr>
+<tr class="separator:a42174b8456818f5490c1145d679d9e35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a943b76fbda7a00808bc6a5e545cbfaea" id="r_a943b76fbda7a00808bc6a5e545cbfaea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a943b76fbda7a00808bc6a5e545cbfaea">operator=</a> (const <a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp;)=delete</td></tr>
+<tr class="separator:a943b76fbda7a00808bc6a5e545cbfaea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0eef2771b780661d2cd145c1d709042f" id="r_a0eef2771b780661d2cd145c1d709042f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a0eef2771b780661d2cd145c1d709042f">addActor</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, int <a class="el" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>)</td></tr>
+<tr class="memdesc:a0eef2771b780661d2cd145c1d709042f"><td class="mdescLeft">&#160;</td><td class="mdescRight">加入参战者；side 为任意阵营 id。  <br /></td></tr>
+<tr class="separator:a0eef2771b780661d2cd145c1d709042f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a559ea2b384df26aaa49ca0af9f296b7d" id="r_a559ea2b384df26aaa49ca0af9f296b7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a559ea2b384df26aaa49ca0af9f296b7d">setAction</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;skillId, <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>=nullptr)</td></tr>
+<tr class="memdesc:a559ea2b384df26aaa49ca0af9f296b7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">为参战者设置本回合行动；target 为空由目标规则自动解析。  <br /></td></tr>
+<tr class="separator:a559ea2b384df26aaa49ca0af9f296b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5642d37e50e09b94c503d9db120f70c" id="r_ad5642d37e50e09b94c503d9db120f70c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#ad5642d37e50e09b94c503d9db120f70c">setActionChecked</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;skillId, <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>=nullptr)</td></tr>
+<tr class="memdesc:ad5642d37e50e09b94c503d9db120f70c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and queue exactly one action for a living participant this round.  <br /></td></tr>
+<tr class="separator:ad5642d37e50e09b94c503d9db120f70c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeacc44cedd98e57b5e9cd8a3a3ecb1e9" id="r_aeacc44cedd98e57b5e9cd8a3a3ecb1e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#aeacc44cedd98e57b5e9cd8a3a3ecb1e9">setActionByPolicyChecked</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, const std::string &amp;skillId, <a class="el" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">BattleTargetPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:aeacc44cedd98e57b5e9cd8a3a3ecb1e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a deterministic target policy and queue one checked action atomically.  <br /></td></tr>
+<tr class="separator:aeacc44cedd98e57b5e9cd8a3a3ecb1e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2545da8dd1c012fe3e1d7e61c9f5fd3d" id="r_a2545da8dd1c012fe3e1d7e61c9f5fd3d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a2545da8dd1c012fe3e1d7e61c9f5fd3d">autoEnemyActions</a> ()</td></tr>
+<tr class="memdesc:a2545da8dd1c012fe3e1d7e61c9f5fd3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">未设行动的 AI 侧自动选一个随机已学技能（或普攻）打随机存活敌对目标。  <br /></td></tr>
+<tr class="separator:a2545da8dd1c012fe3e1d7e61c9f5fd3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0354e9a21b26f5136f48ee1b7857658e" id="r_a0354e9a21b26f5136f48ee1b7857658e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a0354e9a21b26f5136f48ee1b7857658e">startRound</a> ()</td></tr>
+<tr class="memdesc:a0354e9a21b26f5136f48ee1b7857658e"><td class="mdescLeft">&#160;</td><td class="mdescRight">结算所有已设行动：先攻排序、清空待行动，回合数 +1。  <br /></td></tr>
+<tr class="separator:a0354e9a21b26f5136f48ee1b7857658e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb269ea08e86aa80daa1cf03d44d45f4" id="r_aeb269ea08e86aa80daa1cf03d44d45f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#aeb269ea08e86aa80daa1cf03d44d45f4">executeNextAction</a> ()</td></tr>
+<tr class="memdesc:aeb269ea08e86aa80daa1cf03d44d45f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">执行下一条行动（compatibility facade (脚本兼容门面)）；返回是否执行了一条。  <br /></td></tr>
+<tr class="separator:aeb269ea08e86aa80daa1cf03d44d45f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8789e2a2aa753fb9f994a8928a8215d" id="r_af8789e2a2aa753fb9f994a8928a8215d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#af8789e2a2aa753fb9f994a8928a8215d">isFinished</a> () const</td></tr>
+<tr class="memdesc:af8789e2a2aa753fb9f994a8928a8215d"><td class="mdescLeft">&#160;</td><td class="mdescRight">战斗是否已结束（仅剩一方存活 / 双方全灭）。  <br /></td></tr>
+<tr class="separator:af8789e2a2aa753fb9f994a8928a8215d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afde92a99d2a07705a3333949aaa190e8" id="r_afde92a99d2a07705a3333949aaa190e8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#afde92a99d2a07705a3333949aaa190e8">isVictory</a> () const</td></tr>
+<tr class="memdesc:afde92a99d2a07705a3333949aaa190e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否胜利：获胜方 == 玩家侧。  <br /></td></tr>
+<tr class="separator:afde92a99d2a07705a3333949aaa190e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb6d8885f173a314625f07283075c302" id="r_aeb6d8885f173a314625f07283075c302"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#aeb6d8885f173a314625f07283075c302">isDefeat</a> () const</td></tr>
+<tr class="memdesc:aeb6d8885f173a314625f07283075c302"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否战败：已结束且获胜方 != 玩家侧。  <br /></td></tr>
+<tr class="separator:aeb6d8885f173a314625f07283075c302"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19b61cec4b47dbde9a0a28a00959621e" id="r_a19b61cec4b47dbde9a0a28a00959621e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a19b61cec4b47dbde9a0a28a00959621e">setPlayerSide</a> (int <a class="el" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a>)</td></tr>
+<tr class="memdesc:a19b61cec4b47dbde9a0a28a00959621e"><td class="mdescLeft">&#160;</td><td class="mdescRight">玩家阵营 id（isVictory/isDefeat 依据），默认 0。  <br /></td></tr>
+<tr class="separator:a19b61cec4b47dbde9a0a28a00959621e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e208699e43e2f4e6a452799e39e6c46" id="r_a1e208699e43e2f4e6a452799e39e6c46"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a1e208699e43e2f4e6a452799e39e6c46">getPlayerSide</a> () const</td></tr>
+<tr class="separator:a1e208699e43e2f4e6a452799e39e6c46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e68a2b76696112cb10238c1f3e907b1" id="r_a9e68a2b76696112cb10238c1f3e907b1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a9e68a2b76696112cb10238c1f3e907b1">getWinnerSide</a> () const</td></tr>
+<tr class="memdesc:a9e68a2b76696112cb10238c1f3e907b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">获胜阵营 id；未结束或平局（双方全灭）返回 -1。  <br /></td></tr>
+<tr class="separator:a9e68a2b76696112cb10238c1f3e907b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1b2f0222eb2ff16ed0e05d879d53c11" id="r_ad1b2f0222eb2ff16ed0e05d879d53c11"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#ad1b2f0222eb2ff16ed0e05d879d53c11">getTurn</a> () const</td></tr>
+<tr class="memdesc:ad1b2f0222eb2ff16ed0e05d879d53c11"><td class="mdescLeft">&#160;</td><td class="mdescRight">当前回合数（1 起）。  <br /></td></tr>
+<tr class="separator:ad1b2f0222eb2ff16ed0e05d879d53c11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad270dfc2bd10de239d7ecd2fee470fe0" id="r_ad270dfc2bd10de239d7ecd2fee470fe0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#ad270dfc2bd10de239d7ecd2fee470fe0">isActorAlive</a> (<a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor) const</td></tr>
+<tr class="separator:ad270dfc2bd10de239d7ecd2fee470fe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8d9dd735c30a325448d93eb2a4ad92e" id="r_ae8d9dd735c30a325448d93eb2a4ad92e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#ae8d9dd735c30a325448d93eb2a4ad92e">getActorCount</a> () const</td></tr>
+<tr class="separator:ae8d9dd735c30a325448d93eb2a4ad92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02fcc5536bffde4b589867bda45d647e" id="r_a02fcc5536bffde4b589867bda45d647e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a02fcc5536bffde4b589867bda45d647e">getActor</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a02fcc5536bffde4b589867bda45d647e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a participant actor by index, or null when out of range.  <br /></td></tr>
+<tr class="separator:a02fcc5536bffde4b589867bda45d647e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a4472806ac4d955ec3ecc646f69da35" id="r_a5a4472806ac4d955ec3ecc646f69da35"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a5a4472806ac4d955ec3ecc646f69da35">getSide</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a5a4472806ac4d955ec3ecc646f69da35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af826f99ff0d100386ba73a8298f9541d" id="r_af826f99ff0d100386ba73a8298f9541d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#af826f99ff0d100386ba73a8298f9541d">getEventCount</a> () const</td></tr>
+<tr class="separator:af826f99ff0d100386ba73a8298f9541d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae28d4d76944d3c7df21510d674313af2" id="r_ae28d4d76944d3c7df21510d674313af2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1rpg_1_1BattleEvent.html">BattleEvent</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#ae28d4d76944d3c7df21510d674313af2">getEvent</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ae28d4d76944d3c7df21510d674313af2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adec9d85fe27a919c96a93ff9656c0d30" id="r_adec9d85fe27a919c96a93ff9656c0d30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#adec9d85fe27a919c96a93ff9656c0d30">pollEvents</a> ()</td></tr>
+<tr class="separator:adec9d85fe27a919c96a93ff9656c0d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5d277f65227d98e3233eabba10586f2" id="r_ac5d277f65227d98e3233eabba10586f2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#ac5d277f65227d98e3233eabba10586f2">getEventAction</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ac5d277f65227d98e3233eabba10586f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b5b461936bc69bf4f02f6300aae2ae4" id="r_a6b5b461936bc69bf4f02f6300aae2ae4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a6b5b461936bc69bf4f02f6300aae2ae4">getEventSkillId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a6b5b461936bc69bf4f02f6300aae2ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa7a71b1933374a9dfb10cf7bd988252" id="r_aaa7a71b1933374a9dfb10cf7bd988252"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#aaa7a71b1933374a9dfb10cf7bd988252">getEventCaster</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aaa7a71b1933374a9dfb10cf7bd988252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the caster of a polled event, or null when out of range.  <br /></td></tr>
+<tr class="separator:aaa7a71b1933374a9dfb10cf7bd988252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1078b1ee6ceec8ced4288305fbb4e56" id="r_ab1078b1ee6ceec8ced4288305fbb4e56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#ab1078b1ee6ceec8ced4288305fbb4e56">getEventTarget</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ab1078b1ee6ceec8ced4288305fbb4e56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the target of a polled event, or null when out of range.  <br /></td></tr>
+<tr class="separator:ab1078b1ee6ceec8ced4288305fbb4e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56a5ba454797c57e1fe96ac78317d73d" id="r_a56a5ba454797c57e1fe96ac78317d73d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a56a5ba454797c57e1fe96ac78317d73d">getEventAmount</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a56a5ba454797c57e1fe96ac78317d73d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4312901b4c827a889322d6eba396298e" id="r_a4312901b4c827a889322d6eba396298e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#a4312901b4c827a889322d6eba396298e">getEventCrit</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a4312901b4c827a889322d6eba396298e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:afe1b81265c1b16ba5a640d3b7265e90c" id="r_afe1b81265c1b16ba5a640d3b7265e90c"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1Battle.html#afe1b81265c1b16ba5a640d3b7265e90c">BattleTacticsCatalogue</a></td></tr>
+<tr class="separator:afe1b81265c1b16ba5a640d3b7265e90c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>一场回合制战斗（任意阵营数）。 @ownership 由调用方创建/销毁；Battle 不持有参与者的所有权（参与者为借用 ECS actor）。 @thread 在单一模拟线程上驱动整场战斗。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8h_source.html">Battle.h</a> 第 <a class="el" href="Battle_8h_source.html#l00048">48</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8ddf7019ce56827b9f6fe745059c34d3" name="a8ddf7019ce56827b9f6fe745059c34d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ddf7019ce56827b9f6fe745059c34d3">&#9670;&#160;</a></span>Battle() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::Battle::Battle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acf25af084c4bf0090d2c493bc458236c" name="acf25af084c4bf0090d2c493bc458236c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf25af084c4bf0090d2c493bc458236c">&#9670;&#160;</a></span>~Battle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::Battle::~Battle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42174b8456818f5490c1145d679d9e35" name="a42174b8456818f5490c1145d679d9e35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42174b8456818f5490c1145d679d9e35">&#9670;&#160;</a></span>Battle() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::Battle::Battle </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0eef2771b780661d2cd145c1d709042f" name="a0eef2771b780661d2cd145c1d709042f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0eef2771b780661d2cd145c1d709042f">&#9670;&#160;</a></span>addActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Battle::addActor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>side</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>加入参战者；side 为任意阵营 id。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Party_8cpp_source.html#l00109">eve::rpg::Party::addToBattle()</a>.</p>
+
+</div>
+</div>
+<a id="a2545da8dd1c012fe3e1d7e61c9f5fd3d" name="a2545da8dd1c012fe3e1d7e61c9f5fd3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2545da8dd1c012fe3e1d7e61c9f5fd3d">&#9670;&#160;</a></span>autoEnemyActions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Battle::autoEnemyActions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>未设行动的 AI 侧自动选一个随机已学技能（或普攻）打随机存活敌对目标。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="aeb269ea08e86aa80daa1cf03d44d45f4" name="aeb269ea08e86aa80daa1cf03d44d45f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb269ea08e86aa80daa1cf03d44d45f4">&#9670;&#160;</a></span>executeNextAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Battle::executeNextAction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>执行下一条行动（compatibility facade (脚本兼容门面)）；返回是否执行了一条。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00077">eve::rpg::SkillSystem::getTargetType()</a>, <a class="el" href="VitalsSystem_8cpp_source.html#l00083">eve::rpg::VitalsSystem::isDead()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a02fcc5536bffde4b589867bda45d647e" name="a02fcc5536bffde4b589867bda45d647e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02fcc5536bffde4b589867bda45d647e">&#9670;&#160;</a></span>getActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * eve::rpg::Battle::getActor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a participant actor by index, or null when out of range. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable ECS actor; the battle does not own it. @ownership The ECS world owns the actor; callers must not delete it. @lifetime Valid until the actor or battle is destroyed; do not retain across rounds. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00043">eve::rpg::BattleControl::bindParticipant()</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="ae8d9dd735c30a325448d93eb2a4ad92e" name="ae8d9dd735c30a325448d93eb2a4ad92e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8d9dd735c30a325448d93eb2a4ad92e">&#9670;&#160;</a></span>getActorCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Battle::getActorCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00043">eve::rpg::BattleControl::bindParticipant()</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="ae28d4d76944d3c7df21510d674313af2" name="ae28d4d76944d3c7df21510d674313af2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae28d4d76944d3c7df21510d674313af2">&#9670;&#160;</a></span>getEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rpg_1_1BattleEvent.html">BattleEvent</a> eve::rpg::Battle::getEvent </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00337">337</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac5d277f65227d98e3233eabba10586f2" name="ac5d277f65227d98e3233eabba10586f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5d277f65227d98e3233eabba10586f2">&#9670;&#160;</a></span>getEventAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Battle::getEventAction </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a56a5ba454797c57e1fe96ac78317d73d" name="a56a5ba454797c57e1fe96ac78317d73d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56a5ba454797c57e1fe96ac78317d73d">&#9670;&#160;</a></span>getEventAmount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::Battle::getEventAmount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="aaa7a71b1933374a9dfb10cf7bd988252" name="aaa7a71b1933374a9dfb10cf7bd988252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa7a71b1933374a9dfb10cf7bd988252">&#9670;&#160;</a></span>getEventCaster()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * eve::rpg::Battle::getEventCaster </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the caster of a polled event, or null when out of range. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable ECS actor; the event cache does not own it. @ownership The ECS world owns the actor; callers must not delete it. @lifetime Valid until the actor is destroyed; do not retain beyond the poll. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00354">354</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="af826f99ff0d100386ba73a8298f9541d" name="af826f99ff0d100386ba73a8298f9541d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af826f99ff0d100386ba73a8298f9541d">&#9670;&#160;</a></span>getEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Battle::getEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a4312901b4c827a889322d6eba396298e" name="a4312901b4c827a889322d6eba396298e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4312901b4c827a889322d6eba396298e">&#9670;&#160;</a></span>getEventCrit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Battle::getEventCrit </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a6b5b461936bc69bf4f02f6300aae2ae4" name="a6b5b461936bc69bf4f02f6300aae2ae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b5b461936bc69bf4f02f6300aae2ae4">&#9670;&#160;</a></span>getEventSkillId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::Battle::getEventSkillId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="ab1078b1ee6ceec8ced4288305fbb4e56" name="ab1078b1ee6ceec8ced4288305fbb4e56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1078b1ee6ceec8ced4288305fbb4e56">&#9670;&#160;</a></span>getEventTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * eve::rpg::Battle::getEventTarget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the target of a polled event, or null when out of range. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable ECS actor; the event cache does not own it. @ownership The ECS world owns the actor; callers must not delete it. @lifetime Valid until the actor is destroyed; do not retain beyond the poll. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a1e208699e43e2f4e6a452799e39e6c46" name="a1e208699e43e2f4e6a452799e39e6c46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e208699e43e2f4e6a452799e39e6c46">&#9670;&#160;</a></span>getPlayerSide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Battle::getPlayerSide </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a4472806ac4d955ec3ecc646f69da35" name="a5a4472806ac4d955ec3ecc646f69da35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a4472806ac4d955ec3ecc646f69da35">&#9670;&#160;</a></span>getSide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Battle::getSide </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="ad1b2f0222eb2ff16ed0e05d879d53c11" name="ad1b2f0222eb2ff16ed0e05d879d53c11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1b2f0222eb2ff16ed0e05d879d53c11">&#9670;&#160;</a></span>getTurn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Battle::getTurn </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>当前回合数（1 起）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00148">eve::rpg::BattleControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a9e68a2b76696112cb10238c1f3e907b1" name="a9e68a2b76696112cb10238c1f3e907b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e68a2b76696112cb10238c1f3e907b1">&#9670;&#160;</a></span>getWinnerSide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::Battle::getWinnerSide </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获胜阵营 id；未结束或平局（双方全灭）返回 -1。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad270dfc2bd10de239d7ecd2fee470fe0" name="ad270dfc2bd10de239d7ecd2fee470fe0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad270dfc2bd10de239d7ecd2fee470fe0">&#9670;&#160;</a></span>isActorAlive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Battle::isActorAlive </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00083">eve::rpg::VitalsSystem::isDead()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00125">eve::rpg::BattleControl::availableGameplayActions()</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="aeb6d8885f173a314625f07283075c302" name="aeb6d8885f173a314625f07283075c302"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb6d8885f173a314625f07283075c302">&#9670;&#160;</a></span>isDefeat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Battle::isDefeat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>是否战败：已结束且获胜方 != 玩家侧。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="af8789e2a2aa753fb9f994a8928a8215d" name="af8789e2a2aa753fb9f994a8928a8215d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8789e2a2aa753fb9f994a8928a8215d">&#9670;&#160;</a></span>isFinished()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Battle::isFinished </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>战斗是否已结束（仅剩一方存活 / 双方全灭）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>, <a class="el" href="BattleControl_8cpp_source.html#l00125">eve::rpg::BattleControl::availableGameplayActions()</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="afde92a99d2a07705a3333949aaa190e8" name="afde92a99d2a07705a3333949aaa190e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afde92a99d2a07705a3333949aaa190e8">&#9670;&#160;</a></span>isVictory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::Battle::isVictory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>是否胜利：获胜方 == 玩家侧。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a943b76fbda7a00808bc6a5e545cbfaea" name="a943b76fbda7a00808bc6a5e545cbfaea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a943b76fbda7a00808bc6a5e545cbfaea">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp; eve::rpg::Battle::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rpg_1_1Battle.html">Battle</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>.</p>
+
+</div>
+</div>
+<a id="adec9d85fe27a919c96a93ff9656c0d30" name="adec9d85fe27a919c96a93ff9656c0d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adec9d85fe27a919c96a93ff9656c0d30">&#9670;&#160;</a></span>pollEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Battle::pollEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a559ea2b384df26aaa49ca0af9f296b7d" name="a559ea2b384df26aaa49ca0af9f296b7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a559ea2b384df26aaa49ca0af9f296b7d">&#9670;&#160;</a></span>setAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Battle::setAction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>target</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>为参战者设置本回合行动；target 为空由目标规则自动解析。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="Battle_8cpp_source.html#l00096">setActionChecked()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="aeacc44cedd98e57b5e9cd8a3a3ecb1e9" name="aeacc44cedd98e57b5e9cd8a3a3ecb1e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeacc44cedd98e57b5e9cd8a3a3ecb1e9">&#9670;&#160;</a></span>setActionByPolicyChecked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::Battle::setActionByPolicyChecked </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0c">BattleTargetPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a deterministic target policy and queue one checked action atomically. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, or a structured failure without changing the pending action set. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Lowest-health ties preserve participant insertion order. Policy and skill target type must agree; Auto retains the normal target-type resolver. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca06b9281e396db002010bde1de57262eb">eve::rpg::Auto</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0cad4dc7acbb6ffa7b4b85f89623ddd2b77">eve::rpg::LowestHealthAlly</a>, <a class="el" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0ca40ee82cbad04251ddadd1ec20bc487eb">eve::rpg::LowestHealthEnemy</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="namespaceeve_1_1rpg.html#a248f45dc14ba0fdb68e353c3fddeef0caad6e7652b1bdfb38783486c2c3d5e806">eve::rpg::Self</a>, <a class="el" href="Battle_8cpp_source.html#l00096">setActionChecked()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleTactics_8cpp_source.html#l00146">eve::rpg::BattleTacticsCatalogue::queueAction()</a>.</p>
+
+</div>
+</div>
+<a id="ad5642d37e50e09b94c503d9db120f70c" name="ad5642d37e50e09b94c503d9db120f70c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5642d37e50e09b94c503d9db120f70c">&#9670;&#160;</a></span>setActionChecked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::Battle::setActionChecked </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>target</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and queue exactly one action for a living participant this round. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, or a structured failure without mutating the pending action set. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Explicit targets must be living participants on the legal side for the skill target type. @thread Call on the battle's owning simulation thread between rounds. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="SkillSystem_8cpp_source.html#l00077">eve::rpg::SkillSystem::getTargetType()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RPGActor_8cpp_source.html#l00199">eve::rpg::RPGActor::knowsSkill()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Battle_8cpp_source.html#l00076">setAction()</a>, <a class="el" href="Battle_8cpp_source.html#l00148">setActionByPolicyChecked()</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00148">eve::rpg::BattleControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a19b61cec4b47dbde9a0a28a00959621e" name="a19b61cec4b47dbde9a0a28a00959621e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19b61cec4b47dbde9a0a28a00959621e">&#9670;&#160;</a></span>setPlayerSide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Battle::setPlayerSide </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>side</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>玩家阵营 id（isVictory/isDefeat 依据），默认 0。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>.</p>
+
+</div>
+</div>
+<a id="a0354e9a21b26f5136f48ee1b7857658e" name="a0354e9a21b26f5136f48ee1b7857658e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0354e9a21b26f5136f48ee1b7857658e">&#9670;&#160;</a></span>startRound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::Battle::startRound </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>结算所有已设行动：先攻排序、清空待行动，回合数 +1。 </p>
+
+<p class="definition">在文件 <a class="el" href="Battle_8cpp_source.html">Battle.cpp</a> 第 <a class="el" href="Battle_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00221">eve::rpg::TraitSystem::getAttackSpeed()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00103">eve::rpg::AttributeSystem::getFinal()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00210">eve::rpg::BattleControl::advanceGameplay()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="afe1b81265c1b16ba5a640d3b7265e90c" name="afe1b81265c1b16ba5a640d3b7265e90c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe1b81265c1b16ba5a640d3b7265e90c">&#9670;&#160;</a></span>BattleTacticsCatalogue</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1rpg_1_1BattleTacticsCatalogue.html">BattleTacticsCatalogue</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Battle_8h_source.html">Battle.h</a> 第 <a class="el" href="Battle_8h_source.html#l00168">168</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="Battle_8h_source.html">Battle.h</a></li>
+<li>src/modules/rpg/<a class="el" href="Battle_8cpp_source.html">Battle.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

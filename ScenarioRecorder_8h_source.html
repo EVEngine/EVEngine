@@ -1,0 +1,291 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/ScenarioRecorder.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ScenarioRecorder.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ScenarioRecorder_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">struct </span>SQVM;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="ScenarioRecorder_8h.html#a9118df9c000fff034a7b410b6de3443c">   10</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>SQVM* <a class="code hl_typedef" href="ScenarioRecorder_8h.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1platform__event.html">   12</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1platform__event.html">eve::platform_event</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1platform__event_1_1PlatformEvent.html">PlatformEvent</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1platform__event_1_1Message.html">Message</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}  <span class="comment">// namespace eve::platform_event</span></div>
+</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1ScenarioEvent.html">   20</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1ScenarioEvent.html">ScenarioEvent</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1ScenarioEvent.html#aee873c7607d1ac1965783312cb58ae24">   21</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1dev_1_1ScenarioEvent.html#aee873c7607d1ac1965783312cb58ae24">name</a>;  </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1ScenarioEvent.html#aacc3319d67f534429efc80615c7e494e">   22</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1dev_1_1ScenarioEvent.html#aacc3319d67f534429efc80615c7e494e">args</a>;  </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1ScenarioFrame.html">   26</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1ScenarioFrame.html">ScenarioFrame</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1ScenarioFrame.html#a5689c06aef9a05bf0bcf8a9118d1a27f">   27</a></span>    <span class="keywordtype">int</span>                          frame = 0;  </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1ScenarioFrame.html#ade1a376904f0082056980b8117031636">   28</a></span>    std::vector&lt;ScenarioEvent&gt;   <a class="code hl_variable" href="structeve_1_1dev_1_1ScenarioFrame.html#ade1a376904f0082056980b8117031636">events</a>;     </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html">   47</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a>&amp; instance();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#a03d431013e409ab110f6cf39cc32ce4d">   51</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#a03d431013e409ab110f6cf39cc32ce4d">ScenarioRecorder</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#ac95ea2a3310dbde02ca6c39899968c17">   52</a></span>    <a class="code hl_class" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#ac95ea2a3310dbde02ca6c39899968c17">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// ---- recording -----------------------------------------------------</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::string* err = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> markFrame();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string* err = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span> cancel();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7d6fe0d52594543a212994d7d2c8c366">   71</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7d6fe0d52594543a212994d7d2c8c366">recording</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> vm_ != <span class="keyword">nullptr</span> &amp;&amp; recording_; }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// ---- replay ---------------------------------------------------------</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">bool</span> beginReplay(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string* err = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">bool</span> stageFrame();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7a72dc56cf774b77d88f90e4bcaa07d1">   85</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7a72dc56cf774b77d88f90e4bcaa07d1">replaying</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> replay_; }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#a410f4aebf0f4708273c1f9071b8ad084">   87</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#a410f4aebf0f4708273c1f9071b8ad084">framesRemaining</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> replay_ ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(frames_.size()) - replayIndex_ : 0; }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="comment">// ---- DevTool wiring --------------------------------------------------</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">void</span> setErrorInfo(<span class="keyword">const</span> std::string&amp; report, <span class="keyword">const</span> std::string&amp; site);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">void</span> onEventConsumed(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1platform__event_1_1Message.html">eve::platform_event::Message</a>&amp; msg);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> detachObserver();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="comment">// ---- accessors --------------------------------------------------------</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#a9a0e4181df6d04c686a13b0329fdb666">   98</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#a9a0e4181df6d04c686a13b0329fdb666">baseline</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> baseline_; }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7f18c04077f8bcefa80eb2c0592f8318">   99</a></span>    <span class="keyword">const</span> std::vector&lt;ScenarioFrame&gt;&amp; <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#a7f18c04077f8bcefa80eb2c0592f8318">frames</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> frames_; }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#a5f46fdb6999365c82a82bc717dbd314e">  100</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#a5f46fdb6999365c82a82bc717dbd314e">errorReport</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> errorReport_; }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1ScenarioRecorder.html#a2f15a9c994d241b4922e6d15d05d132c">  101</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1dev_1_1ScenarioRecorder.html#a2f15a9c994d241b4922e6d15d05d132c">errorSite</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> errorSite_; }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> save(<span class="keyword">const</span> std::string&amp; baseline, <span class="keyword">const</span> std::vector&lt;ScenarioFrame&gt;&amp; frames,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                     <span class="keyword">const</span> std::string&amp; errorReport, <span class="keyword">const</span> std::string&amp; errorSite,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                     <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string* err = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> load(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string* baseline,</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                     std::vector&lt;ScenarioFrame&gt;* frames, std::string* errorReport,</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                     std::string* errorSite, std::string* err = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classeve_1_1dev_1_1ScenarioRecorder.html">ScenarioRecorder</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> setObserver();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>                            vm_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordtype">bool</span>                                   recording_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">bool</span>                                   replay_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">int</span>                                    replayIndex_ = 0;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">int</span>                                    currentFrame_ = 0;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    std::string                            baseline_;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    std::vector&lt;ScenarioFrame&gt;             frames_;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    std::string                            errorReport_;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    std::string                            errorSite_;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    std::function&lt;void(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1platform__event_1_1Message.html">eve::platform_event::Message</a>&amp;)&gt; savedObserver_;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <a class="code hl_class" href="classeve_1_1platform__event_1_1PlatformEvent.html">eve::platform_event::PlatformEvent</a>*                      eventModule_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>};</div>
+</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aScenarioRecorder_8h_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ScenarioRecorder_8h.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00010">ScenarioRecorder.h:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html">eve::dev::ScenarioRecorder</a></div><div class="ttdoc">A state-driven bug scenario: baseline snapshot + ordered per-frame inputs.</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00047">ScenarioRecorder.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_a03d431013e409ab110f6cf39cc32ce4d"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#a03d431013e409ab110f6cf39cc32ce4d">eve::dev::ScenarioRecorder::ScenarioRecorder</a></div><div class="ttdeci">ScenarioRecorder(const ScenarioRecorder &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_a2f15a9c994d241b4922e6d15d05d132c"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#a2f15a9c994d241b4922e6d15d05d132c">eve::dev::ScenarioRecorder::errorSite</a></div><div class="ttdeci">const std::string &amp; errorSite() const</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00101">ScenarioRecorder.h:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_a410f4aebf0f4708273c1f9071b8ad084"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#a410f4aebf0f4708273c1f9071b8ad084">eve::dev::ScenarioRecorder::framesRemaining</a></div><div class="ttdeci">int framesRemaining() const</div><div class="ttdoc">Number of frames remaining to stage.</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00087">ScenarioRecorder.h:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_a5f46fdb6999365c82a82bc717dbd314e"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#a5f46fdb6999365c82a82bc717dbd314e">eve::dev::ScenarioRecorder::errorReport</a></div><div class="ttdeci">const std::string &amp; errorReport() const</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00100">ScenarioRecorder.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_a7a72dc56cf774b77d88f90e4bcaa07d1"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#a7a72dc56cf774b77d88f90e4bcaa07d1">eve::dev::ScenarioRecorder::replaying</a></div><div class="ttdeci">bool replaying() const</div><div class="ttdoc">True while a replay is in progress with frames remaining.</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00085">ScenarioRecorder.h:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_a7d6fe0d52594543a212994d7d2c8c366"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#a7d6fe0d52594543a212994d7d2c8c366">eve::dev::ScenarioRecorder::recording</a></div><div class="ttdeci">bool recording() const</div><div class="ttdoc">True while a scenario is being recorded.</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00071">ScenarioRecorder.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_a7f18c04077f8bcefa80eb2c0592f8318"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#a7f18c04077f8bcefa80eb2c0592f8318">eve::dev::ScenarioRecorder::frames</a></div><div class="ttdeci">const std::vector&lt; ScenarioFrame &gt; &amp; frames() const</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00099">ScenarioRecorder.h:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_a9a0e4181df6d04c686a13b0329fdb666"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#a9a0e4181df6d04c686a13b0329fdb666">eve::dev::ScenarioRecorder::baseline</a></div><div class="ttdeci">const std::string &amp; baseline() const</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00098">ScenarioRecorder.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1ScenarioRecorder_html_ac95ea2a3310dbde02ca6c39899968c17"><div class="ttname"><a href="classeve_1_1dev_1_1ScenarioRecorder.html#ac95ea2a3310dbde02ca6c39899968c17">eve::dev::ScenarioRecorder::operator=</a></div><div class="ttdeci">ScenarioRecorder &amp; operator=(const ScenarioRecorder &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1platform__event_1_1Message_html"><div class="ttname"><a href="classeve_1_1platform__event_1_1Message.html">eve::platform_event::Message</a></div><div class="ttdoc">A named event carrying an ordered list of Variant payloads. Pushed messages are heap-allocated; the q...</div><div class="ttdef"><b>Definition</b> <a href="PlatformEvent_8h_source.html#l00072">PlatformEvent.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1platform__event_1_1PlatformEvent_html"><div class="ttname"><a href="classeve_1_1platform__event_1_1PlatformEvent.html">eve::platform_event::PlatformEvent</a></div><div class="ttdef"><b>Definition</b> <a href="PlatformEvent_8h_source.html#l00086">PlatformEvent.h:86</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AgentDevelopmentMcp_8cpp_source.html#l00012">AgentDevelopmentMcp.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1platform__event_html"><div class="ttname"><a href="namespaceeve_1_1platform__event.html">eve::platform_event</a></div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00012">ScenarioRecorder.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1ScenarioEvent_html"><div class="ttname"><a href="structeve_1_1dev_1_1ScenarioEvent.html">eve::dev::ScenarioEvent</a></div><div class="ttdoc">One serializable event payload recorded from the event queue.</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00020">ScenarioRecorder.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1ScenarioEvent_html_aacc3319d67f534429efc80615c7e494e"><div class="ttname"><a href="structeve_1_1dev_1_1ScenarioEvent.html#aacc3319d67f534429efc80615c7e494e">eve::dev::ScenarioEvent::args</a></div><div class="ttdeci">std::vector&lt; std::string &gt; args</div><div class="ttdoc">String payloads (non-string payloads dropped).</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00022">ScenarioRecorder.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1ScenarioEvent_html_aee873c7607d1ac1965783312cb58ae24"><div class="ttname"><a href="structeve_1_1dev_1_1ScenarioEvent.html#aee873c7607d1ac1965783312cb58ae24">eve::dev::ScenarioEvent::name</a></div><div class="ttdeci">std::string name</div><div class="ttdoc">Event/message name (&quot;keypressed&quot;, ...).</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00021">ScenarioRecorder.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1ScenarioFrame_html"><div class="ttname"><a href="structeve_1_1dev_1_1ScenarioFrame.html">eve::dev::ScenarioFrame</a></div><div class="ttdoc">All events consumed during one game frame.</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00026">ScenarioRecorder.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1ScenarioFrame_html_ade1a376904f0082056980b8117031636"><div class="ttname"><a href="structeve_1_1dev_1_1ScenarioFrame.html#ade1a376904f0082056980b8117031636">eve::dev::ScenarioFrame::events</a></div><div class="ttdeci">std::vector&lt; ScenarioEvent &gt; events</div><div class="ttdoc">Events consumed that frame, in order.</div><div class="ttdef"><b>Definition</b> <a href="ScenarioRecorder_8h_source.html#l00028">ScenarioRecorder.h:28</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

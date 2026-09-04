@@ -1,0 +1,346 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainMesh.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainMesh.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainMesh_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="MeshBuild_8h.html">procgen/MeshBuild.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainPipeline_8h.html">procgen/heightmap/TerrainPipeline.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainMeshSettings.html">   11</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainMeshSettings.html">TerrainMeshSettings</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2d6635d38098db26cbfb2a248cb51375">   12</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2d6635d38098db26cbfb2a248cb51375">originX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a6b0edaa58e90231da7693acf140fed50">originY</a> = 0;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#adb4a888008f7206b34aa0614088b23a7">   13</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#adb4a888008f7206b34aa0614088b23a7">cellsX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a101c416f66a6fd1d677c1562a18b8f5f">cellsY</a> = 0;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a0a12e48e724776cf87c3167cfd206382">   14</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a0a12e48e724776cf87c3167cfd206382">lod</a> = 0;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2414da922b42a15705e83fdb33b9e25d">   15</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2414da922b42a15705e83fdb33b9e25d">cellSize</a> = 1.f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#acaf8b2594923aaee4dda99636666bfe6">   16</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#acaf8b2594923aaee4dda99636666bfe6">heightScale</a> = 1.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2c8c36b56ce65b30b9fd7c3553db6731">   17</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2c8c36b56ce65b30b9fd7c3553db6731">skirtDepth</a> = 1.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html">   26</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1TerrainMeshChunk.html">TerrainMeshChunk</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a3032be7e598bc10c4eb7f0ba187d20e9">   28</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a3032be7e598bc10c4eb7f0ba187d20e9">mesh</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mesh_; }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a78fb2d2b7b1595e447f8e9220beb35c3">   29</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a78fb2d2b7b1595e447f8e9220beb35c3">mesh</a>() { <span class="keywordflow">return</span> mesh_; }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#aede12aefc6f6446c816228d3d2c2fd48">   30</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#aede12aefc6f6446c816228d3d2c2fd48">getVertexCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mesh_.<a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a>(); }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#ad357f5d8745842fbe68042ff7e94478b">   31</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#ad357f5d8745842fbe68042ff7e94478b">getIndexCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mesh_.<a class="code hl_function" href="classeve_1_1procgen_1_1MeshBuild.html#a6f9256be5db1d30c5b5d3a9b8823fbe9">getIndexCount</a>(); }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#aa291a64905e5ccabcd84e8fc28a04090">   32</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#aa291a64905e5ccabcd84e8fc28a04090">getBaseVertexCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> baseVertexCount_; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a33effa56e994e7ce4aba162a01216d75">   33</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a33effa56e994e7ce4aba162a01216d75">getLodStep</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lodStep_; }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a8f32cd20109e31a842fdb6fd2b5e9e36">   34</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a8f32cd20109e31a842fdb6fd2b5e9e36">getOriginX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originX_; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a7fac2c6a12dc20389f09e2b115463dcf">   35</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a7fac2c6a12dc20389f09e2b115463dcf">getOriginY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originY_; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a74eeef011d2bd4b217e4205c42e16064">   36</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a74eeef011d2bd4b217e4205c42e16064">getSplatWidth</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> splatWidth_; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a034b77edcccb9e1632a8ed598970a245">   37</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a034b77edcccb9e1632a8ed598970a245">getSplatHeight</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> splatHeight_; }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a0c9e9ae490f11115b9afca14504be160">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a0c9e9ae490f11115b9afca14504be160">getGeometricError</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> geometricError_; }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a288b5b16cc1bd880a7d4838b70354a85">getBiome</a>(<span class="keywordtype">int</span> vertex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a4d1fc69e45ae86d7a68100728f84bb50">getMaterialWeight</a>(<span class="keywordtype">int</span> vertex, <span class="keywordtype">int</span> channel) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a4ad44a8656e27611ae7df8bc6af8d9ca">   44</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1TerrainMeshBuilder.html">TerrainMeshBuilder</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> mesh_;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::vector&lt;float&gt; weights_;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::vector&lt;uint8_t&gt; biomes_;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">int</span> baseVertexCount_ = 0, lodStep_ = 1, originX_ = 0, originY_ = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">int</span> splatWidth_ = 0, splatHeight_ = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">float</span> geometricError_ = 0.f;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainMeshBuilder.html">   54</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1TerrainMeshBuilder.html">TerrainMeshBuilder</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshBuilder.html#a0992ecb955b7a593e95b853b5754a535">build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainLayers.html">TerrainLayers</a> *layers,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainMeshSettings.html">TerrainMeshSettings</a> &amp;settings, <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainMeshChunk.html">TerrainMeshChunk</a> &amp;out,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                      std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">static</span> <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainMeshBuilder.html#aaaa0ceea30e7422f1a15b116764b0c53">estimateGeometricError</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainMeshSettings.html">TerrainMeshSettings</a> &amp;settings);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="};">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainLodSelector.html">   66</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1TerrainLodSelector.html">TerrainLodSelector</a> {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainLodSelector.html#aa283b3c54c0bb21cb3981fb37ed00e73">select</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainMeshSettings.html">TerrainMeshSettings</a> settings, <span class="keywordtype">int</span> maxLod,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                      <span class="keywordtype">float</span> distance, <span class="keywordtype">float</span> viewportHeight, <span class="keywordtype">float</span> verticalFovDegrees,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                      <span class="keywordtype">float</span> targetPixelError);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="};">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html">   77</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html">TerrainRiverMeshSettings</a> {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a11b07f6cc20a9046ac69fe06ab287568">   78</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a11b07f6cc20a9046ac69fe06ab287568">originX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#ad4fc032f19a185c98b3cad37fa8fc5e5">originY</a> = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a28eede9d8f4c32889f38292021cb21d0">   79</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a28eede9d8f4c32889f38292021cb21d0">cellsX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a79e45388b281791b4835273e341e2c0e">cellsY</a> = 0;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a57eefc3372be73ac9ddee680c14a5268">   80</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a57eefc3372be73ac9ddee680c14a5268">cellSize</a> = 1.f;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#ae03cf5082591ab90d18e5c42bd3b3776">   81</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#ae03cf5082591ab90d18e5c42bd3b3776">heightScale</a> = 1.f;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#ad0014b704a69aec806aaafd43e7cea44">   82</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#ad0014b704a69aec806aaafd43e7cea44">minWidth</a> = 0.12f;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#af8b6c85a464bc36d644be02e2c81c931">   83</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#af8b6c85a464bc36d644be02e2c81c931">maxWidth</a> = 0.6f;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a3e25bd1b45f56c178802240b76ee59f1">   84</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a3e25bd1b45f56c178802240b76ee59f1">heightOffset</a> = 0.03f;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a5b3a0e4f2517be629c9e83e44e2c82f2">   86</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a5b3a0e4f2517be629c9e83e44e2c82f2">minSurfaceSlope</a> = 0.f;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a7dfe5b81bb6caf68b853ea934b680d96">   88</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a7dfe5b81bb6caf68b853ea934b680d96">maxSurfaceSlope</a> = 0.30f;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>};</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="};">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainRiverMeshBuilder.html">   92</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1TerrainRiverMeshBuilder.html">TerrainRiverMeshBuilder</a> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainRiverMeshBuilder.html#a977ef46639b6daeb9432cdb37f404811">build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainLayers.html">TerrainLayers</a> &amp;layers,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html">TerrainRiverMeshSettings</a> &amp;settings, <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                      std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>};</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="};">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html">  100</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html">TerrainLakeMeshSettings</a> {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a547fb13e4bceebe9663ca3e9952d96e4">  101</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a547fb13e4bceebe9663ca3e9952d96e4">originX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a410d0abfebfe7a5c3f46604a218cb1f8">originY</a> = 0;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#ae63333b91d5e98c3a6309f2b7eb2524a">  102</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#ae63333b91d5e98c3a6309f2b7eb2524a">cellsX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a03b380263779bffd0ef9cfefe4cd8640">cellsY</a> = 0;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a99150e3a60b0ec524b63febb6521e9f8">  103</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a99150e3a60b0ec524b63febb6521e9f8">cellSize</a> = 1.f;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a5d366891cfc5b99ed4ad9f5f97826e13">  104</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a5d366891cfc5b99ed4ad9f5f97826e13">heightScale</a> = 1.f;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#af9df8c773f9a9a530182e47364b5a51c">  105</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#af9df8c773f9a9a530182e47364b5a51c">minimumDepth</a> = 0.002f;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a3c54feccb4c13aa37a020ff5bc94213a">  106</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a3c54feccb4c13aa37a020ff5bc94213a">heightOffset</a> = 0.025f;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="};">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainLakeMeshBuilder.html">  110</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1TerrainLakeMeshBuilder.html">TerrainLakeMeshBuilder</a> {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainLakeMeshBuilder.html#a1a5772b25e131ab9d05aa61665424f5c">build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainLayers.html">TerrainLayers</a> &amp;layers,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html">TerrainLakeMeshSettings</a> &amp;settings, <a class="code hl_class" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;out,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                      std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>};</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aMeshBuild_8h_html"><div class="ttname"><a href="MeshBuild_8h.html">MeshBuild.h</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aTerrainPipeline_8h_html"><div class="ttname"><a href="TerrainPipeline_8h.html">TerrainPipeline.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00019">Heightmap.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html">eve::procgen::MeshBuild</a></div><div class="ttdoc">CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packe...</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8h_source.html#l00017">MeshBuild.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_a6f9256be5db1d30c5b5d3a9b8823fbe9"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#a6f9256be5db1d30c5b5d3a9b8823fbe9">eve::procgen::MeshBuild::getIndexCount</a></div><div class="ttdeci">int getIndexCount() const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00159">MeshBuild.cpp:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1MeshBuild_html_ab0ad02c622f5d76e9fd304107d2031b6"><div class="ttname"><a href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">eve::procgen::MeshBuild::getVertexCount</a></div><div class="ttdeci">int getVertexCount() const</div><div class="ttdef"><b>Definition</b> <a href="MeshBuild_8cpp_source.html#l00158">MeshBuild.cpp:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainLakeMeshBuilder_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainLakeMeshBuilder.html">eve::procgen::TerrainLakeMeshBuilder</a></div><div class="ttdoc">Builds flat water-surface cells for Priority-Flood depressions.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00110">TerrainMesh.h:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainLakeMeshBuilder_html_a1a5772b25e131ab9d05aa61665424f5c"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainLakeMeshBuilder.html#a1a5772b25e131ab9d05aa61665424f5c">eve::procgen::TerrainLakeMeshBuilder::build</a></div><div class="ttdeci">static bool build(const Heightmap &amp;heightmap, const TerrainLayers &amp;layers, const TerrainLakeMeshSettings &amp;settings, MeshBuild &amp;out, std::string *error=nullptr)</div><div class="ttdoc">Compatibility operation that builds lake surface geometry.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8cpp_source.html#l00478">TerrainMesh.cpp:478</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainLayers_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainLayers.html">eve::procgen::TerrainLayers</a></div><div class="ttdoc">Script-friendly ownership wrapper for baked hydrology and climate layers.</div><div class="ttdef"><b>Definition</b> <a href="TerrainPipeline_8h_source.html#l00069">TerrainPipeline.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainLodSelector_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainLodSelector.html">eve::procgen::TerrainLodSelector</a></div><div class="ttdoc">Screen-space-error LOD choice based on measured heightfield deviation.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00066">TerrainMesh.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainLodSelector_html_aa283b3c54c0bb21cb3981fb37ed00e73"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainLodSelector.html#aa283b3c54c0bb21cb3981fb37ed00e73">eve::procgen::TerrainLodSelector::select</a></div><div class="ttdeci">static int select(const Heightmap &amp;heightmap, TerrainMeshSettings settings, int maxLod, float distance, float viewportHeight, float verticalFovDegrees, float targetPixelError)</div><div class="ttdoc">Select the coarsest LOD whose projected geometric error is within budget.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8cpp_source.html#l00202">TerrainMesh.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshBuilder_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshBuilder.html">eve::procgen::TerrainMeshBuilder</a></div><div class="ttdoc">Builds LOD heightfield chunks with stable normals, skirts, and biome splat weights.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00054">TerrainMesh.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshBuilder_html_a0992ecb955b7a593e95b853b5754a535"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshBuilder.html#a0992ecb955b7a593e95b853b5754a535">eve::procgen::TerrainMeshBuilder::build</a></div><div class="ttdeci">static bool build(const Heightmap &amp;heightmap, const TerrainLayers *layers, const TerrainMeshSettings &amp;settings, TerrainMeshChunk &amp;out, std::string *error=nullptr)</div><div class="ttdoc">Compatibility operation that builds a terrain mesh chunk.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8cpp_source.html#l00105">TerrainMesh.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshBuilder_html_aaaa0ceea30e7422f1a15b116764b0c53"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshBuilder.html#aaaa0ceea30e7422f1a15b116764b0c53">eve::procgen::TerrainMeshBuilder::estimateGeometricError</a></div><div class="ttdeci">static float estimateGeometricError(const Heightmap &amp;heightmap, const TerrainMeshSettings &amp;settings)</div><div class="ttdoc">Maximum world-space deviation between a LOD grid and the source heightfield.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8cpp_source.html#l00174">TerrainMesh.cpp:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html">eve::procgen::TerrainMeshChunk</a></div><div class="ttdoc">One renderable heightfield chunk plus four ecological material weights.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00026">TerrainMesh.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a034b77edcccb9e1632a8ed598970a245"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a034b77edcccb9e1632a8ed598970a245">eve::procgen::TerrainMeshChunk::getSplatHeight</a></div><div class="ttdeci">int getSplatHeight() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00037">TerrainMesh.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a0c9e9ae490f11115b9afca14504be160"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a0c9e9ae490f11115b9afca14504be160">eve::procgen::TerrainMeshChunk::getGeometricError</a></div><div class="ttdeci">float getGeometricError() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00038">TerrainMesh.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a288b5b16cc1bd880a7d4838b70354a85"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a288b5b16cc1bd880a7d4838b70354a85">eve::procgen::TerrainMeshChunk::getBiome</a></div><div class="ttdeci">int getBiome(int vertex) const</div><div class="ttdoc">Return the biome id stored for one mesh vertex, or -1 when out of range.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8cpp_source.html#l00100">TerrainMesh.cpp:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a3032be7e598bc10c4eb7f0ba187d20e9"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a3032be7e598bc10c4eb7f0ba187d20e9">eve::procgen::TerrainMeshChunk::mesh</a></div><div class="ttdeci">const MeshBuild &amp; mesh() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00028">TerrainMesh.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a33effa56e994e7ce4aba162a01216d75"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a33effa56e994e7ce4aba162a01216d75">eve::procgen::TerrainMeshChunk::getLodStep</a></div><div class="ttdeci">int getLodStep() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00033">TerrainMesh.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a4d1fc69e45ae86d7a68100728f84bb50"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a4d1fc69e45ae86d7a68100728f84bb50">eve::procgen::TerrainMeshChunk::getMaterialWeight</a></div><div class="ttdeci">float getMaterialWeight(int vertex, int channel) const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8cpp_source.html#l00095">TerrainMesh.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a74eeef011d2bd4b217e4205c42e16064"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a74eeef011d2bd4b217e4205c42e16064">eve::procgen::TerrainMeshChunk::getSplatWidth</a></div><div class="ttdeci">int getSplatWidth() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00036">TerrainMesh.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a78fb2d2b7b1595e447f8e9220beb35c3"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a78fb2d2b7b1595e447f8e9220beb35c3">eve::procgen::TerrainMeshChunk::mesh</a></div><div class="ttdeci">MeshBuild &amp; mesh()</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00029">TerrainMesh.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a7fac2c6a12dc20389f09e2b115463dcf"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a7fac2c6a12dc20389f09e2b115463dcf">eve::procgen::TerrainMeshChunk::getOriginY</a></div><div class="ttdeci">int getOriginY() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00035">TerrainMesh.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_a8f32cd20109e31a842fdb6fd2b5e9e36"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a8f32cd20109e31a842fdb6fd2b5e9e36">eve::procgen::TerrainMeshChunk::getOriginX</a></div><div class="ttdeci">int getOriginX() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00034">TerrainMesh.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_aa291a64905e5ccabcd84e8fc28a04090"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#aa291a64905e5ccabcd84e8fc28a04090">eve::procgen::TerrainMeshChunk::getBaseVertexCount</a></div><div class="ttdeci">int getBaseVertexCount() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00032">TerrainMesh.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_ad357f5d8745842fbe68042ff7e94478b"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#ad357f5d8745842fbe68042ff7e94478b">eve::procgen::TerrainMeshChunk::getIndexCount</a></div><div class="ttdeci">int getIndexCount() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00031">TerrainMesh.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainMeshChunk_html_aede12aefc6f6446c816228d3d2c2fd48"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#aede12aefc6f6446c816228d3d2c2fd48">eve::procgen::TerrainMeshChunk::getVertexCount</a></div><div class="ttdeci">int getVertexCount() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00030">TerrainMesh.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainRiverMeshBuilder_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainRiverMeshBuilder.html">eve::procgen::TerrainRiverMeshBuilder</a></div><div class="ttdoc">Builds overlapping flow-aligned water ribbons from a terrain river network.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00092">TerrainMesh.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainRiverMeshBuilder_html_a977ef46639b6daeb9432cdb37f404811"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainRiverMeshBuilder.html#a977ef46639b6daeb9432cdb37f404811">eve::procgen::TerrainRiverMeshBuilder::build</a></div><div class="ttdeci">static bool build(const Heightmap &amp;heightmap, const TerrainLayers &amp;layers, const TerrainRiverMeshSettings &amp;settings, MeshBuild &amp;out, std::string *error=nullptr)</div><div class="ttdoc">Compatibility operation that builds river surface geometry.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8cpp_source.html#l00223">TerrainMesh.cpp:223</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html">eve::procgen::TerrainLakeMeshSettings</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00100">TerrainMesh.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html_a03b380263779bffd0ef9cfefe4cd8640"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a03b380263779bffd0ef9cfefe4cd8640">eve::procgen::TerrainLakeMeshSettings::cellsY</a></div><div class="ttdeci">int cellsY</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00102">TerrainMesh.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html_a3c54feccb4c13aa37a020ff5bc94213a"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a3c54feccb4c13aa37a020ff5bc94213a">eve::procgen::TerrainLakeMeshSettings::heightOffset</a></div><div class="ttdeci">float heightOffset</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00106">TerrainMesh.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html_a410d0abfebfe7a5c3f46604a218cb1f8"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a410d0abfebfe7a5c3f46604a218cb1f8">eve::procgen::TerrainLakeMeshSettings::originY</a></div><div class="ttdeci">int originY</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00101">TerrainMesh.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html_a547fb13e4bceebe9663ca3e9952d96e4"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a547fb13e4bceebe9663ca3e9952d96e4">eve::procgen::TerrainLakeMeshSettings::originX</a></div><div class="ttdeci">int originX</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00101">TerrainMesh.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html_a5d366891cfc5b99ed4ad9f5f97826e13"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a5d366891cfc5b99ed4ad9f5f97826e13">eve::procgen::TerrainLakeMeshSettings::heightScale</a></div><div class="ttdeci">float heightScale</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00104">TerrainMesh.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html_a99150e3a60b0ec524b63febb6521e9f8"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#a99150e3a60b0ec524b63febb6521e9f8">eve::procgen::TerrainLakeMeshSettings::cellSize</a></div><div class="ttdeci">float cellSize</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00103">TerrainMesh.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html_ae63333b91d5e98c3a6309f2b7eb2524a"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#ae63333b91d5e98c3a6309f2b7eb2524a">eve::procgen::TerrainLakeMeshSettings::cellsX</a></div><div class="ttdeci">int cellsX</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00102">TerrainMesh.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainLakeMeshSettings_html_af9df8c773f9a9a530182e47364b5a51c"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainLakeMeshSettings.html#af9df8c773f9a9a530182e47364b5a51c">eve::procgen::TerrainLakeMeshSettings::minimumDepth</a></div><div class="ttdeci">float minimumDepth</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00105">TerrainMesh.h:105</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html">eve::procgen::TerrainMeshSettings</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00011">TerrainMesh.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html_a0a12e48e724776cf87c3167cfd206382"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a0a12e48e724776cf87c3167cfd206382">eve::procgen::TerrainMeshSettings::lod</a></div><div class="ttdeci">int lod</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00014">TerrainMesh.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html_a101c416f66a6fd1d677c1562a18b8f5f"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a101c416f66a6fd1d677c1562a18b8f5f">eve::procgen::TerrainMeshSettings::cellsY</a></div><div class="ttdeci">int cellsY</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00013">TerrainMesh.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html_a2414da922b42a15705e83fdb33b9e25d"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2414da922b42a15705e83fdb33b9e25d">eve::procgen::TerrainMeshSettings::cellSize</a></div><div class="ttdeci">float cellSize</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00015">TerrainMesh.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html_a2c8c36b56ce65b30b9fd7c3553db6731"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2c8c36b56ce65b30b9fd7c3553db6731">eve::procgen::TerrainMeshSettings::skirtDepth</a></div><div class="ttdeci">float skirtDepth</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00017">TerrainMesh.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html_a2d6635d38098db26cbfb2a248cb51375"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a2d6635d38098db26cbfb2a248cb51375">eve::procgen::TerrainMeshSettings::originX</a></div><div class="ttdeci">int originX</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00012">TerrainMesh.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html_a6b0edaa58e90231da7693acf140fed50"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html#a6b0edaa58e90231da7693acf140fed50">eve::procgen::TerrainMeshSettings::originY</a></div><div class="ttdeci">int originY</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00012">TerrainMesh.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html_acaf8b2594923aaee4dda99636666bfe6"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html#acaf8b2594923aaee4dda99636666bfe6">eve::procgen::TerrainMeshSettings::heightScale</a></div><div class="ttdeci">float heightScale</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00016">TerrainMesh.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMeshSettings_html_adb4a888008f7206b34aa0614088b23a7"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMeshSettings.html#adb4a888008f7206b34aa0614088b23a7">eve::procgen::TerrainMeshSettings::cellsX</a></div><div class="ttdeci">int cellsX</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00013">TerrainMesh.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html">eve::procgen::TerrainRiverMeshSettings</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00077">TerrainMesh.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_a11b07f6cc20a9046ac69fe06ab287568"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a11b07f6cc20a9046ac69fe06ab287568">eve::procgen::TerrainRiverMeshSettings::originX</a></div><div class="ttdeci">int originX</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00078">TerrainMesh.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_a28eede9d8f4c32889f38292021cb21d0"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a28eede9d8f4c32889f38292021cb21d0">eve::procgen::TerrainRiverMeshSettings::cellsX</a></div><div class="ttdeci">int cellsX</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00079">TerrainMesh.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_a3e25bd1b45f56c178802240b76ee59f1"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a3e25bd1b45f56c178802240b76ee59f1">eve::procgen::TerrainRiverMeshSettings::heightOffset</a></div><div class="ttdeci">float heightOffset</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00084">TerrainMesh.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_a57eefc3372be73ac9ddee680c14a5268"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a57eefc3372be73ac9ddee680c14a5268">eve::procgen::TerrainRiverMeshSettings::cellSize</a></div><div class="ttdeci">float cellSize</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00080">TerrainMesh.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_a5b3a0e4f2517be629c9e83e44e2c82f2"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a5b3a0e4f2517be629c9e83e44e2c82f2">eve::procgen::TerrainRiverMeshSettings::minSurfaceSlope</a></div><div class="ttdeci">float minSurfaceSlope</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00086">TerrainMesh.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_a79e45388b281791b4835273e341e2c0e"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a79e45388b281791b4835273e341e2c0e">eve::procgen::TerrainRiverMeshSettings::cellsY</a></div><div class="ttdeci">int cellsY</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00079">TerrainMesh.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_a7dfe5b81bb6caf68b853ea934b680d96"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#a7dfe5b81bb6caf68b853ea934b680d96">eve::procgen::TerrainRiverMeshSettings::maxSurfaceSlope</a></div><div class="ttdeci">float maxSurfaceSlope</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00088">TerrainMesh.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_ad0014b704a69aec806aaafd43e7cea44"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#ad0014b704a69aec806aaafd43e7cea44">eve::procgen::TerrainRiverMeshSettings::minWidth</a></div><div class="ttdeci">float minWidth</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00082">TerrainMesh.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_ad4fc032f19a185c98b3cad37fa8fc5e5"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#ad4fc032f19a185c98b3cad37fa8fc5e5">eve::procgen::TerrainRiverMeshSettings::originY</a></div><div class="ttdeci">int originY</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00078">TerrainMesh.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_ae03cf5082591ab90d18e5c42bd3b3776"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#ae03cf5082591ab90d18e5c42bd3b3776">eve::procgen::TerrainRiverMeshSettings::heightScale</a></div><div class="ttdeci">float heightScale</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00081">TerrainMesh.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainRiverMeshSettings_html_af8b6c85a464bc36d644be02e2c81c931"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainRiverMeshSettings.html#af8b6c85a464bc36d644be02e2c81c931">eve::procgen::TerrainRiverMeshSettings::maxWidth</a></div><div class="ttdeci">float maxWidth</div><div class="ttdef"><b>Definition</b> <a href="TerrainMesh_8h_source.html#l00083">TerrainMesh.h:83</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

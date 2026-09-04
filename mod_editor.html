@@ -1,0 +1,560 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 编辑器构件模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">编辑器构件模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>编辑器构件模块</h1>
+<p><b>脚本入口：</b> <code>eve.Editor()</code></p>
+<p>引擎**不附带**完整 3D 场景编辑器或 2D 地图编辑器，而是提供组装自定义编辑器所需的构件。新的工具协议不在核心中枚举“瓦片笔刷、地形隆起、摆放单位”等工具类型；任何实现 <code>IEditorTool</code> 的代码都能进入同一个会话。</p>
+<blockquote class="doxtable">
+<p>&zwj;C++ 新代码应直接使用 <code>editing/*</code> 公共契约和对应的 <code>&lt;domain&gt;_editing/*</code> 卫星模块。 <code>editor/Editor*Target.h</code>、<code>Editor*Graph.h</code>、<code>Editor*Runtime.h</code> 仅是源兼容 facade；权威实现、 snapshot、validator、runtime publication 和 preview adapter 均由领域卫星拥有。发布用的 <code>runtime-3d</code> profile 不链接 <code>editor</code>、<code>editing</code> 或任何 editing 卫星。 </p>
+</blockquote>
+<p>推荐把编辑器拆成五类可替换组件：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">协议   </th><th class="markdownTableHeadNone">职责    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>IEditorTool</code>   </td><td class="markdownTableBodyNone">生命周期、输入与手势；原生或 Squirrel 工具一视同仁    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>IEditableTarget</code> + capability   </td><td class="markdownTableBodyNone">被编辑对象；工具只查询自己需要的能力    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>IBrushKernel</code> / <code>IFieldBrushOperation</code>   </td><td class="markdownTableBodyNone">笔刷形状、衰减和“画什么”分别组合    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>IEditCommand</code> / <code>IEditConstraint</code>   </td><td class="markdownTableBodyNone">通用撤销事务与项目美术/玩法限制    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>IEditorOverlay</code> / <code>IEditorInspector</code>   </td><td class="markdownTableBodyNone">与渲染器和 UI 框架无关的预览、属性呈现   </td></tr>
+</table>
+<p>因此红警 2 / 帝国时代 2 风格的格子地图、魔兽 3 风格的 3D 地图和连续高度场不需要三套会话。它们分别提供目标 capability、工具和视口坐标转换即可。</p>
+<p>设计参考了 Three.js <code>TransformControls</code>、Babylon.js <code>GizmoManager</code>、ImGuizmo、Unity <code>GridBrushBase</code> 与 Godot 编辑器插件的常见 API 形态；详见编辑器模块设计。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local editor = eve.Editor();</div>
+<div class="line"> </div>
+<div class="line">// 3D 操作框</div>
+<div class="line">local gizmo = editor.newGizmo();</div>
+<div class="line">gizmo.setMode(&quot;translate&quot;);   // translate | rotate | scale | bound</div>
+<div class="line">gizmo.setSpace(&quot;world&quot;);      // local | world</div>
+<div class="line">gizmo.setPosition(0, 1, 0);</div>
+<div class="line">gizmo.setSize(1.0);</div>
+<div class="line"> </div>
+<div class="line">// 每帧：用相机射线拾取并拖拽</div>
+<div class="line">local axis = gizmo.pick(rayOx, rayOy, rayOz, rayDx, rayDy, rayDz);</div>
+<div class="line">if (axis != &quot;&quot; &amp;&amp; mouseDown) {</div>
+<div class="line">    gizmo.beginDrag(axis, rayOx, rayOy, rayOz, rayDx, rayDy, rayDz);</div>
+<div class="line">}</div>
+<div class="line">if (gizmo.isDragging()) {</div>
+<div class="line">    gizmo.updateDrag(rayOx, rayOy, rayOz, rayDx, rayDy, rayDz);</div>
+<div class="line">    // 把 gizmo.getPosition* / getRotation* / getScale* 写回场景节点</div>
+<div class="line">}</div>
+<div class="line">if (mouseUp) gizmo.endDrag();</div>
+<div class="line"> </div>
+<div class="line">// 绘制：遍历 getPart* 用调试线 / 网格画出轴、环、平面</div>
+<div class="line">for (local i = 0; i &lt; gizmo.getPartCount(); i++) {</div>
+<div class="line">    local kind = gizmo.getPartKind(i); // axis | plane | ring | box | center | handle</div>
+<div class="line">    // ...</div>
+<div class="line">}</div>
+</div><!-- fragment --><div class="fragment"><div class="line">// 项目组合一个可撤销的高度场工具；C++ 不认识“地形编辑器”窗口。</div>
+<div class="line">local heightmapTargets = eve.HeightmapTargetModule();</div>
+<div class="line">local target = heightmapTargets.create(&quot;terrain&quot;, hm);</div>
+<div class="line">local falloff = editor.newSmoothBrushFalloff();</div>
+<div class="line">local kernel = editor.newCircleBrushKernel();</div>
+<div class="line">kernel.setSmoothFalloff(falloff);</div>
+<div class="line"> </div>
+<div class="line">local operation = editor.newAddScalarFieldOperation();</div>
+<div class="line">local sculpt = editor.newFieldBrushTool(&quot;terrain-sculpt&quot;, &quot;Sculpt&quot;);</div>
+<div class="line">sculpt.setCircleKernel(kernel);</div>
+<div class="line">sculpt.setAddScalarOperation(operation);</div>
+<div class="line">sculpt.setRadius(3.0);</div>
+<div class="line">sculpt.setStrength(0.15); // 负值降低地形</div>
+<div class="line"> </div>
+<div class="line">local session = editor.newSession();</div>
+<div class="line">session.addFieldTool(sculpt);</div>
+<div class="line">heightmapTargets.bind(session, target);</div>
+<div class="line">session.activateTool(&quot;terrain-sculpt&quot;);</div>
+<div class="line"> </div>
+<div class="line">// 视口把鼠标射线换算为高度图坐标；一次 Down..Up 自动合并成一条事务。</div>
+<div class="line">session.dispatchPointer(0, 0, 0, cellX, cellY, 0.0, 0.0, 1.0);</div>
+<div class="line">session.dispatchPointer(2, 0, 0, cellX, cellY, 0.0, 0.0, 1.0);</div>
+<div class="line">session.undo();</div>
+<div class="line">session.redo();</div>
+<div class="line"> </div>
+<div class="line">// HeightmapTarget 直接包装同一个 hm；revision 变化时原地刷新 GPU 网格。</div>
+<div class="line">local mesh = heightmapTargets.newSmoothMesh(hm, 0.5, 3.2);</div>
+<div class="line">if (target.getRevision() != lastRevision)</div>
+<div class="line">    heightmapTargets.updateSmoothMesh(mesh, gfx, hm, 0.5, 3.2);</div>
+</div><!-- fragment --><p>Target、kernel、falloff、operation 与 tool 之间是非拥有关系，项目需把它们保存在持久状态中。 <code>heightmapTargets.applyBrush</code> 是简单脚本的兼容投影；定制编辑器应使用上面的组件和统一事务栈。</p>
+<h2>接口式工具会话（C++）</h2>
+<div class="fragment"><div class="line">EditorSession session;</div>
+<div class="line">TileBufferTarget <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>(<span class="stringliteral">&quot;ground&quot;</span>, &amp;<a class="code hl_variable" href="WfcSimple_8cpp.html#a0c05430de08c4341b29a52bf20bd0ed1">tiles</a>);</div>
+<div class="line">ConstantBrushFalloff hardEdge;</div>
+<div class="line">CircleBrushKernel circle(&amp;hardEdge);</div>
+<div class="line">PaintIntFieldOperation paintGrass(17);</div>
+<div class="line">FieldBrushTool paint(<span class="stringliteral">&quot;paint-grass&quot;</span>, <span class="stringliteral">&quot;Paint Grass&quot;</span>, &amp;circle, &amp;paintGrass);</div>
+<div class="line"> </div>
+<div class="line">session.bindTarget(&amp;<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line">session.addTool(&amp;paint);              <span class="comment">// 接受任意 IEditorTool</span></div>
+<div class="line">session.activateTool(<span class="stringliteral">&quot;paint-grass&quot;</span>);</div>
+<div class="line"> </div>
+<div class="line">EditorPointerEvent down;</div>
+<div class="line">down.phase = EditorPointerEvent::Phase::Down;</div>
+<div class="line">down.x = tileX;</div>
+<div class="line">down.y = tileY;</div>
+<div class="line">session.dispatchPointer(down);        <span class="comment">// 自动开启一次可撤销 stroke</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aWfcSimple_8cpp_html_a0c05430de08c4341b29a52bf20bd0ed1"><div class="ttname"><a href="WfcSimple_8cpp.html#a0c05430de08c4341b29a52bf20bd0ed1">tiles</a></div><div class="ttdeci">std::vector&lt; WfcTile &gt; tiles</div><div class="ttdef"><b>Definition</b> <a href="WfcSimple_8cpp_source.html#l00022">WfcSimple.cpp:22</a></div></div>
+</div><!-- fragment --><p>将 <code>TileBufferTarget</code> 换成 <code>HeightmapTarget</code>、把操作换成 <code>AddScalarFieldOperation</code>，同一个 <code>FieldBrushTool</code> 就成为带衰减的地形升降笔刷。项目也可以实现新的 <code>IEditableTarget</code> capability（对象放置、道路、区域、体素等）以及对应操作；无需修改 <code>EditorSession</code>。</p>
+<p>脚本可把同一个整数字段工具直接绑定到运行中的 <code>map.TileLayer</code>，修改会立即进入正常地图渲染、寻路与 FOV revision 流程：</p>
+<div class="fragment"><div class="line">local layer = eve.Map().newLayer(64, 64, 32, 32);</div>
+<div class="line">local tileLayerTargets = eve.TileLayerTargetModule();</div>
+<div class="line">local target = tileLayerTargets.create(&quot;ground&quot;, layer);</div>
+<div class="line">local paint = editor.newPaintIntFieldOperation(17);</div>
+<div class="line">local hard = editor.newConstantBrushFalloff();</div>
+<div class="line">local circle = editor.newCircleBrushKernel();</div>
+<div class="line">circle.setConstantFalloff(hard);</div>
+<div class="line">local tool = editor.newFieldBrushTool(&quot;paint-grass&quot;, &quot;Paint Grass&quot;);</div>
+<div class="line">tool.setCircleKernel(circle);</div>
+<div class="line">tool.setPaintIntOperation(paint);</div>
+<div class="line">session.addFieldTool(tool);</div>
+<div class="line">tileLayerTargets.bind(session, target);</div>
+</div><!-- fragment --><h3>三维稀疏体积</h3>
+<p>Voxel 不会被伪装成二维 tile。<code>IIntVolumeTarget</code>、球/盒 Kernel、体积操作和 <code>dispatchPointer3D</code> 构成独立的三维 capability，但仍复用 <code>IEditorTool</code> 生命周期、 constraint 与 stroke transaction：</p>
+<div class="fragment"><div class="line">local world = eve.Voxel().newWorld();</div>
+<div class="line">local voxelWorldTargets = eve.VoxelWorldTargetModule();</div>
+<div class="line">local target = voxelWorldTargets.create(&quot;terrain.voxels&quot;, world);</div>
+<div class="line">local hard = editor.newConstantBrushFalloff();</div>
+<div class="line">local sphere = editor.newSphereVolumeBrushKernel();</div>
+<div class="line">sphere.setConstantFalloff(hard);</div>
+<div class="line">local paint = editor.newPaintIntVolumeOperation(7); // 0 为擦除</div>
+<div class="line">local tool = editor.newVolumeBrushTool(&quot;voxel.paint&quot;, &quot;Paint Voxels&quot;);</div>
+<div class="line">tool.setSphereKernel(sphere);</div>
+<div class="line">tool.setPaintIntOperation(paint);</div>
+<div class="line">tool.setRadius(2.5);</div>
+<div class="line">session.addVolumeTool(tool);</div>
+<div class="line">voxelWorldTargets.bind(session, target);</div>
+<div class="line">session.activateTool(&quot;voxel.paint&quot;);</div>
+<div class="line"> </div>
+<div class="line">// 视口 raycast 决定三维目标坐标，再转发 Down / Move / Up。</div>
+<div class="line">session.dispatchPointer3D(0, 0, 0, vx, vy, vz, 0, 0, 0, 1.0);</div>
+<div class="line">session.dispatchPointer3D(2, 0, 0, vx, vy, vz, 0, 0, 0, 1.0);</div>
+</div><!-- fragment --><p><code>VoxelWorldTarget.getRevision()</code> 读取 live world 的单调 revision，因此游戏逻辑、流式加载或 其他脚本产生的变化也能使预览与保存票据失效。<code>getDirtyMinX/Y/Z</code>、<code>getDirtyMaxX/Y/Z</code> 提供局部 remesh/overlay 范围；<code>clearDirtyVolume</code> 在消费者完成刷新后清除它。</p>
+<h3>项目限制</h3>
+<p>实现 <code>IEditConstraint::evaluate()</code> 并注册到 <code>session.constraints()</code>。约束可以允许、给出警告或拒绝任意 <code>IEditCommand</code>，例如锁定水岸坡度、限定可用 tile、吸附建筑朝向、阻止穿过地图边界。所有命令都经 <code>EditorContext::execute()</code> 进入约束和事务，拒绝的命令不会污染撤销栈。</p>
+<h3>自定义呈现</h3>
+<p>视口实现 <code>IEditorOverlay</code>，Inspector 实现 <code>IEditorInspector</code>。工具只输出圆、线、矩形、文本和属性意图，所以可同时接入 2.5D 正交视口、3D 透视视口、ImGui 或游戏自己的 UI。</p>
+<h2>Squirrel 自定义工具</h2>
+<p>脚本工具也实现相同的 <code>IEditorTool</code> 协议。回调返回位标志：<code>1</code> 表示已处理，<code>2</code> 表示捕获指针，<code>4</code> 表示释放指针。</p>
+<div class="fragment"><div class="line">local editor = eve.Editor();</div>
+<div class="line">local session = editor.newSession();</div>
+<div class="line">local road = editor.newScriptTool(&quot;road&quot;, &quot;Road&quot;);</div>
+<div class="line"> </div>
+<div class="line">road.setActivateCallback(function() { previewRoad(); });</div>
+<div class="line">road.setPointerCallback(function(phase, pointerId, button, x, y, dx, dy,</div>
+<div class="line">                                 pressure, shift, control, alt) {</div>
+<div class="line">    if (phase == 0) { beginRoad(x, y); return 1 | 2; } // Down</div>
+<div class="line">    if (phase == 1) { updateRoad(x, y); return 1; }    // Move</div>
+<div class="line">    if (phase == 2) { finishRoad(); return 1 | 4; }    // Up</div>
+<div class="line">    cancelRoad(); return 1 | 4;</div>
+<div class="line">});</div>
+<div class="line"> </div>
+<div class="line">session.addTool(road);</div>
+<div class="line">session.activateTool(&quot;road&quot;);</div>
+<div class="line">// 视口负责把屏幕/射线坐标变换到工具坐标后转发。</div>
+<div class="line">session.dispatchPointer(0, 0, 0, mapX, mapY, 0.0, 0.0, 1.0);</div>
+</div><!-- fragment --><p><code>EditorSession</code> 和工具都是非拥有关系；脚本必须像上例一样持有 <code>road</code>，直到从会话移除。</p>
+<h3>注册并执行项目命令</h3>
+<p>项目可用 <code>registerScriptCommand(id, name, category, callback)</code> 把游戏专用操作注入统一命令 服务，退出插件或编辑器时用 <code>unregisterScriptCommand(id)</code> 清理。会话通过 <code>getCommandCount()</code> 与 <code>getCommandId/Name/Category(index)</code> 枚举命令； <code>planCommand(id, payload)</code> 只生成并保留计划，随后用 <code>executePlan(planId, context)</code> 执行； 不需要预览时可直接 <code>executeCommand(id, payload)</code>。这些入口和 C++ 命令服务共享约束、 事务及 HostProfile 策略，因此游戏内建造玩法和开发编辑器可以复用同一条命令路径。</p>
+<h2>地图笔刷</h2>
+<p><code>Brush</code> / <code>EditorHistory</code> 属于 <code>level_editing</code> 领域，并由 <code>eve.levelEditor</code> 暴露。新编辑器优先使用上面的协议式会话；这些 API 适合很小的纯 tile 工具。</p>
+<h2>材质文档（C++）</h2>
+<p><code>MaterialDocumentTarget</code> 把 <code>graphics::Material</code> 的核心创作参数暴露成 UI 无关的属性模型， 包括 shading model、tint、metallic/roughness、纹理/Shader 资产引用、surface/blend、 alpha cutoff、parallax、光照和阴影开关。Presenter 可直接使用它的 <code>IPropertyProvider</code>， 所有赋值仍生成 <code>DomainOperation</code> 并通过统一事务执行：</p>
+<div class="fragment"><div class="line">MaterialDocumentTarget <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>(<span class="stringliteral">&quot;materials/metal-panel&quot;</span>);</div>
+<div class="line">SelectionSnapshot selection = <span class="comment">/* one Asset selection for this target */</span>;</div>
+<div class="line"><span class="keyword">auto</span> operation = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>.makeSet(selection, PropertyPath(<span class="stringliteral">&quot;shading.metallic&quot;</span>),</div>
+<div class="line">                                  EditorValue(0.8), PropertySetMode::Absolute);</div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ae5f89cb6e6c69abb9c0b93094fd97a1a"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a></div><div class="ttdeci">Material * material</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00732">RenderSystem3D.cpp:732</a></div></div>
+</div><!-- fragment --><p><code>snapshotValue()</code> 返回可交给 <code>DocumentService</code> 保存的确定性数据；<code>loadSnapshot()</code> 验证版本、 属性名、类型、枚举和数值范围后才原子替换内容。<code>validate()</code> 额外报告跨字段问题，例如 custom shading 未指定 Shader、masked surface 未指定含 alpha 的 albedo，以及高度图存在但 parallax scale 为零。实际 GPU <code>Texture*</code> / <code>Shader*</code> 的解析和预览场景由 graphics host 负责， 文档本身只保存稳定资产引用。</p>
+<p>材质图的规范实现位于 <code><a class="el" href="MaterialGraph_8h.html">material_editing/MaterialGraph.h</a></code>，通用图和后台任务契约分别位于 <code><a class="el" href="EditingGraph_8h.html">editing/EditingGraph.h</a></code>、<code><a class="el" href="EditingTaskService_8h.html">editing/EditingTaskService.h</a></code>。<code>MaterialGraphDomain</code> 负责 typed-pin 校验和确定性编译；<code>MaterialEditorService</code> 只允许成功且 revision 匹配的产物替换预览。 <code><a class="el" href="EditorGraph_8h.html">material_editor/EditorGraph.h</a></code> 与 <code><a class="el" href="EditorTaskService_8h.html">editor/EditorTaskService.h</a></code> 仅保留旧 include/namespace 兼容入口。</p>
+<h2>动画状态图（C++）</h2>
+<p><code>AnimationStateGraphDomain</code> 在通用 <code>GraphDocument</code> 上定义 <code>animation.state</code> 领域。State 节点 保存稳定 Clip 资产引用、播放速度和循环设置；Transition 节点保存混合时间、退出时间以及 float/bool/trigger 条件。连接采用 <code>state -&gt; transition -&gt; state</code>，从结构上允许同一状态拥有 多个独立过渡，同时避免把运行时 <code>AnimClip*</code> 写入文档。</p>
+<div class="fragment"><div class="line">AnimationStateGraphDomain domain;</div>
+<div class="line"><span class="keyword">auto</span> idle = domain.<a class="code hl_function" href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#ab83f5ca94ffdcbebab6774a69d8aa89e">makeStateNode</a>(GraphNodeId(<span class="stringliteral">&quot;idle&quot;</span>), <span class="stringliteral">&quot;asset://anim/idle.eva&quot;</span>);</div>
+<div class="line"><span class="keyword">auto</span> run = domain.makeStateNode(GraphNodeId(<span class="stringliteral">&quot;run&quot;</span>), <span class="stringliteral">&quot;asset://anim/run.eva&quot;</span>);</div>
+<div class="line"><span class="keyword">auto</span> edge = domain.makeTransitionNode(GraphNodeId(<span class="stringliteral">&quot;idle-to-run&quot;</span>));</div>
+<div class="line"><span class="comment">// 将 idle.out -&gt; edge.in、edge.out -&gt; run.in 写入 GraphDocument，</span></div>
+<div class="line"><span class="comment">// 并把 graph.parameters.entry 设为 &quot;idle&quot;。</span></div>
+<div class="line"><span class="keyword">auto</span> result = domain.compile(<a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>.snapshot(domain.domain()));</div>
+<div class="ttc" id="aPackage_8cpp_html_a8d10a8def83a0e25fb0e6300bc085eab"><div class="ttname"><a href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; graph</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00059">Package.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation__editing_1_1AnimationStateGraphDomain_html_ab83f5ca94ffdcbebab6774a69d8aa89e"><div class="ttname"><a href="classeve_1_1animation__editing_1_1AnimationStateGraphDomain.html#ab83f5ca94ffdcbebab6774a69d8aa89e">eve::animation_editing::AnimationStateGraphDomain::makeStateNode</a></div><div class="ttdeci">EditorResult&lt; GraphNodeRecord &gt; makeStateNode(const GraphNodeId &amp;id, const std::string &amp;clipAsset) const</div><div class="ttdoc">Construct a state node referencing one animation clip asset.</div><div class="ttdef"><b>Definition</b> <a href="AnimationGraph_8cpp_source.html#l00054">AnimationGraph.cpp:54</a></div></div>
+</div><!-- fragment --><p>编译会检查 Schema 版本、入口、Clip 引用、节点属性、过渡完整性、条件运算符和重复来源/ 目的地。启用 <code>animation</code> 模块时，<code>AnimationStateGraphRuntimeBuilder</code> 可通过 host 提供的 Clip resolver 把同一份快照构造成真正的 <code>animation::AnimStateMachine</code>；无法解析的资产以 结构化 <code>NotFound</code> 返回，编辑器模块不持有资源指针。</p>
+<h2>UI 文档（C++）</h2>
+<p>规范 API 位于 <code><a class="el" href="UiDocument_8h.html">ui_editing/UiDocument.h</a></code>，包含 hierarchy/layout/style/content authoring、版本化 snapshot、确定性 preview/picking 和可选 <code>UIHost</code> publication；<code><a class="el" href="EditorUiDocumentTarget_8h.html">ui_editor/EditorUiDocumentTarget.h</a></code> 只保留旧 include/namespace 兼容入口。</p>
+<p><code>UiDocumentTarget</code> 是 retained UI 的可持久化创作模型。每个 Widget 使用稳定 ID，并保存父级、 类型、名称、文本、visible/enabled，以及 position、size、anchor 和 pivot。内容皮肤还保存字体资产、 字号、文本色、双轴对齐、纹理资产、<code>stretch</code>/<code>contain</code>/<code>cover</code> 适配方式和祖先裁剪开关。Hierarchy 工具通过 <code>IUiDocumentEditTarget</code> 创建、删除、重命名和换父节点；Canvas 工具通过 <code>makeSetLayout()</code> 生成同一类可逆事务。父节点不存在、循环层级、删除非叶节点以及越界 Anchor/Pivot 都会在 计划或应用阶段拒绝。</p>
+<p>该 target 同时实现 <code>IPropertyProvider</code>。通用 Inspector 可对多选 Widget 编辑名称、文本、 可见性、启用状态和布局字段，并正确显示 <code>Mixed</code> 值。多选操作先验证完整候选树再一次性提交， 不会部分修改文档。<code>snapshotValue()</code> / <code>loadSnapshot()</code> 提供确定性、版本化且原子校验的保存 边界；schema 2 会写入内容皮肤，同时继续读取无皮肤字段的 schema 1 文档。</p>
+<p><code>UiSkinPreviewPlanner</code> 使用 <code>IUiSkinAssetResolver</code> 校验字体及纹理尺寸，并把当前 revision 的布局 快照转换成确定性的文字/图片 draw plan。Plan 已计算 padding、contain 尺寸、cover UV 裁切和父级 裁剪矩形；缺失资产返回结构化诊断。<code>UiOffscreenPreviewRenderer</code> 可注入 <code>IUiSkinPlanRenderer</code>，在原有 box/tint 背景之后绘制同一份 plan，因此 UI host 或 graphics adapter 无需重新解释文档语义。</p>
+<h2>流体表面与湿润材质（C++）</h2>
+<p><code>FluidSimulationTarget</code> 负责体积粒子求解器的容量、核半径、密度、黏性、PBF 迭代和预算。 <code>SurfaceFluidTarget</code> 则覆盖原先无法编辑的表面表现链路：液滴摩擦、黏附与脱离、接触角和合并半径， wet-film 扩散、蒸发和饱和值，以及速度拉伸、宽高比、表面偏移、干湿粗糙度/高光、变暗和法线强度。</p>
+<p>所有字段均通过 <code>IPropertyProvider</code> 生成可撤销事务；非法接触角、负速率、越界材质值和非有限数会在 提交前拒绝，反常的干湿粗糙度或高光顺序以 Warning 呈现。<code>snapshotValue()</code> / <code>loadSnapshot()</code> 提供原子保存边界。启用 <code>fluids</code> 时，<code>SurfaceFluidRuntimeApplier</code> 一次发布到真实 <code>SurfaceDropletSimulation</code>、<code>SurfaceFluidRenderParams</code> 和 <code>SurfaceWetnessParams</code>，避免 Inspector 只更新其中一段而造成预览与运行时不一致。</p>
+<p><code>SurfaceFluidPreviewService</code> 接收三角面拓扑、UV 和以 triangle+barycentric 表示的稳定液滴种子。 每次时间轴拖动都从这些初始数据重建独立 Simulation，再以固定 Step 重放到目标时间；因此先看 0.8 秒、回拖到 0.2 秒、再前进到 0.8 秒会得到逐值相同的液滴和湿润度结果。Snapshot 输出 世界空间 position/normal/major/minor axis、cap height、液滴 wetness 和逐顶点 wetness，宿主无需访问 solver 私有状态。请求同时限制 600 秒、最大 Step、顶点和液滴数量，并拒绝旧 document revision。 <code>SurfaceFluidOffscreenPreviewService</code> 将同一 Snapshot 接入共享 Canvas/readback；具体正交或透视相机 构图由 <code>ISurfaceFluidPreviewRenderer</code> 决定。</p>
+<h2>Stylize Recipe（C++）</h2>
+<p><code>StylizeRecipeTarget</code> 把现有 <code>StyleDefinition</code> / <code>StyleParameterDesc</code> 元数据转成稳定 Pass 文档。 每个 Pass 保存 ID、Style、Enabled、Priority 和显式参数 Override；创建、删除、排序、启停、参数修改与 Reset 都生成可逆事务。Inspector Schema 直接读取引擎参数表的 Default/Min/Max，同 Style 多选支持 Mixed 值；未知 Style、越界 Override、重复 ID、超过 64 Pass、混合 Pipeline Stage 或把 mesh-only Style 放进 post recipe 都会在提交或原子快照加载时拒绝。</p>
+<p><code>StyleInstance</code> 新增可恢复的 authored priority override，使 Recipe 的可视顺序与真实编译顺序一致。 <code>StylizeRecipeRuntime</code> 先创建全部 Instance、应用 Override 并编译完整候选 Recipe，成功后才替换当前 generation；应用时必须匹配 document revision。<code>StylizeOffscreenPreviewService</code> 使用独立候选 runtime 接入共享 Canvas/readback，不修改游戏正在使用的 StyleRecipe。全部 Pass 禁用时会执行无效果拷贝， 因此 Editor 仍能生成对照预览。</p>
+<h2>Decal 文档与投影预览（C++）</h2>
+<p><code>DecalDocumentTarget</code> 用稳定文档 ID 取代运行时临时整数 ID。Inspector 可编辑世界位置、投影法线、 Yaw、Size/Depth、Kind、Albedo/Normal/Params 纹理、Atlas UV、四个材质通道强度、Blend，以及 Lifetime/Fade。零法线、越界 UV、未知 Blend、空 Kind 和非法数值会在事务提交前拒绝；缺少 Albedo、 无效的 Additive/Emissive 组合和 Persistent/Fade 组合以 Warning 呈现。快照加载先验证完整候选值， 失败不会修改当前文档。</p>
+<p><code>DecalGizmoPreviewService</code> 输出带 revision 的 oriented projection box 和 surface-normal arrow。 <code>DecalRuntimeBinding</code> 会先解析全部纹理，再构造完整 <code>DecalInstance</code>；<code>DecalManager::replace()</code> 在注册表 副本中移除旧 generation、执行 Kind quota 并插入新 generation，最后一次 swap。因此纹理缺失、旧 ID 过期或候选非法时，场景中的旧贴花保持不变，同一机制也适用于 Undo/Redo 发布。</p>
+<h2>Physics Collider 与 Joint（C++）</h2>
+<p><code>PhysicsColliderTarget</code> 为 Box2D/Box3D 提供同一套后端无关创作属性：body type、shape kind、 offset/size/radius/capsule height、density/friction/restitution、sensor、category/mask 和复杂形状 资产引用。二维和三维 Schema 会分别限制可用形状及 Vec2/Vec3 维度。属性修改可撤销，快照记录 维度并拒绝把 3D Collider 载入 2D 文档。<code>validate()</code> 会报告缺少 mesh/height-field/polygon 资产、无效 capsule 比例和 dynamic + zero density 等组合问题。</p>
+<p>启用 <code>physics</code> 时，<code>PhysicsColliderRuntimeBuilder</code> 可把 primitive 文档直接创建为真实的 Box2D <code>Fixture</code> 或 Box3D <code>Shape3D</code>，并应用 offset、材质、sensor 和过滤位。Polygon/Chain、Convex Hull、 Triangle Mesh 与 Height Field 需要项目的资产解析器，因此 bridge 会明确返回 <code>Unsupported</code>， 不会静默退化成 Box。</p>
+<p><code>PhysicsJointTarget</code> 保存稳定 Body 引用、distance/revolute/prismatic/spherical/wheel 类型、两个 锚点、轴、Limit、Motor、connected collision 以及 Break force/torque。Inspector 可在创建运行时 Joint 前发现相同/缺失 Body、零轴和反向 Limit 范围。</p>
+<h2>Audio Source 与 Mixer（C++）</h2>
+<p><code>AudioSourceTarget</code> 保存稳定 Clip 资产引用、static/stream 模式、autoplay/loop、volume/pitch、 loop range、position/velocity/direction、listener-relative、reference/max attenuation distance 和 Mixer Bus 路由。它实现通用属性 Schema、可逆事务和版本化快照；<code>validate()</code> 会报告缺失 Clip、 无效循环范围、反向衰减距离、零方向和空 Bus。空间参数可直接驱动视口中的声源点、方向箭头及 内外衰减球 Gizmo。</p>
+<p>启用 <code>audio</code> 时，<code>AudioSourceRuntimeApplier</code> 把已验证设置应用到现有 live <code>audio::Source</code>。 Clip 解码和 Source 创建仍由 audio/sound host 负责；Editor 文档不保存 OpenAL handle。当前运行时 只有整段 Loop，因此 loop-start/end 作为创作元数据保留，供后续区间播放 backend 或导出器使用。</p>
+<p><code>AudioMixerTarget</code> 提供以不可删除 <code>master</code> 为根的 Bus 树。每个 Bus 保存 volume、mute、solo 和 结构化 effect chain，可创建、删除叶节点、换父节点或修改设置，并完整 undo/redo。快照加载会 原子检查重复 ID、缺失 Parent、路由循环以及未最终汇入 Master 的孤立树。</p>
+<h2>Particle Graph（C++）</h2>
+<p>规范 API 位于 <code><a class="el" href="ParticleGraph_8h.html">particles_editing/ParticleGraph.h</a></code>；<code><a class="el" href="EditorParticleGraph_8h.html">particles_editor/EditorParticleGraph.h</a></code> 仅作为旧 include/namespace 兼容入口。通用图文档契约位于 <code><a class="el" href="EditingGraph_8h.html">editing/EditingGraph.h</a></code>。</p>
+<p><code>ParticleGraphDomain</code> 在通用 <code>GraphDocument</code> 上定义 <code>particles.emitter</code> 领域。模块链从唯一的 Emission 开始，经过可选 Motion/Collision，进入唯一 Renderer，最后终止于唯一 Output。 节点属性对应现有 <code>ParticleEmitter::Config</code>：发射率、生命周期、区域和随机种子；方向、速度、 重力、阻尼和 simulation space；碰撞模式；render/material/sort/GPU/soft-particle；以及 buffer、 quality、priority、overflow 和 per-frame spawn cap。</p>
+<p>编译器拒绝分支、合流、循环、悬空 Pin、错误方向、重复必需模块以及越界属性，并输出 renderer/backend 无关的配置对象。<code>preview()</code> 使用固定步长、粒子总预算和每帧 Spawn 预算生成 确定性的 spawned/peak-live/dropped 估算；结果携带源文档 revision，预算或 buffer 饱和以结构化 Warning 返回，因此 host 不会发布过期或无界预览。</p>
+<p>启用 <code>particles</code> 时，<code>ParticleGraphRuntimeBuilder</code> 可把已编译配置应用到真实 <code>ParticleEmitter</code>。它会在任何 setter 前检查 Buffer Size 并解析所有 Texture 资产，资源失败时 不会部分修改 live emitter；Buffer 不匹配要求 host 按 Output 容量重建 emitter。</p>
+<p><code>ParticleEmitterOffscreenPresenter</code> 提供无需项目自写 callback 的真实外观预览。它创建临时 Emitter，解析纹理，强制关闭随机种子与 GPU simulation，按整数 Tick 和固定步长运行到精确 scrub 时间，再通过 <code>ParticleRenderSystem::renderEmitter()</code> 只绘制该实例。这个入口复用正式运行时的 Sprite、Ribbon、Flipbook、排序和材质提交逻辑，但不会遍历全局 ECS，因此不会把游戏场景里的其他 Emitter 混入预览。无论应用、步进或绘制失败，临时实体都会被释放。单次预览限制为 600 秒或 一百万个 Step，防止异常请求阻塞 Editor。</p>
+<h3>Dialogue Graph 与本地化 QA</h3>
+<p><code>DialogueGraphDomain</code> 提供 <code>dialogue.conversation</code> 图域。Line、Choice、Branch、Call、Command、 Wait、End 是业务节点；Choice/Branch 的每个出口使用带稳定 ID 的 Route 节点保存选项文本或条件， 避免把易丢失的业务数据塞进通用 Edge。编译阶段检查入口、Pin、路由结构、节点字段和参数，启用 <code>dialogue</code> 时可由 <code>DialogueGraphRuntimeBuilder</code> 无损生成并再次验证 <code>ConversationDocument</code>。</p>
+<p><code>LocalizationDocument</code> 按稳定 key 保存 source/context 与各 locale 的翻译、voice asset、制作状态和 实测时长。<code>analyze()</code> 汇总 translated/voiced/approved 覆盖率，并报告缺译、占位符不一致、缺语音、 孤立时长等结构化诊断；snapshot/load 是确定且原子的。启用 <code>dialogue</code> 与 <code>audio</code> 时， <code>LocalizationVoiceAudition</code> 会先解析真实 Source，再交给 <code>DialogueVoice</code> 播放，解析失败不会改变文档。</p>
+<h3>Definition/Schema 资产</h3>
+<p><code>DefinitionDocument</code> 保存稳定 type/id、schema version、JSON payload，以及由 schema presenter 提取的 引用路径。宿主可注入 schema validator 和 definition resolver，统一得到字段约束及缺失跨引用诊断； snapshot/load 保证失败不污染当前文档。启用 <code>definitions</code> 时，<code>DefinitionRuntimePublisher</code> 通过真实 <code>DefinitionRegistry</code> 执行 insert/replace，保留其版本校验、generation 与 stale-handle 语义。</p>
+<h3>Live Scene 与 Prefab</h3>
+<p>启用 <code>scene</code> 时，<code>SceneHostEditorTarget</code> 会导入真实 retained SceneHost，并把通用 hierarchy/TRS operation 作为增量 mutation 提交。新增、叶节点删除、改名、重挂和 TRS 不会 remount 整棵树，已有 render/physics/audio link 因而保留；提交前会比较 mirror 与 live host，检测到游戏侧外部修改时返回 Conflict，不会静默覆盖。</p>
+<p><code>ScenePrefabService</code> 从任意 scene target 捕获一个子树，生成稳定 source-id 的 prefab snapshot。 实例化计划把 source id 映射为 <code>&lt;instance&gt;/&lt;source&gt;</code>，可与普通 transaction/undo 共用； <code>applyOverrides()</code> 产出递增 revision 的新 prefab 值，<code>revertOverrides()</code> 产出可逆 rename/reparent/TRS operation。结构缺失、跨实例重挂、ID 冲突、父节点缺失和 prefab cycle 都会在修改前被拒绝。</p>
+<p>模块可实现 <code>ISceneComponentPayloadProvider</code>，把自己拥有的组件字段注册到 <code>SceneComponentPayloadRegistry</code>。Scene target 通过 <code>ISceneComponentPayloadTarget::editorCapabilityId()</code> 暴露聚合入口：Inspector 先按场景对象枚举 <code>SceneComponentPayloadRef</code>，再用 <code>makeSceneComponentSelection()</code> 获得通用属性选择并解析 <code>IPropertyProvider</code> 与对应的 <code>IDomainOperationTarget</code>。引用同时携带 generation/revision；组件被替换或外部 修改后，<code>validatePayload()</code> 会返回 NotFound/Conflict，而不是让旧 Inspector 覆盖新数据。组件适配器若同时 实现 <code>IDomainOperationTargetStaging</code>，其字段修改即可直接使用统一 transaction、undo/redo 和 Schema 校验。</p>
+<p>对已有的模块编辑 Target，不需要再手写一层字段代理。<code>SceneComponentPropertyBindings</code> 可把一个 <code>SceneComponentPayloadRef</code> 绑定到模块自己的 selection、<code>IPropertyProvider</code> 和 <code>IDomainOperationTarget</code>，并在每次枚举时读取操作 Target 的最新 revision。目前 <code>AudioSourceTarget</code>、<code>PhysicsColliderTarget</code>、<code>PhysicsJointTarget</code> 和 <code>MaterialDocumentTarget</code> 都提供 原子 staging，因此经该适配器进入 Scene Inspector 后仍能完整提交及撤销。Bindings 与底层 Target 均为 非拥有关系，宿主应保证它们在 Registry 和 Scene Target 之后析构。</p>
+<p>需要立即写回实时声音时，用 <code>AudioSourcePublishingTarget</code> 代替直接提交 <code>AudioSourceTarget</code>：属性仍从 <code>authoringTarget()</code> 读取和生成 operation，但 transaction 的 operation target 指向 publishing target。 它会先在 detached candidate 上应用整笔变更，再通过 <code>IAudioSourceRuntimeSink</code> 发布；sink 拒绝时作者状态与 revision 均不改变。Undo/redo 也走相同 candidate-first 路径。引擎提供的 <code>AudioSourceRuntimeSink</code> 将该协议 连接到真实 <code>audio::Source</code>。Sink 与 Source 都是非拥有引用，宿主销毁 Source 前必须先解除 SceneLink、 component binding 和 publishing target。</p>
+<p>Material 使用同样的原子路径：<code>MaterialPublishingTarget::authoringTarget()</code> 负责 Inspector Schema 与 operation，<code>IMaterialRuntimeSink</code> 负责整份 candidate 的无部分写入发布。启用 <code>graphics</code> 时， <code>Renderable3DMaterialRuntimeSink</code> 会先解析 albedo/normal/height texture 与 shader 的全部资产引用，再更新 Renderable 的 tint、metallic、roughness、parallax、lighting 和 shadow 参数。内置 legacy Renderable sink 只接受 PBR、opaque、alpha、single-sided 组合；其他 surface/shading 模式返回 Unsupported，项目应注册 能够原子发布其专用 Material pipeline 的 sink。</p>
+<p>3D Collider 用 <code>PhysicsColliderPublishingTarget</code> 与 <code>PhysicsCollider3DRuntimeSink</code> 接入同一流程。Sink 会先 校验完整 candidate 和 static mesh/height-field 约束，必要时预切换 Body type，然后通过 <code>PhysicsColliderRuntimeBuilder</code> 创建并完整配置 replacement；只有成功后才对旧 <code>Shape3D</code> 调用 <code><a class="el" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy()</a></code> 并更新 generation-qualified shape 槽。Builder 或资产解析失败会恢复原 Body type，旧 shape、 作者文档和 revision 均保持不变。Undo 会创建另一代 shape，而不会尝试复活已经失效的 runtime handle。 从 complex static collider 同时切换为 non-static primitive 时，应拆成两笔提交：先换 primitive，再改 Body type，避免 Box3D 在旧 complex shape 仍存活时拒绝类型转换。</p>
+<p>2D 使用同一 <code>PhysicsColliderPublishingTarget</code>，将 dimensions 设为 <code>2</code> 并绑定 <code>PhysicsCollider2DRuntimeSink</code>。AssetDB 的 polygon metadata 使用 3–8 个有限、严格凸的 packed XY 顶点；chain 使用至少两个顶点，并可用 <code>loop: true</code> 闭合。Resolver 会在触碰 Box2D 前拒绝凹多边形、 连续重复点、超预算数据和 kind 不匹配；builder 负责像素到米换算并应用 authored offset、density、 friction、restitution、sensor 与 collision filter。Fixture 同样先创建成功再销毁旧实例，undo 不复用失效 指针。</p>
+<h3>Skeleton Viewport Overlay</h3>
+<p><code>SkeletonOverlayBuilder</code> 把不可变 <code>SkeletonOverlayBone</code> 列表转换为通用 <code>EditorGizmoSnapshot</code>，输出 joint、 bone-line、选中骨骼的 XYZ axis，以及可选 yaw/pitch constraint-arc。Retarget 的 matched、unmatched、 ambiguous 状态使用稳定配色，未匹配骨骼使用虚线；blend mask weight 会调节骨骼亮度。Builder 在生成 primitive 前检查稳定 ID、父级存在、层级环、有限 TRS、mask 范围、constraint min/max 和 maximumBones 预算，因此 renderer 不需要重新解释动画数据。</p>
+<p>启用 <code>animation</code> 时，<code>AnimationSkeletonOverlayAdapter</code> 从真实 <code>AnimSkeleton</code> 和 <code>AnimPose</code> 提取 world position/quaternion，并接受 selected bone、retarget mapping 与 mask。它只更新 Pose 的派生 world cache，不 修改 local pose。Vulkan、Web 或游戏内调试 HUD 只需实现 <code>joint</code>、<code>bone-line</code>、<code>axis</code> 和 <code>constraint-arc</code> primitive 的绘制。</p>
+<h3>Material Preview、Light 与 Environment</h3>
+<p><code>MaterialPreviewService</code> 把材质 snapshot、文档 revision、mesh/camera/environment 设置封装为不可变 <code>MaterialPreviewRenderRequest</code>。每次请求带唯一 isolated scene ID，renderer host 不需要访问 live scene； 只有成功且 revision 仍匹配的 artifact 才能 publish。自定义 mesh、分辨率、相机距离及材质交叉字段会在 调用 renderer 前校验。</p>
+<p><code>MaterialStudioController</code> 在这些底层契约上提供实时编辑会话。UI 在 slider、颜色选择器或资产槽开始交互时 调用 <code>beginInteraction()</code>，把中间值传给 <code>updateInteraction()</code>，并用宿主的单调毫秒时间调用 <code><a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick()</a></code>。 中间值只进入 owned draft 和隔离预览；<code>commitInteraction()</code> 才把最终值作为一个事务发布，因此一次拖拽只 生成一条 undo 记录。<code>cancelInteraction()</code> 不修改 live material。默认预览间隔约 33ms，也可通过 <code>setPreviewRate()</code> 在 1–240 Hz 内调整。完整布局、状态、生命周期与失败契约见 `实时材质 Studio 设计`。</p>
+<p><code>Light3DDocumentTarget</code> 和 <code>EnvironmentDocumentTarget</code> 实现标准 <code>IPropertyProvider</code>、可逆 operation、 snapshot/load 与结构化诊断。Light 覆盖 type、position/direction、HDR color/intensity、radius、shadow 及 volumetric；Environment 覆盖 static/DayNight/Weather mode、sky/ambient/exposure、时钟/大气、 天气/风/雷电/雾。对应 runtime applier 会先完整校验，再原子地写入真实 <code>Light3D</code>、<code>DayNight</code> 或 <code>Weather</code>，并拒绝 mode 不匹配及多环境 owner。</p>
+<h3>Map Structure、Road 与 Placement</h3>
+<p><code>MapDocumentTarget</code> 提供 <code>eve.editor.target.map-structure</code> capability，把 tile/object/road/group layer、 road spline 与 asset placement 纳入统一 revision、staging transaction 和 undo operation。Outliner 可稳定 排序、隐藏、锁定和改名 layer；锁定 layer 会在 planning 与 apply 两个边界拒绝内容修改，非空 layer 不能删除或改变 kind。</p>
+<p>Road 使用稳定 point ID、XYZ 与逐点 width，支持 open/closed spline；<code>previewRoad()</code> 在 triangle budget 内输出 renderer-neutral strip vertices/indices、中心线长度和源 revision，并报告零长度 tangent、缺材质及 预算超限。Placement 保存稳定 asset ref 和完整 TRS，仅能写入 object layer。整个 map structure 可确定性 snapshot/load，缺层引用、重复 order、非法 scale 和错误 spline 结构会原子拒绝。</p>
+<h3>Building Footprint 与可逆放置</h3>
+<p>启用 <code>building</code> 时，<code>BuildingPlacementTarget</code> 直接绑定真实 <code>PlacementWorld</code>。<code>preview()</code> 复用当前 building definition、snap mode、rotation mode、terrain/adjacency/occupancy rule，返回吸附坐标、规范化 旋转、每个 footprint cell 的 bounds/terrain/occupant 和稳定 rule diagnostic；预览不修改世界。</p>
+<p>Place 使用 editor 指定的稳定正整数 instance ID；move/remove operation 的 inverse 保存完整 cell/world pose、channel、properties、tags、garrison 及其 revision。<code>PlacementSystem::restoreExact()</code> 会重新执行当前 规则和占用检查后恢复原 ID，因此 Undo 遇到已被其他建筑占用的格子时返回 Conflict/Rejected，不会覆盖 新状态。成功恢复同步推进全局 ID allocator，后续正常放置不会重用该 ID。</p>
+<div class="fragment"><div class="line">local buf = levelEditor.newTileBuffer(64, 64);</div>
+<div class="line">local brush = levelEditor.newBrush();</div>
+<div class="line">brush.setTool(&quot;paint&quot;);  // paint | erase | fill | line | rect | stamp</div>
+<div class="line">brush.setTile(3);</div>
+<div class="line">brush.setSize(3);</div>
+<div class="line">brush.setShape(&quot;circle&quot;);</div>
+<div class="line">brush.paintAt(buf, tx, ty);</div>
+<div class="line"> </div>
+<div class="line">// 同步到 map.TileLayer（示例）</div>
+<div class="line">for (local y = 0; y &lt; buf.getHeight(); y++)</div>
+<div class="line">    for (local x = 0; x &lt; buf.getWidth(); x++)</div>
+<div class="line">        layer.setTile(x, y, buf.getGid(x, y));</div>
+</div><!-- fragment --><h2>编辑器壳</h2>
+<h3>可组合 Workspace（推荐）</h3>
+<p><code>EditorWorkspace</code> 是 UI 无关的组合模型，不提供固定编辑器窗口。项目注册任意面板描述， 再由 <code>ui</code>、游戏 HUD、MCP host 或其他 presenter 动态生成界面。Workspace 同时提供带通道的 Selection/Focus，因此开发编辑器和游戏内建造模式可以共享语义状态而使用不同布局。</p>
+<div class="fragment"><div class="line">local ws = editor.newWorkspace(&quot;level&quot;, &quot;My Level Tools&quot;);</div>
+<div class="line">ws.setRegionSize(&quot;left&quot;, 240);</div>
+<div class="line">ws.registerPanel(&quot;outliner&quot;, &quot;Outliner&quot;, &quot;left&quot;, 10);</div>
+<div class="line">ws.registerPanel(&quot;viewport&quot;, &quot;Scene&quot;, &quot;center&quot;, 20);</div>
+<div class="line">ws.setPanelCapability(&quot;viewport&quot;, &quot;scene.viewport.3d&quot;);</div>
+<div class="line">ws.layout(config.width, config.height);</div>
+<div class="line"> </div>
+<div class="line">// 枚举 descriptor 动态生成项目自己的 UI，而不是依赖固定 shell。</div>
+<div class="line">for (local i = 0; i &lt; ws.getPanelCount(); ++i) {</div>
+<div class="line">    print(ws.getPanelId(i) + &quot; -&gt; &quot; + ws.getPanelRegion(i) + &quot;\n&quot;);</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">ws.select(&quot;world&quot;, &quot;scene&quot;, &quot;level-1&quot;, &quot;tree-42&quot;, &quot;vegetation.tree&quot;, false);</div>
+</div><!-- fragment --><p>完整组合示例见 <a href="../../../examples/composable-editor"><code>examples/composable-editor</code></a>：项目脚本用 五个面板 builder 组合地形、材质、反射 MVVM、ECS 与游戏命令；C++ 不认识这些具体面板。</p>
+<h3>动作时间轴编辑器</h3>
+<p><code>eve.ActionEditorModule().create(targetId, timelineTable)</code> 把版本化的 <code>eve.action.timeline</code> 资产交给原生动作编辑器。原生对象是时间轴、命中测试、事务、撤销/重做和确定性预览游标的 唯一事实源；脚本只负责用项目自己的 UI 绘制 <code>getItem*</code> 布局并转发指针输入。</p>
+<div class="fragment"><div class="line">local created = eve.ActionEditorModule().create(&quot;ability.light-attack&quot;, timelineAsset);</div>
+<div class="line">if (!created.ok) throw created.status.summary;</div>
+<div class="line">local actionEditor = created.value; // ownership == &quot;owned&quot;</div>
+<div class="line"> </div>
+<div class="line">local ws = editor.newWorkspace(&quot;combat&quot;, &quot;Combat Action Editor&quot;);</div>
+<div class="line">local composed = actionEditor.configureWorkspace(ws); // Assets/Preview/Inspector/Timeline</div>
+<div class="line">actionEditor.setViewport(900.0, 36.0, 145.0);</div>
+<div class="line"> </div>
+<div class="line">// 视口输入；一次 Down..Up 只生成一个撤销事务。</div>
+<div class="line">actionEditor.pointerDown(mouseX, mouseY, false);</div>
+<div class="line">actionEditor.pointerMove(mouseX);</div>
+<div class="line">actionEditor.pointerUp(mouseX);</div>
+<div class="line"> </div>
+<div class="line">actionEditor.play();</div>
+<div class="line">actionEditor.update(dt);</div>
+<div class="line">animationPlayer.setTime(actionEditor.getPreviewTime());</div>
+</div><!-- fragment --><p>工厂与所有可能失败的编辑操作返回通用 Result 表：<code>ok</code>、<code>value</code>、<code>status.code</code>、 <code>status.summary</code> 和 <code>status.diagnostics</code>。返回的动作编辑器由 Squirrel VM release hook 拥有， 仅可在创建它的线程使用；<code>configureWorkspace</code> 不保留传入的 Workspace 指针，<code>snapshot</code> 返回与编辑器生命周期解耦的规范化资产值。完整可运行示例见 <a href="../../../examples/combat-action-editor"><code>examples/combat-action-editor</code></a>。</p>
+<div class="fragment"><div class="line">local dock = editor.newDock();</div>
+<div class="line">dock.setRegionSize(&quot;left&quot;, 200);</div>
+<div class="line">dock.layout(config.width, config.height);</div>
+<div class="line">// 用 dock.getRegionX/Y/W/H(&quot;center&quot;|&quot;left&quot;|...) 放置 ui 窗口</div>
+<div class="line"> </div>
+<div class="line">local toolbar = editor.newToolbar();</div>
+<div class="line">toolbar.addTool(&quot;move&quot;, &quot;Move&quot;);</div>
+<div class="line">toolbar.addTool(&quot;paint&quot;, &quot;Paint&quot;);</div>
+<div class="line">toolbar.setShortcut(&quot;move&quot;, &quot;W&quot;);</div>
+<div class="line"> </div>
+<div class="line">local insp = editor.newInspector();</div>
+<div class="line">insp.addChoice(&quot;mode&quot;, &quot;Mode&quot;, &quot;translate,rotate,scale&quot;, &quot;translate&quot;);</div>
+<div class="line">insp.addFloat3(&quot;pos&quot;, &quot;Position&quot;, 0, 0, 0);</div>
+</div><!-- fragment --><h2>AI、队列与关系图</h2>
+<p><code>CrowdDocumentTarget</code> 用稳定 ID 编辑 Agent、多边形 Zone 和 Waypoint Path； <code>BehaviorGraphDomain</code> 在交给运行时前检查唯一根节点、环、多父节点、悬空边和不可达节点。 启用 <code>crowd</code> 时，运行时桥会把已验证文档发布为 named agents。</p>
+<p><code>RuntimeQueueInspector</code> 会立即复制 Orders 与 Production 的任务和事件，UI 不需要长期持有 运行时 borrowed pointer；它支持 owner/state/kind 筛选，并报告超时和非法进度。 <code>SocialDocumentTarget</code> 对 ownership、control、assignment 和加权 relation 提供可逆编辑、 原子快照与交叉引用校验，启用 <code>social</code> 时可发布到真实 <code>SocialGraph</code>。</p>
+<p>音频编辑的规范 C++ API 已拆到独立的 <code>audio_editing</code> 模块，使用 <code><a class="el" href="AudioTarget_8h.html">audio_editing/AudioTarget.h</a></code>、<code><a class="el" href="AudioEffects_8h.html">audio_editing/AudioEffects.h</a></code>、 <code><a class="el" href="AudioWaveform_8h.html">audio_editing/AudioWaveform.h</a></code>、<code><a class="el" href="AudioImportDiagnostics_8h.html">audio_editing/AudioImportDiagnostics.h</a></code> 和 <code><a class="el" href="AudioTransport_8h.html">audio_editing/AudioTransport.h</a></code>。启用 <code>audio_editor</code> 时，<code>AudioEditorModule</code> <code>AudioAuditionTransport</code> 做 play/pause/stop/seek 和区间循环试听。 启用 <code>audio_editor</code> 时，<code>eve.AudioEditorModule().create(targetId)</code> 返回脚本拥有的 <code>AudioSourceEditor</code>：原生对象是 source 文档、波形包络、试听 transport 和撤销事务的 唯一事实源。<code>configureWorkspace</code> 安装 Sources / Waveform / Inspector / Transport 四面板（capability <code>audio.source</code>）。完整可运行示例见 <a href="../../../examples/audio-source-editor"><code>examples/audio-source-editor</code></a>。</p>
+<p><code>audio-source</code> / <code>audio-mixer</code> / <code>audio-effects</code> target 工厂仍供 automation 使用。原有 <code>editor/EditorAudio*.h</code> 仅作为兼容入口保留，新代码不应再通过 <code>editor</code> 获取音频编辑契约。</p>
+<p>Scene 和 Map 的规范 C++ authoring API 分别位于 <code><a class="el" href="SceneTarget_8h.html">scene_editing/SceneTarget.h</a></code>、 <code><a class="el" href="SceneComponentPayload_8h.html">scene_editing/SceneComponentPayload.h</a></code> 与 <code><a class="el" href="MapDocument_8h.html">map_editing/MapDocument.h</a></code>。对应的 <code>editor/EditorScene*.h</code>、<code><a class="el" href="EditorMapDocument_8h.html">map_editor/EditorMapDocument.h</a></code> 只用于源代码兼容。</p>
+<p>Animation clip 的规范 authoring API 位于 <code><a class="el" href="AnimationClip_8h.html">animation_editing/AnimationClip.h</a></code>； <code><a class="el" href="EditorAnimationClip_8h.html">animation_editor/EditorAnimationClip.h</a></code> 是兼容入口。启用 <code>animation_editor</code> 时， <code>eve.AnimationEditorModule().create(targetId)</code> 返回脚本拥有的 <code>AnimationClipEditor</code>： 原生对象是 clip 文档、姿态 scrub、skeleton overlay、dope-sheet 布局和撤销事务的唯一事实源。 <code>configureWorkspace</code> 安装 Skeleton / Pose Preview / Inspector / Dope 四面板（capability <code>animation.clip</code>）。完整可运行示例见 <a href="../../../examples/animation-clip-editor"><code>examples/animation-clip-editor</code></a>。 <code>animation-clip</code> automation 工厂仍供 MCP/命令路径使用。</p>
+<p>音频资源可通过 <code>AudioAuditionTransport</code> 做 play/pause/stop/seek 和区间循环试听。 所有操作都绑定资源 revision；检测到旧 revision 时会立即停止并解绑播放源，避免继续试听 已经被重新导入或覆盖的音频。启用 <code>audio</code> 时使用 <code>AudioSourceTransportBackend</code> 连接真实 Source。</p>
+<p>复杂 3D Collider 使用 <code>AssetDatabasePhysicsColliderResolver</code> 从 AssetDB 元数据解析并限制 Convex Hull、Triangle Mesh 或 Height Field 的 CPU 几何；索引范围、顶点/三角形/采样预算、 有限数值和 Shape Kind 会在进入 Box3D 前检查。把 resolver 传给 <code>PhysicsColliderRuntimeBuilder</code> 即可创建真实复杂 Shape，同时继续应用 Offset、Sensor、Filter 和 Material 设置。</p>
+<p>基础设施设置通过 <code>ProjectSettingsTarget</code> 编辑。默认 Schema 覆盖 Asset Root、Import Cache、 Unsigned Plugin、Network Endpoint、Auth Token 与 Database Connection；需要重启的修改会单独列出。 敏感项只接受 <code>secret://</code> 引用，读取时返回脱敏值，快照不会接受明文凭据。各 Importer 可用 <code>importerSettingsSchema</code> 提供自己的同类设置。</p>
+<p><code>PluginPermissionTarget</code> 对 filesystem/network/database/native-script/process 权限保存显式窄 Scope 的 allow/deny/ask 决策，拒绝 <code>/</code> 或 <code>*</code> 这类全局授权。<code>EditorEventTimeline</code> 则提供有容量上限的 事件副本、Correlation/Severity/Tick 筛选、Dropped 计数和 generation-safe 分页。</p>
+<p>离屏预览通过三个窄 Graphics 接口完成 Canvas 分配、目标绑定与绘制。服务会在 DrawCallback 期间切换到目标 Canvas，并在成功、失败或异常时恢复此前目标，然后再做 CPU Readback。 <code>OffscreenMaterialPreviewRenderer</code> 将 MaterialPreviewService 请求接入该流程； <code>ParticleOffscreenPreviewService</code> 先编译和预算检查粒子图，再交给隔离的真实 Emitter presenter；<code>UiOffscreenPreviewRenderer</code> 会把可见 Widget 的 Box Model 与 Tint 直接栅格化为 revision-safe Artifact。</p>
+<p><code>AudioImportDiagnosticsService</code> 对解码 PCM 做每声道 Peak/RMS/DC Offset/Clipping/Silence 分析，同时给出解码内存、压缩比和 Streaming 建议。<code>AudioEffectChainTarget</code> 支持 Gain、 Low/High Pass、Delay、Reverb、Compressor 的稳定实例、参数范围、Bypass、Dry/Wet、排序、 撤销和原子快照；链可赋给 Mixer Bus，并通过 <code>IAudioEffectChainSink</code> 做 revision-safe 发布。</p>
+<h2>相机与程序化房屋资产</h2>
+<p><code>CameraDocumentTarget</code> 把 CameraController 的 Rig 和导演时间线变成稳定资产。Rig Inspector 覆盖 follow/orbit/topdown/firstperson/cinematic、目标与偏移、构图、FOV、平滑和速度；时间线 使用稳定 ID 保存 Cut、Event 和 Float Automation。<code>CameraPreview</code> 可确定性 scrub，并输出相机、 观察目标和 frustum 线框；<code>CameraDocumentRuntime</code> 先完整构建候选控制器，再切换运行 generation。</p>
+<p><code>HouseGenDocumentTarget</code> 同时保存组件 Kit 与生成 Request。Kit 可逐项创建，即使尚缺 foundation/floor/wall/door/roof 也能保存并显示诊断；只有请求实际生成预览时才要求 grammar 完整。<code>HouseGenPreviewRuntime</code> 在隔离的组件库和布局中执行确定性生成，失败保留上一版，成功后 可输出组件包围盒和房间区域 overlay。模型字段使用 <code>model3d</code> AssetRef，生成尺寸、层数、尝试次数 和预览实例数都有明确预算。</p>
+<p><code>SpriteStackDocumentTarget</code> 保存 primitive/model 来源、切片轴、层数、分辨率、padding、shade、 tint 及 2D 叠片表现参数。<code>SpriteStackBakeRuntime</code> 在 CPU 临时 generation 中完成所有切片，返回 每层 checksum 和 alpha coverage；模型资源通过窄 resolver 提供。完整成功后才能替换旧切片， 并可继续发布成真实 <code>SpriteStack2D</code>。512 MiB 解码预算会拒绝烘焙，超过 128 MiB 会提前警告。</p>
+<p><code>VirtualGeometryDocumentTarget</code> 保存 Mesh AssetRef、cluster 顶点/三角形上限、LOD 层数、合并因子、 目标简化比，以及预览 FOV、像素误差和距离范围。<code>VirtualGeometryBuildRuntime</code> 通过 mesh resolver 进行候选 CPU 构建，检查索引、有限坐标、cluster range 和 child reference，然后输出稳定 checksum、 几何膨胀统计与对数距离 LOD 成本曲线。GPU cache 格式及上传仍由各图形后端/importer 决定。</p>
+<p><code>AvatarDocumentTarget</code> 保存 image/Live2D/VRoid 类型和源资产，并用稳定 ID 编辑图层、动态参数和 表达式 channel。Layer Inspector 覆盖纹理、Z、可见性、偏移、尺寸与颜色；Parameter Inspector 覆盖 default/min/max/current。删除仍被表达式引用的图层或参数会被拒绝。<code>AvatarDocumentRuntime</code> 先解析所有纹理并完整创建候选 <code>AvatarInstance</code>，任一 backend load 或 channel 应用失败都会保留旧 generation。 启用 <code>avatar_editor</code> 时，<code>eve.AvatarEditorModule().create(targetId)</code> 返回脚本拥有的 <code>AvatarDocumentEditor</code>：原生对象是文档、CPU 图层合成预览和撤销事务的唯一事实源。 <code>configureWorkspace</code> 安装 Layers / Preview / Inspector / Parameters / Expressions （capability <code>avatar.document</code>）。完整可运行示例见 <a href="../../../examples/avatar-document-editor"><code>examples/avatar-document-editor</code></a>。</p>
+<p><code>VoxelPaletteTarget</code> 编辑 CubeType 的六面图集 ID、方向性、compose group 和连接提示。方向性类型 在运行时占四个连续 ID，普通类型占一个；Editor 会在超过 255 个 variant 前拒绝操作。 <code>VoxelPaletteRuntime</code> 候选构建完整 <code>CubeTypeRegistry</code>，并返回稳定 editor ID 到 base ID/variant 数量 的映射，供体素笔刷、调色板 UI 和关卡文档保存引用。</p>
+<p><code>BiomeDocumentTarget</code> 把 Procgen 的 BiomeRules 变成稳定资产：Layer Inspector 编辑空间域引用、优先级 和密度，子项 Inspector 编辑加权 prefab/model、缩放范围和随机朝向，exclusion 也使用空间 AssetRef。 结构编辑、属性编辑和快照均可撤销且原子校验；<code>BiomeDocumentRuntime</code> 先解析所有空间资源并构建完整 候选规则，成功后才发布。预览按文档 revision 拒绝过期请求，并以固定 seed 确定性生成 PointSet。 启用 <code>biome_editor</code> 时，<code>eve.BiomeEditorModule().create(targetId)</code> 返回脚本拥有的 <code>BiomeRulesEditor</code>：原生对象是规则文档、空间域、PointSet 预览和撤销事务的唯一事实源。 <code>configureWorkspace</code> 安装 Layers / World Preview / Inspector / Assets（capability <code>biome.rules</code>）。 排除区挂在 Inspector，不单开 dock。完整可运行示例见 <a href="../../../examples/biome-rules-editor"><code>examples/biome-rules-editor</code></a>。</p>
+<p><code>TextureRecipeTarget</code> 直接读取 Procgen <code>RecipeDescriptor</code>，把参数类型、范围、枚举、分类和默认值映射为 通用 Inspector，因此新增 recipe 无需再编写专用面板。参数编辑和快照可撤销且原子校验； <code>TextureRecipePreviewRuntime</code> 在候选图像完整生成后才发布，并返回尺寸、source revision 和稳定像素 checksum。</p>
+<p>Network 调试页使用 <code>Network::telemetrySnapshot()</code> 获取线程安全复制快照，不持有 socket、channel 或 worker 内部对象。快照包含真实 transport 收发字节、completion/error/connection 累计值、TCP/UDP watch 数、 channel 数和 TCP 待发送字节。<code>NetworkTelemetryModel</code> 保存有界历史，计算收发速率和近期错误率，正确处理 计数器 reset，并对高 backpressure、异常错误率及 socket 数量给出结构化诊断。</p>
+<p><code>SceneImportTarget</code> 保存 SceneLoader 源 AssetRef 和完整 <code>LoadOptions</code>。选择 quality、balanced、mobile 或 raw preset 时会展开为显式选项；随后修改任一选项自动进入 custom，避免 UI 标签与实际导入参数漂移。 <code>SceneImportPreflightRuntime</code> 使用 CPU-only <code>SceneLoader::inspect</code> 解码，不挂载 ECS 也不上传 GPU，返回 节点/mesh 数、对当前 mounted scene 的 add/remove/modify/move dry-run diff、warning、SOCKET_ 和碰撞节点清单。</p>
+<p><code>InputMapTarget</code> 在原始 Keyboard/Mouse/Touch/Joystick API 之上提供设备无关 Action/Binding 资产。 Binding Inspector 支持设备、control、scale、invert 和 deadzone；多个 binding 可合成为一个 1D axis，删除仍被 引用的 action 会被拒绝，重复 control 会产生冲突诊断。<code>InputMapEvaluator</code> 可用复制的原始样本确定性预览 action 值；<code>InputBindingCapture</code> 过滤设备与微小轴噪声，只捕获首个超过阈值的有意输入。</p>
+<p>Profiler 调试页通过 <code>EditorProfilerCollector</code> 复制运行时最后一个已完成帧，不保留 Profiler 内部借用引用。 <code>EditorProfilerModel</code> 保存有界 CPU/GPU 帧历史，并为最新帧提供按模块、线程和文本筛选的热点表、按 self/total/count/name 排序、模块汇总以及 CPU/GPU/单区段预算诊断。预算与历史容量修改会先完整校验； 过期序列或非法计时不会部分写入。当前运行时聚合行没有稳定父节点身份，因此该模型不构造推测性的调用树。</p>
+<p><code>Hd2dDocumentTarget</code> 同时描述 Sprite3D 精灵表和 TileMap3D extrusion preset。Sprite Inspector 覆盖纹理、帧网格、当前帧、动画区间、FPS、翻转、尺寸与 tint；Tile Inspector 覆盖 side depth、 height scale 和 wall UV。<code>Hd2dFramePreviewService</code> 可按时间确定性计算帧与 UV，runtime bridge 在纹理解析成功后才创建候选 Sprite3D，或发布配置完整的 TileMap3D builder。</p>
+<h2>对象关系</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">类型   </th><th class="markdownTableHeadNone">职责    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>TransformGizmo</code>   </td><td class="markdownTableBodyNone">单对象 TRS/包围盒手柄、射线交互、绘制部件    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>GizmoManager</code>   </td><td class="markdownTableBodyNone">多 mode 开关 + attach，转发 pick/drag（Babylon 风格）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>TileBuffer</code>   </td><td class="markdownTableBodyNone">与 <code>map</code> 解耦的 GID 网格    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>Brush</code>   </td><td class="markdownTableBodyNone">笔刷工具；产出 preview / change 列表    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>EditorHistory</code>   </td><td class="markdownTableBodyNone">撤销栈；瓦片分组可 <code>applyLastToBuffer</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Toolbar / Inspector / Dock   </td><td class="markdownTableBodyNone">仅状态与矩形，由 <code>ui</code> 渲染    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>ActionTimelineEditor</code>   </td><td class="markdownTableBodyNone">版本化动作时间轴、事务、撤销/重做和确定性预览   </td></tr>
+</table>
+<h2>目标导向指南</h2>
+<h3>给场景节点加平移旋转缩放</h3>
+<p>创建 <code>GizmoManager</code>，<code>attach()</code> 后按需 <code>setPositionEnabled</code> / <code>setRotationEnabled</code> / <code>setScaleEnabled</code>；把相机 <code>screenToRay</code> 交给 <code>pick</code> / <code>updateDrag</code>，再写回 <code>scene</code> 节点 local TRS。</p>
+<h3>做简易 tile 地图编辑器</h3>
+<p><code>TileBuffer</code> + <code>Brush</code> + <code>EditorHistory</code>：每次 <code>paintAt</code> 后把 <code>getChange*</code> 记入 <code>beginGroup</code>/<code>recordTile</code>/<code>endGroup</code>；Undo 时 <code>applyLastToBuffer</code>。用 <code>EditorDock</code> 划分调色板与视口，用 <code>EditorToolbar</code> 切换 paint/erase/fill。</p>
+<h2>常见问题</h2>
+<ul>
+<li>期望引擎弹出完整编辑器窗口——本模块只提供构件，需自行用 <code>ui</code> / <code>graphics</code> 组装。</li>
+<li>笔刷直接改 <code>TileLayer</code>——请先画在 <code>TileBuffer</code>，再同步，避免模块硬耦合。</li>
+<li><code>getPart*</code> 在 mode/TRS 变化后过期——调用 <code>rebuildParts()</code> 或任意 set*（多数 set 已自动重建）。</li>
+</ul>
+<h2>API 快查</h2>
+<ul>
+<li>Editor 核心模块：<code>newWorkspace</code> / <code>newSession</code> / <code>newScriptTool</code> / <code>newFieldBrushTool</code> / <code>newVolumeBrushTool</code> / <code>newConstantBrushFalloff</code> / <code>newLinearBrushFalloff</code> / <code>newSmoothBrushFalloff</code> / <code>newCircleBrushKernel</code> / <code>newBoxBrushKernel</code> / <code>newSphereVolumeBrushKernel</code> / <code>newBoxVolumeBrushKernel</code> / <code>newPaintIntFieldOperation</code> / <code>newAddScalarFieldOperation</code> / <code>newPaintIntVolumeOperation</code> / <code>registerScriptCommand</code> / <code>unregisterScriptCommand</code> / <code>newGizmo</code> / <code>newGizmoManager</code> / <code>newToolbar</code> / <code>newInspector</code> / <code>newDock</code></li>
+<li>Level Editor 模块：<code>newTileBuffer</code> / <code>newBrush</code> / <code>newHistory</code> / <code>createTarget</code> / <code>bind</code></li>
+<li>Action editor adapter：<code>eve.ActionEditorModule().create</code></li>
+<li>Heightmap Target 模块：<code>create</code> / <code>bind</code> / <code>applyBrush</code> / <code>newMesh</code> / <code>updateMesh</code> / <code>newSmoothMesh</code> / <code>updateSmoothMesh</code></li>
+<li>Workspace：<code>getId</code> / <code>getTitle</code> / <code>setTitle</code> / <code>registerPanel</code> / <code>removePanel</code> / <code>clearPanels</code> / <code>movePanel</code> / <code>setPanelCapability</code> / <code>setPanelContext</code> / <code>setPanelVisible</code> / <code>setPanelSingleton</code> / <code>activatePanel</code> / <code>getActivePanel</code> / <code>getPanelCount</code> / <code>getPanelId</code> / <code>getPanelTitle</code> / <code>getPanelRegion</code> / <code>getPanelCapability</code> / <code>getPanelContext</code> / <code>getPanelOrder</code> / <code>getPanelVisible</code> / <code>getPanelSingleton</code> / <code>setRegionSize</code> / <code>layout</code> / <code>getRegionX</code> / <code>getRegionY</code> / <code>getRegionW</code> / <code>getRegionH</code> / <code>setMode</code> / <code>getMode</code> / <code>select</code> / <code>clearSelection</code> / <code>getSelectionCount</code> / <code>getSelectionItem</code> / <code>getSelectionType</code> / <code>getPrimarySelection</code> / <code>getSelectionSequence</code> / <code>focus</code> / <code>getFocusedSurface</code> / <code>getRevision</code></li>
+<li>动作时间轴：<code>configureWorkspace</code> / <code>setViewport</code> / <code>pointerDown</code> / <code>pointerMove</code> / <code>pointerUp</code> / <code>seekX</code> / <code>seekSeconds</code> / <code>resizeState</code> / <code>undo</code> / <code>redo</code> / <code>update</code> / <code>snapshot</code> / <code>play</code> / <code>pause</code> / <code>isPlaying</code> / <code>canUndo</code> / <code>canRedo</code> / <code>isDragging</code> / <code>getDuration</code> / <code>getPreviewTime</code> / <code>getRevision</code> / <code>getAnimationUri</code> / <code>getTrackCount</code> / <code>getTrackId</code> / <code>getTrackLabel</code> / <code>getTrackKind</code> / <code>getTrackMuted</code> / <code>getLayoutWidth</code> / <code>getLayoutHeight</code> / <code>getPlayheadX</code> / <code>getItemCount</code> / <code>getItemId</code> / <code>getItemType</code> / <code>getItemState</code> / <code>getItemSelected</code> / <code>getItemMinX</code> / <code>getItemMaxX</code> / <code>getItemMinY</code> / <code>getItemMaxY</code> / <code>getStateStart</code> / <code>getStateEnd</code> / <code>getEventCount</code> / <code>getEventItemId</code> / <code>getEventType</code> / <code>getEventTime</code> / <code>getEventKind</code></li>
+<li>动画 Clip：<code>eve.AnimationEditorModule().create</code> / <code>configureWorkspace</code> / <code>setViewport</code> / <code>pointerDown</code> / <code>seekX</code> / <code>seekSeconds</code> / <code>selectBone</code> / <code>setMaskWeight</code> / <code>setDuration</code> / <code>setSampleRate</code> / <code>setLoop</code> / <code>undo</code> / <code>redo</code> / <code>play</code> / <code>pause</code> / <code>stop</code> / <code>update</code> / <code>getTrack*</code> / <code>getKey*</code> / <code>getEvent*</code> / <code>getPrimitive*</code></li>
+<li>Avatar 文档：<code>eve.AvatarEditorModule().create</code> / <code>configureWorkspace</code> / <code>selectLayer</code> / <code>selectParameter</code> / <code>selectExpression</code> / <code>pointerDown</code> / <code>setLayerVisible</code> / <code>setLayerZ</code> / <code>setParameterValue</code> / <code>createLayer</code> / <code>deleteSelectedLayer</code> / <code>deleteSelectedParameter</code> / <code>undo</code> / <code>redo</code> / <code>getPreview*</code> / <code>getLayer*</code> / <code>getParameter*</code> / <code>getExpression*</code></li>
+<li>Biome 规则：<code>eve.BiomeEditorModule().create</code> / <code>configureWorkspace</code> / <code>selectLayer</code> / <code>selectAsset</code> / <code>setLayerDensity</code> / <code>setLayerPriority</code> / <code>setAssetWeight</code> / <code>addExclusion</code> / <code>removeExclusion</code> / <code>setSeed</code> / <code>undo</code> / <code>redo</code> / <code>getPoint*</code> / <code>getLayer*</code> / <code>getAsset*</code> / <code>getExclusion*</code></li>
+<li>会话：<code>addTool</code> / <code>addFieldTool</code> / <code>addVolumeTool</code> / <code>removeTool</code> / <code>clearTools</code> / <code>clearTarget</code> / <code>activateTool</code> / <code>getActiveToolId</code> / <code>dispatchPointer</code> / <code>dispatchPointer3D</code> / <code>hasPointerCapture</code> / <code>update</code> / <code>cancelActiveTool</code> / <code>undo</code> / <code>redo</code> / <code>canUndo</code> / <code>canRedo</code> / <code>clearHistory</code> / <code>getCommandCount</code> / <code>getCommandId</code> / <code>getCommandName</code> / <code>getCommandCategory</code> / <code>planCommand</code> / <code>executePlan</code> / <code>executeCommand</code>。领域 Target 通过各自模块的 <code>bind(session, target)</code> 接入。</li>
+<li>脚本工具：<code>setShortcut</code> / <code>setActivateCallback</code> / <code>setDeactivateCallback</code> / <code>setPointerCallback</code> / <code>setKeyCallback</code> / <code>setUpdateCallback</code> / <code>setCancelCallback</code></li>
+<li>字段工具：<code>setRadius</code> / <code>setStrength</code> / <code>getRadius</code> / <code>getStrength</code> / <code>setCircleKernel</code> / <code>setBoxKernel</code> / <code>setPaintIntOperation</code> / <code>setAddScalarOperation</code></li>
+<li>Kernel：<code>setConstantFalloff</code> / <code>setLinearFalloff</code> / <code>setSmoothFalloff</code></li>
+<li>整数字段操作：<code>setValue</code> / <code>getValue</code></li>
+<li>字段 Target：<code>getTargetId</code> / <code>getRevision</code> / <code>getWidth</code> / <code>getHeight</code> / <code>readInt</code> / <code>writeInt</code> / <code>readScalar</code> / <code>writeScalar</code> / <code>sampleScalar</code> / <code>clearDirtyRegion</code></li>
+<li>体积工具/Target：<code>setSphereKernel</code> / <code>setBoxKernel</code> / <code>setPaintIntOperation</code> / <code>readInt3</code> / <code>writeInt3</code> / <code>getDirtyMinX</code> / <code>getDirtyMinY</code> / <code>getDirtyMinZ</code> / <code>getDirtyMaxX</code> / <code>getDirtyMaxY</code> / <code>getDirtyMaxZ</code> / <code>clearDirtyVolume</code></li>
+<li>Gizmo：<code>setMode</code> / <code>setSpace</code> / <code>setPosition</code> / <code>setRotationEuler</code> / <code>setScale</code> / <code>setBounds</code> / <code>setSnap*</code> / <code>pick</code> / <code>beginDrag</code> / <code>updateDrag</code> / <code>endDrag</code> / <code>getPart*</code></li>
+<li>Manager：<code>set*Enabled</code> / <code>attach</code> / <code>detach</code> / <code>getGizmo</code> / <code>pick</code> / <code>beginDrag</code> / <code>updateDrag</code></li>
+<li>Brush：<code>setTool</code> / <code>setSize</code> / <code>setShape</code> / <code>setTile</code> / <code>paintAt</code> / <code>eraseAt</code> / <code>floodFill</code> / <code>paintLine</code> / <code>paintRect</code> / <code>preview*</code> / <code>getChange*</code></li>
+<li>History：<code>push</code> / <code>beginGroup</code> / <code>recordTile</code> / <code>endGroup</code> / <code>undo</code> / <code>redo</code> / <code>applyLastToBuffer</code></li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块与辅助对象应长期持有；不要每帧 <code>newGizmo()</code>。</li>
+<li>枚举一律 string，非法值抛异常。</li>
+<li>绘制与输入由宿主完成；本模块不做 GPU 提交。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/editor/"><code>src/modules/editor/</code></a> <br  />
+ <b>设计文档：</b> `docs/dev/编辑器模块设计.md` <br  />
+ <b>相关测试：</b> <a href="../../../test/editor.cpp"><code>test/editor.cpp</code></a></p>
+<h3>PR #287 新增绑定</h3>
+<ul>
+<li>反射链、HDR 与探针相关 API 位于 <code>GraphicsEditorModule</code>：<code>getCenterX</code> <code>getCenterY</code>/<code>getCenterZ</code> <code>getColorB</code> <code>getColorG</code>/<code>getColorR</code> <code>getLineCount</code> <code>getLineEnd</code>/<code>getLineStart</code> <code>getStatusLabel</code> <code>createReflectionProbeVisualizer</code>/<code>setExtents</code> </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

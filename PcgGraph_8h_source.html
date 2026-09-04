@@ -1,0 +1,299 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen_editing/PcgGraph.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64a72953ed6375cc8141dd0470155ee0.html">procgen_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgGraph.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgGraph_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ProcgenEditingTypes_8h.html">procgen_editing/ProcgenEditingTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da">PointSet</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>}</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen__editing.html">eve::procgen_editing</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html">PcgGraphCompileResult</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#ad49b424fa78941ef7a93b5076c3d89ad">   16</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>                  <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#ad49b424fa78941ef7a93b5076c3d89ad">status</a>           = EditorStatus::Failed;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#aa7fd9d47bf4a488cd19fbeae49891b60">   17</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">Revision</a>                      <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#aa7fd9d47bf4a488cd19fbeae49891b60">documentRevision</a> = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#a281f932ad862c68bda3ef43773d3e43f">   18</a></span>    std::string                   <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#a281f932ad862c68bda3ef43773d3e43f">definition</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#af00621541706e20662476caaffbed976">   19</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#af00621541706e20662476caaffbed976">diagnostics</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html">PcgGraphMigrationResult</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ab53ab75124b9415ed001845852bf5848">   24</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>                  <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ab53ab75124b9415ed001845852bf5848">status</a>      = EditorStatus::Failed;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ae68834dd10eb4ab8647b253b275c9727">   25</a></span>    std::uint32_t                 <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ae68834dd10eb4ab8647b253b275c9727">fromVersion</a> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#a8913966fab20ab37fd3903caa632b03a">   26</a></span>    std::uint32_t                 <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#a8913966fab20ab37fd3903caa632b03a">toVersion</a>   = 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#a2f1992f57da3cf603016345bd042d5f8">   27</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a>             <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#a2f1992f57da3cf603016345bd042d5f8">graph</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ab4aefe434a8a84c42438eb2b58b28122">   28</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ab4aefe434a8a84c42438eb2b58b28122">diagnostics</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html">PcgGraphPreviewMetric</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a26219b349d0ec9ff0bcbc8e3c5ca598d">   33</a></span>    std::string <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a26219b349d0ec9ff0bcbc8e3c5ca598d">nodeId</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#aef24ed2f62ebaa1fdf64fa75c0be51a7">   34</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#aef24ed2f62ebaa1fdf64fa75c0be51a7">outputCount</a>    = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a353a2626ee7a0ccc02fddc464e4243c1">   35</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a353a2626ee7a0ccc02fddc464e4243c1">milliseconds</a>   = 0.f;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a41f6382850112c355dc5f6c19c771f2b">   36</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a41f6382850112c355dc5f6c19c771f2b">cacheHit</a>       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#ae6f62758b064cef6a6b077b685f043f6">   37</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#ae6f62758b064cef6a6b077b685f043f6">minX</a>           = 0.f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#afe17b4e3665dbf6bbaf0149b8b9a3789">   38</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#afe17b4e3665dbf6bbaf0149b8b9a3789">minY</a>           = 0.f;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a4603eb64dee998d65e8f1a96d02219ec">   39</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a4603eb64dee998d65e8f1a96d02219ec">minZ</a>           = 0.f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a2f3da0b901f54f3975202d8b682f8aaa">   40</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a2f3da0b901f54f3975202d8b682f8aaa">maxX</a>           = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a060d553eae75efd088ef541d3f563085">   41</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a060d553eae75efd088ef541d3f563085">maxY</a>           = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#afb08b19cabe296f9604560b31e39b28b">   42</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#afb08b19cabe296f9604560b31e39b28b">maxZ</a>           = 0.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a08c56986740dc3ab1bfbc28f7f1bb169">   43</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a08c56986740dc3ab1bfbc28f7f1bb169">averageDensity</a> = 0.f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html">   47</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html">PcgGraphPreviewResult</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a9e44e384e4bde00a3390630669e48269">   48</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>                       <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a9e44e384e4bde00a3390630669e48269">status</a>           = EditorStatus::Failed;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#ad6867c725a342bc5e5e402ede8a973e8">   49</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">Revision</a>                           <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#ad6867c725a342bc5e5e402ede8a973e8">documentRevision</a> = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a8c17827e1973e1a19225fd33cf3a5836">   50</a></span>    <span class="keywordtype">int</span>                                <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a8c17827e1973e1a19225fd33cf3a5836">outputCount</a>      = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#aeca798eedb9c9707e469250acd0d5742">   51</a></span>    std::vector&lt;PcgGraphPreviewMetric&gt; <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#aeca798eedb9c9707e469250acd0d5742">metrics</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a413050a9504044f913230e250c18a97e">   52</a></span>    std::vector&lt;EditorDiagnostic&gt;      <a class="code hl_variable" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a413050a9504044f913230e250c18a97e">diagnostics</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html">   62</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html">PcgPointGraphDomain</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IGraphDomainProvider.html">IGraphDomainProvider</a> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a7506bd05f77638ebdc577fc876a702f4">   64</a></span>    std::string <a class="code hl_function" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a7506bd05f77638ebdc577fc876a702f4">domain</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;procgen.point&quot;</span>; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1GraphConnectionDecision.html">GraphConnectionDecision</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#af950ae6c4c267da4e7008ef012fe4046">canConnect</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                       <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphPinRecord.html">GraphPinRecord</a>&amp; <a class="code hl_variable" href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;GraphNodeRecord&gt;</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a1e4787c0bec24085a713ceab77a22c23">makeNode</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphNodeId</a>&amp; <span class="keywordtype">id</span>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                           <span class="keyword">const</span> std::string&amp; operation) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_struct" href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html">PcgGraphMigrationResult</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a14201d4fc844a7e273099d5c140e3dc1">migrate</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a>&amp; <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_struct" href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html">PcgGraphCompileResult</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a972af39b7665897c7fb0c52bd96329b1">compile</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a>&amp; <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_struct" href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html">PcgGraphPreviewResult</a> <a class="code hl_function" href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#ad245ba41db92d7bbbd4d690b8261c386">preview</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1GraphDocumentData.html">GraphDocumentData</a>&amp; <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, <span class="keyword">const</span> std::string&amp; inputNode,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                  <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">procgen::PointSet</a>* previewInput,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                                  <span class="keyword">const</span> std::string&amp; outputNode, <span class="keywordtype">int</span> nodeBudget = 0,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                  <span class="keywordtype">int</span> pointBudget = 100000) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}  <span class="comment">// namespace eve::procgen_editing</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8d10a8def83a0e25fb0e6300bc085eab"><div class="ttname"><a href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; graph</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00059">Package.cpp:59</a></div></div>
+<div class="ttc" id="aPixelWorldPhysics_8cpp_html_a4951cbf0b20c4996ed09481097db841f"><div class="ttname"><a href="PixelWorldPhysics_8cpp.html#a4951cbf0b20c4996ed09481097db841f">to</a></div><div class="ttdeci">GridPoint to</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldPhysics_8cpp_source.html#l00094">PixelWorldPhysics.cpp:94</a></div></div>
+<div class="ttc" id="aProcgenEditingTypes_8h_html"><div class="ttname"><a href="ProcgenEditingTypes_8h.html">ProcgenEditingTypes.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IGraphDomainProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IGraphDomainProvider.html">eve::editing::IGraphDomainProvider</a></div><div class="ttdoc">Domain-owned typed connection policy.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00075">EditingGraph.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></div><div class="ttdoc">Script-friendly collection of attributed 3D samples.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00056">PointSet.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1PcgPointGraphDomain_html"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html">eve::procgen_editing::PcgPointGraphDomain</a></div><div class="ttdoc">procgen.point editor graph domain backed by procgen::PointGraph schema.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00062">PcgGraph.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1PcgPointGraphDomain_html_a14201d4fc844a7e273099d5c140e3dc1"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a14201d4fc844a7e273099d5c140e3dc1">eve::procgen_editing::PcgPointGraphDomain::migrate</a></div><div class="ttdeci">PcgGraphMigrationResult migrate(const GraphDocumentData &amp;graph) const</div><div class="ttdoc">Upgrade a legacy graph without mutating the source document.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8cpp_source.html#l00103">PcgGraph.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1PcgPointGraphDomain_html_a1e4787c0bec24085a713ceab77a22c23"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a1e4787c0bec24085a713ceab77a22c23">eve::procgen_editing::PcgPointGraphDomain::makeNode</a></div><div class="ttdeci">EditorResult&lt; GraphNodeRecord &gt; makeNode(const GraphNodeId &amp;id, const std::string &amp;operation) const</div><div class="ttdoc">Construct a generic editor node from one reflected PointGraph operation.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8cpp_source.html#l00073">PcgGraph.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1PcgPointGraphDomain_html_a7506bd05f77638ebdc577fc876a702f4"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a7506bd05f77638ebdc577fc876a702f4">eve::procgen_editing::PcgPointGraphDomain::domain</a></div><div class="ttdeci">std::string domain() const override</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00064">PcgGraph.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1PcgPointGraphDomain_html_a972af39b7665897c7fb0c52bd96329b1"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#a972af39b7665897c7fb0c52bd96329b1">eve::procgen_editing::PcgPointGraphDomain::compile</a></div><div class="ttdeci">PcgGraphCompileResult compile(const GraphDocumentData &amp;graph) const</div><div class="ttdoc">Compile topology and scalar properties into a reusable PointGraph definition.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8cpp_source.html#l00188">PcgGraph.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1PcgPointGraphDomain_html_ad245ba41db92d7bbbd4d690b8261c386"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#ad245ba41db92d7bbbd4d690b8261c386">eve::procgen_editing::PcgPointGraphDomain::preview</a></div><div class="ttdeci">PcgGraphPreviewResult preview(const GraphDocumentData &amp;graph, const std::string &amp;inputNode, procgen::PointSet *previewInput, const std::string &amp;outputNode, int nodeBudget=0, int pointBudget=100000) const</div><div class="ttdoc">Compile and execute an isolated point-input preview for editor visualization.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8cpp_source.html#l00350">PcgGraph.cpp:350</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen__editing_1_1PcgPointGraphDomain_html_af950ae6c4c267da4e7008ef012fe4046"><div class="ttname"><a href="classeve_1_1procgen__editing_1_1PcgPointGraphDomain.html#af950ae6c4c267da4e7008ef012fe4046">eve::procgen_editing::PcgPointGraphDomain::canConnect</a></div><div class="ttdeci">GraphConnectionDecision canConnect(const GraphPinRecord &amp;from, const GraphPinRecord &amp;to) const override</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8cpp_source.html#l00060">PcgGraph.cpp:60</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aaaedf8f48dfa5b704b6c12b415707a1da">eve::artifact::PartKind::PointSet</a></div><div class="ttdeci">@ PointSet</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen__editing_html"><div class="ttname"><a href="namespaceeve_1_1procgen__editing.html">eve::procgen_editing</a></div><div class="ttdef"><b>Definition</b> <a href="HeightmapTargetModule_8h_source.html#l00018">HeightmapTargetModule.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphConnectionDecision_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphConnectionDecision.html">eve::editing::GraphConnectionDecision</a></div><div class="ttdoc">Result of domain-specific connection validation.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00048">EditingGraph.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphDocumentData_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphDocumentData.html">eve::editing::GraphDocumentData</a></div><div class="ttdoc">Immutable graph document value sent to a domain compiler.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00038">EditingGraph.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1GraphPinRecord_html"><div class="ttname"><a href="structeve_1_1editing_1_1GraphPinRecord.html">eve::editing::GraphPinRecord</a></div><div class="ttdoc">Stable typed pin owned by a graph node.</div><div class="ttdef"><b>Definition</b> <a href="EditingGraph_8h_source.html#l00015">EditingGraph.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphCompileResult_html"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html">eve::procgen_editing::PcgGraphCompileResult</a></div><div class="ttdoc">Result of compiling a generic editor graph into a PointGraph asset definition.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00015">PcgGraph.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphCompileResult_html_a281f932ad862c68bda3ef43773d3e43f"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#a281f932ad862c68bda3ef43773d3e43f">eve::procgen_editing::PcgGraphCompileResult::definition</a></div><div class="ttdeci">std::string definition</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00018">PcgGraph.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphCompileResult_html_aa7fd9d47bf4a488cd19fbeae49891b60"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#aa7fd9d47bf4a488cd19fbeae49891b60">eve::procgen_editing::PcgGraphCompileResult::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00017">PcgGraph.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphCompileResult_html_ad49b424fa78941ef7a93b5076c3d89ad"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#ad49b424fa78941ef7a93b5076c3d89ad">eve::procgen_editing::PcgGraphCompileResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00016">PcgGraph.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphCompileResult_html_af00621541706e20662476caaffbed976"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphCompileResult.html#af00621541706e20662476caaffbed976">eve::procgen_editing::PcgGraphCompileResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00019">PcgGraph.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphMigrationResult_html"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html">eve::procgen_editing::PcgGraphMigrationResult</a></div><div class="ttdoc">Transactional result of upgrading an editor PCG graph to the current schema.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00023">PcgGraph.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphMigrationResult_html_a2f1992f57da3cf603016345bd042d5f8"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#a2f1992f57da3cf603016345bd042d5f8">eve::procgen_editing::PcgGraphMigrationResult::graph</a></div><div class="ttdeci">GraphDocumentData graph</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00027">PcgGraph.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphMigrationResult_html_a8913966fab20ab37fd3903caa632b03a"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#a8913966fab20ab37fd3903caa632b03a">eve::procgen_editing::PcgGraphMigrationResult::toVersion</a></div><div class="ttdeci">std::uint32_t toVersion</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00026">PcgGraph.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphMigrationResult_html_ab4aefe434a8a84c42438eb2b58b28122"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ab4aefe434a8a84c42438eb2b58b28122">eve::procgen_editing::PcgGraphMigrationResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00028">PcgGraph.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphMigrationResult_html_ab53ab75124b9415ed001845852bf5848"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ab53ab75124b9415ed001845852bf5848">eve::procgen_editing::PcgGraphMigrationResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00024">PcgGraph.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphMigrationResult_html_ae68834dd10eb4ab8647b253b275c9727"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphMigrationResult.html#ae68834dd10eb4ab8647b253b275c9727">eve::procgen_editing::PcgGraphMigrationResult::fromVersion</a></div><div class="ttdeci">std::uint32_t fromVersion</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00025">PcgGraph.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html">eve::procgen_editing::PcgGraphPreviewMetric</a></div><div class="ttdoc">One node's isolated PointGraph preview telemetry for graph overlays.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00032">PcgGraph.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_a060d553eae75efd088ef541d3f563085"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a060d553eae75efd088ef541d3f563085">eve::procgen_editing::PcgGraphPreviewMetric::maxY</a></div><div class="ttdeci">float maxY</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00041">PcgGraph.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_a08c56986740dc3ab1bfbc28f7f1bb169"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a08c56986740dc3ab1bfbc28f7f1bb169">eve::procgen_editing::PcgGraphPreviewMetric::averageDensity</a></div><div class="ttdeci">float averageDensity</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00043">PcgGraph.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_a26219b349d0ec9ff0bcbc8e3c5ca598d"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a26219b349d0ec9ff0bcbc8e3c5ca598d">eve::procgen_editing::PcgGraphPreviewMetric::nodeId</a></div><div class="ttdeci">std::string nodeId</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00033">PcgGraph.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_a2f3da0b901f54f3975202d8b682f8aaa"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a2f3da0b901f54f3975202d8b682f8aaa">eve::procgen_editing::PcgGraphPreviewMetric::maxX</a></div><div class="ttdeci">float maxX</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00040">PcgGraph.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_a353a2626ee7a0ccc02fddc464e4243c1"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a353a2626ee7a0ccc02fddc464e4243c1">eve::procgen_editing::PcgGraphPreviewMetric::milliseconds</a></div><div class="ttdeci">float milliseconds</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00035">PcgGraph.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_a41f6382850112c355dc5f6c19c771f2b"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a41f6382850112c355dc5f6c19c771f2b">eve::procgen_editing::PcgGraphPreviewMetric::cacheHit</a></div><div class="ttdeci">bool cacheHit</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00036">PcgGraph.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_a4603eb64dee998d65e8f1a96d02219ec"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#a4603eb64dee998d65e8f1a96d02219ec">eve::procgen_editing::PcgGraphPreviewMetric::minZ</a></div><div class="ttdeci">float minZ</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00039">PcgGraph.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_ae6f62758b064cef6a6b077b685f043f6"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#ae6f62758b064cef6a6b077b685f043f6">eve::procgen_editing::PcgGraphPreviewMetric::minX</a></div><div class="ttdeci">float minX</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00037">PcgGraph.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_aef24ed2f62ebaa1fdf64fa75c0be51a7"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#aef24ed2f62ebaa1fdf64fa75c0be51a7">eve::procgen_editing::PcgGraphPreviewMetric::outputCount</a></div><div class="ttdeci">int outputCount</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00034">PcgGraph.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_afb08b19cabe296f9604560b31e39b28b"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#afb08b19cabe296f9604560b31e39b28b">eve::procgen_editing::PcgGraphPreviewMetric::maxZ</a></div><div class="ttdeci">float maxZ</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00042">PcgGraph.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewMetric_html_afe17b4e3665dbf6bbaf0149b8b9a3789"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewMetric.html#afe17b4e3665dbf6bbaf0149b8b9a3789">eve::procgen_editing::PcgGraphPreviewMetric::minY</a></div><div class="ttdeci">float minY</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00038">PcgGraph.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewResult_html"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html">eve::procgen_editing::PcgGraphPreviewResult</a></div><div class="ttdoc">Revision-tagged result of compiling and executing an isolated editor preview.</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00047">PcgGraph.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewResult_html_a413050a9504044f913230e250c18a97e"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a413050a9504044f913230e250c18a97e">eve::procgen_editing::PcgGraphPreviewResult::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00052">PcgGraph.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewResult_html_a8c17827e1973e1a19225fd33cf3a5836"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a8c17827e1973e1a19225fd33cf3a5836">eve::procgen_editing::PcgGraphPreviewResult::outputCount</a></div><div class="ttdeci">int outputCount</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00050">PcgGraph.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewResult_html_a9e44e384e4bde00a3390630669e48269"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#a9e44e384e4bde00a3390630669e48269">eve::procgen_editing::PcgGraphPreviewResult::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00048">PcgGraph.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewResult_html_ad6867c725a342bc5e5e402ede8a973e8"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#ad6867c725a342bc5e5e402ede8a973e8">eve::procgen_editing::PcgGraphPreviewResult::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00049">PcgGraph.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen__editing_1_1PcgGraphPreviewResult_html_aeca798eedb9c9707e469250acd0d5742"><div class="ttname"><a href="structeve_1_1procgen__editing_1_1PcgGraphPreviewResult.html#aeca798eedb9c9707e469250acd0d5742">eve::procgen_editing::PcgGraphPreviewResult::metrics</a></div><div class="ttdeci">std::vector&lt; PcgGraphPreviewMetric &gt; metrics</div><div class="ttdef"><b>Definition</b> <a href="PcgGraph_8h_source.html#l00051">PcgGraph.h:51</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

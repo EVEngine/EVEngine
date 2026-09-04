@@ -1,0 +1,415 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::ActionPreviewController类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1ActionPreviewController.html">ActionPreviewController</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1ActionPreviewController-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::ActionPreviewController类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Coordinates deterministic timeline transport with a transactional preview host.  
+ <a href="classeve_1_1editor_1_1ActionPreviewController.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ActionPreviewController_8h_source.html">ActionPreviewController.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a66cfc497fae1d09d78b7a5d669de499e" id="r_a66cfc497fae1d09d78b7a5d669de499e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionPreviewController.html#a66cfc497fae1d09d78b7a5d669de499e">ActionPreviewController</a> (<a class="el" href="classeve_1_1editor_1_1ActionTimelineEditor.html">ActionTimelineEditor</a> &amp;editor, <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html">action::IActionPreviewSink</a> &amp;sink, const <a class="el" href="classeve_1_1action_1_1IActionRootMotionSource.html">action::IActionRootMotionSource</a> *rootMotion=nullptr)</td></tr>
+<tr class="memdesc:a66cfc497fae1d09d78b7a5d669de499e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct with a required presentation sink and optional root-motion provider.  <br /></td></tr>
+<tr class="separator:a66cfc497fae1d09d78b7a5d669de499e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7796b28aaf316345f5d63a9166999f74" id="r_a7796b28aaf316345f5d63a9166999f74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionPreviewController.html#a7796b28aaf316345f5d63a9166999f74">setRootMotionSampleCount</a> (std::uint32_t sampleCount)</td></tr>
+<tr class="memdesc:a7796b28aaf316345f5d63a9166999f74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure root-motion trajectory density in the inclusive range 2..1024.  <br /></td></tr>
+<tr class="separator:a7796b28aaf316345f5d63a9166999f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a955304a752fe22755fa499a917a804b0" id="r_a955304a752fe22755fa499a917a804b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionPreviewController.html#a955304a752fe22755fa499a917a804b0">refresh</a> ()</td></tr>
+<tr class="memdesc:a955304a752fe22755fa499a917a804b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-present the current cursor without changing transport state.  <br /></td></tr>
+<tr class="separator:a955304a752fe22755fa499a917a804b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb79852746040ccd01b11cd664430a1a" id="r_adb79852746040ccd01b11cd664430a1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionPreviewController.html#adb79852746040ccd01b11cd664430a1a">seek</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>)</td></tr>
+<tr class="memdesc:adb79852746040ccd01b11cd664430a1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically prepare presentation and seek the authoritative preview transport.  <br /></td></tr>
+<tr class="separator:adb79852746040ccd01b11cd664430a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87fb9df8e5711398ad2d8b5f45aeb6d8" id="r_a87fb9df8e5711398ad2d8b5f45aeb6d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionPreviewController.html#a87fb9df8e5711398ad2d8b5f45aeb6d8">update</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> delta)</td></tr>
+<tr class="memdesc:a87fb9df8e5711398ad2d8b5f45aeb6d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically prepare presentation and advance by injected deterministic time.  <br /></td></tr>
+<tr class="separator:a87fb9df8e5711398ad2d8b5f45aeb6d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1093f3acad38f83a771463c4934c1e81" id="r_a1093f3acad38f83a771463c4934c1e81"><td class="memItemLeft" align="right" valign="top">const std::optional&lt; <a class="el" href="structeve_1_1action_1_1ActionPreviewFrame.html">action::ActionPreviewFrame</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionPreviewController.html#a1093f3acad38f83a771463c4934c1e81">lastFrame</a> () const noexcept</td></tr>
+<tr class="memdesc:a1093f3acad38f83a771463c4934c1e81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last frame successfully published to the host.  <br /></td></tr>
+<tr class="separator:a1093f3acad38f83a771463c4934c1e81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4de13874df70ab9e86ea8f0364c6542" id="r_aa4de13874df70ab9e86ea8f0364c6542"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ActionPreviewController.html#aa4de13874df70ab9e86ea8f0364c6542">drawRootMotion</a> (<a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;overlay, <a class="el" href="structeve_1_1editor_1_1OverlayPoint.html">OverlayPoint</a> origin={}, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>=1.0f) const</td></tr>
+<tr class="memdesc:aa4de13874df70ab9e86ea8f0364c6542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the latest root-motion trajectory into a 3D-capable overlay.  <br /></td></tr>
+<tr class="separator:aa4de13874df70ab9e86ea8f0364c6542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Coordinates deterministic timeline transport with a transactional preview host. </p>
+<p>The controller borrows services that must outlive it. It invokes no preview host callback while holding a lock and remains owner-thread-only. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionPreviewController_8h_source.html">ActionPreviewController.h</a> 第 <a class="el" href="ActionPreviewController_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a66cfc497fae1d09d78b7a5d669de499e" name="a66cfc497fae1d09d78b7a5d669de499e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66cfc497fae1d09d78b7a5d669de499e">&#9670;&#160;</a></span>ActionPreviewController()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::ActionPreviewController::ActionPreviewController </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1ActionTimelineEditor.html">ActionTimelineEditor</a> &amp;&#160;</td>
+          <td class="paramname"><em>editor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html">action::IActionPreviewSink</a> &amp;&#160;</td>
+          <td class="paramname"><em>sink</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1action_1_1IActionRootMotionSource.html">action::IActionRootMotionSource</a> *&#160;</td>
+          <td class="paramname"><em>rootMotion</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct with a required presentation sink and optional root-motion provider. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionPreviewController_8cpp_source.html">ActionPreviewController.cpp</a> 第 <a class="el" href="ActionPreviewController_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa4de13874df70ab9e86ea8f0364c6542" name="aa4de13874df70ab9e86ea8f0364c6542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4de13874df70ab9e86ea8f0364c6542">&#9670;&#160;</a></span>drawRootMotion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ActionPreviewController::drawRootMotion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;&#160;</td>
+          <td class="paramname"><em>overlay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1editor_1_1OverlayPoint.html">OverlayPoint</a>&#160;</td>
+          <td class="paramname"><em>origin</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em> = <code>1.0f</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw the latest root-motion trajectory into a 3D-capable overlay. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionPreviewController_8cpp_source.html">ActionPreviewController.cpp</a> 第 <a class="el" href="ActionPreviewController_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1action.html#a9f707d783b0ee282494cf8357d5ec6c3a78945de8de090e90045d299651a68a9b">eve::action::Available</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html#aaaa83da59f32b2b311b1775a7038d932">eve::editor::IEditorOverlay::line()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="EditorPresentation_8h_source.html#l00009">eve::editor::OverlayPoint::x</a>, <a class="el" href="EditorPresentation_8h_source.html#l00010">eve::editor::OverlayPoint::y</a> , 以及 <a class="el" href="EditorPresentation_8h_source.html#l00011">eve::editor::OverlayPoint::z</a>.</p>
+
+</div>
+</div>
+<a id="a1093f3acad38f83a771463c4934c1e81" name="a1093f3acad38f83a771463c4934c1e81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1093f3acad38f83a771463c4934c1e81">&#9670;&#160;</a></span>lastFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::optional&lt; <a class="el" href="structeve_1_1action_1_1ActionPreviewFrame.html">action::ActionPreviewFrame</a> &gt; &amp; eve::editor::ActionPreviewController::lastFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last frame successfully published to the host. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionPreviewController_8h_source.html">ActionPreviewController.h</a> 第 <a class="el" href="ActionPreviewController_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a955304a752fe22755fa499a917a804b0" name="a955304a752fe22755fa499a917a804b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a955304a752fe22755fa499a917a804b0">&#9670;&#160;</a></span>refresh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionPreviewController::refresh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-present the current cursor without changing transport state. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionPreviewController_8cpp_source.html">ActionPreviewController.cpp</a> 第 <a class="el" href="ActionPreviewController_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html#a8bb212f140c1e44f997063be07cd4084">eve::action::IActionPreviewSink::prepare()</a>, <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html#a8be068971037db97b61d06733be27bbb">eve::action::IActionPreviewSink::present()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00181">eve::editor::ActionTimelineEditor::previewTime()</a> , 以及 <a class="el" href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fda63a6a88c066880c5ac42394a22803ca6">eve::action::Refresh</a>.</p>
+
+</div>
+</div>
+<a id="adb79852746040ccd01b11cd664430a1a" name="adb79852746040ccd01b11cd664430a1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb79852746040ccd01b11cd664430a1a">&#9670;&#160;</a></span>seek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionPreviewController::seek </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically prepare presentation and seek the authoritative preview transport. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionPreviewController_8cpp_source.html">ActionPreviewController.cpp</a> 第 <a class="el" href="ActionPreviewController_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html#a9f4f12e1c66a4073fb2ace943b18fba0">eve::action::IActionPreviewSink::discardPrepared()</a>, <a class="el" href="ActionTimeline_8h_source.html#l00106">eve::action::ActionTimeline::duration</a>, <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html#a8bb212f140c1e44f997063be07cd4084">eve::action::IActionPreviewSink::prepare()</a>, <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html#a8be068971037db97b61d06733be27bbb">eve::action::IActionPreviewSink::present()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00181">eve::editor::ActionTimelineEditor::previewTime()</a>, <a class="el" href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fdaed7ecb1dbb9be8c65f909819dac7aa54">eve::action::Seek</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00674">eve::editor::ActionTimelineEditor::seek()</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00119">eve::editor::ActionTimelineEditor::target()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">time</a>, <a class="el" href="ActionTimelineEditor_8h_source.html#l00073">eve::editor::ActionTimelineTarget::timeline()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a7796b28aaf316345f5d63a9166999f74" name="a7796b28aaf316345f5d63a9166999f74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7796b28aaf316345f5d63a9166999f74">&#9670;&#160;</a></span>setRootMotionSampleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::ActionPreviewController::setRootMotionSampleCount </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>sampleCount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure root-motion trajectory density in the inclusive range 2..1024. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionPreviewController_8cpp_source.html">ActionPreviewController.cpp</a> 第 <a class="el" href="ActionPreviewController_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a87fb9df8e5711398ad2d8b5f45aeb6d8" name="a87fb9df8e5711398ad2d8b5f45aeb6d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87fb9df8e5711398ad2d8b5f45aeb6d8">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; std::size_t &gt; eve::editor::ActionPreviewController::update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>delta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically prepare presentation and advance by injected deterministic time. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionPreviewController_8cpp_source.html">ActionPreviewController.cpp</a> 第 <a class="el" href="ActionPreviewController_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1action.html#a098bda227449af4b7f75c15a0eb5f2fda0a86dddc699c7e6fe7f1e43153a5cbee">eve::action::Advance</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00729">eve::editor::ActionTimelineEditor::applyPreviewPlan()</a>, <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html#a9f4f12e1c66a4073fb2ace943b18fba0">eve::action::IActionPreviewSink::discardPrepared()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00695">eve::editor::ActionTimelineEditor::planPreview()</a>, <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html#a8bb212f140c1e44f997063be07cd4084">eve::action::IActionPreviewSink::prepare()</a>, <a class="el" href="classeve_1_1action_1_1IActionPreviewSink.html#a8be068971037db97b61d06733be27bbb">eve::action::IActionPreviewSink::present()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/action_editor/<a class="el" href="ActionPreviewController_8h_source.html">ActionPreviewController.h</a></li>
+<li>src/modules/action_editor/<a class="el" href="ActionPreviewController_8cpp_source.html">ActionPreviewController.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

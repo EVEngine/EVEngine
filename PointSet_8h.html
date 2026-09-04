@@ -1,0 +1,271 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/PointSet.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">PointSet.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="AttributeTable_8h_source.html">procgen/AttributeTable.h</a>&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="PointSet_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html">eve::procgen::ProcgenPoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One deterministic sample used by script-first procedural pipelines.  <a href="structeve_1_1procgen_1_1ProcgenPoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-friendly collection of attributed 3D samples.  <a href="classeve_1_1procgen_1_1PointSet.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a06118b2d84cb524546b3003a40d4165a" id="r_a06118b2d84cb524546b3003a40d4165a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a06118b2d84cb524546b3003a40d4165a">eve::procgen::deriveSeed</a> (uint32_t <a class="el" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>)</td></tr>
+<tr class="memdesc:a06118b2d84cb524546b3003a40d4165a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable label-based seed derivation; independent pipeline branches do not perturb each other.  <br /></td></tr>
+<tr class="separator:a06118b2d84cb524546b3003a40d4165a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b4093bcb3ff2ca71250f52f142ec632" id="r_a0b4093bcb3ff2ca71250f52f142ec632"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a0b4093bcb3ff2ca71250f52f142ec632">eve::procgen::derivePointId</a> (std::uint64_t namespaceId, std::uint64_t ordinal)</td></tr>
+<tr class="memdesc:a0b4093bcb3ff2ca71250f52f142ec632"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministically derive a non-zero stable point identity.  <br /></td></tr>
+<tr class="separator:a0b4093bcb3ff2ca71250f52f142ec632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab55ac5b5355ee3fce94aa635618618fc" id="r_ab55ac5b5355ee3fce94aa635618618fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ab55ac5b5355ee3fce94aa635618618fc">eve::procgen::sampleGridPoints</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, float jitter)</td></tr>
+<tr class="separator:ab55ac5b5355ee3fce94aa635618618fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f661e07103b7b43bcdbc6ca157e2ea3" id="r_a6f661e07103b7b43bcdbc6ca157e2ea3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6f661e07103b7b43bcdbc6ca157e2ea3">eve::procgen::poissonDiskPoints</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, int maxPoints)</td></tr>
+<tr class="memdesc:a6f661e07103b7b43bcdbc6ca157e2ea3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bridson blue-noise (Poisson disk) samples in a width x depth area (XZ, y=0).  <br /></td></tr>
+<tr class="separator:a6f661e07103b7b43bcdbc6ca157e2ea3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f68466f3d261d0633d8daa585eec95c" id="r_a9f68466f3d261d0633d8daa585eec95c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a9f68466f3d261d0633d8daa585eec95c">eve::procgen::filterPointHeight</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float minHeight, float maxHeight)</td></tr>
+<tr class="separator:a9f68466f3d261d0633d8daa585eec95c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb16c6dfa46909378dee9805ac1d9fff" id="r_abb16c6dfa46909378dee9805ac1d9fff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#abb16c6dfa46909378dee9805ac1d9fff">eve::procgen::filterPointDensity</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float minDensity, float maxDensity)</td></tr>
+<tr class="separator:abb16c6dfa46909378dee9805ac1d9fff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56fa9afe25dfaab2cec3b003bedf414e" id="r_a56fa9afe25dfaab2cec3b003bedf414e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a56fa9afe25dfaab2cec3b003bedf414e">eve::procgen::filterPointBox</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, bool invert)</td></tr>
+<tr class="separator:a56fa9afe25dfaab2cec3b003bedf414e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d2eb395b7a6dc1f1e38e5313ade5805" id="r_a5d2eb395b7a6dc1f1e38e5313ade5805"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a5d2eb395b7a6dc1f1e38e5313ade5805">eve::procgen::filterPointSlope</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float minDegrees, float maxDegrees)</td></tr>
+<tr class="separator:a5d2eb395b7a6dc1f1e38e5313ade5805"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e94ea44fc611cd4b0b25bb0d7d1badf" id="r_a3e94ea44fc611cd4b0b25bb0d7d1badf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a3e94ea44fc611cd4b0b25bb0d7d1badf">eve::procgen::filterPointsByPolygon</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;polygon, bool invert)</td></tr>
+<tr class="separator:a3e94ea44fc611cd4b0b25bb0d7d1badf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73ab32c21cbcd1b49b065bd9dd8f42c6" id="r_a73ab32c21cbcd1b49b065bd9dd8f42c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a73ab32c21cbcd1b49b065bd9dd8f42c6">eve::procgen::filterPointsBySplineDistance</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;controlPoints, float minDistance, float maxDistance)</td></tr>
+<tr class="separator:a73ab32c21cbcd1b49b065bd9dd8f42c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a889fb1242d87656fa8e3c5ec823b8d5f" id="r_a889fb1242d87656fa8e3c5ec823b8d5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a889fb1242d87656fa8e3c5ec823b8d5f">eve::procgen::excludePointRadius</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a889fb1242d87656fa8e3c5ec823b8d5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dbace5b2e20fe63aff77b6c57892dcf" id="r_a8dbace5b2e20fe63aff77b6c57892dcf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8dbace5b2e20fe63aff77b6c57892dcf">eve::procgen::jitterPointPositions</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, float amountX, float amountZ)</td></tr>
+<tr class="separator:a8dbace5b2e20fe63aff77b6c57892dcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfc6174097ea44289b7783c063f6bdad" id="r_abfc6174097ea44289b7783c063f6bdad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#abfc6174097ea44289b7783c063f6bdad">eve::procgen::selfPrunePoints</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:abfc6174097ea44289b7783c063f6bdad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6692d0b35eceab190f919e610e8d4eaf" id="r_a6692d0b35eceab190f919e610e8d4eaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6692d0b35eceab190f919e610e8d4eaf">eve::procgen::projectPointsToHeightmap</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, float originX, float originZ, float cellSize, float heightScale)</td></tr>
+<tr class="separator:a6692d0b35eceab190f919e610e8d4eaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b5767e075b6ebbeb17f3e173d4501d2" id="r_a0b5767e075b6ebbeb17f3e173d4501d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a0b5767e075b6ebbeb17f3e173d4501d2">eve::procgen::samplePolylinePoints</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;controlPoints, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, float lateralJitter)</td></tr>
+<tr class="separator:a0b5767e075b6ebbeb17f3e173d4501d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a6d9bd8b4d569fbaf9a0a433583187" id="r_ac0a6d9bd8b4d569fbaf9a0a433583187"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac0a6d9bd8b4d569fbaf9a0a433583187">eve::procgen::mergePointSets</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;second)</td></tr>
+<tr class="memdesc:ac0a6d9bd8b4d569fbaf9a0a433583187"><td class="mdescLeft">&#160;</td><td class="mdescRight">Concatenate two attributed point collections while preserving order.  <br /></td></tr>
+<tr class="separator:ac0a6d9bd8b4d569fbaf9a0a433583187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a554b3017729a78ad28f8983f560ec4a0" id="r_a554b3017729a78ad28f8983f560ec4a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a554b3017729a78ad28f8983f560ec4a0">eve::procgen::unionPointSets</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;second)</td></tr>
+<tr class="memdesc:a554b3017729a78ad28f8983f560ec4a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable union by non-zero point id, with legacy position-and-seed fallback.  <br /></td></tr>
+<tr class="separator:a554b3017729a78ad28f8983f560ec4a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add9e4f41a2f9e81deef3ab4c9b0b5243" id="r_add9e4f41a2f9e81deef3ab4c9b0b5243"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#add9e4f41a2f9e81deef3ab4c9b0b5243">eve::procgen::intersectPointSets</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;second)</td></tr>
+<tr class="memdesc:add9e4f41a2f9e81deef3ab4c9b0b5243"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keep first-set points whose stable or legacy identity occurs in the second set.  <br /></td></tr>
+<tr class="separator:add9e4f41a2f9e81deef3ab4c9b0b5243"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3579c53c94ea0eacad2f76b6ffc59af" id="r_ad3579c53c94ea0eacad2f76b6ffc59af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ad3579c53c94ea0eacad2f76b6ffc59af">eve::procgen::differencePointSets</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;second)</td></tr>
+<tr class="memdesc:ad3579c53c94ea0eacad2f76b6ffc59af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove first-set points whose stable or legacy identity occurs in the second set.  <br /></td></tr>
+<tr class="separator:ad3579c53c94ea0eacad2f76b6ffc59af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdc3aa926eef70c2bc02673e4705dfbe" id="r_afdc3aa926eef70c2bc02673e4705dfbe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#afdc3aa926eef70c2bc02673e4705dfbe">eve::procgen::transformPointSet</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float translateX, float translateY, float translateZ, float yawDegrees, float scaleX, float scaleY, float scaleZ)</td></tr>
+<tr class="memdesc:afdc3aa926eef70c2bc02673e4705dfbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply translation, yaw rotation and non-uniform scale to points and their transforms.  <br /></td></tr>
+<tr class="separator:afdc3aa926eef70c2bc02673e4705dfbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8af0de02b4ebc830620214b1a269c4c" id="r_ac8af0de02b4ebc830620214b1a269c4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac8af0de02b4ebc830620214b1a269c4c">eve::procgen::transformPointSet3D</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float translateX, float translateY, float translateZ, float pitchDegrees, float yawDegrees, float rollDegrees, float scaleX, float scaleY, float scaleZ)</td></tr>
+<tr class="memdesc:ac8af0de02b4ebc830620214b1a269c4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply translation, pitch/yaw/roll rotation and non-uniform scale.  <br /></td></tr>
+<tr class="separator:ac8af0de02b4ebc830620214b1a269c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9866311b3758032659f6afea8caeb54" id="r_ab9866311b3758032659f6afea8caeb54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ab9866311b3758032659f6afea8caeb54">eve::procgen::copyPointsToTargets</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;targets, bool inheritTargetAttributes)</td></tr>
+<tr class="memdesc:ab9866311b3758032659f6afea8caeb54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate source points relative to targets in stable target-major order.  <br /></td></tr>
+<tr class="separator:ab9866311b3758032659f6afea8caeb54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae23b47808c9596c7008015f8fac0608f" id="r_ae23b47808c9596c7008015f8fac0608f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ae23b47808c9596c7008015f8fac0608f">eve::procgen::remapPointDensity</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, float inputMin, float inputMax, float outputMin, float outputMax, bool clampOutput)</td></tr>
+<tr class="memdesc:ae23b47808c9596c7008015f8fac0608f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linearly remap point density between ranges with optional output clamping.  <br /></td></tr>
+<tr class="separator:ae23b47808c9596c7008015f8fac0608f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d9e05e62e6ef2afa88769c420268f2e" id="r_a6d9e05e62e6ef2afa88769c420268f2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a6d9e05e62e6ef2afa88769c420268f2e">eve::procgen::mathPointFloatAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;attribute, const std::string &amp;outputAttribute, const std::string &amp;operation, float operand, float <a class="el" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>)</td></tr>
+<tr class="memdesc:a6d9e05e62e6ef2afa88769c420268f2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one scalar operation to a float metadata attribute.  <br /></td></tr>
+<tr class="separator:a6d9e05e62e6ef2afa88769c420268f2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77928b9a61bfe9d4ccce4c98c3e743c8" id="r_a77928b9a61bfe9d4ccce4c98c3e743c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a77928b9a61bfe9d4ccce4c98c3e743c8">eve::procgen::filterPointFloatAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float minValue, float maxValue, bool invert)</td></tr>
+<tr class="memdesc:a77928b9a61bfe9d4ccce4c98c3e743c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select points whose named float attribute lies in an inclusive range.  <br /></td></tr>
+<tr class="separator:a77928b9a61bfe9d4ccce4c98c3e743c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ce707bfd9d1e8b31f5748a471d88a6b" id="r_a8ce707bfd9d1e8b31f5748a471d88a6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#a8ce707bfd9d1e8b31f5748a471d88a6b">eve::procgen::filterPointStringAttribute</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, bool invert)</td></tr>
+<tr class="memdesc:a8ce707bfd9d1e8b31f5748a471d88a6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select points whose named string attribute equals a value.  <br /></td></tr>
+<tr class="separator:a8ce707bfd9d1e8b31f5748a471d88a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9837582619c0a4f4f6c401fffbe5de6" id="r_ac9837582619c0a4f4f6c401fffbe5de6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html#ac9837582619c0a4f4f6c401fffbe5de6">eve::procgen::densityCullPoints</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, float multiplier)</td></tr>
+<tr class="memdesc:ac9837582619c0a4f4f6c401fffbe5de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministically keep points according to density and a root seed.  <br /></td></tr>
+<tr class="separator:ac9837582619c0a4f4f6c401fffbe5de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

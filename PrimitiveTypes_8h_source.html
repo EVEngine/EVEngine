@@ -1,0 +1,360 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/PrimitiveTypes.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PrimitiveTypes.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PrimitiveTypes_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BlendMode_8h.html">graphics/BlendMode.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Color_8h.html">graphics/Color.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011c">   16</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011c">PaintMode</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">Fill</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">Stroke</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8d2b1ddcb67066e4f983e5ce7e1b28c2">FillAndStroke</a> };</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6">   18</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6">LineCap</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6ab2635ed1075287dea1eb1598a90df1fe">Butt</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6aceb46ca115d05c51aa5a16a8867c3304">Square</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6ab7f41fc1412ad2ee75e9b2635d3b9d5c">Round</a> };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1d">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1d">LineJoin</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1dae4396f81cd926bb129ccf3c147c64514">Miter</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1da1b9ae4ca6d43fc984af318046e1e7bb5">Bevel</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6ab7f41fc1412ad2ee75e9b2635d3b9d5c">Round</a> };</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26ac">   22</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26ac">WidthSpace</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca6ee27983416423ac1fd53c1d4f2bc828">ScreenPixels</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca8eed2802a1077ce6e8670971de0fd1aa">WorldUnits</a> };</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1e">   24</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1e">DashSpace</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca6ee27983416423ac1fd53c1d4f2bc828">ScreenPixels</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca8eed2802a1077ce6e8670971de0fd1aa">WorldUnits</a> };</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8">   26</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8">PrimitiveDepthMode</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8a9677077bb2ef0421441917f57ac103ba">TestAndWrite</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8aa9463c9f72315953501239b6c265ecb1">TestOnly</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8afd038fc7f319e48f3115d92bf5bdbef9">Ignore</a> };</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1">   28</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1">PrimitiveCullMode</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a0557fa923dcee4d0f86b1409f5c2167f">Back</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a5835bab1ade0060909e31a06af2e2cde">Front</a> };</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143a">   30</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143a">PrimitiveQuality</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa28d0edd045e05cf5af64e35ae0c4c6ef">Low</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa87f8a6ab85c9ced3702b4ea641ad4bb5">Medium</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa655d20c1ca69519ca647684edbb2db35">High</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa1244cba6ca79bfda45de46141d32ea7b">Adaptive</a> };</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0">   32</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0">PrimitiveRecordStatus</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0a5b6352d4af330defb41d0bba3929b885">Recorded</a> };</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1RadialTessellation.html">   35</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1RadialTessellation.html">RadialTessellation</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1RadialTessellation.html#a7e056eb878ad69395c670f5eb573013b">   36</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143a">PrimitiveQuality</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1RadialTessellation.html#a7e056eb878ad69395c670f5eb573013b">quality</a>              = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa87f8a6ab85c9ced3702b4ea641ad4bb5">PrimitiveQuality::Medium</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1RadialTessellation.html#ad31c0abb40ee5538c492c6bddd385489">   37</a></span>    <span class="keywordtype">float</span>            <a class="code hl_variable" href="structeve_1_1graphics_1_1RadialTessellation.html#ad31c0abb40ee5538c492c6bddd385489">maxScreenErrorPixels</a> = 0.75f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1RadialTessellation.html#ac8d281892bc5998ff76cfa86ff4b09a8">   38</a></span>    std::uint32_t    <a class="code hl_variable" href="structeve_1_1graphics_1_1RadialTessellation.html#ac8d281892bc5998ff76cfa86ff4b09a8">customSegments</a>       = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>[[nodiscard]] std::uint32_t <a class="code hl_function" href="namespaceeve_1_1graphics.html#a0186514ab7ab9454b8d6190ad020ea2f">resolveRadialSegments</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1RadialTessellation.html">RadialTessellation</a>&amp; tessellation, <span class="keywordtype">float</span> projectedRadiusPixels);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DashPattern.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1DashPattern.html">DashPattern</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DashPattern.html#ac456070e1633d9e82615cfb4fbb68461">   46</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1DashPattern.html#ac456070e1633d9e82615cfb4fbb68461">intervals</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DashPattern.html#a414ed6244a738f9e73c129957732b293">   47</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1graphics_1_1DashPattern.html#a414ed6244a738f9e73c129957732b293">phase</a> = 0.f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1DashPattern.html#a4f63440fc3150be937ecf062ba720a4c">   48</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1e">DashSpace</a>          <a class="code hl_variable" href="structeve_1_1graphics_1_1DashPattern.html#a4f63440fc3150be937ecf062ba720a4c">space</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1ea6ee27983416423ac1fd53c1d4f2bc828">DashSpace::ScreenPixels</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1graphics_1_1DashPattern.html#a1fe072ac54fb28bda6327f1c261e3dc8">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    [[nodiscard]] <span class="keywordtype">float</span> <a class="code hl_function" href="structeve_1_1graphics_1_1DashPattern.html#a02834a0902d1497c1a0cb0c611aad2c5">period</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1StrokeStyle.html">   57</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1StrokeStyle.html">StrokeStyle</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1StrokeStyle.html#ab6cd3e24def304bccd8403bd9248fa6d">   58</a></span>    <span class="keywordtype">float</span>                      <a class="code hl_variable" href="structeve_1_1graphics_1_1StrokeStyle.html#ab6cd3e24def304bccd8403bd9248fa6d">width</a>      = 1.f;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1StrokeStyle.html#abea90d5ff9f9b93db153b612b805b061">   59</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26ac">WidthSpace</a>                 <a class="code hl_variable" href="structeve_1_1graphics_1_1StrokeStyle.html#abea90d5ff9f9b93db153b612b805b061">widthSpace</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca6ee27983416423ac1fd53c1d4f2bc828">WidthSpace::ScreenPixels</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1StrokeStyle.html#a2a0cab1ac6c87cc9acd505bc881335e0">   60</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6">LineCap</a>                    <a class="code hl_variable" href="structeve_1_1graphics_1_1StrokeStyle.html#a2a0cab1ac6c87cc9acd505bc881335e0">cap</a>        = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6ab2635ed1075287dea1eb1598a90df1fe">LineCap::Butt</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1StrokeStyle.html#a4b8cae1fcc824e6a0cc170fab6dd6016">   61</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1d">LineJoin</a>                   <a class="code hl_variable" href="structeve_1_1graphics_1_1StrokeStyle.html#a4b8cae1fcc824e6a0cc170fab6dd6016">join</a>       = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1dae4396f81cd926bb129ccf3c147c64514">LineJoin::Miter</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1StrokeStyle.html#a89bdc24fff2b7c622540b89cae7c1148">   62</a></span>    <span class="keywordtype">float</span>                      <a class="code hl_variable" href="structeve_1_1graphics_1_1StrokeStyle.html#a89bdc24fff2b7c622540b89cae7c1148">miterLimit</a> = 4.f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1StrokeStyle.html#a5fc310c8785e5e11c9da35c0b388ecd2">   63</a></span>    std::optional&lt;DashPattern&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1StrokeStyle.html#a5fc310c8785e5e11c9da35c0b388ecd2">dash</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1graphics_1_1StrokeStyle.html#a3da521ceab8e78dc7548fc1d3130cbd2">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="};">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitivePaint.html">   70</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1PrimitivePaint.html">PrimitivePaint</a> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitivePaint.html#a6602329c06586ae3b2c004198caf644c">   71</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>       <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitivePaint.html#a6602329c06586ae3b2c004198caf644c">color</a> = <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>(1.f, 1.f, 1.f, 1.f);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitivePaint.html#a95b42c8d045af34e0416d9ede8c8f6ef">   72</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011c">PaintMode</a>   <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitivePaint.html#a95b42c8d045af34e0416d9ede8c8f6ef">mode</a>  = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">PaintMode::Fill</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitivePaint.html#ab48136054b3aa9eef4db92c23f15f260">   73</a></span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1StrokeStyle.html">StrokeStyle</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitivePaint.html#ab48136054b3aa9eef4db92c23f15f260">stroke</a>{};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitivePaint.html#ae4720dccc12bc3f44a9e1b8f7c666b69">   74</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a>   <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitivePaint.html#ae4720dccc12bc3f44a9e1b8f7c666b69">blend</a>     = <a class="code hl_enumvalue" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">BlendMode::Alpha</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitivePaint.html#aa79cae0462edba5b81429a2f224ba8cc">   75</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitivePaint.html#aa79cae0462edba5b81429a2f224ba8cc">antialias</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1graphics_1_1PrimitivePaint.html#a203545cdc9946fe6bc769b50d2c7de74">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="};">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">   82</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">ScenePrimitivePaint</a> : <a class="code hl_struct" href="structeve_1_1graphics_1_1PrimitivePaint.html">PrimitivePaint</a> {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a5478537a90012248eb727eba24ec7698">   83</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8">PrimitiveDepthMode</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a5478537a90012248eb727eba24ec7698">depth</a>    = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8aa9463c9f72315953501239b6c265ecb1">PrimitiveDepthMode::TestOnly</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a587a443e67cd46ca6cf748d6df33b6c5">   84</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1">PrimitiveCullMode</a>  <a class="code hl_variable" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a587a443e67cd46ca6cf748d6df33b6c5">cull</a>     = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a6adf97f83acf6453d4a6a4b1070f3754">PrimitiveCullMode::None</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a5ea31d32354502e45000edfd7f66bd21">   85</a></span>    std::uint32_t      <a class="code hl_variable" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a5ea31d32354502e45000edfd7f66bd21">layer</a>    = 0;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#ab68c17a5fe044bb54d506dfc401a322e">   86</a></span>    std::uint64_t      <a class="code hl_variable" href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#ab68c17a5fe044bb54d506dfc401a322e">objectId</a> = 0;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="};">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SceneDrawContext.html">   90</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1SceneDrawContext.html">SceneDrawContext</a> {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SceneDrawContext.html#a06db8cb764b6fdfa9c97f478b7fc34c1">   91</a></span>    glm::mat4  <a class="code hl_variable" href="structeve_1_1graphics_1_1SceneDrawContext.html#a06db8cb764b6fdfa9c97f478b7fc34c1">view</a>{1.f};</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SceneDrawContext.html#a7efad628b8803ca3818472d47d891182">   92</a></span>    glm::mat4  <a class="code hl_variable" href="structeve_1_1graphics_1_1SceneDrawContext.html#a7efad628b8803ca3818472d47d891182">projection</a>{1.f};</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SceneDrawContext.html#addf883811c7726c9baa29c90af885cf8">   93</a></span>    glm::vec3  <a class="code hl_variable" href="structeve_1_1graphics_1_1SceneDrawContext.html#addf883811c7726c9baa29c90af885cf8">cameraPosition</a>{0.f};</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SceneDrawContext.html#ac13e02b53143b39fbb3a526c77f472a8">   94</a></span>    glm::ivec2 <a class="code hl_variable" href="structeve_1_1graphics_1_1SceneDrawContext.html#ac13e02b53143b39fbb3a526c77f472a8">viewportSize</a>{0};</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SceneDrawContext.html#afd9cd3bea99faf9a61f1feb2abddb47e">   95</a></span>    <span class="keywordtype">float</span>      <a class="code hl_variable" href="structeve_1_1graphics_1_1SceneDrawContext.html#afd9cd3bea99faf9a61f1feb2abddb47e">nearPlane</a> = 0.1f;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1SceneDrawContext.html#a18062aa78a8cbb0a6d03ebfae7099765">   96</a></span>    <span class="keywordtype">float</span>      <a class="code hl_variable" href="structeve_1_1graphics_1_1SceneDrawContext.html#a18062aa78a8cbb0a6d03ebfae7099765">farPlane</a>  = 1000.f;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1graphics_1_1SceneDrawContext.html#a136c82ed5805aa0d9bd5ece4e6e9fe55">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>};</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="};">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html">  103</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html">PrimitiveDrawStatistics</a> {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#aa7775a91d5b6272ddc225b8a2977fa81">  104</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#aa7775a91d5b6272ddc225b8a2977fa81">commandCount</a>    = 0;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#a7d6b266c2bf404e9743f7269b38211ba">  105</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#a7d6b266c2bf404e9743f7269b38211ba">segmentCount</a>    = 0;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#ad4cb0b09c6e565c4fb18c4b364770a7a">  106</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#ad4cb0b09c6e565c4fb18c4b364770a7a">triangleCount</a>   = 0;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#a40b117bdae0f29ce7d88483b55ec14dc">  107</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#a40b117bdae0f29ce7d88483b55ec14dc">batchCount</a>      = 0;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#affa97c9d469a545bde0ab1503169b9d3">  108</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#affa97c9d469a545bde0ab1503169b9d3">uploadBytes</a>     = 0;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#af6de2eab480e08bc2e0b8da1258bbfcb">  109</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#af6de2eab480e08bc2e0b8da1258bbfcb">cacheHits</a>       = 0;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#adc3b43fab89267a8075891f27f9958a2">  110</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#adc3b43fab89267a8075891f27f9958a2">droppedCommands</a> = 0;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>};</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aBlendMode_8h_html"><div class="ttname"><a href="BlendMode_8h.html">BlendMode.h</a></div></div>
+<div class="ttc" id="aColor_8h_html"><div class="ttname"><a href="Color_8h.html">Color.h</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a0186514ab7ab9454b8d6190ad020ea2f"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a0186514ab7ab9454b8d6190ad020ea2f">eve::graphics::resolveRadialSegments</a></div><div class="ttdeci">std::uint32_t resolveRadialSegments(const RadialTessellation &amp;tessellation, float projectedRadiusPixels)</div><div class="ttdoc">Resolves a radial tessellation policy to a validated segment count.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8cpp_source.html#l00013">PrimitiveTypes.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a04c335b7bf5f2ce1bec1fbda05da81b6"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6">eve::graphics::LineCap</a></div><div class="ttdeci">LineCap</div><div class="ttdoc">Shape applied to each open line endpoint.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00018">PrimitiveTypes.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a04c335b7bf5f2ce1bec1fbda05da81b6ab2635ed1075287dea1eb1598a90df1fe"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6ab2635ed1075287dea1eb1598a90df1fe">eve::graphics::LineCap::Butt</a></div><div class="ttdeci">@ Butt</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a04c335b7bf5f2ce1bec1fbda05da81b6ab7f41fc1412ad2ee75e9b2635d3b9d5c"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6ab7f41fc1412ad2ee75e9b2635d3b9d5c">eve::graphics::LineCap::Round</a></div><div class="ttdeci">@ Round</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a04c335b7bf5f2ce1bec1fbda05da81b6aceb46ca115d05c51aa5a16a8867c3304"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a04c335b7bf5f2ce1bec1fbda05da81b6aceb46ca115d05c51aa5a16a8867c3304">eve::graphics::LineCap::Square</a></div><div class="ttdeci">@ Square</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a20fca965a95453d11c9ba68fe40ad5c1"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1">eve::graphics::PrimitiveCullMode</a></div><div class="ttdeci">PrimitiveCullMode</div><div class="ttdoc">Face culling used by filled 3D primitives.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00028">PrimitiveTypes.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a20fca965a95453d11c9ba68fe40ad5c1a0557fa923dcee4d0f86b1409f5c2167f"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a0557fa923dcee4d0f86b1409f5c2167f">eve::graphics::PrimitiveCullMode::Back</a></div><div class="ttdeci">@ Back</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a20fca965a95453d11c9ba68fe40ad5c1a5835bab1ade0060909e31a06af2e2cde"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a5835bab1ade0060909e31a06af2e2cde">eve::graphics::PrimitiveCullMode::Front</a></div><div class="ttdeci">@ Front</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a20fca965a95453d11c9ba68fe40ad5c1a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a20fca965a95453d11c9ba68fe40ad5c1a6adf97f83acf6453d4a6a4b1070f3754">eve::graphics::PrimitiveCullMode::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3b1a7c8c113a9a08b1de0de0f855143a"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143a">eve::graphics::PrimitiveQuality</a></div><div class="ttdeci">PrimitiveQuality</div><div class="ttdoc">Reusable quality policy for radial primitive tessellation.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00030">PrimitiveTypes.h:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3b1a7c8c113a9a08b1de0de0f855143aa1244cba6ca79bfda45de46141d32ea7b"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa1244cba6ca79bfda45de46141d32ea7b">eve::graphics::PrimitiveQuality::Adaptive</a></div><div class="ttdeci">@ Adaptive</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3b1a7c8c113a9a08b1de0de0f855143aa28d0edd045e05cf5af64e35ae0c4c6ef"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa28d0edd045e05cf5af64e35ae0c4c6ef">eve::graphics::PrimitiveQuality::Low</a></div><div class="ttdeci">@ Low</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3b1a7c8c113a9a08b1de0de0f855143aa655d20c1ca69519ca647684edbb2db35"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa655d20c1ca69519ca647684edbb2db35">eve::graphics::PrimitiveQuality::High</a></div><div class="ttdeci">@ High</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3b1a7c8c113a9a08b1de0de0f855143aa87f8a6ab85c9ced3702b4ea641ad4bb5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3b1a7c8c113a9a08b1de0de0f855143aa87f8a6ab85c9ced3702b4ea641ad4bb5">eve::graphics::PrimitiveQuality::Medium</a></div><div class="ttdeci">@ Medium</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3c999b9b6ed51f6349bf0cb1a3c7011c"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011c">eve::graphics::PaintMode</a></div><div class="ttdeci">PaintMode</div><div class="ttdoc">Whether a primitive paints its interior, boundary, or both.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00016">PrimitiveTypes.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3c999b9b6ed51f6349bf0cb1a3c7011ca8d2b1ddcb67066e4f983e5ce7e1b28c2"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8d2b1ddcb67066e4f983e5ce7e1b28c2">eve::graphics::PaintMode::FillAndStroke</a></div><div class="ttdeci">@ FillAndStroke</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011ca8e763d9065582268c9ffa345a3f81f5f">eve::graphics::PaintMode::Stroke</a></div><div class="ttdeci">@ Stroke</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a3c999b9b6ed51f6349bf0cb1a3c7011cadb3e3f51c9107e26c9bccf9a188ce2ed">eve::graphics::PaintMode::Fill</a></div><div class="ttdeci">@ Fill</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a56afc85822dd7ff28fc57f3ae1bd9fc0"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0">eve::graphics::PrimitiveRecordStatus</a></div><div class="ttdeci">PrimitiveRecordStatus</div><div class="ttdoc">Successful outcome of one atomic primitive recording operation.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00032">PrimitiveTypes.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a56afc85822dd7ff28fc57f3ae1bd9fc0a5b6352d4af330defb41d0bba3929b885"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a56afc85822dd7ff28fc57f3ae1bd9fc0a5b6352d4af330defb41d0bba3929b885">eve::graphics::PrimitiveRecordStatus::Recorded</a></div><div class="ttdeci">@ Recorded</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a773eb3cd86914aca6af6cc2d4206cb1d"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1d">eve::graphics::LineJoin</a></div><div class="ttdeci">LineJoin</div><div class="ttdoc">Shape used where adjacent line segments meet.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00020">PrimitiveTypes.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a773eb3cd86914aca6af6cc2d4206cb1da1b9ae4ca6d43fc984af318046e1e7bb5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1da1b9ae4ca6d43fc984af318046e1e7bb5">eve::graphics::LineJoin::Bevel</a></div><div class="ttdeci">@ Bevel</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a773eb3cd86914aca6af6cc2d4206cb1dae4396f81cd926bb129ccf3c147c64514"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a773eb3cd86914aca6af6cc2d4206cb1dae4396f81cd926bb129ccf3c147c64514">eve::graphics::LineJoin::Miter</a></div><div class="ttdeci">@ Miter</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ab83c054bd211ff775e48dc735528ce1e"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1e">eve::graphics::DashSpace</a></div><div class="ttdeci">DashSpace</div><div class="ttdoc">Coordinate space in which dash intervals are measured.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00024">PrimitiveTypes.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ab83c054bd211ff775e48dc735528ce1ea6ee27983416423ac1fd53c1d4f2bc828"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ab83c054bd211ff775e48dc735528ce1ea6ee27983416423ac1fd53c1d4f2bc828">eve::graphics::DashSpace::ScreenPixels</a></div><div class="ttdeci">@ ScreenPixels</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ac623dcff6a3c96f5d2f82722e9ec26ac"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26ac">eve::graphics::WidthSpace</a></div><div class="ttdeci">WidthSpace</div><div class="ttdoc">Coordinate space in which stroke width is measured.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00022">PrimitiveTypes.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ac623dcff6a3c96f5d2f82722e9ec26aca6ee27983416423ac1fd53c1d4f2bc828"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca6ee27983416423ac1fd53c1d4f2bc828">eve::graphics::WidthSpace::ScreenPixels</a></div><div class="ttdeci">@ ScreenPixels</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ac623dcff6a3c96f5d2f82722e9ec26aca8eed2802a1077ce6e8670971de0fd1aa"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ac623dcff6a3c96f5d2f82722e9ec26aca8eed2802a1077ce6e8670971de0fd1aa">eve::graphics::WidthSpace::WorldUnits</a></div><div class="ttdeci">@ WorldUnits</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_af4de7e6ba5341eaa38149d1e9c6fe1b8"><div class="ttname"><a href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8">eve::graphics::PrimitiveDepthMode</a></div><div class="ttdeci">PrimitiveDepthMode</div><div class="ttdoc">Depth behavior of one 3D primitive.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00026">PrimitiveTypes.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_af4de7e6ba5341eaa38149d1e9c6fe1b8a9677077bb2ef0421441917f57ac103ba"><div class="ttname"><a href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8a9677077bb2ef0421441917f57ac103ba">eve::graphics::PrimitiveDepthMode::TestAndWrite</a></div><div class="ttdeci">@ TestAndWrite</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_af4de7e6ba5341eaa38149d1e9c6fe1b8aa9463c9f72315953501239b6c265ecb1"><div class="ttname"><a href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8aa9463c9f72315953501239b6c265ecb1">eve::graphics::PrimitiveDepthMode::TestOnly</a></div><div class="ttdeci">@ TestOnly</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_af4de7e6ba5341eaa38149d1e9c6fe1b8afd038fc7f319e48f3115d92bf5bdbef9"><div class="ttname"><a href="namespaceeve_1_1graphics.html#af4de7e6ba5341eaa38149d1e9c6fe1b8afd038fc7f319e48f3115d92bf5bdbef9">eve::graphics::PrimitiveDepthMode::Ignore</a></div><div class="ttdeci">@ Ignore</div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::BlendMode</a></div><div class="ttdeci">BlendMode</div><div class="ttdoc">Render-neutral 2D blend mode shared by graphics-facing modules.</div><div class="ttdef"><b>Definition</b> <a href="RenderTypes_8h_source.html#l00011">RenderTypes.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">eve::BlendMode::Alpha</a></div><div class="ttdeci">@ Alpha</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DashPattern_html"><div class="ttname"><a href="structeve_1_1graphics_1_1DashPattern.html">eve::graphics::DashPattern</a></div><div class="ttdoc">Owning alternating draw/gap pattern for stroked primitives.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00045">PrimitiveTypes.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DashPattern_html_a02834a0902d1497c1a0cb0c611aad2c5"><div class="ttname"><a href="structeve_1_1graphics_1_1DashPattern.html#a02834a0902d1497c1a0cb0c611aad2c5">eve::graphics::DashPattern::period</a></div><div class="ttdeci">float period() const</div><div class="ttdoc">Returns the sum of all draw and gap intervals.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8cpp_source.html#l00046">PrimitiveTypes.cpp:46</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DashPattern_html_a1fe072ac54fb28bda6327f1c261e3dc8"><div class="ttname"><a href="structeve_1_1graphics_1_1DashPattern.html#a1fe072ac54fb28bda6327f1c261e3dc8">eve::graphics::DashPattern::validate</a></div><div class="ttdeci">void validate() const</div><div class="ttdoc">Validates finite positive intervals and an even interval count.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8cpp_source.html#l00036">PrimitiveTypes.cpp:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DashPattern_html_a414ed6244a738f9e73c129957732b293"><div class="ttname"><a href="structeve_1_1graphics_1_1DashPattern.html#a414ed6244a738f9e73c129957732b293">eve::graphics::DashPattern::phase</a></div><div class="ttdeci">float phase</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00047">PrimitiveTypes.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DashPattern_html_a4f63440fc3150be937ecf062ba720a4c"><div class="ttname"><a href="structeve_1_1graphics_1_1DashPattern.html#a4f63440fc3150be937ecf062ba720a4c">eve::graphics::DashPattern::space</a></div><div class="ttdeci">DashSpace space</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00048">PrimitiveTypes.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1DashPattern_html_ac456070e1633d9e82615cfb4fbb68461"><div class="ttname"><a href="structeve_1_1graphics_1_1DashPattern.html#ac456070e1633d9e82615cfb4fbb68461">eve::graphics::DashPattern::intervals</a></div><div class="ttdeci">std::vector&lt; float &gt; intervals</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00046">PrimitiveTypes.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitiveDrawStatistics_html"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html">eve::graphics::PrimitiveDrawStatistics</a></div><div class="ttdoc">Per-frame observable primitive workload.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00103">PrimitiveTypes.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitiveDrawStatistics_html_a40b117bdae0f29ce7d88483b55ec14dc"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#a40b117bdae0f29ce7d88483b55ec14dc">eve::graphics::PrimitiveDrawStatistics::batchCount</a></div><div class="ttdeci">std::size_t batchCount</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00107">PrimitiveTypes.h:107</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitiveDrawStatistics_html_a7d6b266c2bf404e9743f7269b38211ba"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#a7d6b266c2bf404e9743f7269b38211ba">eve::graphics::PrimitiveDrawStatistics::segmentCount</a></div><div class="ttdeci">std::size_t segmentCount</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00105">PrimitiveTypes.h:105</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitiveDrawStatistics_html_aa7775a91d5b6272ddc225b8a2977fa81"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#aa7775a91d5b6272ddc225b8a2977fa81">eve::graphics::PrimitiveDrawStatistics::commandCount</a></div><div class="ttdeci">std::size_t commandCount</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00104">PrimitiveTypes.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitiveDrawStatistics_html_ad4cb0b09c6e565c4fb18c4b364770a7a"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#ad4cb0b09c6e565c4fb18c4b364770a7a">eve::graphics::PrimitiveDrawStatistics::triangleCount</a></div><div class="ttdeci">std::size_t triangleCount</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00106">PrimitiveTypes.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitiveDrawStatistics_html_adc3b43fab89267a8075891f27f9958a2"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#adc3b43fab89267a8075891f27f9958a2">eve::graphics::PrimitiveDrawStatistics::droppedCommands</a></div><div class="ttdeci">std::size_t droppedCommands</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00110">PrimitiveTypes.h:110</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitiveDrawStatistics_html_af6de2eab480e08bc2e0b8da1258bbfcb"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#af6de2eab480e08bc2e0b8da1258bbfcb">eve::graphics::PrimitiveDrawStatistics::cacheHits</a></div><div class="ttdeci">std::size_t cacheHits</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00109">PrimitiveTypes.h:109</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitiveDrawStatistics_html_affa97c9d469a545bde0ab1503169b9d3"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitiveDrawStatistics.html#affa97c9d469a545bde0ab1503169b9d3">eve::graphics::PrimitiveDrawStatistics::uploadBytes</a></div><div class="ttdeci">std::size_t uploadBytes</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00108">PrimitiveTypes.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitivePaint_html"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitivePaint.html">eve::graphics::PrimitivePaint</a></div><div class="ttdoc">Backend-neutral fill and stroke paint.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00070">PrimitiveTypes.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitivePaint_html_a203545cdc9946fe6bc769b50d2c7de74"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitivePaint.html#a203545cdc9946fe6bc769b50d2c7de74">eve::graphics::PrimitivePaint::validate</a></div><div class="ttdeci">void validate() const</div><div class="ttdoc">Validates paint state used by a draw command.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8cpp_source.html#l00059">PrimitiveTypes.cpp:59</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitivePaint_html_a6602329c06586ae3b2c004198caf644c"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitivePaint.html#a6602329c06586ae3b2c004198caf644c">eve::graphics::PrimitivePaint::color</a></div><div class="ttdeci">Color color</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00071">PrimitiveTypes.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitivePaint_html_a95b42c8d045af34e0416d9ede8c8f6ef"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitivePaint.html#a95b42c8d045af34e0416d9ede8c8f6ef">eve::graphics::PrimitivePaint::mode</a></div><div class="ttdeci">PaintMode mode</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00072">PrimitiveTypes.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitivePaint_html_aa79cae0462edba5b81429a2f224ba8cc"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitivePaint.html#aa79cae0462edba5b81429a2f224ba8cc">eve::graphics::PrimitivePaint::antialias</a></div><div class="ttdeci">bool antialias</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00075">PrimitiveTypes.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitivePaint_html_ab48136054b3aa9eef4db92c23f15f260"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitivePaint.html#ab48136054b3aa9eef4db92c23f15f260">eve::graphics::PrimitivePaint::stroke</a></div><div class="ttdeci">StrokeStyle stroke</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00073">PrimitiveTypes.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PrimitivePaint_html_ae4720dccc12bc3f44a9e1b8f7c666b69"><div class="ttname"><a href="structeve_1_1graphics_1_1PrimitivePaint.html#ae4720dccc12bc3f44a9e1b8f7c666b69">eve::graphics::PrimitivePaint::blend</a></div><div class="ttdeci">BlendMode blend</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00074">PrimitiveTypes.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1RadialTessellation_html"><div class="ttname"><a href="structeve_1_1graphics_1_1RadialTessellation.html">eve::graphics::RadialTessellation</a></div><div class="ttdoc">Quality and screen-error policy used by circles and curved spatial primitives.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00035">PrimitiveTypes.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1RadialTessellation_html_a7e056eb878ad69395c670f5eb573013b"><div class="ttname"><a href="structeve_1_1graphics_1_1RadialTessellation.html#a7e056eb878ad69395c670f5eb573013b">eve::graphics::RadialTessellation::quality</a></div><div class="ttdeci">PrimitiveQuality quality</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00036">PrimitiveTypes.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1RadialTessellation_html_ac8d281892bc5998ff76cfa86ff4b09a8"><div class="ttname"><a href="structeve_1_1graphics_1_1RadialTessellation.html#ac8d281892bc5998ff76cfa86ff4b09a8">eve::graphics::RadialTessellation::customSegments</a></div><div class="ttdeci">std::uint32_t customSegments</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00038">PrimitiveTypes.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1RadialTessellation_html_ad31c0abb40ee5538c492c6bddd385489"><div class="ttname"><a href="structeve_1_1graphics_1_1RadialTessellation.html#ad31c0abb40ee5538c492c6bddd385489">eve::graphics::RadialTessellation::maxScreenErrorPixels</a></div><div class="ttdeci">float maxScreenErrorPixels</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00037">PrimitiveTypes.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SceneDrawContext_html"><div class="ttname"><a href="structeve_1_1graphics_1_1SceneDrawContext.html">eve::graphics::SceneDrawContext</a></div><div class="ttdoc">Immutable camera and viewport facts used to resolve one 3D draw list.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00090">PrimitiveTypes.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SceneDrawContext_html_a06db8cb764b6fdfa9c97f478b7fc34c1"><div class="ttname"><a href="structeve_1_1graphics_1_1SceneDrawContext.html#a06db8cb764b6fdfa9c97f478b7fc34c1">eve::graphics::SceneDrawContext::view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00091">PrimitiveTypes.h:91</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SceneDrawContext_html_a136c82ed5805aa0d9bd5ece4e6e9fe55"><div class="ttname"><a href="structeve_1_1graphics_1_1SceneDrawContext.html#a136c82ed5805aa0d9bd5ece4e6e9fe55">eve::graphics::SceneDrawContext::validate</a></div><div class="ttdeci">void validate() const</div><div class="ttdoc">Validates viewport and clip-plane values.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8cpp_source.html#l00061">PrimitiveTypes.cpp:61</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SceneDrawContext_html_a18062aa78a8cbb0a6d03ebfae7099765"><div class="ttname"><a href="structeve_1_1graphics_1_1SceneDrawContext.html#a18062aa78a8cbb0a6d03ebfae7099765">eve::graphics::SceneDrawContext::farPlane</a></div><div class="ttdeci">float farPlane</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00096">PrimitiveTypes.h:96</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SceneDrawContext_html_a7efad628b8803ca3818472d47d891182"><div class="ttname"><a href="structeve_1_1graphics_1_1SceneDrawContext.html#a7efad628b8803ca3818472d47d891182">eve::graphics::SceneDrawContext::projection</a></div><div class="ttdeci">glm::mat4 projection</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00092">PrimitiveTypes.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SceneDrawContext_html_ac13e02b53143b39fbb3a526c77f472a8"><div class="ttname"><a href="structeve_1_1graphics_1_1SceneDrawContext.html#ac13e02b53143b39fbb3a526c77f472a8">eve::graphics::SceneDrawContext::viewportSize</a></div><div class="ttdeci">glm::ivec2 viewportSize</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00094">PrimitiveTypes.h:94</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SceneDrawContext_html_addf883811c7726c9baa29c90af885cf8"><div class="ttname"><a href="structeve_1_1graphics_1_1SceneDrawContext.html#addf883811c7726c9baa29c90af885cf8">eve::graphics::SceneDrawContext::cameraPosition</a></div><div class="ttdeci">glm::vec3 cameraPosition</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00093">PrimitiveTypes.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1SceneDrawContext_html_afd9cd3bea99faf9a61f1feb2abddb47e"><div class="ttname"><a href="structeve_1_1graphics_1_1SceneDrawContext.html#afd9cd3bea99faf9a61f1feb2abddb47e">eve::graphics::SceneDrawContext::nearPlane</a></div><div class="ttdeci">float nearPlane</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00095">PrimitiveTypes.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ScenePrimitivePaint_html"><div class="ttname"><a href="structeve_1_1graphics_1_1ScenePrimitivePaint.html">eve::graphics::ScenePrimitivePaint</a></div><div class="ttdoc">Additional scene-pass state carried by every 3D command.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00082">PrimitiveTypes.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ScenePrimitivePaint_html_a5478537a90012248eb727eba24ec7698"><div class="ttname"><a href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a5478537a90012248eb727eba24ec7698">eve::graphics::ScenePrimitivePaint::depth</a></div><div class="ttdeci">PrimitiveDepthMode depth</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00083">PrimitiveTypes.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ScenePrimitivePaint_html_a587a443e67cd46ca6cf748d6df33b6c5"><div class="ttname"><a href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a587a443e67cd46ca6cf748d6df33b6c5">eve::graphics::ScenePrimitivePaint::cull</a></div><div class="ttdeci">PrimitiveCullMode cull</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00084">PrimitiveTypes.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ScenePrimitivePaint_html_a5ea31d32354502e45000edfd7f66bd21"><div class="ttname"><a href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#a5ea31d32354502e45000edfd7f66bd21">eve::graphics::ScenePrimitivePaint::layer</a></div><div class="ttdeci">std::uint32_t layer</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00085">PrimitiveTypes.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ScenePrimitivePaint_html_ab68c17a5fe044bb54d506dfc401a322e"><div class="ttname"><a href="structeve_1_1graphics_1_1ScenePrimitivePaint.html#ab68c17a5fe044bb54d506dfc401a322e">eve::graphics::ScenePrimitivePaint::objectId</a></div><div class="ttdeci">std::uint64_t objectId</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00086">PrimitiveTypes.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1StrokeStyle_html"><div class="ttname"><a href="structeve_1_1graphics_1_1StrokeStyle.html">eve::graphics::StrokeStyle</a></div><div class="ttdoc">Backend-neutral stroke state shared by 2D and 3D canvases.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00057">PrimitiveTypes.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1StrokeStyle_html_a2a0cab1ac6c87cc9acd505bc881335e0"><div class="ttname"><a href="structeve_1_1graphics_1_1StrokeStyle.html#a2a0cab1ac6c87cc9acd505bc881335e0">eve::graphics::StrokeStyle::cap</a></div><div class="ttdeci">LineCap cap</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00060">PrimitiveTypes.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1StrokeStyle_html_a3da521ceab8e78dc7548fc1d3130cbd2"><div class="ttname"><a href="structeve_1_1graphics_1_1StrokeStyle.html#a3da521ceab8e78dc7548fc1d3130cbd2">eve::graphics::StrokeStyle::validate</a></div><div class="ttdeci">void validate() const</div><div class="ttdoc">Validates all scalar and optional dash state.</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8cpp_source.html#l00051">PrimitiveTypes.cpp:51</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1StrokeStyle_html_a4b8cae1fcc824e6a0cc170fab6dd6016"><div class="ttname"><a href="structeve_1_1graphics_1_1StrokeStyle.html#a4b8cae1fcc824e6a0cc170fab6dd6016">eve::graphics::StrokeStyle::join</a></div><div class="ttdeci">LineJoin join</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00061">PrimitiveTypes.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1StrokeStyle_html_a5fc310c8785e5e11c9da35c0b388ecd2"><div class="ttname"><a href="structeve_1_1graphics_1_1StrokeStyle.html#a5fc310c8785e5e11c9da35c0b388ecd2">eve::graphics::StrokeStyle::dash</a></div><div class="ttdeci">std::optional&lt; DashPattern &gt; dash</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00063">PrimitiveTypes.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1StrokeStyle_html_a89bdc24fff2b7c622540b89cae7c1148"><div class="ttname"><a href="structeve_1_1graphics_1_1StrokeStyle.html#a89bdc24fff2b7c622540b89cae7c1148">eve::graphics::StrokeStyle::miterLimit</a></div><div class="ttdeci">float miterLimit</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00062">PrimitiveTypes.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1StrokeStyle_html_ab6cd3e24def304bccd8403bd9248fa6d"><div class="ttname"><a href="structeve_1_1graphics_1_1StrokeStyle.html#ab6cd3e24def304bccd8403bd9248fa6d">eve::graphics::StrokeStyle::width</a></div><div class="ttdeci">float width</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00058">PrimitiveTypes.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1StrokeStyle_html_abea90d5ff9f9b93db153b612b805b061"><div class="ttname"><a href="structeve_1_1graphics_1_1StrokeStyle.html#abea90d5ff9f9b93db153b612b805b061">eve::graphics::StrokeStyle::widthSpace</a></div><div class="ttdeci">WidthSpace widthSpace</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTypes_8h_source.html#l00059">PrimitiveTypes.h:59</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

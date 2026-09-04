@@ -1,0 +1,434 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::level_editing::LevelLayer结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1level__editing.html">level_editing</a></li><li class="navelem"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html">LevelLayer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1level__editing_1_1LevelLayer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::level_editing::LevelLayer结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A tile or object layer in a <a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html" title="Format-neutral, editable top-down level model.">LevelDocument</a>.  
+ <a href="structeve_1_1level__editing_1_1LevelLayer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a90d17ee4790ecd990d86114de99af9f8" id="r_a90d17ee4790ecd990d86114de99af9f8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8">Kind</a> { <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8aa67f2c9d056f29b94521c17b838b9756">Tiles</a>
+, <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8ac8308b1eba7ba926a61b8fd802194386">Objects</a>
+ }</td></tr>
+<tr class="separator:a90d17ee4790ecd990d86114de99af9f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a42fcc4eb97db4db896851cc60b3f30bb" id="r_a42fcc4eb97db4db896851cc60b3f30bb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a42fcc4eb97db4db896851cc60b3f30bb">id</a></td></tr>
+<tr class="separator:a42fcc4eb97db4db896851cc60b3f30bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69ea52a449caeb935b7a33bf8578a9d3" id="r_a69ea52a449caeb935b7a33bf8578a9d3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a69ea52a449caeb935b7a33bf8578a9d3">name</a></td></tr>
+<tr class="separator:a69ea52a449caeb935b7a33bf8578a9d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae81b3ebbf5abf04c6233f0162e61628f" id="r_ae81b3ebbf5abf04c6233f0162e61628f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8">Kind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#ae81b3ebbf5abf04c6233f0162e61628f">kind</a> = <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8aa67f2c9d056f29b94521c17b838b9756">Kind::Tiles</a></td></tr>
+<tr class="separator:ae81b3ebbf5abf04c6233f0162e61628f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0b4c979a6054fa45b164b505a9e9835" id="r_ab0b4c979a6054fa45b164b505a9e9835"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#ab0b4c979a6054fa45b164b505a9e9835">visible</a> = true</td></tr>
+<tr class="separator:ab0b4c979a6054fa45b164b505a9e9835"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae74637aec3cfecbe50e524f61904fe9d" id="r_ae74637aec3cfecbe50e524f61904fe9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#ae74637aec3cfecbe50e524f61904fe9d">locked</a> = false</td></tr>
+<tr class="separator:ae74637aec3cfecbe50e524f61904fe9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f4b93a560af5295b0442a8a03bb5086" id="r_a5f4b93a560af5295b0442a8a03bb5086"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a5f4b93a560af5295b0442a8a03bb5086">opacity</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5f4b93a560af5295b0442a8a03bb5086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16cfde16c05dfdf6f28801b67de201c1" id="r_a16cfde16c05dfdf6f28801b67de201c1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a16cfde16c05dfdf6f28801b67de201c1">offsetX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a16cfde16c05dfdf6f28801b67de201c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbe8baf6691118a12ac0d3f06eeb73bc" id="r_abbe8baf6691118a12ac0d3f06eeb73bc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#abbe8baf6691118a12ac0d3f06eeb73bc">offsetY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abbe8baf6691118a12ac0d3f06eeb73bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a901c76df46e4907c81fff7cc7eba71" id="r_a3a901c76df46e4907c81fff7cc7eba71"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a3a901c76df46e4907c81fff7cc7eba71">tiles</a></td></tr>
+<tr class="separator:a3a901c76df46e4907c81fff7cc7eba71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5b55b183dc877fb14e6e5968cbbd385" id="r_aa5b55b183dc877fb14e6e5968cbbd385"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1level__editing_1_1LevelObject.html">LevelObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#aa5b55b183dc877fb14e6e5968cbbd385">objects</a></td></tr>
+<tr class="separator:aa5b55b183dc877fb14e6e5968cbbd385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e7fd7e1e52508b515f9561910489b87" id="r_a5e7fd7e1e52508b515f9561910489b87"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a5e7fd7e1e52508b515f9561910489b87">properties</a></td></tr>
+<tr class="separator:a5e7fd7e1e52508b515f9561910489b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A tile or object layer in a <a class="el" href="classeve_1_1level__editing_1_1LevelDocument.html" title="Format-neutral, editable top-down level model.">LevelDocument</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a90d17ee4790ecd990d86114de99af9f8" name="a90d17ee4790ecd990d86114de99af9f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90d17ee4790ecd990d86114de99af9f8">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8">eve::level_editing::LevelLayer::Kind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a90d17ee4790ecd990d86114de99af9f8aa67f2c9d056f29b94521c17b838b9756" name="a90d17ee4790ecd990d86114de99af9f8aa67f2c9d056f29b94521c17b838b9756"></a>Tiles&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a90d17ee4790ecd990d86114de99af9f8ac8308b1eba7ba926a61b8fd802194386" name="a90d17ee4790ecd990d86114de99af9f8ac8308b1eba7ba926a61b8fd802194386"></a>Objects&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a42fcc4eb97db4db896851cc60b3f30bb" name="a42fcc4eb97db4db896851cc60b3f30bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42fcc4eb97db4db896851cc60b3f30bb">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::level_editing::LevelLayer::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LevelDocument_8cpp_source.html#l00047">eve::level_editing::LevelDocument::addObjectLayer()</a> , 以及 <a class="el" href="LevelDocument_8cpp_source.html#l00037">eve::level_editing::LevelDocument::addTileLayer()</a>.</p>
+
+</div>
+</div>
+<a id="ae81b3ebbf5abf04c6233f0162e61628f" name="ae81b3ebbf5abf04c6233f0162e61628f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae81b3ebbf5abf04c6233f0162e61628f">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8">Kind</a> eve::level_editing::LevelLayer::kind = <a class="el" href="structeve_1_1level__editing_1_1LevelLayer.html#a90d17ee4790ecd990d86114de99af9f8aa67f2c9d056f29b94521c17b838b9756">Kind::Tiles</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LevelDocument_8cpp_source.html#l00047">eve::level_editing::LevelDocument::addObjectLayer()</a> , 以及 <a class="el" href="LevelDocument_8cpp_source.html#l00037">eve::level_editing::LevelDocument::addTileLayer()</a>.</p>
+
+</div>
+</div>
+<a id="ae74637aec3cfecbe50e524f61904fe9d" name="ae74637aec3cfecbe50e524f61904fe9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae74637aec3cfecbe50e524f61904fe9d">&#9670;&#160;</a></span>locked</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::level_editing::LevelLayer::locked = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69ea52a449caeb935b7a33bf8578a9d3" name="a69ea52a449caeb935b7a33bf8578a9d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69ea52a449caeb935b7a33bf8578a9d3">&#9670;&#160;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::level_editing::LevelLayer::name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LevelDocument_8cpp_source.html#l00047">eve::level_editing::LevelDocument::addObjectLayer()</a> , 以及 <a class="el" href="LevelDocument_8cpp_source.html#l00037">eve::level_editing::LevelDocument::addTileLayer()</a>.</p>
+
+</div>
+</div>
+<a id="aa5b55b183dc877fb14e6e5968cbbd385" name="aa5b55b183dc877fb14e6e5968cbbd385"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5b55b183dc877fb14e6e5968cbbd385">&#9670;&#160;</a></span>objects</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1level__editing_1_1LevelObject.html">LevelObject</a>&gt; eve::level_editing::LevelLayer::objects</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a16cfde16c05dfdf6f28801b67de201c1" name="a16cfde16c05dfdf6f28801b67de201c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16cfde16c05dfdf6f28801b67de201c1">&#9670;&#160;</a></span>offsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::level_editing::LevelLayer::offsetX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abbe8baf6691118a12ac0d3f06eeb73bc" name="abbe8baf6691118a12ac0d3f06eeb73bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbe8baf6691118a12ac0d3f06eeb73bc">&#9670;&#160;</a></span>offsetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::level_editing::LevelLayer::offsetY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f4b93a560af5295b0442a8a03bb5086" name="a5f4b93a560af5295b0442a8a03bb5086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f4b93a560af5295b0442a8a03bb5086">&#9670;&#160;</a></span>opacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::level_editing::LevelLayer::opacity = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e7fd7e1e52508b515f9561910489b87" name="a5e7fd7e1e52508b515f9561910489b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e7fd7e1e52508b515f9561910489b87">&#9670;&#160;</a></span>properties</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, std::string&gt; eve::level_editing::LevelLayer::properties</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a901c76df46e4907c81fff7cc7eba71" name="a3a901c76df46e4907c81fff7cc7eba71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a901c76df46e4907c81fff7cc7eba71">&#9670;&#160;</a></span>tiles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a>&gt; eve::level_editing::LevelLayer::tiles</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LevelDocument_8cpp_source.html#l00037">eve::level_editing::LevelDocument::addTileLayer()</a>.</p>
+
+</div>
+</div>
+<a id="ab0b4c979a6054fa45b164b505a9e9835" name="ab0b4c979a6054fa45b164b505a9e9835"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0b4c979a6054fa45b164b505a9e9835">&#9670;&#160;</a></span>visible</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::level_editing::LevelLayer::visible = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a> 第 <a class="el" href="LevelDocument_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/level_editing/<a class="el" href="LevelDocument_8h_source.html">LevelDocument.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

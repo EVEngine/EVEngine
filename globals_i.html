@@ -1,0 +1,210 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 文件成员</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">这里列出了所有文件成员,并附带其所属的文件:</div>
+
+<h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
+<li>i0&#160;:&#160;<a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">Grass.cpp</a></li>
+<li>i1&#160;:&#160;<a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">Grass.cpp</a></li>
+<li>i2&#160;:&#160;<a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">Grass.cpp</a></li>
+<li>icon&#160;:&#160;<a class="el" href="Icons_8cpp.html#afdd3c4da11faf136d323a303a1dcca18">Icons.cpp</a></li>
+<li>id&#160;:&#160;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">WorldSnapshot.cpp</a>, <a class="el" href="PointGraph_8cpp.html#aeffa2f0815ce90fecbda9aac199143db">PointGraph.cpp</a>, <a class="el" href="PointSet_8cpp.html#a3e3507be967a9cec9979b9ab1179b210">PointSet.cpp</a>, <a class="el" href="RTSContent_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">RTSContent.cpp</a>, <a class="el" href="EditorHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">EditorHost.cpp</a></li>
+<li>idleTicks&#160;:&#160;<a class="el" href="PixelWorld_8cpp.html#a45b0313f6ff8ad6060695b0786d319d6">PixelWorld.cpp</a></li>
+<li>ids&#160;:&#160;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a7199017871c97339c74bf0d61d90f1f5">GraphicsVirtualGeometry.cpp</a></li>
+<li>idx&#160;:&#160;<a class="el" href="Pathfinder_8cpp.html#ae40354a1051342eb5a9db005715dcfa9">Pathfinder.cpp</a></li>
+<li>image&#160;:&#160;<a class="el" href="TileConfig_8cpp.html#a96b4a087acee7543a7624102a67fc14d">TileConfig.cpp</a></li>
+<li>ImGui_ImplWGPU_CreateFontsTexture()&#160;:&#160;<a class="el" href="imgui__impl__wgpu_8h.html#a7fc42f7c46611604fc9ab63af07ba84d">imgui_impl_wgpu.h</a></li>
+<li>ImGui_ImplWGPU_Init()&#160;:&#160;<a class="el" href="imgui__impl__wgpu_8h.html#a82dc2999d1fb5a6a2757acae5566e670">imgui_impl_wgpu.h</a></li>
+<li>ImGui_ImplWGPU_InvalidateDeviceObjects()&#160;:&#160;<a class="el" href="imgui__impl__wgpu_8h.html#aa1d0e7487ac3d04f9c601627c1f26392">imgui_impl_wgpu.h</a></li>
+<li>ImGui_ImplWGPU_NewFrame()&#160;:&#160;<a class="el" href="imgui__impl__wgpu_8h.html#a66452774219a993368c3ad017d67848c">imgui_impl_wgpu.h</a></li>
+<li>ImGui_ImplWGPU_RenderDrawData()&#160;:&#160;<a class="el" href="imgui__impl__wgpu_8h.html#a81aabc242052c5e001388a54b0b46ca0">imgui_impl_wgpu.h</a></li>
+<li>ImGui_ImplWGPU_Shutdown()&#160;:&#160;<a class="el" href="imgui__impl__wgpu_8h.html#a8f518adc1b396651e1c4c785644b72fc">imgui_impl_wgpu.h</a></li>
+<li>impl&#160;:&#160;<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">Capability.cpp</a></li>
+<li>importCommand&#160;:&#160;<a class="el" href="AssetCommand_8cpp.html#a43c8be97f8aea4aa62ca2af9c1765089">AssetCommand.cpp</a></li>
+<li>imported&#160;:&#160;<a class="el" href="LanguageIndex_8cpp.html#ad14b6eeb57c2224bf5c791e17f512d24">LanguageIndex.cpp</a></li>
+<li>importedToken&#160;:&#160;<a class="el" href="LanguageIndex_8cpp.html#a5153b8c6cc46bafb4e6816b2652d041c">LanguageIndex.cpp</a></li>
+<li>importRpgMakerMap()&#160;:&#160;<a class="el" href="RpgMakerTileImporter_8inl.html#ac54533a4b5d6b1a08a2699756d58da48">RpgMakerTileImporter.inl</a></li>
+<li>inDefaultView&#160;:&#160;<a class="el" href="RenderSystem3D_8cpp.html#a303c9fd755f34274c29e107d67453bf3">RenderSystem3D.cpp</a></li>
+<li>index&#160;:&#160;<a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">Production.cpp</a></li>
+<li>indexCount&#160;:&#160;<a class="el" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">GltfImporter.cpp</a></li>
+<li>indexExprs&#160;:&#160;<a class="el" href="KernelGen_8cpp.html#a243901bdf7679671e1aeb57315eb81c3">KernelGen.cpp</a></li>
+<li>indexType&#160;:&#160;<a class="el" href="GraphicsVisibility_8cpp.html#a028a4af7db36c8ca6a925db57c1c85e5">GraphicsVisibility.cpp</a></li>
+<li>indices&#160;:&#160;<a class="el" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">EvpackGraphicsLoader.cpp</a>, <a class="el" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">HeightmapMesh.cpp</a></li>
+<li>inertia&#160;:&#160;<a class="el" href="TreeMesh_8cpp.html#a17ca74f051befb55deca87ccc0e5cbdd">TreeMesh.cpp</a></li>
+<li>influenceRadius&#160;:&#160;<a class="el" href="TreeMesh_8cpp.html#afc247b1dfc99333562f52d9a52208b00">TreeMesh.cpp</a></li>
+<li>info&#160;:&#160;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">GraphicsGpuDriven.cpp</a></li>
+<li>input&#160;:&#160;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">Evpack.cpp</a>, <a class="el" href="AssetCommand_8cpp.html#a84703f07f323f416cd4b531c1bbd59af">AssetCommand.cpp</a></li>
+<li>inputs&#160;:&#160;<a class="el" href="PointGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">PointGraph.cpp</a></li>
+<li>inside&#160;:&#160;<a class="el" href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">UrbanCrossField.cpp</a></li>
+<li>inspectCommand&#160;:&#160;<a class="el" href="AssetCommand_8cpp.html#a63221ed0480f136140d3f9e78a595df1">AssetCommand.cpp</a></li>
+<li>instanceCount&#160;:&#160;<a class="el" href="GraphicsParticles_8cpp.html#a96888c566c534d7f33a97e50697df5dc">GraphicsParticles.cpp</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a03769e76e974fc0a517627ea030c81f9">GraphicsGpuDriven.cpp</a>, <a class="el" href="GraphicsVisibility_8cpp.html#a03769e76e974fc0a517627ea030c81f9">GraphicsVisibility.cpp</a></li>
+<li>instances&#160;:&#160;<a class="el" href="BuildingTarget_8cpp.html#a847adfdf0456acf149e82b9b0304d031">BuildingTarget.cpp</a></li>
+<li>instancing&#160;:&#160;<a class="el" href="StandardAbilities_8cpp.html#aa31a856d647a670d1660cfc2937e37be">StandardAbilities.cpp</a></li>
+<li>inView&#160;:&#160;<a class="el" href="RenderSystem3D_8cpp.html#a0cfd6bf564ac2f84d8791c94ca2c9c09">RenderSystem3D.cpp</a></li>
+<li>irregularity&#160;:&#160;<a class="el" href="CaveMesh_8cpp.html#ac93051387a3ace2bb035c09262337e01">CaveMesh.cpp</a></li>
+<li>island&#160;:&#160;<a class="el" href="CaveNormals_8cpp.html#a2380ac1a020bd2501059d6a43a91388c">CaveNormals.cpp</a></li>
+<li>isPoint&#160;:&#160;<a class="el" href="RenderSystem_8cpp.html#a409b77101f156f6b54f7be43c6fc87aa">RenderSystem.cpp</a>, <a class="el" href="RenderSystem3D_8cpp.html#a409b77101f156f6b54f7be43c6fc87aa">RenderSystem3D.cpp</a></li>
+<li>itemId&#160;:&#160;<a class="el" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">ActionTimelineWidget.cpp</a></li>
+<li>iterations&#160;:&#160;<a class="el" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">TreeMesh.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

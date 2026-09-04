@@ -1,0 +1,583 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Font类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Font-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Font类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>GPU-side font: wraps a decoded <code><a class="el" href="classeve_1_1font_1_1FontData.html" title="CPU-side decoded font face (FreeType FT_Face + owned font bytes). Does not upload to GPU — rasterize ...">font::FontData</a></code> and rasterizes a fixed set of codepoints into a single RGBA8 glyph atlas texture up front, so <code><a class="el" href="classeve_1_1graphics_1_1Graphics.html#a6a0ee167c0dc2509a646388bdfc0e988" title="Draw UTF-8 text with an explicitly supplied GPU font.">Graphics::drawText()</a></code> and <code><a class="el" href="classeve_1_1graphics_1_1Graphics.html#a94effaf27d38e2d624222cb358989c6e" title="Draw UTF-8 text with the font selected by setFont().">Graphics::print()</a></code> can draw text with plain textured-quad draws.  
+ <a href="classeve_1_1graphics_1_1Font.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="graphics_2Font_8h_source.html">Font.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1Font_1_1Glyph.html">Glyph</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a15c3420d022b575210d2717db59dd238" id="r_a15c3420d022b575210d2717db59dd238"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#a15c3420d022b575210d2717db59dd238">Font</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1font_1_1FontData.html">font::FontData</a> *data, std::string charset=<a class="el" href="classeve_1_1graphics_1_1Font.html#a35727dd5fb2be8a1867b1fcc23f6052c">defaultCharset</a>())</td></tr>
+<tr class="separator:a15c3420d022b575210d2717db59dd238"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ecf27a5d75d779b62ee057a6037d63a" id="r_a4ecf27a5d75d779b62ee057a6037d63a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#a4ecf27a5d75d779b62ee057a6037d63a">~Font</a> ()</td></tr>
+<tr class="separator:a4ecf27a5d75d779b62ee057a6037d63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabff050c66dedaf999ab7c160ab0b50a" id="r_aabff050c66dedaf999ab7c160ab0b50a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#aabff050c66dedaf999ab7c160ab0b50a">Font</a> (const <a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> &amp;)=delete</td></tr>
+<tr class="separator:aabff050c66dedaf999ab7c160ab0b50a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc66f70d5dce7235afe5e7900f3b6094" id="r_afc66f70d5dce7235afe5e7900f3b6094"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#afc66f70d5dce7235afe5e7900f3b6094">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> &amp;)=delete</td></tr>
+<tr class="separator:afc66f70d5dce7235afe5e7900f3b6094"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a066157a5d7bf63f174099f1788b844" id="r_a5a066157a5d7bf63f174099f1788b844"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1font_1_1FontData.html">font::FontData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#a5a066157a5d7bf63f174099f1788b844">getData</a> () const</td></tr>
+<tr class="separator:a5a066157a5d7bf63f174099f1788b844"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742c3e7ac9b0a8f1a27587ee2db15faa" id="r_a742c3e7ac9b0a8f1a27587ee2db15faa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#a742c3e7ac9b0a8f1a27587ee2db15faa">getTexture</a> () const</td></tr>
+<tr class="separator:a742c3e7ac9b0a8f1a27587ee2db15faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0504e01197b6068c742a8abe52669cb" id="r_ae0504e01197b6068c742a8abe52669cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#ae0504e01197b6068c742a8abe52669cb">getHeight</a> () const</td></tr>
+<tr class="memdesc:ae0504e01197b6068c742a8abe52669cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Line height in pixels at the FontData's decoded pixel size.  <br /></td></tr>
+<tr class="separator:ae0504e01197b6068c742a8abe52669cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11153631672e71d999269595fbd88f8d" id="r_a11153631672e71d999269595fbd88f8d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#a11153631672e71d999269595fbd88f8d">getAscent</a> () const</td></tr>
+<tr class="separator:a11153631672e71d999269595fbd88f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a767dd135e6ffed87c9cca65e97399140" id="r_a767dd135e6ffed87c9cca65e97399140"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#a767dd135e6ffed87c9cca65e97399140">getBaseline</a> () const</td></tr>
+<tr class="memdesc:a767dd135e6ffed87c9cca65e97399140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance from the top of a line to the baseline (== <a class="el" href="classeve_1_1graphics_1_1Font.html#a11153631672e71d999269595fbd88f8d">getAscent()</a>).  <br /></td></tr>
+<tr class="separator:a767dd135e6ffed87c9cca65e97399140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7b174c0369d388d2bf6e91f30ba4f42" id="r_ae7b174c0369d388d2bf6e91f30ba4f42"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#ae7b174c0369d388d2bf6e91f30ba4f42">getWidth</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>) const</td></tr>
+<tr class="memdesc:ae7b174c0369d388d2bf6e91f30ba4f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pixel width of <code>text</code> (UTF-8), including kerning; delegates to FontData.  <br /></td></tr>
+<tr class="separator:ae7b174c0369d388d2bf6e91f30ba4f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ba40f209672a65b5ce96a9e197b138b" id="r_a4ba40f209672a65b5ce96a9e197b138b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#a4ba40f209672a65b5ce96a9e197b138b">hasGlyph</a> (int codepoint) const</td></tr>
+<tr class="memdesc:a4ba40f209672a65b5ce96a9e197b138b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether <code>codepoint</code> was rasterized into this <a class="el" href="classeve_1_1graphics_1_1Font.html" title="GPU-side font: wraps a decoded font::FontData and rasterizes a fixed set of codepoints into a single ...">Font</a>'s atlas.  <br /></td></tr>
+<tr class="separator:a4ba40f209672a65b5ce96a9e197b138b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab54ec3591aaafc63cf39a88634fc3437" id="r_ab54ec3591aaafc63cf39a88634fc3437"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1Font_1_1Glyph.html">Glyph</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#ab54ec3591aaafc63cf39a88634fc3437">findGlyph</a> (int codepoint) const</td></tr>
+<tr class="memdesc:ab54ec3591aaafc63cf39a88634fc3437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns nullptr if <code>codepoint</code> isn't in this <a class="el" href="classeve_1_1graphics_1_1Font.html" title="GPU-side font: wraps a decoded font::FontData and rasterizes a fixed set of codepoints into a single ...">Font</a>'s atlas.  <br /></td></tr>
+<tr class="separator:ab54ec3591aaafc63cf39a88634fc3437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a35727dd5fb2be8a1867b1fcc23f6052c" id="r_a35727dd5fb2be8a1867b1fcc23f6052c"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Font.html#a35727dd5fb2be8a1867b1fcc23f6052c">defaultCharset</a> ()</td></tr>
+<tr class="memdesc:a35727dd5fb2be8a1867b1fcc23f6052c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Printable ASCII (0x20..0x7E), used when no explicit charset is given.  <br /></td></tr>
+<tr class="separator:a35727dd5fb2be8a1867b1fcc23f6052c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>GPU-side font: wraps a decoded <code><a class="el" href="classeve_1_1font_1_1FontData.html" title="CPU-side decoded font face (FreeType FT_Face + owned font bytes). Does not upload to GPU — rasterize ...">font::FontData</a></code> and rasterizes a fixed set of codepoints into a single RGBA8 glyph atlas texture up front, so <code><a class="el" href="classeve_1_1graphics_1_1Graphics.html#a6a0ee167c0dc2509a646388bdfc0e988" title="Draw UTF-8 text with an explicitly supplied GPU font.">Graphics::drawText()</a></code> and <code><a class="el" href="classeve_1_1graphics_1_1Graphics.html#a94effaf27d38e2d624222cb358989c6e" title="Draw UTF-8 text with the font selected by setFont().">Graphics::print()</a></code> can draw text with plain textured-quad draws. </p>
+<p>Codepoints outside the pre-rasterized charset still advance the pen using <code>FontData</code> metrics (via FreeType) but are not drawn (no atlas entry). Does not take ownership of the <code>FontData*</code> passed to the constructor. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8h_source.html">Font.h</a> 第 <a class="el" href="graphics_2Font_8h_source.html#l00033">33</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a15c3420d022b575210d2717db59dd238" name="a15c3420d022b575210d2717db59dd238"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15c3420d022b575210d2717db59dd238">&#9670;&#160;</a></span>Font() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Font::Font </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1font_1_1FontData.html">font::FontData</a> *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>charset</em> = <code><a class="el" href="classeve_1_1graphics_1_1Font.html#a35727dd5fb2be8a1867b1fcc23f6052c">defaultCharset</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="FontData_8cpp_source.html#l00233">eve::font::FontData::getGlyphAdvance()</a>, <a class="el" href="FontData_8cpp_source.html#l00231">eve::font::FontData::getGlyphBearingX()</a>, <a class="el" href="FontData_8cpp_source.html#l00232">eve::font::FontData::getGlyphBearingY()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="FontData_8cpp_source.html#l00151">eve::font::FontData::hasGlyph()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="FontData_8cpp_source.html#l00235">eve::font::FontData::newGlyphImageData()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="ImageData_8cpp_source.html#l01069">eve::image::ImageData::paste()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00118">placed</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="graphics_2Font_8h_source.html#l00061">eve::graphics::Font::Glyph::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a4ecf27a5d75d779b62ee057a6037d63a" name="a4ecf27a5d75d779b62ee057a6037d63a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ecf27a5d75d779b62ee057a6037d63a">&#9670;&#160;</a></span>~Font()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Font::~Font </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aabff050c66dedaf999ab7c160ab0b50a" name="aabff050c66dedaf999ab7c160ab0b50a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabff050c66dedaf999ab7c160ab0b50a">&#9670;&#160;</a></span>Font() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Font::Font </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a35727dd5fb2be8a1867b1fcc23f6052c" name="a35727dd5fb2be8a1867b1fcc23f6052c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35727dd5fb2be8a1867b1fcc23f6052c">&#9670;&#160;</a></span>defaultCharset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Font::defaultCharset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Printable ASCII (0x20..0x7E), used when no explicit charset is given. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<a id="ab54ec3591aaafc63cf39a88634fc3437" name="ab54ec3591aaafc63cf39a88634fc3437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab54ec3591aaafc63cf39a88634fc3437">&#9670;&#160;</a></span>findGlyph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1Font_1_1Glyph.html">Font::Glyph</a> * eve::graphics::Font::findGlyph </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>codepoint</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns nullptr if <code>codepoint</code> isn't in this <a class="el" href="classeve_1_1graphics_1_1Font.html" title="GPU-side font: wraps a decoded font::FontData and rasterizes a fixed set of codepoints into a single ...">Font</a>'s atlas. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01791">eve::graphics::Graphics::drawText()</a>.</p>
+
+</div>
+</div>
+<a id="a11153631672e71d999269595fbd88f8d" name="a11153631672e71d999269595fbd88f8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11153631672e71d999269595fbd88f8d">&#9670;&#160;</a></span>getAscent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Font::getAscent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FontData_8cpp_source.html#l00106">eve::font::FontData::getAscent()</a>.</p>
+
+</div>
+</div>
+<a id="a767dd135e6ffed87c9cca65e97399140" name="a767dd135e6ffed87c9cca65e97399140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a767dd135e6ffed87c9cca65e97399140">&#9670;&#160;</a></span>getBaseline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Font::getBaseline </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distance from the top of a line to the baseline (== <a class="el" href="classeve_1_1graphics_1_1Font.html#a11153631672e71d999269595fbd88f8d">getAscent()</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FontData_8cpp_source.html#l00125">eve::font::FontData::getBaseline()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01791">eve::graphics::Graphics::drawText()</a>.</p>
+
+</div>
+</div>
+<a id="a5a066157a5d7bf63f174099f1788b844" name="a5a066157a5d7bf63f174099f1788b844"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a066157a5d7bf63f174099f1788b844">&#9670;&#160;</a></span>getData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1font_1_1FontData.html">font::FontData</a> * eve::graphics::Font::getData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8h_source.html">Font.h</a> 第 <a class="el" href="graphics_2Font_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01791">eve::graphics::Graphics::drawText()</a>.</p>
+
+</div>
+</div>
+<a id="ae0504e01197b6068c742a8abe52669cb" name="ae0504e01197b6068c742a8abe52669cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0504e01197b6068c742a8abe52669cb">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Font::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Line height in pixels at the FontData's decoded pixel size. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FontData_8cpp_source.html#l00119">eve::font::FontData::getLineHeight()</a>.</p>
+
+</div>
+</div>
+<a id="a742c3e7ac9b0a8f1a27587ee2db15faa" name="a742c3e7ac9b0a8f1a27587ee2db15faa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a742c3e7ac9b0a8f1a27587ee2db15faa">&#9670;&#160;</a></span>getTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::Font::getTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8h_source.html">Font.h</a> 第 <a class="el" href="graphics_2Font_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01791">eve::graphics::Graphics::drawText()</a>.</p>
+
+</div>
+</div>
+<a id="ae7b174c0369d388d2bf6e91f30ba4f42" name="ae7b174c0369d388d2bf6e91f30ba4f42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7b174c0369d388d2bf6e91f30ba4f42">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Font::getWidth </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pixel width of <code>text</code> (UTF-8), including kerning; delegates to FontData. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FontData_8cpp_source.html#l00212">eve::font::FontData::getWidth()</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardTypes_8cpp_source.html#l00210">eve::card::printCentered()</a>.</p>
+
+</div>
+</div>
+<a id="a4ba40f209672a65b5ce96a9e197b138b" name="a4ba40f209672a65b5ce96a9e197b138b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ba40f209672a65b5ce96a9e197b138b">&#9670;&#160;</a></span>hasGlyph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Font::hasGlyph </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>codepoint</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether <code>codepoint</code> was rasterized into this <a class="el" href="classeve_1_1graphics_1_1Font.html" title="GPU-side font: wraps a decoded font::FontData and rasterizes a fixed set of codepoints into a single ...">Font</a>'s atlas. </p>
+
+<p class="definition">在文件 <a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a> 第 <a class="el" href="graphics_2Font_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc66f70d5dce7235afe5e7900f3b6094" name="afc66f70d5dce7235afe5e7900f3b6094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc66f70d5dce7235afe5e7900f3b6094">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> &amp; eve::graphics::Font::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="graphics_2Font_8h_source.html">Font.h</a></li>
+<li>src/modules/graphics/<a class="el" href="graphics_2Font_8cpp_source.html">Font.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

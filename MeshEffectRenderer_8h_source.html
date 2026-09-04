@@ -1,0 +1,381 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/MeshEffectRenderer.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MeshEffectRenderer.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MeshEffectRenderer_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Color_8h.html">graphics/Color.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="MeshVfxBatchSubmission_8h.html">stylize/MeshVfxBatchSubmission.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="MeshEffect_8h.html">stylize/MeshEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="MeshParticleEmitter_8h.html">stylize/MeshParticleEmitter.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="TrailEffect_8h.html">stylize/TrailEffect.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>Mesh;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>Texture;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html">MeshEffectDrawSource</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a00201a82f0bf6b792973aaf846dc7b47">   29</a></span>    <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MeshEffectTargetHandle</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a00201a82f0bf6b792973aaf846dc7b47">target</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a167ceab87214ab2c98bde47b8a836bba">   30</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>* <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a167ceab87214ab2c98bde47b8a836bba">mesh</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a0516bd43dd9c8adff5ebea1c918ee290">   31</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a>* <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a0516bd43dd9c8adff5ebea1c918ee290">albedo</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a2f5a181f3f61e8c2cd96f97f3c12a5c5">   32</a></span>    glm::mat4 <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a2f5a181f3f61e8c2cd96f97f3c12a5c5">model</a>{1.f};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#aba2dc902a6e18fcfea50609d956e943d">   33</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#aba2dc902a6e18fcfea50609d956e943d">tint</a>{1.f};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html">   37</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html">MeshParticleDrawSource</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#ade9b53d8745d1a10bc0caf222d1f68a6">   38</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>* <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#ade9b53d8745d1a10bc0caf222d1f68a6">mesh</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#a4d6d071f12c9eb180ba79f62cafdde67">   39</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a>* <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#a4d6d071f12c9eb180ba79f62cafdde67">albedo</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#acda68128438fbdb2597db4cfcb28a375">   40</a></span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleInstance.html">MeshParticleInstance</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#acda68128438fbdb2597db4cfcb28a375">instance</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1TrailUploadData.html">   44</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1TrailUploadData.html">TrailUploadData</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1TrailUploadData.html#a3c99cdf50352d622c1ff2a0490b97118">   45</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1TrailUploadData.html#a3c99cdf50352d622c1ff2a0490b97118">positions</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1TrailUploadData.html#acfb2c9a1e28fa0c71b4d4e1dd4f64abb">   46</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1TrailUploadData.html#acfb2c9a1e28fa0c71b4d4e1dd4f64abb">normals</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1TrailUploadData.html#a04982ee7b5a21eee3c3be3e3e8a7a80c">   47</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1TrailUploadData.html#a04982ee7b5a21eee3c3be3e3e8a7a80c">uvs</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1TrailUploadData.html#a4bf6ce60ab40917c1517262cc9d60882">   48</a></span>    std::vector&lt;std::uint32_t&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1TrailUploadData.html#a4bf6ce60ab40917c1517262cc9d60882">indices</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600">   52</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600">MeshEffectSubmitStatus</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600ac4816e491f1e2cf4b8c26d844861d8fe">Drawn</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600a4d1eefc128a7e993ffdf85fa67ba90f4">SkippedInactive</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600a100c5901ffcc9308a6952f02f8c345c2">SkippedEmpty</a> };</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="};">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html">   55</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html">MeshVfxRendererCommand</a> {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975">   56</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975">Kind</a> : std::uint8_t { <a class="code hl_enumvalue" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975a6b551379c3c0b59326abdaf3b4395bd3">Overlay</a>, <a class="code hl_enumvalue" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975ad518a06262ac68f1f006a4f802588130">Trail</a>, <a class="code hl_enumvalue" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975a5e9328c486b44b9a58bca20f7f2064f4">Particle</a> };</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a8d5719ec7e992a494151d712a2ba02fd">   58</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a8d5719ec7e992a494151d712a2ba02fd">stableInstanceId</a> = 0;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a8244d3aa60dede6fce394d7a88c7995a">   59</a></span>    <a class="code hl_enumeration" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975">Kind</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a8244d3aa60dede6fce394d7a88c7995a">kind</a> = <a class="code hl_enumvalue" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975a6b551379c3c0b59326abdaf3b4395bd3">Kind::Overlay</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#af474f7818c8e777ae264aa299da073bf">   60</a></span>    <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>* <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#af474f7818c8e777ae264aa299da073bf">effect</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ad57723548c339ddb0805a04a4896f12d">   61</a></span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html">MeshEffectDrawSource</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ad57723548c339ddb0805a04a4896f12d">overlay</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ab16b8d9f03d9838854e6bdcfe4407690">   62</a></span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">TrailMeshSnapshot</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ab16b8d9f03d9838854e6bdcfe4407690">trail</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#aa0722b87daee9f45f71ea52144bedf79">   63</a></span>    glm::mat4 <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#aa0722b87daee9f45f71ea52144bedf79">trailModel</a>{1.f};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a15a804e9eccc21b08aa8afdff5a8f52e">   64</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a15a804e9eccc21b08aa8afdff5a8f52e">trailTint</a>{1.f};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a67f22f01c1613d710d007cf8996675ed">   65</a></span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html">MeshParticleDrawSource</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a67f22f01c1613d710d007cf8996675ed">particle</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="};">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html">   69</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html">MeshParticleRenderInputs</a> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#a46ac6e9e762be13c1dc3fdcd273be8cc">   70</a></span>    std::vector&lt;MeshVfxLodCandidate&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#a46ac6e9e762be13c1dc3fdcd273be8cc">lodCandidates</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#abc87ab47721ae67676dfd331ef0d6510">   71</a></span>    std::vector&lt;MeshVfxRenderItem&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#abc87ab47721ae67676dfd331ef0d6510">renderItems</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#a02a9076e1d5961b7a7f8307863bcd91d">   72</a></span>    std::vector&lt;MeshVfxRendererCommand&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#a02a9076e1d5961b7a7f8307863bcd91d">commands</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>[[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html">MeshParticleRenderInputs</a> <a class="code hl_function" href="namespaceeve_1_1stylize.html#a5f8c4cc05cfe8642eb90d99faf1c312e">buildMeshParticleRenderInputs</a>(</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    std::span&lt;const MeshParticleInstance&gt; <a class="code hl_variable" href="BuildingTarget_8cpp.html#a847adfdf0456acf149e82b9b0304d031">instances</a>, <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>* effect,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a>* <a class="code hl_variable" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxBatchKey.html">MeshVfxBatchKey</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    std::uint64_t emitterStableId, <span class="keyword">const</span> glm::vec3&amp; cameraPosition,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">float</span> projectionScalePixels, <span class="keywordtype">float</span> maximumDistance, std::int32_t <a class="code hl_variable" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a> = 0);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;TrailUploadData&gt;</a> <a class="code hl_function" href="namespaceeve_1_1stylize.html#a4a286ceeb0d635d80698a5fef6d2cf01">prepareTrailUpload</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">TrailMeshSnapshot</a>&amp; snapshot);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="foldopen" id="foldopen00113" data-start="{" data-end="};">
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectRenderer.html">  113</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectRenderer.html">MeshEffectRenderer</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html">IMeshVfxBatchSink</a> {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectRenderer.html">MeshEffectRenderer</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp; graphics) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#aed48b97ce7694488d5a2e81da26cb815">  118</a></span>    <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#aed48b97ce7694488d5a2e81da26cb815">MeshEffectRenderer</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectRenderer.html">MeshEffectRenderer</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a5734c38919622fe77ed8db3c4fb3e270">  119</a></span>    <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectRenderer.html">MeshEffectRenderer</a>&amp; <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a5734c38919622fe77ed8db3c4fb3e270">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectRenderer.html">MeshEffectRenderer</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;MeshEffectSubmitStatus&gt;</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#ae6904aae0ff17096130e8539b5872192">submitOverlay</a>(</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>&amp; effect, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshEffectDrawSource.html">MeshEffectDrawSource</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;MeshEffectSubmitStatus&gt;</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a749c0d984cdffdc2d0338b3711245e9b">submitTrail</a>(</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>&amp; effect, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">TrailMeshSnapshot</a>&amp; snapshot,</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keyword">const</span> glm::mat4&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a> = glm::mat4(1.f), <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a>&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a> = <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a>(1.f));</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;MeshEffectSubmitStatus&gt;</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#ad82396ab20d41d32aae90c616669eead">submitParticle</a>(</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>&amp; effect, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleDrawSource.html">MeshParticleDrawSource</a>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;MeshVfxSubmissionReport&gt;</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a47e8a0c394391429cb47447e6b75c4ae">submitQueue</a>(</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxRenderQueue.html">MeshVfxRenderQueue</a>&amp; queue, std::span&lt;const MeshVfxRendererCommand&gt; <a class="code hl_variable" href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a>);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">MeshVfxSubmitStatus</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#af2e50ebea760cf6492f07080036935fc">beginBatch</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxBatchKey.html">MeshVfxBatchKey</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">MeshVfxSubmitStatus</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a88292fef38db269fc116db4c47edaf69">submitDraw</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshVfxBatchedDraw.html">MeshVfxBatchedDraw</a>&amp; <a class="code hl_variable" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">MeshVfxSubmitStatus</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a3b3ff44de8527474fbd318bef6133775">endBatch</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#ab38da74dec696e8cb699f33d46c3aaae">  175</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>* <a class="code hl_function" href="classeve_1_1stylize_1_1MeshEffectRenderer.html#ab38da74dec696e8cb699f33d46c3aaae">trailMesh</a>() const noexcept { <span class="keywordflow">return</span> trailMesh_; }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* shaderFor(<a class="code hl_class" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a>&amp; effect);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp; graphics_;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>* trailMesh_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    std::unordered_map&lt;std::string, graphics::Shader*&gt; shaders_;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    std::unordered_map&lt;std::uint64_t, const MeshVfxRendererCommand*&gt; activeCommands_;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordtype">bool</span> batchActive_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>};</div>
+</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aBuildingTarget_8cpp_html_a847adfdf0456acf149e82b9b0304d031"><div class="ttname"><a href="BuildingTarget_8cpp.html#a847adfdf0456acf149e82b9b0304d031">instances</a></div><div class="ttdeci">std::vector&lt; BuildingInstanceSnapshot &gt; instances</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8cpp_source.html#l00255">BuildingTarget.cpp:255</a></div></div>
+<div class="ttc" id="aCapability_8cpp_html_acec9ce2df15222151ad66fcb1d74eb9f"><div class="ttname"><a href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00015">Capability.cpp:15</a></div></div>
+<div class="ttc" id="aColor_8h_html"><div class="ttname"><a href="Color_8h.html">Color.h</a></div></div>
+<div class="ttc" id="aEditorTransactionConsumer_8cpp_html_a91dfb623dcffda243afe1b1a57887e90"><div class="ttname"><a href="EditorTransactionConsumer_8cpp.html#a91dfb623dcffda243afe1b1a57887e90">commands</a></div><div class="ttdeci">std::vector&lt; std::unique_ptr&lt; IEditCommand &gt; &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="EditorTransactionConsumer_8cpp_source.html#l00081">EditorTransactionConsumer.cpp:81</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a7675542847a16d47375ee96d007f8999"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a></div><div class="ttdeci">glm::vec4 tint</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00046">GraphicsVirtualGeometry.cpp:46</a></div></div>
+<div class="ttc" id="aMeshEffect_8h_html"><div class="ttname"><a href="MeshEffect_8h.html">MeshEffect.h</a></div></div>
+<div class="ttc" id="aMeshParticleEmitter_8h_html"><div class="ttname"><a href="MeshParticleEmitter_8h.html">MeshParticleEmitter.h</a></div></div>
+<div class="ttc" id="aMeshVfxBatchSubmission_8h_html"><div class="ttname"><a href="MeshVfxBatchSubmission_8h.html">MeshVfxBatchSubmission.h</a></div></div>
+<div class="ttc" id="aMeshVfxRenderBatch_8cpp_html_a90ba9e50cca44205ade0c723c61f20ad"><div class="ttname"><a href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a></div><div class="ttdeci">MeshVfxBatchedDraw draw</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8cpp_source.html#l00013">MeshVfxRenderBatch.cpp:13</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_ab7584fa1f0ea319cb0ecfaf835116c72"><div class="ttname"><a href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a></div><div class="ttdeci">Texture * albedo</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00093">ModelRenderer.cpp:93</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00731">RenderSystem3D.cpp:731</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ade56622421c713a8290c025626759118"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00734">RenderSystem3D.cpp:734</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTrailEffect_8h_html"><div class="ttname"><a href="TrailEffect_8h.html">TrailEffect.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; MeshEffectTargetTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00020">Mesh.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1IMeshVfxBatchSink_html"><div class="ttname"><a href="classeve_1_1stylize_1_1IMeshVfxBatchSink.html">eve::stylize::IMeshVfxBatchSink</a></div><div class="ttdoc">Immediate graphics-backend contract for a mesh VFX render queue.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00042">MeshVfxBatchSubmission.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectInstance_html"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectInstance.html">eve::stylize::MeshEffectInstance</a></div><div class="ttdoc">Runtime state for a shader effect attached to a renderable mesh.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffect_8h_source.html#l00038">MeshEffect.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html">eve::stylize::MeshEffectRenderer</a></div><div class="ttdoc">Render-thread adapter from stylize runtime state to Graphics mesh draws.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00113">MeshEffectRenderer.h:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_a3b3ff44de8527474fbd318bef6133775"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a3b3ff44de8527474fbd318bef6133775">eve::stylize::MeshEffectRenderer::endBatch</a></div><div class="ttdeci">MeshVfxSubmitStatus endBatch() override</div><div class="ttdoc">End the active GPU-state batch.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00296">MeshEffectRenderer.cpp:296</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_a47e8a0c394391429cb47447e6b75c4ae"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a47e8a0c394391429cb47447e6b75c4ae">eve::stylize::MeshEffectRenderer::submitQueue</a></div><div class="ttdeci">eve::Result&lt; MeshVfxSubmissionReport &gt; submitQueue(const MeshVfxRenderQueue &amp;queue, std::span&lt; const MeshVfxRendererCommand &gt; commands)</div><div class="ttdoc">Resolve and submit a complete LOD-planned render queue.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00241">MeshEffectRenderer.cpp:241</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_a5734c38919622fe77ed8db3c4fb3e270"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a5734c38919622fe77ed8db3c4fb3e270">eve::stylize::MeshEffectRenderer::operator=</a></div><div class="ttdeci">MeshEffectRenderer &amp; operator=(const MeshEffectRenderer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_a749c0d984cdffdc2d0338b3711245e9b"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a749c0d984cdffdc2d0338b3711245e9b">eve::stylize::MeshEffectRenderer::submitTrail</a></div><div class="ttdeci">eve::Result&lt; MeshEffectSubmitStatus &gt; submitTrail(MeshEffectInstance &amp;effect, const TrailMeshSnapshot &amp;snapshot, const glm::mat4 &amp;model=glm::mat4(1.f), const graphics::Color &amp;tint=graphics::Color(1.f))</div><div class="ttdoc">Upload and draw one dynamic ribbon using an active mesh effect.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00174">MeshEffectRenderer.cpp:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_a88292fef38db269fc116db4c47edaf69"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#a88292fef38db269fc116db4c47edaf69">eve::stylize::MeshEffectRenderer::submitDraw</a></div><div class="ttdeci">MeshVfxSubmitStatus submitDraw(const MeshVfxBatchedDraw &amp;draw) override</div><div class="ttdoc">Submit one resolved draw in the active batch.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00277">MeshEffectRenderer.cpp:277</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_ab38da74dec696e8cb699f33d46c3aaae"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#ab38da74dec696e8cb699f33d46c3aaae">eve::stylize::MeshEffectRenderer::trailMesh</a></div><div class="ttdeci">graphics::Mesh * trailMesh() const noexcept</div><div class="ttdoc">Return the backend-owned dynamic ribbon mesh, or nullptr before first upload.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00175">MeshEffectRenderer.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_ad82396ab20d41d32aae90c616669eead"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#ad82396ab20d41d32aae90c616669eead">eve::stylize::MeshEffectRenderer::submitParticle</a></div><div class="ttdeci">eve::Result&lt; MeshEffectSubmitStatus &gt; submitParticle(MeshEffectInstance &amp;effect, const MeshParticleDrawSource &amp;source)</div><div class="ttdoc">Draw one simulated mesh particle through an active mesh-effect style.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00217">MeshEffectRenderer.cpp:217</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_ae6904aae0ff17096130e8539b5872192"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#ae6904aae0ff17096130e8539b5872192">eve::stylize::MeshEffectRenderer::submitOverlay</a></div><div class="ttdeci">eve::Result&lt; MeshEffectSubmitStatus &gt; submitOverlay(MeshEffectInstance &amp;effect, const MeshEffectDrawSource &amp;source)</div><div class="ttdoc">Draw a second-pass effect over a resolved source mesh.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00145">MeshEffectRenderer.cpp:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_aed48b97ce7694488d5a2e81da26cb815"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#aed48b97ce7694488d5a2e81da26cb815">eve::stylize::MeshEffectRenderer::MeshEffectRenderer</a></div><div class="ttdeci">MeshEffectRenderer(const MeshEffectRenderer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshEffectRenderer_html_af2e50ebea760cf6492f07080036935fc"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshEffectRenderer.html#af2e50ebea760cf6492f07080036935fc">eve::stylize::MeshEffectRenderer::beginBatch</a></div><div class="ttdeci">MeshVfxSubmitStatus beginBatch(const MeshVfxBatchKey &amp;key) override</div><div class="ttdoc">Begin one GPU-state batch; intended for MeshVfxBatchExecutor.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00263">MeshEffectRenderer.cpp:263</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a13324d64a47c081b41e83ff8eff3db31"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a13324d64a47c081b41e83ff8eff3db31">eve::stylize::MeshVfxSubmitStatus</a></div><div class="ttdeci">MeshVfxSubmitStatus</div><div class="ttdoc">Result of one synchronous backend submission operation.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxBatchSubmission_8h_source.html#l00010">MeshVfxBatchSubmission.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a4a286ceeb0d635d80698a5fef6d2cf01"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a4a286ceeb0d635d80698a5fef6d2cf01">eve::stylize::prepareTrailUpload</a></div><div class="ttdeci">eve::Result&lt; TrailUploadData &gt; prepareTrailUpload(const TrailMeshSnapshot &amp;snapshot)</div><div class="ttdoc">Validate and convert a ribbon snapshot into packed graphics arrays.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00062">MeshEffectRenderer.cpp:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a5f8c4cc05cfe8642eb90d99faf1c312e"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a5f8c4cc05cfe8642eb90d99faf1c312e">eve::stylize::buildMeshParticleRenderInputs</a></div><div class="ttdeci">MeshParticleRenderInputs buildMeshParticleRenderInputs(std::span&lt; const MeshParticleInstance &gt; instances, MeshEffectInstance *effect, graphics::Mesh *mesh, graphics::Texture *albedo, const MeshVfxBatchKey &amp;key, std::uint64_t emitterStableId, const glm::vec3 &amp;cameraPosition, float projectionScalePixels, float maximumDistance, std::int32_t priority)</div><div class="ttdoc">Convert stable particle snapshots into the shared LOD/batch/render pipeline.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8cpp_source.html#l00030">MeshEffectRenderer.cpp:30</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a600ede5434073c832a316d6a00ff5600"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600">eve::stylize::MeshEffectSubmitStatus</a></div><div class="ttdeci">MeshEffectSubmitStatus</div><div class="ttdoc">Observable result of one mesh-effect submission.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00052">MeshEffectRenderer.h:52</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a600ede5434073c832a316d6a00ff5600a100c5901ffcc9308a6952f02f8c345c2"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600a100c5901ffcc9308a6952f02f8c345c2">eve::stylize::MeshEffectSubmitStatus::SkippedEmpty</a></div><div class="ttdeci">@ SkippedEmpty</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a600ede5434073c832a316d6a00ff5600a4d1eefc128a7e993ffdf85fa67ba90f4"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600a4d1eefc128a7e993ffdf85fa67ba90f4">eve::stylize::MeshEffectSubmitStatus::SkippedInactive</a></div><div class="ttdeci">@ SkippedInactive</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a600ede5434073c832a316d6a00ff5600ac4816e491f1e2cf4b8c26d844861d8fe"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a600ede5434073c832a316d6a00ff5600ac4816e491f1e2cf4b8c26d844861d8fe">eve::stylize::MeshEffectSubmitStatus::Drawn</a></div><div class="ttdeci">@ Drawn</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectDrawSource_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectDrawSource.html">eve::stylize::MeshEffectDrawSource</a></div><div class="ttdoc">Immediate borrowed inputs for drawing an effect over an existing mesh.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00028">MeshEffectRenderer.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectDrawSource_html_a00201a82f0bf6b792973aaf846dc7b47"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a00201a82f0bf6b792973aaf846dc7b47">eve::stylize::MeshEffectDrawSource::target</a></div><div class="ttdeci">MeshEffectTargetHandle target</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00029">MeshEffectRenderer.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectDrawSource_html_a0516bd43dd9c8adff5ebea1c918ee290"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a0516bd43dd9c8adff5ebea1c918ee290">eve::stylize::MeshEffectDrawSource::albedo</a></div><div class="ttdeci">graphics::Texture * albedo</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00031">MeshEffectRenderer.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectDrawSource_html_a167ceab87214ab2c98bde47b8a836bba"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a167ceab87214ab2c98bde47b8a836bba">eve::stylize::MeshEffectDrawSource::mesh</a></div><div class="ttdeci">graphics::Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00030">MeshEffectRenderer.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectDrawSource_html_a2f5a181f3f61e8c2cd96f97f3c12a5c5"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#a2f5a181f3f61e8c2cd96f97f3c12a5c5">eve::stylize::MeshEffectDrawSource::model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00032">MeshEffectRenderer.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshEffectDrawSource_html_aba2dc902a6e18fcfea50609d956e943d"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshEffectDrawSource.html#aba2dc902a6e18fcfea50609d956e943d">eve::stylize::MeshEffectDrawSource::tint</a></div><div class="ttdeci">graphics::Color tint</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00033">MeshEffectRenderer.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleDrawSource_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleDrawSource.html">eve::stylize::MeshParticleDrawSource</a></div><div class="ttdoc">Borrowed mesh/material plus owning transform state for one mesh particle draw.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00037">MeshEffectRenderer.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleDrawSource_html_a4d6d071f12c9eb180ba79f62cafdde67"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#a4d6d071f12c9eb180ba79f62cafdde67">eve::stylize::MeshParticleDrawSource::albedo</a></div><div class="ttdeci">graphics::Texture * albedo</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00039">MeshEffectRenderer.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleDrawSource_html_acda68128438fbdb2597db4cfcb28a375"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#acda68128438fbdb2597db4cfcb28a375">eve::stylize::MeshParticleDrawSource::instance</a></div><div class="ttdeci">MeshParticleInstance instance</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00040">MeshEffectRenderer.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleDrawSource_html_ade9b53d8745d1a10bc0caf222d1f68a6"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleDrawSource.html#ade9b53d8745d1a10bc0caf222d1f68a6">eve::stylize::MeshParticleDrawSource::mesh</a></div><div class="ttdeci">graphics::Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00038">MeshEffectRenderer.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleInstance_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleInstance.html">eve::stylize::MeshParticleInstance</a></div><div class="ttdoc">Render-facing immutable state of one live mesh particle.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00073">MeshParticleEmitter.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleRenderInputs_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html">eve::stylize::MeshParticleRenderInputs</a></div><div class="ttdoc">Complete planner and renderer inputs generated from one particle snapshot.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00069">MeshEffectRenderer.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleRenderInputs_html_a02a9076e1d5961b7a7f8307863bcd91d"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#a02a9076e1d5961b7a7f8307863bcd91d">eve::stylize::MeshParticleRenderInputs::commands</a></div><div class="ttdeci">std::vector&lt; MeshVfxRendererCommand &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00072">MeshEffectRenderer.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleRenderInputs_html_a46ac6e9e762be13c1dc3fdcd273be8cc"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#a46ac6e9e762be13c1dc3fdcd273be8cc">eve::stylize::MeshParticleRenderInputs::lodCandidates</a></div><div class="ttdeci">std::vector&lt; MeshVfxLodCandidate &gt; lodCandidates</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00070">MeshEffectRenderer.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleRenderInputs_html_abc87ab47721ae67676dfd331ef0d6510"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleRenderInputs.html#abc87ab47721ae67676dfd331ef0d6510">eve::stylize::MeshParticleRenderInputs::renderItems</a></div><div class="ttdeci">std::vector&lt; MeshVfxRenderItem &gt; renderItems</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00071">MeshEffectRenderer.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxBatchKey_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxBatchKey.html">eve::stylize::MeshVfxBatchKey</a></div><div class="ttdoc">Immutable GPU-state identity used to combine compatible draw items.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8h_source.html#l00018">MeshVfxRenderBatch.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxBatchedDraw_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxBatchedDraw.html">eve::stylize::MeshVfxBatchedDraw</a></div><div class="ttdoc">One ordered draw reference inside a render batch.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8h_source.html#l00042">MeshVfxRenderBatch.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRenderQueue_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRenderQueue.html">eve::stylize::MeshVfxRenderQueue</a></div><div class="ttdoc">Complete deterministic queue consumed by a graphics backend.</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8h_source.html#l00065">MeshVfxRenderBatch.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html">eve::stylize::MeshVfxRendererCommand</a></div><div class="ttdoc">Concrete draw payload resolved for one batched stable instance ID.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00055">MeshEffectRenderer.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_a15a804e9eccc21b08aa8afdff5a8f52e"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a15a804e9eccc21b08aa8afdff5a8f52e">eve::stylize::MeshVfxRendererCommand::trailTint</a></div><div class="ttdeci">graphics::Color trailTint</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00064">MeshEffectRenderer.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_a67f22f01c1613d710d007cf8996675ed"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a67f22f01c1613d710d007cf8996675ed">eve::stylize::MeshVfxRendererCommand::particle</a></div><div class="ttdeci">MeshParticleDrawSource particle</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00065">MeshEffectRenderer.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_a8244d3aa60dede6fce394d7a88c7995a"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a8244d3aa60dede6fce394d7a88c7995a">eve::stylize::MeshVfxRendererCommand::kind</a></div><div class="ttdeci">Kind kind</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00059">MeshEffectRenderer.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_a8d5719ec7e992a494151d712a2ba02fd"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#a8d5719ec7e992a494151d712a2ba02fd">eve::stylize::MeshVfxRendererCommand::stableInstanceId</a></div><div class="ttdeci">std::uint64_t stableInstanceId</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00058">MeshEffectRenderer.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_aa0722b87daee9f45f71ea52144bedf79"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#aa0722b87daee9f45f71ea52144bedf79">eve::stylize::MeshVfxRendererCommand::trailModel</a></div><div class="ttdeci">glm::mat4 trailModel</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00063">MeshEffectRenderer.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_ab16b8d9f03d9838854e6bdcfe4407690"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ab16b8d9f03d9838854e6bdcfe4407690">eve::stylize::MeshVfxRendererCommand::trail</a></div><div class="ttdeci">TrailMeshSnapshot trail</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00062">MeshEffectRenderer.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_ad57723548c339ddb0805a04a4896f12d"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ad57723548c339ddb0805a04a4896f12d">eve::stylize::MeshVfxRendererCommand::overlay</a></div><div class="ttdeci">MeshEffectDrawSource overlay</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00061">MeshEffectRenderer.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_ada303ea463e37d8d264dcbce41cc1975"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975">eve::stylize::MeshVfxRendererCommand::Kind</a></div><div class="ttdeci">Kind</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00056">MeshEffectRenderer.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_ada303ea463e37d8d264dcbce41cc1975a5e9328c486b44b9a58bca20f7f2064f4"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975a5e9328c486b44b9a58bca20f7f2064f4">eve::stylize::MeshVfxRendererCommand::Kind::Particle</a></div><div class="ttdeci">@ Particle</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_ada303ea463e37d8d264dcbce41cc1975a6b551379c3c0b59326abdaf3b4395bd3"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975a6b551379c3c0b59326abdaf3b4395bd3">eve::stylize::MeshVfxRendererCommand::Kind::Overlay</a></div><div class="ttdeci">@ Overlay</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_ada303ea463e37d8d264dcbce41cc1975ad518a06262ac68f1f006a4f802588130"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#ada303ea463e37d8d264dcbce41cc1975ad518a06262ac68f1f006a4f802588130">eve::stylize::MeshVfxRendererCommand::Kind::Trail</a></div><div class="ttdeci">@ Trail</div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshVfxRendererCommand_html_af474f7818c8e777ae264aa299da073bf"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshVfxRendererCommand.html#af474f7818c8e777ae264aa299da073bf">eve::stylize::MeshVfxRendererCommand::effect</a></div><div class="ttdeci">MeshEffectInstance * effect</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00060">MeshEffectRenderer.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailMeshSnapshot_html"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailMeshSnapshot.html">eve::stylize::TrailMeshSnapshot</a></div><div class="ttdoc">Owning CPU snapshot suitable for upload by a graphics adapter.</div><div class="ttdef"><b>Definition</b> <a href="TrailEffect_8h_source.html#l00040">TrailEffect.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailUploadData_html"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailUploadData.html">eve::stylize::TrailUploadData</a></div><div class="ttdoc">Packed owning arrays accepted by Graphics dynamic mesh upload APIs.</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00044">MeshEffectRenderer.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailUploadData_html_a04982ee7b5a21eee3c3be3e3e8a7a80c"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailUploadData.html#a04982ee7b5a21eee3c3be3e3e8a7a80c">eve::stylize::TrailUploadData::uvs</a></div><div class="ttdeci">std::vector&lt; float &gt; uvs</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00047">MeshEffectRenderer.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailUploadData_html_a3c99cdf50352d622c1ff2a0490b97118"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailUploadData.html#a3c99cdf50352d622c1ff2a0490b97118">eve::stylize::TrailUploadData::positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00045">MeshEffectRenderer.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailUploadData_html_a4bf6ce60ab40917c1517262cc9d60882"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailUploadData.html#a4bf6ce60ab40917c1517262cc9d60882">eve::stylize::TrailUploadData::indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00048">MeshEffectRenderer.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1TrailUploadData_html_acfb2c9a1e28fa0c71b4d4e1dd4f64abb"><div class="ttname"><a href="structeve_1_1stylize_1_1TrailUploadData.html#acfb2c9a1e28fa0c71b4d4e1dd4f64abb">eve::stylize::TrailUploadData::normals</a></div><div class="ttdeci">std::vector&lt; float &gt; normals</div><div class="ttdef"><b>Definition</b> <a href="MeshEffectRenderer_8h_source.html#l00046">MeshEffectRenderer.h:46</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

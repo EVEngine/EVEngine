@@ -1,0 +1,1189 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::FootIKSolver类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html">FootIKSolver</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1FootIKSolver-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::FootIKSolver类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Paired-foot IK with contact smoothing and pelvis compensation.  
+ <a href="classeve_1_1animation_1_1FootIKSolver.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a75a17b60977f678e2cd8eb8b1adb4554" id="r_a75a17b60977f678e2cd8eb8b1adb4554"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a75a17b60977f678e2cd8eb8b1adb4554">FootIKSolver</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="memdesc:a75a17b60977f678e2cd8eb8b1adb4554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct for a non-null borrowed skeleton.  <br /></td></tr>
+<tr class="separator:a75a17b60977f678e2cd8eb8b1adb4554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa999dba0545ab65b7d3d457483b107a6" id="r_aa999dba0545ab65b7d3d457483b107a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#aa999dba0545ab65b7d3d457483b107a6">~FootIKSolver</a> ()</td></tr>
+<tr class="separator:aa999dba0545ab65b7d3d457483b107a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad00928b2e786325f5fa75a4ea744239f" id="r_ad00928b2e786325f5fa75a4ea744239f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#ad00928b2e786325f5fa75a4ea744239f">FootIKSolver</a> (const <a class="el" href="classeve_1_1animation_1_1FootIKSolver.html">FootIKSolver</a> &amp;)=default</td></tr>
+<tr class="separator:ad00928b2e786325f5fa75a4ea744239f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab57fae7f93560b77f2e7ab7c779a06e4" id="r_ab57fae7f93560b77f2e7ab7c779a06e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html">FootIKSolver</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#ab57fae7f93560b77f2e7ab7c779a06e4">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1FootIKSolver.html">FootIKSolver</a> &amp;)=default</td></tr>
+<tr class="separator:ab57fae7f93560b77f2e7ab7c779a06e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1357ec18f6e9063b55032b856ca9519" id="r_af1357ec18f6e9063b55032b856ca9519"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#af1357ec18f6e9063b55032b856ca9519">setSkeleton</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="memdesc:af1357ec18f6e9063b55032b856ca9519"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebind; changing skeleton clears all bone-index configuration.  <br /></td></tr>
+<tr class="separator:af1357ec18f6e9063b55032b856ca9519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeff35b887a6902b9091479cff8893bce" id="r_aeff35b887a6902b9091479cff8893bce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#aeff35b887a6902b9091479cff8893bce">getSkeleton</a> () const</td></tr>
+<tr class="memdesc:aeff35b887a6902b9091479cff8893bce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the borrowed skeleton, or null. @ownership Borrowed; ownership remains with the animation source. @lifetime Valid until <a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#af1357ec18f6e9063b55032b856ca9519" title="Rebind; changing skeleton clears all bone-index configuration.">setSkeleton()</a>, skeleton destruction, or solver destruction.  <br /></td></tr>
+<tr class="separator:aeff35b887a6902b9091479cff8893bce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa451bca4420a13559815a06ff0d16f4a" id="r_aa451bca4420a13559815a06ff0d16f4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#aa451bca4420a13559815a06ff0d16f4a">setPelvisBone</a> (int <a class="el" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>)</td></tr>
+<tr class="memdesc:aa451bca4420a13559815a06ff0d16f4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the pelvis bone.  <br /></td></tr>
+<tr class="separator:aa451bca4420a13559815a06ff0d16f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdedfa27b1850a40a11837d13345e509" id="r_acdedfa27b1850a40a11837d13345e509"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#acdedfa27b1850a40a11837d13345e509">configureLeftLeg</a> (int hip, int knee, int foot, float soleOffset=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:acdedfa27b1850a40a11837d13345e509"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the left hip-knee-foot chain and sole offset.  <br /></td></tr>
+<tr class="separator:acdedfa27b1850a40a11837d13345e509"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8665f570e976a843291ffe512efd332d" id="r_a8665f570e976a843291ffe512efd332d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a8665f570e976a843291ffe512efd332d">configureRightLeg</a> (int hip, int knee, int foot, float soleOffset=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a8665f570e976a843291ffe512efd332d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the right hip-knee-foot chain and sole offset.  <br /></td></tr>
+<tr class="separator:a8665f570e976a843291ffe512efd332d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c157c46d6cc07aac3be27906318c2d0" id="r_a7c157c46d6cc07aac3be27906318c2d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a7c157c46d6cc07aac3be27906318c2d0">configureLeftToe</a> (int toe, float soleOffset=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a7c157c46d6cc07aac3be27906318c2d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure an optional left toe child and its sole offset.  <br /></td></tr>
+<tr class="separator:a7c157c46d6cc07aac3be27906318c2d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc09af5cf1a536421504dcc68e75e4c2" id="r_adc09af5cf1a536421504dcc68e75e4c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#adc09af5cf1a536421504dcc68e75e4c2">configureRightToe</a> (int toe, float soleOffset=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:adc09af5cf1a536421504dcc68e75e4c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure an optional right toe child and its sole offset.  <br /></td></tr>
+<tr class="separator:adc09af5cf1a536421504dcc68e75e4c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc658307b5f53148dec54d2299bb1b81" id="r_afc658307b5f53148dec54d2299bb1b81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#afc658307b5f53148dec54d2299bb1b81">setGroundProvider</a> (const <a class="el" href="classeve_1_1animation_1_1FootIKGroundProvider.html">FootIKGroundProvider</a> *provider)</td></tr>
+<tr class="memdesc:afc658307b5f53148dec54d2299bb1b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an optional automatic ground-query provider. @ownership Borrowed; ownership remains with the caller. @lifetime The provider must outlive this solver or be cleared before destruction.  <br /></td></tr>
+<tr class="separator:afc658307b5f53148dec54d2299bb1b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1bb9cb4c4fdc682c0dd187aa529bce79" id="r_a1bb9cb4c4fdc682c0dd187aa529bce79"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1animation_1_1FootIKGroundProvider.html">FootIKGroundProvider</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a1bb9cb4c4fdc682c0dd187aa529bce79">getGroundProvider</a> () const</td></tr>
+<tr class="memdesc:a1bb9cb4c4fdc682c0dd187aa529bce79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the borrowed ground provider, or null. @ownership Borrowed; ownership remains with the caller. @lifetime Valid until <a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#afc658307b5f53148dec54d2299bb1b81" title="Set an optional automatic ground-query provider. @ownership Borrowed; ownership remains with the call...">setGroundProvider()</a>, provider destruction, or solver destruction.  <br /></td></tr>
+<tr class="separator:a1bb9cb4c4fdc682c0dd187aa529bce79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a740086a34fb5840a84c037c98fad62fc" id="r_a740086a34fb5840a84c037c98fad62fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a740086a34fb5840a84c037c98fad62fc">setGroundQuery</a> (float startHeight, float distance)</td></tr>
+<tr class="memdesc:a740086a34fb5840a84c037c98fad62fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set ray origin height and downward query distance.  <br /></td></tr>
+<tr class="separator:a740086a34fb5840a84c037c98fad62fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefe236713387fb516a8149ce91502512" id="r_aefe236713387fb516a8149ce91502512"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#aefe236713387fb516a8149ce91502512">setLeftContact</a> (bool <a class="el" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, float <a class="el" href="CaveWetness_8cpp.html#a9c79b33ae8c9c2a5388a32077d5eed37">ny</a>, float <a class="el" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>, float weight=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aefe236713387fb516a8149ce91502512"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supply the left model-space ground contact.  <br /></td></tr>
+<tr class="separator:aefe236713387fb516a8149ce91502512"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaae5daeab15d974a94d50b1f6af76c9a" id="r_aaae5daeab15d974a94d50b1f6af76c9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#aaae5daeab15d974a94d50b1f6af76c9a">setRightContact</a> (bool <a class="el" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, float <a class="el" href="CaveWetness_8cpp.html#a9c79b33ae8c9c2a5388a32077d5eed37">ny</a>, float <a class="el" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>, float weight=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aaae5daeab15d974a94d50b1f6af76c9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supply the right model-space ground contact.  <br /></td></tr>
+<tr class="separator:aaae5daeab15d974a94d50b1f6af76c9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a445570e32b4a0a7c68be5bcd74994325" id="r_a445570e32b4a0a7c68be5bcd74994325"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a445570e32b4a0a7c68be5bcd74994325">setMaxPelvisOffset</a> (float distance)</td></tr>
+<tr class="memdesc:a445570e32b4a0a7c68be5bcd74994325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set maximum pelvis compensation distance.  <br /></td></tr>
+<tr class="separator:a445570e32b4a0a7c68be5bcd74994325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12565ae4a4eed644dcb061f2ad48b78a" id="r_a12565ae4a4eed644dcb061f2ad48b78a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a12565ae4a4eed644dcb061f2ad48b78a">setMinGroundNormalY</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a12565ae4a4eed644dcb061f2ad48b78a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set minimum accepted upward normal cosine in [0, 1].  <br /></td></tr>
+<tr class="separator:a12565ae4a4eed644dcb061f2ad48b78a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad730f03c3aa7a9628ea3ef978f6945e" id="r_aad730f03c3aa7a9628ea3ef978f6945e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#aad730f03c3aa7a9628ea3ef978f6945e">setPositionResponse</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:aad730f03c3aa7a9628ea3ef978f6945e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set contact interpolation response in inverse seconds.  <br /></td></tr>
+<tr class="separator:aad730f03c3aa7a9628ea3ef978f6945e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1fed3f1af207d34720626574d9f5c14" id="r_ab1fed3f1af207d34720626574d9f5c14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#ab1fed3f1af207d34720626574d9f5c14">setRotationResponse</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ab1fed3f1af207d34720626574d9f5c14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set foot-normal interpolation response in inverse seconds.  <br /></td></tr>
+<tr class="separator:ab1fed3f1af207d34720626574d9f5c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac00864605de071ade0204ac59da19ebe" id="r_ac00864605de071ade0204ac59da19ebe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#ac00864605de071ade0204ac59da19ebe">setContactGraceTime</a> (float seconds)</td></tr>
+<tr class="memdesc:ac00864605de071ade0204ac59da19ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set how long a missing automatic contact retains its prior target.  <br /></td></tr>
+<tr class="separator:ac00864605de071ade0204ac59da19ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c4d72871378fe2340dca1b619f685ab" id="r_a8c4d72871378fe2340dca1b619f685ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a8c4d72871378fe2340dca1b619f685ab">setFootLockEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a8c4d72871378fe2340dca1b619f685ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable world-space foot locking.  <br /></td></tr>
+<tr class="separator:a8c4d72871378fe2340dca1b619f685ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd6fbe9d133192e604ca458f8ba142fa" id="r_acd6fbe9d133192e604ca458f8ba142fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#acd6fbe9d133192e604ca458f8ba142fa">setFootLockThresholds</a> (float enterWeight, float exitWeight)</td></tr>
+<tr class="memdesc:acd6fbe9d133192e604ca458f8ba142fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set lock enter and release contact-weight thresholds.  <br /></td></tr>
+<tr class="separator:acd6fbe9d133192e604ca458f8ba142fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a907d1474bff6182962f9dcd030b0a55f" id="r_a907d1474bff6182962f9dcd030b0a55f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a907d1474bff6182962f9dcd030b0a55f">isLeftFootLocked</a> () const</td></tr>
+<tr class="memdesc:a907d1474bff6182962f9dcd030b0a55f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the left foot is currently locked.  <br /></td></tr>
+<tr class="separator:a907d1474bff6182962f9dcd030b0a55f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5454ab077223ba7e39e7aaa3f8af086" id="r_ac5454ab077223ba7e39e7aaa3f8af086"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#ac5454ab077223ba7e39e7aaa3f8af086">isRightFootLocked</a> () const</td></tr>
+<tr class="memdesc:ac5454ab077223ba7e39e7aaa3f8af086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the right foot is currently locked.  <br /></td></tr>
+<tr class="separator:ac5454ab077223ba7e39e7aaa3f8af086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9cc5bce04a307a97aac4fe9ffd8398" id="r_a1f9cc5bce04a307a97aac4fe9ffd8398"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a1f9cc5bce04a307a97aac4fe9ffd8398">reset</a> ()</td></tr>
+<tr class="memdesc:a1f9cc5bce04a307a97aac4fe9ffd8398"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear interpolated contacts.  <br /></td></tr>
+<tr class="separator:a1f9cc5bce04a307a97aac4fe9ffd8398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac47fd556d29f8a92b810758aeeb88d32" id="r_ac47fd556d29f8a92b810758aeeb88d32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#ac47fd556d29f8a92b810758aeeb88d32">apply</a> (<a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *pose, float dt)</td></tr>
+<tr class="memdesc:ac47fd556d29f8a92b810758aeeb88d32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply using injected delta time and owning contact values.  <br /></td></tr>
+<tr class="separator:ac47fd556d29f8a92b810758aeeb88d32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db7f04ec008f0e139a48cc048915e6b" id="r_a1db7f04ec008f0e139a48cc048915e6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation_1_1FootIKDebugSnapshot.html">FootIKDebugSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#a1db7f04ec008f0e139a48cc048915e6b">debugSnapshot</a> () const</td></tr>
+<tr class="memdesc:a1db7f04ec008f0e139a48cc048915e6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy smoothed contacts and lock state for tooling visualization.  <br /></td></tr>
+<tr class="separator:a1db7f04ec008f0e139a48cc048915e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Paired-foot IK with contact smoothing and pelvis compensation. </p>
+<dl class="section note"><dt>注解</dt><dd>Main-thread only. The borrowed skeleton must outlive this object. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00029">29</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a75a17b60977f678e2cd8eb8b1adb4554" name="a75a17b60977f678e2cd8eb8b1adb4554"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75a17b60977f678e2cd8eb8b1adb4554">&#9670;&#160;</a></span>FootIKSolver() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::FootIKSolver::FootIKSolver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct for a non-null borrowed skeleton. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa999dba0545ab65b7d3d457483b107a6" name="aa999dba0545ab65b7d3d457483b107a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa999dba0545ab65b7d3d457483b107a6">&#9670;&#160;</a></span>~FootIKSolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::FootIKSolver::~FootIKSolver </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad00928b2e786325f5fa75a4ea744239f" name="ad00928b2e786325f5fa75a4ea744239f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad00928b2e786325f5fa75a4ea744239f">&#9670;&#160;</a></span>FootIKSolver() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::FootIKSolver::FootIKSolver </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1FootIKSolver.html">FootIKSolver</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac47fd556d29f8a92b810758aeeb88d32" name="ac47fd556d29f8a92b810758aeeb88d32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac47fd556d29f8a92b810758aeeb88d32">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td>
+          <td class="paramname"><em>pose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply using injected delta time and owning contact values. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimPose_8cpp_source.html#l00230">eve::animation::AnimPose::computeWorld()</a>, <a class="el" href="AnimPose_8h_source.html#l00027">eve::animation::AnimPose::getBoneCount()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="AnimPose_8cpp_source.html#l00153">eve::animation::AnimPose::local()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::py</a>.</p>
+
+</div>
+</div>
+<a id="acdedfa27b1850a40a11837d13345e509" name="acdedfa27b1850a40a11837d13345e509"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdedfa27b1850a40a11837d13345e509">&#9670;&#160;</a></span>configureLeftLeg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::configureLeftLeg </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>hip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>knee</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>foot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>soleOffset</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the left hip-knee-foot chain and sole offset. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a7c157c46d6cc07aac3be27906318c2d0" name="a7c157c46d6cc07aac3be27906318c2d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c157c46d6cc07aac3be27906318c2d0">&#9670;&#160;</a></span>configureLeftToe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::configureLeftToe </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>toe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>soleOffset</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure an optional left toe child and its sole offset. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a8665f570e976a843291ffe512efd332d" name="a8665f570e976a843291ffe512efd332d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8665f570e976a843291ffe512efd332d">&#9670;&#160;</a></span>configureRightLeg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::configureRightLeg </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>hip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>knee</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>foot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>soleOffset</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the right hip-knee-foot chain and sole offset. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a> , 以及 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="adc09af5cf1a536421504dcc68e75e4c2" name="adc09af5cf1a536421504dcc68e75e4c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc09af5cf1a536421504dcc68e75e4c2">&#9670;&#160;</a></span>configureRightToe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::configureRightToe </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>toe</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>soleOffset</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure an optional right toe child and its sole offset. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a1db7f04ec008f0e139a48cc048915e6b" name="a1db7f04ec008f0e139a48cc048915e6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1db7f04ec008f0e139a48cc048915e6b">&#9670;&#160;</a></span>debugSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation_1_1FootIKDebugSnapshot.html">FootIKDebugSnapshot</a> eve::animation::FootIKSolver::debugSnapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy smoothed contacts and lock state for tooling visualization. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::configured</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::contact</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::locked</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::nx</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::ny</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::nz</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::toeConfigured</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::toeX</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::toeY</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::toeZ</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::x</a>, <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::y</a> , 以及 <a class="el" href="FootIKSolver_8h_source.html#l00021">eve::animation::FootIKDebugFoot::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneOverlay_8cpp_source.html#l00010">eve::animation_editing::ProceduralBoneOverlayBuilder::build()</a>.</p>
+
+</div>
+</div>
+<a id="a1bb9cb4c4fdc682c0dd187aa529bce79" name="a1bb9cb4c4fdc682c0dd187aa529bce79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bb9cb4c4fdc682c0dd187aa529bce79">&#9670;&#160;</a></span>getGroundProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1animation_1_1FootIKGroundProvider.html">FootIKGroundProvider</a> * eve::animation::FootIKSolver::getGroundProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the borrowed ground provider, or null. @ownership Borrowed; ownership remains with the caller. @lifetime Valid until <a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#afc658307b5f53148dec54d2299bb1b81" title="Set an optional automatic ground-query provider. @ownership Borrowed; ownership remains with the call...">setGroundProvider()</a>, provider destruction, or solver destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeff35b887a6902b9091479cff8893bce" name="aeff35b887a6902b9091479cff8893bce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeff35b887a6902b9091479cff8893bce">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::FootIKSolver::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the borrowed skeleton, or null. @ownership Borrowed; ownership remains with the animation source. @lifetime Valid until <a class="el" href="classeve_1_1animation_1_1FootIKSolver.html#af1357ec18f6e9063b55032b856ca9519" title="Rebind; changing skeleton clears all bone-index configuration.">setSkeleton()</a>, skeleton destruction, or solver destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a907d1474bff6182962f9dcd030b0a55f" name="a907d1474bff6182962f9dcd030b0a55f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a907d1474bff6182962f9dcd030b0a55f">&#9670;&#160;</a></span>isLeftFootLocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::FootIKSolver::isLeftFootLocked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the left foot is currently locked. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5454ab077223ba7e39e7aaa3f8af086" name="ac5454ab077223ba7e39e7aaa3f8af086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5454ab077223ba7e39e7aaa3f8af086">&#9670;&#160;</a></span>isRightFootLocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::FootIKSolver::isRightFootLocked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the right foot is currently locked. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab57fae7f93560b77f2e7ab7c779a06e4" name="ab57fae7f93560b77f2e7ab7c779a06e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab57fae7f93560b77f2e7ab7c779a06e4">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1FootIKSolver.html">FootIKSolver</a> &amp; eve::animation::FootIKSolver::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1FootIKSolver.html">FootIKSolver</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1f9cc5bce04a307a97aac4fe9ffd8398" name="a1f9cc5bce04a307a97aac4fe9ffd8398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f9cc5bce04a307a97aac4fe9ffd8398">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear interpolated contacts. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac00864605de071ade0204ac59da19ebe" name="ac00864605de071ade0204ac59da19ebe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac00864605de071ade0204ac59da19ebe">&#9670;&#160;</a></span>setContactGraceTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setContactGraceTime </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set how long a missing automatic contact retains its prior target. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a8c4d72871378fe2340dca1b619f685ab" name="a8c4d72871378fe2340dca1b619f685ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c4d72871378fe2340dca1b619f685ab">&#9670;&#160;</a></span>setFootLockEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setFootLockEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable world-space foot locking. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="acd6fbe9d133192e604ca458f8ba142fa" name="acd6fbe9d133192e604ca458f8ba142fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd6fbe9d133192e604ca458f8ba142fa">&#9670;&#160;</a></span>setFootLockThresholds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setFootLockThresholds </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>enterWeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>exitWeight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set lock enter and release contact-weight thresholds. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="afc658307b5f53148dec54d2299bb1b81" name="afc658307b5f53148dec54d2299bb1b81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc658307b5f53148dec54d2299bb1b81">&#9670;&#160;</a></span>setGroundProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setGroundProvider </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1FootIKGroundProvider.html">FootIKGroundProvider</a> *&#160;</td>
+          <td class="paramname"><em>provider</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set an optional automatic ground-query provider. @ownership Borrowed; ownership remains with the caller. @lifetime The provider must outlive this solver or be cleared before destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a> 第 <a class="el" href="FootIKSolver_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a740086a34fb5840a84c037c98fad62fc" name="a740086a34fb5840a84c037c98fad62fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a740086a34fb5840a84c037c98fad62fc">&#9670;&#160;</a></span>setGroundQuery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setGroundQuery </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>startHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set ray origin height and downward query distance. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="aefe236713387fb516a8149ce91502512" name="aefe236713387fb516a8149ce91502512"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefe236713387fb516a8149ce91502512">&#9670;&#160;</a></span>setLeftContact()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setLeftContact </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ny</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Supply the left model-space ground contact. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a445570e32b4a0a7c68be5bcd74994325" name="a445570e32b4a0a7c68be5bcd74994325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a445570e32b4a0a7c68be5bcd74994325">&#9670;&#160;</a></span>setMaxPelvisOffset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setMaxPelvisOffset </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>distance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set maximum pelvis compensation distance. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a12565ae4a4eed644dcb061f2ad48b78a" name="a12565ae4a4eed644dcb061f2ad48b78a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12565ae4a4eed644dcb061f2ad48b78a">&#9670;&#160;</a></span>setMinGroundNormalY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setMinGroundNormalY </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set minimum accepted upward normal cosine in [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="aa451bca4420a13559815a06ff0d16f4a" name="aa451bca4420a13559815a06ff0d16f4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa451bca4420a13559815a06ff0d16f4a">&#9670;&#160;</a></span>setPelvisBone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setPelvisBone </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bone</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the pelvis bone. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a> , 以及 <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="aad730f03c3aa7a9628ea3ef978f6945e" name="aad730f03c3aa7a9628ea3ef978f6945e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad730f03c3aa7a9628ea3ef978f6945e">&#9670;&#160;</a></span>setPositionResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setPositionResponse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set contact interpolation response in inverse seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="aaae5daeab15d974a94d50b1f6af76c9a" name="aaae5daeab15d974a94d50b1f6af76c9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaae5daeab15d974a94d50b1f6af76c9a">&#9670;&#160;</a></span>setRightContact()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setRightContact </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ny</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Supply the right model-space ground contact. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ab1fed3f1af207d34720626574d9f5c14" name="ab1fed3f1af207d34720626574d9f5c14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1fed3f1af207d34720626574d9f5c14">&#9670;&#160;</a></span>setRotationResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setRotationResponse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set foot-normal interpolation response in inverse seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>.</p>
+
+</div>
+</div>
+<a id="af1357ec18f6e9063b55032b856ca9519" name="af1357ec18f6e9063b55032b856ca9519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1357ec18f6e9063b55032b856ca9519">&#9670;&#160;</a></span>setSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::FootIKSolver::setSkeleton </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebind; changing skeleton clears all bone-index configuration. </p>
+
+<p class="definition">在文件 <a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a> 第 <a class="el" href="FootIKSolver_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="FootIKSolver_8h_source.html">FootIKSolver.h</a></li>
+<li>src/modules/animation/<a class="el" href="FootIKSolver_8cpp_source.html">FootIKSolver.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainAsset类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html">TerrainAsset</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainAsset-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainAsset类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Versioned, random-access terrain archive.  
+ <a href="classeve_1_1procgen_1_1TerrainAsset.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a287097fb8d14d01cbb1bcf9f02f2730d" id="r_a287097fb8d14d01cbb1bcf9f02f2730d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#a287097fb8d14d01cbb1bcf9f02f2730d">open</a> (const uint8_t *data, size_t size, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a287097fb8d14d01cbb1bcf9f02f2730d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation that opens only the header and directory.  <br /></td></tr>
+<tr class="separator:a287097fb8d14d01cbb1bcf9f02f2730d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47b5cd19ba9049c27dd581ad603ed399" id="r_a47b5cd19ba9049c27dd581ad603ed399"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#a47b5cd19ba9049c27dd581ad603ed399">loadChunk</a> (int chunkX, int chunkY, <a class="el" href="structeve_1_1procgen_1_1TerrainChunkData.html">TerrainChunkData</a> &amp;out, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr) const</td></tr>
+<tr class="memdesc:a47b5cd19ba9049c27dd581ad603ed399"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation that loads and verifies one chunk.  <br /></td></tr>
+<tr class="separator:a47b5cd19ba9049c27dd581ad603ed399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acea01acdbf779cc252e9a95baf35d440" id="r_acea01acdbf779cc252e9a95baf35d440"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#acea01acdbf779cc252e9a95baf35d440">getWidth</a> () const</td></tr>
+<tr class="separator:acea01acdbf779cc252e9a95baf35d440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6d52917cec96190d32d0299bce32e9b" id="r_ac6d52917cec96190d32d0299bce32e9b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#ac6d52917cec96190d32d0299bce32e9b">getHeight</a> () const</td></tr>
+<tr class="separator:ac6d52917cec96190d32d0299bce32e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a591a060bb19f8fd71e54aa13e8f6dcb7" id="r_a591a060bb19f8fd71e54aa13e8f6dcb7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#a591a060bb19f8fd71e54aa13e8f6dcb7">getChunkSize</a> () const</td></tr>
+<tr class="separator:a591a060bb19f8fd71e54aa13e8f6dcb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5424151e8fa3fa482bf82e095e394e6f" id="r_a5424151e8fa3fa482bf82e095e394e6f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#a5424151e8fa3fa482bf82e095e394e6f">getMinHeight</a> () const</td></tr>
+<tr class="separator:a5424151e8fa3fa482bf82e095e394e6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a741ec88454ef785bab41fe83184712" id="r_a0a741ec88454ef785bab41fe83184712"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#a0a741ec88454ef785bab41fe83184712">getMaxHeight</a> () const</td></tr>
+<tr class="separator:a0a741ec88454ef785bab41fe83184712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adac522450415eb199a100b293ada78d9" id="r_adac522450415eb199a100b293ada78d9"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainChunkEntry.html">TerrainChunkEntry</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#adac522450415eb199a100b293ada78d9">chunks</a> () const</td></tr>
+<tr class="separator:adac522450415eb199a100b293ada78d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a2ac5c69267f56cd65eb2879a04a947ee" id="r_a2ac5c69267f56cd65eb2879a04a947ee"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainAsset.html#a2ac5c69267f56cd65eb2879a04a947ee">bake</a> (const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;heightmap, const <a class="el" href="structeve_1_1procgen_1_1HydrologyMap.html">HydrologyMap</a> &amp;hydrology, const <a class="el" href="structeve_1_1procgen_1_1ClimateMap.html">ClimateMap</a> &amp;climate, int chunkSize, std::vector&lt; uint8_t &gt; &amp;out, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr)</td></tr>
+<tr class="memdesc:a2ac5c69267f56cd65eb2879a04a947ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility operation that bakes all terrain layers into EVTR.  <br /></td></tr>
+<tr class="separator:a2ac5c69267f56cd65eb2879a04a947ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Versioned, random-access terrain archive. </p>
+<p>EVTR stores a fixed header and deterministic chunk directory followed by independently PackBits-compressed payloads. Heights use archive-wide UNORM16; temperature, moisture, normalized drainage and normalized lake depth use UNORM8. Continuous flow vectors use two signed-normalized bytes; flow direction, river and biome layers remain exact bytes. A corrupt chunk cannot silently enter the world. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a> 第 <a class="el" href="TerrainAsset_8h_source.html#l00043">43</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a2ac5c69267f56cd65eb2879a04a947ee" name="a2ac5c69267f56cd65eb2879a04a947ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ac5c69267f56cd65eb2879a04a947ee">&#9670;&#160;</a></span>bake()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainAsset::bake </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>heightmap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1HydrologyMap.html">HydrologyMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>hydrology</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1ClimateMap.html">ClimateMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>climate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compatibility operation that bakes all terrain layers into EVTR. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8cpp_source.html">TerrainAsset.cpp</a> 第 <a class="el" href="TerrainAsset_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainPipeline_8h_source.html#l00047">eve::procgen::ClimateMap::biomes</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="Heightmap_8h_source.html#l00037">eve::procgen::Heightmap::data()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00038">eve::procgen::HydrologyMap::flowAccumulation</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00036">eve::procgen::HydrologyMap::flowDirection</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00037">eve::procgen::HydrologyMap::flowVectorX</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00037">eve::procgen::HydrologyMap::flowVectorY</a>, <a class="el" href="Heightmap_8cpp_source.html#l00017">eve::procgen::Heightmap::getHeight()</a>, <a class="el" href="Heightmap_8cpp_source.html#l00016">eve::procgen::Heightmap::getWidth()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00035">eve::procgen::HydrologyMap::height</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00045">eve::procgen::ClimateMap::height</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00039">eve::procgen::HydrologyMap::lakeDepth</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00046">eve::procgen::ClimateMap::moisture</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00040">eve::procgen::HydrologyMap::rivers</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00041">eve::procgen::HydrologyMap::streamOrder</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00046">eve::procgen::ClimateMap::temperature</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="TerrainPipeline_8h_source.html#l00035">eve::procgen::HydrologyMap::width</a> , 以及 <a class="el" href="TerrainPipeline_8h_source.html#l00045">eve::procgen::ClimateMap::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02363">eve::procgen::Procgen::bakeTerrainAsset()</a>.</p>
+
+</div>
+</div>
+<a id="adac522450415eb199a100b293ada78d9" name="adac522450415eb199a100b293ada78d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adac522450415eb199a100b293ada78d9">&#9670;&#160;</a></span>chunks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1TerrainChunkEntry.html">TerrainChunkEntry</a> &gt; &amp; eve::procgen::TerrainAsset::chunks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a> 第 <a class="el" href="TerrainAsset_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00024">eve::procgen::TerrainStreamingCache::streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="a591a060bb19f8fd71e54aa13e8f6dcb7" name="a591a060bb19f8fd71e54aa13e8f6dcb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a591a060bb19f8fd71e54aa13e8f6dcb7">&#9670;&#160;</a></span>getChunkSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainAsset::getChunkSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a> 第 <a class="el" href="TerrainAsset_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">eve::procgen::TerrainStreamingCache::sampleCell()</a>, <a class="el" href="VoxelWorld_8cpp_source.html#l00229">eve::voxel::VoxelWorld::streamAround()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00024">eve::procgen::TerrainStreamingCache::streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="ac6d52917cec96190d32d0299bce32e9b" name="ac6d52917cec96190d32d0299bce32e9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6d52917cec96190d32d0299bce32e9b">&#9670;&#160;</a></span>getHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainAsset::getHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a> 第 <a class="el" href="TerrainAsset_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00126">eve::procgen::TerrainStreamingCache::buildWindow()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">eve::procgen::TerrainStreamingCache::sampleCell()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00163">eve::procgen::TerrainStreamingCache::sampleHeight()</a>.</p>
+
+</div>
+</div>
+<a id="a0a741ec88454ef785bab41fe83184712" name="a0a741ec88454ef785bab41fe83184712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a741ec88454ef785bab41fe83184712">&#9670;&#160;</a></span>getMaxHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainAsset::getMaxHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a> 第 <a class="el" href="TerrainAsset_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5424151e8fa3fa482bf82e095e394e6f" name="a5424151e8fa3fa482bf82e095e394e6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5424151e8fa3fa482bf82e095e394e6f">&#9670;&#160;</a></span>getMinHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainAsset::getMinHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a> 第 <a class="el" href="TerrainAsset_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acea01acdbf779cc252e9a95baf35d440" name="acea01acdbf779cc252e9a95baf35d440"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acea01acdbf779cc252e9a95baf35d440">&#9670;&#160;</a></span>getWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainAsset::getWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a> 第 <a class="el" href="TerrainAsset_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00126">eve::procgen::TerrainStreamingCache::buildWindow()</a>, <a class="el" href="TerrainStreaming_8cpp_source.html#l00074">eve::procgen::TerrainStreamingCache::sampleCell()</a> , 以及 <a class="el" href="TerrainStreaming_8cpp_source.html#l00163">eve::procgen::TerrainStreamingCache::sampleHeight()</a>.</p>
+
+</div>
+</div>
+<a id="a47b5cd19ba9049c27dd581ad603ed399" name="a47b5cd19ba9049c27dd581ad603ed399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47b5cd19ba9049c27dd581ad603ed399">&#9670;&#160;</a></span>loadChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainAsset::loadChunk </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>chunkY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1TerrainChunkData.html">TerrainChunkData</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility operation that loads and verifies one chunk. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8cpp_source.html">TerrainAsset.cpp</a> 第 <a class="el" href="TerrainAsset_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00034">biome</a>, <a class="el" href="TerrainAsset_8h_source.html#l00021">eve::procgen::TerrainChunkData::biomes</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="TerrainAsset_8h_source.html#l00014">eve::procgen::TerrainChunkData::chunkX</a>, <a class="el" href="TerrainAsset_8h_source.html#l00014">eve::procgen::TerrainChunkData::chunkY</a>, <a class="el" href="Heightmap_8h_source.html#l00037">eve::procgen::Heightmap::data()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="TerrainAsset_8h_source.html#l00017">eve::procgen::TerrainChunkData::flowAccumulation</a>, <a class="el" href="TerrainAsset_8h_source.html#l00019">eve::procgen::TerrainChunkData::flowDirection</a>, <a class="el" href="TerrainAsset_8h_source.html#l00017">eve::procgen::TerrainChunkData::flowVectorX</a>, <a class="el" href="TerrainAsset_8h_source.html#l00017">eve::procgen::TerrainChunkData::flowVectorY</a>, <a class="el" href="TerrainAsset_8h_source.html#l00015">eve::procgen::TerrainChunkData::height</a>, <a class="el" href="TerrainAsset_8h_source.html#l00016">eve::procgen::TerrainChunkData::heights</a>, <a class="el" href="TerrainAsset_8h_source.html#l00018">eve::procgen::TerrainChunkData::lakeDepth</a>, <a class="el" href="TerrainAsset_8h_source.html#l00018">eve::procgen::TerrainChunkData::moisture</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="Heightmap_8cpp_source.html#l00010">eve::procgen::Heightmap::resize()</a>, <a class="el" href="TerrainAsset_8h_source.html#l00020">eve::procgen::TerrainChunkData::rivers</a>, <a class="el" href="Evpack_8cpp_source.html#l00176">stored</a>, <a class="el" href="TerrainAsset_8h_source.html#l00020">eve::procgen::TerrainChunkData::streamOrder</a>, <a class="el" href="TerrainAsset_8h_source.html#l00018">eve::procgen::TerrainChunkData::temperature</a>, <a class="el" href="namespaceeve_1_1procgen.html#a81730403b809c329037b9d6859d9b3beaa585e582cd0441f88d3b0aaa10790112">eve::procgen::Wetland</a> , 以及 <a class="el" href="TerrainAsset_8h_source.html#l00015">eve::procgen::TerrainChunkData::width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00024">eve::procgen::TerrainStreamingCache::streamAround()</a>.</p>
+
+</div>
+</div>
+<a id="a287097fb8d14d01cbb1bcf9f02f2730d" name="a287097fb8d14d01cbb1bcf9f02f2730d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a287097fb8d14d01cbb1bcf9f02f2730d">&#9670;&#160;</a></span>open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::TerrainAsset::open </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility operation that opens only the header and directory. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainAsset_8cpp_source.html">TerrainAsset.cpp</a> 第 <a class="el" href="TerrainAsset_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="TerrainAsset_8h_source.html#l00029">eve::procgen::TerrainChunkEntry::checksum</a>, <a class="el" href="TerrainAsset_8h_source.html#l00026">eve::procgen::TerrainChunkEntry::chunkX</a>, <a class="el" href="TerrainAsset_8h_source.html#l00026">eve::procgen::TerrainChunkEntry::chunkY</a>, <a class="el" href="TerrainAsset_8h_source.html#l00030">eve::procgen::TerrainChunkEntry::compressed</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="TerrainAsset_8h_source.html#l00027">eve::procgen::TerrainChunkEntry::height</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="TerrainAsset_8h_source.html#l00028">eve::procgen::TerrainChunkEntry::offset</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="TerrainAsset_8h_source.html#l00029">eve::procgen::TerrainChunkEntry::rawSize</a>, <a class="el" href="TerrainAsset_8h_source.html#l00029">eve::procgen::TerrainChunkEntry::storedSize</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="TerrainAsset_8h_source.html#l00027">eve::procgen::TerrainChunkEntry::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainStreaming_8cpp_source.html#l00014">eve::procgen::TerrainStreamingCache::open()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainAsset_8h_source.html">TerrainAsset.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainAsset_8cpp_source.html">TerrainAsset.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

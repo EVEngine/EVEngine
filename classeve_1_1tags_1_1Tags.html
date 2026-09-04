@@ -1,0 +1,1006 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tags::Tags类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tags.html">tags</a></li><li class="navelem"><a class="el" href="classeve_1_1tags_1_1Tags.html">Tags</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1tags_1_1Tags-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tags::Tags类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script-facing module for generic tags and capabilities.  
+ <a href="classeve_1_1tags_1_1Tags.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Tags_8h_source.html">Tags.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::tags::Tags 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1tags_1_1Tags.png" usemap="#eve::tags::Tags_map" alt=""/>
+  <map id="eve::tags::Tags_map" name="eve::tags::Tags_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,95,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a25ce590c62e98891365435a85effcb80" id="r_a25ce590c62e98891365435a85effcb80"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a25ce590c62e98891365435a85effcb80">Module_REG</a> (<a class="el" href="classeve_1_1tags_1_1Tags.html">Tags</a>)</td></tr>
+<tr class="separator:a25ce590c62e98891365435a85effcb80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a920a0d4217c52f46556925689d848bb8" id="r_a920a0d4217c52f46556925689d848bb8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a920a0d4217c52f46556925689d848bb8">Tags</a> ()=default</td></tr>
+<tr class="separator:a920a0d4217c52f46556925689d848bb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a950987bdf8a776438d9da5b316674d1f" id="r_a950987bdf8a776438d9da5b316674d1f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a950987bdf8a776438d9da5b316674d1f">~Tags</a> () override=default</td></tr>
+<tr class="separator:a950987bdf8a776438d9da5b316674d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe1f142a50aa68e4b89ea713f176954d" id="r_abe1f142a50aa68e4b89ea713f176954d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#abe1f142a50aa68e4b89ea713f176954d">add</a> (const std::string &amp;subject, const std::string &amp;tag)</td></tr>
+<tr class="memdesc:abe1f142a50aa68e4b89ea713f176954d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a tag to a subject.  <br /></td></tr>
+<tr class="separator:abe1f142a50aa68e4b89ea713f176954d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b307c3c102fc4dca90ff32b9cbafba8" id="r_a4b307c3c102fc4dca90ff32b9cbafba8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a4b307c3c102fc4dca90ff32b9cbafba8">remove</a> (const std::string &amp;subject, const std::string &amp;tag)</td></tr>
+<tr class="memdesc:a4b307c3c102fc4dca90ff32b9cbafba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a tag from a subject.  <br /></td></tr>
+<tr class="separator:a4b307c3c102fc4dca90ff32b9cbafba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8265d857904fbb37887065eb1c44a48" id="r_af8265d857904fbb37887065eb1c44a48"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#af8265d857904fbb37887065eb1c44a48">has</a> (const std::string &amp;subject, const std::string &amp;tag) const</td></tr>
+<tr class="memdesc:af8265d857904fbb37887065eb1c44a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests whether a subject has a tag.  <br /></td></tr>
+<tr class="separator:af8265d857904fbb37887065eb1c44a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a5005dc9e8992266cab6b09e746436d" id="r_a4a5005dc9e8992266cab6b09e746436d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a4a5005dc9e8992266cab6b09e746436d">count</a> (const std::string &amp;subject) const</td></tr>
+<tr class="memdesc:a4a5005dc9e8992266cab6b09e746436d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a subject's tag count.  <br /></td></tr>
+<tr class="separator:a4a5005dc9e8992266cab6b09e746436d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72cbc843687464c1cdf0cbcf39fbd21b" id="r_a72cbc843687464c1cdf0cbcf39fbd21b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a72cbc843687464c1cdf0cbcf39fbd21b">at</a> (const std::string &amp;subject, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a72cbc843687464c1cdf0cbcf39fbd21b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a subject's tag by deterministic index, or an empty string.  <br /></td></tr>
+<tr class="separator:a72cbc843687464c1cdf0cbcf39fbd21b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47d2c68d72e8f437a04d12f8f50368f9" id="r_a47d2c68d72e8f437a04d12f8f50368f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a47d2c68d72e8f437a04d12f8f50368f9">subjectCount</a> (const std::string &amp;tag) const</td></tr>
+<tr class="memdesc:a47d2c68d72e8f437a04d12f8f50368f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of subjects carrying a tag.  <br /></td></tr>
+<tr class="separator:a47d2c68d72e8f437a04d12f8f50368f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8301a0983cfcb4a6e36ea5052dcadf17" id="r_a8301a0983cfcb4a6e36ea5052dcadf17"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a8301a0983cfcb4a6e36ea5052dcadf17">subjectAt</a> (const std::string &amp;tag, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a8301a0983cfcb4a6e36ea5052dcadf17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a subject carrying a tag by deterministic index, or an empty string.  <br /></td></tr>
+<tr class="separator:a8301a0983cfcb4a6e36ea5052dcadf17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad13e1129ec1ee446ca636044a14af38f" id="r_ad13e1129ec1ee446ca636044a14af38f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#ad13e1129ec1ee446ca636044a14af38f">addCapability</a> (const std::string &amp;subject, const std::string &amp;capability)</td></tr>
+<tr class="memdesc:ad13e1129ec1ee446ca636044a14af38f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a capability to a subject.  <br /></td></tr>
+<tr class="separator:ad13e1129ec1ee446ca636044a14af38f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3acc31c465bb8eeb603fff4ec9243685" id="r_a3acc31c465bb8eeb603fff4ec9243685"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a3acc31c465bb8eeb603fff4ec9243685">removeCapability</a> (const std::string &amp;subject, const std::string &amp;capability)</td></tr>
+<tr class="memdesc:a3acc31c465bb8eeb603fff4ec9243685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a capability from a subject.  <br /></td></tr>
+<tr class="separator:a3acc31c465bb8eeb603fff4ec9243685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e73f6d6f7de92a1569f66eb53c71ae4" id="r_a8e73f6d6f7de92a1569f66eb53c71ae4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a8e73f6d6f7de92a1569f66eb53c71ae4">hasCapability</a> (const std::string &amp;subject, const std::string &amp;capability) const</td></tr>
+<tr class="memdesc:a8e73f6d6f7de92a1569f66eb53c71ae4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests whether a subject has a capability.  <br /></td></tr>
+<tr class="separator:a8e73f6d6f7de92a1569f66eb53c71ae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fc622a9f239df352578b230dbb1b224" id="r_a5fc622a9f239df352578b230dbb1b224"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a5fc622a9f239df352578b230dbb1b224">capabilityCount</a> (const std::string &amp;subject) const</td></tr>
+<tr class="memdesc:a5fc622a9f239df352578b230dbb1b224"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a subject's capability count.  <br /></td></tr>
+<tr class="separator:a5fc622a9f239df352578b230dbb1b224"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afece9604285968a8aee576a775f9b7ed" id="r_afece9604285968a8aee576a775f9b7ed"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#afece9604285968a8aee576a775f9b7ed">capabilityAt</a> (const std::string &amp;subject, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:afece9604285968a8aee576a775f9b7ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a capability by deterministic index, or an empty string.  <br /></td></tr>
+<tr class="separator:afece9604285968a8aee576a775f9b7ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a903ae0ec123edb76634f64fda3b66f7a" id="r_a903ae0ec123edb76634f64fda3b66f7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a903ae0ec123edb76634f64fda3b66f7a">removeSubject</a> (const std::string &amp;subject)</td></tr>
+<tr class="memdesc:a903ae0ec123edb76634f64fda3b66f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes every tag and capability belonging to a subject.  <br /></td></tr>
+<tr class="separator:a903ae0ec123edb76634f64fda3b66f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0597d6f04eaff24cfe3410ca26e90c5" id="r_aa0597d6f04eaff24cfe3410ca26e90c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#aa0597d6f04eaff24cfe3410ca26e90c5">clear</a> ()</td></tr>
+<tr class="memdesc:aa0597d6f04eaff24cfe3410ca26e90c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all state and resets event sequencing.  <br /></td></tr>
+<tr class="separator:aa0597d6f04eaff24cfe3410ca26e90c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdc5f02d7a7eab694175fc6171d876d7" id="r_acdc5f02d7a7eab694175fc6171d876d7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#acdc5f02d7a7eab694175fc6171d876d7">eventCount</a> () const</td></tr>
+<tr class="memdesc:acdc5f02d7a7eab694175fc6171d876d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets queued change event count.  <br /></td></tr>
+<tr class="separator:acdc5f02d7a7eab694175fc6171d876d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab788610523ca7e2125ff335378fd81cf" id="r_ab788610523ca7e2125ff335378fd81cf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#ab788610523ca7e2125ff335378fd81cf">eventSequence</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ab788610523ca7e2125ff335378fd81cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets event sequence by index, or zero.  <br /></td></tr>
+<tr class="separator:ab788610523ca7e2125ff335378fd81cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5e51a28e6ed6017dfe22c2ddde8d33b" id="r_aa5e51a28e6ed6017dfe22c2ddde8d33b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#aa5e51a28e6ed6017dfe22c2ddde8d33b">eventAction</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aa5e51a28e6ed6017dfe22c2ddde8d33b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets event action by index, or an empty string.  <br /></td></tr>
+<tr class="separator:aa5e51a28e6ed6017dfe22c2ddde8d33b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afce6fecd29cf6727639c66fb0e59e063" id="r_afce6fecd29cf6727639c66fb0e59e063"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#afce6fecd29cf6727639c66fb0e59e063">eventSubject</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:afce6fecd29cf6727639c66fb0e59e063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets event subject by index, or an empty string.  <br /></td></tr>
+<tr class="separator:afce6fecd29cf6727639c66fb0e59e063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada16a438129c0d8a70b9dc86c7bee6a9" id="r_ada16a438129c0d8a70b9dc86c7bee6a9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#ada16a438129c0d8a70b9dc86c7bee6a9">eventValue</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ada16a438129c0d8a70b9dc86c7bee6a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets event tag or capability by index, or an empty string.  <br /></td></tr>
+<tr class="separator:ada16a438129c0d8a70b9dc86c7bee6a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4215a094d1e1468c618f2f4587d5ebe3" id="r_a4215a094d1e1468c618f2f4587d5ebe3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a4215a094d1e1468c618f2f4587d5ebe3">clearEvents</a> ()</td></tr>
+<tr class="memdesc:a4215a094d1e1468c618f2f4587d5ebe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears queued events without changing state.  <br /></td></tr>
+<tr class="separator:a4215a094d1e1468c618f2f4587d5ebe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fb1db4c78b982e3e7c527e4cff1c16b" id="r_a1fb1db4c78b982e3e7c527e4cff1c16b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tags_1_1TagStore.html">TagStore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a1fb1db4c78b982e3e7c527e4cff1c16b">store</a> ()</td></tr>
+<tr class="memdesc:a1fb1db4c78b982e3e7c527e4cff1c16b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives C++ callers direct access to the underlying store.  <br /></td></tr>
+<tr class="separator:a1fb1db4c78b982e3e7c527e4cff1c16b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca29aa3124cff2c98385df5cbadd0387" id="r_aca29aa3124cff2c98385df5cbadd0387"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1tags_1_1GameplayTagRegistry.html">GameplayTagRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#aca29aa3124cff2c98385df5cbadd0387">registry</a> ()</td></tr>
+<tr class="memdesc:aca29aa3124cff2c98385df5cbadd0387"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives C++ callers owner-thread access to the canonical gameplay-tag registry.  <br /></td></tr>
+<tr class="separator:aca29aa3124cff2c98385df5cbadd0387"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d27dfcea55a2bd2f5cc6905ceaf84cd" id="r_a3d27dfcea55a2bd2f5cc6905ceaf84cd"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1tags_1_1GameplayTagRegistry.html">GameplayTagRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1tags_1_1Tags.html#a3d27dfcea55a2bd2f5cc6905ceaf84cd">registry</a> () const</td></tr>
+<tr class="memdesc:a3d27dfcea55a2bd2f5cc6905ceaf84cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives C++ callers immutable owner-thread access to the canonical gameplay-tag registry.  <br /></td></tr>
+<tr class="separator:a3d27dfcea55a2bd2f5cc6905ceaf84cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script-facing module for generic tags and capabilities. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8h_source.html">Tags.h</a> 第 <a class="el" href="Tags_8h_source.html#l00012">12</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a920a0d4217c52f46556925689d848bb8" name="a920a0d4217c52f46556925689d848bb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a920a0d4217c52f46556925689d848bb8">&#9670;&#160;</a></span>Tags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tags::Tags::Tags </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a950987bdf8a776438d9da5b316674d1f" name="a950987bdf8a776438d9da5b316674d1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a950987bdf8a776438d9da5b316674d1f">&#9670;&#160;</a></span>~Tags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tags::Tags::~Tags </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="abe1f142a50aa68e4b89ea713f176954d" name="abe1f142a50aa68e4b89ea713f176954d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe1f142a50aa68e4b89ea713f176954d">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::Tags::add </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a tag to a subject. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00050">eve::tags::TagStore::addTag()</a>.</p>
+
+</div>
+</div>
+<a id="ad13e1129ec1ee446ca636044a14af38f" name="ad13e1129ec1ee446ca636044a14af38f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad13e1129ec1ee446ca636044a14af38f">&#9670;&#160;</a></span>addCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::Tags::addCapability </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a capability to a subject. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00101">eve::tags::TagStore::addCapability()</a>.</p>
+
+</div>
+</div>
+<a id="a72cbc843687464c1cdf0cbcf39fbd21b" name="a72cbc843687464c1cdf0cbcf39fbd21b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72cbc843687464c1cdf0cbcf39fbd21b">&#9670;&#160;</a></span>at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tags::Tags::at </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets a subject's tag by deterministic index, or an empty string. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="TagStore_8cpp_source.html#l00066">eve::tags::TagStore::tagsOf()</a>.</p>
+
+</div>
+</div>
+<a id="afece9604285968a8aee576a775f9b7ed" name="afece9604285968a8aee576a775f9b7ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afece9604285968a8aee576a775f9b7ed">&#9670;&#160;</a></span>capabilityAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tags::Tags::capabilityAt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets a capability by deterministic index, or an empty string. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00111">eve::tags::TagStore::capabilitiesOf()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a5fc622a9f239df352578b230dbb1b224" name="a5fc622a9f239df352578b230dbb1b224"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fc622a9f239df352578b230dbb1b224">&#9670;&#160;</a></span>capabilityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tags::Tags::capabilityCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets a subject's capability count. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00111">eve::tags::TagStore::capabilitiesOf()</a>.</p>
+
+</div>
+</div>
+<a id="aa0597d6f04eaff24cfe3410ca26e90c5" name="aa0597d6f04eaff24cfe3410ca26e90c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0597d6f04eaff24cfe3410ca26e90c5">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tags::Tags::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears all state and resets event sequencing. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00134">eve::tags::TagStore::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a4215a094d1e1468c618f2f4587d5ebe3" name="a4215a094d1e1468c618f2f4587d5ebe3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4215a094d1e1468c618f2f4587d5ebe3">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::tags::Tags::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears queued events without changing state. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8h_source.html#l00072">eve::tags::TagStore::clearEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a4a5005dc9e8992266cab6b09e746436d" name="a4a5005dc9e8992266cab6b09e746436d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a5005dc9e8992266cab6b09e746436d">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tags::Tags::count </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets a subject's tag count. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00066">eve::tags::TagStore::tagsOf()</a>.</p>
+
+</div>
+</div>
+<a id="aa5e51a28e6ed6017dfe22c2ddde8d33b" name="aa5e51a28e6ed6017dfe22c2ddde8d33b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5e51a28e6ed6017dfe22c2ddde8d33b">&#9670;&#160;</a></span>eventAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tags::Tags::eventAction </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets event action by index, or an empty string. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="acdc5f02d7a7eab694175fc6171d876d7" name="acdc5f02d7a7eab694175fc6171d876d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdc5f02d7a7eab694175fc6171d876d7">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tags::Tags::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets queued change event count. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8h_source.html#l00070">eve::tags::TagStore::events()</a>.</p>
+
+</div>
+</div>
+<a id="ab788610523ca7e2125ff335378fd81cf" name="ab788610523ca7e2125ff335378fd81cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab788610523ca7e2125ff335378fd81cf">&#9670;&#160;</a></span>eventSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tags::Tags::eventSequence </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets event sequence by index, or zero. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="afce6fecd29cf6727639c66fb0e59e063" name="afce6fecd29cf6727639c66fb0e59e063"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afce6fecd29cf6727639c66fb0e59e063">&#9670;&#160;</a></span>eventSubject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tags::Tags::eventSubject </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets event subject by index, or an empty string. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ada16a438129c0d8a70b9dc86c7bee6a9" name="ada16a438129c0d8a70b9dc86c7bee6a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada16a438129c0d8a70b9dc86c7bee6a9">&#9670;&#160;</a></span>eventValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tags::Tags::eventValue </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets event tag or capability by index, or an empty string. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="af8265d857904fbb37887065eb1c44a48" name="af8265d857904fbb37887065eb1c44a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8265d857904fbb37887065eb1c44a48">&#9670;&#160;</a></span>has()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::Tags::has </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests whether a subject has a tag. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00056">eve::tags::TagStore::hasTag()</a>.</p>
+
+</div>
+</div>
+<a id="a8e73f6d6f7de92a1569f66eb53c71ae4" name="a8e73f6d6f7de92a1569f66eb53c71ae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e73f6d6f7de92a1569f66eb53c71ae4">&#9670;&#160;</a></span>hasCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::Tags::hasCapability </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests whether a subject has a capability. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00107">eve::tags::TagStore::hasCapability()</a>.</p>
+
+</div>
+</div>
+<a id="a25ce590c62e98891365435a85effcb80" name="a25ce590c62e98891365435a85effcb80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ce590c62e98891365435a85effcb80">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::tags::Tags::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1tags_1_1Tags.html">Tags</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca29aa3124cff2c98385df5cbadd0387" name="aca29aa3124cff2c98385df5cbadd0387"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca29aa3124cff2c98385df5cbadd0387">&#9670;&#160;</a></span>registry() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tags_1_1GameplayTagRegistry.html">GameplayTagRegistry</a> &amp; eve::tags::Tags::registry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gives C++ callers owner-thread access to the canonical gameplay-tag registry. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed mutable reference owned by this module. @lifetime Valid until this <a class="el" href="classeve_1_1tags_1_1Tags.html" title="Script-facing module for generic tags and capabilities.">Tags</a> module is destroyed; definitions returned by the registry are owning copies. @thread Owner-thread-only; no synchronization is performed. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Tags_8h_source.html">Tags.h</a> 第 <a class="el" href="Tags_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d27dfcea55a2bd2f5cc6905ceaf84cd" name="a3d27dfcea55a2bd2f5cc6905ceaf84cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d27dfcea55a2bd2f5cc6905ceaf84cd">&#9670;&#160;</a></span>registry() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1tags_1_1GameplayTagRegistry.html">GameplayTagRegistry</a> &amp; eve::tags::Tags::registry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gives C++ callers immutable owner-thread access to the canonical gameplay-tag registry. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed immutable reference owned by this module. @lifetime Valid until this <a class="el" href="classeve_1_1tags_1_1Tags.html" title="Script-facing module for generic tags and capabilities.">Tags</a> module is destroyed. @thread Owner-thread-only; no synchronization is performed. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Tags_8h_source.html">Tags.h</a> 第 <a class="el" href="Tags_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b307c3c102fc4dca90ff32b9cbafba8" name="a4b307c3c102fc4dca90ff32b9cbafba8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b307c3c102fc4dca90ff32b9cbafba8">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::Tags::remove </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a tag from a subject. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00053">eve::tags::TagStore::removeTag()</a>.</p>
+
+</div>
+</div>
+<a id="a3acc31c465bb8eeb603fff4ec9243685" name="a3acc31c465bb8eeb603fff4ec9243685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3acc31c465bb8eeb603fff4ec9243685">&#9670;&#160;</a></span>removeCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::Tags::removeCapability </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a capability from a subject. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00104">eve::tags::TagStore::removeCapability()</a>.</p>
+
+</div>
+</div>
+<a id="a903ae0ec123edb76634f64fda3b66f7a" name="a903ae0ec123edb76634f64fda3b66f7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a903ae0ec123edb76634f64fda3b66f7a">&#9670;&#160;</a></span>removeSubject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::tags::Tags::removeSubject </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>subject</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes every tag and capability belonging to a subject. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00124">eve::tags::TagStore::removeSubject()</a>.</p>
+
+</div>
+</div>
+<a id="a1fb1db4c78b982e3e7c527e4cff1c16b" name="a1fb1db4c78b982e3e7c527e4cff1c16b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fb1db4c78b982e3e7c527e4cff1c16b">&#9670;&#160;</a></span>store()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1tags_1_1TagStore.html">TagStore</a> &amp; eve::tags::Tags::store </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gives C++ callers direct access to the underlying store. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8h_source.html">Tags.h</a> 第 <a class="el" href="Tags_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8301a0983cfcb4a6e36ea5052dcadf17" name="a8301a0983cfcb4a6e36ea5052dcadf17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8301a0983cfcb4a6e36ea5052dcadf17">&#9670;&#160;</a></span>subjectAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::tags::Tags::subjectAt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets a subject carrying a tag by deterministic index, or an empty string. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="TagStore_8cpp_source.html#l00070">eve::tags::TagStore::subjectsWithTag()</a>.</p>
+
+</div>
+</div>
+<a id="a47d2c68d72e8f437a04d12f8f50368f9" name="a47d2c68d72e8f437a04d12f8f50368f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47d2c68d72e8f437a04d12f8f50368f9">&#9670;&#160;</a></span>subjectCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::tags::Tags::subjectCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the number of subjects carrying a tag. </p>
+
+<p class="definition">在文件 <a class="el" href="Tags_8cpp_source.html">Tags.cpp</a> 第 <a class="el" href="Tags_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TagStore_8cpp_source.html#l00070">eve::tags::TagStore::subjectsWithTag()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/tags/<a class="el" href="Tags_8h_source.html">Tags.h</a></li>
+<li>src/modules/tags/<a class="el" href="Tags_8cpp_source.html">Tags.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

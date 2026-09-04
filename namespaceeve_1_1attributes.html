@@ -1,0 +1,598 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::attributes 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1attributes.html">attributes</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::attributes 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1attributes_1_1priority" id="r_namespaceeve_1_1attributes_1_1priority"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes_1_1priority.html">priority</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1attributes_1_1priority"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared default priorities for domain adapters. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1attributes_1_1source" id="r_namespaceeve_1_1attributes_1_1source"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes_1_1source.html">source</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1attributes_1_1source"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable source labels used by all domain attribute adapters. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html">AttributeModifier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One canonical runtime modifier applied to one named attribute.  <a href="structeve_1_1attributes_1_1AttributeModifier.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1attributes_1_1AttributeOperationRegistry.html">AttributeOperationRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registry for explicitly named custom attribute policies.  <a href="classeve_1_1attributes_1_1AttributeOperationRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1attributes_1_1AttributeProjection.html">AttributeProjection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical selected-attribute storage with owner and revision checks.  <a href="classeve_1_1attributes_1_1AttributeProjection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">AttributeProjectionSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transaction-safe snapshot of selected attributes and their modifiers.  <a href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html">AttributeResourceAccountAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restricts one <a class="el" href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html" title="Adapts integral AttributeSet base values to IResourceAccount.">AttributeSetResourceAccount</a> to Mana or Stamina.  <a href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1attributes_1_1Attributes.html">Attributes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic named numeric attributes and modifier module.  <a href="classeve_1_1attributes_1_1Attributes.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1attributes_1_1AttributeSet.html">AttributeSet</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic owning collection of canonical attributes and modifiers.  <a href="classeve_1_1attributes_1_1AttributeSet.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html">AttributeSetResourceAccount</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapts integral <a class="el" href="classeve_1_1attributes_1_1AttributeSet.html" title="Generic owning collection of canonical attributes and modifiers.">AttributeSet</a> base values to IResourceAccount.  <a href="classeve_1_1attributes_1_1AttributeSetResourceAccount.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html">AttributeSetStateAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapts one <a class="el" href="classeve_1_1attributes_1_1AttributeSet.html" title="Generic owning collection of canonical attributes and modifiers.">AttributeSet</a> to numeric world reads and volatile writes.  <a href="classeve_1_1attributes_1_1AttributeSetStateAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeSnapshotBase.html">AttributeSnapshotBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One base value captured by an attribute projection snapshot.  <a href="structeve_1_1attributes_1_1AttributeSnapshotBase.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1AttributeValue.html">AttributeValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> value and modifiers for exactly one attribute.  <a href="structeve_1_1attributes_1_1AttributeValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1attributes_1_1ParsedAttributeOperation.html">ParsedAttributeOperation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parsed legacy operation and its normalized value.  <a href="structeve_1_1attributes_1_1ParsedAttributeOperation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:ada27c457df707f6a7abda6e6c6ce8067" id="r_ada27c457df707f6a7abda6e6c6ce8067"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#ada27c457df707f6a7abda6e6c6ce8067">ManaAccountAdapter</a> = <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html">AttributeResourceAccountAdapter</a></td></tr>
+<tr class="memdesc:ada27c457df707f6a7abda6e6c6ce8067"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit alias used by code that wants a Mana-only view.  <br /></td></tr>
+<tr class="separator:ada27c457df707f6a7abda6e6c6ce8067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78af0e555ebca60fe1a96e08e6bf1e64" id="r_a78af0e555ebca60fe1a96e08e6bf1e64"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#a78af0e555ebca60fe1a96e08e6bf1e64">StaminaAccountAdapter</a> = <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html">AttributeResourceAccountAdapter</a></td></tr>
+<tr class="memdesc:a78af0e555ebca60fe1a96e08e6bf1e64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit alias used by code that wants a Stamina-only view.  <br /></td></tr>
+<tr class="separator:a78af0e555ebca60fe1a96e08e6bf1e64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa90e326b7b2f241ed8b42c45adf860" id="r_aafa90e326b7b2f241ed8b42c45adf860"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#aafa90e326b7b2f241ed8b42c45adf860">AttributeId</a> = std::string</td></tr>
+<tr class="separator:aafa90e326b7b2f241ed8b42c45adf860"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe2518c85498659f0ae676249d7b94f8" id="r_afe2518c85498659f0ae676249d7b94f8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">ModifierId</a> = std::string</td></tr>
+<tr class="separator:afe2518c85498659f0ae676249d7b94f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab49807b9ba8ce48f462f34436e15a0a7" id="r_ab49807b9ba8ce48f462f34436e15a0a7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#ab49807b9ba8ce48f462f34436e15a0a7">SourceId</a> = std::string</td></tr>
+<tr class="separator:ab49807b9ba8ce48f462f34436e15a0a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd5ec976475059b165f840591ea78b7e" id="r_afd5ec976475059b165f840591ea78b7e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">ModifierPriority</a> = std::int32_t</td></tr>
+<tr class="separator:afd5ec976475059b165f840591ea78b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0772d72ac3cf5adbcd46cfd6e1a2f4b6" id="r_a0772d72ac3cf5adbcd46cfd6e1a2f4b6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#a0772d72ac3cf5adbcd46cfd6e1a2f4b6">ModifierSequence</a> = std::uint64_t</td></tr>
+<tr class="separator:a0772d72ac3cf5adbcd46cfd6e1a2f4b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a1b7f5c1413612acbcc6fd500b91d6737" id="r_a1b7f5c1413612acbcc6fd500b91d6737"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#a1b7f5c1413612acbcc6fd500b91d6737">AttributeResourceKind</a> : unsigned char { <a class="el" href="namespaceeve_1_1attributes.html#a1b7f5c1413612acbcc6fd500b91d6737a02fcc64668dd1b6a85e60ac9797f2dc7">Mana</a>
+, <a class="el" href="namespaceeve_1_1attributes.html#a1b7f5c1413612acbcc6fd500b91d6737aa712984d490248f6cfa49d59a5b5c8e9">Stamina</a>
+ }</td></tr>
+<tr class="memdesc:a1b7f5c1413612acbcc6fd500b91d6737"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attribute-backed resource names used by common gameplay adapters.  <a href="namespaceeve_1_1attributes.html#a1b7f5c1413612acbcc6fd500b91d6737">更多...</a><br /></td></tr>
+<tr class="separator:a1b7f5c1413612acbcc6fd500b91d6737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad494bfaa5f634564da12d93611415192" id="r_ad494bfaa5f634564da12d93611415192"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">AttributeOperation</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9">Add</a>
+, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192af4d61dce499b32b1fc2b2d40eedadb0e">AdditivePercent</a>
+, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aab3b83562b460a40995b442d8cefe605">MultiplicativePercent</a>
+, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a6da8e67225fdcfa78c3ea5dc3154b849">Override</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a99fb0f1e2d95905a2ee12fe21670ab04">ClampMin</a>
+, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a50fe6afb3d1d826a7adc608787672508">ClampMax</a>
+, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a90589c47f06eb971d548591f23c285af">Custom</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ad494bfaa5f634564da12d93611415192"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in calculation operation for an attribute modifier.  <a href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">更多...</a><br /></td></tr>
+<tr class="separator:ad494bfaa5f634564da12d93611415192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ab0e432fffdcfbaf84e900e37cb7e5a09" id="r_ab0e432fffdcfbaf84e900e37cb7e5a09"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#ab0e432fffdcfbaf84e900e37cb7e5a09">Module_IMPL</a> (<a class="el" href="classeve_1_1attributes_1_1Attributes.html">Attributes</a>, new <a class="el" href="classeve_1_1attributes_1_1Attributes.html">Attributes</a>())</td></tr>
+<tr class="separator:ab0e432fffdcfbaf84e900e37cb7e5a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7e5aa4186e8dfc11458ca388718bcb1" id="r_ad7e5aa4186e8dfc11458ca388718bcb1"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#ad7e5aa4186e8dfc11458ca388718bcb1">attributeOperationName</a> (<a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">AttributeOperation</a> operation) noexcept</td></tr>
+<tr class="memdesc:ad7e5aa4186e8dfc11458ca388718bcb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable spelling of a built-in attribute operation. @ownership The returned string is a borrowed, process-static literal; the caller must not free or retain it as mutable storage. @nullable Never null for a valid enum value; the unknown-value spelling is also a process-static literal for an invalid value. @lifetime Valid for the process lifetime. @thread Thread-safe because the function reads no mutable state. @reentrancy Reentrant; it performs no callbacks.  <br /></td></tr>
+<tr class="separator:ad7e5aa4186e8dfc11458ca388718bcb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a761fb7307a6d7c35197cc7703092a4bc" id="r_a761fb7307a6d7c35197cc7703092a4bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1attributes_1_1ParsedAttributeOperation.html">ParsedAttributeOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#a761fb7307a6d7c35197cc7703092a4bc">parseAttributeOperation</a> (std::string_view operation, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a761fb7307a6d7c35197cc7703092a4bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a built-in operation spelling used by existing data and APIs.  <br /></td></tr>
+<tr class="separator:a761fb7307a6d7c35197cc7703092a4bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8911fd66a7a26990b4eee576ed1d984" id="r_aa8911fd66a7a26990b4eee576ed1d984"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1attributes.html#aa8911fd66a7a26990b4eee576ed1d984">computeAttributeValue</a> (const <a class="el" href="structeve_1_1attributes_1_1AttributeValue.html">AttributeValue</a> &amp;attribute, const <a class="el" href="classeve_1_1attributes_1_1AttributeOperationRegistry.html">AttributeOperationRegistry</a> *customOperations=nullptr)</td></tr>
+<tr class="memdesc:aa8911fd66a7a26990b4eee576ed1d984"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute one attribute using the canonical operation order.  <br /></td></tr>
+<tr class="separator:aa8911fd66a7a26990b4eee576ed1d984"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="aafa90e326b7b2f241ed8b42c45adf860" name="aafa90e326b7b2f241ed8b42c45adf860"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa90e326b7b2f241ed8b42c45adf860">&#9670;&#160;</a></span>AttributeId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1attributes.html#aafa90e326b7b2f241ed8b42c45adf860">eve::attributes::AttributeId</a> = typedef std::string</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ada27c457df707f6a7abda6e6c6ce8067" name="ada27c457df707f6a7abda6e6c6ce8067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada27c457df707f6a7abda6e6c6ce8067">&#9670;&#160;</a></span>ManaAccountAdapter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1attributes.html#ada27c457df707f6a7abda6e6c6ce8067">eve::attributes::ManaAccountAdapter</a> = typedef <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html">AttributeResourceAccountAdapter</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit alias used by code that wants a Mana-only view. </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeResourceAccount_8h_source.html">AttributeResourceAccount.h</a> 第 <a class="el" href="AttributeResourceAccount_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe2518c85498659f0ae676249d7b94f8" name="afe2518c85498659f0ae676249d7b94f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe2518c85498659f0ae676249d7b94f8">&#9670;&#160;</a></span>ModifierId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">eve::attributes::ModifierId</a> = typedef std::string</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd5ec976475059b165f840591ea78b7e" name="afd5ec976475059b165f840591ea78b7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd5ec976475059b165f840591ea78b7e">&#9670;&#160;</a></span>ModifierPriority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1attributes.html#afd5ec976475059b165f840591ea78b7e">eve::attributes::ModifierPriority</a> = typedef std::int32_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0772d72ac3cf5adbcd46cfd6e1a2f4b6" name="a0772d72ac3cf5adbcd46cfd6e1a2f4b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0772d72ac3cf5adbcd46cfd6e1a2f4b6">&#9670;&#160;</a></span>ModifierSequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1attributes.html#a0772d72ac3cf5adbcd46cfd6e1a2f4b6">eve::attributes::ModifierSequence</a> = typedef std::uint64_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab49807b9ba8ce48f462f34436e15a0a7" name="ab49807b9ba8ce48f462f34436e15a0a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab49807b9ba8ce48f462f34436e15a0a7">&#9670;&#160;</a></span>SourceId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1attributes.html#ab49807b9ba8ce48f462f34436e15a0a7">eve::attributes::SourceId</a> = typedef std::string</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78af0e555ebca60fe1a96e08e6bf1e64" name="a78af0e555ebca60fe1a96e08e6bf1e64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78af0e555ebca60fe1a96e08e6bf1e64">&#9670;&#160;</a></span>StaminaAccountAdapter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1attributes.html#a78af0e555ebca60fe1a96e08e6bf1e64">eve::attributes::StaminaAccountAdapter</a> = typedef <a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html">AttributeResourceAccountAdapter</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit alias used by code that wants a Stamina-only view. </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeResourceAccount_8h_source.html">AttributeResourceAccount.h</a> 第 <a class="el" href="AttributeResourceAccount_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="ad494bfaa5f634564da12d93611415192" name="ad494bfaa5f634564da12d93611415192"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad494bfaa5f634564da12d93611415192">&#9670;&#160;</a></span>AttributeOperation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">eve::attributes::AttributeOperation</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Built-in calculation operation for an attribute modifier. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9" name="ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9"></a>Add&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad494bfaa5f634564da12d93611415192af4d61dce499b32b1fc2b2d40eedadb0e" name="ad494bfaa5f634564da12d93611415192af4d61dce499b32b1fc2b2d40eedadb0e"></a>AdditivePercent&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad494bfaa5f634564da12d93611415192aab3b83562b460a40995b442d8cefe605" name="ad494bfaa5f634564da12d93611415192aab3b83562b460a40995b442d8cefe605"></a>MultiplicativePercent&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad494bfaa5f634564da12d93611415192a6da8e67225fdcfa78c3ea5dc3154b849" name="ad494bfaa5f634564da12d93611415192a6da8e67225fdcfa78c3ea5dc3154b849"></a>Override&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad494bfaa5f634564da12d93611415192a99fb0f1e2d95905a2ee12fe21670ab04" name="ad494bfaa5f634564da12d93611415192a99fb0f1e2d95905a2ee12fe21670ab04"></a>ClampMin&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad494bfaa5f634564da12d93611415192a50fe6afb3d1d826a7adc608787672508" name="ad494bfaa5f634564da12d93611415192a50fe6afb3d1d826a7adc608787672508"></a>ClampMax&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad494bfaa5f634564da12d93611415192a90589c47f06eb971d548591f23c285af" name="ad494bfaa5f634564da12d93611415192a90589c47f06eb971d548591f23c285af"></a>Custom&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8h_source.html">AttributeSet.h</a> 第 <a class="el" href="AttributeSet_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1b7f5c1413612acbcc6fd500b91d6737" name="a1b7f5c1413612acbcc6fd500b91d6737"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b7f5c1413612acbcc6fd500b91d6737">&#9670;&#160;</a></span>AttributeResourceKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1attributes.html#a1b7f5c1413612acbcc6fd500b91d6737">eve::attributes::AttributeResourceKind</a> : unsigned char</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attribute-backed resource names used by common gameplay adapters. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a1b7f5c1413612acbcc6fd500b91d6737a02fcc64668dd1b6a85e60ac9797f2dc7" name="a1b7f5c1413612acbcc6fd500b91d6737a02fcc64668dd1b6a85e60ac9797f2dc7"></a>Mana&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1b7f5c1413612acbcc6fd500b91d6737aa712984d490248f6cfa49d59a5b5c8e9" name="a1b7f5c1413612acbcc6fd500b91d6737aa712984d490248f6cfa49d59a5b5c8e9"></a>Stamina&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AttributeResourceAccount_8h_source.html">AttributeResourceAccount.h</a> 第 <a class="el" href="AttributeResourceAccount_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ad7e5aa4186e8dfc11458ca388718bcb1" name="ad7e5aa4186e8dfc11458ca388718bcb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7e5aa4186e8dfc11458ca388718bcb1">&#9670;&#160;</a></span>attributeOperationName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::attributes::attributeOperationName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192">AttributeOperation</a>&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable spelling of a built-in attribute operation. @ownership The returned string is a borrowed, process-static literal; the caller must not free or retain it as mutable storage. @nullable Never null for a valid enum value; the unknown-value spelling is also a process-static literal for an invalid value. @lifetime Valid for the process lifetime. @thread Thread-safe because the function reads no mutable state. @reentrancy Reentrant; it performs no callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8cpp_source.html">AttributeSet.cpp</a> 第 <a class="el" href="AttributeSet_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192af4d61dce499b32b1fc2b2d40eedadb0e">AdditivePercent</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a50fe6afb3d1d826a7adc608787672508">ClampMax</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a99fb0f1e2d95905a2ee12fe21670ab04">ClampMin</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a90589c47f06eb971d548591f23c285af">Custom</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aab3b83562b460a40995b442d8cefe605">MultiplicativePercent</a> , 以及 <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a6da8e67225fdcfa78c3ea5dc3154b849">Override</a>.</p>
+
+</div>
+</div>
+<a id="aa8911fd66a7a26990b4eee576ed1d984" name="aa8911fd66a7a26990b4eee576ed1d984"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8911fd66a7a26990b4eee576ed1d984">&#9670;&#160;</a></span>computeAttributeValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::attributes::computeAttributeValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1attributes_1_1AttributeValue.html">AttributeValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1attributes_1_1AttributeOperationRegistry.html">AttributeOperationRegistry</a> *&#160;</td>
+          <td class="paramname"><em>customOperations</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute one attribute using the canonical operation order. </p>
+<p>The order is base, all Add values, one summed AdditivePercent pass, all MultiplicativePercent factors, then priority/sequence ordered Override and Clamp operations. Custom policies participate in the final ordered phase. </p>
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8cpp_source.html">AttributeSet.cpp</a> 第 <a class="el" href="AttributeSet_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192af4d61dce499b32b1fc2b2d40eedadb0e">AdditivePercent</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00065">eve::attributes::AttributeOperationRegistry::apply()</a>, <a class="el" href="AttributeSet_8h_source.html#l00128">eve::attributes::AttributeValue::base</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a50fe6afb3d1d826a7adc608787672508">ClampMax</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a99fb0f1e2d95905a2ee12fe21670ab04">ClampMin</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a90589c47f06eb971d548591f23c285af">Custom</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00061">eve::attributes::AttributeOperationRegistry::has()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="AttributeSet_8h_source.html#l00129">eve::attributes::AttributeValue::modifiers</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aab3b83562b460a40995b442d8cefe605">MultiplicativePercent</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a6da8e67225fdcfa78c3ea5dc3154b849">Override</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSet_8cpp_source.html#l00207">eve::attributes::AttributeSet::getFinal()</a>.</p>
+
+</div>
+</div>
+<a id="ab0e432fffdcfbaf84e900e37cb7e5a09" name="ab0e432fffdcfbaf84e900e37cb7e5a09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0e432fffdcfbaf84e900e37cb7e5a09">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::attributes::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1attributes_1_1Attributes.html">Attributes</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Attributes</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a761fb7307a6d7c35197cc7703092a4bc" name="a761fb7307a6d7c35197cc7703092a4bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a761fb7307a6d7c35197cc7703092a4bc">&#9670;&#160;</a></span>parseAttributeOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1attributes_1_1ParsedAttributeOperation.html">ParsedAttributeOperation</a> &gt; eve::attributes::parseAttributeOperation </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse a built-in operation spelling used by existing data and APIs. </p>
+<dl class="section return"><dt>返回</dt><dd>A normalized operation, or a rejected <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> for an unknown spelling. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AttributeSet_8cpp_source.html">AttributeSet.cpp</a> 第 <a class="el" href="AttributeSet_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192af4d61dce499b32b1fc2b2d40eedadb0e">AdditivePercent</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a50fe6afb3d1d826a7adc608787672508">ClampMax</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a99fb0f1e2d95905a2ee12fe21670ab04">ClampMin</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192aab3b83562b460a40995b442d8cefe605">MultiplicativePercent</a>, <a class="el" href="AttributeSet_8h_source.html#l00052">eve::attributes::ParsedAttributeOperation::operation</a>, <a class="el" href="namespaceeve_1_1attributes.html#ad494bfaa5f634564da12d93611415192a6da8e67225fdcfa78c3ea5dc3154b849">Override</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="AttributeSet_8h_source.html#l00053">eve::attributes::ParsedAttributeOperation::value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeSet_8cpp_source.html#l00266">eve::attributes::AttributeSet::addModifier()</a> , 以及 <a class="el" href="AttributeSystem_8cpp_source.html#l00054">eve::rpg::AttributeSystem::addModifier()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

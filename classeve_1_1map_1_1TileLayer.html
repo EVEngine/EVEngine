@@ -1,0 +1,2868 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::map::TileLayer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map.html">map</a></li><li class="navelem"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1map_1_1TileLayer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::map::TileLayer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>ECS tile layer entity. Script mutates tile GIDs / tileset / draw; <a class="el" href="classeve_1_1map_1_1TileRenderSystem.html" title="Draws all visible TileLayer entities via Graphics batch path (UV atlas quads).">TileRenderSystem</a> batch-draws atlas quads (or solid debug colors when no texture).  
+ <a href="classeve_1_1map_1_1TileLayer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TileLayer_8h_source.html">TileLayer.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::map::TileLayer 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1map_1_1TileLayer.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Config.html">Config</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Draw.html">Draw</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Resource.html">Resource</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tiles.html">Tiles</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset.html">Tileset</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aff38d4594f327b7eda4ff84104abfff9" id="r_aff38d4594f327b7eda4ff84104abfff9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aff38d4594f327b7eda4ff84104abfff9">release</a> () override</td></tr>
+<tr class="separator:aff38d4594f327b7eda4ff84104abfff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44d0498b47b5b3c09103830d32996e67" id="r_a44d0498b47b5b3c09103830d32996e67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a44d0498b47b5b3c09103830d32996e67">setOrigin</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="memdesc:a44d0498b47b5b3c09103830d32996e67"><td class="mdescLeft">&#160;</td><td class="mdescRight">World origin of the layer (pixels).  <br /></td></tr>
+<tr class="separator:a44d0498b47b5b3c09103830d32996e67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee07fc1849b90fe9fd9fbcd884fa356d" id="r_aee07fc1849b90fe9fd9fbcd884fa356d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aee07fc1849b90fe9fd9fbcd884fa356d">getX</a> ()</td></tr>
+<tr class="separator:aee07fc1849b90fe9fd9fbcd884fa356d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb52d27e8bc1219bf94566728746ad1a" id="r_afb52d27e8bc1219bf94566728746ad1a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#afb52d27e8bc1219bf94566728746ad1a">getY</a> ()</td></tr>
+<tr class="separator:afb52d27e8bc1219bf94566728746ad1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af683d287a81e0c5e3bcaf6b22ca93278" id="r_af683d287a81e0c5e3bcaf6b22ca93278"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#af683d287a81e0c5e3bcaf6b22ca93278">getMapWidth</a> ()</td></tr>
+<tr class="memdesc:af683d287a81e0c5e3bcaf6b22ca93278"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1map_1_1Map.html" title="Map module — factory + script binding for 2D tilemaps. Per-frame: TileConfigSystem (hot reload) → uni...">Map</a> dimensions in tiles.  <br /></td></tr>
+<tr class="separator:af683d287a81e0c5e3bcaf6b22ca93278"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b86d985e3e15336051ead3c7c36fe83" id="r_a0b86d985e3e15336051ead3c7c36fe83"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a0b86d985e3e15336051ead3c7c36fe83">getMapHeight</a> ()</td></tr>
+<tr class="separator:a0b86d985e3e15336051ead3c7c36fe83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25f82da3a5111d95f130a5c3df35f26f" id="r_a25f82da3a5111d95f130a5c3df35f26f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a25f82da3a5111d95f130a5c3df35f26f">getTileWidth</a> ()</td></tr>
+<tr class="memdesc:a25f82da3a5111d95f130a5c3df35f26f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tile size in pixels.  <br /></td></tr>
+<tr class="separator:a25f82da3a5111d95f130a5c3df35f26f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe93984ac326e0ddb104aa916e18e62f" id="r_afe93984ac326e0ddb104aa916e18e62f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#afe93984ac326e0ddb104aa916e18e62f">getTileHeight</a> ()</td></tr>
+<tr class="separator:afe93984ac326e0ddb104aa916e18e62f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac55de53da121d14077949a60dc3ed87f" id="r_ac55de53da121d14077949a60dc3ed87f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ac55de53da121d14077949a60dc3ed87f">setTileSize</a> (float <a class="el" href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a>, float <a class="el" href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a>)</td></tr>
+<tr class="separator:ac55de53da121d14077949a60dc3ed87f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a300b1407a52daf7d83f4b699fbc430ac" id="r_a300b1407a52daf7d83f4b699fbc430ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a300b1407a52daf7d83f4b699fbc430ac">setCellGap</a> (float gapX, float gapY)</td></tr>
+<tr class="memdesc:a300b1407a52daf7d83f4b699fbc430ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets extra world-space distance between projected cells.  <br /></td></tr>
+<tr class="separator:a300b1407a52daf7d83f4b699fbc430ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cd4169f75e1eb6ff328d2de07bd505c" id="r_a7cd4169f75e1eb6ff328d2de07bd505c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a7cd4169f75e1eb6ff328d2de07bd505c">setRenderSpacing</a> (float spacingX, float spacingY)</td></tr>
+<tr class="memdesc:a7cd4169f75e1eb6ff328d2de07bd505c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets projected cell pitch as a multiple of the logical tile size.  <br /></td></tr>
+<tr class="separator:a7cd4169f75e1eb6ff328d2de07bd505c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab028fe2df87e56310018c79171e48973" id="r_ab028fe2df87e56310018c79171e48973"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab028fe2df87e56310018c79171e48973">getCellGapX</a> ()</td></tr>
+<tr class="memdesc:ab028fe2df87e56310018c79171e48973"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizontal and vertical world-space gaps between projected cells.  <br /></td></tr>
+<tr class="separator:ab028fe2df87e56310018c79171e48973"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e6ae45dc8d00f598be56add50599d73" id="r_a3e6ae45dc8d00f598be56add50599d73"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a3e6ae45dc8d00f598be56add50599d73">getCellGapY</a> ()</td></tr>
+<tr class="separator:a3e6ae45dc8d00f598be56add50599d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6bdc60a1b387d90d7ef6c70e974b23b" id="r_ad6bdc60a1b387d90d7ef6c70e974b23b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ad6bdc60a1b387d90d7ef6c70e974b23b">getRenderSpacingX</a> ()</td></tr>
+<tr class="memdesc:ad6bdc60a1b387d90d7ef6c70e974b23b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Horizontal and vertical projected pitch multipliers.  <br /></td></tr>
+<tr class="separator:ad6bdc60a1b387d90d7ef6c70e974b23b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab414819fece9d6085500f73be7796c83" id="r_ab414819fece9d6085500f73be7796c83"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab414819fece9d6085500f73be7796c83">getRenderSpacingY</a> ()</td></tr>
+<tr class="separator:ab414819fece9d6085500f73be7796c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a706426926b27f194461100d3a18ebd31" id="r_a706426926b27f194461100d3a18ebd31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a706426926b27f194461100d3a18ebd31">resize</a> (int mapW, int mapH)</td></tr>
+<tr class="memdesc:a706426926b27f194461100d3a18ebd31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes the tile grid (existing GIDs preserved where possible).  <br /></td></tr>
+<tr class="separator:a706426926b27f194461100d3a18ebd31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ab56c169d64bccb415810ed47250ced" id="r_a5ab56c169d64bccb415810ed47250ced"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a5ab56c169d64bccb415810ed47250ced">setTile</a> (int tx, int ty, int gid)</td></tr>
+<tr class="memdesc:a5ab56c169d64bccb415810ed47250ced"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tile GID access; 0 = empty.  <br /></td></tr>
+<tr class="separator:a5ab56c169d64bccb415810ed47250ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98ebad56f77dc292df24964881f96356" id="r_a98ebad56f77dc292df24964881f96356"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a98ebad56f77dc292df24964881f96356">getTile</a> (int tx, int ty)</td></tr>
+<tr class="separator:a98ebad56f77dc292df24964881f96356"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbb8f40b9c7a4e9fcffc1e0e9ce96267" id="r_afbb8f40b9c7a4e9fcffc1e0e9ce96267"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#afbb8f40b9c7a4e9fcffc1e0e9ce96267">fillRect</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, int gid)</td></tr>
+<tr class="memdesc:afbb8f40b9c7a4e9fcffc1e0e9ce96267"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill a clipped rectangular region and publish one tile revision.  <br /></td></tr>
+<tr class="separator:afbb8f40b9c7a4e9fcffc1e0e9ce96267"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed5183c2aa2a57b67383450488793cce" id="r_aed5183c2aa2a57b67383450488793cce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aed5183c2aa2a57b67383450488793cce">fill</a> (int gid)</td></tr>
+<tr class="memdesc:aed5183c2aa2a57b67383450488793cce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fills the whole layer with one GID.  <br /></td></tr>
+<tr class="separator:aed5183c2aa2a57b67383450488793cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ef741f77334ec29b1e693c94a82672a" id="r_a1ef741f77334ec29b1e693c94a82672a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a1ef741f77334ec29b1e693c94a82672a">clear</a> ()</td></tr>
+<tr class="memdesc:a1ef741f77334ec29b1e693c94a82672a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the layer to empty.  <br /></td></tr>
+<tr class="separator:a1ef741f77334ec29b1e693c94a82672a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6349461225fd41bca84d2519d3dcafc" id="r_aa6349461225fd41bca84d2519d3dcafc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aa6349461225fd41bca84d2519d3dcafc">getRevision</a> ()</td></tr>
+<tr class="memdesc:aa6349461225fd41bca84d2519d3dcafc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic tile-data revision used by derived navigation/FOV caches.  <br /></td></tr>
+<tr class="separator:aa6349461225fd41bca84d2519d3dcafc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a954dd79a480a9395f8041dd50676f067" id="r_a954dd79a480a9395f8041dd50676f067"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a954dd79a480a9395f8041dd50676f067">getChunkSize</a> ()</td></tr>
+<tr class="memdesc:a954dd79a480a9395f8041dd50676f067"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> spatial-index diagnostics.  <br /></td></tr>
+<tr class="separator:a954dd79a480a9395f8041dd50676f067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27cdaed0b1fd3140ad365dc8ad424ab7" id="r_a27cdaed0b1fd3140ad365dc8ad424ab7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a27cdaed0b1fd3140ad365dc8ad424ab7">getChunkCount</a> ()</td></tr>
+<tr class="separator:a27cdaed0b1fd3140ad365dc8ad424ab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92fb4cd72b2cb1d25f32e8a77e3ded68" id="r_a92fb4cd72b2cb1d25f32e8a77e3ded68"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a92fb4cd72b2cb1d25f32e8a77e3ded68">getNonEmptyChunkCount</a> ()</td></tr>
+<tr class="separator:a92fb4cd72b2cb1d25f32e8a77e3ded68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a424776b085052f88f5118f8183939018" id="r_a424776b085052f88f5118f8183939018"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a424776b085052f88f5118f8183939018">rebuildSpatialIndex</a> ()</td></tr>
+<tr class="memdesc:a424776b085052f88f5118f8183939018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild chunk occupancy after bulk loader writes directly to gids.  <br /></td></tr>
+<tr class="separator:a424776b085052f88f5118f8183939018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bc78ec04e2cad01c443fe937c1929aa" id="r_a0bc78ec04e2cad01c443fe937c1929aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a0bc78ec04e2cad01c443fe937c1929aa">clearTileAnimation</a> (int gid)</td></tr>
+<tr class="memdesc:a0bc78ec04e2cad01c443fe937c1929aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">TileSet v2 animation authoring; frames are selected during map update/render.  <br /></td></tr>
+<tr class="separator:a0bc78ec04e2cad01c443fe937c1929aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67d46268f7acf8976cdedce1c2140e09" id="r_a67d46268f7acf8976cdedce1c2140e09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a67d46268f7acf8976cdedce1c2140e09">addTileAnimationFrame</a> (int gid, int frameGid, int durationMs)</td></tr>
+<tr class="separator:a67d46268f7acf8976cdedce1c2140e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab874cd6209d6d3d50920684ec2eb49bf" id="r_ab874cd6209d6d3d50920684ec2eb49bf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab874cd6209d6d3d50920684ec2eb49bf">getTileAnimationFrameCount</a> (int gid)</td></tr>
+<tr class="separator:ab874cd6209d6d3d50920684ec2eb49bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee0c76129acb3c63aa8a504a96338a44" id="r_aee0c76129acb3c63aa8a504a96338a44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aee0c76129acb3c63aa8a504a96338a44">setTileDataString</a> (int gid, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:aee0c76129acb3c63aa8a504a96338a44"><td class="mdescLeft">&#160;</td><td class="mdescRight">TileSet v2 typed custom data (stored losslessly as canonical text).  <br /></td></tr>
+<tr class="separator:aee0c76129acb3c63aa8a504a96338a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32b43b43d08e0779623abb334615e87d" id="r_a32b43b43d08e0779623abb334615e87d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a32b43b43d08e0779623abb334615e87d">setTileDataNumber</a> (int gid, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a32b43b43d08e0779623abb334615e87d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dc57dae5f6ada0c2ccfb5ad4c848225" id="r_a1dc57dae5f6ada0c2ccfb5ad4c848225"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a1dc57dae5f6ada0c2ccfb5ad4c848225">setTileDataBool</a> (int gid, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a1dc57dae5f6ada0c2ccfb5ad4c848225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea692363aa303cab4abf8fdf8adfd373" id="r_aea692363aa303cab4abf8fdf8adfd373"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aea692363aa303cab4abf8fdf8adfd373">getTileDataType</a> (int gid, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:aea692363aa303cab4abf8fdf8adfd373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2be4788a6eea6efb45edb96862a00c35" id="r_a2be4788a6eea6efb45edb96862a00c35"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a2be4788a6eea6efb45edb96862a00c35">getTileDataString</a> (int gid, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a2be4788a6eea6efb45edb96862a00c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b4db7bf75adc4fd04481c01f0450656" id="r_a3b4db7bf75adc4fd04481c01f0450656"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a3b4db7bf75adc4fd04481c01f0450656">getTileDataNumber</a> (int gid, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a3b4db7bf75adc4fd04481c01f0450656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a614629d72fd3b1d4e78a682cc606fa" id="r_a7a614629d72fd3b1d4e78a682cc606fa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a7a614629d72fd3b1d4e78a682cc606fa">getTileDataBool</a> (int gid, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a7a614629d72fd3b1d4e78a682cc606fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9b3ddadfebf8c70714c931ad0dc5a9e" id="r_af9b3ddadfebf8c70714c931ad0dc5a9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#af9b3ddadfebf8c70714c931ad0dc5a9e">setTerrainRule</a> (int gid, int <a class="el" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>, int neighborMask)</td></tr>
+<tr class="memdesc:af9b3ddadfebf8c70714c931ad0dc5a9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register an 8-neighbor terrain rule and paint with local re-resolution.  <br /></td></tr>
+<tr class="separator:af9b3ddadfebf8c70714c931ad0dc5a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3231daecdb996ef3f1efe998034d651" id="r_ad3231daecdb996ef3f1efe998034d651"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ad3231daecdb996ef3f1efe998034d651">defineAutotileFamily</a> (int <a class="el" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, int <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>=0)</td></tr>
+<tr class="memdesc:ad3231daecdb996ef3f1efe998034d651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a deterministic resolver family: terrain, shore, wall or waterfall.  <br /></td></tr>
+<tr class="separator:ad3231daecdb996ef3f1efe998034d651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef40bbaf2dd015c73e8fd3c44c79c743" id="r_aef40bbaf2dd015c73e8fd3c44c79c743"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aef40bbaf2dd015c73e8fd3c44c79c743">setAutotileRule</a> (int gid, int <a class="el" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>, int neighborMask, int weight=1)</td></tr>
+<tr class="memdesc:aef40bbaf2dd015c73e8fd3c44c79c743"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an exact eight-neighbor rule with deterministic variant weight.  <br /></td></tr>
+<tr class="separator:aef40bbaf2dd015c73e8fd3c44c79c743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f02c3ed0c545146f86a15dd0a618f54" id="r_a0f02c3ed0c545146f86a15dd0a618f54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a0f02c3ed0c545146f86a15dd0a618f54">clearTerrainRules</a> ()</td></tr>
+<tr class="separator:a0f02c3ed0c545146f86a15dd0a618f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97776d762026dd38c5a41b144f52ce53" id="r_a97776d762026dd38c5a41b144f52ce53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a97776d762026dd38c5a41b144f52ce53">paintTerrain</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>)</td></tr>
+<tr class="separator:a97776d762026dd38c5a41b144f52ce53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac489c9df2b52075be6f733cbdbdc6a5" id="r_aac489c9df2b52075be6f733cbdbdc6a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aac489c9df2b52075be6f733cbdbdc6a5">paintTerrainRect</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, int <a class="el" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>)</td></tr>
+<tr class="memdesc:aac489c9df2b52075be6f733cbdbdc6a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Paints a clipped rectangle and resolves one dirty-region revision.  <br /></td></tr>
+<tr class="separator:aac489c9df2b52075be6f733cbdbdc6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc856edd44ef2bfe0baaa12542c697f0" id="r_abc856edd44ef2bfe0baaa12542c697f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#abc856edd44ef2bfe0baaa12542c697f0">fillTerrain</a> (int <a class="el" href="AssetCommand_8cpp.html#ab2a3d0d88ca0598e78bd62e7d03ca6a1">terrain</a>)</td></tr>
+<tr class="memdesc:abc856edd44ef2bfe0baaa12542c697f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces every logical terrain cell and resolves the whole layer.  <br /></td></tr>
+<tr class="separator:abc856edd44ef2bfe0baaa12542c697f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28777ab1fde10cfca186779d70103ceb" id="r_a28777ab1fde10cfca186779d70103ceb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a28777ab1fde10cfca186779d70103ceb">eraseTerrainRect</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:a28777ab1fde10cfca186779d70103ceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erases logical terrain and visual GIDs in a clipped rectangle.  <br /></td></tr>
+<tr class="separator:a28777ab1fde10cfca186779d70103ceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac5e3236dfd076b007ff1c84430b0fdf" id="r_aac5e3236dfd076b007ff1c84430b0fdf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aac5e3236dfd076b007ff1c84430b0fdf">getTerrain</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:aac5e3236dfd076b007ff1c84430b0fdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63dff558d10034c5b53cbdf30433b94f" id="r_a63dff558d10034c5b53cbdf30433b94f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a63dff558d10034c5b53cbdf30433b94f">setTileset</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture, int <a class="el" href="TileConfig_8cpp.html#a184765c5f162353836ea1ebc60e2b8bf">firstGid</a>, int <a class="el" href="TileConfig_8cpp.html#a341d2f00089fffc71eb6dbfd29f56c89">columns</a>, int <a class="el" href="TileConfig_8cpp.html#a863a6ce49a581dba9da9e7def06f2e1c">margin</a>=0, int <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>=0)</td></tr>
+<tr class="memdesc:a63dff558d10034c5b53cbdf30433b94f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the atlas texture and tile table.  <br /></td></tr>
+<tr class="separator:a63dff558d10034c5b53cbdf30433b94f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e7704cf744c04e04da4480e10eb7a8" id="r_a80e7704cf744c04e04da4480e10eb7a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a80e7704cf744c04e04da4480e10eb7a8">setTilesetTileSize</a> (int <a class="el" href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a>, int <a class="el" href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a>)</td></tr>
+<tr class="memdesc:a80e7704cf744c04e04da4480e10eb7a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tile size in pixels of the bound tileset.  <br /></td></tr>
+<tr class="separator:a80e7704cf744c04e04da4480e10eb7a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e8eda198f284447649f43ee50557542" id="r_a4e8eda198f284447649f43ee50557542"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a4e8eda198f284447649f43ee50557542">setTileVisual</a> (int gid, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float pivotX, float pivotY, float sortBias=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a4e8eda198f284447649f43ee50557542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines or replaces one irregular atlas region.  <br /></td></tr>
+<tr class="separator:a4e8eda198f284447649f43ee50557542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ede9bc91fbcb4e769b81f9d061de977" id="r_a5ede9bc91fbcb4e769b81f9d061de977"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a5ede9bc91fbcb4e769b81f9d061de977">clearTileVisuals</a> ()</td></tr>
+<tr class="memdesc:a5ede9bc91fbcb4e769b81f9d061de977"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all irregular per-GID visual metadata.  <br /></td></tr>
+<tr class="separator:a5ede9bc91fbcb4e769b81f9d061de977"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cb8ade917ebedd298fbca39cad8bdd7" id="r_a1cb8ade917ebedd298fbca39cad8bdd7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a1cb8ade917ebedd298fbca39cad8bdd7">getTileVisualCount</a> ()</td></tr>
+<tr class="memdesc:a1cb8ade917ebedd298fbca39cad8bdd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of irregular visual records.  <br /></td></tr>
+<tr class="separator:a1cb8ade917ebedd298fbca39cad8bdd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa93e0ab5f533062653d12d0feb822e2b" id="r_aa93e0ab5f533062653d12d0feb822e2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aa93e0ab5f533062653d12d0feb822e2b">setTileMetadata</a> (int gid, int footprintW, int footprintH, bool walkable, float <a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aa93e0ab5f533062653d12d0feb822e2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures gameplay metadata kept beside a visual record.  <br /></td></tr>
+<tr class="separator:aa93e0ab5f533062653d12d0feb822e2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64de2fdc96e4e2384a4bdafc7b220636" id="r_a64de2fdc96e4e2384a4bdafc7b220636"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a64de2fdc96e4e2384a4bdafc7b220636">setTileNavigationProfile</a> (int gid, bool walkable, float <a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>, int <a class="el" href="Pathfinder_8cpp.html#ada9e5a6088573a4bb0f51a0badca487c">enterMask</a>, int <a class="el" href="Pathfinder_8cpp.html#a4f0413e169ea228d0c37b1f548f1f241">exitMask</a>, bool opaque, int semanticFlags=0)</td></tr>
+<tr class="memdesc:a64de2fdc96e4e2384a4bdafc7b220636"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets canonical navigation, collision and visibility metadata for one GID.  <br /></td></tr>
+<tr class="separator:a64de2fdc96e4e2384a4bdafc7b220636"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a179dee5527d8cf175b38d794643956" id="r_a8a179dee5527d8cf175b38d794643956"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a8a179dee5527d8cf175b38d794643956">loadTilesetManifest</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a8a179dee5527d8cf175b38d794643956"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads an extensible TileSet manifest without changing map cell data.  <br /></td></tr>
+<tr class="separator:a8a179dee5527d8cf175b38d794643956"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36434647ed4677568501add8f4c102bb" id="r_a36434647ed4677568501add8f4c102bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a36434647ed4677568501add8f4c102bb">getTilesetTexture</a> ()</td></tr>
+<tr class="memdesc:a36434647ed4677568501add8f4c102bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bound tileset accessors.  <br /></td></tr>
+<tr class="separator:a36434647ed4677568501add8f4c102bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a352cc245305b3d5b933d764de5537cc1" id="r_a352cc245305b3d5b933d764de5537cc1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a352cc245305b3d5b933d764de5537cc1">getTilesetFirstGid</a> ()</td></tr>
+<tr class="separator:a352cc245305b3d5b933d764de5537cc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ed2238d5c4faee81fb18d95af568150" id="r_a8ed2238d5c4faee81fb18d95af568150"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a8ed2238d5c4faee81fb18d95af568150">getTilesetColumns</a> ()</td></tr>
+<tr class="separator:a8ed2238d5c4faee81fb18d95af568150"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca3c9ef7cf1d13064336463327c0b4f8" id="r_aca3c9ef7cf1d13064336463327c0b4f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aca3c9ef7cf1d13064336463327c0b4f8">setCanvas</a> (<a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *canvas)</td></tr>
+<tr class="memdesc:aca3c9ef7cf1d13064336463327c0b4f8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Draw.html">Draw</a> target canvas / camera.  <br /></td></tr>
+<tr class="separator:aca3c9ef7cf1d13064336463327c0b4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bdd2f929bf27ab48a9bb55249d238fa" id="r_a8bdd2f929bf27ab48a9bb55249d238fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a8bdd2f929bf27ab48a9bb55249d238fa">setCamera</a> (<a class="el" href="classeve_1_1graphics_1_1Camera2D.html">graphics::Camera2D</a> *camera)</td></tr>
+<tr class="separator:a8bdd2f929bf27ab48a9bb55249d238fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a840f0f2455665c594543d32802fde63f" id="r_a840f0f2455665c594543d32802fde63f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a840f0f2455665c594543d32802fde63f">setLayer</a> (int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="memdesc:a840f0f2455665c594543d32802fde63f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Draw.html">Draw</a> order layer / visibility / tint.  <br /></td></tr>
+<tr class="separator:a840f0f2455665c594543d32802fde63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a890f711fdaf05a3a30dc78ad23defc67" id="r_a890f711fdaf05a3a30dc78ad23defc67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a890f711fdaf05a3a30dc78ad23defc67">getLayer</a> ()</td></tr>
+<tr class="separator:a890f711fdaf05a3a30dc78ad23defc67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae41eac72be4548133d8e11865b4b4db1" id="r_ae41eac72be4548133d8e11865b4b4db1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ae41eac72be4548133d8e11865b4b4db1">setVisible</a> (bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>)</td></tr>
+<tr class="separator:ae41eac72be4548133d8e11865b4b4db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92c03f8ba8a6b67cc256cdf0ca0e1c6" id="r_ac92c03f8ba8a6b67cc256cdf0ca0e1c6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ac92c03f8ba8a6b67cc256cdf0ca0e1c6">isVisible</a> ()</td></tr>
+<tr class="separator:ac92c03f8ba8a6b67cc256cdf0ca0e1c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af890a3e32f8e65a01c1e5ad0d272a6d0" id="r_af890a3e32f8e65a01c1e5ad0d272a6d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#af890a3e32f8e65a01c1e5ad0d272a6d0">setTint</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:af890a3e32f8e65a01c1e5ad0d272a6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d9f9648315ba99765da8d60eb1b9427" id="r_a7d9f9648315ba99765da8d60eb1b9427"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a7d9f9648315ba99765da8d60eb1b9427">applyConfig</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a7d9f9648315ba99765da8d60eb1b9427"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a map JSON config (<a class="el" href="structeve_1_1map_1_1TileLayer_1_1Config.html">Config</a> + <a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tiles.html">Tiles</a> + <a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset.html">Tileset</a> + <a class="el" href="structeve_1_1map_1_1TileLayer_1_1Draw.html">Draw</a>).  <br /></td></tr>
+<tr class="separator:a7d9f9648315ba99765da8d60eb1b9427"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ee08bb1b7d76ee4f799b112c5d809e6" id="r_a4ee08bb1b7d76ee4f799b112c5d809e6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a4ee08bb1b7d76ee4f799b112c5d809e6">loadConfig</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a4ee08bb1b7d76ee4f799b112c5d809e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads a config file and binds it for hot reload.  <br /></td></tr>
+<tr class="separator:a4ee08bb1b7d76ee4f799b112c5d809e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99209b76252864ce5d9c90ab16df4652" id="r_a99209b76252864ce5d9c90ab16df4652"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a99209b76252864ce5d9c90ab16df4652">reloadConfig</a> ()</td></tr>
+<tr class="memdesc:a99209b76252864ce5d9c90ab16df4652"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-reads the bound config file (hot reload).  <br /></td></tr>
+<tr class="separator:a99209b76252864ce5d9c90ab16df4652"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c4cc1aed879918156efaf0e306c6154" id="r_a5c4cc1aed879918156efaf0e306c6154"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a5c4cc1aed879918156efaf0e306c6154">setAutoReload</a> (bool enable)</td></tr>
+<tr class="memdesc:a5c4cc1aed879918156efaf0e306c6154"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables/disables automatic config hot reload.  <br /></td></tr>
+<tr class="separator:a5c4cc1aed879918156efaf0e306c6154"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a60d81c682741b7d907980a9c7e2fa7" id="r_a3a60d81c682741b7d907980a9c7e2fa7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a3a60d81c682741b7d907980a9c7e2fa7">getAutoReload</a> ()</td></tr>
+<tr class="separator:a3a60d81c682741b7d907980a9c7e2fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a12dbdf236e7613e36b635d6703da20" id="r_a0a12dbdf236e7613e36b635d6703da20"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a0a12dbdf236e7613e36b635d6703da20">getConfigPath</a> ()</td></tr>
+<tr class="memdesc:a0a12dbdf236e7613e36b635d6703da20"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1map_1_1Path.html" title="Ordered tile-index waypoints from start to goal (inclusive).">Path</a> of the bound config file.  <br /></td></tr>
+<tr class="separator:a0a12dbdf236e7613e36b635d6703da20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac944b27692f4433a3861b379e330acd6" id="r_ac944b27692f4433a3861b379e330acd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ac944b27692f4433a3861b379e330acd6">tileToWorld</a> (int tx, int ty, float &amp;<a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, float &amp;<a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>)</td></tr>
+<tr class="memdesc:ac944b27692f4433a3861b379e330acd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tile-index ↔ world-pixel conversions (per layer orientation).  <br /></td></tr>
+<tr class="separator:ac944b27692f4433a3861b379e330acd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab62039a7a8335004814f15063565b421" id="r_ab62039a7a8335004814f15063565b421"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab62039a7a8335004814f15063565b421">depthY</a> (int tx, int ty)</td></tr>
+<tr class="memdesc:ab62039a7a8335004814f15063565b421"><td class="mdescLeft">&#160;</td><td class="mdescRight">Painter's-algorithm depth for 2.5D draw ordering.  <br /></td></tr>
+<tr class="separator:ab62039a7a8335004814f15063565b421"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab86b075d145349f5cbf54a5df716fcb9" id="r_ab86b075d145349f5cbf54a5df716fcb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab86b075d145349f5cbf54a5df716fcb9">worldToTile</a> (float <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, float <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, int &amp;tx, int &amp;ty)</td></tr>
+<tr class="separator:ab86b075d145349f5cbf54a5df716fcb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab54f7e3873199423fefa8f68543304d2" id="r_ab54f7e3873199423fefa8f68543304d2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ab54f7e3873199423fefa8f68543304d2">tileToWorldX</a> (int tx, int ty)</td></tr>
+<tr class="memdesc:ab54f7e3873199423fefa8f68543304d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scalar conversion helpers.  <br /></td></tr>
+<tr class="separator:ab54f7e3873199423fefa8f68543304d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6b739e83410580b498cae063fc88f1c" id="r_ae6b739e83410580b498cae063fc88f1c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ae6b739e83410580b498cae063fc88f1c">tileToWorldY</a> (int tx, int ty)</td></tr>
+<tr class="separator:ae6b739e83410580b498cae063fc88f1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac46533e088c5c6297014a0153ecd1acc" id="r_ac46533e088c5c6297014a0153ecd1acc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#ac46533e088c5c6297014a0153ecd1acc">depthYAt</a> (int tx, int ty)</td></tr>
+<tr class="separator:ac46533e088c5c6297014a0153ecd1acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5952bd1fc6ca1ece68c9f43123fb124c" id="r_a5952bd1fc6ca1ece68c9f43123fb124c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a5952bd1fc6ca1ece68c9f43123fb124c">worldToTileX</a> (float <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, float <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>)</td></tr>
+<tr class="separator:a5952bd1fc6ca1ece68c9f43123fb124c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8423c274fd201d47b1cdbe7c8f9e0239" id="r_a8423c274fd201d47b1cdbe7c8f9e0239"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#a8423c274fd201d47b1cdbe7c8f9e0239">worldToTileY</a> (float <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, float <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>)</td></tr>
+<tr class="separator:a8423c274fd201d47b1cdbe7c8f9e0239"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa371566daa6fb07fd085f1c338becd39" id="r_aa371566daa6fb07fd085f1c338becd39"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map_1_1TileLayer.html#aa371566daa6fb07fd085f1c338becd39">createLayer</a> (int mapW, int mapH, float <a class="el" href="TileConfig_8cpp.html#a610e16748328942de9e86ea346d25fde">tileW</a>=32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="TileConfig_8cpp.html#a874b28363d25afff3707792758892c19">tileH</a>=32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:aa371566daa6fb07fd085f1c338becd39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>ECS tile layer entity. Script mutates tile GIDs / tileset / draw; <a class="el" href="classeve_1_1map_1_1TileRenderSystem.html" title="Draws all visible TileLayer entities via Graphics batch path (UV atlas quads).">TileRenderSystem</a> batch-draws atlas quads (or solid debug colors when no texture). </p>
+<p>GID 0 = empty. Tiled flip flags (high bits) are masked on read/draw. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a67d46268f7acf8976cdedce1c2140e09" name="a67d46268f7acf8976cdedce1c2140e09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67d46268f7acf8976cdedce1c2140e09">&#9670;&#160;</a></span>addTileAnimationFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::addTileAnimationFrame </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frameGid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>durationMs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00138">animations</a>.</p>
+
+</div>
+</div>
+<a id="a7d9f9648315ba99765da8d60eb1b9427" name="a7d9f9648315ba99765da8d60eb1b9427"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d9f9648315ba99765da8d60eb1b9427">&#9670;&#160;</a></span>applyConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::applyConfig </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies a map JSON config (<a class="el" href="structeve_1_1map_1_1TileLayer_1_1Config.html">Config</a> + <a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tiles.html">Tiles</a> + <a class="el" href="structeve_1_1map_1_1TileLayer_1_1Tileset.html">Tileset</a> + <a class="el" href="structeve_1_1map_1_1TileLayer_1_1Draw.html">Draw</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00522">522</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l01160">eve::map::applyConfigText()</a>.</p>
+
+</div>
+</div>
+<a id="a1ef741f77334ec29b1e693c94a82672a" name="a1ef741f77334ec29b1e693c94a82672a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ef741f77334ec29b1e693c94a82672a">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears the layer to empty. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00102">fill()</a>.</p>
+
+</div>
+</div>
+<a id="a0f02c3ed0c545146f86a15dd0a618f54" name="a0f02c3ed0c545146f86a15dd0a618f54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f02c3ed0c545146f86a15dd0a618f54">&#9670;&#160;</a></span>clearTerrainRules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::clearTerrainRules </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8h_source.html#l00161">eve::map::TileLayer::Tileset::terrainFamilies</a>, <a class="el" href="TileLayer_8h_source.html#l00160">eve::map::TileLayer::Tileset::terrainRules</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+</div>
+</div>
+<a id="a0bc78ec04e2cad01c443fe937c1929aa" name="a0bc78ec04e2cad01c443fe937c1929aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bc78ec04e2cad01c443fe937c1929aa">&#9670;&#160;</a></span>clearTileAnimation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::clearTileAnimation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TileSet v2 animation authoring; frames are selected during map update/render. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00138">animations</a>.</p>
+
+</div>
+</div>
+<a id="a5ede9bc91fbcb4e769b81f9d061de977" name="a5ede9bc91fbcb4e769b81f9d061de977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ede9bc91fbcb4e769b81f9d061de977">&#9670;&#160;</a></span>clearTileVisuals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::clearTileVisuals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes all irregular per-GID visual metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a> , 以及 <a class="el" href="TileLayer_8h_source.html#l00158">eve::map::TileLayer::Tileset::visuals</a>.</p>
+
+</div>
+</div>
+<a id="aa371566daa6fb07fd085f1c338becd39" name="aa371566daa6fb07fd085f1c338becd39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa371566daa6fb07fd085f1c338becd39">&#9670;&#160;</a></span>createLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1TileLayer.html">TileLayer</a> * eve::map::TileLayer::createLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mapW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mapH</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tileW</em> = <code>32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tileH</em> = <code>32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00046">resize()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00040">setTileSize()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00134">tileH</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00133">tileW</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Map_8cpp_source.html#l00051">eve::map::Map::newLayer()</a>.</p>
+
+</div>
+</div>
+<a id="ad3231daecdb996ef3f1efe998034d651" name="ad3231daecdb996ef3f1efe998034d651"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3231daecdb996ef3f1efe998034d651">&#9670;&#160;</a></span>defineAutotileFamily()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::defineAutotileFamily </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Defines a deterministic resolver family: terrain, shore, wall or waterfall. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+</div>
+</div>
+<a id="ab62039a7a8335004814f15063565b421" name="ab62039a7a8335004814f15063565b421"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab62039a7a8335004814f15063565b421">&#9670;&#160;</a></span>depthY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::depthY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Painter's-algorithm depth for 2.5D draw ordering. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00536">536</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileProjection_8cpp_source.html#l00045">eve::map::tileToDepthY()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayer_8cpp_source.html#l00554">depthYAt()</a>.</p>
+
+</div>
+</div>
+<a id="ac46533e088c5c6297014a0153ecd1acc" name="ac46533e088c5c6297014a0153ecd1acc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac46533e088c5c6297014a0153ecd1acc">&#9670;&#160;</a></span>depthYAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::depthYAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00554">554</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00536">depthY()</a>.</p>
+
+</div>
+</div>
+<a id="a28777ab1fde10cfca186779d70103ceb" name="a28777ab1fde10cfca186779d70103ceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28777ab1fde10cfca186779d70103ceb">&#9670;&#160;</a></span>eraseTerrainRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::eraseTerrainRect </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Erases logical terrain and visual GIDs in a clipped rectangle. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00371">371</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="aed5183c2aa2a57b67383450488793cce" name="aed5183c2aa2a57b67383450488793cce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed5183c2aa2a57b67383450488793cce">&#9670;&#160;</a></span>fill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::fill </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fills the whole layer with one GID. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="TileLayer_8cpp_source.html#l00127">rebuildSpatialIndex()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayer_8cpp_source.html#l00115">clear()</a>.</p>
+
+</div>
+</div>
+<a id="afbb8f40b9c7a4e9fcffc1e0e9ce96267" name="afbb8f40b9c7a4e9fcffc1e0e9ce96267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbb8f40b9c7a4e9fcffc1e0e9ce96267">&#9670;&#160;</a></span>fillRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::fillRect </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill a clipped rectangular region and publish one tile revision. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="TileLayer_8cpp_source.html#l00127">rebuildSpatialIndex()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="abc856edd44ef2bfe0baaa12542c697f0" name="abc856edd44ef2bfe0baaa12542c697f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc856edd44ef2bfe0baaa12542c697f0">&#9670;&#160;</a></span>fillTerrain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::fillTerrain </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>terrain</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces every logical terrain cell and resolves the whole layer. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+</div>
+</div>
+<a id="a3a60d81c682741b7d907980a9c7e2fa7" name="a3a60d81c682741b7d907980a9c7e2fa7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a60d81c682741b7d907980a9c7e2fa7">&#9670;&#160;</a></span>getAutoReload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::getAutoReload </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00529">529</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab028fe2df87e56310018c79171e48973" name="ab028fe2df87e56310018c79171e48973"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab028fe2df87e56310018c79171e48973">&#9670;&#160;</a></span>getCellGapX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getCellGapX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Horizontal and vertical world-space gaps between projected cells. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00427">427</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e6ae45dc8d00f598be56add50599d73" name="a3e6ae45dc8d00f598be56add50599d73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e6ae45dc8d00f598be56add50599d73">&#9670;&#160;</a></span>getCellGapY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getCellGapY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a27cdaed0b1fd3140ad365dc8ad424ab7" name="a27cdaed0b1fd3140ad365dc8ad424ab7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27cdaed0b1fd3140ad365dc8ad424ab7">&#9670;&#160;</a></span>getChunkCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getChunkCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+</div>
+</div>
+<a id="a954dd79a480a9395f8041dd50676f067" name="a954dd79a480a9395f8041dd50676f067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a954dd79a480a9395f8041dd50676f067">&#9670;&#160;</a></span>getChunkSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getChunkSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> spatial-index diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8h_source.html#l00055">eve::map::TileLayer::Tiles::kChunkSize</a>.</p>
+
+</div>
+</div>
+<a id="a0a12dbdf236e7613e36b635d6703da20" name="a0a12dbdf236e7613e36b635d6703da20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a12dbdf236e7613e36b635d6703da20">&#9670;&#160;</a></span>getConfigPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::TileLayer::getConfigPath </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1map_1_1Path.html" title="Ordered tile-index waypoints from start to goal (inclusive).">Path</a> of the bound config file. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00530">530</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a890f711fdaf05a3a30dc78ad23defc67" name="a890f711fdaf05a3a30dc78ad23defc67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a890f711fdaf05a3a30dc78ad23defc67">&#9670;&#160;</a></span>getLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00513">513</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a0b86d985e3e15336051ead3c7c36fe83" name="a0b86d985e3e15336051ead3c7c36fe83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b86d985e3e15336051ead3c7c36fe83">&#9670;&#160;</a></span>getMapHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getMapHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileConfig_8cpp_source.html#l01128">eve::map::applyConfigDocument()</a>, <a class="el" href="TileConfig_8cpp_source.html#l01160">eve::map::applyConfigText()</a>, <a class="el" href="TileLayerTarget_8cpp_source.html#l00014">eve::map_editing::TileLayerTarget::height()</a> , 以及 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="af683d287a81e0c5e3bcaf6b22ca93278" name="af683d287a81e0c5e3bcaf6b22ca93278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af683d287a81e0c5e3bcaf6b22ca93278">&#9670;&#160;</a></span>getMapWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getMapWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1map_1_1Map.html" title="Map module — factory + script binding for 2D tilemaps. Per-frame: TileConfigSystem (hot reload) → uni...">Map</a> dimensions in tiles. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileConfig_8cpp_source.html#l01128">eve::map::applyConfigDocument()</a>, <a class="el" href="TileConfig_8cpp_source.html#l01160">eve::map::applyConfigText()</a>, <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a> , 以及 <a class="el" href="TileLayerTarget_8cpp_source.html#l00013">eve::map_editing::TileLayerTarget::width()</a>.</p>
+
+</div>
+</div>
+<a id="a92fb4cd72b2cb1d25f32e8a77e3ded68" name="a92fb4cd72b2cb1d25f32e8a77e3ded68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92fb4cd72b2cb1d25f32e8a77e3ded68">&#9670;&#160;</a></span>getNonEmptyChunkCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getNonEmptyChunkCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+</div>
+</div>
+<a id="ad6bdc60a1b387d90d7ef6c70e974b23b" name="ad6bdc60a1b387d90d7ef6c70e974b23b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6bdc60a1b387d90d7ef6c70e974b23b">&#9670;&#160;</a></span>getRenderSpacingX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getRenderSpacingX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Horizontal and vertical projected pitch multipliers. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00429">429</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab414819fece9d6085500f73be7796c83" name="ab414819fece9d6085500f73be7796c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab414819fece9d6085500f73be7796c83">&#9670;&#160;</a></span>getRenderSpacingY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getRenderSpacingY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00432">432</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa6349461225fd41bca84d2519d3dcafc" name="aa6349461225fd41bca84d2519d3dcafc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6349461225fd41bca84d2519d3dcafc">&#9670;&#160;</a></span>getRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Monotonic tile-data revision used by derived navigation/FOV caches. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+</div>
+</div>
+<a id="aac5e3236dfd076b007ff1c84430b0fdf" name="aac5e3236dfd076b007ff1c84430b0fdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac5e3236dfd076b007ff1c84430b0fdf">&#9670;&#160;</a></span>getTerrain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getTerrain </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a98ebad56f77dc292df24964881f96356" name="a98ebad56f77dc292df24964881f96356"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98ebad56f77dc292df24964881f96356">&#9670;&#160;</a></span>getTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getTile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00063">eve::map::dualGridLogicFilled()</a>, <a class="el" href="TileLayerTarget_8cpp_source.html#l00018">eve::map_editing::TileLayerTarget::readInt()</a> , 以及 <a class="el" href="TileLayerTarget_8cpp_source.html#l00019">eve::map_editing::TileLayerTarget::writeInt()</a>.</p>
+
+</div>
+</div>
+<a id="ab874cd6209d6d3d50920684ec2eb49bf" name="ab874cd6209d6d3d50920684ec2eb49bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab874cd6209d6d3d50920684ec2eb49bf">&#9670;&#160;</a></span>getTileAnimationFrameCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getTileAnimationFrameCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a614629d72fd3b1d4e78a682cc606fa" name="a7a614629d72fd3b1d4e78a682cc606fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a614629d72fd3b1d4e78a682cc606fa">&#9670;&#160;</a></span>getTileDataBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::getTileDataBool </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a3b4db7bf75adc4fd04481c01f0450656" name="a3b4db7bf75adc4fd04481c01f0450656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b4db7bf75adc4fd04481c01f0450656">&#9670;&#160;</a></span>getTileDataNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getTileDataNumber </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a2be4788a6eea6efb45edb96862a00c35" name="a2be4788a6eea6efb45edb96862a00c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2be4788a6eea6efb45edb96862a00c35">&#9670;&#160;</a></span>getTileDataString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::TileLayer::getTileDataString </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="aea692363aa303cab4abf8fdf8adfd373" name="aea692363aa303cab4abf8fdf8adfd373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea692363aa303cab4abf8fdf8adfd373">&#9670;&#160;</a></span>getTileDataType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::map::TileLayer::getTileDataType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="afe93984ac326e0ddb104aa916e18e62f" name="afe93984ac326e0ddb104aa916e18e62f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe93984ac326e0ddb104aa916e18e62f">&#9670;&#160;</a></span>getTileHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getTileHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a8ed2238d5c4faee81fb18d95af568150" name="a8ed2238d5c4faee81fb18d95af568150"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ed2238d5c4faee81fb18d95af568150">&#9670;&#160;</a></span>getTilesetColumns()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getTilesetColumns </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00507">507</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8h_source.html#l00153">eve::map::TileLayer::Tileset::columns</a>.</p>
+
+</div>
+</div>
+<a id="a352cc245305b3d5b933d764de5537cc1" name="a352cc245305b3d5b933d764de5537cc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a352cc245305b3d5b933d764de5537cc1">&#9670;&#160;</a></span>getTilesetFirstGid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getTilesetFirstGid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00506">506</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8h_source.html#l00152">eve::map::TileLayer::Tileset::firstGid</a>.</p>
+
+</div>
+</div>
+<a id="a36434647ed4677568501add8f4c102bb" name="a36434647ed4677568501add8f4c102bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36434647ed4677568501add8f4c102bb">&#9670;&#160;</a></span>getTilesetTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::map::TileLayer::getTilesetTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bound tileset accessors. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00505">505</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8h_source.html#l00151">eve::map::TileLayer::Tileset::texture</a>.</p>
+
+</div>
+</div>
+<a id="a1cb8ade917ebedd298fbca39cad8bdd7" name="a1cb8ade917ebedd298fbca39cad8bdd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cb8ade917ebedd298fbca39cad8bdd7">&#9670;&#160;</a></span>getTileVisualCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::getTileVisualCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of irregular visual records. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00137">visuals</a>.</p>
+
+</div>
+</div>
+<a id="a25f82da3a5111d95f130a5c3df35f26f" name="a25f82da3a5111d95f130a5c3df35f26f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25f82da3a5111d95f130a5c3df35f26f">&#9670;&#160;</a></span>getTileWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getTileWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tile size in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="aee07fc1849b90fe9fd9fbcd884fa356d" name="aee07fc1849b90fe9fd9fbcd884fa356d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee07fc1849b90fe9fd9fbcd884fa356d">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="afb52d27e8bc1219bf94566728746ad1a" name="afb52d27e8bc1219bf94566728746ad1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb52d27e8bc1219bf94566728746ad1a">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::getY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="ac92c03f8ba8a6b67cc256cdf0ca0e1c6" name="ac92c03f8ba8a6b67cc256cdf0ca0e1c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac92c03f8ba8a6b67cc256cdf0ca0e1c6">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::isVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00516">516</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a>.</p>
+
+</div>
+</div>
+<a id="a4ee08bb1b7d76ee4f799b112c5d809e6" name="a4ee08bb1b7d76ee4f799b112c5d809e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ee08bb1b7d76ee4f799b112c5d809e6">&#9670;&#160;</a></span>loadConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::loadConfig </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Loads a config file and binds it for hot reload. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00524">524</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l01221">eve::map::loadConfigFile()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="a8a179dee5527d8cf175b38d794643956" name="a8a179dee5527d8cf175b38d794643956"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a179dee5527d8cf175b38d794643956">&#9670;&#160;</a></span>loadTilesetManifest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::loadTilesetManifest </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Loads an extensible TileSet manifest without changing map cell data. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00501">501</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l01291">eve::map::loadTilesetManifestFile()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="a97776d762026dd38c5a41b144f52ce53" name="a97776d762026dd38c5a41b144f52ce53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97776d762026dd38c5a41b144f52ce53">&#9670;&#160;</a></span>paintTerrain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::paintTerrain </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>terrain</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="aac489c9df2b52075be6f733cbdbdc6a5" name="aac489c9df2b52075be6f733cbdbdc6a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac489c9df2b52075be6f733cbdbdc6a5">&#9670;&#160;</a></span>paintTerrainRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::paintTerrainRect </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>terrain</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Paints a clipped rectangle and resolves one dirty-region revision. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a424776b085052f88f5118f8183939018" name="a424776b085052f88f5118f8183939018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a424776b085052f88f5118f8183939018">&#9670;&#160;</a></span>rebuildSpatialIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::rebuildSpatialIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebuild chunk occupancy after bulk loader writes directly to gids. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="TileLayer_8h_source.html#l00055">eve::map::TileLayer::Tiles::kChunkSize</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="TileLayer_8h_source.html#l00342">eve::map::tileGid()</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayer_8cpp_source.html#l00102">fill()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00078">fillRect()</a> , 以及 <a class="el" href="TileLayer_8cpp_source.html#l00046">resize()</a>.</p>
+
+</div>
+</div>
+<a id="aff38d4594f327b7eda4ff84104abfff9" name="aff38d4594f327b7eda4ff84104abfff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff38d4594f327b7eda4ff84104abfff9">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8h_source.html">TileLayer.h</a> 第 <a class="el" href="TileLayer_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a99209b76252864ce5d9c90ab16df4652" name="a99209b76252864ce5d9c90ab16df4652"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99209b76252864ce5d9c90ab16df4652">&#9670;&#160;</a></span>reloadConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map::TileLayer::reloadConfig </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-reads the bound config file (hot reload). </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00526">526</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l01281">eve::map::reloadConfigFile()</a>.</p>
+
+</div>
+</div>
+<a id="a706426926b27f194461100d3a18ebd31" name="a706426926b27f194461100d3a18ebd31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a706426926b27f194461100d3a18ebd31">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::resize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mapW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mapH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resizes the tile grid (existing GIDs preserved where possible). </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="TileLayer_8cpp_source.html#l00127">rebuildSpatialIndex()</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00236">u</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayer_8cpp_source.html#l00014">createLayer()</a> , 以及 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a5c4cc1aed879918156efaf0e306c6154" name="a5c4cc1aed879918156efaf0e306c6154"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c4cc1aed879918156efaf0e306c6154">&#9670;&#160;</a></span>setAutoReload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setAutoReload </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables/disables automatic config hot reload. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00528">528</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef40bbaf2dd015c73e8fd3c44c79c743" name="aef40bbaf2dd015c73e8fd3c44c79c743"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef40bbaf2dd015c73e8fd3c44c79c743">&#9670;&#160;</a></span>setAutotileRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setAutotileRule </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>neighborMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>weight</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds an exact eight-neighbor rule with deterministic variant weight. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a>, <a class="el" href="TileLayer_8h_source.html#l00160">eve::map::TileLayer::Tileset::terrainRules</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayer_8cpp_source.html#l00232">setTerrainRule()</a>.</p>
+
+</div>
+</div>
+<a id="a8bdd2f929bf27ab48a9bb55249d238fa" name="a8bdd2f929bf27ab48a9bb55249d238fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bdd2f929bf27ab48a9bb55249d238fa">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setCamera </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera2D.html">graphics::Camera2D</a> *&#160;</td>
+          <td class="paramname"><em>camera</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00510">510</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="aca3c9ef7cf1d13064336463327c0b4f8" name="aca3c9ef7cf1d13064336463327c0b4f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca3c9ef7cf1d13064336463327c0b4f8">&#9670;&#160;</a></span>setCanvas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setCanvas </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">graphics::Canvas</a> *&#160;</td>
+          <td class="paramname"><em>canvas</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Draw.html">Draw</a> target canvas / camera. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00509">509</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a300b1407a52daf7d83f4b699fbc430ac" name="a300b1407a52daf7d83f4b699fbc430ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a300b1407a52daf7d83f4b699fbc430ac">&#9670;&#160;</a></span>setCellGap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setCellGap </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gapX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gapY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets extra world-space distance between projected cells. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00417">417</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00134">tileH</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00133">tileW</a>.</p>
+
+</div>
+</div>
+<a id="a840f0f2455665c594543d32802fde63f" name="a840f0f2455665c594543d32802fde63f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a840f0f2455665c594543d32802fde63f">&#9670;&#160;</a></span>setLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="structeve_1_1map_1_1TileLayer_1_1Draw.html">Draw</a> order layer / visibility / tint. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a44d0498b47b5b3c09103830d32996e67" name="a44d0498b47b5b3c09103830d32996e67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44d0498b47b5b3c09103830d32996e67">&#9670;&#160;</a></span>setOrigin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setOrigin </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World origin of the layer (pixels). </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a7cd4169f75e1eb6ff328d2de07bd505c" name="a7cd4169f75e1eb6ff328d2de07bd505c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cd4169f75e1eb6ff328d2de07bd505c">&#9670;&#160;</a></span>setRenderSpacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setRenderSpacing </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacingX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacingY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets projected cell pitch as a multiple of the logical tile size. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af9b3ddadfebf8c70714c931ad0dc5a9e" name="af9b3ddadfebf8c70714c931ad0dc5a9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9b3ddadfebf8c70714c931ad0dc5a9e">&#9670;&#160;</a></span>setTerrainRule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTerrainRule </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>terrain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>neighborMask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register an 8-neighbor terrain rule and paint with local re-resolution. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00251">setAutotileRule()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">terrain</a>.</p>
+
+</div>
+</div>
+<a id="a5ab56c169d64bccb415810ed47250ced" name="a5ab56c169d64bccb415810ed47250ced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ab56c169d64bccb415810ed47250ced">&#9670;&#160;</a></span>setTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tile GID access; 0 = empty. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="TileLayer_8h_source.html#l00055">eve::map::TileLayer::Tiles::kChunkSize</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="TileLayer_8h_source.html#l00342">eve::map::tileGid()</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a> , 以及 <a class="el" href="TileLayerTarget_8cpp_source.html#l00019">eve::map_editing::TileLayerTarget::writeInt()</a>.</p>
+
+</div>
+</div>
+<a id="a1dc57dae5f6ada0c2ccfb5ad4c848225" name="a1dc57dae5f6ada0c2ccfb5ad4c848225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dc57dae5f6ada0c2ccfb5ad4c848225">&#9670;&#160;</a></span>setTileDataBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTileDataBool </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a32b43b43d08e0779623abb334615e87d" name="a32b43b43d08e0779623abb334615e87d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32b43b43d08e0779623abb334615e87d">&#9670;&#160;</a></span>setTileDataNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTileDataNumber </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aee0c76129acb3c63aa8a504a96338a44" name="aee0c76129acb3c63aa8a504a96338a44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee0c76129acb3c63aa8a504a96338a44">&#9670;&#160;</a></span>setTileDataString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTileDataString </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TileSet v2 typed custom data (stored losslessly as canonical text). </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa93e0ab5f533062653d12d0feb822e2b" name="aa93e0ab5f533062653d12d0feb822e2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa93e0ab5f533062653d12d0feb822e2b">&#9670;&#160;</a></span>setTileMetadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTileMetadata </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>footprintW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>footprintH</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>walkable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cost</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures gameplay metadata kept beside a visual record. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00463">463</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00037">cost</a>, <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="TileConfig_8cpp_source.html#l00137">visuals</a> , 以及 <a class="el" href="TileLayer_8h_source.html#l00158">eve::map::TileLayer::Tileset::visuals</a>.</p>
+
+</div>
+</div>
+<a id="a64de2fdc96e4e2384a4bdafc7b220636" name="a64de2fdc96e4e2384a4bdafc7b220636"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64de2fdc96e4e2384a4bdafc7b220636">&#9670;&#160;</a></span>setTileNavigationProfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTileNavigationProfile </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>walkable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cost</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>enterMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>exitMask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>opaque</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>semanticFlags</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets canonical navigation, collision and visibility metadata for one GID. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00481">481</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00037">cost</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00156">enterMask</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00157">exitMask</a> , 以及 <a class="el" href="WfcSimple_8cpp_source.html#l00022">tiles</a>.</p>
+
+</div>
+</div>
+<a id="a63dff558d10034c5b53cbdf30433b94f" name="a63dff558d10034c5b53cbdf30433b94f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63dff558d10034c5b53cbdf30433b94f">&#9670;&#160;</a></span>setTileset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTileset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstGid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>columns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>margin</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>spacing</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Binds the atlas texture and tile table. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00132">columns</a>, <a class="el" href="TileConfig_8cpp_source.html#l00131">firstGid</a>, <a class="el" href="TileConfig_8cpp_source.html#l00135">margin</a>, <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>, <a class="el" href="TileConfig_8cpp_source.html#l00134">tileH</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00133">tileW</a>.</p>
+
+</div>
+</div>
+<a id="a80e7704cf744c04e04da4480e10eb7a8" name="a80e7704cf744c04e04da4480e10eb7a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80e7704cf744c04e04da4480e10eb7a8">&#9670;&#160;</a></span>setTilesetTileSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTilesetTileSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tileW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tileH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tile size in pixels of the bound tileset. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileConfig_8cpp_source.html#l00134">tileH</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00133">tileW</a>.</p>
+
+</div>
+</div>
+<a id="ac55de53da121d14077949a60dc3ed87f" name="ac55de53da121d14077949a60dc3ed87f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac55de53da121d14077949a60dc3ed87f">&#9670;&#160;</a></span>setTileSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTileSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tileW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tileH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="TileConfig_8cpp_source.html#l00134">tileH</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00133">tileW</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayer_8cpp_source.html#l00014">createLayer()</a> , 以及 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a4e8eda198f284447649f43ee50557542" name="a4e8eda198f284447649f43ee50557542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e8eda198f284447649f43ee50557542">&#9670;&#160;</a></span>setTileVisual()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTileVisual </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pivotX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pivotY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sortBias</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Defines or replaces one irregular atlas region. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gid</td><td>Global tile id. </td></tr>
+    <tr><td class="paramname">x</td><td>Region left in atlas pixels. </td></tr>
+    <tr><td class="paramname">y</td><td>Region top in atlas pixels. </td></tr>
+    <tr><td class="paramname">width</td><td>Region width in atlas pixels. </td></tr>
+    <tr><td class="paramname">height</td><td>Region height in atlas pixels. </td></tr>
+    <tr><td class="paramname">pivotX</td><td>Region-space point aligned with the projected tile origin. </td></tr>
+    <tr><td class="paramname">pivotY</td><td>Region-space point aligned with the projected tile origin. </td></tr>
+    <tr><td class="paramname">sortBias</td><td>Extra painter-order offset in pixels. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00436">436</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="TileConfig_8cpp_source.html#l00137">visuals</a>, <a class="el" href="TileLayer_8h_source.html#l00158">eve::map::TileLayer::Tileset::visuals</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="af890a3e32f8e65a01c1e5ad0d272a6d0" name="af890a3e32f8e65a01c1e5ad0d272a6d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af890a3e32f8e65a01c1e5ad0d272a6d0">&#9670;&#160;</a></span>setTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setTint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00518">518</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="ae41eac72be4548133d8e11865b4b4db1" name="ae41eac72be4548133d8e11865b4b4db1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae41eac72be4548133d8e11865b4b4db1">&#9670;&#160;</a></span>setVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::setVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00515">515</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshVfxRenderBatch_8cpp_source.html#l00013">draw</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DualGrid_8cpp_source.html#l00080">eve::map::resolveDualGrid()</a>.</p>
+
+</div>
+</div>
+<a id="ac944b27692f4433a3861b379e330acd6" name="ac944b27692f4433a3861b379e330acd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac944b27692f4433a3861b379e330acd6">&#9670;&#160;</a></span>tileToWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::tileToWorld </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>wy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tile-index ↔ world-pixel conversions (per layer orientation). </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00532">532</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileProjection_8cpp_source.html#l00041">eve::map::tileToWorld()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayer_8cpp_source.html#l00542">tileToWorldX()</a> , 以及 <a class="el" href="TileLayer_8cpp_source.html#l00548">tileToWorldY()</a>.</p>
+
+</div>
+</div>
+<a id="ab54f7e3873199423fefa8f68543304d2" name="ab54f7e3873199423fefa8f68543304d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab54f7e3873199423fefa8f68543304d2">&#9670;&#160;</a></span>tileToWorldX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::tileToWorldX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scalar conversion helpers. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00542">542</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00532">tileToWorld()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a>.</p>
+
+</div>
+</div>
+<a id="ae6b739e83410580b498cae063fc88f1c" name="ae6b739e83410580b498cae063fc88f1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6b739e83410580b498cae063fc88f1c">&#9670;&#160;</a></span>tileToWorldY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::map::TileLayer::tileToWorldY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00548">548</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00532">tileToWorld()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a>.</p>
+
+</div>
+</div>
+<a id="ab86b075d145349f5cbf54a5df716fcb9" name="ab86b075d145349f5cbf54a5df716fcb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab86b075d145349f5cbf54a5df716fcb9">&#9670;&#160;</a></span>worldToTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map::TileLayer::worldToTile </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00538">538</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileProjection_8cpp_source.html#l00049">eve::map::worldToTile()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayer_8cpp_source.html#l00556">worldToTileX()</a> , 以及 <a class="el" href="TileLayer_8cpp_source.html#l00562">worldToTileY()</a>.</p>
+
+</div>
+</div>
+<a id="a5952bd1fc6ca1ece68c9f43123fb124c" name="a5952bd1fc6ca1ece68c9f43123fb124c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5952bd1fc6ca1ece68c9f43123fb124c">&#9670;&#160;</a></span>worldToTileX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::worldToTileX </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00556">556</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00538">worldToTile()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a>.</p>
+
+</div>
+</div>
+<a id="a8423c274fd201d47b1cdbe7c8f9e0239" name="a8423c274fd201d47b1cdbe7c8f9e0239"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8423c274fd201d47b1cdbe7c8f9e0239">&#9670;&#160;</a></span>worldToTileY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map::TileLayer::worldToTileY </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a> 第 <a class="el" href="TileLayer_8cpp_source.html#l00562">562</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00538">worldToTile()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/map/<a class="el" href="TileLayer_8h_source.html">TileLayer.h</a></li>
+<li>src/modules/map/<a class="el" href="TileLayer_8cpp_source.html">TileLayer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

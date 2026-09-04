@@ -1,0 +1,228 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/SurfaceWetnessField.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SurfaceWetnessField.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SurfaceWetnessField_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="FluidSurfaceBinding_8h.html">fluids/FluidSurfaceBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html">   11</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html">SurfaceWetnessParams</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#ac309876da3a5ec22e4e6b5fb476249b7">   13</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#ac309876da3a5ec22e4e6b5fb476249b7">diffusion</a> = 0.18f;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#a9712ad49cdef008e8e01a8f0599d4613">   15</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#a9712ad49cdef008e8e01a8f0599d4613">evaporation</a> = 0.025f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#a992614078e20b8dc41319fc8a15fce9c">   17</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#a992614078e20b8dc41319fc8a15fce9c">maxWetness</a> = 1.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1SurfaceWetnessField.html">   26</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1SurfaceWetnessField.html">SurfaceWetnessField</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1SurfaceWetnessField.html#ae45600cf85670c25b01bc7b3b3d162e9">build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1FluidSurfaceBinding.html">FluidSurfaceBinding</a>&amp; binding);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1SurfaceWetnessField.html#aaa3d9202a2e142fffd50869d36fb2fa7">deposit</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a>&amp; location, <span class="keywordtype">float</span> amount);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">void</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>(<span class="keywordtype">float</span> dt, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceWetnessParams.html">SurfaceWetnessParams</a>&amp; <a class="code hl_variable" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a> = {});</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1fluids_1_1SurfaceWetnessField.html#a9f7b67f9f13d074f90dc8bcfab0b79d5">sample</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1SurfaceLocation.html">SurfaceLocation</a>&amp; location) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1SurfaceWetnessField.html#acdb4a044b723b946e64d7f4a4e5eb6e9">   41</a></span>    <span class="keyword">const</span> std::vector&lt;float&gt;&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1SurfaceWetnessField.html#acdb4a044b723b946e64d7f4a4e5eb6e9">values</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> values_; }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1fluids_1_1SurfaceWetnessField.html#a63059536455a7212bc14b19e7e2a8bb2">clear</a>();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::vector&lt;float&gt;              values_;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::vector&lt;std::vector&lt;int&gt;&gt;   neighbors_;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    std::vector&lt;std::pair&lt;uint32_t, uint32_t&gt;&gt; edges_;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    std::vector&lt;glm::uvec3&gt;         triangles_;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aFluidSurfaceBinding_8h_html"><div class="ttname"><a href="FluidSurfaceBinding_8h.html">FluidSurfaceBinding.h</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_a551d430cf2ccceca90f2f17e1921dc6a"><div class="ttname"><a href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a></div><div class="ttdeci">std::vector&lt; OperationParam &gt; params</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00024">PointGraph.cpp:24</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1FluidSurfaceBinding_html"><div class="ttname"><a href="classeve_1_1fluids_1_1FluidSurfaceBinding.html">eve::fluids::FluidSurfaceBinding</a></div><div class="ttdoc">Dynamic triangle surface used to bind films and droplets to deforming meshes.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00043">FluidSurfaceBinding.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1SurfaceWetnessField_html"><div class="ttname"><a href="classeve_1_1fluids_1_1SurfaceWetnessField.html">eve::fluids::SurfaceWetnessField</a></div><div class="ttdoc">Lightweight material-space wet-film field stored at mesh vertices.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8h_source.html#l00026">SurfaceWetnessField.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1SurfaceWetnessField_html_a63059536455a7212bc14b19e7e2a8bb2"><div class="ttname"><a href="classeve_1_1fluids_1_1SurfaceWetnessField.html#a63059536455a7212bc14b19e7e2a8bb2">eve::fluids::SurfaceWetnessField::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Reset all wetness to zero.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8cpp_source.html#l00067">SurfaceWetnessField.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1SurfaceWetnessField_html_a9f7b67f9f13d074f90dc8bcfab0b79d5"><div class="ttname"><a href="classeve_1_1fluids_1_1SurfaceWetnessField.html#a9f7b67f9f13d074f90dc8bcfab0b79d5">eve::fluids::SurfaceWetnessField::sample</a></div><div class="ttdeci">float sample(const SurfaceLocation &amp;location) const</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8cpp_source.html#l00060">SurfaceWetnessField.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1SurfaceWetnessField_html_aaa3d9202a2e142fffd50869d36fb2fa7"><div class="ttname"><a href="classeve_1_1fluids_1_1SurfaceWetnessField.html#aaa3d9202a2e142fffd50869d36fb2fa7">eve::fluids::SurfaceWetnessField::deposit</a></div><div class="ttdeci">void deposit(const SurfaceLocation &amp;location, float amount)</div><div class="ttdoc">Deposit a wet trace at a material-space location.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8cpp_source.html#l00032">SurfaceWetnessField.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1SurfaceWetnessField_html_acdb4a044b723b946e64d7f4a4e5eb6e9"><div class="ttname"><a href="classeve_1_1fluids_1_1SurfaceWetnessField.html#acdb4a044b723b946e64d7f4a4e5eb6e9">eve::fluids::SurfaceWetnessField::values</a></div><div class="ttdeci">const std::vector&lt; float &gt; &amp; values() const</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8h_source.html#l00041">SurfaceWetnessField.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1SurfaceWetnessField_html_ae45600cf85670c25b01bc7b3b3d162e9"><div class="ttname"><a href="classeve_1_1fluids_1_1SurfaceWetnessField.html#ae45600cf85670c25b01bc7b3b3d162e9">eve::fluids::SurfaceWetnessField::build</a></div><div class="ttdeci">bool build(const FluidSurfaceBinding &amp;binding)</div><div class="ttdoc">Initialize the field from a surface topology.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8cpp_source.html#l00008">SurfaceWetnessField.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidGpuKernels_8h_source.html#l00036">FluidGpuKernels.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceLocation_html"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceLocation.html">eve::fluids::SurfaceLocation</a></div><div class="ttdoc">Stable material-space address of a point on a triangle surface.</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8h_source.html#l00011">FluidSurfaceBinding.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWetnessParams_html"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWetnessParams.html">eve::fluids::SurfaceWetnessParams</a></div><div class="ttdoc">Parameters controlling persistent wet-film traces on a triangle surface.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8h_source.html#l00011">SurfaceWetnessField.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWetnessParams_html_a9712ad49cdef008e8e01a8f0599d4613"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#a9712ad49cdef008e8e01a8f0599d4613">eve::fluids::SurfaceWetnessParams::evaporation</a></div><div class="ttdeci">float evaporation</div><div class="ttdoc">Exponential evaporation rate per second.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8h_source.html#l00015">SurfaceWetnessField.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWetnessParams_html_a992614078e20b8dc41319fc8a15fce9c"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#a992614078e20b8dc41319fc8a15fce9c">eve::fluids::SurfaceWetnessParams::maxWetness</a></div><div class="ttdeci">float maxWetness</div><div class="ttdoc">Saturation limit for each field vertex.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8h_source.html#l00017">SurfaceWetnessField.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1SurfaceWetnessParams_html_ac309876da3a5ec22e4e6b5fb476249b7"><div class="ttname"><a href="structeve_1_1fluids_1_1SurfaceWetnessParams.html#ac309876da3a5ec22e4e6b5fb476249b7">eve::fluids::SurfaceWetnessParams::diffusion</a></div><div class="ttdeci">float diffusion</div><div class="ttdoc">Material-space diffusion rate per second.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceWetnessField_8h_source.html#l00013">SurfaceWetnessField.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

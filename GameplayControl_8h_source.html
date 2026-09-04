@@ -1,0 +1,332 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/GameplayControl.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GameplayControl.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GameplayControl_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Identity_8h.html">common/Identity.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="SubjectRef_8h.html">common/SubjectRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9">   22</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9">GameplayAccess</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9a640f91cfed3d91bffc5c0fff82a1ec7f">PlayerEquivalent</a>, <a class="code hl_enumvalue" href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9ab4c9b855d94bf451b75cc6c33ac0495b">TestDriver</a>, <a class="code hl_enumvalue" href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9ad34a3d793c9d3e8e04b5be8e1ae99c1a">DeveloperCheat</a> };</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1GameplaySession.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1GameplaySession.html#a9a407a91a87da854eb53c0258e4cf0b0">   31</a></span>    std::string             <a class="code hl_variable" href="structeve_1_1GameplaySession.html#a9a407a91a87da854eb53c0258e4cf0b0">id</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1GameplaySession.html#adbe35cd12b79e2d3312aafcbcaaee8d7">   32</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9">GameplayAccess</a>          <a class="code hl_variable" href="structeve_1_1GameplaySession.html#adbe35cd12b79e2d3312aafcbcaaee8d7">access</a> = <a class="code hl_enumvalue" href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9a640f91cfed3d91bffc5c0fff82a1ec7f">GameplayAccess::PlayerEquivalent</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1GameplaySession.html#ac50d1d82737a0d32bf08e085099e4e70">   33</a></span>    std::vector&lt;SubjectRef&gt; <a class="code hl_variable" href="structeve_1_1GameplaySession.html#ac50d1d82737a0d32bf08e085099e4e70">controlledSubjects</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayActionDescriptor.html">   37</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1GameplayActionDescriptor.html">GameplayActionDescriptor</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayActionDescriptor.html#ac88ed723f05748994ab1b18a48bbe56c">   38</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a> <a class="code hl_variable" href="structeve_1_1GameplayActionDescriptor.html#ac88ed723f05748994ab1b18a48bbe56c">id</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayActionDescriptor.html#a024fb3794788dd0ffcc2504f8fbf3746">   39</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">Value</a>     <a class="code hl_variable" href="structeve_1_1GameplayActionDescriptor.html#a024fb3794788dd0ffcc2504f8fbf3746">parameterSchema</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayObservation.html">   43</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1GameplayObservation.html">GameplayObservation</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayObservation.html#a87a15b157c76c28ae76cea199ec3ed47">   44</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>       <a class="code hl_variable" href="structeve_1_1GameplayObservation.html#a87a15b157c76c28ae76cea199ec3ed47">domain</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayObservation.html#a13419f8a7d48f9455d76faa2dc039bb2">   45</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>      <a class="code hl_variable" href="structeve_1_1GameplayObservation.html#a13419f8a7d48f9455d76faa2dc039bb2">instance</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayObservation.html#a271f078817a895968e0263b79f39cff7">   46</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="structeve_1_1GameplayObservation.html#a271f078817a895968e0263b79f39cff7">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayObservation.html#ab7fa60801e7b75228a49de9a245b782f">   47</a></span>    std::uint64_t   <a class="code hl_variable" href="structeve_1_1GameplayObservation.html#ab7fa60801e7b75228a49de9a245b782f">revision</a> = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayObservation.html#a053ede71c1530170c5859ffa5c0abd91">   48</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">Value</a>           <a class="code hl_variable" href="structeve_1_1GameplayObservation.html#a053ede71c1530170c5859ffa5c0abd91">state</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="};">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommand.html">   52</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1GameplayCommand.html">GameplayCommand</a> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommand.html#a403deb5cbb8b8388f48383b4f0665982">   53</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1GameplayCommand.html#a403deb5cbb8b8388f48383b4f0665982">id</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommand.html#ae9a6de42db91eb54900ac854c0d589e3">   54</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>       <a class="code hl_variable" href="structeve_1_1GameplayCommand.html#ae9a6de42db91eb54900ac854c0d589e3">action</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommand.html#a2abe9a59b13f3aa8925880d367b02e0e">   55</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>      <a class="code hl_variable" href="structeve_1_1GameplayCommand.html#a2abe9a59b13f3aa8925880d367b02e0e">subject</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommand.html#a96f436f42d4150211e863e2fb0f9e6ba">   56</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="structeve_1_1GameplayCommand.html#a96f436f42d4150211e863e2fb0f9e6ba">observedTick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommand.html#a68d96ebe0bfafe08f59bad89d8a84221">   57</a></span>    std::uint64_t   <a class="code hl_variable" href="structeve_1_1GameplayCommand.html#a68d96ebe0bfafe08f59bad89d8a84221">expectedRevision</a> = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommand.html#afe00922baeba547d4b0b3c9c7f3c2e4e">   58</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">Value</a>           <a class="code hl_variable" href="structeve_1_1GameplayCommand.html#afe00922baeba547d4b0b3c9c7f3c2e4e">parameters</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommandReceipt.html">   62</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1GameplayCommandReceipt.html">GameplayCommandReceipt</a> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommandReceipt.html#aed098e67fb5de1c051031f3581d66192">   63</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1GameplayCommandReceipt.html#aed098e67fb5de1c051031f3581d66192">commandId</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommandReceipt.html#a69530c29ced6b504ea9ac92976be4771">   64</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1GameplayCommandReceipt.html#a69530c29ced6b504ea9ac92976be4771">executionId</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommandReceipt.html#a413f359551ca4a9caeb9577395e0c3d8">   65</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="structeve_1_1GameplayCommandReceipt.html#a413f359551ca4a9caeb9577395e0c3d8">acceptedTick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommandReceipt.html#af9283c4286e4bb1e03d2c93e0f3b75c7">   66</a></span>    std::uint64_t   <a class="code hl_variable" href="structeve_1_1GameplayCommandReceipt.html#af9283c4286e4bb1e03d2c93e0f3b75c7">resultingRevision</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayCommandReceipt.html#a47b57c2e7cfe5a43ff28154e2d3b6d91">   67</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">Value</a>           <a class="code hl_variable" href="structeve_1_1GameplayCommandReceipt.html#a47b57c2e7cfe5a43ff28154e2d3b6d91">details</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayEvent.html">   71</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1GameplayEvent.html">GameplayEvent</a> {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayEvent.html#a1e1cf3ddda08ac28a383c20fc2406182">   72</a></span>    std::uint64_t   <a class="code hl_variable" href="structeve_1_1GameplayEvent.html#a1e1cf3ddda08ac28a383c20fc2406182">sequence</a> = 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayEvent.html#a0a409ebde62ec798220fa36e7a11d057">   73</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="structeve_1_1GameplayEvent.html#a0a409ebde62ec798220fa36e7a11d057">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayEvent.html#a304600f19d785cfa54f1822cac3e70ab">   74</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1GameplayEvent.html#a304600f19d785cfa54f1822cac3e70ab">type</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayEvent.html#abf27b69f0bd7f530b5dac6ae4cbc1ae6">   75</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>      <a class="code hl_variable" href="structeve_1_1GameplayEvent.html#abf27b69f0bd7f530b5dac6ae4cbc1ae6">subject</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayEvent.html#a4ae06fc93ddfe9de2e002e0835bc8aaa">   76</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1GameplayEvent.html#a4ae06fc93ddfe9de2e002e0835bc8aaa">causationCommandId</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayEvent.html#abf6d7023424cdc11dba56b8c68607f30">   77</a></span>    std::string     <a class="code hl_variable" href="structeve_1_1GameplayEvent.html#abf6d7023424cdc11dba56b8c68607f30">correlationId</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1GameplayEvent.html#a8e41c579d85f8f0ba7f7bf30d3210824">   78</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">Value</a>           <a class="code hl_variable" href="structeve_1_1GameplayEvent.html#a8e41c579d85f8f0ba7f7bf30d3210824">payload</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="};">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html">   90</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1IGameplayControlProvider.html">IGameplayControlProvider</a> {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html#aee803ca0d14eadea63f8788e13d10c2b">   92</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1IGameplayControlProvider.html#aee803ca0d14eadea63f8788e13d10c2b">capabilityName</a> = <span class="stringliteral">&quot;IGameplayControlProvider&quot;</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html#aa35341669f898fd0b827036a1fb7361b">   93</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1IGameplayControlProvider.html#aa35341669f898fd0b827036a1fb7361b">~IGameplayControlProvider</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html#af87a275bcbf73986f4abe3345a5a7ccf">   96</a></span>    [[nodiscard]] <span class="keyword">virtual</span> std::string_view <a class="code hl_function" href="classeve_1_1IGameplayControlProvider.html#af87a275bcbf73986f4abe3345a5a7ccf">gameplayDomain</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html#a251767bc64d37a2e5c12f9c8db648df2">   98</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1GameplayObservation.html">GameplayObservation</a>&gt; <a class="code hl_function" href="classeve_1_1IGameplayControlProvider.html#a251767bc64d37a2e5c12f9c8db648df2">observeGameplay</a>(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                                                                       <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance) const = 0;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html#a21c391f621adf61ea07df02d4ad9668e">  101</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_struct" href="structeve_1_1GameplayActionDescriptor.html">GameplayActionDescriptor</a>&gt;&gt; <a class="code hl_function" href="classeve_1_1IGameplayControlProvider.html#a21c391f621adf61ea07df02d4ad9668e">availableGameplayActions</a>(</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> subject) const = 0;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html#a0e07c001dc3c5551e5ea32c46322b22e">  104</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1GameplayCommandReceipt.html">GameplayCommandReceipt</a>&gt; <a class="code hl_function" href="classeve_1_1IGameplayControlProvider.html#a0e07c001dc3c5551e5ea32c46322b22e">submitGameplay</a>(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                                                                         <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                                                                         const <a class="code hl_struct" href="structeve_1_1GameplayCommand.html">GameplayCommand</a>&amp; command) = 0;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html#aa46527b85a71c71075efde668dc997bd">  108</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1GameplayObservation.html">GameplayObservation</a>&gt; <a class="code hl_function" href="classeve_1_1IGameplayControlProvider.html#aa46527b85a71c71075efde668dc997bd">advanceGameplay</a>(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session,</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                                                                       <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance,</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                                                                       const <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) = 0;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classeve_1_1IGameplayControlProvider.html#a6bdfb78dac9e74f9e5f639018c3c2d27">  112</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_struct" href="structeve_1_1GameplayEvent.html">GameplayEvent</a>&gt;&gt; <a class="code hl_function" href="classeve_1_1IGameplayControlProvider.html#a6bdfb78dac9e74f9e5f639018c3c2d27">gameplayEvents</a>(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                                                                             <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                                                                             <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t afterSequence) const = 0;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>};</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aIdentity_8h_html"><div class="ttname"><a href="Identity_8h.html">Identity.h</a></div><div class="ttdoc">Strong identity values shared by persistence, content and logical-name APIs.</div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSubjectRef_8h_html"><div class="ttname"><a href="SubjectRef_8h.html">SubjectRef.h</a></div><div class="ttdoc">Stable reference to a runtime gameplay subject.</div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html">eve::IGameplayControlProvider</a></div><div class="ttdoc">Multi-provider gameplay boundary consumed by input, scripts and automation.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00090">GameplayControl.h:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html_a0e07c001dc3c5551e5ea32c46322b22e"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html#a0e07c001dc3c5551e5ea32c46322b22e">eve::IGameplayControlProvider::submitGameplay</a></div><div class="ttdeci">virtual Result&lt; GameplayCommandReceipt &gt; submitGameplay(const GameplaySession &amp;session, SubjectRef instance, const GameplayCommand &amp;command)=0</div><div class="ttdoc">Validate authority and atomically submit one domain command.</div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html_a21c391f621adf61ea07df02d4ad9668e"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html#a21c391f621adf61ea07df02d4ad9668e">eve::IGameplayControlProvider::availableGameplayActions</a></div><div class="ttdeci">virtual Result&lt; std::vector&lt; GameplayActionDescriptor &gt; &gt; availableGameplayActions(const GameplaySession &amp;session, SubjectRef instance, SubjectRef subject) const =0</div><div class="ttdoc">Discover currently legal player-semantic actions for one subject.</div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html_a251767bc64d37a2e5c12f9c8db648df2"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html#a251767bc64d37a2e5c12f9c8db648df2">eve::IGameplayControlProvider::observeGameplay</a></div><div class="ttdeci">virtual Result&lt; GameplayObservation &gt; observeGameplay(const GameplaySession &amp;session, SubjectRef instance) const =0</div><div class="ttdoc">Observe one provider-owned gameplay instance without mutation.</div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html_a6bdfb78dac9e74f9e5f639018c3c2d27"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html#a6bdfb78dac9e74f9e5f639018c3c2d27">eve::IGameplayControlProvider::gameplayEvents</a></div><div class="ttdeci">virtual Result&lt; std::vector&lt; GameplayEvent &gt; &gt; gameplayEvents(const GameplaySession &amp;session, SubjectRef instance, std::uint64_t afterSequence) const =0</div><div class="ttdoc">Return events strictly newer than an instance-local sequence cursor.</div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html_aa35341669f898fd0b827036a1fb7361b"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html#aa35341669f898fd0b827036a1fb7361b">eve::IGameplayControlProvider::~IGameplayControlProvider</a></div><div class="ttdeci">virtual ~IGameplayControlProvider()=default</div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html_aa46527b85a71c71075efde668dc997bd"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html#aa46527b85a71c71075efde668dc997bd">eve::IGameplayControlProvider::advanceGameplay</a></div><div class="ttdeci">virtual Result&lt; GameplayObservation &gt; advanceGameplay(const GameplaySession &amp;session, SubjectRef instance, const SimulationStep &amp;step)=0</div><div class="ttdoc">Advance one provider-owned instance using injected deterministic time.</div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html_aee803ca0d14eadea63f8788e13d10c2b"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html#aee803ca0d14eadea63f8788e13d10c2b">eve::IGameplayControlProvider::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00092">GameplayControl.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html_af87a275bcbf73986f4abe3345a5a7ccf"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html#af87a275bcbf73986f4abe3345a5a7ccf">eve::IGameplayControlProvider::gameplayDomain</a></div><div class="ttdeci">virtual std::string_view gameplayDomain() const noexcept=0</div><div class="ttdoc">Stable provider domain used for discovery and routing.</div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00413">Identity.h:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ab94223efe73deb764451e4cad6153cd9"><div class="ttname"><a href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9">eve::GameplayAccess</a></div><div class="ttdeci">GameplayAccess</div><div class="ttdoc">Authority profile applied by a gameplay provider before domain validation.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00022">GameplayControl.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ab94223efe73deb764451e4cad6153cd9a640f91cfed3d91bffc5c0fff82a1ec7f"><div class="ttname"><a href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9a640f91cfed3d91bffc5c0fff82a1ec7f">eve::GameplayAccess::PlayerEquivalent</a></div><div class="ttdeci">@ PlayerEquivalent</div></div>
+<div class="ttc" id="anamespaceeve_html_ab94223efe73deb764451e4cad6153cd9ab4c9b855d94bf451b75cc6c33ac0495b"><div class="ttname"><a href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9ab4c9b855d94bf451b75cc6c33ac0495b">eve::GameplayAccess::TestDriver</a></div><div class="ttdeci">@ TestDriver</div></div>
+<div class="ttc" id="anamespaceeve_html_ab94223efe73deb764451e4cad6153cd9ad34a3d793c9d3e8e04b5be8e1ae99c1a"><div class="ttname"><a href="namespaceeve.html#ab94223efe73deb764451e4cad6153cd9ad34a3d793c9d3e8e04b5be8e1ae99c1a">eve::GameplayAccess::DeveloperCheat</a></div><div class="ttdeci">@ DeveloperCheat</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayActionDescriptor_html"><div class="ttname"><a href="structeve_1_1GameplayActionDescriptor.html">eve::GameplayActionDescriptor</a></div><div class="ttdoc">One discoverable domain action and its owning schema projection.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00037">GameplayControl.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayActionDescriptor_html_a024fb3794788dd0ffcc2504f8fbf3746"><div class="ttname"><a href="structeve_1_1GameplayActionDescriptor.html#a024fb3794788dd0ffcc2504f8fbf3746">eve::GameplayActionDescriptor::parameterSchema</a></div><div class="ttdeci">Value parameterSchema</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00039">GameplayControl.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayActionDescriptor_html_ac88ed723f05748994ab1b18a48bbe56c"><div class="ttname"><a href="structeve_1_1GameplayActionDescriptor.html#ac88ed723f05748994ab1b18a48bbe56c">eve::GameplayActionDescriptor::id</a></div><div class="ttdeci">LogicalId id</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00038">GameplayControl.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommandReceipt_html"><div class="ttname"><a href="structeve_1_1GameplayCommandReceipt.html">eve::GameplayCommandReceipt</a></div><div class="ttdoc">Owning evidence that a gameplay authority accepted one command.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00062">GameplayControl.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommandReceipt_html_a413f359551ca4a9caeb9577395e0c3d8"><div class="ttname"><a href="structeve_1_1GameplayCommandReceipt.html#a413f359551ca4a9caeb9577395e0c3d8">eve::GameplayCommandReceipt::acceptedTick</a></div><div class="ttdeci">SimulationTick acceptedTick</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00065">GameplayControl.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommandReceipt_html_a47b57c2e7cfe5a43ff28154e2d3b6d91"><div class="ttname"><a href="structeve_1_1GameplayCommandReceipt.html#a47b57c2e7cfe5a43ff28154e2d3b6d91">eve::GameplayCommandReceipt::details</a></div><div class="ttdeci">Value details</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00067">GameplayControl.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommandReceipt_html_a69530c29ced6b504ea9ac92976be4771"><div class="ttname"><a href="structeve_1_1GameplayCommandReceipt.html#a69530c29ced6b504ea9ac92976be4771">eve::GameplayCommandReceipt::executionId</a></div><div class="ttdeci">std::string executionId</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00064">GameplayControl.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommandReceipt_html_aed098e67fb5de1c051031f3581d66192"><div class="ttname"><a href="structeve_1_1GameplayCommandReceipt.html#aed098e67fb5de1c051031f3581d66192">eve::GameplayCommandReceipt::commandId</a></div><div class="ttdeci">std::string commandId</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00063">GameplayControl.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommandReceipt_html_af9283c4286e4bb1e03d2c93e0f3b75c7"><div class="ttname"><a href="structeve_1_1GameplayCommandReceipt.html#af9283c4286e4bb1e03d2c93e0f3b75c7">eve::GameplayCommandReceipt::resultingRevision</a></div><div class="ttdeci">std::uint64_t resultingRevision</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00066">GameplayControl.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommand_html"><div class="ttname"><a href="structeve_1_1GameplayCommand.html">eve::GameplayCommand</a></div><div class="ttdoc">One player-semantic command submitted to a domain authority.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00052">GameplayControl.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommand_html_a2abe9a59b13f3aa8925880d367b02e0e"><div class="ttname"><a href="structeve_1_1GameplayCommand.html#a2abe9a59b13f3aa8925880d367b02e0e">eve::GameplayCommand::subject</a></div><div class="ttdeci">SubjectRef subject</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00055">GameplayControl.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommand_html_a403deb5cbb8b8388f48383b4f0665982"><div class="ttname"><a href="structeve_1_1GameplayCommand.html#a403deb5cbb8b8388f48383b4f0665982">eve::GameplayCommand::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00053">GameplayControl.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommand_html_a68d96ebe0bfafe08f59bad89d8a84221"><div class="ttname"><a href="structeve_1_1GameplayCommand.html#a68d96ebe0bfafe08f59bad89d8a84221">eve::GameplayCommand::expectedRevision</a></div><div class="ttdeci">std::uint64_t expectedRevision</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00057">GameplayControl.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommand_html_a96f436f42d4150211e863e2fb0f9e6ba"><div class="ttname"><a href="structeve_1_1GameplayCommand.html#a96f436f42d4150211e863e2fb0f9e6ba">eve::GameplayCommand::observedTick</a></div><div class="ttdeci">SimulationTick observedTick</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00056">GameplayControl.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommand_html_ae9a6de42db91eb54900ac854c0d589e3"><div class="ttname"><a href="structeve_1_1GameplayCommand.html#ae9a6de42db91eb54900ac854c0d589e3">eve::GameplayCommand::action</a></div><div class="ttdeci">LogicalId action</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00054">GameplayControl.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommand_html_afe00922baeba547d4b0b3c9c7f3c2e4e"><div class="ttname"><a href="structeve_1_1GameplayCommand.html#afe00922baeba547d4b0b3c9c7f3c2e4e">eve::GameplayCommand::parameters</a></div><div class="ttdeci">Value parameters</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00058">GameplayControl.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html"><div class="ttname"><a href="structeve_1_1GameplayEvent.html">eve::GameplayEvent</a></div><div class="ttdoc">Owning event projection safe across frames and process boundaries.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00071">GameplayControl.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html_a0a409ebde62ec798220fa36e7a11d057"><div class="ttname"><a href="structeve_1_1GameplayEvent.html#a0a409ebde62ec798220fa36e7a11d057">eve::GameplayEvent::tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00073">GameplayControl.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html_a1e1cf3ddda08ac28a383c20fc2406182"><div class="ttname"><a href="structeve_1_1GameplayEvent.html#a1e1cf3ddda08ac28a383c20fc2406182">eve::GameplayEvent::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00072">GameplayControl.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html_a304600f19d785cfa54f1822cac3e70ab"><div class="ttname"><a href="structeve_1_1GameplayEvent.html#a304600f19d785cfa54f1822cac3e70ab">eve::GameplayEvent::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00074">GameplayControl.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html_a4ae06fc93ddfe9de2e002e0835bc8aaa"><div class="ttname"><a href="structeve_1_1GameplayEvent.html#a4ae06fc93ddfe9de2e002e0835bc8aaa">eve::GameplayEvent::causationCommandId</a></div><div class="ttdeci">std::string causationCommandId</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00076">GameplayControl.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html_a8e41c579d85f8f0ba7f7bf30d3210824"><div class="ttname"><a href="structeve_1_1GameplayEvent.html#a8e41c579d85f8f0ba7f7bf30d3210824">eve::GameplayEvent::payload</a></div><div class="ttdeci">Value payload</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00078">GameplayControl.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html_abf27b69f0bd7f530b5dac6ae4cbc1ae6"><div class="ttname"><a href="structeve_1_1GameplayEvent.html#abf27b69f0bd7f530b5dac6ae4cbc1ae6">eve::GameplayEvent::subject</a></div><div class="ttdeci">SubjectRef subject</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00075">GameplayControl.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html_abf6d7023424cdc11dba56b8c68607f30"><div class="ttname"><a href="structeve_1_1GameplayEvent.html#abf6d7023424cdc11dba56b8c68607f30">eve::GameplayEvent::correlationId</a></div><div class="ttdeci">std::string correlationId</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00077">GameplayControl.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayObservation_html"><div class="ttname"><a href="structeve_1_1GameplayObservation.html">eve::GameplayObservation</a></div><div class="ttdoc">Immutable owning observation of one authoritative gameplay instance.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00043">GameplayControl.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayObservation_html_a053ede71c1530170c5859ffa5c0abd91"><div class="ttname"><a href="structeve_1_1GameplayObservation.html#a053ede71c1530170c5859ffa5c0abd91">eve::GameplayObservation::state</a></div><div class="ttdeci">Value state</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00048">GameplayControl.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayObservation_html_a13419f8a7d48f9455d76faa2dc039bb2"><div class="ttname"><a href="structeve_1_1GameplayObservation.html#a13419f8a7d48f9455d76faa2dc039bb2">eve::GameplayObservation::instance</a></div><div class="ttdeci">SubjectRef instance</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00045">GameplayControl.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayObservation_html_a271f078817a895968e0263b79f39cff7"><div class="ttname"><a href="structeve_1_1GameplayObservation.html#a271f078817a895968e0263b79f39cff7">eve::GameplayObservation::tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00046">GameplayControl.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayObservation_html_a87a15b157c76c28ae76cea199ec3ed47"><div class="ttname"><a href="structeve_1_1GameplayObservation.html#a87a15b157c76c28ae76cea199ec3ed47">eve::GameplayObservation::domain</a></div><div class="ttdeci">LogicalId domain</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00044">GameplayControl.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayObservation_html_ab7fa60801e7b75228a49de9a245b782f"><div class="ttname"><a href="structeve_1_1GameplayObservation.html#ab7fa60801e7b75228a49de9a245b782f">eve::GameplayObservation::revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00047">GameplayControl.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplaySession_html"><div class="ttname"><a href="structeve_1_1GameplaySession.html">eve::GameplaySession</a></div><div class="ttdoc">Owning authorization context shared by player, script and automation adapters.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00030">GameplayControl.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplaySession_html_a9a407a91a87da854eb53c0258e4cf0b0"><div class="ttname"><a href="structeve_1_1GameplaySession.html#a9a407a91a87da854eb53c0258e4cf0b0">eve::GameplaySession::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00031">GameplayControl.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplaySession_html_ac50d1d82737a0d32bf08e085099e4e70"><div class="ttname"><a href="structeve_1_1GameplaySession.html#ac50d1d82737a0d32bf08e085099e4e70">eve::GameplaySession::controlledSubjects</a></div><div class="ttdeci">std::vector&lt; SubjectRef &gt; controlledSubjects</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00033">GameplayControl.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplaySession_html_adbe35cd12b79e2d3312aafcbcaaee8d7"><div class="ttname"><a href="structeve_1_1GameplaySession.html#adbe35cd12b79e2d3312aafcbcaaee8d7">eve::GameplaySession::access</a></div><div class="ttdeci">GameplayAccess access</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00032">GameplayControl.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

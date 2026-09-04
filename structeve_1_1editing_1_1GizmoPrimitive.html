@@ -1,0 +1,371 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editing::GizmoPrimitive结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editing.html">editing</a></li><li class="navelem"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html">GizmoPrimitive</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1editing_1_1GizmoPrimitive-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editing::GizmoPrimitive结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Renderer-neutral wire primitive for authoring viewport overlays.  
+ <a href="structeve_1_1editing_1_1GizmoPrimitive.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a6b439b69b1c3e23b1b34647d56046761" id="r_a6b439b69b1c3e23b1b34647d56046761"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#a6b439b69b1c3e23b1b34647d56046761">id</a></td></tr>
+<tr class="separator:a6b439b69b1c3e23b1b34647d56046761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb3e61e590a74ab23fc666ac1ffeccb2" id="r_abb3e61e590a74ab23fc666ac1ffeccb2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#abb3e61e590a74ab23fc666ac1ffeccb2">kind</a></td></tr>
+<tr class="separator:abb3e61e590a74ab23fc666ac1ffeccb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9da175b7d583149eee1a48c21e6d042" id="r_af9da175b7d583149eee1a48c21e6d042"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#af9da175b7d583149eee1a48c21e6d042">position</a> {0.0, 0.0, 0.0}</td></tr>
+<tr class="separator:af9da175b7d583149eee1a48c21e6d042"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a412b9db6c1407cb003c7658831527648" id="r_a412b9db6c1407cb003c7658831527648"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#a412b9db6c1407cb003c7658831527648">size</a> {0.0, 0.0, 0.0}</td></tr>
+<tr class="separator:a412b9db6c1407cb003c7658831527648"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa295e2c6e761f02212d14b2369ee69b1" id="r_aa295e2c6e761f02212d14b2369ee69b1"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#aa295e2c6e761f02212d14b2369ee69b1">direction</a> {0.0, 0.0, -1.0}</td></tr>
+<tr class="separator:aa295e2c6e761f02212d14b2369ee69b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc33598b54f33bd1596b2251b5358f22" id="r_afc33598b54f33bd1596b2251b5358f22"><td class="memItemLeft" align="right" valign="top">std::array&lt; double, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#afc33598b54f33bd1596b2251b5358f22">color</a> {1.0, 1.0, 1.0, 1.0}</td></tr>
+<tr class="separator:afc33598b54f33bd1596b2251b5358f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f6ecc0b9d828024772689f7a56729e6" id="r_a8f6ecc0b9d828024772689f7a56729e6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#a8f6ecc0b9d828024772689f7a56729e6">radius</a> = 0.0</td></tr>
+<tr class="separator:a8f6ecc0b9d828024772689f7a56729e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d2fe99670ce3989a14502121c24565" id="r_a12d2fe99670ce3989a14502121c24565"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#a12d2fe99670ce3989a14502121c24565">length</a> = 0.0</td></tr>
+<tr class="separator:a12d2fe99670ce3989a14502121c24565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ed1ae12b8edaf65d59864da7f9344a" id="r_a77ed1ae12b8edaf65d59864da7f9344a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editing_1_1GizmoPrimitive.html#a77ed1ae12b8edaf65d59864da7f9344a">dashed</a> = false</td></tr>
+<tr class="separator:a77ed1ae12b8edaf65d59864da7f9344a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Renderer-neutral wire primitive for authoring viewport overlays. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00012">12</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="afc33598b54f33bd1596b2251b5358f22" name="afc33598b54f33bd1596b2251b5358f22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc33598b54f33bd1596b2251b5358f22">&#9670;&#160;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;double, 4&gt; eve::editing::GizmoPrimitive::color {1.0, 1.0, 1.0, 1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a> , 以及 <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="a77ed1ae12b8edaf65d59864da7f9344a" name="a77ed1ae12b8edaf65d59864da7f9344a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77ed1ae12b8edaf65d59864da7f9344a">&#9670;&#160;</a></span>dashed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editing::GizmoPrimitive::dashed = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a>.</p>
+
+</div>
+</div>
+<a id="aa295e2c6e761f02212d14b2369ee69b1" name="aa295e2c6e761f02212d14b2369ee69b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa295e2c6e761f02212d14b2369ee69b1">&#9670;&#160;</a></span>direction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;double, 3&gt; eve::editing::GizmoPrimitive::direction {0.0, 0.0, -1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="a6b439b69b1c3e23b1b34647d56046761" name="a6b439b69b1c3e23b1b34647d56046761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b439b69b1c3e23b1b34647d56046761">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editing::GizmoPrimitive::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l01030">eve::building_editing::BuildingPlacementTarget::edgeCubicBezierGizmo()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a> , 以及 <a class="el" href="HouseGenRuntime_8cpp_source.html#l00041">eve::housegen_editing::HouseGenPreviewRuntime::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="abb3e61e590a74ab23fc666ac1ffeccb2" name="abb3e61e590a74ab23fc666ac1ffeccb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb3e61e590a74ab23fc666ac1ffeccb2">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editing::GizmoPrimitive::kind</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a> , 以及 <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="a12d2fe99670ce3989a14502121c24565" name="a12d2fe99670ce3989a14502121c24565"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12d2fe99670ce3989a14502121c24565">&#9670;&#160;</a></span>length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::editing::GizmoPrimitive::length = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a> , 以及 <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="af9da175b7d583149eee1a48c21e6d042" name="af9da175b7d583149eee1a48c21e6d042"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9da175b7d583149eee1a48c21e6d042">&#9670;&#160;</a></span>position</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;double, 3&gt; eve::editing::GizmoPrimitive::position {0.0, 0.0, 0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a> , 以及 <a class="el" href="CameraTarget_8cpp_source.html#l00050">eve::camera_editing::CameraPreview::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="a8f6ecc0b9d828024772689f7a56729e6" name="a8f6ecc0b9d828024772689f7a56729e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f6ecc0b9d828024772689f7a56729e6">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::editing::GizmoPrimitive::radius = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a>.</p>
+
+</div>
+</div>
+<a id="a412b9db6c1407cb003c7658831527648" name="a412b9db6c1407cb003c7658831527648"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a412b9db6c1407cb003c7658831527648">&#9670;&#160;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;double, 3&gt; eve::editing::GizmoPrimitive::size {0.0, 0.0, 0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a> 第 <a class="el" href="EditingGizmo_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00048">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::collider()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/editing/<a class="el" href="EditingGizmo_8h_source.html">EditingGizmo.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

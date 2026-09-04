@@ -1,0 +1,306 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/audio/Source.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_189de8ddbd20baa858469f52f29d4333.html">audio</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Source.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Source_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Object_8h.html">common/Object.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;AL/al.h&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;AL/alc.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;queue&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="AudioTypes_8h.html">AudioTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>sound {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>SoundData;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>Decoder;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}  <span class="comment">// namespace sound</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span>audio {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02ab22f0418e8ac915eb66f829d262d14a2">Audio</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1audio_1_1Source.html">   30</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1audio_1_1Source.html">Source</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Object.html">Object</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_class" href="classeve_1_1audio_1_1Source.html">Source</a>(<a class="code hl_class" href="classeve_1_1audio_1_1Audio.html">Audio</a> *audio, <a class="code hl_class" href="classeve_1_1sound_1_1SoundData.html">sound::SoundData</a> *<a class="code hl_variable" href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_class" href="classeve_1_1audio_1_1Source.html">Source</a>(<a class="code hl_class" href="classeve_1_1audio_1_1Audio.html">Audio</a> *audio, <a class="code hl_class" href="classeve_1_1sound_1_1Decoder.html">sound::Decoder</a> *decoder, <span class="keywordtype">bool</span> streaming, <span class="keywordtype">bool</span> takeDecoderOwnership = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a1961d60b1efbd935abe7d47b79b21ca1">~Source</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a0eaa9c696e0e22a002aaca19b30e062f">play</a>();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a27ae36ab2b728a7c081d7ee6106b1998">pause</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a934d18b2e9e82ddc6b5d90ddb1fb4e8c">stop</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a683e67912deeec0d9a0a173ec3b0fc8f">isPlaying</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a37e094a276d8b4b2cdfee00087746ca7">setVolume</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a514d0aa5741e8720a609db35f37c0f62">getVolume</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#afdf477356854e145f9746d2630e9f13a">setPitch</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a725bbd8f9205c6bb8aa8234c2bac7bee">getPitch</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#adf5fd5c4a6a69319df05ddebfa7fad0a">setLooping</a>(<span class="keywordtype">bool</span> l);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#aea3105c10ec38c7d3febea0e4070ed2b">isLooping</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#ad5388b1e80f0c2849cde1c029f4b08c2">seek</a>(<span class="keywordtype">double</span> seconds);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#ab3113e0de07e3ffbb21e4ca88d362253">tell</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#aaedcc8b30b58f7eecc716a14f5e717da">getDuration</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a7e259e4082e7f6e4a142acd24fd8f89d">setPosition</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a5b9b0a12af9276f1988653930d76b13c">setVelocity</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#ae7bab0cf0043e301b64721c127c86170">setDirection</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a73588eb5f87b6ffdabaaf7575e60a208">setRelative</a>(<span class="keywordtype">bool</span> relative);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#ab3a7ca58ce3d90265be461b81e8aaa14">setAttenuationDistances</a>(<span class="keywordtype">float</span> <a class="code hl_class" href="classeve_1_1ref.html">ref</a>, <span class="keywordtype">float</span> max);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1audio_1_1Source.html#a25eded75596606726e4c77c90d2d14d0">   74</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a25eded75596606726e4c77c90d2d14d0">isStreaming</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> streaming; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#af51723f323c4c60c42f67ba6265d8632">pump</a>();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1audio_1_1Source.html#a07b8ad5c3c5a989741ef5fde7d3a50f1">fillPendingFromDecoder</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1audio_1_1Source.html#a211f008bd6a46efe478fe81d31e28933">   86</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1audio_1_1Audio.html">Audio</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> applyGainPitch();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    ALenum alFormat() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">void</span> ensureStaticBuffer();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">int</span> decoderSampleRateOr(<span class="keywordtype">int</span> fallback) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_class" href="classeve_1_1audio_1_1Audio.html">Audio</a> *audio = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_class" href="classeve_1_1sound_1_1SoundData.html">sound::SoundData</a> *staticData = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_class" href="classeve_1_1sound_1_1Decoder.html">sound::Decoder</a> *decoder = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">bool</span> ownsDecoder = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">bool</span> streaming = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    ALuint alSource = 0;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    ALuint alBuffer = 0;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    ALuint streamBuffers[<a class="code hl_variable" href="namespaceeve_1_1audio.html#a9e2276e2e2f7824893283bc3561ae917">kStreamBufferCount</a>]{};</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">int</span> streamBufferCount = 0;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">float</span> volume = 1.f;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">float</span> pitch = 1.f;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">bool</span> looping = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="comment">// Guards all access to `decoder` (including its lifetime): the Audio worker</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="comment">// thread reads/decodes via fillPendingFromDecoder() while other threads may</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="comment">// seek/stop/destroy the Source (and delete its Decoder) concurrently.</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">mutable</span> std::mutex decoderMutex;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::mutex pendingMutex;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::queue&lt;PcmChunk&gt; <a class="code hl_variable" href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    std::atomic&lt;bool&gt; playing{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::atomic&lt;bool&gt; wantsData{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>};</div>
+</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}  <span class="comment">// namespace audio</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAudioTypes_8h_html"><div class="ttname"><a href="AudioTypes_8h.html">AudioTypes.h</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a318c52c4cdd810a5dbbd886bf5d38244"><div class="ttname"><a href="BattleVictory_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a></div><div class="ttdeci">std::vector&lt; QuestEvent &gt; pending</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00026">BattleVictory.cpp:26</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aObject_8h_html"><div class="ttname"><a href="Object_8h.html">Object.h</a></div></div>
+<div class="ttc" id="aRenderSystem_8cpp_html_a0acebf32e3c4db81315b76a7355ecae8"><div class="ttname"><a href="RenderSystem_8cpp.html#a0acebf32e3c4db81315b76a7355ecae8">data</a></div><div class="ttdeci">Light2D::Data * data</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem_8cpp_source.html#l00192">RenderSystem.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1Object_html"><div class="ttname"><a href="classeve_1_1Object.html">eve::Object</a></div><div class="ttdoc">Object is the base class for all game objects. It provides reference counting and dirty flag for upda...</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00018">Object.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Audio_html"><div class="ttname"><a href="classeve_1_1audio_1_1Audio.html">eve::audio::Audio</a></div><div class="ttdoc">OpenAL audio module: device management, master listener state, and Source factory....</div><div class="ttdef"><b>Definition</b> <a href="Audio_8h_source.html#l00027">Audio.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html">eve::audio::Source</a></div><div class="ttdoc">A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex...</div><div class="ttdef"><b>Definition</b> <a href="Source_8h_source.html#l00030">Source.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a07b8ad5c3c5a989741ef5fde7d3a50f1"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a07b8ad5c3c5a989741ef5fde7d3a50f1">eve::audio::Source::fillPendingFromDecoder</a></div><div class="ttdeci">void fillPendingFromDecoder()</div><div class="ttdoc">Called by the Audio worker thread. Internally synchronized against concurrent decoder teardown (see d...</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00250">Source.cpp:250</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a0eaa9c696e0e22a002aaca19b30e062f"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a0eaa9c696e0e22a002aaca19b30e062f">eve::audio::Source::play</a></div><div class="ttdeci">void play()</div><div class="ttdoc">Starts (or resumes) playback.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00120">Source.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a1961d60b1efbd935abe7d47b79b21ca1"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a1961d60b1efbd935abe7d47b79b21ca1">eve::audio::Source::~Source</a></div><div class="ttdeci">~Source() override</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00046">Source.cpp:46</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a25eded75596606726e4c77c90d2d14d0"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a25eded75596606726e4c77c90d2d14d0">eve::audio::Source::isStreaming</a></div><div class="ttdeci">bool isStreaming() const</div><div class="ttdef"><b>Definition</b> <a href="Source_8h_source.html#l00074">Source.h:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a27ae36ab2b728a7c081d7ee6106b1998"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a27ae36ab2b728a7c081d7ee6106b1998">eve::audio::Source::pause</a></div><div class="ttdeci">void pause()</div><div class="ttdoc">Pauses playback, keeping the play position.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00135">Source.cpp:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a37e094a276d8b4b2cdfee00087746ca7"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a37e094a276d8b4b2cdfee00087746ca7">eve::audio::Source::setVolume</a></div><div class="ttdeci">void setVolume(float v)</div><div class="ttdoc">Sets source gain (clamped to &gt;= 0).</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00181">Source.cpp:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a514d0aa5741e8720a609db35f37c0f62"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a514d0aa5741e8720a609db35f37c0f62">eve::audio::Source::getVolume</a></div><div class="ttdeci">float getVolume() const</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00185">Source.cpp:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a5b9b0a12af9276f1988653930d76b13c"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a5b9b0a12af9276f1988653930d76b13c">eve::audio::Source::setVelocity</a></div><div class="ttdeci">void setVelocity(float x, float y, float z)</div><div class="ttdoc">Sets the source velocity (used by OpenAL doppler).</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00239">Source.cpp:239</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a683e67912deeec0d9a0a173ec3b0fc8f"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a683e67912deeec0d9a0a173ec3b0fc8f">eve::audio::Source::isPlaying</a></div><div class="ttdeci">bool isPlaying() const</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00175">Source.cpp:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a725bbd8f9205c6bb8aa8234c2bac7bee"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a725bbd8f9205c6bb8aa8234c2bac7bee">eve::audio::Source::getPitch</a></div><div class="ttdeci">float getPitch() const</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00191">Source.cpp:191</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a73588eb5f87b6ffdabaaf7575e60a208"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a73588eb5f87b6ffdabaaf7575e60a208">eve::audio::Source::setRelative</a></div><div class="ttdeci">void setRelative(bool relative)</div><div class="ttdoc">Makes the source ignore the listener position (head-relative).</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00241">Source.cpp:241</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a7e259e4082e7f6e4a142acd24fd8f89d"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a7e259e4082e7f6e4a142acd24fd8f89d">eve::audio::Source::setPosition</a></div><div class="ttdeci">void setPosition(float x, float y, float z)</div><div class="ttdoc">Sets the source position in world units.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00238">Source.cpp:238</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_a934d18b2e9e82ddc6b5d90ddb1fb4e8c"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#a934d18b2e9e82ddc6b5d90ddb1fb4e8c">eve::audio::Source::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdoc">Stops playback and rewinds the play position.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00140">Source.cpp:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_aaedcc8b30b58f7eecc716a14f5e717da"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#aaedcc8b30b58f7eecc716a14f5e717da">eve::audio::Source::getDuration</a></div><div class="ttdeci">double getDuration() const</div><div class="ttdoc">Total duration in seconds (0 for live/unbounded streams).</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00229">Source.cpp:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_ab3113e0de07e3ffbb21e4ca88d362253"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#ab3113e0de07e3ffbb21e4ca88d362253">eve::audio::Source::tell</a></div><div class="ttdeci">double tell() const</div><div class="ttdoc">Current play time in seconds.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00223">Source.cpp:223</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_ab3a7ca58ce3d90265be461b81e8aaa14"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#ab3a7ca58ce3d90265be461b81e8aaa14">eve::audio::Source::setAttenuationDistances</a></div><div class="ttdeci">void setAttenuationDistances(float ref, float max)</div><div class="ttdoc">Sets OpenAL reference and maximum attenuation distances.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00244">Source.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_ad5388b1e80f0c2849cde1c029f4b08c2"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#ad5388b1e80f0c2849cde1c029f4b08c2">eve::audio::Source::seek</a></div><div class="ttdeci">bool seek(double seconds)</div><div class="ttdoc">Seeks to a time in seconds; false when seeking is unsupported.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00200">Source.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_adf5fd5c4a6a69319df05ddebfa7fad0a"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#adf5fd5c4a6a69319df05ddebfa7fad0a">eve::audio::Source::setLooping</a></div><div class="ttdeci">void setLooping(bool l)</div><div class="ttdoc">Enables/disables looping.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00193">Source.cpp:193</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_ae7bab0cf0043e301b64721c127c86170"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#ae7bab0cf0043e301b64721c127c86170">eve::audio::Source::setDirection</a></div><div class="ttdeci">void setDirection(float x, float y, float z)</div><div class="ttdoc">Sets the source directional cone orientation.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00240">Source.cpp:240</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_aea3105c10ec38c7d3febea0e4070ed2b"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#aea3105c10ec38c7d3febea0e4070ed2b">eve::audio::Source::isLooping</a></div><div class="ttdeci">bool isLooping() const</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00198">Source.cpp:198</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_af51723f323c4c60c42f67ba6265d8632"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#af51723f323c4c60c42f67ba6265d8632">eve::audio::Source::pump</a></div><div class="ttdeci">void pump()</div><div class="ttdoc">Main thread: queues/unqueues AL buffers for a streaming source.</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00286">Source.cpp:286</a></div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html_afdf477356854e145f9746d2630e9f13a"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html#afdf477356854e145f9746d2630e9f13a">eve::audio::Source::setPitch</a></div><div class="ttdeci">void setPitch(float p)</div><div class="ttdoc">Sets playback pitch (clamped to &gt;= 0).</div><div class="ttdef"><b>Definition</b> <a href="Source_8cpp_source.html#l00187">Source.cpp:187</a></div></div>
+<div class="ttc" id="aclasseve_1_1ref_html"><div class="ttname"><a href="classeve_1_1ref.html">eve::ref</a></div><div class="ttdoc">ref is a smart pointer that automatically calls ref() and unref() on the object. Type T must be a sub...</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00054">Object.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1Decoder_html"><div class="ttname"><a href="classeve_1_1sound_1_1Decoder.html">eve::sound::Decoder</a></div><div class="ttdoc">Streaming audio decoder (medialoader-backed). Owns the raw encoded bytes and decodes incrementally vi...</div><div class="ttdef"><b>Definition</b> <a href="Decoder_8h_source.html#l00020">Decoder.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1sound_1_1SoundData_html"><div class="ttname"><a href="classeve_1_1sound_1_1SoundData.html">eve::sound::SoundData</a></div><div class="ttdoc">Raw PCM audio buffer with format metadata (samples/rate/bit depth/channels).</div><div class="ttdef"><b>Definition</b> <a href="SoundData_8h_source.html#l00013">SoundData.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a70f6cdd4922cfc97794533a4a734bb02ab22f0418e8ac915eb66f829d262d14a2"><div class="ttname"><a href="namespaceeve_1_1action.html#a70f6cdd4922cfc97794533a4a734bb02ab22f0418e8ac915eb66f829d262d14a2">eve::action::ActionPreviewCueKind::Audio</a></div><div class="ttdeci">@ Audio</div></div>
+<div class="ttc" id="anamespaceeve_1_1audio_html_a9e2276e2e2f7824893283bc3561ae917"><div class="ttname"><a href="namespaceeve_1_1audio.html#a9e2276e2e2f7824893283bc3561ae917">eve::audio::kStreamBufferCount</a></div><div class="ttdeci">constexpr int kStreamBufferCount</div><div class="ttdoc">流式 Source 的 OpenAL 缓冲数量。</div><div class="ttdef"><b>Definition</b> <a href="AudioTypes_8h_source.html#l00011">AudioTypes.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

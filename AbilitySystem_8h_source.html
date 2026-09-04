@@ -1,0 +1,336 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/action/AbilitySystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4132021be2fc4b1a23b2cac06bb68e21.html">action</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AbilitySystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AbilitySystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Action_8h.html">action/Action.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="StrongUint64_8h.html">common/StrongUint64.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="GameplayTag_8h.html">tags/GameplayTag.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1action.html">eve::action</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61">   17</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61">AbilityInstancingPolicy</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61a3935128fa76732fe13bc035cec22639d">NonInstanced</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61aff258bff42beda10966dc483ccf11e3a">PerOwner</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61a6e11cf6b06c17d24f962f2b5fd664d23">PerExecution</a> };</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6">AbilityActivationGroup</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6ae9e003c325eec6946ed1d23c6ac90a21">Independent</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6a4c824057461770e7abcfea62af25dbf3">ExclusiveReplaceable</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6a3fc82936a018ebb365e39b38d3269085">ExclusiveBlocking</a> };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityTrigger.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1AbilityTrigger.html">AbilityTrigger</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityTrigger.html#a4af61ccaa030a97f725490804b5d47cd">   24</a></span>    std::string            <a class="code hl_variable" href="structeve_1_1action_1_1AbilityTrigger.html#a4af61ccaa030a97f725490804b5d47cd">gameplayTag</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityTrigger.html#ae855fb63d5c030263fbc1db237bd2435">   25</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4">tags::GameplayTagMatch</a> <a class="code hl_variable" href="structeve_1_1action_1_1AbilityTrigger.html#ae855fb63d5c030263fbc1db237bd2435">match</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4a1649aed298f99d587e2eb30c1db5946b">tags::GameplayTagMatch::Exact</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityDefinition.html">   29</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1AbilityDefinition.html">AbilityDefinition</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityDefinition.html#a463aca901b275cd6fc543a0b8708baf3">   30</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>                   <a class="code hl_variable" href="structeve_1_1action_1_1AbilityDefinition.html#a463aca901b275cd6fc543a0b8708baf3">id</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityDefinition.html#ac9581a3feca12ba0759aba3ae2c91c10">   31</a></span>    <a class="code hl_struct" href="structeve_1_1action_1_1ActionDefinition.html">ActionDefinition</a>            <a class="code hl_variable" href="structeve_1_1action_1_1AbilityDefinition.html#ac9581a3feca12ba0759aba3ae2c91c10">action</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityDefinition.html#a9cfe3365729dd9751af9993d42167364">   32</a></span>    <a class="code hl_class" href="classeve_1_1Duration.html">Duration</a>                    <a class="code hl_variable" href="structeve_1_1action_1_1AbilityDefinition.html#a9cfe3365729dd9751af9993d42167364">cooldown</a>        = <a class="code hl_function" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityDefinition.html#a5c7085c3d253922f22fb4ab480344c7f">   33</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61">AbilityInstancingPolicy</a>     <a class="code hl_variable" href="structeve_1_1action_1_1AbilityDefinition.html#a5c7085c3d253922f22fb4ab480344c7f">instancing</a>      = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61aff258bff42beda10966dc483ccf11e3a">AbilityInstancingPolicy::PerOwner</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityDefinition.html#a17cf1c62bb83bba147adc2d531c67e69">   34</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6">AbilityActivationGroup</a>      <a class="code hl_variable" href="structeve_1_1action_1_1AbilityDefinition.html#a17cf1c62bb83bba147adc2d531c67e69">activationGroup</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6ae9e003c325eec6946ed1d23c6ac90a21">AbilityActivationGroup::Independent</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityDefinition.html#a1e477ae210e9e66d46d7e1ab531017ea">   35</a></span>    std::vector&lt;AbilityTrigger&gt; <a class="code hl_variable" href="structeve_1_1action_1_1AbilityDefinition.html#a1e477ae210e9e66d46d7e1ab531017ea">triggers</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1action_1_1AbilityDefinition.html#abaca892bdf5af69793a3a169c537bd2f">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">struct </span>AbilityGrantIdTag;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">struct </span>AbilityActivationIdTag;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">struct </span>AbilityInstanceIdTag;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">   45</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityGrantId</a> = <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt;AbilityGrantIdTag&gt;</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#a67a1486cf04a869dd2782fa654a66459">   47</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityActivationId</a> = <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt;AbilityActivationIdTag&gt;</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#adf891268bb000725eaa662a94251193e">   49</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityInstanceId</a> = <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt;AbilityInstanceIdTag&gt;</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="};">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityGrantState.html">   52</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1AbilityGrantState.html">AbilityGrantState</a> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityGrantState.html#a0542c713afd5377d74337ff214878ac3">   53</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityGrantId</a> <a class="code hl_variable" href="structeve_1_1action_1_1AbilityGrantState.html#a0542c713afd5377d74337ff214878ac3">grantId</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityGrantState.html#ab6c4d165a421cd5674873625eb9f13f5">   54</a></span>    std::string    <a class="code hl_variable" href="structeve_1_1action_1_1AbilityGrantState.html#ab6c4d165a421cd5674873625eb9f13f5">ownerId</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityGrantState.html#a7bef2c00bf04d95f5e9cee33657f768a">   55</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>      <a class="code hl_variable" href="structeve_1_1action_1_1AbilityGrantState.html#a7bef2c00bf04d95f5e9cee33657f768a">definitionId</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityGrantState.html#add3384e2169f28b6c73f7d444be31fb6">   56</a></span>    <a class="code hl_class" href="classeve_1_1Duration.html">Duration</a>       <a class="code hl_variable" href="structeve_1_1action_1_1AbilityGrantState.html#add3384e2169f28b6c73f7d444be31fb6">cooldownRemaining</a> = <a class="code hl_function" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>};</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="};">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityActivation.html">   60</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1AbilityActivation.html">AbilityActivation</a> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityActivation.html#a8192d3e16c2c222335cdc60b009fecd7">   61</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityActivationId</a>    <a class="code hl_variable" href="structeve_1_1action_1_1AbilityActivation.html#a8192d3e16c2c222335cdc60b009fecd7">id</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityActivation.html#a4d17a18125e40383672a7cdf567d7357">   62</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityGrantId</a>         <a class="code hl_variable" href="structeve_1_1action_1_1AbilityActivation.html#a4d17a18125e40383672a7cdf567d7357">grantId</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityActivation.html#a3c402bcf6acda0375f8d972614d09b65">   63</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityInstanceId</a>      <a class="code hl_variable" href="structeve_1_1action_1_1AbilityActivation.html#a3c402bcf6acda0375f8d972614d09b65">instanceId</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityActivation.html#aa687ab0a0c1c8643dfbb76e302273179">   64</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ActionExecutionId</a>      <a class="code hl_variable" href="structeve_1_1action_1_1AbilityActivation.html#aa687ab0a0c1c8643dfbb76e302273179">executionId</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityActivation.html#acebce114291ff484f5aa30f1d533746f">   65</a></span>    std::string            <a class="code hl_variable" href="structeve_1_1action_1_1AbilityActivation.html#acebce114291ff484f5aa30f1d533746f">ownerId</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1AbilityActivation.html#ae68d49279eb3240ee09c85f3d3da5992">   66</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6">AbilityActivationGroup</a> <a class="code hl_variable" href="structeve_1_1action_1_1AbilityActivation.html#ae68d49279eb3240ee09c85f3d3da5992">group</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6ae9e003c325eec6946ed1d23c6ac90a21">AbilityActivationGroup::Independent</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="};">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1AbilityRuntime.html">   76</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1action_1_1AbilityRuntime.html">AbilityRuntime</a> {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1AbilityRuntime.html#a9248b27ac0c16aed7d5000f2c29e69d8">   79</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#a9248b27ac0c16aed7d5000f2c29e69d8">AbilityRuntime</a>(<a class="code hl_class" href="classeve_1_1action_1_1ActionRuntime.html">ActionRuntime</a>&amp; runtime) : runtime_(runtime) {}</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#a936858263c832c001c948a7b15e6b635">registerDefinition</a>(<a class="code hl_struct" href="structeve_1_1action_1_1AbilityDefinition.html">AbilityDefinition</a> definition);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AbilityGrantId&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#acf13be28c15046ae96036af51af729f2">grant</a>(std::string ownerId, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; definitionId);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#a7fb87c99c9e51db799dcfa84230d65b2">revoke</a>(<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityGrantId</a> grantId);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AbilityGrantState&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#a58e6b87d16595eebc76da5894afdd1c1">findGrant</a>(<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityGrantId</a> grantId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AbilityActivation&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#a286810802396bc13a48ba178c886e7db">activate</a>(<a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityGrantId</a> grantId, <a class="code hl_struct" href="structeve_1_1action_1_1ActionRequest.html">ActionRequest</a> request,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                                                     <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] std::vector&lt;AbilityGrantId&gt; <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#ad3634edf3b40b00ffb3b289c84693b18">matchingGrants</a>(std::string_view ownerId,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                                                             std::string_view gameplayEventTag) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#a99bea6817dfca25d4aae134cf71ff343">advanceCooldowns</a>(<a class="code hl_class" href="classeve_1_1Duration.html">Duration</a> delta);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::size_t&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#a620f4b1e9e0e0ff60239d0b083536862">synchronize</a>();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    [[nodiscard]] std::vector&lt;AbilityActivation&gt; <a class="code hl_function" href="classeve_1_1action_1_1AbilityRuntime.html#ab86bb79ce910cf2d6661b3922c556f21">activeActivations</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">struct </span>GrantRecord {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <a class="code hl_struct" href="structeve_1_1action_1_1AbilityGrantState.html">AbilityGrantState</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">AbilityInstanceId</a> ownerInstanceId;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    };</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AbilityGrantId&gt;</a>      nextGrantId();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AbilityActivationId&gt;</a> nextActivationId();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;AbilityInstanceId&gt;</a>   nextInstanceId();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    [[nodiscard]] <span class="keywordtype">bool</span>                        grantHasActiveActivation(<a class="code hl_typedef" href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">AbilityGrantId</a> grantId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    ActionRuntime&amp;                                   runtime_;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    std::map&lt;std::string, AbilityDefinition&gt;         definitions_;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::map&lt;AbilityGrantId, GrantRecord&gt;            grants_;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    std::map&lt;AbilityActivationId, AbilityActivation&gt; activations_;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <a class="code hl_typedef" href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">AbilityGrantId</a>                                   nextGrant_{1};</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_typedef" href="namespaceeve_1_1action.html#a67a1486cf04a869dd2782fa654a66459">AbilityActivationId</a>                              nextActivation_{1};</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_typedef" href="namespaceeve_1_1action.html#adf891268bb000725eaa662a94251193e">AbilityInstanceId</a>                                nextInstance_{1};</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>};</div>
+</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>}  <span class="comment">// namespace eve::action</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aAction_8h_html"><div class="ttname"><a href="Action_8h.html">Action.h</a></div><div class="ttdoc">Renderer- and ruleset-neutral gameplay action pipeline.</div></div>
+<div class="ttc" id="aGameplayTag_8h_html"><div class="ttname"><a href="GameplayTag_8h.html">GameplayTag.h</a></div><div class="ttdoc">Stable hierarchical gameplay-tag definitions and registry.</div></div>
+<div class="ttc" id="aStrongUint64_8h_html"><div class="ttname"><a href="StrongUint64_8h.html">StrongUint64.h</a></div><div class="ttdoc">Internal storage primitive for domain-owned unsigned values.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html"><div class="ttname"><a href="classeve_1_1Duration.html">eve::Duration</a></div><div class="ttdoc">Signed, fixed-resolution simulation duration in nanoseconds.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00041">Time.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html_a9de3e023afa73e0361442ee7a7097bde"><div class="ttname"><a href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">eve::Duration::zero</a></div><div class="ttdeci">static constexpr Duration zero() noexcept</div><div class="ttdoc">Return zero duration.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00058">Time.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00413">Identity.h:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html">eve::action::AbilityRuntime</a></div><div class="ttdoc">Owner-thread coordinator for grant and activation state.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00076">AbilitySystem.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_a286810802396bc13a48ba178c886e7db"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#a286810802396bc13a48ba178c886e7db">eve::action::AbilityRuntime::activate</a></div><div class="ttdeci">Result&lt; AbilityActivation &gt; activate(AbilityGrantId grantId, ActionRequest request, SimulationTick tick)</div><div class="ttdoc">Submit an activation after cooldown, instancing and group checks.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00093">AbilitySystem.cpp:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_a58e6b87d16595eebc76da5894afdd1c1"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#a58e6b87d16595eebc76da5894afdd1c1">eve::action::AbilityRuntime::findGrant</a></div><div class="ttdeci">Result&lt; AbilityGrantState &gt; findGrant(AbilityGrantId grantId) const</div><div class="ttdoc">Return an owning grant-state snapshot.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00086">AbilitySystem.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_a620f4b1e9e0e0ff60239d0b083536862"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#a620f4b1e9e0e0ff60239d0b083536862">eve::action::AbilityRuntime::synchronize</a></div><div class="ttdeci">Result&lt; std::size_t &gt; synchronize()</div><div class="ttdoc">Remove links whose ActionRuntime execution reached a terminal phase.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00192">AbilitySystem.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_a7fb87c99c9e51db799dcfa84230d65b2"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#a7fb87c99c9e51db799dcfa84230d65b2">eve::action::AbilityRuntime::revoke</a></div><div class="ttdeci">Result&lt; void &gt; revoke(AbilityGrantId grantId)</div><div class="ttdoc">Revoke an inactive grant. Active grants must be synchronized/cancelled first.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00077">AbilitySystem.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_a9248b27ac0c16aed7d5000f2c29e69d8"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#a9248b27ac0c16aed7d5000f2c29e69d8">eve::action::AbilityRuntime::AbilityRuntime</a></div><div class="ttdeci">AbilityRuntime(ActionRuntime &amp;runtime)</div><div class="ttdoc">Construct a system borrowing the action runtime used for submissions.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00079">AbilitySystem.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_a936858263c832c001c948a7b15e6b635"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#a936858263c832c001c948a7b15e6b635">eve::action::AbilityRuntime::registerDefinition</a></div><div class="ttdeci">Result&lt; void &gt; registerDefinition(AbilityDefinition definition)</div><div class="ttdoc">Register one canonical definition; duplicate ids are rejected.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00047">AbilitySystem.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_a99bea6817dfca25d4aae134cf71ff343"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#a99bea6817dfca25d4aae134cf71ff343">eve::action::AbilityRuntime::advanceCooldowns</a></div><div class="ttdeci">Result&lt; void &gt; advanceCooldowns(Duration delta)</div><div class="ttdoc">Decrease every cooldown using injected deterministic time.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00181">AbilitySystem.cpp:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_ab86bb79ce910cf2d6661b3922c556f21"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#ab86bb79ce910cf2d6661b3922c556f21">eve::action::AbilityRuntime::activeActivations</a></div><div class="ttdeci">std::vector&lt; AbilityActivation &gt; activeActivations() const</div><div class="ttdoc">Return owning active-link snapshots in activation-id order.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00203">AbilitySystem.cpp:203</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_acf13be28c15046ae96036af51af729f2"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#acf13be28c15046ae96036af51af729f2">eve::action::AbilityRuntime::grant</a></div><div class="ttdeci">Result&lt; AbilityGrantId &gt; grant(std::string ownerId, const LogicalId &amp;definitionId)</div><div class="ttdoc">Grant a registered definition to a non-empty owner identity.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00057">AbilitySystem.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1AbilityRuntime_html_ad3634edf3b40b00ffb3b289c84693b18"><div class="ttname"><a href="classeve_1_1action_1_1AbilityRuntime.html#ad3634edf3b40b00ffb3b289c84693b18">eve::action::AbilityRuntime::matchingGrants</a></div><div class="ttdeci">std::vector&lt; AbilityGrantId &gt; matchingGrants(std::string_view ownerId, std::string_view gameplayEventTag) const</div><div class="ttdoc">Return grants whose declared gameplay-event triggers match an event tag.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00165">AbilitySystem.cpp:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionRuntime_html"><div class="ttname"><a href="classeve_1_1action_1_1ActionRuntime.html">eve::action::ActionRuntime</a></div><div class="ttdoc">Deterministic action lifecycle coordinator.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00474">Action.h:474</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; AbilityGrantIdTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html"><div class="ttname"><a href="namespaceeve_1_1action.html">eve::action</a></div><div class="ttdef"><b>Definition</b> <a href="AbilityController_8cpp_source.html#l00007">AbilityController.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a67a1486cf04a869dd2782fa654a66459"><div class="ttname"><a href="namespaceeve_1_1action.html#a67a1486cf04a869dd2782fa654a66459">eve::action::AbilityActivationId</a></div><div class="ttdeci">eve::detail::StrongUint64&lt; AbilityActivationIdTag &gt; AbilityActivationId</div><div class="ttdoc">Opaque identity of one activation attempt accepted by ActionRuntime.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00047">AbilitySystem.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a739c1b8f7fedbaec9489d68bd60136c6"><div class="ttname"><a href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6">eve::action::AbilityActivationGroup</a></div><div class="ttdeci">AbilityActivationGroup</div><div class="ttdoc">Concurrency policy modeled after independent and exclusive ability groups.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00020">AbilitySystem.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a739c1b8f7fedbaec9489d68bd60136c6a3fc82936a018ebb365e39b38d3269085"><div class="ttname"><a href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6a3fc82936a018ebb365e39b38d3269085">eve::action::AbilityActivationGroup::ExclusiveBlocking</a></div><div class="ttdeci">@ ExclusiveBlocking</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a739c1b8f7fedbaec9489d68bd60136c6a4c824057461770e7abcfea62af25dbf3"><div class="ttname"><a href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6a4c824057461770e7abcfea62af25dbf3">eve::action::AbilityActivationGroup::ExclusiveReplaceable</a></div><div class="ttdeci">@ ExclusiveReplaceable</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a739c1b8f7fedbaec9489d68bd60136c6ae9e003c325eec6946ed1d23c6ac90a21"><div class="ttname"><a href="namespaceeve_1_1action.html#a739c1b8f7fedbaec9489d68bd60136c6ae9e003c325eec6946ed1d23c6ac90a21">eve::action::AbilityActivationGroup::Independent</a></div><div class="ttdeci">@ Independent</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_adf891268bb000725eaa662a94251193e"><div class="ttname"><a href="namespaceeve_1_1action.html#adf891268bb000725eaa662a94251193e">eve::action::AbilityInstanceId</a></div><div class="ttdeci">eve::detail::StrongUint64&lt; AbilityInstanceIdTag &gt; AbilityInstanceId</div><div class="ttdoc">Opaque mutable-instance identity; zero explicitly means NonInstanced.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00049">AbilitySystem.h:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_aeb6b71f12765459f9ee8b593fb89e09d"><div class="ttname"><a href="namespaceeve_1_1action.html#aeb6b71f12765459f9ee8b593fb89e09d">eve::action::AbilityGrantId</a></div><div class="ttdeci">eve::detail::StrongUint64&lt; AbilityGrantIdTag &gt; AbilityGrantId</div><div class="ttdoc">Opaque identity of one owner-to-definition grant.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00045">AbilitySystem.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_afbeaa062749370393cbf0a9372054e61"><div class="ttname"><a href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61">eve::action::AbilityInstancingPolicy</a></div><div class="ttdeci">AbilityInstancingPolicy</div><div class="ttdoc">Controls where mutable ability instance state is allocated.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00017">AbilitySystem.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_afbeaa062749370393cbf0a9372054e61a3935128fa76732fe13bc035cec22639d"><div class="ttname"><a href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61a3935128fa76732fe13bc035cec22639d">eve::action::AbilityInstancingPolicy::NonInstanced</a></div><div class="ttdeci">@ NonInstanced</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_afbeaa062749370393cbf0a9372054e61a6e11cf6b06c17d24f962f2b5fd664d23"><div class="ttname"><a href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61a6e11cf6b06c17d24f962f2b5fd664d23">eve::action::AbilityInstancingPolicy::PerExecution</a></div><div class="ttdeci">@ PerExecution</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_afbeaa062749370393cbf0a9372054e61aff258bff42beda10966dc483ccf11e3a"><div class="ttname"><a href="namespaceeve_1_1action.html#afbeaa062749370393cbf0a9372054e61aff258bff42beda10966dc483ccf11e3a">eve::action::AbilityInstancingPolicy::PerOwner</a></div><div class="ttdeci">@ PerOwner</div></div>
+<div class="ttc" id="anamespaceeve_1_1tags_html_a0645e1cb7ff56bfe64632dd4ddd0a9d4"><div class="ttname"><a href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4">eve::tags::GameplayTagMatch</a></div><div class="ttdeci">GameplayTagMatch</div><div class="ttdoc">Selects exact or hierarchical descendant matching.</div><div class="ttdef"><b>Definition</b> <a href="GameplayTag_8h_source.html#l00021">GameplayTag.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tags_html_a0645e1cb7ff56bfe64632dd4ddd0a9d4a1649aed298f99d587e2eb30c1db5946b"><div class="ttname"><a href="namespaceeve_1_1tags.html#a0645e1cb7ff56bfe64632dd4ddd0a9d4a1649aed298f99d587e2eb30c1db5946b">eve::tags::GameplayTagMatch::Exact</a></div><div class="ttdeci">@ Exact</div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityActivation_html"><div class="ttname"><a href="structeve_1_1action_1_1AbilityActivation.html">eve::action::AbilityActivation</a></div><div class="ttdoc">Owning link between an ability activation and its action execution.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00060">AbilitySystem.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityActivation_html_a3c402bcf6acda0375f8d972614d09b65"><div class="ttname"><a href="structeve_1_1action_1_1AbilityActivation.html#a3c402bcf6acda0375f8d972614d09b65">eve::action::AbilityActivation::instanceId</a></div><div class="ttdeci">AbilityInstanceId instanceId</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00063">AbilitySystem.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityActivation_html_a4d17a18125e40383672a7cdf567d7357"><div class="ttname"><a href="structeve_1_1action_1_1AbilityActivation.html#a4d17a18125e40383672a7cdf567d7357">eve::action::AbilityActivation::grantId</a></div><div class="ttdeci">AbilityGrantId grantId</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00062">AbilitySystem.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityActivation_html_a8192d3e16c2c222335cdc60b009fecd7"><div class="ttname"><a href="structeve_1_1action_1_1AbilityActivation.html#a8192d3e16c2c222335cdc60b009fecd7">eve::action::AbilityActivation::id</a></div><div class="ttdeci">AbilityActivationId id</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00061">AbilitySystem.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityActivation_html_aa687ab0a0c1c8643dfbb76e302273179"><div class="ttname"><a href="structeve_1_1action_1_1AbilityActivation.html#aa687ab0a0c1c8643dfbb76e302273179">eve::action::AbilityActivation::executionId</a></div><div class="ttdeci">ActionExecutionId executionId</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00064">AbilitySystem.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityActivation_html_acebce114291ff484f5aa30f1d533746f"><div class="ttname"><a href="structeve_1_1action_1_1AbilityActivation.html#acebce114291ff484f5aa30f1d533746f">eve::action::AbilityActivation::ownerId</a></div><div class="ttdeci">std::string ownerId</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00065">AbilitySystem.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityActivation_html_ae68d49279eb3240ee09c85f3d3da5992"><div class="ttname"><a href="structeve_1_1action_1_1AbilityActivation.html#ae68d49279eb3240ee09c85f3d3da5992">eve::action::AbilityActivation::group</a></div><div class="ttdeci">AbilityActivationGroup group</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00066">AbilitySystem.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityDefinition_html"><div class="ttname"><a href="structeve_1_1action_1_1AbilityDefinition.html">eve::action::AbilityDefinition</a></div><div class="ttdoc">Canonical immutable-by-convention definition of a grantable ability.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00029">AbilitySystem.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityDefinition_html_a17cf1c62bb83bba147adc2d531c67e69"><div class="ttname"><a href="structeve_1_1action_1_1AbilityDefinition.html#a17cf1c62bb83bba147adc2d531c67e69">eve::action::AbilityDefinition::activationGroup</a></div><div class="ttdeci">AbilityActivationGroup activationGroup</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00034">AbilitySystem.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityDefinition_html_a1e477ae210e9e66d46d7e1ab531017ea"><div class="ttname"><a href="structeve_1_1action_1_1AbilityDefinition.html#a1e477ae210e9e66d46d7e1ab531017ea">eve::action::AbilityDefinition::triggers</a></div><div class="ttdeci">std::vector&lt; AbilityTrigger &gt; triggers</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00035">AbilitySystem.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityDefinition_html_a463aca901b275cd6fc543a0b8708baf3"><div class="ttname"><a href="structeve_1_1action_1_1AbilityDefinition.html#a463aca901b275cd6fc543a0b8708baf3">eve::action::AbilityDefinition::id</a></div><div class="ttdeci">LogicalId id</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00030">AbilitySystem.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityDefinition_html_a5c7085c3d253922f22fb4ab480344c7f"><div class="ttname"><a href="structeve_1_1action_1_1AbilityDefinition.html#a5c7085c3d253922f22fb4ab480344c7f">eve::action::AbilityDefinition::instancing</a></div><div class="ttdeci">AbilityInstancingPolicy instancing</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00033">AbilitySystem.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityDefinition_html_a9cfe3365729dd9751af9993d42167364"><div class="ttname"><a href="structeve_1_1action_1_1AbilityDefinition.html#a9cfe3365729dd9751af9993d42167364">eve::action::AbilityDefinition::cooldown</a></div><div class="ttdeci">Duration cooldown</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00032">AbilitySystem.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityDefinition_html_abaca892bdf5af69793a3a169c537bd2f"><div class="ttname"><a href="structeve_1_1action_1_1AbilityDefinition.html#abaca892bdf5af69793a3a169c537bd2f">eve::action::AbilityDefinition::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate identity, action, cooldown and gameplay-event trigger invariants.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8cpp_source.html#l00033">AbilitySystem.cpp:33</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityDefinition_html_ac9581a3feca12ba0759aba3ae2c91c10"><div class="ttname"><a href="structeve_1_1action_1_1AbilityDefinition.html#ac9581a3feca12ba0759aba3ae2c91c10">eve::action::AbilityDefinition::action</a></div><div class="ttdeci">ActionDefinition action</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00031">AbilitySystem.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityGrantState_html"><div class="ttname"><a href="structeve_1_1action_1_1AbilityGrantState.html">eve::action::AbilityGrantState</a></div><div class="ttdoc">Owning snapshot of one granted ability's mutable state.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00052">AbilitySystem.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityGrantState_html_a0542c713afd5377d74337ff214878ac3"><div class="ttname"><a href="structeve_1_1action_1_1AbilityGrantState.html#a0542c713afd5377d74337ff214878ac3">eve::action::AbilityGrantState::grantId</a></div><div class="ttdeci">AbilityGrantId grantId</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00053">AbilitySystem.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityGrantState_html_a7bef2c00bf04d95f5e9cee33657f768a"><div class="ttname"><a href="structeve_1_1action_1_1AbilityGrantState.html#a7bef2c00bf04d95f5e9cee33657f768a">eve::action::AbilityGrantState::definitionId</a></div><div class="ttdeci">LogicalId definitionId</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00055">AbilitySystem.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityGrantState_html_ab6c4d165a421cd5674873625eb9f13f5"><div class="ttname"><a href="structeve_1_1action_1_1AbilityGrantState.html#ab6c4d165a421cd5674873625eb9f13f5">eve::action::AbilityGrantState::ownerId</a></div><div class="ttdeci">std::string ownerId</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00054">AbilitySystem.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityGrantState_html_add3384e2169f28b6c73f7d444be31fb6"><div class="ttname"><a href="structeve_1_1action_1_1AbilityGrantState.html#add3384e2169f28b6c73f7d444be31fb6">eve::action::AbilityGrantState::cooldownRemaining</a></div><div class="ttdeci">Duration cooldownRemaining</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00056">AbilitySystem.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityTrigger_html"><div class="ttname"><a href="structeve_1_1action_1_1AbilityTrigger.html">eve::action::AbilityTrigger</a></div><div class="ttdoc">One gameplay-event trigger declared by an ability definition.</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00023">AbilitySystem.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityTrigger_html_a4af61ccaa030a97f725490804b5d47cd"><div class="ttname"><a href="structeve_1_1action_1_1AbilityTrigger.html#a4af61ccaa030a97f725490804b5d47cd">eve::action::AbilityTrigger::gameplayTag</a></div><div class="ttdeci">std::string gameplayTag</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00024">AbilitySystem.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1AbilityTrigger_html_ae855fb63d5c030263fbc1db237bd2435"><div class="ttname"><a href="structeve_1_1action_1_1AbilityTrigger.html#ae855fb63d5c030263fbc1db237bd2435">eve::action::AbilityTrigger::match</a></div><div class="ttdeci">tags::GameplayTagMatch match</div><div class="ttdef"><b>Definition</b> <a href="AbilitySystem_8h_source.html#l00025">AbilitySystem.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionDefinition_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionDefinition.html">eve::action::ActionDefinition</a></div><div class="ttdoc">Immutable-by-convention definition of one action kind.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00088">Action.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionRequest_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionRequest.html">eve::action::ActionRequest</a></div><div class="ttdoc">One caller-owned request to instantiate an action execution.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00125">Action.h:125</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

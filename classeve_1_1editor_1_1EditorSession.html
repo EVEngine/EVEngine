@@ -1,0 +1,2186 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditorSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1editor_1_1EditorSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditorSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Hosts interchangeable editor tools and routes their lifecycle/input.  
+ <a href="classeve_1_1editor_1_1EditorSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorSession_8h_source.html">EditorSession.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3d761407fccb01f6265cf6cd8716ec8f" id="r_a3d761407fccb01f6265cf6cd8716ec8f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3d761407fccb01f6265cf6cd8716ec8f">EditorSession</a> ()</td></tr>
+<tr class="separator:a3d761407fccb01f6265cf6cd8716ec8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7e405ed6b5dca0862a502161dd7a478" id="r_ab7e405ed6b5dca0862a502161dd7a478"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab7e405ed6b5dca0862a502161dd7a478">~EditorSession</a> () noexcept</td></tr>
+<tr class="separator:ab7e405ed6b5dca0862a502161dd7a478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b4365e4f0fc19586bb12b33bb050102" id="r_a2b4365e4f0fc19586bb12b33bb050102"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2b4365e4f0fc19586bb12b33bb050102">EditorSession</a> (const <a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;)=delete</td></tr>
+<tr class="separator:a2b4365e4f0fc19586bb12b33bb050102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a480275838fad86e91353a6835ac5c717" id="r_a480275838fad86e91353a6835ac5c717"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a480275838fad86e91353a6835ac5c717">operator=</a> (const <a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;)=delete</td></tr>
+<tr class="separator:a480275838fad86e91353a6835ac5c717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3624ecf96490e0c30503efc92d86601d" id="r_a3624ecf96490e0c30503efc92d86601d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3624ecf96490e0c30503efc92d86601d">addTool</a> (<a class="el" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> *tool)</td></tr>
+<tr class="memdesc:a3624ecf96490e0c30503efc92d86601d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a tool. Returns false for null or duplicate id/pointer.  <br /></td></tr>
+<tr class="separator:a3624ecf96490e0c30503efc92d86601d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dce77c129b53dd85d0d6d49311b65eb" id="r_a3dce77c129b53dd85d0d6d49311b65eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3dce77c129b53dd85d0d6d49311b65eb">removeTool</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a3dce77c129b53dd85d0d6d49311b65eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a registered tool by id, deactivating it when necessary.  <br /></td></tr>
+<tr class="separator:a3dce77c129b53dd85d0d6d49311b65eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa85b5d456b19ae544fc81a1fcf3a6770" id="r_aa85b5d456b19ae544fc81a1fcf3a6770"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aa85b5d456b19ae544fc81a1fcf3a6770">clearTools</a> ()</td></tr>
+<tr class="memdesc:aa85b5d456b19ae544fc81a1fcf3a6770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all tools and release any pointer capture.  <br /></td></tr>
+<tr class="separator:aa85b5d456b19ae544fc81a1fcf3a6770"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd518dacaa74aac1d49d42cd289e93ee" id="r_acd518dacaa74aac1d49d42cd289e93ee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#acd518dacaa74aac1d49d42cd289e93ee">getToolCount</a> () const</td></tr>
+<tr class="separator:acd518dacaa74aac1d49d42cd289e93ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f32e3a35f67d568e5ad8b96dcb55a62" id="r_a3f32e3a35f67d568e5ad8b96dcb55a62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3f32e3a35f67d568e5ad8b96dcb55a62">getTool</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a3f32e3a35f67d568e5ad8b96dcb55a62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28d1a85de54e9da33f65fcf81264790a" id="r_a28d1a85de54e9da33f65fcf81264790a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a28d1a85de54e9da33f65fcf81264790a">findTool</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a28d1a85de54e9da33f65fcf81264790a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a689a0293913cc95ff8ab11cfac84b41d" id="r_a689a0293913cc95ff8ab11cfac84b41d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a689a0293913cc95ff8ab11cfac84b41d">activateTool</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a689a0293913cc95ff8ab11cfac84b41d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activate a registered tool by id. Empty id deactivates all tools.  <br /></td></tr>
+<tr class="separator:a689a0293913cc95ff8ab11cfac84b41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31416e30f7e02f9e414323d8948ab750" id="r_a31416e30f7e02f9e414323d8948ab750"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a31416e30f7e02f9e414323d8948ab750">activeTool</a> () const</td></tr>
+<tr class="separator:a31416e30f7e02f9e414323d8948ab750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc72107b975f52f551af047f8033f507" id="r_acc72107b975f52f551af047f8033f507"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#acc72107b975f52f551af047f8033f507">activeToolId</a> () const</td></tr>
+<tr class="separator:acc72107b975f52f551af047f8033f507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47ffd0de020cbf299460773c81a9f3f7" id="r_a47ffd0de020cbf299460773c81a9f3f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a47ffd0de020cbf299460773c81a9f3f7">dispatchPointer</a> (const <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a> &amp;event)</td></tr>
+<tr class="memdesc:a47ffd0de020cbf299460773c81a9f3f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Route input to the active tool and apply pointer-capture response.  <br /></td></tr>
+<tr class="separator:a47ffd0de020cbf299460773c81a9f3f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49cf9e49c71a4caed522b4ef48467c4b" id="r_a49cf9e49c71a4caed522b4ef48467c4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a49cf9e49c71a4caed522b4ef48467c4b">dispatchKey</a> (const <a class="el" href="structeve_1_1editor_1_1EditorKeyEvent.html">EditorKeyEvent</a> &amp;event)</td></tr>
+<tr class="memdesc:a49cf9e49c71a4caed522b4ef48467c4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Route keyboard input to the active tool.  <br /></td></tr>
+<tr class="separator:a49cf9e49c71a4caed522b4ef48467c4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a728c561945d1fdf388880e238dcdefcc" id="r_a728c561945d1fdf388880e238dcdefcc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a728c561945d1fdf388880e238dcdefcc">update</a> (float dt)</td></tr>
+<tr class="memdesc:a728c561945d1fdf388880e238dcdefcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the active tool.  <br /></td></tr>
+<tr class="separator:a728c561945d1fdf388880e238dcdefcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62c20090d11a7c114435c65671cc5f75" id="r_a62c20090d11a7c114435c65671cc5f75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a62c20090d11a7c114435c65671cc5f75">drawOverlay</a> (<a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;overlay)</td></tr>
+<tr class="memdesc:a62c20090d11a7c114435c65671cc5f75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ask the active tool to emit viewport feedback.  <br /></td></tr>
+<tr class="separator:a62c20090d11a7c114435c65671cc5f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a992c3f11c64091ca9b8776b63cb51e26" id="r_a992c3f11c64091ca9b8776b63cb51e26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a992c3f11c64091ca9b8776b63cb51e26">inspect</a> (<a class="el" href="classeve_1_1editor_1_1IEditorInspector.html">IEditorInspector</a> &amp;inspector)</td></tr>
+<tr class="memdesc:a992c3f11c64091ca9b8776b63cb51e26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ask the active tool to expose its configurable properties.  <br /></td></tr>
+<tr class="separator:a992c3f11c64091ca9b8776b63cb51e26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa22d8a202bf1c17e32a216f99bea4be4" id="r_aa22d8a202bf1c17e32a216f99bea4be4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aa22d8a202bf1c17e32a216f99bea4be4">cancelActiveTool</a> ()</td></tr>
+<tr class="memdesc:aa22d8a202bf1c17e32a216f99bea4be4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel its gesture and clear pointer capture.  <br /></td></tr>
+<tr class="separator:aa22d8a202bf1c17e32a216f99bea4be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b9c265c466f9c477c9d613ddf458791" id="r_a0b9c265c466f9c477c9d613ddf458791"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a0b9c265c466f9c477c9d613ddf458791">hasPointerCapture</a> () const</td></tr>
+<tr class="separator:a0b9c265c466f9c477c9d613ddf458791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1559f3fe33be98f1e6df31589cf7fb30" id="r_a1559f3fe33be98f1e6df31589cf7fb30"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a1559f3fe33be98f1e6df31589cf7fb30">capturedPointerId</a> () const</td></tr>
+<tr class="separator:a1559f3fe33be98f1e6df31589cf7fb30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad408711ff9e486574d280e76dca26ce3" id="r_ad408711ff9e486574d280e76dca26ce3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ad408711ff9e486574d280e76dca26ce3">context</a> ()</td></tr>
+<tr class="separator:ad408711ff9e486574d280e76dca26ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a352f7586d6d3cb65a93cc63991e41fc8" id="r_a352f7586d6d3cb65a93cc63991e41fc8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a352f7586d6d3cb65a93cc63991e41fc8">context</a> () const</td></tr>
+<tr class="separator:a352f7586d6d3cb65a93cc63991e41fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3852db454976e0f7fc2a4c126d69cbc" id="r_ac3852db454976e0f7fc2a4c126d69cbc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ac3852db454976e0f7fc2a4c126d69cbc">bindTarget</a> (<a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> &amp;<a class="el" href="classeve_1_1editor_1_1EditorSession.html#a05e43c4eb386aefa2a28e045a553c697">target</a>)</td></tr>
+<tr class="memdesc:ac3852db454976e0f7fc2a4c126d69cbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a caller-managed editable target available to every tool callback.  <br /></td></tr>
+<tr class="separator:ac3852db454976e0f7fc2a4c126d69cbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadeca810fe8f2be61a69e819d9c47009" id="r_aadeca810fe8f2be61a69e819d9c47009"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aadeca810fe8f2be61a69e819d9c47009">bindTarget</a> (<a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> *<a class="el" href="classeve_1_1editor_1_1EditorSession.html#a05e43c4eb386aefa2a28e045a553c697">target</a>)</td></tr>
+<tr class="memdesc:aadeca810fe8f2be61a69e819d9c47009"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only nullable pointer facade over <a class="el" href="classeve_1_1editor_1_1EditorSession.html#ac3852db454976e0f7fc2a4c126d69cbc" title="Bind a caller-managed editable target available to every tool callback.">bindTarget()</a> and <a class="el" href="classeve_1_1editor_1_1EditorSession.html#a10f291473554d1e7df1327642505925c" title="Clear the active target and invalidate retained plans derived from it.">clearTarget()</a>.  <br /></td></tr>
+<tr class="separator:aadeca810fe8f2be61a69e819d9c47009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10f291473554d1e7df1327642505925c" id="r_a10f291473554d1e7df1327642505925c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a10f291473554d1e7df1327642505925c">clearTarget</a> ()</td></tr>
+<tr class="memdesc:a10f291473554d1e7df1327642505925c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the active target and invalidate retained plans derived from it.  <br /></td></tr>
+<tr class="separator:a10f291473554d1e7df1327642505925c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05e43c4eb386aefa2a28e045a553c697" id="r_a05e43c4eb386aefa2a28e045a553c697"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a05e43c4eb386aefa2a28e045a553c697">target</a> () const</td></tr>
+<tr class="memdesc:a05e43c4eb386aefa2a28e045a553c697"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the live borrowed target, or null after an explicit or tracked unbind.  <br /></td></tr>
+<tr class="separator:a05e43c4eb386aefa2a28e045a553c697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa5779d50010c78302fd65352d3e1836" id="r_aaa5779d50010c78302fd65352d3e1836"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aaa5779d50010c78302fd65352d3e1836">boundTargetId</a> () const noexcept</td></tr>
+<tr class="memdesc:aaa5779d50010c78302fd65352d3e1836"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the identity of the current binding without dereferencing the target.  <br /></td></tr>
+<tr class="separator:aaa5779d50010c78302fd65352d3e1836"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b399073eda890b9dde3fdca07f3df49" id="r_a5b399073eda890b9dde3fdca07f3df49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorTransactions.html">EditorTransactions</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a5b399073eda890b9dde3fdca07f3df49">transactions</a> ()</td></tr>
+<tr class="separator:a5b399073eda890b9dde3fdca07f3df49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a481cb204e3a2c61ecd7843d9c15ff2ae" id="r_a481cb204e3a2c61ecd7843d9c15ff2ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html">EditConstraintPipeline</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a481cb204e3a2c61ecd7843d9c15ff2ae">constraints</a> ()</td></tr>
+<tr class="separator:a481cb204e3a2c61ecd7843d9c15ff2ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ac05251e66178eae72716a4aa040063" id="r_a3ac05251e66178eae72716a4aa040063"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3ac05251e66178eae72716a4aa040063">execute</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &gt; command)</td></tr>
+<tr class="memdesc:a3ac05251e66178eae72716a4aa040063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate then execute a command in the active transaction.  <br /></td></tr>
+<tr class="separator:a3ac05251e66178eae72716a4aa040063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75d9f902734f7fa339e19cb3726d6960" id="r_a75d9f902734f7fa339e19cb3726d6960"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a75d9f902734f7fa339e19cb3726d6960">executeChecked</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &gt; command)</td></tr>
+<tr class="memdesc:a75d9f902734f7fa339e19cb3726d6960"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and execute a command while preserving constraint and transaction diagnostics.  <br /></td></tr>
+<tr class="separator:a75d9f902734f7fa339e19cb3726d6960"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2809cd69f2486e9ac4191eca008b2e5d" id="r_a2809cd69f2486e9ac4191eca008b2e5d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2809cd69f2486e9ac4191eca008b2e5d">bindCommandService</a> (<a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp;service)</td></tr>
+<tr class="memdesc:a2809cd69f2486e9ac4191eca008b2e5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a non-owning V2 command service that must outlive this binding.  <br /></td></tr>
+<tr class="separator:a2809cd69f2486e9ac4191eca008b2e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5ad989b1b8607f00772439fb80a8b4b" id="r_ab5ad989b1b8607f00772439fb80a8b4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab5ad989b1b8607f00772439fb80a8b4b">clearCommandService</a> ()</td></tr>
+<tr class="memdesc:ab5ad989b1b8607f00772439fb80a8b4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the V2 command service binding.  <br /></td></tr>
+<tr class="separator:ab5ad989b1b8607f00772439fb80a8b4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b72f002b02c3d30e538eb5ddeeb1dc4" id="r_a2b72f002b02c3d30e538eb5ddeeb1dc4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2b72f002b02c3d30e538eb5ddeeb1dc4">setCommandService</a> (<a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> *service)</td></tr>
+<tr class="memdesc:a2b72f002b02c3d30e538eb5ddeeb1dc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only nullable pointer facade over <a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2809cd69f2486e9ac4191eca008b2e5d" title="Bind a non-owning V2 command service that must outlive this binding.">bindCommandService()</a> and <a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab5ad989b1b8607f00772439fb80a8b4b" title="Clear the V2 command service binding.">clearCommandService()</a>.  <br /></td></tr>
+<tr class="separator:a2b72f002b02c3d30e538eb5ddeeb1dc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef2e512889b6a3cd2392875a56d01d7f" id="r_aef2e512889b6a3cd2392875a56d01d7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aef2e512889b6a3cd2392875a56d01d7f">commandService</a> () const</td></tr>
+<tr class="memdesc:aef2e512889b6a3cd2392875a56d01d7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the bound V2 command service, or nullptr.  <br /></td></tr>
+<tr class="separator:aef2e512889b6a3cd2392875a56d01d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87429dc08fff529e2234e4ffa4f1cde8" id="r_a87429dc08fff529e2234e4ffa4f1cde8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a87429dc08fff529e2234e4ffa4f1cde8">setHostProfile</a> (<a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a> profile)</td></tr>
+<tr class="memdesc:a87429dc08fff529e2234e4ffa4f1cde8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the host capability boundary used for command discovery and execution.  <br /></td></tr>
+<tr class="separator:a87429dc08fff529e2234e4ffa4f1cde8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12c4268d5a93bf49b284191899890351" id="r_a12c4268d5a93bf49b284191899890351"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a12c4268d5a93bf49b284191899890351">hostProfile</a> () const</td></tr>
+<tr class="memdesc:a12c4268d5a93bf49b284191899890351"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current host capability boundary.  <br /></td></tr>
+<tr class="separator:a12c4268d5a93bf49b284191899890351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6523710de0db10a69516151ac0c7df22" id="r_a6523710de0db10a69516151ac0c7df22"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a6523710de0db10a69516151ac0c7df22">setSessionId</a> (<a class="el" href="namespaceeve_1_1editor.html#a303dd6569dbeffc28182c66738a4fa63">SessionId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a6523710de0db10a69516151ac0c7df22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign the stable identity included in asynchronous context snapshots.  <br /></td></tr>
+<tr class="separator:a6523710de0db10a69516151ac0c7df22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa19512841ab04f6a502f3eba2bc97b43" id="r_aa19512841ab04f6a502f3eba2bc97b43"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceeve_1_1editor.html#a303dd6569dbeffc28182c66738a4fa63">SessionId</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aa19512841ab04f6a502f3eba2bc97b43">sessionId</a> () const</td></tr>
+<tr class="memdesc:aa19512841ab04f6a502f3eba2bc97b43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable session identity.  <br /></td></tr>
+<tr class="separator:aa19512841ab04f6a502f3eba2bc97b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43792c1b576541133063bd19c04cfe9f" id="r_a43792c1b576541133063bd19c04cfe9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a63bb085192f3841ce813a4946847dda8">EditorContextSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a43792c1b576541133063bd19c04cfe9f">contextSnapshot</a> () const</td></tr>
+<tr class="memdesc:a43792c1b576541133063bd19c04cfe9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture target revision and host identity for delayed command work.  <br /></td></tr>
+<tr class="separator:a43792c1b576541133063bd19c04cfe9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad298278cdfedd5c5ce57cf46903fc2f9" id="r_ad298278cdfedd5c5ce57cf46903fc2f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ad298278cdfedd5c5ce57cf46903fc2f9">executeCommand</a> (const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>={}, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=CommandSource::Api)</td></tr>
+<tr class="memdesc:ad298278cdfedd5c5ce57cf46903fc2f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a registered V2 command in this session.  <br /></td></tr>
+<tr class="separator:ad298278cdfedd5c5ce57cf46903fc2f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8670241eb2e9223393165ffd4d894f55" id="r_a8670241eb2e9223393165ffd4d894f55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa335d046ca082216514912599b8e91b2">CommandPlan</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a8670241eb2e9223393165ffd4d894f55">planCommand</a> (const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>={}, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=CommandSource::Api, std::optional&lt; <a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> &gt; expectedRevision=std::nullopt) const</td></tr>
+<tr class="memdesc:a8670241eb2e9223393165ffd4d894f55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan a registered command without applying target mutations.  <br /></td></tr>
+<tr class="separator:a8670241eb2e9223393165ffd4d894f55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53fb70be0a2ff2614be276e34b840c0e" id="r_a53fb70be0a2ff2614be276e34b840c0e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a53fb70be0a2ff2614be276e34b840c0e">executePlan</a> (const <a class="el" href="namespaceeve_1_1editor.html#aa335d046ca082216514912599b8e91b2">CommandPlan</a> &amp;plan, const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>={}, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=CommandSource::Api)</td></tr>
+<tr class="memdesc:a53fb70be0a2ff2614be276e34b840c0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a previously returned plan through its registered executor.  <br /></td></tr>
+<tr class="separator:a53fb70be0a2ff2614be276e34b840c0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9c2d1b561a74cbe0c894e3c83320dad" id="r_ab9c2d1b561a74cbe0c894e3c83320dad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab9c2d1b561a74cbe0c894e3c83320dad">executeCommandReceipt</a> (const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>={}, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=CommandSource::Api)</td></tr>
+<tr class="memdesc:ab9c2d1b561a74cbe0c894e3c83320dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a legacy-compatible command and return a V2 transaction receipt.  <br /></td></tr>
+<tr class="separator:ab9c2d1b561a74cbe0c894e3c83320dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1db9c8160714525ffae0ec160d022fe" id="r_ad1db9c8160714525ffae0ec160d022fe"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1CommandDescriptor.html">CommandDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ad1db9c8160714525ffae0ec160d022fe">availableCommands</a> () const</td></tr>
+<tr class="memdesc:ad1db9c8160714525ffae0ec160d022fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return commands visible through this session's host profile.  <br /></td></tr>
+<tr class="separator:ad1db9c8160714525ffae0ec160d022fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca8a67ed5d4a048cce47b065d19cf420" id="r_aca8a67ed5d4a048cce47b065d19cf420"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a20b762588caff864c5d603e7a2358a71">PlanId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aca8a67ed5d4a048cce47b065d19cf420">retainPlan</a> (const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>={}, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=CommandSource::Api, std::optional&lt; <a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> &gt; expectedRevision=std::nullopt)</td></tr>
+<tr class="memdesc:aca8a67ed5d4a048cce47b065d19cf420"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan a command and retain its immutable payload under the returned plan id.  <br /></td></tr>
+<tr class="separator:aca8a67ed5d4a048cce47b065d19cf420"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae8f372c8810f6ee2d7f0cb359e188e3" id="r_aae8f372c8810f6ee2d7f0cb359e188e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aae8f372c8810f6ee2d7f0cb359e188e3">executeRetainedPlan</a> (const <a class="el" href="namespaceeve_1_1editor.html#a20b762588caff864c5d603e7a2358a71">PlanId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a> <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=CommandSource::Api)</td></tr>
+<tr class="memdesc:aae8f372c8810f6ee2d7f0cb359e188e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a retained plan. Successful plans are consumed exactly once.  <br /></td></tr>
+<tr class="separator:aae8f372c8810f6ee2d7f0cb359e188e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34dfacab8a86c849482e6dcea2cd098b" id="r_a34dfacab8a86c849482e6dcea2cd098b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a34dfacab8a86c849482e6dcea2cd098b">cancelRetainedPlan</a> (const <a class="el" href="namespaceeve_1_1editor.html#a20b762588caff864c5d603e7a2358a71">PlanId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a34dfacab8a86c849482e6dcea2cd098b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard one retained plan without executing it.  <br /></td></tr>
+<tr class="separator:a34dfacab8a86c849482e6dcea2cd098b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fac95a6386229ffd300e21cac6d104c" id="r_a6fac95a6386229ffd300e21cac6d104c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a6fac95a6386229ffd300e21cac6d104c">clearRetainedPlans</a> ()</td></tr>
+<tr class="memdesc:a6fac95a6386229ffd300e21cac6d104c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard all retained plans, for example after replacing a document or target.  <br /></td></tr>
+<tr class="separator:a6fac95a6386229ffd300e21cac6d104c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae23669b44dfb5013473f8c60d88dffd2" id="r_ae23669b44dfb5013473f8c60d88dffd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ae23669b44dfb5013473f8c60d88dffd2">setDocumentServices</a> (<a class="el" href="classeve_1_1editor_1_1DocumentService.html">DocumentService</a> *documents, <a class="el" href="classeve_1_1editor_1_1AutosaveService.html">AutosaveService</a> *autosave=nullptr)</td></tr>
+<tr class="memdesc:ae23669b44dfb5013473f8c60d88dffd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind non-owning persistence services used by the active document.  <br /></td></tr>
+<tr class="separator:ae23669b44dfb5013473f8c60d88dffd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8aa57feb4fd16e9f758f1dc24847e4e" id="r_ae8aa57feb4fd16e9f758f1dc24847e4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ae8aa57feb4fd16e9f758f1dc24847e4e">bindDocumentServices</a> (<a class="el" href="classeve_1_1editor_1_1DocumentService.html">DocumentService</a> &amp;documents, <a class="el" href="classeve_1_1editor_1_1AutosaveService.html">AutosaveService</a> *autosave=nullptr)</td></tr>
+<tr class="memdesc:ae8aa57feb4fd16e9f758f1dc24847e4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind document services; documents must outlive this binding.  <br /></td></tr>
+<tr class="separator:ae8aa57feb4fd16e9f758f1dc24847e4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b01106debe7dcb0c12e9d02242df01c" id="r_a4b01106debe7dcb0c12e9d02242df01c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a4b01106debe7dcb0c12e9d02242df01c">clearDocumentServices</a> ()</td></tr>
+<tr class="memdesc:a4b01106debe7dcb0c12e9d02242df01c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear document service bindings and unbind the active document.  <br /></td></tr>
+<tr class="separator:a4b01106debe7dcb0c12e9d02242df01c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3389ab40458786f2a6533a80de66c46a" id="r_a3389ab40458786f2a6533a80de66c46a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a3389ab40458786f2a6533a80de66c46a">bindDocument</a> (const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;document)</td></tr>
+<tr class="memdesc:a3389ab40458786f2a6533a80de66c46a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select an already-open document for save, autosave and conflict polling.  <br /></td></tr>
+<tr class="separator:a3389ab40458786f2a6533a80de66c46a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b4c084aca1af2eaa4143bcb7047afca" id="r_a2b4c084aca1af2eaa4143bcb7047afca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2b4c084aca1af2eaa4143bcb7047afca">unbindDocument</a> ()</td></tr>
+<tr class="memdesc:a2b4c084aca1af2eaa4143bcb7047afca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop coordinating the active document without closing it.  <br /></td></tr>
+<tr class="separator:a2b4c084aca1af2eaa4143bcb7047afca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03e28a96994e64b42a10d5237bba3003" id="r_a03e28a96994e64b42a10d5237bba3003"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a03e28a96994e64b42a10d5237bba3003">activeDocument</a> () const</td></tr>
+<tr class="memdesc:a03e28a96994e64b42a10d5237bba3003"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the active document identity, or an empty id.  <br /></td></tr>
+<tr class="separator:a03e28a96994e64b42a10d5237bba3003"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a467ca81f6b9c28c7b2d19be3ca012de7" id="r_a467ca81f6b9c28c7b2d19be3ca012de7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a467ca81f6b9c28c7b2d19be3ca012de7">editDocument</a> (<a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> content, std::optional&lt; <a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> &gt; expectedRevision=std::nullopt)</td></tr>
+<tr class="memdesc:a467ca81f6b9c28c7b2d19be3ca012de7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace active working content using optional optimistic edit revision.  <br /></td></tr>
+<tr class="separator:a467ca81f6b9c28c7b2d19be3ca012de7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9aee267b9f3c59194f588a41277422a" id="r_ad9aee267b9f3c59194f588a41277422a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ad9aee267b9f3c59194f588a41277422a">saveDocument</a> ()</td></tr>
+<tr class="memdesc:ad9aee267b9f3c59194f588a41277422a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persist the current active revision through the document CAS store.  <br /></td></tr>
+<tr class="separator:ad9aee267b9f3c59194f588a41277422a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a237d3c59604063c3407b5ceae75c4bbe" id="r_a237d3c59604063c3407b5ceae75c4bbe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1StoredDocument.html">StoredDocument</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a237d3c59604063c3407b5ceae75c4bbe">autosaveDocument</a> ()</td></tr>
+<tr class="memdesc:a237d3c59604063c3407b5ceae75c4bbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the active dirty revision to its separate autosave draft.  <br /></td></tr>
+<tr class="separator:a237d3c59604063c3407b5ceae75c4bbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1949ede1e3e3b0b0863b96637f731c92" id="r_a1949ede1e3e3b0b0863b96637f731c92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a1949ede1e3e3b0b0863b96637f731c92">pollDocumentChanges</a> ()</td></tr>
+<tr class="memdesc:a1949ede1e3e3b0b0863b96637f731c92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect external disk changes, adopting only when the document is clean.  <br /></td></tr>
+<tr class="separator:a1949ede1e3e3b0b0863b96637f731c92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab17c985b764b542dbb2b0836b24de196" id="r_ab17c985b764b542dbb2b0836b24de196"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab17c985b764b542dbb2b0836b24de196">setAutosaveInterval</a> (float seconds)</td></tr>
+<tr class="memdesc:ab17c985b764b542dbb2b0836b24de196"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure draft cadence.  <br /></td></tr>
+<tr class="separator:ab17c985b764b542dbb2b0836b24de196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1a39ad9f3400f616258913169ac6a0d" id="r_ab1a39ad9f3400f616258913169ac6a0d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab1a39ad9f3400f616258913169ac6a0d">setExternalPollInterval</a> (float seconds)</td></tr>
+<tr class="memdesc:ab1a39ad9f3400f616258913169ac6a0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure external-store polling cadence.  <br /></td></tr>
+<tr class="separator:ab1a39ad9f3400f616258913169ac6a0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a997e7f7fea8ad722712fef3bc2b18c95" id="r_a997e7f7fea8ad722712fef3bc2b18c95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#a997e7f7fea8ad722712fef3bc2b18c95">lastAutosavedRevision</a> () const</td></tr>
+<tr class="memdesc:a997e7f7fea8ad722712fef3bc2b18c95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last edit revision successfully written to the draft store.  <br /></td></tr>
+<tr class="separator:a997e7f7fea8ad722712fef3bc2b18c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:aeac834c5f47e2154ddc077d20910f333" id="r_aeac834c5f47e2154ddc077d20910f333"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorSession.html#aeac834c5f47e2154ddc077d20910f333">EditorTargetCoordinator</a></td></tr>
+<tr class="separator:aeac834c5f47e2154ddc077d20910f333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Hosts interchangeable editor tools and routes their lifecycle/input. </p>
+<p>Tools are non-owning: the caller must keep a registered tool alive until it is removed or the session is destroyed. All methods are owner-thread only. Tool callbacks may re-enter the session; lifecycle state is detached before cancellation or deactivation callbacks are invoked. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3d761407fccb01f6265cf6cd8716ec8f" name="a3d761407fccb01f6265cf6cd8716ec8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d761407fccb01f6265cf6cd8716ec8f">&#9670;&#160;</a></span>EditorSession() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorSession::EditorSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7e405ed6b5dca0862a502161dd7a478" name="ab7e405ed6b5dca0862a502161dd7a478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7e405ed6b5dca0862a502161dd7a478">&#9670;&#160;</a></span>~EditorSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorSession::~EditorSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b4365e4f0fc19586bb12b33bb050102" name="a2b4365e4f0fc19586bb12b33bb050102"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b4365e4f0fc19586bb12b33bb050102">&#9670;&#160;</a></span>EditorSession() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorSession::EditorSession </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a689a0293913cc95ff8ab11cfac84b41d" name="a689a0293913cc95ff8ab11cfac84b41d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a689a0293913cc95ff8ab11cfac84b41d">&#9670;&#160;</a></span>activateTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorSession::activateTool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Activate a registered tool by id. Empty id deactivates all tools. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTool_8h_source.html#l00108">eve::editor::IEditorTool::activate()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00406">findTool()</a>.</p>
+
+</div>
+</div>
+<a id="a03e28a96994e64b42a10d5237bba3003" name="a03e28a96994e64b42a10d5237bba3003"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03e28a96994e64b42a10d5237bba3003">&#9670;&#160;</a></span>activeDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp; eve::editor::EditorSession::activeDocument </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the active document identity, or an empty id. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a31416e30f7e02f9e414323d8948ab750" name="a31416e30f7e02f9e414323d8948ab750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31416e30f7e02f9e414323d8948ab750">&#9670;&#160;</a></span>activeTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> * eve::editor::EditorSession::activeTool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc72107b975f52f551af047f8033f507" name="acc72107b975f52f551af047f8033f507"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc72107b975f52f551af047f8033f507">&#9670;&#160;</a></span>activeToolId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorSession::activeToolId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00439">439</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html#acee31c51ecc88fe4c9b743fdd1a0ffb4">eve::editor::IEditorTool::descriptor()</a> , 以及 <a class="el" href="EditorTool_8h_source.html#l00089">eve::editor::ToolDescriptor::id</a>.</p>
+
+</div>
+</div>
+<a id="a3624ecf96490e0c30503efc92d86601d" name="a3624ecf96490e0c30503efc92d86601d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3624ecf96490e0c30503efc92d86601d">&#9670;&#160;</a></span>addTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorSession::addTool </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> *&#160;</td>
+          <td class="paramname"><em>tool</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a tool. Returns false for null or duplicate id/pointer. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html#acee31c51ecc88fe4c9b743fdd1a0ffb4">eve::editor::IEditorTool::descriptor()</a> , 以及 <a class="el" href="EditorTool_8h_source.html#l00089">eve::editor::ToolDescriptor::id</a>.</p>
+
+</div>
+</div>
+<a id="a237d3c59604063c3407b5ceae75c4bbe" name="a237d3c59604063c3407b5ceae75c4bbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a237d3c59604063c3407b5ceae75c4bbe">&#9670;&#160;</a></span>autosaveDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1StoredDocument.html">StoredDocument</a> &gt; eve::editor::EditorSession::autosaveDocument </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write the active dirty revision to its separate autosave draft. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDocumentService_8cpp_source.html#l00118">eve::editor::DocumentService::content()</a>, <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00126">eve::editor::DocumentService::snapshot()</a>, <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a> , 以及 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00174">eve::editor::AutosaveService::writeDraft()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00463">update()</a>.</p>
+
+</div>
+</div>
+<a id="ad1db9c8160714525ffae0ec160d022fe" name="ad1db9c8160714525ffae0ec160d022fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1db9c8160714525ffae0ec160d022fe">&#9670;&#160;</a></span>availableCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1CommandDescriptor.html">CommandDescriptor</a> &gt; eve::editor::EditorSession::availableCommands </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return commands visible through this session's host profile. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorCommandService_8cpp_source.html#l00124">eve::editor::EditorCommandService::commands()</a>.</p>
+
+</div>
+</div>
+<a id="a2809cd69f2486e9ac4191eca008b2e5d" name="a2809cd69f2486e9ac4191eca008b2e5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2809cd69f2486e9ac4191eca008b2e5d">&#9670;&#160;</a></span>bindCommandService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::bindCommandService </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> &amp;&#160;</td>
+          <td class="paramname"><em>service</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind a non-owning V2 command service that must outlive this binding. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00019">service</a>.</p>
+
+</div>
+</div>
+<a id="a3389ab40458786f2a6533a80de66c46a" name="a3389ab40458786f2a6533a80de66c46a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3389ab40458786f2a6533a80de66c46a">&#9670;&#160;</a></span>bindDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::EditorSession::bindDocument </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select an already-open document for save, autosave and conflict polling. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">document</td><td>Stable identity already opened by <a class="el" href="classeve_1_1editor_1_1DocumentService.html" title="Document coordinator with revision-safe requestSave/executeSave sequencing.">DocumentService</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Bound document snapshot or a structured lookup failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00126">eve::editor::DocumentService::snapshot()</a> , 以及 <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="ae8aa57feb4fd16e9f758f1dc24847e4e" name="ae8aa57feb4fd16e9f758f1dc24847e4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8aa57feb4fd16e9f758f1dc24847e4e">&#9670;&#160;</a></span>bindDocumentServices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::bindDocumentServices </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1DocumentService.html">DocumentService</a> &amp;&#160;</td>
+          <td class="paramname"><em>documents</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1AutosaveService.html">AutosaveService</a> *&#160;</td>
+          <td class="paramname"><em>autosave</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind document services; documents must outlive this binding. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00299">unbindDocument()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00266">setDocumentServices()</a>.</p>
+
+</div>
+</div>
+<a id="ac3852db454976e0f7fc2a4c126d69cbc" name="ac3852db454976e0f7fc2a4c126d69cbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3852db454976e0f7fc2a4c126d69cbc">&#9670;&#160;</a></span>bindTarget() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::bindTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind a caller-managed editable target available to every tool callback. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Borrowed target; the caller must clear the binding before destroying it. @thread Owner-thread only. Tool callbacks are never invoked by this function. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00107">target()</a> , 以及 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget::targetId()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LevelEditorModule_8cpp_source.html#l00036">eve::level_editor::LevelEditorModule::bind()</a>, <a class="el" href="TileLayerTargetModule_8cpp_source.html#l00021">eve::tilelayer_target::TileLayerTargetModule::bind()</a>, <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00023">eve::heightmap_target::HeightmapTargetModule::bind()</a>, <a class="el" href="VoxelWorldTargetModule_8cpp_source.html#l00021">eve::voxelworld_target::VoxelWorldTargetModule::bind()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00054">bindTarget()</a>.</p>
+
+</div>
+</div>
+<a id="aadeca810fe8f2be61a69e819d9c47009" name="aadeca810fe8f2be61a69e819d9c47009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadeca810fe8f2be61a69e819d9c47009">&#9670;&#160;</a></span>bindTarget() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::bindTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> *&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only nullable pointer facade over <a class="el" href="classeve_1_1editor_1_1EditorSession.html#ac3852db454976e0f7fc2a4c126d69cbc" title="Bind a caller-managed editable target available to every tool callback.">bindTarget()</a> and <a class="el" href="classeve_1_1editor_1_1EditorSession.html#a10f291473554d1e7df1327642505925c" title="Clear the active target and invalidate retained plans derived from it.">clearTarget()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00045">bindTarget()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00084">clearTarget()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00107">target()</a>.</p>
+
+</div>
+</div>
+<a id="aaa5779d50010c78302fd65352d3e1836" name="aaa5779d50010c78302fd65352d3e1836"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa5779d50010c78302fd65352d3e1836">&#9670;&#160;</a></span>boundTargetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespaceeve_1_1editor.html#a5cad32dd3db1b40e5875c1b258a4e3e5">TargetId</a> &amp; eve::editor::EditorSession::boundTargetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the identity of the current binding without dereferencing the target. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00126">eve::editor::EditorAutomationProvider::targetUnregistered()</a>.</p>
+
+</div>
+</div>
+<a id="aa22d8a202bf1c17e32a216f99bea4be4" name="aa22d8a202bf1c17e32a216f99bea4be4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa22d8a202bf1c17e32a216f99bea4be4">&#9670;&#160;</a></span>cancelActiveTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::cancelActiveTool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancel its gesture and clear pointer capture. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00492">492</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTool_8h_source.html#l00145">eve::editor::IEditorTool::cancel()</a>.</p>
+
+</div>
+</div>
+<a id="a34dfacab8a86c849482e6dcea2cd098b" name="a34dfacab8a86c849482e6dcea2cd098b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34dfacab8a86c849482e6dcea2cd098b">&#9670;&#160;</a></span>cancelRetainedPlan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditorSession::cancelRetainedPlan </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a20b762588caff864c5d603e7a2358a71">PlanId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Discard one retained plan without executing it. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="a1559f3fe33be98f1e6df31589cf7fb30" name="a1559f3fe33be98f1e6df31589cf7fb30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1559f3fe33be98f1e6df31589cf7fb30">&#9670;&#160;</a></span>capturedPointerId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editor::EditorSession::capturedPointerId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5ad989b1b8607f00772439fb80a8b4b" name="ab5ad989b1b8607f00772439fb80a8b4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5ad989b1b8607f00772439fb80a8b4b">&#9670;&#160;</a></span>clearCommandService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::clearCommandService </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear the V2 command service binding. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b01106debe7dcb0c12e9d02242df01c" name="a4b01106debe7dcb0c12e9d02242df01c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b01106debe7dcb0c12e9d02242df01c">&#9670;&#160;</a></span>clearDocumentServices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::clearDocumentServices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear document service bindings and unbind the active document. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00299">unbindDocument()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00266">setDocumentServices()</a>.</p>
+
+</div>
+</div>
+<a id="a6fac95a6386229ffd300e21cac6d104c" name="a6fac95a6386229ffd300e21cac6d104c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fac95a6386229ffd300e21cac6d104c">&#9670;&#160;</a></span>clearRetainedPlans()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::clearRetainedPlans </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Discard all retained plans, for example after replacing a document or target. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00126">eve::editor::EditorAutomationProvider::targetUnregistered()</a>.</p>
+
+</div>
+</div>
+<a id="a10f291473554d1e7df1327642505925c" name="a10f291473554d1e7df1327642505925c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10f291473554d1e7df1327642505925c">&#9670;&#160;</a></span>clearTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::clearTarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the active target and invalidate retained plans derived from it. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00054">bindTarget()</a> , 以及 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00126">eve::editor::EditorAutomationProvider::targetUnregistered()</a>.</p>
+
+</div>
+</div>
+<a id="aa85b5d456b19ae544fc81a1fcf3a6770" name="aa85b5d456b19ae544fc81a1fcf3a6770"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa85b5d456b19ae544fc81a1fcf3a6770">&#9670;&#160;</a></span>clearTools()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::clearTools </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all tools and release any pointer capture. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aef2e512889b6a3cd2392875a56d01d7f" name="aef2e512889b6a3cd2392875a56d01d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef2e512889b6a3cd2392875a56d01d7f">&#9670;&#160;</a></span>commandService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> * eve::editor::EditorSession::commandService </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the bound V2 command service, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a481cb204e3a2c61ecd7843d9c15ff2ae" name="a481cb204e3a2c61ecd7843d9c15ff2ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a481cb204e3a2c61ecd7843d9c15ff2ae">&#9670;&#160;</a></span>constraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html">EditConstraintPipeline</a> &amp; eve::editor::EditorSession::constraints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad408711ff9e486574d280e76dca26ce3" name="ad408711ff9e486574d280e76dca26ce3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad408711ff9e486574d280e76dca26ce3">&#9670;&#160;</a></span>context() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp; eve::editor::EditorSession::context </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a352f7586d6d3cb65a93cc63991e41fc8" name="a352f7586d6d3cb65a93cc63991e41fc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a352f7586d6d3cb65a93cc63991e41fc8">&#9670;&#160;</a></span>context() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp; eve::editor::EditorSession::context </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43792c1b576541133063bd19c04cfe9f" name="a43792c1b576541133063bd19c04cfe9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43792c1b576541133063bd19c04cfe9f">&#9670;&#160;</a></span>contextSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a63bb085192f3841ce813a4946847dda8">EditorContextSnapshot</a> eve::editor::EditorSession::contextSnapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture target revision and host identity for delayed command work. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProtocol_8h_source.html#l00026">eve::editing::ContextSnapshot::host</a>, <a class="el" href="EditorHostProfile_8h_source.html#l00058">eve::editor::HostProfile::kind()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00025">eve::editing::ContextSnapshot::session</a>, <a class="el" href="EditingProtocol_8h_source.html#l00027">eve::editing::ContextSnapshot::target</a>, <a class="el" href="EditorSession_8cpp_source.html#l00107">target()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00030">eve::editing::ContextSnapshot::targetGeneration</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00028">eve::editing::ContextSnapshot::targetRevision</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00190">executePlan()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00174">planCommand()</a>.</p>
+
+</div>
+</div>
+<a id="a49cf9e49c71a4caed522b4ef48467c4b" name="a49cf9e49c71a4caed522b4ef48467c4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49cf9e49c71a4caed522b4ef48467c4b">&#9670;&#160;</a></span>dispatchKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> eve::editor::EditorSession::dispatchKey </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1EditorKeyEvent.html">EditorKeyEvent</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Route keyboard input to the active tool. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00459">459</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTool_8h_source.html#l00052">eve::editor::ToolResponse::ignored()</a> , 以及 <a class="el" href="EditorTool_8h_source.html#l00120">eve::editor::IEditorTool::keyEvent()</a>.</p>
+
+</div>
+</div>
+<a id="a47ffd0de020cbf299460773c81a9f3f7" name="a47ffd0de020cbf299460773c81a9f3f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47ffd0de020cbf299460773c81a9f3f7">&#9670;&#160;</a></span>dispatchPointer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> eve::editor::EditorSession::dispatchPointer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Route input to the active tool and apply pointer-capture response. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00441">441</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516aea4788705e6873b424c65e91c2846b19">eve::editor::EditorPointerEvent::Cancel</a>, <a class="el" href="EditorTool_8h_source.html#l00049">eve::editor::ToolResponse::capturePointer</a>, <a class="el" href="EditorTool_8h_source.html#l00048">eve::editor::ToolResponse::handled</a>, <a class="el" href="EditorTool_8h_source.html#l00052">eve::editor::ToolResponse::ignored()</a>, <a class="el" href="EditorTool_8h_source.html#l00021">eve::editor::EditorPointerEvent::phase</a>, <a class="el" href="EditorTool_8h_source.html#l00113">eve::editor::IEditorTool::pointerEvent()</a>, <a class="el" href="EditorTool_8h_source.html#l00022">eve::editor::EditorPointerEvent::pointerId</a> , 以及 <a class="el" href="EditorTool_8h_source.html#l00050">eve::editor::ToolResponse::releasePointer</a>.</p>
+
+</div>
+</div>
+<a id="a62c20090d11a7c114435c65671cc5f75" name="a62c20090d11a7c114435c65671cc5f75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62c20090d11a7c114435c65671cc5f75">&#9670;&#160;</a></span>drawOverlay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::drawOverlay </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;&#160;</td>
+          <td class="paramname"><em>overlay</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ask the active tool to emit viewport feedback. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00484">484</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTool_8h_source.html#l00133">eve::editor::IEditorTool::drawOverlay()</a>.</p>
+
+</div>
+</div>
+<a id="a467ca81f6b9c28c7b2d19be3ca012de7" name="a467ca81f6b9c28c7b2d19be3ca012de7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a467ca81f6b9c28c7b2d19be3ca012de7">&#9670;&#160;</a></span>editDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::EditorSession::editDocument </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>&#160;</td>
+          <td class="paramname"><em>content</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> &gt;&#160;</td>
+          <td class="paramname"><em>expectedRevision</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace active working content using optional optimistic edit revision. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">content</td><td>New serializable working content. </td></tr>
+    <tr><td class="paramname">expectedRevision</td><td>Optional edit revision used to reject stale writers. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Updated document snapshot or a structured conflict. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00306">306</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDocumentService_8cpp_source.html#l00065">eve::editor::DocumentService::edit()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>.</p>
+
+</div>
+</div>
+<a id="a3ac05251e66178eae72716a4aa040063" name="a3ac05251e66178eae72716a4aa040063"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ac05251e66178eae72716a4aa040063">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorSession::execute </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &gt;&#160;</td>
+          <td class="paramname"><em>command</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate then execute a command in the active transaction. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00034">executeChecked()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00019">eve::editor::EditorContext::execute()</a>.</p>
+
+</div>
+</div>
+<a id="a75d9f902734f7fa339e19cb3726d6960" name="a75d9f902734f7fa339e19cb3726d6960"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75d9f902734f7fa339e19cb3726d6960">&#9670;&#160;</a></span>executeChecked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditorSession::executeChecked </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &gt;&#160;</td>
+          <td class="paramname"><em>command</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and execute a command while preserving constraint and transaction diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactions_8cpp_source.html#l00013">eve::editor::EditorTransactions::append()</a>, <a class="el" href="Result_8h_source.html#l00252">eve::Result&lt; T &gt;::diagnostics()</a>, <a class="el" href="EditConstraint_8cpp_source.html#l00036">eve::editor::EditConstraintPipeline::evaluateChecked()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="EditorResultProjection_8h_source.html#l00018">eve::editor::projectCommonResult()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00030">execute()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00023">eve::editor::EditorContext::executeChecked()</a>.</p>
+
+</div>
+</div>
+<a id="ad298278cdfedd5c5ce57cf46903fc2f9" name="ad298278cdfedd5c5ce57cf46903fc2f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad298278cdfedd5c5ce57cf46903fc2f9">&#9670;&#160;</a></span>executeCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &gt; eve::editor::EditorSession::executeCommand </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a>&#160;</td>
+          <td class="paramname"><em>source</em> = <code>CommandSource::Api</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute a registered V2 command in this session. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">id</td><td>Stable registered command identity. </td></tr>
+    <tr><td class="paramname">payload</td><td>Structured command input. </td></tr>
+    <tr><td class="paramname">source</td><td>User/script/automation source used by execution policy. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Structured status, value and diagnostics. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorResultProjection_8h_source.html#l00034">eve::editor::appendProjectedDiagnostics()</a>, <a class="el" href="EditorTransactions_8cpp_source.html#l00005">eve::editor::EditorTransactions::beginTransaction()</a>, <a class="el" href="EditorTransactions_8cpp_source.html#l00017">eve::editor::EditorTransactions::commitTransaction()</a>, <a class="el" href="EditorCommandService_8h_source.html#l00033">eve::editor::CommandDescriptor::createsTransaction</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="Result_8h_source.html#l00252">eve::Result&lt; T &gt;::diagnostics()</a>, <a class="el" href="Result_8h_source.html#l00434">eve::Result&lt; void &gt;::diagnostics()</a>, <a class="el" href="EditorCommandService_8cpp_source.html#l00133">eve::editor::EditorCommandService::execute()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditorCommandService_8cpp_source.html#l00112">eve::editor::EditorCommandService::find()</a>, <a class="el" href="EditorTransactions_8h_source.html#l00041">eve::editor::EditorTransactions::isActive()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="EditorCommandService_8h_source.html#l00020">eve::editor::CommandContext::profile</a>, <a class="el" href="EditorTransactions_8cpp_source.html#l00019">eve::editor::EditorTransactions::rollbackTransaction()</a>, <a class="el" href="EditorCommandService_8h_source.html#l00019">eve::editor::CommandContext::session</a>, <a class="el" href="EditorCommandService_8h_source.html#l00023">eve::editor::CommandContext::source</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="EditorCommandService_8h_source.html#l00021">eve::editor::CommandContext::target</a>, <a class="el" href="EditorSession_8cpp_source.html#l00107">target()</a> , 以及 <a class="el" href="EditorCommandService_8h_source.html#l00022">eve::editor::CommandContext::targetRevision</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00208">executeCommandReceipt()</a>.</p>
+
+</div>
+</div>
+<a id="ab9c2d1b561a74cbe0c894e3c83320dad" name="ab9c2d1b561a74cbe0c894e3c83320dad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9c2d1b561a74cbe0c894e3c83320dad">&#9670;&#160;</a></span>executeCommandReceipt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::EditorSession::executeCommandReceipt </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a>&#160;</td>
+          <td class="paramname"><em>source</em> = <code>CommandSource::Api</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute a legacy-compatible command and return a V2 transaction receipt. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProtocol_8h_source.html#l00094">eve::editing::TransactionReceipt::afterRevision</a>, <a class="el" href="EditingProtocol_8h_source.html#l00093">eve::editing::TransactionReceipt::beforeRevision</a>, <a class="el" href="Result_8h_source.html#l00246">eve::Result&lt; T &gt;::code()</a>, <a class="el" href="Result_8h_source.html#l00252">eve::Result&lt; T &gt;::diagnostics()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00096">eve::editing::TransactionReceipt::diagnostics</a>, <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00113">executeCommand()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00091">eve::editing::TransactionReceipt::id</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="EditingProtocol_8h_source.html#l00092">eve::editing::TransactionReceipt::state</a>, <a class="el" href="Result_8h_source.html#l00240">eve::Result&lt; T &gt;::status()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00107">target()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="a53fb70be0a2ff2614be276e34b840c0e" name="a53fb70be0a2ff2614be276e34b840c0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53fb70be0a2ff2614be276e34b840c0e">&#9670;&#160;</a></span>executePlan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::EditorSession::executePlan </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#aa335d046ca082216514912599b8e91b2">CommandPlan</a> &amp;&#160;</td>
+          <td class="paramname"><em>plan</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a>&#160;</td>
+          <td class="paramname"><em>source</em> = <code>CommandSource::Api</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute a previously returned plan through its registered executor. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProtocol_8h_source.html#l00057">eve::editing::CommandPlan::baseRevision</a>, <a class="el" href="EditingProtocol_8h_source.html#l00055">eve::editing::CommandPlan::command</a>, <a class="el" href="EditingProtocol_8h_source.html#l00049">eve::editing::CommandRequest::context</a>, <a class="el" href="EditorSession_8cpp_source.html#l00162">contextSnapshot()</a>, <a class="el" href="EditorCommandService_8cpp_source.html#l00200">eve::editor::EditorCommandService::executePlan()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00050">eve::editing::CommandRequest::expectedRevision</a>, <a class="el" href="EditingProtocol_8h_source.html#l00046">eve::editing::CommandRequest::id</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00047">eve::editing::CommandRequest::payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00048">eve::editing::CommandRequest::source</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="EditingProtocol_8h_source.html#l00027">eve::editing::ContextSnapshot::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00056">eve::editing::CommandPlan::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00030">eve::editing::ContextSnapshot::targetGeneration</a>, <a class="el" href="EditingProtocol_8h_source.html#l00059">eve::editing::CommandPlan::targetGeneration</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00028">eve::editing::ContextSnapshot::targetRevision</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00243">executeRetainedPlan()</a> , 以及 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="aae8f372c8810f6ee2d7f0cb359e188e3" name="aae8f372c8810f6ee2d7f0cb359e188e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae8f372c8810f6ee2d7f0cb359e188e3">&#9670;&#160;</a></span>executeRetainedPlan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::EditorSession::executeRetainedPlan </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a20b762588caff864c5d603e7a2358a71">PlanId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a>&#160;</td>
+          <td class="paramname"><em>source</em> = <code>CommandSource::Api</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute a retained plan. Successful plans are consumed exactly once. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00190">executePlan()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="a28d1a85de54e9da33f65fcf81264790a" name="a28d1a85de54e9da33f65fcf81264790a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28d1a85de54e9da33f65fcf81264790a">&#9670;&#160;</a></span>findTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> * eve::editor::EditorSession::findTool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00413">activateTool()</a>.</p>
+
+</div>
+</div>
+<a id="a3f32e3a35f67d568e5ad8b96dcb55a62" name="a3f32e3a35f67d568e5ad8b96dcb55a62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f32e3a35f67d568e5ad8b96dcb55a62">&#9670;&#160;</a></span>getTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html">IEditorTool</a> * eve::editor::EditorSession::getTool </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00401">401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="acd518dacaa74aac1d49d42cd289e93ee" name="acd518dacaa74aac1d49d42cd289e93ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd518dacaa74aac1d49d42cd289e93ee">&#9670;&#160;</a></span>getToolCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editor::EditorSession::getToolCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00399">399</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b9c265c466f9c477c9d613ddf458791" name="a0b9c265c466f9c477c9d613ddf458791"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b9c265c466f9c477c9d613ddf458791">&#9670;&#160;</a></span>hasPointerCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorSession::hasPointerCapture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12c4268d5a93bf49b284191899890351" name="a12c4268d5a93bf49b284191899890351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12c4268d5a93bf49b284191899890351">&#9670;&#160;</a></span>hostProfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a> &amp; eve::editor::EditorSession::hostProfile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current host capability boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a992c3f11c64091ca9b8776b63cb51e26" name="a992c3f11c64091ca9b8776b63cb51e26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a992c3f11c64091ca9b8776b63cb51e26">&#9670;&#160;</a></span>inspect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::inspect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorInspector.html">IEditorInspector</a> &amp;&#160;</td>
+          <td class="paramname"><em>inspector</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ask the active tool to expose its configurable properties. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00488">488</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTool_8h_source.html#l00139">eve::editor::IEditorTool::inspect()</a>.</p>
+
+</div>
+</div>
+<a id="a997e7f7fea8ad722712fef3bc2b18c95" name="a997e7f7fea8ad722712fef3bc2b18c95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a997e7f7fea8ad722712fef3bc2b18c95">&#9670;&#160;</a></span>lastAutosavedRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> eve::editor::EditorSession::lastAutosavedRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last edit revision successfully written to the draft store. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a480275838fad86e91353a6835ac5c717" name="a480275838fad86e91353a6835ac5c717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a480275838fad86e91353a6835ac5c717">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp; eve::editor::EditorSession::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editor_1_1EditorSession.html">EditorSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8670241eb2e9223393165ffd4d894f55" name="a8670241eb2e9223393165ffd4d894f55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8670241eb2e9223393165ffd4d894f55">&#9670;&#160;</a></span>planCommand()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#aa335d046ca082216514912599b8e91b2">CommandPlan</a> &gt; eve::editor::EditorSession::planCommand </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a>&#160;</td>
+          <td class="paramname"><em>source</em> = <code>CommandSource::Api</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> &gt;&#160;</td>
+          <td class="paramname"><em>expectedRevision</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan a registered command without applying target mutations. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProtocol_8h_source.html#l00049">eve::editing::CommandRequest::context</a>, <a class="el" href="EditorSession_8cpp_source.html#l00162">contextSnapshot()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00051">eve::editing::CommandRequest::dryRun</a>, <a class="el" href="EditingProtocol_8h_source.html#l00050">eve::editing::CommandRequest::expectedRevision</a>, <a class="el" href="EditingProtocol_8h_source.html#l00046">eve::editing::CommandRequest::id</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00047">eve::editing::CommandRequest::payload</a>, <a class="el" href="EditorCommandService_8cpp_source.html#l00159">eve::editor::EditorCommandService::plan()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00048">eve::editing::CommandRequest::source</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00231">retainPlan()</a>.</p>
+
+</div>
+</div>
+<a id="a1949ede1e3e3b0b0863b96637f731c92" name="a1949ede1e3e3b0b0863b96637f731c92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1949ede1e3e3b0b0863b96637f731c92">&#9670;&#160;</a></span>pollDocumentChanges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::EditorSession::pollDocumentChanges </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Detect external disk changes, adopting only when the document is clean. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00349">349</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a> , 以及 <a class="el" href="EditorDocumentService_8cpp_source.html#l00144">eve::editor::DocumentService::reconcileExternal()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00463">update()</a>.</p>
+
+</div>
+</div>
+<a id="a3dce77c129b53dd85d0d6d49311b65eb" name="a3dce77c129b53dd85d0d6d49311b65eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dce77c129b53dd85d0d6d49311b65eb">&#9670;&#160;</a></span>removeTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorSession::removeTool </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a registered tool by id, deactivating it when necessary. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca8a67ed5d4a048cce47b065d19cf420" name="aca8a67ed5d4a048cce47b065d19cf420"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca8a67ed5d4a048cce47b065d19cf420">&#9670;&#160;</a></span>retainPlan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a20b762588caff864c5d603e7a2358a71">PlanId</a> &gt; eve::editor::EditorSession::retainPlan </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a514d62a4d487b03a21872432ec2fa178">CommandId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#aa34933b3e28a2294395a900abce32747">CommandSource</a>&#160;</td>
+          <td class="paramname"><em>source</em> = <code>CommandSource::Api</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> &gt;&#160;</td>
+          <td class="paramname"><em>expectedRevision</em> = <code>std::nullopt</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan a command and retain its immutable payload under the returned plan id. </p>
+<dl class="section return"><dt>返回</dt><dd>Stable plan id suitable for script and UI frontends. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="EditorSession_8cpp_source.html#l00174">planCommand()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="Result_8h_source.html#l00240">eve::Result&lt; T &gt;::status()</a> , 以及 <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="ad9aee267b9f3c59194f588a41277422a" name="ad9aee267b9f3c59194f588a41277422a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9aee267b9f3c59194f588a41277422a">&#9670;&#160;</a></span>saveDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a> &gt; eve::editor::EditorSession::saveDocument </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Persist the current active revision through the document CAS store. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00093">eve::editor::DocumentService::executeSave()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00078">eve::editor::DocumentService::requestSave()</a>, <a class="el" href="Result_8h_source.html#l00240">eve::Result&lt; T &gt;::status()</a> , 以及 <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="aa19512841ab04f6a502f3eba2bc97b43" name="aa19512841ab04f6a502f3eba2bc97b43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa19512841ab04f6a502f3eba2bc97b43">&#9670;&#160;</a></span>sessionId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespaceeve_1_1editor.html#a303dd6569dbeffc28182c66738a4fa63">SessionId</a> &amp; eve::editor::EditorSession::sessionId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable session identity. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab17c985b764b542dbb2b0836b24de196" name="ab17c985b764b542dbb2b0836b24de196"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab17c985b764b542dbb2b0836b24de196">&#9670;&#160;</a></span>setAutosaveInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::setAutosaveInterval </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure draft cadence. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seconds</td><td>Interval in seconds; zero disables automatic drafts. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b72f002b02c3d30e538eb5ddeeb1dc4" name="a2b72f002b02c3d30e538eb5ddeeb1dc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b72f002b02c3d30e538eb5ddeeb1dc4">&#9670;&#160;</a></span>setCommandService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::setCommandService </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorCommandService.html">EditorCommandService</a> *&#160;</td>
+          <td class="paramname"><em>service</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compatibility-only nullable pointer facade over <a class="el" href="classeve_1_1editor_1_1EditorSession.html#a2809cd69f2486e9ac4191eca008b2e5d" title="Bind a non-owning V2 command service that must outlive this binding.">bindCommandService()</a> and <a class="el" href="classeve_1_1editor_1_1EditorSession.html#ab5ad989b1b8607f00772439fb80a8b4b" title="Clear the V2 command service binding.">clearCommandService()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00019">service</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00117">eve::editor::EditorAutomationProvider::EditorAutomationProvider()</a>.</p>
+
+</div>
+</div>
+<a id="ae23669b44dfb5013473f8c60d88dffd2" name="ae23669b44dfb5013473f8c60d88dffd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae23669b44dfb5013473f8c60d88dffd2">&#9670;&#160;</a></span>setDocumentServices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::setDocumentServices </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1DocumentService.html">DocumentService</a> *&#160;</td>
+          <td class="paramname"><em>documents</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1AutosaveService.html">AutosaveService</a> *&#160;</td>
+          <td class="paramname"><em>autosave</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind non-owning persistence services used by the active document. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">documents</td><td>Formal document coordinator; must outlive the session. </td></tr>
+    <tr><td class="paramname">autosave</td><td>Optional draft service; must outlive the session. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00266">266</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00273">bindDocumentServices()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00279">clearDocumentServices()</a>.</p>
+
+</div>
+</div>
+<a id="ab1a39ad9f3400f616258913169ac6a0d" name="ab1a39ad9f3400f616258913169ac6a0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1a39ad9f3400f616258913169ac6a0d">&#9670;&#160;</a></span>setExternalPollInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::setExternalPollInterval </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure external-store polling cadence. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seconds</td><td>Interval in seconds; zero disables polling. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a87429dc08fff529e2234e4ffa4f1cde8" name="a87429dc08fff529e2234e4ffa4f1cde8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87429dc08fff529e2234e4ffa4f1cde8">&#9670;&#160;</a></span>setHostProfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::setHostProfile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1HostProfile.html">HostProfile</a>&#160;</td>
+          <td class="paramname"><em>profile</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the host capability boundary used for command discovery and execution. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00099">99</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6523710de0db10a69516151ac0c7df22" name="a6523710de0db10a69516151ac0c7df22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6523710de0db10a69516151ac0c7df22">&#9670;&#160;</a></span>setSessionId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::setSessionId </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a303dd6569dbeffc28182c66738a4fa63">SessionId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Assign the stable identity included in asynchronous context snapshots. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00117">eve::editor::EditorAutomationProvider::EditorAutomationProvider()</a>.</p>
+
+</div>
+</div>
+<a id="a05e43c4eb386aefa2a28e045a553c697" name="a05e43c4eb386aefa2a28e045a553c697"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05e43c4eb386aefa2a28e045a553c697">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#adf62680c307352c1ceb613ebeff188ea">IEditableTarget</a> * eve::editor::EditorSession::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the live borrowed target, or null after an explicit or tracked unbind. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00045">bindTarget()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00054">bindTarget()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00162">contextSnapshot()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00113">executeCommand()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00208">executeCommandReceipt()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00015">eve::editor::EditorContext::target()</a>.</p>
+
+</div>
+</div>
+<a id="a5b399073eda890b9dde3fdca07f3df49" name="a5b399073eda890b9dde3fdca07f3df49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b399073eda890b9dde3fdca07f3df49">&#9670;&#160;</a></span>transactions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorTransactions.html">EditorTransactions</a> &amp; eve::editor::EditorSession::transactions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00132">eve::editor::EditorAutomationProvider::invoke()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00017">eve::editor::EditorContext::transactions()</a>.</p>
+
+</div>
+</div>
+<a id="a2b4c084aca1af2eaa4143bcb7047afca" name="a2b4c084aca1af2eaa4143bcb7047afca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b4c084aca1af2eaa4143bcb7047afca">&#9670;&#160;</a></span>unbindDocument()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::unbindDocument </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop coordinating the active document without closing it. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8cpp_source.html#l00273">bindDocumentServices()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00279">clearDocumentServices()</a>.</p>
+
+</div>
+</div>
+<a id="a728c561945d1fdf388880e238dcdefcc" name="a728c561945d1fdf388880e238dcdefcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a728c561945d1fdf388880e238dcdefcc">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorSession::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the active tool. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a> 第 <a class="el" href="EditorSession_8cpp_source.html#l00463">463</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSession_8cpp_source.html#l00330">autosaveDocument()</a>, <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="EditorSession_8cpp_source.html#l00349">pollDocumentChanges()</a>, <a class="el" href="EditorDocumentService_8cpp_source.html#l00126">eve::editor::DocumentService::snapshot()</a>, <a class="el" href="EditorTool_8h_source.html#l00127">eve::editor::IEditorTool::update()</a> , 以及 <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::value()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="aeac834c5f47e2154ddc077d20910f333" name="aeac834c5f47e2154ddc077d20910f333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeac834c5f47e2154ddc077d20910f333">&#9670;&#160;</a></span>EditorTargetCoordinator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1editor_1_1EditorTargetCoordinator.html">EditorTargetCoordinator</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorSession_8h_source.html">EditorSession.h</a> 第 <a class="el" href="EditorSession_8h_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorSession_8h_source.html">EditorSession.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorSession_8cpp_source.html">EditorSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

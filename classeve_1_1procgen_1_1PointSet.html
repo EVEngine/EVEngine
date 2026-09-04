@@ -1,0 +1,2683 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::PointSet类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1PointSet-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::PointSet类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script-friendly collection of attributed 3D samples.  
+ <a href="classeve_1_1procgen_1_1PointSet.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PointSet_8h_source.html">PointSet.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aec412ab94ec5268fa85c83b124787762" id="r_aec412ab94ec5268fa85c83b124787762"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aec412ab94ec5268fa85c83b124787762">getCount</a> () const</td></tr>
+<tr class="separator:aec412ab94ec5268fa85c83b124787762"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21a9d39b95bf763a08f5997b6ad49580" id="r_a21a9d39b95bf763a08f5997b6ad49580"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a21a9d39b95bf763a08f5997b6ad49580">empty</a> () const</td></tr>
+<tr class="separator:a21a9d39b95bf763a08f5997b6ad49580"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee6099099072739def776ba44c5377c6" id="r_aee6099099072739def776ba44c5377c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aee6099099072739def776ba44c5377c6">clear</a> ()</td></tr>
+<tr class="separator:aee6099099072739def776ba44c5377c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe6de6d317388fabf7bea1fea5a18bab" id="r_afe6de6d317388fabf7bea1fea5a18bab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#afe6de6d317388fabf7bea1fea5a18bab">reserve</a> (std::size_t <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:afe6de6d317388fabf7bea1fea5a18bab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserve point storage without changing point or attribute row counts.  <br /></td></tr>
+<tr class="separator:afe6de6d317388fabf7bea1fea5a18bab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa69713749e79221e2c343d66371324a1" id="r_aa69713749e79221e2c343d66371324a1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa69713749e79221e2c343d66371324a1">appendPoint</a> (<a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html">ProcgenPoint</a> <a class="el" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>)</td></tr>
+<tr class="memdesc:aa69713749e79221e2c343d66371324a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a point with an empty attribute row and return its row index.  <br /></td></tr>
+<tr class="separator:aa69713749e79221e2c343d66371324a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef919bd50b87e2a746d6c23b95d11f37" id="r_aef919bd50b87e2a746d6c23b95d11f37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aef919bd50b87e2a746d6c23b95d11f37">appendPointFrom</a> (const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::size_t sourceIndex)</td></tr>
+<tr class="memdesc:aef919bd50b87e2a746d6c23b95d11f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a point and its attributes from another set.  <br /></td></tr>
+<tr class="separator:aef919bd50b87e2a746d6c23b95d11f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37a8076dc053b5bbd226dc10fae94b5a" id="r_a37a8076dc053b5bbd226dc10fae94b5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a37a8076dc053b5bbd226dc10fae94b5a">clearPointAttributes</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a37a8076dc053b5bbd226dc10fae94b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all metadata values on an existing point while retaining the set schema.  <br /></td></tr>
+<tr class="separator:a37a8076dc053b5bbd226dc10fae94b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c3811fd5cd8af4506b59dac6fffa024" id="r_a2c3811fd5cd8af4506b59dac6fffa024"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a2c3811fd5cd8af4506b59dac6fffa024">add</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a2c3811fd5cd8af4506b59dac6fffa024"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94290b4a450aace6627325903a7667f3" id="r_a94290b4a450aace6627325903a7667f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a94290b4a450aace6627325903a7667f3">setPosition</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a94290b4a450aace6627325903a7667f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1695a1d2429430eaa85af278495a5f7" id="r_aa1695a1d2429430eaa85af278495a5f7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa1695a1d2429430eaa85af278495a5f7">getX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aa1695a1d2429430eaa85af278495a5f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a543be20b04c981d0bec7e5f13567df80" id="r_a543be20b04c981d0bec7e5f13567df80"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a543be20b04c981d0bec7e5f13567df80">getY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a543be20b04c981d0bec7e5f13567df80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeab4f4325c71b98eed50e95568ea90f" id="r_aaeab4f4325c71b98eed50e95568ea90f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aaeab4f4325c71b98eed50e95568ea90f">getZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aaeab4f4325c71b98eed50e95568ea90f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8b5747a22a316e94b3270a0ab15cfe8" id="r_ab8b5747a22a316e94b3270a0ab15cfe8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab8b5747a22a316e94b3270a0ab15cfe8">setNormal</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:ab8b5747a22a316e94b3270a0ab15cfe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1ced541d6ca0f028276c7fba7c92f85" id="r_aa1ced541d6ca0f028276c7fba7c92f85"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa1ced541d6ca0f028276c7fba7c92f85">getNormalX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aa1ced541d6ca0f028276c7fba7c92f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8122f083efd9e4adc842e1139f9aac9" id="r_ab8122f083efd9e4adc842e1139f9aac9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab8122f083efd9e4adc842e1139f9aac9">getNormalY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab8122f083efd9e4adc842e1139f9aac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1947183225bfbe429a8b05a1bdb55789" id="r_a1947183225bfbe429a8b05a1bdb55789"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a1947183225bfbe429a8b05a1bdb55789">getNormalZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a1947183225bfbe429a8b05a1bdb55789"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab00111512952ebe1f1d861719749139" id="r_aab00111512952ebe1f1d861719749139"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aab00111512952ebe1f1d861719749139">setYaw</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float yaw)</td></tr>
+<tr class="separator:aab00111512952ebe1f1d861719749139"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f39e1ecf5015fa58212a69d2e72b1ff" id="r_a5f39e1ecf5015fa58212a69d2e72b1ff"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a5f39e1ecf5015fa58212a69d2e72b1ff">getYaw</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a5f39e1ecf5015fa58212a69d2e72b1ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1ac0d92e73096d73dbf6876f8b4b1eb" id="r_af1ac0d92e73096d73dbf6876f8b4b1eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af1ac0d92e73096d73dbf6876f8b4b1eb">setRotation</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float pitch, float yaw, float roll)</td></tr>
+<tr class="memdesc:af1ac0d92e73096d73dbf6876f8b4b1eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the point's local Euler rotation in degrees.  <br /></td></tr>
+<tr class="separator:af1ac0d92e73096d73dbf6876f8b4b1eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84851412a059de9dead1d5493bc4435f" id="r_a84851412a059de9dead1d5493bc4435f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a84851412a059de9dead1d5493bc4435f">getPitch</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a84851412a059de9dead1d5493bc4435f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the point's local pitch in degrees.  <br /></td></tr>
+<tr class="separator:a84851412a059de9dead1d5493bc4435f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9bffa1a573f070df179b695f34c19a3" id="r_aa9bffa1a573f070df179b695f34c19a3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa9bffa1a573f070df179b695f34c19a3">getRoll</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aa9bffa1a573f070df179b695f34c19a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the point's local roll in degrees.  <br /></td></tr>
+<tr class="separator:aa9bffa1a573f070df179b695f34c19a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a314586d8bc3cecbc71546bc7fdf25d35" id="r_a314586d8bc3cecbc71546bc7fdf25d35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a314586d8bc3cecbc71546bc7fdf25d35">setScale</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a314586d8bc3cecbc71546bc7fdf25d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54757103143dc4bb2ad6cbc851182799" id="r_a54757103143dc4bb2ad6cbc851182799"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a54757103143dc4bb2ad6cbc851182799">getScaleX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a54757103143dc4bb2ad6cbc851182799"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a2ec72112504aaed5e73dc88283b7b" id="r_ac0a2ec72112504aaed5e73dc88283b7b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ac0a2ec72112504aaed5e73dc88283b7b">getScaleY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ac0a2ec72112504aaed5e73dc88283b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabaec36f3e0b52d271408a314cfcc338" id="r_aabaec36f3e0b52d271408a314cfcc338"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aabaec36f3e0b52d271408a314cfcc338">getScaleZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aabaec36f3e0b52d271408a314cfcc338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a813c65227e0e8a18c19e8c5d02fdc6a5" id="r_a813c65227e0e8a18c19e8c5d02fdc6a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a813c65227e0e8a18c19e8c5d02fdc6a5">setBounds</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="memdesc:a813c65227e0e8a18c19e8c5d02fdc6a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set local-space point bounds before scale and rotation are applied.  <br /></td></tr>
+<tr class="separator:a813c65227e0e8a18c19e8c5d02fdc6a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15d5fadabe8f2316a8b8b4e714a94113" id="r_a15d5fadabe8f2316a8b8b4e714a94113"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a15d5fadabe8f2316a8b8b4e714a94113">getBoundsMinX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a15d5fadabe8f2316a8b8b4e714a94113"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the local-space minimum X bound.  <br /></td></tr>
+<tr class="separator:a15d5fadabe8f2316a8b8b4e714a94113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66556b8ab3f1989ea84d7f8d978af7e7" id="r_a66556b8ab3f1989ea84d7f8d978af7e7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a66556b8ab3f1989ea84d7f8d978af7e7">getBoundsMinY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a66556b8ab3f1989ea84d7f8d978af7e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the local-space minimum Y bound.  <br /></td></tr>
+<tr class="separator:a66556b8ab3f1989ea84d7f8d978af7e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af733814fe0e02c4e0e2a5cabacaac9bb" id="r_af733814fe0e02c4e0e2a5cabacaac9bb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af733814fe0e02c4e0e2a5cabacaac9bb">getBoundsMinZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:af733814fe0e02c4e0e2a5cabacaac9bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the local-space minimum Z bound.  <br /></td></tr>
+<tr class="separator:af733814fe0e02c4e0e2a5cabacaac9bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d910b34b81489dbdbe92a1c12a4367f" id="r_a3d910b34b81489dbdbe92a1c12a4367f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a3d910b34b81489dbdbe92a1c12a4367f">getBoundsMaxX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a3d910b34b81489dbdbe92a1c12a4367f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the local-space maximum X bound.  <br /></td></tr>
+<tr class="separator:a3d910b34b81489dbdbe92a1c12a4367f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a351988d9058fa77587fe36acdf93df19" id="r_a351988d9058fa77587fe36acdf93df19"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a351988d9058fa77587fe36acdf93df19">getBoundsMaxY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a351988d9058fa77587fe36acdf93df19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the local-space maximum Y bound.  <br /></td></tr>
+<tr class="separator:a351988d9058fa77587fe36acdf93df19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32c3c9613338f624f11da4fc7922b183" id="r_a32c3c9613338f624f11da4fc7922b183"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a32c3c9613338f624f11da4fc7922b183">getBoundsMaxZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a32c3c9613338f624f11da4fc7922b183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the local-space maximum Z bound.  <br /></td></tr>
+<tr class="separator:a32c3c9613338f624f11da4fc7922b183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5267da29b3db90308440b528692bbd66" id="r_a5267da29b3db90308440b528692bbd66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a5267da29b3db90308440b528692bbd66">setColor</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float red, float green, float blue, float alpha)</td></tr>
+<tr class="memdesc:a5267da29b3db90308440b528692bbd66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the normalized linear RGBA point color.  <br /></td></tr>
+<tr class="separator:a5267da29b3db90308440b528692bbd66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27805706c1a1fcdebd4e62b9dcfe63d5" id="r_a27805706c1a1fcdebd4e62b9dcfe63d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a27805706c1a1fcdebd4e62b9dcfe63d5">getColorR</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a27805706c1a1fcdebd4e62b9dcfe63d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the point's linear red channel.  <br /></td></tr>
+<tr class="separator:a27805706c1a1fcdebd4e62b9dcfe63d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45b1b88640b095837a1a73fdae697ea2" id="r_a45b1b88640b095837a1a73fdae697ea2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a45b1b88640b095837a1a73fdae697ea2">getColorG</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a45b1b88640b095837a1a73fdae697ea2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the point's linear green channel.  <br /></td></tr>
+<tr class="separator:a45b1b88640b095837a1a73fdae697ea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af80ebba22a90a7572776676ff57bd757" id="r_af80ebba22a90a7572776676ff57bd757"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af80ebba22a90a7572776676ff57bd757">getColorB</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:af80ebba22a90a7572776676ff57bd757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the point's linear blue channel.  <br /></td></tr>
+<tr class="separator:af80ebba22a90a7572776676ff57bd757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade84813e03fdfd77adaa4e98c2e52629" id="r_ade84813e03fdfd77adaa4e98c2e52629"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ade84813e03fdfd77adaa4e98c2e52629">getColorA</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ade84813e03fdfd77adaa4e98c2e52629"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the point's linear alpha channel.  <br /></td></tr>
+<tr class="separator:ade84813e03fdfd77adaa4e98c2e52629"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0214be832e1fe7f4a72a6aba77936ab" id="r_aa0214be832e1fe7f4a72a6aba77936ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa0214be832e1fe7f4a72a6aba77936ab">setSteepness</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float steepness)</td></tr>
+<tr class="memdesc:aa0214be832e1fe7f4a72a6aba77936ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set normalized surface steepness metadata in the inclusive range [0, 1].  <br /></td></tr>
+<tr class="separator:aa0214be832e1fe7f4a72a6aba77936ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef4d751bea6016b64bc2251f67bd6d3a" id="r_aef4d751bea6016b64bc2251f67bd6d3a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aef4d751bea6016b64bc2251f67bd6d3a">getSteepness</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:aef4d751bea6016b64bc2251f67bd6d3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return normalized point steepness metadata.  <br /></td></tr>
+<tr class="separator:aef4d751bea6016b64bc2251f67bd6d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9d7d0d26b0153f37a5d7626580575af" id="r_ad9d7d0d26b0153f37a5d7626580575af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ad9d7d0d26b0153f37a5d7626580575af">setDensity</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float density)</td></tr>
+<tr class="separator:ad9d7d0d26b0153f37a5d7626580575af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7eb8912dfe80f058499deeddf20be8e" id="r_af7eb8912dfe80f058499deeddf20be8e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af7eb8912dfe80f058499deeddf20be8e">getDensity</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:af7eb8912dfe80f058499deeddf20be8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3d84c37d24c936caf9743e1c3276d7d" id="r_ab3d84c37d24c936caf9743e1c3276d7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab3d84c37d24c936caf9743e1c3276d7d">setPointSeed</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="separator:ab3d84c37d24c936caf9743e1c3276d7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a989a0e9b918f50a416f529a61cd1b632" id="r_a989a0e9b918f50a416f529a61cd1b632"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a989a0e9b918f50a416f529a61cd1b632">getPointSeed</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a989a0e9b918f50a416f529a61cd1b632"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a916dd1cb95cd8d468bfb0c2270006c2d" id="r_a916dd1cb95cd8d468bfb0c2270006c2d"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a916dd1cb95cd8d468bfb0c2270006c2d">getPointId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a916dd1cb95cd8d468bfb0c2270006c2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable point identity, or zero when it has not been assigned.  <br /></td></tr>
+<tr class="separator:a916dd1cb95cd8d468bfb0c2270006c2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0db21e87c08baad34e38cf54e83b2fe2" id="r_a0db21e87c08baad34e38cf54e83b2fe2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a0db21e87c08baad34e38cf54e83b2fe2">trySetPointId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, std::uint64_t <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a0db21e87c08baad34e38cf54e83b2fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign a unique non-zero point identity without mutating on failure.  <br /></td></tr>
+<tr class="separator:a0db21e87c08baad34e38cf54e83b2fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8244dd25e3e4225625df81644b8e6cab" id="r_a8244dd25e3e4225625df81644b8e6cab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a8244dd25e3e4225625df81644b8e6cab">assignPointIds</a> (std::uint64_t namespaceId)</td></tr>
+<tr class="memdesc:a8244dd25e3e4225625df81644b8e6cab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill zero identities deterministically and reject pre-existing duplicates.  <br /></td></tr>
+<tr class="separator:a8244dd25e3e4225625df81644b8e6cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9bd6b0a0e1b1f08f1413990855dbcb7" id="r_af9bd6b0a0e1b1f08f1413990855dbcb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af9bd6b0a0e1b1f08f1413990855dbcb7">trySetFloatAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:af9bd6b0a0e1b1f08f1413990855dbcb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical checked float metadata write.  <br /></td></tr>
+<tr class="separator:af9bd6b0a0e1b1f08f1413990855dbcb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1015e688aea73ecfe91755886b3b5ed4" id="r_a1015e688aea73ecfe91755886b3b5ed4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a1015e688aea73ecfe91755886b3b5ed4">setFloatAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a1015e688aea73ecfe91755886b3b5ed4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only unchecked script setter; canonical code uses trySetFloatAttribute.  <br /></td></tr>
+<tr class="separator:a1015e688aea73ecfe91755886b3b5ed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f8c552f9429ec7cfee61f93e6f2d732" id="r_a2f8c552f9429ec7cfee61f93e6f2d732"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a2f8c552f9429ec7cfee61f93e6f2d732">getFloatAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float fallback) const</td></tr>
+<tr class="separator:a2f8c552f9429ec7cfee61f93e6f2d732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8287e8e790debaec7efa62f281b99dab" id="r_a8287e8e790debaec7efa62f281b99dab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a8287e8e790debaec7efa62f281b99dab">hasFloatAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a8287e8e790debaec7efa62f281b99dab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1a7675250e62bcebf261c4a1e052159" id="r_ae1a7675250e62bcebf261c4a1e052159"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ae1a7675250e62bcebf261c4a1e052159">trySetIntAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::int64_t <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ae1a7675250e62bcebf261c4a1e052159"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical checked signed integer metadata write.  <br /></td></tr>
+<tr class="separator:ae1a7675250e62bcebf261c4a1e052159"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a620c7bb5eb21b2acaa066445595183db" id="r_a620c7bb5eb21b2acaa066445595183db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a620c7bb5eb21b2acaa066445595183db">setIntAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::int64_t <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a620c7bb5eb21b2acaa066445595183db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only unchecked script setter; canonical code uses trySetIntAttribute.  <br /></td></tr>
+<tr class="separator:a620c7bb5eb21b2acaa066445595183db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae554d6958a4e6fad9c8cfe8e9004d27f" id="r_ae554d6958a4e6fad9c8cfe8e9004d27f"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ae554d6958a4e6fad9c8cfe8e9004d27f">getIntAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::int64_t fallback) const</td></tr>
+<tr class="memdesc:ae554d6958a4e6fad9c8cfe8e9004d27f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read signed integer metadata or return the caller-provided default when absent.  <br /></td></tr>
+<tr class="separator:ae554d6958a4e6fad9c8cfe8e9004d27f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23f2b8e9216fe475a3b11ed2ad99b448" id="r_a23f2b8e9216fe475a3b11ed2ad99b448"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a23f2b8e9216fe475a3b11ed2ad99b448">hasIntAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a23f2b8e9216fe475a3b11ed2ad99b448"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether signed integer metadata exists.  <br /></td></tr>
+<tr class="separator:a23f2b8e9216fe475a3b11ed2ad99b448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d603a7c28257752d30f11256916ef18" id="r_a5d603a7c28257752d30f11256916ef18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a5d603a7c28257752d30f11256916ef18">trySetBoolAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a5d603a7c28257752d30f11256916ef18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical checked Boolean metadata write.  <br /></td></tr>
+<tr class="separator:a5d603a7c28257752d30f11256916ef18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dabc5de17b6b331a63133e3ea01436e" id="r_a8dabc5de17b6b331a63133e3ea01436e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a8dabc5de17b6b331a63133e3ea01436e">setBoolAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a8dabc5de17b6b331a63133e3ea01436e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only unchecked script setter; canonical code uses trySetBoolAttribute.  <br /></td></tr>
+<tr class="separator:a8dabc5de17b6b331a63133e3ea01436e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4f63926ce1b51f4b097db44965a7ba4" id="r_aa4f63926ce1b51f4b097db44965a7ba4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa4f63926ce1b51f4b097db44965a7ba4">getBoolAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool fallback) const</td></tr>
+<tr class="memdesc:aa4f63926ce1b51f4b097db44965a7ba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read boolean metadata or return the caller-provided default when absent.  <br /></td></tr>
+<tr class="separator:aa4f63926ce1b51f4b097db44965a7ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29a885c2d5e8b3b5e7ff7d76b8c9646f" id="r_a29a885c2d5e8b3b5e7ff7d76b8c9646f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a29a885c2d5e8b3b5e7ff7d76b8c9646f">hasBoolAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a29a885c2d5e8b3b5e7ff7d76b8c9646f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether boolean metadata exists.  <br /></td></tr>
+<tr class="separator:a29a885c2d5e8b3b5e7ff7d76b8c9646f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a698431b4d482126a8bfe5171d0193d0c" id="r_a698431b4d482126a8bfe5171d0193d0c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a698431b4d482126a8bfe5171d0193d0c">trySetVectorAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a698431b4d482126a8bfe5171d0193d0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical checked vector metadata write.  <br /></td></tr>
+<tr class="separator:a698431b4d482126a8bfe5171d0193d0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9330442409616d2d86893633b862a224" id="r_a9330442409616d2d86893633b862a224"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a9330442409616d2d86893633b862a224">setVectorAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a9330442409616d2d86893633b862a224"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only unchecked script setter; canonical code uses trySetVectorAttribute.  <br /></td></tr>
+<tr class="separator:a9330442409616d2d86893633b862a224"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdda7d7c7ecef93056fff58e1d65f3b2" id="r_abdda7d7c7ecef93056fff58e1d65f3b2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#abdda7d7c7ecef93056fff58e1d65f3b2">getVectorAttributeX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float fallback) const</td></tr>
+<tr class="memdesc:abdda7d7c7ecef93056fff58e1d65f3b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the X component of vector metadata or the caller-provided default.  <br /></td></tr>
+<tr class="separator:abdda7d7c7ecef93056fff58e1d65f3b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57ae7f2a37c18b90822553d53358197b" id="r_a57ae7f2a37c18b90822553d53358197b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a57ae7f2a37c18b90822553d53358197b">getVectorAttributeY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float fallback) const</td></tr>
+<tr class="memdesc:a57ae7f2a37c18b90822553d53358197b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the Y component of vector metadata or the caller-provided default.  <br /></td></tr>
+<tr class="separator:a57ae7f2a37c18b90822553d53358197b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91c69593264ab4f6b1289ef7a931a14e" id="r_a91c69593264ab4f6b1289ef7a931a14e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a91c69593264ab4f6b1289ef7a931a14e">getVectorAttributeZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float fallback) const</td></tr>
+<tr class="memdesc:a91c69593264ab4f6b1289ef7a931a14e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the Z component of vector metadata or the caller-provided default.  <br /></td></tr>
+<tr class="separator:a91c69593264ab4f6b1289ef7a931a14e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17a4e5fdc5ffee6ae7b6aae8ef9eb127" id="r_a17a4e5fdc5ffee6ae7b6aae8ef9eb127"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a17a4e5fdc5ffee6ae7b6aae8ef9eb127">hasVectorAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a17a4e5fdc5ffee6ae7b6aae8ef9eb127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether vector metadata exists.  <br /></td></tr>
+<tr class="separator:a17a4e5fdc5ffee6ae7b6aae8ef9eb127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fc5bd45089bc32d225b1c90884df11b" id="r_a3fc5bd45089bc32d225b1c90884df11b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a3fc5bd45089bc32d225b1c90884df11b">trySetStringAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a3fc5bd45089bc32d225b1c90884df11b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical checked string metadata write.  <br /></td></tr>
+<tr class="separator:a3fc5bd45089bc32d225b1c90884df11b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab226331d3b6b1164eb75601e7dd394db" id="r_ab226331d3b6b1164eb75601e7dd394db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab226331d3b6b1164eb75601e7dd394db">setStringAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ab226331d3b6b1164eb75601e7dd394db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only unchecked script setter; canonical code uses trySetStringAttribute.  <br /></td></tr>
+<tr class="separator:ab226331d3b6b1164eb75601e7dd394db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e17ded5658530572da93a678d1d1da8" id="r_a4e17ded5658530572da93a678d1d1da8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a4e17ded5658530572da93a678d1d1da8">getStringAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;fallback) const</td></tr>
+<tr class="separator:a4e17ded5658530572da93a678d1d1da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2171a7b8e6f80a46bff2545c50ffc3c8" id="r_a2171a7b8e6f80a46bff2545c50ffc3c8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a2171a7b8e6f80a46bff2545c50ffc3c8">hasStringAttribute</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a2171a7b8e6f80a46bff2545c50ffc3c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05c3cc4bff1d4c007811842f22cbc742" id="r_a05c3cc4bff1d4c007811842f22cbc742"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a05c3cc4bff1d4c007811842f22cbc742">getAttributeType</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a05c3cc4bff1d4c007811842f22cbc742"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return float, int, bool, vector, string, or empty when the attribute is absent.  <br /></td></tr>
+<tr class="separator:a05c3cc4bff1d4c007811842f22cbc742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab660f2ffdd15bde1c7d2abb843306b2e" id="r_ab660f2ffdd15bde1c7d2abb843306b2e"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html">ProcgenPoint</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab660f2ffdd15bde1c7d2abb843306b2e">points</a> () const</td></tr>
+<tr class="memdesc:ab660f2ffdd15bde1c7d2abb843306b2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow immutable point rows; structural ownership remains with this set.  <br /></td></tr>
+<tr class="separator:ab660f2ffdd15bde1c7d2abb843306b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a672df9f37fa7d4290bf338f37d9d4359" id="r_a672df9f37fa7d4290bf338f37d9d4359"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html">ProcgenPoint</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a672df9f37fa7d4290bf338f37d9d4359">mutablePoint</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a672df9f37fa7d4290bf338f37d9d4359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutably access one existing point without changing row structure.  <br /></td></tr>
+<tr class="separator:a672df9f37fa7d4290bf338f37d9d4359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af564cf829d15f70838eb06e0e0fee3e9" id="r_af564cf829d15f70838eb06e0e0fee3e9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1procgen_1_1AttributeTable.html">AttributeTable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af564cf829d15f70838eb06e0e0fee3e9">attributes</a> () const noexcept</td></tr>
+<tr class="memdesc:af564cf829d15f70838eb06e0e0fee3e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the authoritative schema-bearing attribute table.  <br /></td></tr>
+<tr class="separator:af564cf829d15f70838eb06e0e0fee3e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script-friendly collection of attributed 3D samples. </p>
+<p>Operations exposed by <a class="el" href="classeve_1_1procgen_1_1Procgen.html" title="Procedural generation module. Phase A: runtime maps (semantic Grid2D → TileLayer)....">Procgen</a> return new <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> instances instead of mutating their input, so named intermediate values remain inspectable after a hot reload and can safely be reused by more than one pipeline branch. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00056">56</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a2c3811fd5cd8af4506b59dac6fffa024" name="a2c3811fd5cd8af4506b59dac6fffa024"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c3811fd5cd8af4506b59dac6fffa024">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointSet::add </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointSet_8cpp_source.html#l00058">appendPoint()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="PointSet_8h_source.html#l00018">eve::procgen::ProcgenPoint::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="LSystem_8cpp_source.html#l00238">eve::procgen::LSystem::toPointSet()</a>.</p>
+
+</div>
+</div>
+<a id="aa69713749e79221e2c343d66371324a1" name="aa69713749e79221e2c343d66371324a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa69713749e79221e2c343d66371324a1">&#9670;&#160;</a></span>appendPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointSet::appendPoint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html">ProcgenPoint</a>&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a point with an empty attribute row and return its row index. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00033">eve::procgen::AttributeTable::appendRow()</a>, <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00093">add()</a>, <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a> , 以及 <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a>.</p>
+
+</div>
+</div>
+<a id="aef919bd50b87e2a746d6c23b95d11f37" name="aef919bd50b87e2a746d6c23b95d11f37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef919bd50b87e2a746d6c23b95d11f37">&#9670;&#160;</a></span>appendPointFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::PointSet::appendPointFrom </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>sourceIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a point and its attributes from another set. </p>
+<dl class="section return"><dt>返回</dt><dd>New row index, or a schema/range failure without partial mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00038">eve::procgen::AttributeTable::appendRowFrom()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AttributeTable_8cpp_source.html#l00029">eve::procgen::AttributeTable::resize()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointDelta_8cpp_source.html#l00212">eve::procgen::applyPointDelta()</a> , 以及 <a class="el" href="PointDelta_8cpp_source.html#l00179">eve::procgen::diffPointSets()</a>.</p>
+
+</div>
+</div>
+<a id="a8244dd25e3e4225625df81644b8e6cab" name="a8244dd25e3e4225625df81644b8e6cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8244dd25e3e4225625df81644b8e6cab">&#9670;&#160;</a></span>assignPointIds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PointSet::assignPointIds </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>namespaceId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill zero identities deterministically and reject pre-existing duplicates. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00306">306</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="PointSet_8cpp_source.html#l00453">eve::procgen::derivePointId()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00571">eve::procgen::RuntimeGeneration::migrateCellPointIds()</a>.</p>
+
+</div>
+</div>
+<a id="af564cf829d15f70838eb06e0e0fee3e9" name="af564cf829d15f70838eb06e0e0fee3e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af564cf829d15f70838eb06e0e0fee3e9">&#9670;&#160;</a></span>attributes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1procgen_1_1AttributeTable.html">AttributeTable</a> &amp; eve::procgen::PointSet::attributes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the authoritative schema-bearing attribute table. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="PointDelta_8cpp_source.html#l00179">eve::procgen::diffPointSets()</a>, <a class="el" href="PointSet_8cpp_source.html#l01013">eve::procgen::filterPointFloatAttribute()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l01025">eve::procgen::filterPointStringAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="aee6099099072739def776ba44c5377c6" name="aee6099099072739def776ba44c5377c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee6099099072739def776ba44c5377c6">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00075">eve::procgen::AttributeTable::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a37a8076dc053b5bbd226dc10fae94b5a" name="a37a8076dc053b5bbd226dc10fae94b5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37a8076dc053b5bbd226dc10fae94b5a">&#9670;&#160;</a></span>clearPointAttributes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PointSet::clearPointAttributes </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear all metadata values on an existing point while retaining the set schema. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00070">eve::procgen::AttributeTable::clearRow()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>.</p>
+
+</div>
+</div>
+<a id="a21a9d39b95bf763a08f5997b6ad49580" name="a21a9d39b95bf763a08f5997b6ad49580"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21a9d39b95bf763a08f5997b6ad49580">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointSet::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgGraph_8cpp_source.html#l00350">eve::procgen_editing::PcgPointGraphDomain::preview()</a>.</p>
+
+</div>
+</div>
+<a id="a05c3cc4bff1d4c007811842f22cbc742" name="a05c3cc4bff1d4c007811842f22cbc742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05c3cc4bff1d4c007811842f22cbc742">&#9670;&#160;</a></span>getAttributeType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointSet::getAttributeType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return float, int, bool, vector, string, or empty when the attribute is absent. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00437">437</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00088">eve::procgen::AttributeTable::has()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AttributeTable_8cpp_source.html#l00175">eve::procgen::procgenAttributeTypeName()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a> , 以及 <a class="el" href="AttributeTable_8cpp_source.html#l00084">eve::procgen::AttributeTable::typeOf()</a>.</p>
+
+</div>
+</div>
+<a id="aa4f63926ce1b51f4b097db44965a7ba4" name="aa4f63926ce1b51f4b097db44965a7ba4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4f63926ce1b51f4b097db44965a7ba4">&#9670;&#160;</a></span>getBoolAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointSet::getBoolAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read boolean metadata or return the caller-provided default when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00378">378</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00161">eve::procgen::AttributeTable::getBool()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a3d910b34b81489dbdbe92a1c12a4367f" name="a3d910b34b81489dbdbe92a1c12a4367f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d910b34b81489dbdbe92a1c12a4367f">&#9670;&#160;</a></span>getBoundsMaxX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getBoundsMaxX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the local-space maximum X bound. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a351988d9058fa77587fe36acdf93df19" name="a351988d9058fa77587fe36acdf93df19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a351988d9058fa77587fe36acdf93df19">&#9670;&#160;</a></span>getBoundsMaxY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getBoundsMaxY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the local-space maximum Y bound. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a32c3c9613338f624f11da4fc7922b183" name="a32c3c9613338f624f11da4fc7922b183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32c3c9613338f624f11da4fc7922b183">&#9670;&#160;</a></span>getBoundsMaxZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getBoundsMaxZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the local-space maximum Z bound. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a15d5fadabe8f2316a8b8b4e714a94113" name="a15d5fadabe8f2316a8b8b4e714a94113"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15d5fadabe8f2316a8b8b4e714a94113">&#9670;&#160;</a></span>getBoundsMinX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getBoundsMinX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the local-space minimum X bound. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a66556b8ab3f1989ea84d7f8d978af7e7" name="a66556b8ab3f1989ea84d7f8d978af7e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66556b8ab3f1989ea84d7f8d978af7e7">&#9670;&#160;</a></span>getBoundsMinY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getBoundsMinY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the local-space minimum Y bound. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="af733814fe0e02c4e0e2a5cabacaac9bb" name="af733814fe0e02c4e0e2a5cabacaac9bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af733814fe0e02c4e0e2a5cabacaac9bb">&#9670;&#160;</a></span>getBoundsMinZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getBoundsMinZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the local-space minimum Z bound. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00217">217</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="ade84813e03fdfd77adaa4e98c2e52629" name="ade84813e03fdfd77adaa4e98c2e52629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade84813e03fdfd77adaa4e98c2e52629">&#9670;&#160;</a></span>getColorA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getColorA </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the point's linear alpha channel. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="af80ebba22a90a7572776676ff57bd757" name="af80ebba22a90a7572776676ff57bd757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af80ebba22a90a7572776676ff57bd757">&#9670;&#160;</a></span>getColorB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getColorB </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the point's linear blue channel. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a45b1b88640b095837a1a73fdae697ea2" name="a45b1b88640b095837a1a73fdae697ea2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45b1b88640b095837a1a73fdae697ea2">&#9670;&#160;</a></span>getColorG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getColorG </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the point's linear green channel. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a27805706c1a1fcdebd4e62b9dcfe63d5" name="a27805706c1a1fcdebd4e62b9dcfe63d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27805706c1a1fcdebd4e62b9dcfe63d5">&#9670;&#160;</a></span>getColorR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getColorR </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the point's linear red channel. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="aec412ab94ec5268fa85c83b124787762" name="aec412ab94ec5268fa85c83b124787762"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec412ab94ec5268fa85c83b124787762">&#9670;&#160;</a></span>getCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::PointSet::getCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a>, <a class="el" href="ShapeGrammar_8cpp_source.html#l00131">eve::procgen::ShapeGrammar::generate()</a>, <a class="el" href="Biome_8cpp_source.html#l00087">eve::procgen::BiomeRules::generate()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00175">eve::procgen::SpatialData::polygon()</a> , 以及 <a class="el" href="SpatialData_8cpp_source.html#l00184">eve::procgen::SpatialData::spline()</a>.</p>
+
+</div>
+</div>
+<a id="af7eb8912dfe80f058499deeddf20be8e" name="af7eb8912dfe80f058499deeddf20be8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7eb8912dfe80f058499deeddf20be8e">&#9670;&#160;</a></span>getDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getDensity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a2f8c552f9429ec7cfee61f93e6f2d732" name="a2f8c552f9429ec7cfee61f93e6f2d732"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f8c552f9429ec7cfee61f93e6f2d732">&#9670;&#160;</a></span>getFloatAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getFloatAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00155">eve::procgen::AttributeTable::getFloat()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00988">eve::procgen::mathPointFloatAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="ae554d6958a4e6fad9c8cfe8e9004d27f" name="ae554d6958a4e6fad9c8cfe8e9004d27f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae554d6958a4e6fad9c8cfe8e9004d27f">&#9670;&#160;</a></span>getIntAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::procgen::PointSet::getIntAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read signed integer metadata or return the caller-provided default when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00158">eve::procgen::AttributeTable::getInt()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa1ced541d6ca0f028276c7fba7c92f85" name="aa1ced541d6ca0f028276c7fba7c92f85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1ced541d6ca0f028276c7fba7c92f85">&#9670;&#160;</a></span>getNormalX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getNormalX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="ab8122f083efd9e4adc842e1139f9aac9" name="ab8122f083efd9e4adc842e1139f9aac9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8122f083efd9e4adc842e1139f9aac9">&#9670;&#160;</a></span>getNormalY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getNormalY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a1947183225bfbe429a8b05a1bdb55789" name="a1947183225bfbe429a8b05a1bdb55789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1947183225bfbe429a8b05a1bdb55789">&#9670;&#160;</a></span>getNormalZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getNormalZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a84851412a059de9dead1d5493bc4435f" name="a84851412a059de9dead1d5493bc4435f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84851412a059de9dead1d5493bc4435f">&#9670;&#160;</a></span>getPitch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getPitch </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the point's local pitch in degrees. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a916dd1cb95cd8d468bfb0c2270006c2d" name="a916dd1cb95cd8d468bfb0c2270006c2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a916dd1cb95cd8d468bfb0c2270006c2d">&#9670;&#160;</a></span>getPointId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen::PointSet::getPointId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the stable point identity, or zero when it has not been assigned. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a989a0e9b918f50a416f529a61cd1b632" name="a989a0e9b918f50a416f529a61cd1b632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a989a0e9b918f50a416f529a61cd1b632">&#9670;&#160;</a></span>getPointSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::procgen::PointSet::getPointSeed </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00236">u</a>.</p>
+
+</div>
+</div>
+<a id="aa9bffa1a573f070df179b695f34c19a3" name="aa9bffa1a573f070df179b695f34c19a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9bffa1a573f070df179b695f34c19a3">&#9670;&#160;</a></span>getRoll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getRoll </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the point's local roll in degrees. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a54757103143dc4bb2ad6cbc851182799" name="a54757103143dc4bb2ad6cbc851182799"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54757103143dc4bb2ad6cbc851182799">&#9670;&#160;</a></span>getScaleX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getScaleX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="ac0a2ec72112504aaed5e73dc88283b7b" name="ac0a2ec72112504aaed5e73dc88283b7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0a2ec72112504aaed5e73dc88283b7b">&#9670;&#160;</a></span>getScaleY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getScaleY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="aabaec36f3e0b52d271408a314cfcc338" name="aabaec36f3e0b52d271408a314cfcc338"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabaec36f3e0b52d271408a314cfcc338">&#9670;&#160;</a></span>getScaleZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getScaleZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="aef4d751bea6016b64bc2251f67bd6d3a" name="aef4d751bea6016b64bc2251f67bd6d3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef4d751bea6016b64bc2251f67bd6d3a">&#9670;&#160;</a></span>getSteepness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getSteepness </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return normalized point steepness metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a4e17ded5658530572da93a678d1d1da8" name="a4e17ded5658530572da93a678d1d1da8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e17ded5658530572da93a678d1d1da8">&#9670;&#160;</a></span>getStringAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::PointSet::getStringAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00167">eve::procgen::AttributeTable::getString()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="abdda7d7c7ecef93056fff58e1d65f3b2" name="abdda7d7c7ecef93056fff58e1d65f3b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdda7d7c7ecef93056fff58e1d65f3b2">&#9670;&#160;</a></span>getVectorAttributeX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getVectorAttributeX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the X component of vector metadata or the caller-provided default. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00164">eve::procgen::AttributeTable::getVector()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a57ae7f2a37c18b90822553d53358197b" name="a57ae7f2a37c18b90822553d53358197b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57ae7f2a37c18b90822553d53358197b">&#9670;&#160;</a></span>getVectorAttributeY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getVectorAttributeY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the Y component of vector metadata or the caller-provided default. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00403">403</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00164">eve::procgen::AttributeTable::getVector()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a91c69593264ab4f6b1289ef7a931a14e" name="a91c69593264ab4f6b1289ef7a931a14e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91c69593264ab4f6b1289ef7a931a14e">&#9670;&#160;</a></span>getVectorAttributeZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getVectorAttributeZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fallback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the Z component of vector metadata or the caller-provided default. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00408">408</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00164">eve::procgen::AttributeTable::getVector()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="aa1695a1d2429430eaa85af278495a5f7" name="aa1695a1d2429430eaa85af278495a5f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1695a1d2429430eaa85af278495a5f7">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a543be20b04c981d0bec7e5f13567df80" name="a543be20b04c981d0bec7e5f13567df80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a543be20b04c981d0bec7e5f13567df80">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a5f39e1ecf5015fa58212a69d2e72b1ff" name="a5f39e1ecf5015fa58212a69d2e72b1ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f39e1ecf5015fa58212a69d2e72b1ff">&#9670;&#160;</a></span>getYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getYaw </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="aaeab4f4325c71b98eed50e95568ea90f" name="aaeab4f4325c71b98eed50e95568ea90f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeab4f4325c71b98eed50e95568ea90f">&#9670;&#160;</a></span>getZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::PointSet::getZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a29a885c2d5e8b3b5e7ff7d76b8c9646f" name="a29a885c2d5e8b3b5e7ff7d76b8c9646f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29a885c2d5e8b3b5e7ff7d76b8c9646f">&#9670;&#160;</a></span>hasBoolAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointSet::hasBoolAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether boolean metadata exists. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00383">383</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00161">eve::procgen::AttributeTable::getBool()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a8287e8e790debaec7efa62f281b99dab" name="a8287e8e790debaec7efa62f281b99dab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8287e8e790debaec7efa62f281b99dab">&#9670;&#160;</a></span>hasFloatAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointSet::hasFloatAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00155">eve::procgen::AttributeTable::getFloat()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a23f2b8e9216fe475a3b11ed2ad99b448" name="a23f2b8e9216fe475a3b11ed2ad99b448"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23f2b8e9216fe475a3b11ed2ad99b448">&#9670;&#160;</a></span>hasIntAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointSet::hasIntAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether signed integer metadata exists. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00158">eve::procgen::AttributeTable::getInt()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a2171a7b8e6f80a46bff2545c50ffc3c8" name="a2171a7b8e6f80a46bff2545c50ffc3c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2171a7b8e6f80a46bff2545c50ffc3c8">&#9670;&#160;</a></span>hasStringAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointSet::hasStringAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00433">433</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00167">eve::procgen::AttributeTable::getString()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a17a4e5fdc5ffee6ae7b6aae8ef9eb127" name="a17a4e5fdc5ffee6ae7b6aae8ef9eb127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17a4e5fdc5ffee6ae7b6aae8ef9eb127">&#9670;&#160;</a></span>hasVectorAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::PointSet::hasVectorAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether vector metadata exists. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeTable_8cpp_source.html#l00164">eve::procgen::AttributeTable::getVector()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a672df9f37fa7d4290bf338f37d9d4359" name="a672df9f37fa7d4290bf338f37d9d4359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a672df9f37fa7d4290bf338f37d9d4359">&#9670;&#160;</a></span>mutablePoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html">ProcgenPoint</a> &amp; eve::procgen::PointSet::mutablePoint </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mutably access one existing point without changing row structure. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpatialData_8cpp_source.html#l00416">eve::procgen::SpatialData::project()</a>, <a class="el" href="PointSetHeightmapAdapter_8cpp_source.html#l00008">eve::procgen::projectPointsToHeightmap()</a>, <a class="el" href="PointSet_8cpp_source.html#l00975">eve::procgen::remapPointDensity()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00833">eve::procgen::transformPointSet3D()</a>.</p>
+
+</div>
+</div>
+<a id="ab660f2ffdd15bde1c7d2abb843306b2e" name="ab660f2ffdd15bde1c7d2abb843306b2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab660f2ffdd15bde1c7d2abb843306b2e">&#9670;&#160;</a></span>points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html">ProcgenPoint</a> &gt; &amp; eve::procgen::PointSet::points </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow immutable point rows; structural ownership remains with this set. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointDelta_8cpp_source.html#l00212">eve::procgen::applyPointDelta()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00312">eve::procgen::SpatialData::contains()</a>, <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="PointSet_8cpp_source.html#l00817">eve::procgen::differencePointSets()</a>, <a class="el" href="PointDelta_8cpp_source.html#l00179">eve::procgen::diffPointSets()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00406">eve::procgen::SpatialData::filter()</a>, <a class="el" href="PointSet_8cpp_source.html#l00590">eve::procgen::filterPointBox()</a>, <a class="el" href="PointSet_8cpp_source.html#l00622">eve::procgen::filterPointsByPolygon()</a>, <a class="el" href="PointSet_8cpp_source.html#l00633">eve::procgen::filterPointsBySplineDistance()</a>, <a class="el" href="PointSet_8cpp_source.html#l00605">eve::procgen::filterPointSlope()</a>, <a class="el" href="Biome_8cpp_source.html#l00087">eve::procgen::BiomeRules::generate()</a>, <a class="el" href="PointSet_8cpp_source.html#l00806">eve::procgen::intersectPointSets()</a>, <a class="el" href="PointSet_8cpp_source.html#l00988">eve::procgen::mathPointFloatAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00737">eve::procgen::mergePointSets()</a>, <a class="el" href="Procgen_8cpp_source.html#l00895">eve::procgen::Procgen::publishCellInstanceDelta()</a>, <a class="el" href="PointSet_8cpp_source.html#l00975">eve::procgen::remapPointDensity()</a>, <a class="el" href="PointSet_8cpp_source.html#l00699">eve::procgen::samplePolylinePoints()</a>, <a class="el" href="PointSet_8cpp_source.html#l00679">eve::procgen::selfPrunePoints()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00794">eve::procgen::unionPointSets()</a>.</p>
+
+</div>
+</div>
+<a id="afe6de6d317388fabf7bea1fea5a18bab" name="afe6de6d317388fabf7bea1fea5a18bab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe6de6d317388fabf7bea1fea5a18bab">&#9670;&#160;</a></span>reserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::reserve </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reserve point storage without changing point or attribute row counts. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointDelta_8cpp_source.html#l00212">eve::procgen::applyPointDelta()</a>, <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="PointSet_8cpp_source.html#l00817">eve::procgen::differencePointSets()</a>, <a class="el" href="PointSet_8cpp_source.html#l00806">eve::procgen::intersectPointSets()</a>, <a class="el" href="PointSet_8cpp_source.html#l00737">eve::procgen::mergePointSets()</a>, <a class="el" href="Procgen_8cpp_source.html#l00725">eve::procgen::Procgen::projectToWorldHandle()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00794">eve::procgen::unionPointSets()</a>.</p>
+
+</div>
+</div>
+<a id="a8dabc5de17b6b331a63133e3ea01436e" name="a8dabc5de17b6b331a63133e3ea01436e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dabc5de17b6b331a63133e3ea01436e">&#9670;&#160;</a></span>setBoolAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setBoolAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only unchecked script setter; canonical code uses trySetBoolAttribute. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PointSet_8cpp_source.html#l00367">trySetBoolAttribute()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a813c65227e0e8a18c19e8c5d02fdc6a5" name="a813c65227e0e8a18c19e8c5d02fdc6a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a813c65227e0e8a18c19e8c5d02fdc6a5">&#9670;&#160;</a></span>setBounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setBounds </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set local-space point bounds before scale and rotation are applied. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a5267da29b3db90308440b528692bbd66" name="a5267da29b3db90308440b528692bbd66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5267da29b3db90308440b528692bbd66">&#9670;&#160;</a></span>setColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setColor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>red</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>green</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>blue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the normalized linear RGBA point color. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="ad9d7d0d26b0153f37a5d7626580575af" name="ad9d7d0d26b0153f37a5d7626580575af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9d7d0d26b0153f37a5d7626580575af">&#9670;&#160;</a></span>setDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setDensity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a1015e688aea73ecfe91755886b3b5ed4" name="a1015e688aea73ecfe91755886b3b5ed4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1015e688aea73ecfe91755886b3b5ed4">&#9670;&#160;</a></span>setFloatAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setFloatAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only unchecked script setter; canonical code uses trySetFloatAttribute. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PointSet_8cpp_source.html#l00327">trySetFloatAttribute()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a620c7bb5eb21b2acaa066445595183db" name="a620c7bb5eb21b2acaa066445595183db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a620c7bb5eb21b2acaa066445595183db">&#9670;&#160;</a></span>setIntAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setIntAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only unchecked script setter; canonical code uses trySetIntAttribute. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00354">354</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PointSet_8cpp_source.html#l00347">trySetIntAttribute()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ab8b5747a22a316e94b3270a0ab15cfe8" name="ab8b5747a22a316e94b3270a0ab15cfe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8b5747a22a316e94b3270a0ab15cfe8">&#9670;&#160;</a></span>setNormal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setNormal </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ab3d84c37d24c936caf9743e1c3276d7d" name="ab3d84c37d24c936caf9743e1c3276d7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3d84c37d24c936caf9743e1c3276d7d">&#9670;&#160;</a></span>setPointSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setPointSeed </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>.</p>
+
+</div>
+</div>
+<a id="a94290b4a450aace6627325903a7667f3" name="a94290b4a450aace6627325903a7667f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94290b4a450aace6627325903a7667f3">&#9670;&#160;</a></span>setPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setPosition </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="af1ac0d92e73096d73dbf6876f8b4b1eb" name="af1ac0d92e73096d73dbf6876f8b4b1eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1ac0d92e73096d73dbf6876f8b4b1eb">&#9670;&#160;</a></span>setRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setRotation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>roll</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the point's local Euler rotation in degrees. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="a314586d8bc3cecbc71546bc7fdf25d35" name="a314586d8bc3cecbc71546bc7fdf25d35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a314586d8bc3cecbc71546bc7fdf25d35">&#9670;&#160;</a></span>setScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setScale </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aa0214be832e1fe7f4a72a6aba77936ab" name="aa0214be832e1fe7f4a72a6aba77936ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0214be832e1fe7f4a72a6aba77936ab">&#9670;&#160;</a></span>setSteepness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setSteepness </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>steepness</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set normalized surface steepness metadata in the inclusive range [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>.</p>
+
+</div>
+</div>
+<a id="ab226331d3b6b1164eb75601e7dd394db" name="ab226331d3b6b1164eb75601e7dd394db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab226331d3b6b1164eb75601e7dd394db">&#9670;&#160;</a></span>setStringAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setStringAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only unchecked script setter; canonical code uses trySetStringAttribute. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PointSet_8cpp_source.html#l00417">trySetStringAttribute()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a9330442409616d2d86893633b862a224" name="a9330442409616d2d86893633b862a224"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9330442409616d2d86893633b862a224">&#9670;&#160;</a></span>setVectorAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setVectorAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only unchecked script setter; canonical code uses trySetVectorAttribute. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PointSet_8cpp_source.html#l00387">trySetVectorAttribute()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="aab00111512952ebe1f1d861719749139" name="aab00111512952ebe1f1d861719749139"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab00111512952ebe1f1d861719749139">&#9670;&#160;</a></span>setYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::PointSet::setYaw </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+</div>
+</div>
+<a id="a5d603a7c28257752d30f11256916ef18" name="a5d603a7c28257752d30f11256916ef18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d603a7c28257752d30f11256916ef18">&#9670;&#160;</a></span>trySetBoolAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PointSet::trySetBoolAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical checked Boolean metadata write. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00367">367</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AttributeTable_8cpp_source.html#l00146">eve::procgen::AttributeTable::setBool()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00374">setBoolAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="af9bd6b0a0e1b1f08f1413990855dbcb7" name="af9bd6b0a0e1b1f08f1413990855dbcb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9bd6b0a0e1b1f08f1413990855dbcb7">&#9670;&#160;</a></span>trySetFloatAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PointSet::trySetFloatAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical checked float metadata write. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AttributeTable_8cpp_source.html#l00140">eve::procgen::AttributeTable::setFloat()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a>, <a class="el" href="PointSet_8cpp_source.html#l00988">eve::procgen::mathPointFloatAttribute()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00334">setFloatAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="ae1a7675250e62bcebf261c4a1e052159" name="ae1a7675250e62bcebf261c4a1e052159"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1a7675250e62bcebf261c4a1e052159">&#9670;&#160;</a></span>trySetIntAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PointSet::trySetIntAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical checked signed integer metadata write. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00347">347</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AttributeTable_8cpp_source.html#l00143">eve::procgen::AttributeTable::setInt()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00354">setIntAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="a0db21e87c08baad34e38cf54e83b2fe2" name="a0db21e87c08baad34e38cf54e83b2fe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0db21e87c08baad34e38cf54e83b2fe2">&#9670;&#160;</a></span>trySetPointId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PointSet::trySetPointId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign a unique non-zero point identity without mutating on failure. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3fc5bd45089bc32d225b1c90884df11b" name="a3fc5bd45089bc32d225b1c90884df11b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fc5bd45089bc32d225b1c90884df11b">&#9670;&#160;</a></span>trySetStringAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PointSet::trySetStringAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical checked string metadata write. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00417">417</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AttributeTable_8cpp_source.html#l00152">eve::procgen::AttributeTable::setString()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00424">setStringAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="a698431b4d482126a8bfe5171d0193d0c" name="a698431b4d482126a8bfe5171d0193d0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a698431b4d482126a8bfe5171d0193d0c">&#9670;&#160;</a></span>trySetVectorAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::PointSet::trySetVectorAttribute </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical checked vector metadata write. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a> 第 <a class="el" href="PointSet_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AttributeTable_8cpp_source.html#l00149">eve::procgen::AttributeTable::setVector()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00394">setVectorAttribute()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="PointSet_8h_source.html">PointSet.h</a></li>
+<li>src/modules/procgen/<a class="el" href="PointSet_8cpp_source.html">PointSet.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

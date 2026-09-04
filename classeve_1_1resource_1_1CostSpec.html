@@ -1,0 +1,549 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::resource::CostSpec类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1resource.html">resource</a></li><li class="navelem"><a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1resource_1_1CostSpec-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::resource::CostSpec类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Immutable canonical multi-resource cost.  
+ <a href="classeve_1_1resource_1_1CostSpec.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a42237a9fbc8771fdcdd620d7a22203b9" id="r_a42237a9fbc8771fdcdd620d7a22203b9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#a42237a9fbc8771fdcdd620d7a22203b9">CostSpec</a> ()=default</td></tr>
+<tr class="memdesc:a42237a9fbc8771fdcdd620d7a22203b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an invalid empty cost; use create/from/single for input.  <br /></td></tr>
+<tr class="separator:a42237a9fbc8771fdcdd620d7a22203b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8bede8e449dab329af1d716d61425b1" id="r_aa8bede8e449dab329af1d716d61425b1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#aa8bede8e449dab329af1d716d61425b1">isValid</a> () const noexcept</td></tr>
+<tr class="memdesc:aa8bede8e449dab329af1d716d61425b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this value contains a validated non-empty cost.  <br /></td></tr>
+<tr class="separator:aa8bede8e449dab329af1d716d61425b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4836842a3592286eaba3669ce5132744" id="r_a4836842a3592286eaba3669ce5132744"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#a4836842a3592286eaba3669ce5132744">empty</a> () const noexcept</td></tr>
+<tr class="memdesc:a4836842a3592286eaba3669ce5132744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this cost has no items.  <br /></td></tr>
+<tr class="separator:a4836842a3592286eaba3669ce5132744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c07a97b46eb4afac2495c0af7108d4d" id="r_a6c07a97b46eb4afac2495c0af7108d4d"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1resource_1_1ResourceCost.html">ResourceCost</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">items</a> () const noexcept</td></tr>
+<tr class="memdesc:a6c07a97b46eb4afac2495c0af7108d4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return canonical items as a read-only borrowed view.  <br /></td></tr>
+<tr class="separator:a6c07a97b46eb4afac2495c0af7108d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3cabbabc51b889e25f24ed42f914aee" id="r_ac3cabbabc51b889e25f24ed42f914aee"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#ac3cabbabc51b889e25f24ed42f914aee">size</a> () const noexcept</td></tr>
+<tr class="memdesc:ac3cabbabc51b889e25f24ed42f914aee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of canonical resource entries.  <br /></td></tr>
+<tr class="separator:ac3cabbabc51b889e25f24ed42f914aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ac2f65d8ce3ed74c35c5f62d4e9979ac0" id="r_ac2f65d8ce3ed74c35c5f62d4e9979ac0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#ac2f65d8ce3ed74c35c5f62d4e9979ac0">create</a> (std::vector&lt; <a class="el" href="structeve_1_1resource_1_1ResourceCost.html">ResourceCost</a> &gt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">items</a>)</td></tr>
+<tr class="memdesc:ac2f65d8ce3ed74c35c5f62d4e9979ac0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and canonicalize resource items.  <br /></td></tr>
+<tr class="separator:ac2f65d8ce3ed74c35c5f62d4e9979ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14dd49d8c2f54ddbc452c632615309d9" id="r_a14dd49d8c2f54ddbc452c632615309d9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#a14dd49d8c2f54ddbc452c632615309d9">from</a> (std::initializer_list&lt; <a class="el" href="structeve_1_1resource_1_1CostInput.html">CostInput</a> &gt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html#a6c07a97b46eb4afac2495c0af7108d4d">items</a>)</td></tr>
+<tr class="memdesc:a14dd49d8c2f54ddbc452c632615309d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a cost from string/integer pairs.  <br /></td></tr>
+<tr class="separator:a14dd49d8c2f54ddbc452c632615309d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0c793c557ea3598f296d338b655dbb3" id="r_af0c793c557ea3598f296d338b655dbb3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#af0c793c557ea3598f296d338b655dbb3">single</a> (std::string_view resource, std::int64_t amount)</td></tr>
+<tr class="memdesc:af0c793c557ea3598f296d338b655dbb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a one-resource cost.  <br /></td></tr>
+<tr class="separator:af0c793c557ea3598f296d338b655dbb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a4a7f89a7ad3e5722316b5e549ce17265" id="r_a4a7f89a7ad3e5722316b5e549ce17265"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1resource_1_1CostSpec.html#a4a7f89a7ad3e5722316b5e549ce17265">operator==</a> (const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;, const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;) noexcept=default</td></tr>
+<tr class="separator:a4a7f89a7ad3e5722316b5e549ce17265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Immutable canonical multi-resource cost. </p>
+<p>Items are sorted by <a class="el" href="classeve_1_1resource_1_1ResourceId.html" title="Strong identity of a resource kind, such as mana or gold.">ResourceId</a> and duplicate resources are merged with checked arithmetic. Empty costs and zero/negative items are rejected, so a successful <a class="el" href="classeve_1_1resource_1_1CostSpec.html" title="Immutable canonical multi-resource cost.">CostSpec</a> is safe to use in reserve/debit/credit operations. </p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a> 第 <a class="el" href="ResourceAccount_8h_source.html#l00140">140</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a42237a9fbc8771fdcdd620d7a22203b9" name="a42237a9fbc8771fdcdd620d7a22203b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42237a9fbc8771fdcdd620d7a22203b9">&#9670;&#160;</a></span>CostSpec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::resource::CostSpec::CostSpec </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an invalid empty cost; use create/from/single for input. </p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ResourceAccount_8cpp_source.html#l00074">create()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac2f65d8ce3ed74c35c5f62d4e9979ac0" name="ac2f65d8ce3ed74c35c5f62d4e9979ac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2f65d8ce3ed74c35c5f62d4e9979ac0">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &gt; eve::resource::CostSpec::create </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1resource_1_1ResourceCost.html">ResourceCost</a> &gt;&#160;</td>
+          <td class="paramname"><em>items</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate and canonicalize resource items. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">items</td><td>Input items; duplicate ids are merged deterministically. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A canonical cost or a rejected <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8cpp_source.html">ResourceAccount.cpp</a> 第 <a class="el" href="ResourceAccount_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1resource_1_1CostSpec.html#a42237a9fbc8771fdcdd620d7a22203b9">CostSpec()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ResourceAccount_8h_source.html#l00178">items()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a> , 以及 <a class="el" href="ResourceAccount_8cpp_source.html#l00103">from()</a>.</p>
+
+</div>
+</div>
+<a id="a4836842a3592286eaba3669ce5132744" name="a4836842a3592286eaba3669ce5132744"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4836842a3592286eaba3669ce5132744">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::resource::CostSpec::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this cost has no items. </p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a> 第 <a class="el" href="ResourceAccount_8h_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a14dd49d8c2f54ddbc452c632615309d9" name="a14dd49d8c2f54ddbc452c632615309d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14dd49d8c2f54ddbc452c632615309d9">&#9670;&#160;</a></span>from()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &gt; eve::resource::CostSpec::from </td>
+          <td>(</td>
+          <td class="paramtype">std::initializer_list&lt; <a class="el" href="structeve_1_1resource_1_1CostInput.html">CostInput</a> &gt;&#160;</td>
+          <td class="paramname"><em>items</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a cost from string/integer pairs. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">items</td><td>Non-empty positive resource entries. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A canonical cost or a rejected <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8cpp_source.html">ResourceAccount.cpp</a> 第 <a class="el" href="ResourceAccount_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ResourceAccount_8cpp_source.html#l00063">eve::resource::ResourceCost::create()</a>, <a class="el" href="ResourceAccount_8cpp_source.html#l00074">create()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a> , 以及 <a class="el" href="ResourceAccount_8h_source.html#l00178">items()</a>.</p>
+
+</div>
+</div>
+<a id="aa8bede8e449dab329af1d716d61425b1" name="aa8bede8e449dab329af1d716d61425b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8bede8e449dab329af1d716d61425b1">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::resource::CostSpec::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this value contains a validated non-empty cost. </p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a> 第 <a class="el" href="ResourceAccount_8h_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a>, <a class="el" href="RTSProductionAction_8cpp_source.html#l00402">eve::rts::RTSProductionActionAdapter::cancel()</a>, <a class="el" href="AtomicResourcePayment_8cpp_source.html#l00038">eve::transaction::AtomicResourcePayment::execute()</a>, <a class="el" href="ResourceAccount_8h_source.html#l00277">eve::resource::Reservation::isValid()</a> , 以及 <a class="el" href="ResourceAccount_8h_source.html#l00294">eve::resource::Receipt::isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a6c07a97b46eb4afac2495c0af7108d4d" name="a6c07a97b46eb4afac2495c0af7108d4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c07a97b46eb4afac2495c0af7108d4d">&#9670;&#160;</a></span>items()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1resource_1_1ResourceCost.html">ResourceCost</a> &gt; &amp; eve::resource::CostSpec::items </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return canonical items as a read-only borrowed view. </p>
+<dl class="section remark"><dt>备注</dt><dd>The view remains valid while this <a class="el" href="classeve_1_1resource_1_1CostSpec.html" title="Immutable canonical multi-resource cost.">CostSpec</a> is alive and is invalidated by assignment or destruction. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a> 第 <a class="el" href="ResourceAccount_8h_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00308">eve::rts::RTSProductionActionAdapter::build()</a>, <a class="el" href="AttributeSetResourceAccount_8cpp_source.html#l00154">eve::attributes::AttributeSetResourceAccount::canAfford()</a>, <a class="el" href="EconomyLedgerResourceAccount_8cpp_source.html#l00183">eve::economy::EconomyLedgerResourceAccount::canAfford()</a>, <a class="el" href="InventoryResourceAccount_8cpp_source.html#l00131">eve::inventory::InventoryResourceAccount::canAfford()</a>, <a class="el" href="AttributeResourceAccount_8cpp_source.html#l00077">eve::attributes::AttributeResourceAccountAdapter::commit()</a>, <a class="el" href="ResourceAccount_8cpp_source.html#l00074">create()</a>, <a class="el" href="AttributeSetResourceAccount_8cpp_source.html#l00260">eve::attributes::AttributeSetResourceAccount::credit()</a>, <a class="el" href="ResourceAccount_8cpp_source.html#l00103">from()</a> , 以及 <a class="el" href="AttributeResourceAccount_8cpp_source.html#l00088">eve::attributes::AttributeResourceAccountAdapter::rollback()</a>.</p>
+
+</div>
+</div>
+<a id="af0c793c557ea3598f296d338b655dbb3" name="af0c793c557ea3598f296d338b655dbb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0c793c557ea3598f296d338b655dbb3">&#9670;&#160;</a></span>single()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &gt; eve::resource::CostSpec::single </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a one-resource cost. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">resource</td><td>Stable resource name. </td></tr>
+    <tr><td class="paramname">amount</td><td>Positive quantity. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A canonical cost or a rejected <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8cpp_source.html">ResourceAccount.cpp</a> 第 <a class="el" href="ResourceAccount_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTS_8cpp_source.html#l02203">eve::rts::RTS::addScriptResource()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03653">eve::rts::AbilitySystem::cast()</a>, <a class="el" href="AttributeResourceAccount_8cpp_source.html#l00030">eve::attributes::AttributeResourceAccountAdapter::makeCost()</a>, <a class="el" href="CardPlay_8cpp_source.html#l00309">eve::card::CardPlayPaymentAdapter::manaCost()</a>, <a class="el" href="RTS_8cpp_source.html#l02610">eve::rts::RTS::queueScriptResearch()</a>, <a class="el" href="RTS_8cpp_source.html#l02269">eve::rts::RTS::queueScriptUnit()</a>, <a class="el" href="RTS_8cpp_source.html#l02502">eve::rts::RTS::sellScriptBuilding()</a>, <a class="el" href="RTS_8cpp_source.html#l02364">eve::rts::RTS::startScriptConstruction()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02492">eve::rts::InfrastructureSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02357">eve::rts::RepairSystem::step()</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l02135">eve::rts::MiningSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="ac3cabbabc51b889e25f24ed42f914aee" name="ac3cabbabc51b889e25f24ed42f914aee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3cabbabc51b889e25f24ed42f914aee">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::resource::CostSpec::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of canonical resource entries. </p>
+
+<p class="definition">在文件 <a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a> 第 <a class="el" href="ResourceAccount_8h_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AttributeResourceAccount_8cpp_source.html#l00077">eve::attributes::AttributeResourceAccountAdapter::commit()</a> , 以及 <a class="el" href="AttributeResourceAccount_8cpp_source.html#l00088">eve::attributes::AttributeResourceAccountAdapter::rollback()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a4a7f89a7ad3e5722316b5e549ce17265" name="a4a7f89a7ad3e5722316b5e549ce17265"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a7f89a7ad3e5722316b5e549ce17265">&#9670;&#160;</a></span>operator==</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1resource_1_1CostSpec.html">CostSpec</a> &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="ResourceAccount_8h_source.html">ResourceAccount.h</a></li>
+<li>src/engine/common/<a class="el" href="ResourceAccount_8cpp_source.html">ResourceAccount.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

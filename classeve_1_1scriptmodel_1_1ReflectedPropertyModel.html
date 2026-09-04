@@ -1,0 +1,582 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scriptmodel::ReflectedPropertyModel类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scriptmodel.html">scriptmodel</a></li><li class="navelem"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html">ReflectedPropertyModel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scriptmodel::ReflectedPropertyModel类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Adapts one live Squirrel instance to the renderer-independent property model.  
+ <a href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ReflectedPropertyModel_8h_source.html">ReflectedPropertyModel.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::scriptmodel::ReflectedPropertyModel 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.png" usemap="#eve::scriptmodel::ReflectedPropertyModel_map" alt=""/>
+  <map id="eve::scriptmodel::ReflectedPropertyModel_map" name="eve::scriptmodel::ReflectedPropertyModel_map">
+<area href="classeve_1_1property__access_1_1IPropertyAccess.html" title="Renderer- and transaction-independent MVVM property surface." alt="eve::property_access::IPropertyAccess" shape="rect" coords="0,0,246,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scriptmodel_1_1ReflectedPropertyModel_1_1ObserverState.html">ObserverState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a45cf56bee31f5e1b12ed4035d5e36f54" id="r_a45cf56bee31f5e1b12ed4035d5e36f54"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#a45cf56bee31f5e1b12ed4035d5e36f54">ReflectedPropertyModel</a> (<a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;runtime, ssq::Object instance)</td></tr>
+<tr class="separator:a45cf56bee31f5e1b12ed4035d5e36f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad15abcad1bca00e165ca14aeb35ca74c" id="r_ad15abcad1bca00e165ca14aeb35ca74c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#ad15abcad1bca00e165ca14aeb35ca74c">~ReflectedPropertyModel</a> () override</td></tr>
+<tr class="separator:ad15abcad1bca00e165ca14aeb35ca74c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adddf2875cf5dc1966e6dbbde8c159d82" id="r_adddf2875cf5dc1966e6dbbde8c159d82"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#adddf2875cf5dc1966e6dbbde8c159d82">ReflectedPropertyModel</a> (const <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html">ReflectedPropertyModel</a> &amp;)=delete</td></tr>
+<tr class="separator:adddf2875cf5dc1966e6dbbde8c159d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d60a4d27af4c4165de98bf00487d3aa" id="r_a2d60a4d27af4c4165de98bf00487d3aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html">ReflectedPropertyModel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#a2d60a4d27af4c4165de98bf00487d3aa">operator=</a> (const <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html">ReflectedPropertyModel</a> &amp;)=delete</td></tr>
+<tr class="separator:a2d60a4d27af4c4165de98bf00487d3aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6e39571e9f906161730f60570cebfe4" id="r_af6e39571e9f906161730f60570cebfe4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1property__access_1_1PropertySchema.html">property_access::PropertySchema</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#af6e39571e9f906161730f60570cebfe4">schema</a> () const override</td></tr>
+<tr class="memdesc:af6e39571e9f906161730f60570cebfe4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable schema exposed by this model.  <br /></td></tr>
+<tr class="separator:af6e39571e9f906161730f60570cebfe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e969a95e3e2927bba48c0b577d7f156" id="r_a8e969a95e3e2927bba48c0b577d7f156"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classeve_1_1Value.html">eve::Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#a8e969a95e3e2927bba48c0b577d7f156">read</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="memdesc:a8e969a95e3e2927bba48c0b577d7f156"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a property value, or nullopt when it is absent.  <br /></td></tr>
+<tr class="separator:a8e969a95e3e2927bba48c0b577d7f156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab53ed7e82920778c8a579fad560d6099" id="r_ab53ed7e82920778c8a579fad560d6099"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1property__access_1_1WriteResult.html">property_access::WriteResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#ab53ed7e82920778c8a579fad560d6099">write</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) override</td></tr>
+<tr class="memdesc:ab53ed7e82920778c8a579fad560d6099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request a two-way binding write.  <br /></td></tr>
+<tr class="separator:ab53ed7e82920778c8a579fad560d6099"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf5e86c48deff38dfd11e784f348811d" id="r_abf5e86c48deff38dfd11e784f348811d"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#abf5e86c48deff38dfd11e784f348811d">revision</a> () const override</td></tr>
+<tr class="memdesc:abf5e86c48deff38dfd11e784f348811d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic revision incremented after observable changes.  <br /></td></tr>
+<tr class="separator:abf5e86c48deff38dfd11e784f348811d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad471ab0e8e0ef3d305faea0e3c59045c" id="r_ad471ab0e8e0ef3d305faea0e3c59045c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1property__access.html#ab940760613fb74791e7cbdc6250ccd9a">property_access::Subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#ad471ab0e8e0ef3d305faea0e3c59045c">subscribe</a> (<a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">ChangeCallback</a> callback) override</td></tr>
+<tr class="memdesc:ad471ab0e8e0ef3d305faea0e3c59045c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observe changes until the returned token is destroyed.  <br /></td></tr>
+<tr class="separator:ad471ab0e8e0ef3d305faea0e3c59045c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a8e1524e921ed94719f57bdac213229" id="r_a0a8e1524e921ed94719f57bdac213229"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#a0a8e1524e921ed94719f57bdac213229">rebuildSchema</a> ()</td></tr>
+<tr class="memdesc:a0a8e1524e921ed94719f57bdac213229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild reflection metadata after a script reload.  <br /></td></tr>
+<tr class="separator:a0a8e1524e921ed94719f57bdac213229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa99f4c4e15e0e2eb662e63e4e9d7a416" id="r_aa99f4c4e15e0e2eb662e63e4e9d7a416"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#aa99f4c4e15e0e2eb662e63e4e9d7a416">refresh</a> ()</td></tr>
+<tr class="memdesc:aa99f4c4e15e0e2eb662e63e4e9d7a416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pull live values and notify observers for changed properties.  <br /></td></tr>
+<tr class="separator:aa99f4c4e15e0e2eb662e63e4e9d7a416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1property__access_1_1IPropertyAccess"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1property__access_1_1IPropertyAccess')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">eve::property_access::IPropertyAccess</a></td></tr>
+<tr class="memitem:aad7b55bc5d61f31b7d39253163a52e27 inherit pub_methods_classeve_1_1property__access_1_1IPropertyAccess" id="r_aad7b55bc5d61f31b7d39253163a52e27"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#aad7b55bc5d61f31b7d39253163a52e27">~IPropertyAccess</a> ()=default</td></tr>
+<tr class="separator:aad7b55bc5d61f31b7d39253163a52e27 inherit pub_methods_classeve_1_1property__access_1_1IPropertyAccess"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_types_classeve_1_1property__access_1_1IPropertyAccess"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classeve_1_1property__access_1_1IPropertyAccess')"><img src="closed.png" alt="-"/>&#160;Public 类型 继承自 <a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">eve::property_access::IPropertyAccess</a></td></tr>
+<tr class="memitem:a549150ac18f8075fb2de41e24ea33b33 inherit pub_types_classeve_1_1property__access_1_1IPropertyAccess" id="r_a549150ac18f8075fb2de41e24ea33b33"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">ChangeCallback</a> = std::function&lt; void(const <a class="el" href="structeve_1_1property__access_1_1PropertyChange.html">PropertyChange</a> &amp;)&gt;</td></tr>
+<tr class="separator:a549150ac18f8075fb2de41e24ea33b33 inherit pub_types_classeve_1_1property__access_1_1IPropertyAccess"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Adapts one live Squirrel instance to the renderer-independent property model. </p>
+<p>Reflection metadata defines the schema while <a class="el" href="classeve_1_1Runtime.html">Runtime</a> owns all reads and writes. Scalar properties are editable; arrays, tables and nested instances are exposed as read-only structured values for generic views and automation. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8h_source.html">ReflectedPropertyModel.h</a> 第 <a class="el" href="ReflectedPropertyModel_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a45cf56bee31f5e1b12ed4035d5e36f54" name="a45cf56bee31f5e1b12ed4035d5e36f54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45cf56bee31f5e1b12ed4035d5e36f54">&#9670;&#160;</a></span>ReflectedPropertyModel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scriptmodel::ReflectedPropertyModel::ReflectedPropertyModel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ssq::Object&#160;</td>
+          <td class="paramname"><em>instance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8cpp_source.html">ReflectedPropertyModel.cpp</a> 第 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00117">rebuildSchema()</a> , 以及 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00238">refresh()</a>.</p>
+
+</div>
+</div>
+<a id="ad15abcad1bca00e165ca14aeb35ca74c" name="ad15abcad1bca00e165ca14aeb35ca74c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad15abcad1bca00e165ca14aeb35ca74c">&#9670;&#160;</a></span>~ReflectedPropertyModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scriptmodel::ReflectedPropertyModel::~ReflectedPropertyModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adddf2875cf5dc1966e6dbbde8c159d82" name="adddf2875cf5dc1966e6dbbde8c159d82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adddf2875cf5dc1966e6dbbde8c159d82">&#9670;&#160;</a></span>ReflectedPropertyModel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scriptmodel::ReflectedPropertyModel::ReflectedPropertyModel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html">ReflectedPropertyModel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2d60a4d27af4c4165de98bf00487d3aa" name="a2d60a4d27af4c4165de98bf00487d3aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d60a4d27af4c4165de98bf00487d3aa">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html">ReflectedPropertyModel</a> &amp; eve::scriptmodel::ReflectedPropertyModel::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html">ReflectedPropertyModel</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8e969a95e3e2927bba48c0b577d7f156" name="a8e969a95e3e2927bba48c0b577d7f156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e969a95e3e2927bba48c0b577d7f156">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::scriptmodel::ReflectedPropertyModel::read </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read a property value, or nullopt when it is absent. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a0f60bb7a6cae70f705c302e14e809d73">eve::property_access::IPropertyAccess</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8cpp_source.html">ReflectedPropertyModel.cpp</a> 第 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PropertyAccess_8cpp_source.html#l00009">eve::property_access::PropertySchema::find()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00697">eve::Runtime::readProperty()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00238">refresh()</a>.</p>
+
+</div>
+</div>
+<a id="a0a8e1524e921ed94719f57bdac213229" name="a0a8e1524e921ed94719f57bdac213229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a8e1524e921ed94719f57bdac213229">&#9670;&#160;</a></span>rebuildSchema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scriptmodel::ReflectedPropertyModel::rebuildSchema </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebuild reflection metadata after a script reload. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8cpp_source.html">ReflectedPropertyModel.cpp</a> 第 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Runtime_8cpp_source.html#l01144">eve::Runtime::classNameOf()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="Value_8h_source.html#l00085">eve::Value::kind()</a>, <a class="el" href="EditingProperty_8h_source.html#l00067">eve::editing::PropertyDescriptor::path</a>, <a class="el" href="PropertyAccess_8h_source.html#l00086">eve::property_access::PropertySchema::properties</a>, <a class="el" href="Runtime_8cpp_source.html#l00650">eve::Runtime::reflectInstance()</a> , 以及 <a class="el" href="PropertyAccess_8h_source.html#l00084">eve::property_access::PropertySchema::typeId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00108">ReflectedPropertyModel()</a>.</p>
+
+</div>
+</div>
+<a id="aa99f4c4e15e0e2eb662e63e4e9d7a416" name="aa99f4c4e15e0e2eb662e63e4e9d7a416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa99f4c4e15e0e2eb662e63e4e9d7a416">&#9670;&#160;</a></span>refresh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scriptmodel::ReflectedPropertyModel::refresh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pull live values and notify observers for changed properties. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8cpp_source.html">ReflectedPropertyModel.cpp</a> 第 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="PropertyAccess_8h_source.html#l00086">eve::property_access::PropertySchema::properties</a> , 以及 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00203">read()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00108">ReflectedPropertyModel()</a>.</p>
+
+</div>
+</div>
+<a id="abf5e86c48deff38dfd11e784f348811d" name="abf5e86c48deff38dfd11e784f348811d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf5e86c48deff38dfd11e784f348811d">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::scriptmodel::ReflectedPropertyModel::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic revision incremented after observable changes. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#aad92ca2970fd011e67aaace258e150f7">eve::property_access::IPropertyAccess</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8h_source.html">ReflectedPropertyModel.h</a> 第 <a class="el" href="ReflectedPropertyModel_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af6e39571e9f906161730f60570cebfe4" name="af6e39571e9f906161730f60570cebfe4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6e39571e9f906161730f60570cebfe4">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1property__access_1_1PropertySchema.html">property_access::PropertySchema</a> &amp; eve::scriptmodel::ReflectedPropertyModel::schema </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable schema exposed by this model. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a0b6b50d3b3b0c4c8cd68ed49ff9d42a4">eve::property_access::IPropertyAccess</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8h_source.html">ReflectedPropertyModel.h</a> 第 <a class="el" href="ReflectedPropertyModel_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad471ab0e8e0ef3d305faea0e3c59045c" name="ad471ab0e8e0ef3d305faea0e3c59045c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad471ab0e8e0ef3d305faea0e3c59045c">&#9670;&#160;</a></span>subscribe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1property__access.html#ab940760613fb74791e7cbdc6250ccd9a">property_access::Subscription</a> eve::scriptmodel::ReflectedPropertyModel::subscribe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">ChangeCallback</a>&#160;</td>
+          <td class="paramname"><em>callback</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observe changes until the returned token is destroyed. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a840c96e28980808e372452ad987a1f4f">eve::property_access::IPropertyAccess</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8cpp_source.html">ReflectedPropertyModel.cpp</a> 第 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>.</p>
+
+</div>
+</div>
+<a id="ab53ed7e82920778c8a579fad560d6099" name="ab53ed7e82920778c8a579fad560d6099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab53ed7e82920778c8a579fad560d6099">&#9670;&#160;</a></span>write()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1property__access_1_1WriteResult.html">property_access::WriteResult</a> eve::scriptmodel::ReflectedPropertyModel::write </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Request a two-way binding write. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#ab69c406d9e50c0ca96a4cb33f4b7d3fe">eve::property_access::IPropertyAccess</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ReflectedPropertyModel_8cpp_source.html">ReflectedPropertyModel.cpp</a> 第 <a class="el" href="ReflectedPropertyModel_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PropertyAccess_8h_source.html#l00094">eve::property_access::WriteResult::accepted</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="Runtime_8h_source.html#l00132">eve::ReflectedValue::empty()</a>, <a class="el" href="PropertyAccess_8cpp_source.html#l00009">eve::property_access::PropertySchema::find()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="Runtime_8cpp_source.html#l00697">eve::Runtime::readProperty()</a>, <a class="el" href="PropertyAccess_8h_source.html#l00099">eve::property_access::WriteResult::reject()</a>, <a class="el" href="PropertyAccess_8h_source.html#l00098">eve::property_access::WriteResult::success()</a>, <a class="el" href="PropertyAccess_8cpp_source.html#l00016">eve::property_access::validatePropertyValue()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="Runtime_8cpp_source.html#l00713">eve::Runtime::writeProperty()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/scriptmodel/<a class="el" href="ReflectedPropertyModel_8h_source.html">ReflectedPropertyModel.h</a></li>
+<li>src/modules/scriptmodel/<a class="el" href="ReflectedPropertyModel_8cpp_source.html">ReflectedPropertyModel.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

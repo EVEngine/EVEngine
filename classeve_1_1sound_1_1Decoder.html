@@ -1,0 +1,626 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::sound::Decoder类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sound.html">sound</a></li><li class="navelem"><a class="el" href="classeve_1_1sound_1_1Decoder.html">Decoder</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1sound_1_1Decoder-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::sound::Decoder类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Streaming audio decoder (medialoader-backed). Owns the raw encoded bytes and decodes incrementally via <a class="el" href="classeve_1_1sound_1_1Decoder.html#afe8bebf51d05b04bbd6c6898170d0a2e" title="Decodes the next chunk; returns bytes produced (0 = end/error).">decode()</a>.  
+ <a href="classeve_1_1sound_1_1Decoder.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Decoder_8h_source.html">Decoder.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::sound::Decoder 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1sound_1_1Decoder.png" usemap="#eve::sound::Decoder_map" alt=""/>
+  <map id="eve::sound::Decoder_map" name="eve::sound::Decoder_map">
+<area href="classeve_1_1Object.html" title="Object is the base class for all game objects. It provides reference counting and dirty flag for upda..." alt="eve::Object" shape="rect" coords="0,0,128,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7459ced65a58340d4025cb4a970ec7b9" id="r_a7459ced65a58340d4025cb4a970ec7b9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a7459ced65a58340d4025cb4a970ec7b9">Decoder</a> (std::unique_ptr&lt; medialoader::Decoder &gt; impl, std::vector&lt; char &gt; ownedData)</td></tr>
+<tr class="memdesc:a7459ced65a58340d4025cb4a970ec7b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wraps a medialoader decoder and the encoded bytes it needs.  <br /></td></tr>
+<tr class="separator:a7459ced65a58340d4025cb4a970ec7b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0afb7d18a554c6ed992327cda22b8b63" id="r_a0afb7d18a554c6ed992327cda22b8b63"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a0afb7d18a554c6ed992327cda22b8b63">~Decoder</a> () override</td></tr>
+<tr class="separator:a0afb7d18a554c6ed992327cda22b8b63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8453c3d676c623a11957ea1cb9bc2307" id="r_a8453c3d676c623a11957ea1cb9bc2307"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1sound_1_1Decoder.html">Decoder</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a8453c3d676c623a11957ea1cb9bc2307">clone</a> () const</td></tr>
+<tr class="memdesc:a8453c3d676c623a11957ea1cb9bc2307"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duplicates the decoder (each clone keeps its own position).  <br /></td></tr>
+<tr class="separator:a8453c3d676c623a11957ea1cb9bc2307"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe8bebf51d05b04bbd6c6898170d0a2e" id="r_afe8bebf51d05b04bbd6c6898170d0a2e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#afe8bebf51d05b04bbd6c6898170d0a2e">decode</a> ()</td></tr>
+<tr class="memdesc:afe8bebf51d05b04bbd6c6898170d0a2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decodes the next chunk; returns bytes produced (0 = end/error).  <br /></td></tr>
+<tr class="separator:afe8bebf51d05b04bbd6c6898170d0a2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae44b4ae62f6424a9c831b4adb96d1588" id="r_ae44b4ae62f6424a9c831b4adb96d1588"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#ae44b4ae62f6424a9c831b4adb96d1588">getSize</a> () const</td></tr>
+<tr class="memdesc:ae44b4ae62f6424a9c831b4adb96d1588"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bytes decoded so far into the internal buffer.  <br /></td></tr>
+<tr class="separator:ae44b4ae62f6424a9c831b4adb96d1588"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1626f4a5442d296da8593ee34c02a0c4" id="r_a1626f4a5442d296da8593ee34c02a0c4"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a1626f4a5442d296da8593ee34c02a0c4">getBuffer</a> () const</td></tr>
+<tr class="memdesc:a1626f4a5442d296da8593ee34c02a0c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal decoded buffer.  <br /></td></tr>
+<tr class="separator:a1626f4a5442d296da8593ee34c02a0c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7e4dd9b803731438630e321ca64a01c" id="r_ab7e4dd9b803731438630e321ca64a01c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#ab7e4dd9b803731438630e321ca64a01c">seek</a> (double seconds)</td></tr>
+<tr class="memdesc:ab7e4dd9b803731438630e321ca64a01c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seeks to a time in seconds; false when unsupported.  <br /></td></tr>
+<tr class="separator:ab7e4dd9b803731438630e321ca64a01c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab664497f8ffd0df55d7045e76e3992b2" id="r_ab664497f8ffd0df55d7045e76e3992b2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#ab664497f8ffd0df55d7045e76e3992b2">rewind</a> ()</td></tr>
+<tr class="memdesc:ab664497f8ffd0df55d7045e76e3992b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rewinds to the start; false when unsupported.  <br /></td></tr>
+<tr class="separator:ab664497f8ffd0df55d7045e76e3992b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36321bbfe9df3dad69ff8171c2e477e2" id="r_a36321bbfe9df3dad69ff8171c2e477e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a36321bbfe9df3dad69ff8171c2e477e2">isSeekable</a> ()</td></tr>
+<tr class="memdesc:a36321bbfe9df3dad69ff8171c2e477e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when seeking is supported.  <br /></td></tr>
+<tr class="separator:a36321bbfe9df3dad69ff8171c2e477e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fb98ccafa929858def356242e95f36a" id="r_a2fb98ccafa929858def356242e95f36a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a2fb98ccafa929858def356242e95f36a">isFinished</a> ()</td></tr>
+<tr class="memdesc:a2fb98ccafa929858def356242e95f36a"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the stream is fully decoded.  <br /></td></tr>
+<tr class="separator:a2fb98ccafa929858def356242e95f36a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fd99eb0bd83b0391050e4072d19439f" id="r_a3fd99eb0bd83b0391050e4072d19439f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a3fd99eb0bd83b0391050e4072d19439f">getChannelCount</a> () const</td></tr>
+<tr class="memdesc:a3fd99eb0bd83b0391050e4072d19439f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Format metadata.  <br /></td></tr>
+<tr class="separator:a3fd99eb0bd83b0391050e4072d19439f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeba3ed40de1d4593e1bae5ffdaf3061a" id="r_aeba3ed40de1d4593e1bae5ffdaf3061a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#aeba3ed40de1d4593e1bae5ffdaf3061a">getBitDepth</a> () const</td></tr>
+<tr class="separator:aeba3ed40de1d4593e1bae5ffdaf3061a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a308ccd2411d545ea2cd36ab048cbcd12" id="r_a308ccd2411d545ea2cd36ab048cbcd12"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a308ccd2411d545ea2cd36ab048cbcd12">getSampleRate</a> () const</td></tr>
+<tr class="separator:a308ccd2411d545ea2cd36ab048cbcd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a211a04d2803e937a1f035bea82f281d8" id="r_a211a04d2803e937a1f035bea82f281d8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a211a04d2803e937a1f035bea82f281d8">getDuration</a> ()</td></tr>
+<tr class="memdesc:a211a04d2803e937a1f035bea82f281d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total duration in seconds.  <br /></td></tr>
+<tr class="separator:a211a04d2803e937a1f035bea82f281d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12f0da712229b2f012e938f3b3e52040" id="r_a12f0da712229b2f012e938f3b3e52040"><td class="memItemLeft" align="right" valign="top">medialoader::Decoder *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sound_1_1Decoder.html#a12f0da712229b2f012e938f3b3e52040">getImpl</a> ()</td></tr>
+<tr class="memdesc:a12f0da712229b2f012e938f3b3e52040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Underlying medialoader decoder (advanced).  <br /></td></tr>
+<tr class="separator:a12f0da712229b2f012e938f3b3e52040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a513f705d32a37006f25d79b57cae7563 inherit pub_methods_classeve_1_1Object" id="r_a513f705d32a37006f25d79b57cae7563"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a513f705d32a37006f25d79b57cae7563">Object</a> ()</td></tr>
+<tr class="separator:a513f705d32a37006f25d79b57cae7563 inherit pub_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object" id="r_a074c5f36236cc17f5c110f17be72b2b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a074c5f36236cc17f5c110f17be72b2b1">setUpdate</a> (<a class="el" href="classeve_1_1Object.html">Object</a> *replacement)</td></tr>
+<tr class="memdesc:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the current object with a replacement. You don't need to care about the reference to the old object since it will be automatically updated in the ref smart pointer.  <br /></td></tr>
+<tr class="separator:a074c5f36236cc17f5c110f17be72b2b1 inherit pub_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pro_methods_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Protected 成员函数 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a50dcf4681be0179bbd04e911b33115cd inherit pro_methods_classeve_1_1Object" id="r_a50dcf4681be0179bbd04e911b33115cd"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a50dcf4681be0179bbd04e911b33115cd">~Object</a> ()</td></tr>
+<tr class="separator:a50dcf4681be0179bbd04e911b33115cd inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab010b8dc4a18ca9771e0b354042c7055 inherit pro_methods_classeve_1_1Object" id="r_ab010b8dc4a18ca9771e0b354042c7055"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#ab010b8dc4a18ca9771e0b354042c7055">isDirty</a> () const</td></tr>
+<tr class="separator:ab010b8dc4a18ca9771e0b354042c7055 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af940d294ff10b6d828c1f52f8139937f inherit pro_methods_classeve_1_1Object" id="r_af940d294ff10b6d828c1f52f8139937f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#af940d294ff10b6d828c1f52f8139937f">getUpdate</a> () const</td></tr>
+<tr class="separator:af940d294ff10b6d828c1f52f8139937f inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeddd56fdaabe8ddb3cb5ed1fc2857db0 inherit pro_methods_classeve_1_1Object" id="r_aeddd56fdaabe8ddb3cb5ed1fc2857db0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#aeddd56fdaabe8ddb3cb5ed1fc2857db0">ref</a> ()</td></tr>
+<tr class="separator:aeddd56fdaabe8ddb3cb5ed1fc2857db0 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4b9ac0bd673dc2582e13122cb7827d7 inherit pro_methods_classeve_1_1Object" id="r_ab4b9ac0bd673dc2582e13122cb7827d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#ab4b9ac0bd673dc2582e13122cb7827d7">unref</a> ()</td></tr>
+<tr class="separator:ab4b9ac0bd673dc2582e13122cb7827d7 inherit pro_methods_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classeve_1_1Object"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classeve_1_1Object')"><img src="closed.png" alt="-"/>&#160;Protected 属性 继承自 <a class="el" href="classeve_1_1Object.html">eve::Object</a></td></tr>
+<tr class="memitem:a16b86af9dc497833e85daeddf7887d79 inherit pro_attribs_classeve_1_1Object" id="r_a16b86af9dc497833e85daeddf7887d79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Object.html">Object</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a16b86af9dc497833e85daeddf7887d79">update</a></td></tr>
+<tr class="separator:a16b86af9dc497833e85daeddf7887d79 inherit pro_attribs_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9246cea7724ecf33485f595e1f2d20d9 inherit pro_attribs_classeve_1_1Object" id="r_a9246cea7724ecf33485f595e1f2d20d9"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Object.html#a9246cea7724ecf33485f595e1f2d20d9">ref_count</a> = 0</td></tr>
+<tr class="separator:a9246cea7724ecf33485f595e1f2d20d9 inherit pro_attribs_classeve_1_1Object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Streaming audio decoder (medialoader-backed). Owns the raw encoded bytes and decodes incrementally via <a class="el" href="classeve_1_1sound_1_1Decoder.html#afe8bebf51d05b04bbd6c6898170d0a2e" title="Decodes the next chunk; returns bytes produced (0 = end/error).">decode()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8h_source.html">Decoder.h</a> 第 <a class="el" href="Decoder_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7459ced65a58340d4025cb4a970ec7b9" name="a7459ced65a58340d4025cb4a970ec7b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7459ced65a58340d4025cb4a970ec7b9">&#9670;&#160;</a></span>Decoder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sound::Decoder::Decoder </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; medialoader::Decoder &gt;&#160;</td>
+          <td class="paramname"><em>impl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; char &gt;&#160;</td>
+          <td class="paramname"><em>ownedData</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wraps a medialoader decoder and the encoded bytes it needs. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0afb7d18a554c6ed992327cda22b8b63" name="a0afb7d18a554c6ed992327cda22b8b63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0afb7d18a554c6ed992327cda22b8b63">&#9670;&#160;</a></span>~Decoder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sound::Decoder::~Decoder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8453c3d676c623a11957ea1cb9bc2307" name="a8453c3d676c623a11957ea1cb9bc2307"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8453c3d676c623a11957ea1cb9bc2307">&#9670;&#160;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1sound_1_1Decoder.html">Decoder</a> * eve::sound::Decoder::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Duplicates the decoder (each clone keeps its own position). </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe8bebf51d05b04bbd6c6898170d0a2e" name="afe8bebf51d05b04bbd6c6898170d0a2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe8bebf51d05b04bbd6c6898170d0a2e">&#9670;&#160;</a></span>decode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sound::Decoder::decode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decodes the next chunk; returns bytes produced (0 = end/error). </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Source_8cpp_source.html#l00250">eve::audio::Source::fillPendingFromDecoder()</a> , 以及 <a class="el" href="Sound_8cpp_source.html#l00181">eve::sound::Sound::newSoundDataFromDecoder()</a>.</p>
+
+</div>
+</div>
+<a id="aeba3ed40de1d4593e1bae5ffdaf3061a" name="aeba3ed40de1d4593e1bae5ffdaf3061a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeba3ed40de1d4593e1bae5ffdaf3061a">&#9670;&#160;</a></span>getBitDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sound::Decoder::getBitDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sound_8cpp_source.html#l00181">eve::sound::Sound::newSoundDataFromDecoder()</a>.</p>
+
+</div>
+</div>
+<a id="a1626f4a5442d296da8593ee34c02a0c4" name="a1626f4a5442d296da8593ee34c02a0c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1626f4a5442d296da8593ee34c02a0c4">&#9670;&#160;</a></span>getBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::sound::Decoder::getBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal decoded buffer. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Source_8cpp_source.html#l00250">eve::audio::Source::fillPendingFromDecoder()</a> , 以及 <a class="el" href="Sound_8cpp_source.html#l00181">eve::sound::Sound::newSoundDataFromDecoder()</a>.</p>
+
+</div>
+</div>
+<a id="a3fd99eb0bd83b0391050e4072d19439f" name="a3fd99eb0bd83b0391050e4072d19439f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fd99eb0bd83b0391050e4072d19439f">&#9670;&#160;</a></span>getChannelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sound::Decoder::getChannelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Format metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sound_8cpp_source.html#l00181">eve::sound::Sound::newSoundDataFromDecoder()</a>.</p>
+
+</div>
+</div>
+<a id="a211a04d2803e937a1f035bea82f281d8" name="a211a04d2803e937a1f035bea82f281d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a211a04d2803e937a1f035bea82f281d8">&#9670;&#160;</a></span>getDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::sound::Decoder::getDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Total duration in seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Source_8cpp_source.html#l00229">eve::audio::Source::getDuration()</a>.</p>
+
+</div>
+</div>
+<a id="a12f0da712229b2f012e938f3b3e52040" name="a12f0da712229b2f012e938f3b3e52040"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12f0da712229b2f012e938f3b3e52040">&#9670;&#160;</a></span>getImpl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">medialoader::Decoder * eve::sound::Decoder::getImpl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Underlying medialoader decoder (advanced). </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8h_source.html">Decoder.h</a> 第 <a class="el" href="Decoder_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00014">impl</a>.</p>
+
+</div>
+</div>
+<a id="a308ccd2411d545ea2cd36ab048cbcd12" name="a308ccd2411d545ea2cd36ab048cbcd12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a308ccd2411d545ea2cd36ab048cbcd12">&#9670;&#160;</a></span>getSampleRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sound::Decoder::getSampleRate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sound_8cpp_source.html#l00181">eve::sound::Sound::newSoundDataFromDecoder()</a>.</p>
+
+</div>
+</div>
+<a id="ae44b4ae62f6424a9c831b4adb96d1588" name="ae44b4ae62f6424a9c831b4adb96d1588"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae44b4ae62f6424a9c831b4adb96d1588">&#9670;&#160;</a></span>getSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::sound::Decoder::getSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bytes decoded so far into the internal buffer. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2fb98ccafa929858def356242e95f36a" name="a2fb98ccafa929858def356242e95f36a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fb98ccafa929858def356242e95f36a">&#9670;&#160;</a></span>isFinished()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sound::Decoder::isFinished </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when the stream is fully decoded. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sound_8cpp_source.html#l00181">eve::sound::Sound::newSoundDataFromDecoder()</a>.</p>
+
+</div>
+</div>
+<a id="a36321bbfe9df3dad69ff8171c2e477e2" name="a36321bbfe9df3dad69ff8171c2e477e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36321bbfe9df3dad69ff8171c2e477e2">&#9670;&#160;</a></span>isSeekable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sound::Decoder::isSeekable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when seeking is supported. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Source_8cpp_source.html#l00200">eve::audio::Source::seek()</a>.</p>
+
+</div>
+</div>
+<a id="ab664497f8ffd0df55d7045e76e3992b2" name="ab664497f8ffd0df55d7045e76e3992b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab664497f8ffd0df55d7045e76e3992b2">&#9670;&#160;</a></span>rewind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sound::Decoder::rewind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rewinds to the start; false when unsupported. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Source_8cpp_source.html#l00250">eve::audio::Source::fillPendingFromDecoder()</a> , 以及 <a class="el" href="Source_8cpp_source.html#l00140">eve::audio::Source::stop()</a>.</p>
+
+</div>
+</div>
+<a id="ab7e4dd9b803731438630e321ca64a01c" name="ab7e4dd9b803731438630e321ca64a01c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7e4dd9b803731438630e321ca64a01c">&#9670;&#160;</a></span>seek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::sound::Decoder::seek </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Seeks to a time in seconds; false when unsupported. </p>
+
+<p class="definition">在文件 <a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a> 第 <a class="el" href="Decoder_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Source_8cpp_source.html#l00200">eve::audio::Source::seek()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/sound/<a class="el" href="Decoder_8h_source.html">Decoder.h</a></li>
+<li>src/modules/sound/<a class="el" href="Decoder_8cpp_source.html">Decoder.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

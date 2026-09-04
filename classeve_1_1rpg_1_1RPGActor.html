@@ -1,0 +1,2973 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::RPGActor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1rpg_1_1RPGActor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::RPGActor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>属性 / 状态 / 技能三表合一的 ECS 实体。  
+ <a href="classeve_1_1rpg_1_1RPGActor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RPGActor_8h_source.html">RPGActor.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::rpg::RPGActor 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1rpg_1_1RPGActor.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Attributes.html">Attributes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">属性组件：AttributeSet 是属性状态与计算的唯一权威真源。  <a href="structeve_1_1rpg_1_1RPGActor_1_1Attributes.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1ClassInfo.html">ClassInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">职业：当前职业 id + 已同步学技能的等级上限。  <a href="structeve_1_1rpg_1_1RPGActor_1_1ClassInfo.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Progression.html">Progression</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">成长进度：等级 / 经验 / 升级所需经验。  <a href="structeve_1_1rpg_1_1RPGActor_1_1Progression.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Skills.html">Skills</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">已学会技能的冷却状态 + 当前读条状态。  <a href="structeve_1_1rpg_1_1RPGActor_1_1Skills.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Statuses.html">Statuses</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Status.html" title="Structured status and zero or more diagnostics for an operation.">Status</a> lifecycle component backed by the generic effects container.  <a href="structeve_1_1rpg_1_1RPGActor_1_1Statuses.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1TraitInstance.html">TraitInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">已施加的运行时特征实例。  <a href="structeve_1_1rpg_1_1RPGActor_1_1TraitInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Traits.html">Traits</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">该 actor 的活动特征列表（TraitSystem 读写）。  <a href="structeve_1_1rpg_1_1RPGActor_1_1Traits.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Vitals.html">Vitals</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">当前资源（hp / mana ...）：current 是运行时瞬时值，上限取同名最终属性。 max 由 attributes 推导（getFinalAttribute(resource)），本组件只存 current。  <a href="structeve_1_1rpg_1_1RPGActor_1_1Vitals.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a48378d77c37dfceb89884810b907edc8" id="r_a48378d77c37dfceb89884810b907edc8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a48378d77c37dfceb89884810b907edc8">release</a> () override</td></tr>
+<tr class="separator:a48378d77c37dfceb89884810b907edc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99835dda1c2cbb0cf81741cd4d4fdf37" id="r_a99835dda1c2cbb0cf81741cd4d4fdf37"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a99835dda1c2cbb0cf81741cd4d4fdf37">setBaseAttribute</a> (const std::string &amp;attribute, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a99835dda1c2cbb0cf81741cd4d4fdf37"><td class="mdescLeft">&#160;</td><td class="mdescRight">便捷成员方法（转发到 <a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html" title="RPG-facing attribute operations backed by the canonical AttributeSet.">AttributeSystem</a> / <a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">StatusSystem</a> / SkillSystem）。 提供这一层薄封装主要是为了让脚本可以写 <code>actor.setBaseAttribute(...)</code>， 与引擎其他模块（TileLayer / ParticleEmitter 等）的绑定风格保持一致； C++ 侧仍然可以直接使用对应的 *System 静态类。  <br /></td></tr>
+<tr class="separator:a99835dda1c2cbb0cf81741cd4d4fdf37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1088028070c66d33c73fea7b364cafb9" id="r_a1088028070c66d33c73fea7b364cafb9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1088028070c66d33c73fea7b364cafb9">getBaseAttribute</a> (const std::string &amp;attribute)</td></tr>
+<tr class="separator:a1088028070c66d33c73fea7b364cafb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d1fddcf1ba76ec1999d206b86c70cff" id="r_a9d1fddcf1ba76ec1999d206b86c70cff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9d1fddcf1ba76ec1999d206b86c70cff">modifyBaseAttribute</a> (const std::string &amp;attribute, double delta)</td></tr>
+<tr class="separator:a9d1fddcf1ba76ec1999d206b86c70cff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a694db59306b0051333fb27a78a187887" id="r_a694db59306b0051333fb27a78a187887"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a694db59306b0051333fb27a78a187887">hasAttribute</a> (const std::string &amp;attribute)</td></tr>
+<tr class="separator:a694db59306b0051333fb27a78a187887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a644014a38e42ffceac6667e0565b514e" id="r_a644014a38e42ffceac6667e0565b514e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1rpg.html#a4888426f9cf19c0fa100ea736b1c7dbe">ModifierId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a644014a38e42ffceac6667e0565b514e">addAttributeModifier</a> (<a class="el" href="namespaceeve_1_1rpg.html#a415cdce866c34776546fa583cea5ec4e">AttributeModifier</a> modifier)</td></tr>
+<tr class="memdesc:a644014a38e42ffceac6667e0565b514e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical modifier insertion backed by AttributeSet.  <br /></td></tr>
+<tr class="separator:a644014a38e42ffceac6667e0565b514e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2e3987a8f9189c2daaddc034d41af6a" id="r_ab2e3987a8f9189c2daaddc034d41af6a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab2e3987a8f9189c2daaddc034d41af6a">addAttributeModifier</a> (const std::string &amp;attribute, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const std::string &amp;op, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:ab2e3987a8f9189c2daaddc034d41af6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy string modifier insertion facade.  <br /></td></tr>
+<tr class="separator:ab2e3987a8f9189c2daaddc034d41af6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af231997032cfa8a3170608d112ab6e47" id="r_af231997032cfa8a3170608d112ab6e47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#af231997032cfa8a3170608d112ab6e47">removeAttributeModifier</a> (const <a class="el" href="namespaceeve_1_1rpg.html#a4888426f9cf19c0fa100ea736b1c7dbe">ModifierId</a> &amp;modifierId)</td></tr>
+<tr class="memdesc:af231997032cfa8a3170608d112ab6e47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical modifier removal backed by AttributeSet.  <br /></td></tr>
+<tr class="separator:af231997032cfa8a3170608d112ab6e47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1f45617594d95e17b06a401c6de8bf5" id="r_af1f45617594d95e17b06a401c6de8bf5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#af1f45617594d95e17b06a401c6de8bf5">removeAttributeModifier</a> (const std::string &amp;attribute, const std::string &amp;modifierId)</td></tr>
+<tr class="separator:af1f45617594d95e17b06a401c6de8bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42a7c234a76aed475aa097b76473c45f" id="r_a42a7c234a76aed475aa097b76473c45f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a42a7c234a76aed475aa097b76473c45f">removeAttributeModifiersBySource</a> (const std::string &amp;attribute, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="separator:a42a7c234a76aed475aa097b76473c45f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ca37d0593e130ef2a3ecea298ace6a9" id="r_a4ca37d0593e130ef2a3ecea298ace6a9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a4ca37d0593e130ef2a3ecea298ace6a9">removeAllAttributeModifiersBySource</a> (const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="separator:a4ca37d0593e130ef2a3ecea298ace6a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad20a8ff2485a1df898a095c96ca25172" id="r_ad20a8ff2485a1df898a095c96ca25172"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ad20a8ff2485a1df898a095c96ca25172">getFinalAttribute</a> (const std::string &amp;attribute)</td></tr>
+<tr class="separator:ad20a8ff2485a1df898a095c96ca25172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adef24e7aafd1d17e4c7271a6314bfabd" id="r_adef24e7aafd1d17e4c7271a6314bfabd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#adef24e7aafd1d17e4c7271a6314bfabd">applyEffect</a> (const std::string &amp;effectId, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:adef24e7aafd1d17e4c7271a6314bfabd"><td class="mdescLeft">&#160;</td><td class="mdescRight">状态（buff/debuff）—— <a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Statuses.html" title="Status lifecycle component backed by the generic effects container.">Statuses</a> ECS 组件的薄封装。  <br /></td></tr>
+<tr class="separator:adef24e7aafd1d17e4c7271a6314bfabd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d4e2d3ae0e6ae570d0acee6324f19ad" id="r_a1d4e2d3ae0e6ae570d0acee6324f19ad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1d4e2d3ae0e6ae570d0acee6324f19ad">removeStatus</a> (int instanceId)</td></tr>
+<tr class="separator:a1d4e2d3ae0e6ae570d0acee6324f19ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab324a96129ed27f66340c49071df2ea0" id="r_ab324a96129ed27f66340c49071df2ea0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab324a96129ed27f66340c49071df2ea0">removeStatusByEffect</a> (const std::string &amp;effectId)</td></tr>
+<tr class="separator:ab324a96129ed27f66340c49071df2ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6321dcc8a75beead11b385d0213964f4" id="r_a6321dcc8a75beead11b385d0213964f4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a6321dcc8a75beead11b385d0213964f4">removeStatusBySource</a> (const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="separator:a6321dcc8a75beead11b385d0213964f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f3b73e1b645ee8bae8606bb48b02eb8" id="r_a5f3b73e1b645ee8bae8606bb48b02eb8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a5f3b73e1b645ee8bae8606bb48b02eb8">removeStatusByTag</a> (const std::string &amp;tag)</td></tr>
+<tr class="separator:a5f3b73e1b645ee8bae8606bb48b02eb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3f9e39c6be1e8f37ad39064cd33338f" id="r_ae3f9e39c6be1e8f37ad39064cd33338f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ae3f9e39c6be1e8f37ad39064cd33338f">hasEffect</a> (const std::string &amp;effectId)</td></tr>
+<tr class="separator:ae3f9e39c6be1e8f37ad39064cd33338f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaef2855ec9b56d7ebc8d997548f8cb98" id="r_aaef2855ec9b56d7ebc8d997548f8cb98"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aaef2855ec9b56d7ebc8d997548f8cb98">hasStatusTag</a> (const std::string &amp;tag)</td></tr>
+<tr class="separator:aaef2855ec9b56d7ebc8d997548f8cb98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa213b7544640ca11cc409acfd37346d8" id="r_aa213b7544640ca11cc409acfd37346d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aa213b7544640ca11cc409acfd37346d8">getStatusCount</a> ()</td></tr>
+<tr class="separator:aa213b7544640ca11cc409acfd37346d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d53fbf46869f85d30e60f3f1ab9825f" id="r_a3d53fbf46869f85d30e60f3f1ab9825f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a3d53fbf46869f85d30e60f3f1ab9825f">getStatusEffectId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a3d53fbf46869f85d30e60f3f1ab9825f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a3d4245248c28a5e44c7c1224db041c" id="r_a9a3d4245248c28a5e44c7c1224db041c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9a3d4245248c28a5e44c7c1224db041c">getStatusStacks</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a9a3d4245248c28a5e44c7c1224db041c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addeefc52c986e817d8817d6fa7b07392" id="r_addeefc52c986e817d8817d6fa7b07392"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#addeefc52c986e817d8817d6fa7b07392">getStatusRemaining</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:addeefc52c986e817d8817d6fa7b07392"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3a85883db91c565dcf6aa067b4489f8" id="r_ac3a85883db91c565dcf6aa067b4489f8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac3a85883db91c565dcf6aa067b4489f8">getStatusInstanceId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:ac3a85883db91c565dcf6aa067b4489f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9d0e7d2f07eb1e6c76a0ab8167d45cf" id="r_ac9d0e7d2f07eb1e6c76a0ab8167d45cf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac9d0e7d2f07eb1e6c76a0ab8167d45cf">getStatusSource</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:ac9d0e7d2f07eb1e6c76a0ab8167d45cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7bf02b0ab972c8d8f0cda7520392786" id="r_ad7bf02b0ab972c8d8f0cda7520392786"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ad7bf02b0ab972c8d8f0cda7520392786">getStatusProp</a> (int instanceId, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;fallback={})</td></tr>
+<tr class="separator:ad7bf02b0ab972c8d8f0cda7520392786"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac78810aca4fb6050a115c3536bc020cc" id="r_ac78810aca4fb6050a115c3536bc020cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac78810aca4fb6050a115c3536bc020cc">setStatusProp</a> (int instanceId, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ac78810aca4fb6050a115c3536bc020cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a802ed963a9581ce6ef1e83bd62db21ac" id="r_a802ed963a9581ce6ef1e83bd62db21ac"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a802ed963a9581ce6ef1e83bd62db21ac">applyBuff</a> (const std::string &amp;effectId, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:a802ed963a9581ce6ef1e83bd62db21ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Buff 别名（与 <a class="el" href="classeve_1_1Status.html" title="Structured status and zero or more diagnostics for an operation.">Status</a> API 等价，便于游戏侧按习惯命名）。  <br /></td></tr>
+<tr class="separator:a802ed963a9581ce6ef1e83bd62db21ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a129cd7e1d7f27e3610ec1b0708c527f0" id="r_a129cd7e1d7f27e3610ec1b0708c527f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a129cd7e1d7f27e3610ec1b0708c527f0">removeBuff</a> (int instanceId)</td></tr>
+<tr class="separator:a129cd7e1d7f27e3610ec1b0708c527f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae8e45ab445c6276fb7923e2335a3c9a" id="r_aae8e45ab445c6276fb7923e2335a3c9a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aae8e45ab445c6276fb7923e2335a3c9a">removeBuffByEffect</a> (const std::string &amp;effectId)</td></tr>
+<tr class="separator:aae8e45ab445c6276fb7923e2335a3c9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab42375a1591757875edac59f417767a2" id="r_ab42375a1591757875edac59f417767a2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab42375a1591757875edac59f417767a2">removeBuffBySource</a> (const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="separator:ab42375a1591757875edac59f417767a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4aa8a88ce43dca55f95b574fd264ed9" id="r_ae4aa8a88ce43dca55f95b574fd264ed9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ae4aa8a88ce43dca55f95b574fd264ed9">removeBuffByTag</a> (const std::string &amp;tag)</td></tr>
+<tr class="separator:ae4aa8a88ce43dca55f95b574fd264ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1230de1ed7fd3b3155641b641248c91" id="r_ac1230de1ed7fd3b3155641b641248c91"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac1230de1ed7fd3b3155641b641248c91">hasBuff</a> (const std::string &amp;effectId)</td></tr>
+<tr class="separator:ac1230de1ed7fd3b3155641b641248c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad16ef68e52ba561b61a92719b828ec14" id="r_ad16ef68e52ba561b61a92719b828ec14"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ad16ef68e52ba561b61a92719b828ec14">hasBuffTag</a> (const std::string &amp;tag)</td></tr>
+<tr class="separator:ad16ef68e52ba561b61a92719b828ec14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab018bdb64a28231c7dc8bb02a527ab23" id="r_ab018bdb64a28231c7dc8bb02a527ab23"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab018bdb64a28231c7dc8bb02a527ab23">getBuffCount</a> ()</td></tr>
+<tr class="separator:ab018bdb64a28231c7dc8bb02a527ab23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68048cc3bc2762ea748c9ef9d9b4a453" id="r_a68048cc3bc2762ea748c9ef9d9b4a453"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a68048cc3bc2762ea748c9ef9d9b4a453">getBuffEffectId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a68048cc3bc2762ea748c9ef9d9b4a453"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aa026bf68da98cdab8576677ec91a81" id="r_a2aa026bf68da98cdab8576677ec91a81"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a2aa026bf68da98cdab8576677ec91a81">getBuffStacks</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a2aa026bf68da98cdab8576677ec91a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9629184b6f3a9bb2cb5b18362a90cb03" id="r_a9629184b6f3a9bb2cb5b18362a90cb03"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9629184b6f3a9bb2cb5b18362a90cb03">getBuffRemaining</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a9629184b6f3a9bb2cb5b18362a90cb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a718f177754a482efe7b1b04fad5cfb62" id="r_a718f177754a482efe7b1b04fad5cfb62"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a718f177754a482efe7b1b04fad5cfb62">getBuffInstanceId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a718f177754a482efe7b1b04fad5cfb62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea78d4e20a5a24b032536404aa36fda8" id="r_aea78d4e20a5a24b032536404aa36fda8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aea78d4e20a5a24b032536404aa36fda8">getBuffSource</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:aea78d4e20a5a24b032536404aa36fda8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75e93b68df57f67fe2ca3b25f48d4029" id="r_a75e93b68df57f67fe2ca3b25f48d4029"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a75e93b68df57f67fe2ca3b25f48d4029">getBuffProp</a> (int instanceId, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;fallback={})</td></tr>
+<tr class="separator:a75e93b68df57f67fe2ca3b25f48d4029"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcdf9c43da23b7abe244e8cd2479be2a" id="r_abcdf9c43da23b7abe244e8cd2479be2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#abcdf9c43da23b7abe244e8cd2479be2a">setBuffProp</a> (int instanceId, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:abcdf9c43da23b7abe244e8cd2479be2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d6626ef069ebab0edcac2eec5295c54" id="r_a6d6626ef069ebab0edcac2eec5295c54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a6d6626ef069ebab0edcac2eec5295c54">learnSkill</a> (const std::string &amp;skillId)</td></tr>
+<tr class="memdesc:a6d6626ef069ebab0edcac2eec5295c54"><td class="mdescLeft">&#160;</td><td class="mdescRight">技能：学习 / 查询 / 冷却。  <br /></td></tr>
+<tr class="separator:a6d6626ef069ebab0edcac2eec5295c54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaf868fa5e99616618e81249f87e8199" id="r_aaaf868fa5e99616618e81249f87e8199"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aaaf868fa5e99616618e81249f87e8199">knowsSkill</a> (const std::string &amp;skillId)</td></tr>
+<tr class="separator:aaaf868fa5e99616618e81249f87e8199"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a699de16741d22265d8cdc979d2aa54e8" id="r_a699de16741d22265d8cdc979d2aa54e8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a699de16741d22265d8cdc979d2aa54e8">forgetSkill</a> (const std::string &amp;skillId)</td></tr>
+<tr class="separator:a699de16741d22265d8cdc979d2aa54e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedf16e5a7d8d819381f2f43a9737baa1" id="r_aedf16e5a7d8d819381f2f43a9737baa1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aedf16e5a7d8d819381f2f43a9737baa1">getSkillCooldown</a> (const std::string &amp;skillId)</td></tr>
+<tr class="separator:aedf16e5a7d8d819381f2f43a9737baa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62f35ce20c6de35b184ec4ffc0e7743f" id="r_a62f35ce20c6de35b184ec4ffc0e7743f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a62f35ce20c6de35b184ec4ffc0e7743f">setSkillCooldown</a> (const std::string &amp;skillId, float seconds)</td></tr>
+<tr class="separator:a62f35ce20c6de35b184ec4ffc0e7743f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94843a992928cf9f40c4db3f200bc630" id="r_a94843a992928cf9f40c4db3f200bc630"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a94843a992928cf9f40c4db3f200bc630">canCastSkill</a> (const std::string &amp;skillId)</td></tr>
+<tr class="separator:a94843a992928cf9f40c4db3f200bc630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fffbb8debe1b6d455e80891f55f7909" id="r_a2fffbb8debe1b6d455e80891f55f7909"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a2fffbb8debe1b6d455e80891f55f7909">canCastSkillReason</a> (const std::string &amp;skillId)</td></tr>
+<tr class="memdesc:a2fffbb8debe1b6d455e80891f55f7909"><td class="mdescLeft">&#160;</td><td class="mdescRight">不能释放的原因（"" = 可以）。  <br /></td></tr>
+<tr class="separator:a2fffbb8debe1b6d455e80891f55f7909"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0141af94ef3706f7e01943b9542b8e0b" id="r_a0141af94ef3706f7e01943b9542b8e0b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a0141af94ef3706f7e01943b9542b8e0b">beginCastSkill</a> (const std::string &amp;skillId, <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>=nullptr)</td></tr>
+<tr class="memdesc:a0141af94ef3706f7e01943b9542b8e0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">开始读条释放；false 表示不满足条件。  <br /></td></tr>
+<tr class="separator:a0141af94ef3706f7e01943b9542b8e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49ac960ec781fef51bfd7da31704c9fe" id="r_a49ac960ec781fef51bfd7da31704c9fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a49ac960ec781fef51bfd7da31704c9fe">cancelCastSkill</a> ()</td></tr>
+<tr class="memdesc:a49ac960ec781fef51bfd7da31704c9fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">取消读条。  <br /></td></tr>
+<tr class="separator:a49ac960ec781fef51bfd7da31704c9fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e5083571cf515ae18babee186f99972" id="r_a0e5083571cf515ae18babee186f99972"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a0e5083571cf515ae18babee186f99972">isCastingSkill</a> ()</td></tr>
+<tr class="memdesc:a0e5083571cf515ae18babee186f99972"><td class="mdescLeft">&#160;</td><td class="mdescRight">读条状态查询。  <br /></td></tr>
+<tr class="separator:a0e5083571cf515ae18babee186f99972"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a4ee473bf60213f66c3831236be1aa1" id="r_a0a4ee473bf60213f66c3831236be1aa1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a0a4ee473bf60213f66c3831236be1aa1">getCastingSkillId</a> ()</td></tr>
+<tr class="separator:a0a4ee473bf60213f66c3831236be1aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cb118f87ea36b1b676fc2204f2861c9" id="r_a6cb118f87ea36b1b676fc2204f2861c9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a6cb118f87ea36b1b676fc2204f2861c9">getCastProgress</a> ()</td></tr>
+<tr class="separator:a6cb118f87ea36b1b676fc2204f2861c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f039beb7a710ad0a1b57e2df5d1a8fb" id="r_a6f039beb7a710ad0a1b57e2df5d1a8fb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a6f039beb7a710ad0a1b57e2df5d1a8fb">getLevel</a> ()</td></tr>
+<tr class="memdesc:a6f039beb7a710ad0a1b57e2df5d1a8fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">成长进度（LevelSystem 的薄转发）。  <br /></td></tr>
+<tr class="separator:a6f039beb7a710ad0a1b57e2df5d1a8fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b20e38554ac69644f5958b00816e5d0" id="r_a1b20e38554ac69644f5958b00816e5d0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1b20e38554ac69644f5958b00816e5d0">getXp</a> ()</td></tr>
+<tr class="separator:a1b20e38554ac69644f5958b00816e5d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82aaa4cd7c01e1c4702f88ef10e42452" id="r_a82aaa4cd7c01e1c4702f88ef10e42452"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a82aaa4cd7c01e1c4702f88ef10e42452">getXpToNext</a> ()</td></tr>
+<tr class="separator:a82aaa4cd7c01e1c4702f88ef10e42452"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb9a56babd41bb42ab85a9f646b577f5" id="r_aeb9a56babd41bb42ab85a9f646b577f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aeb9a56babd41bb42ab85a9f646b577f5">setXpToNext</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:aeb9a56babd41bb42ab85a9f646b577f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49e2127b3e0240c5c27caf6a2b37ca9c" id="r_a49e2127b3e0240c5c27caf6a2b37ca9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a49e2127b3e0240c5c27caf6a2b37ca9c">restoreProgression</a> (int level, double xp, double xpToNext)</td></tr>
+<tr class="memdesc:a49e2127b3e0240c5c27caf6a2b37ca9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically restore this actor's progression checkpoint.  <br /></td></tr>
+<tr class="separator:a49e2127b3e0240c5c27caf6a2b37ca9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c6473c9edf2b5f2278a3e505f6e3e51" id="r_a8c6473c9edf2b5f2278a3e505f6e3e51"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a8c6473c9edf2b5f2278a3e505f6e3e51">gainXp</a> (double amount)</td></tr>
+<tr class="memdesc:a8c6473c9edf2b5f2278a3e505f6e3e51"><td class="mdescLeft">&#160;</td><td class="mdescRight">增加经验并可能升级（compatibility facade (脚本兼容门面)；返回是否升级）。  <br /></td></tr>
+<tr class="separator:a8c6473c9edf2b5f2278a3e505f6e3e51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a413308d7298b70feb0de5b64ac01292b" id="r_a413308d7298b70feb0de5b64ac01292b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a413308d7298b70feb0de5b64ac01292b">getCurrent</a> (const std::string &amp;resource)</td></tr>
+<tr class="memdesc:a413308d7298b70feb0de5b64ac01292b"><td class="mdescLeft">&#160;</td><td class="mdescRight">生命等当前资源（VitalsSystem 的薄转发，max 取同名最终属性）。  <br /></td></tr>
+<tr class="separator:a413308d7298b70feb0de5b64ac01292b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f59aca344269cb1bc34b99c1f8c6ebc" id="r_a7f59aca344269cb1bc34b99c1f8c6ebc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a7f59aca344269cb1bc34b99c1f8c6ebc">getMax</a> (const std::string &amp;resource)</td></tr>
+<tr class="separator:a7f59aca344269cb1bc34b99c1f8c6ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af27862c09c42a529e6f12ea78cd4567c" id="r_af27862c09c42a529e6f12ea78cd4567c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#af27862c09c42a529e6f12ea78cd4567c">setCurrent</a> (const std::string &amp;resource, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:af27862c09c42a529e6f12ea78cd4567c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4034bff1293c06f4694ef0303994cfdf" id="r_a4034bff1293c06f4694ef0303994cfdf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a4034bff1293c06f4694ef0303994cfdf">takeDamage</a> (const std::string &amp;resource, double amount, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=&quot;&quot;)</td></tr>
+<tr class="separator:a4034bff1293c06f4694ef0303994cfdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e3a3404e3399afe10af3f097e77a9c5" id="r_a1e3a3404e3399afe10af3f097e77a9c5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1e3a3404e3399afe10af3f097e77a9c5">heal</a> (const std::string &amp;resource, double amount)</td></tr>
+<tr class="separator:a1e3a3404e3399afe10af3f097e77a9c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58e3e50e2f40a5eed7b32dd9743e3d47" id="r_a58e3e50e2f40a5eed7b32dd9743e3d47"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a58e3e50e2f40a5eed7b32dd9743e3d47">revive</a> (const std::string &amp;resource, double amount=-1.0)</td></tr>
+<tr class="separator:a58e3e50e2f40a5eed7b32dd9743e3d47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65581a88c9398e69d18a33730e55cd31" id="r_a65581a88c9398e69d18a33730e55cd31"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a65581a88c9398e69d18a33730e55cd31">isDead</a> (const std::string &amp;resource)</td></tr>
+<tr class="separator:a65581a88c9398e69d18a33730e55cd31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a314d5531613ce8cf0abf30df448f91d2" id="r_a314d5531613ce8cf0abf30df448f91d2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a314d5531613ce8cf0abf30df448f91d2">applyTrait</a> (const std::string &amp;traitId, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=&quot;&quot;)</td></tr>
+<tr class="memdesc:a314d5531613ce8cf0abf30df448f91d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">特征（TraitSystem 的薄转发）。  <br /></td></tr>
+<tr class="separator:a314d5531613ce8cf0abf30df448f91d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad44647477359047575f32cef8960846e" id="r_ad44647477359047575f32cef8960846e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ad44647477359047575f32cef8960846e">removeTrait</a> (int instanceId)</td></tr>
+<tr class="memdesc:ad44647477359047575f32cef8960846e"><td class="mdescLeft">&#160;</td><td class="mdescRight">移除一个特征（compatibility facade (脚本兼容门面)；成功返回 true）。  <br /></td></tr>
+<tr class="separator:ad44647477359047575f32cef8960846e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91959eb4924ea77f485905d51fdcf408" id="r_a91959eb4924ea77f485905d51fdcf408"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a91959eb4924ea77f485905d51fdcf408">removeTraitsBySource</a> (const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="separator:a91959eb4924ea77f485905d51fdcf408"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a046f5184e849a6bf9fac137ce8534383" id="r_a046f5184e849a6bf9fac137ce8534383"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a046f5184e849a6bf9fac137ce8534383">removeTraitsByTrait</a> (const std::string &amp;traitId)</td></tr>
+<tr class="separator:a046f5184e849a6bf9fac137ce8534383"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56ddc8c934e2fa1b690cb32c2cf00118" id="r_a56ddc8c934e2fa1b690cb32c2cf00118"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a56ddc8c934e2fa1b690cb32c2cf00118">hasTrait</a> (const std::string &amp;traitId)</td></tr>
+<tr class="separator:a56ddc8c934e2fa1b690cb32c2cf00118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af10587d077c629ee49ce2f4b254430aa" id="r_af10587d077c629ee49ce2f4b254430aa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#af10587d077c629ee49ce2f4b254430aa">getTraitCount</a> ()</td></tr>
+<tr class="separator:af10587d077c629ee49ce2f4b254430aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa683ce0ba52527fd9d9997d39cc20c68" id="r_aa683ce0ba52527fd9d9997d39cc20c68"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aa683ce0ba52527fd9d9997d39cc20c68">getTraitInstanceIdAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:aa683ce0ba52527fd9d9997d39cc20c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cc80fc95d00bdf3a775b234e467b1e3" id="r_a9cc80fc95d00bdf3a775b234e467b1e3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9cc80fc95d00bdf3a775b234e467b1e3">getTraitIdAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a9cc80fc95d00bdf3a775b234e467b1e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86cd07087258fd9005d1467e1ae8bda6" id="r_a86cd07087258fd9005d1467e1ae8bda6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a86cd07087258fd9005d1467e1ae8bda6">getTraitSourceAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a86cd07087258fd9005d1467e1ae8bda6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23e0c8141f69a77c9286b650c85cb608" id="r_a23e0c8141f69a77c9286b650c85cb608"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a23e0c8141f69a77c9286b650c85cb608">getParamRate</a> (const std::string &amp;param)</td></tr>
+<tr class="separator:a23e0c8141f69a77c9286b650c85cb608"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34ffeda4eb1527fda61b240d18306b5c" id="r_a34ffeda4eb1527fda61b240d18306b5c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a34ffeda4eb1527fda61b240d18306b5c">getElementRate</a> (const std::string &amp;element)</td></tr>
+<tr class="separator:a34ffeda4eb1527fda61b240d18306b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab80580ecb14e8ab198720dd3ae942f5f" id="r_ab80580ecb14e8ab198720dd3ae942f5f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ab80580ecb14e8ab198720dd3ae942f5f">getStateRate</a> (const std::string &amp;stateId)</td></tr>
+<tr class="separator:ab80580ecb14e8ab198720dd3ae942f5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf8a86953705f04d83141bd56e945f7c" id="r_acf8a86953705f04d83141bd56e945f7c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#acf8a86953705f04d83141bd56e945f7c">isStateResist</a> (const std::string &amp;stateId)</td></tr>
+<tr class="separator:acf8a86953705f04d83141bd56e945f7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a743680628ae6cd9cb84895894ea444cc" id="r_a743680628ae6cd9cb84895894ea444cc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a743680628ae6cd9cb84895894ea444cc">getExParam</a> (const std::string &amp;exParam)</td></tr>
+<tr class="separator:a743680628ae6cd9cb84895894ea444cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a0e6ab366d1141422e775716cce3bde" id="r_a8a0e6ab366d1141422e775716cce3bde"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a8a0e6ab366d1141422e775716cce3bde">getAttackSpeed</a> ()</td></tr>
+<tr class="separator:a8a0e6ab366d1141422e775716cce3bde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39b21664e84aac40cb82c55c92f6f823" id="r_a39b21664e84aac40cb82c55c92f6f823"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a39b21664e84aac40cb82c55c92f6f823">getAttackTimesAdd</a> ()</td></tr>
+<tr class="separator:a39b21664e84aac40cb82c55c92f6f823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d93fc86f9522420ca98c6f7e5c1b695" id="r_a2d93fc86f9522420ca98c6f7e5c1b695"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a2d93fc86f9522420ca98c6f7e5c1b695">getAttackElements</a> ()</td></tr>
+<tr class="separator:a2d93fc86f9522420ca98c6f7e5c1b695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41e3e45cbedbddc4e0bbb168d214fa01" id="r_a41e3e45cbedbddc4e0bbb168d214fa01"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a41e3e45cbedbddc4e0bbb168d214fa01">getAttackStates</a> ()</td></tr>
+<tr class="separator:a41e3e45cbedbddc4e0bbb168d214fa01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae570f237effedb61d870acf41488cd98" id="r_ae570f237effedb61d870acf41488cd98"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ae570f237effedb61d870acf41488cd98">setClass</a> (const std::string &amp;<a class="el" href="UnityImporter_8cpp.html#af71d0c9224b758bb29cb8333b2bdc466">classId</a>)</td></tr>
+<tr class="memdesc:ae570f237effedb61d870acf41488cd98"><td class="mdescLeft">&#160;</td><td class="mdescRight">职业（ClassSystem 的薄转发）。  <br /></td></tr>
+<tr class="separator:ae570f237effedb61d870acf41488cd98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3126ce393516294902c7a1505a69195f" id="r_a3126ce393516294902c7a1505a69195f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a3126ce393516294902c7a1505a69195f">getClassId</a> ()</td></tr>
+<tr class="separator:a3126ce393516294902c7a1505a69195f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76e62670e8c56e4ac5bb97cea86df8bc" id="r_a76e62670e8c56e4ac5bb97cea86df8bc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a76e62670e8c56e4ac5bb97cea86df8bc">hasClass</a> (const std::string &amp;<a class="el" href="UnityImporter_8cpp.html#af71d0c9224b758bb29cb8333b2bdc466">classId</a>)</td></tr>
+<tr class="separator:a76e62670e8c56e4ac5bb97cea86df8bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c9e556b30a98296a93d98aba1d9779" id="r_aa0c9e556b30a98296a93d98aba1d9779"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aa0c9e556b30a98296a93d98aba1d9779">checkLevelSkills</a> ()</td></tr>
+<tr class="separator:aa0c9e556b30a98296a93d98aba1d9779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc23e14e3e92f76b565d31d79662e804" id="r_acc23e14e3e92f76b565d31d79662e804"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#acc23e14e3e92f76b565d31d79662e804">getClassLearnCount</a> ()</td></tr>
+<tr class="separator:acc23e14e3e92f76b565d31d79662e804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb9a4e1e5ccbd48dbf809bdb377a0bb6" id="r_abb9a4e1e5ccbd48dbf809bdb377a0bb6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#abb9a4e1e5ccbd48dbf809bdb377a0bb6">getClassLearnSkillIdAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:abb9a4e1e5ccbd48dbf809bdb377a0bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41e7155b3e85f51e6867e6dfb44a9e20" id="r_a41e7155b3e85f51e6867e6dfb44a9e20"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a41e7155b3e85f51e6867e6dfb44a9e20">getClassLearnLevelAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a41e7155b3e85f51e6867e6dfb44a9e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9adff7ad13d0262fb1d8feba0993214b" id="r_a9adff7ad13d0262fb1d8feba0993214b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9adff7ad13d0262fb1d8feba0993214b">checkpointJson</a> () const</td></tr>
+<tr class="memdesc:a9adff7ad13d0262fb1d8feba0993214b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture this actor at a persistent safe checkpoint.  <br /></td></tr>
+<tr class="separator:a9adff7ad13d0262fb1d8feba0993214b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac809854e92464d601687b5c4eaef261b" id="r_ac809854e92464d601687b5c4eaef261b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#ac809854e92464d601687b5c4eaef261b">restoreCheckpointJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:ac809854e92464d601687b5c4eaef261b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically restore a safe checkpoint into this preconfigured actor.  <br /></td></tr>
+<tr class="separator:ac809854e92464d601687b5c4eaef261b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a5e60092f746d92a47952cde7b485e672" id="r_a5e60092f746d92a47952cde7b485e672"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672">createActor</a> ()</td></tr>
+<tr class="memdesc:a5e60092f746d92a47952cde7b485e672"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1fa37e0232f2132dd6a780b781420bf7" title="返回所有通过 createActor() 创建、且当前仍存活的 actor。 StatusSystem::update / SkillSystem::update 用它遍历所有 actor 逐帧推进。 ...">liveActors()</a> 跟踪。  <br /></td></tr>
+<tr class="separator:a5e60092f746d92a47952cde7b485e672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fa37e0232f2132dd6a780b781420bf7" id="r_a1fa37e0232f2132dd6a780b781420bf7"><td class="memItemLeft" align="right" valign="top">static const std::vector&lt; <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1fa37e0232f2132dd6a780b781420bf7">liveActors</a> ()</td></tr>
+<tr class="memdesc:a1fa37e0232f2132dd6a780b781420bf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">返回所有通过 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672" title="创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。">createActor()</a> 创建、且当前仍存活的 actor。 <a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#ab1ddbf3e3383561aa63fa846d4e92b3b" title="Advance all live RPG status executors with an injected simulation delta.">StatusSystem::update</a> / <a class="el" href="classeve_1_1rpg_1_1SkillSystem.html#a04c6b8510157d23e5d4af231bc03c144" title="遍历 RPGActor::liveActors()：冷却倒计时 + 读条推进/结算。">SkillSystem::update</a> 用它遍历所有 actor 逐帧推进。 直接调用继承自 ENTITY 宏的 RPGActor::create() 不会被跟踪——推荐总是用 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672" title="创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。">createActor()</a>。  <br /></td></tr>
+<tr class="separator:a1fa37e0232f2132dd6a780b781420bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a0b73581db5c1d678ab66b11676d065c2" id="r_a0b73581db5c1d678ab66b11676d065c2"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a0b73581db5c1d678ab66b11676d065c2">RPGSaveSession</a></td></tr>
+<tr class="separator:a0b73581db5c1d678ab66b11676d065c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af73b63c16d5cb76a6a3a319295f27266" id="r_af73b63c16d5cb76a6a3a319295f27266"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html#af73b63c16d5cb76a6a3a319295f27266">Party</a></td></tr>
+<tr class="separator:af73b63c16d5cb76a6a3a319295f27266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>属性 / 状态 / 技能三表合一的 ECS 实体。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8h_source.html">RPGActor.h</a> 第 <a class="el" href="RPGActor_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a644014a38e42ffceac6667e0565b514e" name="a644014a38e42ffceac6667e0565b514e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a644014a38e42ffceac6667e0565b514e">&#9670;&#160;</a></span>addAttributeModifier() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1rpg.html#a4888426f9cf19c0fa100ea736b1c7dbe">ModifierId</a> &gt; eve::rpg::RPGActor::addAttributeModifier </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1rpg.html#a415cdce866c34776546fa583cea5ec4e">AttributeModifier</a>&#160;</td>
+          <td class="paramname"><em>modifier</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical modifier insertion backed by AttributeSet. </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00049">eve::rpg::AttributeSystem::addModifier()</a>.</p>
+
+</div>
+</div>
+<a id="ab2e3987a8f9189c2daaddc034d41af6a" name="ab2e3987a8f9189c2daaddc034d41af6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2e3987a8f9189c2daaddc034d41af6a">&#9670;&#160;</a></span>addAttributeModifier() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::addAttributeModifier </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>op</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy string modifier insertion facade. </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00049">eve::rpg::AttributeSystem::addModifier()</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a802ed963a9581ce6ef1e83bd62db21ac" name="a802ed963a9581ce6ef1e83bd62db21ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a802ed963a9581ce6ef1e83bd62db21ac">&#9670;&#160;</a></span>applyBuff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::applyBuff </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>effectId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Buff 别名（与 <a class="el" href="classeve_1_1Status.html" title="Structured status and zero or more diagnostics for an operation.">Status</a> API 等价，便于游戏侧按习惯命名）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00108">applyEffect()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="adef24e7aafd1d17e4c7271a6314bfabd" name="adef24e7aafd1d17e4c7271a6314bfabd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adef24e7aafd1d17e4c7271a6314bfabd">&#9670;&#160;</a></span>applyEffect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::applyEffect </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>effectId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>状态（buff/debuff）—— <a class="el" href="structeve_1_1rpg_1_1RPGActor_1_1Statuses.html" title="Status lifecycle component backed by the generic effects container.">Statuses</a> ECS 组件的薄封装。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00315">eve::rpg::StatusSystem::apply()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00154">applyBuff()</a>.</p>
+
+</div>
+</div>
+<a id="a314d5531613ce8cf0abf30df448f91d2" name="a314d5531613ce8cf0abf30df448f91d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a314d5531613ce8cf0abf30df448f91d2">&#9670;&#160;</a></span>applyTrait()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::applyTrait </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>traitId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>特征（TraitSystem 的薄转发）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00021">eve::rpg::TraitSystem::apply()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a0141af94ef3706f7e01943b9542b8e0b" name="a0141af94ef3706f7e01943b9542b8e0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0141af94ef3706f7e01943b9542b8e0b">&#9670;&#160;</a></span>beginCastSkill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::beginCastSkill </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *&#160;</td>
+          <td class="paramname"><em>target</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>开始读条释放；false 表示不满足条件。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00117">eve::rpg::SkillSystem::beginCast()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="a94843a992928cf9f40c4db3f200bc630" name="a94843a992928cf9f40c4db3f200bc630"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94843a992928cf9f40c4db3f200bc630">&#9670;&#160;</a></span>canCastSkill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::canCastSkill </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00095">eve::rpg::SkillSystem::canCast()</a>.</p>
+
+</div>
+</div>
+<a id="a2fffbb8debe1b6d455e80891f55f7909" name="a2fffbb8debe1b6d455e80891f55f7909"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fffbb8debe1b6d455e80891f55f7909">&#9670;&#160;</a></span>canCastSkillReason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::canCastSkillReason </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>不能释放的原因（"" = 可以）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00095">eve::rpg::SkillSystem::canCast()</a>.</p>
+
+</div>
+</div>
+<a id="a49ac960ec781fef51bfd7da31704c9fe" name="a49ac960ec781fef51bfd7da31704c9fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49ac960ec781fef51bfd7da31704c9fe">&#9670;&#160;</a></span>cancelCastSkill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::cancelCastSkill </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>取消读条。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00139">eve::rpg::SkillSystem::cancelCast()</a>.</p>
+
+</div>
+</div>
+<a id="aa0c9e556b30a98296a93d98aba1d9779" name="aa0c9e556b30a98296a93d98aba1d9779"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c9e556b30a98296a93d98aba1d9779">&#9670;&#160;</a></span>checkLevelSkills()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::checkLevelSkills </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClassSystem_8cpp_source.html#l00040">eve::rpg::ClassSystem::checkLevelSkills()</a>.</p>
+
+</div>
+</div>
+<a id="a9adff7ad13d0262fb1d8feba0993214b" name="a9adff7ad13d0262fb1d8feba0993214b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9adff7ad13d0262fb1d8feba0993214b">&#9670;&#160;</a></span>checkpointJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::rpg::RPGActor::checkpointJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture this actor at a persistent safe checkpoint. </p>
+<dl class="section return"><dt>返回</dt><dd>Deterministic schema <code>eve.rpg.actor-checkpoint</code> version 1 JSON, or a structured failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The checkpoint stores base attributes, progression, vitals, learned skill ids, class identity and trait identity. Active effects, casts, cooldowns, runtime events and raw targets are transient and excluded. Capture is rejected while an effect or cast is active. @thread Call on the actor's owning ECS simulation thread. @reentrancy No callbacks or registry mutations are performed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGActorPersistence_8cpp_source.html">RPGActorPersistence.cpp</a> 第 <a class="el" href="RPGActorPersistence_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGSaveSession_8cpp_source.html#l00338">eve::rpg::RPGSaveSession::snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a5e60092f746d92a47952cde7b485e672" name="a5e60092f746d92a47952cde7b485e672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e60092f746d92a47952cde7b485e672">&#9670;&#160;</a></span>createActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * eve::rpg::RPGActor::createActor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a1fa37e0232f2132dd6a780b781420bf7" title="返回所有通过 createActor() 创建、且当前仍存活的 actor。 StatusSystem::update / SkillSystem::update 用它遍历所有 actor 逐帧推进。 ...">liveActors()</a> 跟踪。 </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable pointer to the ECS-owned actor; null means creation failed. @ownership The ECS world owns the actor; callers must release it through ECS and never delete it. @lifetime Valid until actor/world destruction; retain the generation-qualified EntityHandle across frames. @thread Call on the <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> ECS thread. @reentrancy The factory invokes no user callbacks; do not re-enter structural ECS mutation while using the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00195">eve::rpg::EncounterCatalogue::createMemberActor()</a> , 以及 <a class="el" href="RPG_8cpp_source.html#l00043">eve::rpg::RPG::newActor()</a>.</p>
+
+</div>
+</div>
+<a id="a699de16741d22265d8cdc979d2aa54e8" name="a699de16741d22265d8cdc979d2aa54e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a699de16741d22265d8cdc979d2aa54e8">&#9670;&#160;</a></span>forgetSkill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::forgetSkill </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00072">eve::rpg::SkillSystem::forget()</a>.</p>
+
+</div>
+</div>
+<a id="a8c6473c9edf2b5f2278a3e505f6e3e51" name="a8c6473c9edf2b5f2278a3e505f6e3e51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c6473c9edf2b5f2278a3e505f6e3e51">&#9670;&#160;</a></span>gainXp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::gainXp </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>amount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>增加经验并可能升级（compatibility facade (脚本兼容门面)；返回是否升级）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelSystem_8cpp_source.html#l00060">eve::rpg::LevelSystem::gainXp()</a>.</p>
+
+</div>
+</div>
+<a id="a2d93fc86f9522420ca98c6f7e5c1b695" name="a2d93fc86f9522420ca98c6f7e5c1b695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d93fc86f9522420ca98c6f7e5c1b695">&#9670;&#160;</a></span>getAttackElements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::rpg::RPGActor::getAttackElements </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00189">eve::rpg::TraitSystem::getAttackElements()</a>.</p>
+
+</div>
+</div>
+<a id="a8a0e6ab366d1141422e775716cce3bde" name="a8a0e6ab366d1141422e775716cce3bde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a0e6ab366d1141422e775716cce3bde">&#9670;&#160;</a></span>getAttackSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getAttackSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00221">eve::rpg::TraitSystem::getAttackSpeed()</a>.</p>
+
+</div>
+</div>
+<a id="a41e3e45cbedbddc4e0bbb168d214fa01" name="a41e3e45cbedbddc4e0bbb168d214fa01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41e3e45cbedbddc4e0bbb168d214fa01">&#9670;&#160;</a></span>getAttackStates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::rpg::RPGActor::getAttackStates </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00205">eve::rpg::TraitSystem::getAttackStates()</a>.</p>
+
+</div>
+</div>
+<a id="a39b21664e84aac40cb82c55c92f6f823" name="a39b21664e84aac40cb82c55c92f6f823"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39b21664e84aac40cb82c55c92f6f823">&#9670;&#160;</a></span>getAttackTimesAdd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getAttackTimesAdd </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00234">eve::rpg::TraitSystem::getAttackTimesAdd()</a>.</p>
+
+</div>
+</div>
+<a id="a1088028070c66d33c73fea7b364cafb9" name="a1088028070c66d33c73fea7b364cafb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1088028070c66d33c73fea7b364cafb9">&#9670;&#160;</a></span>getBaseAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getBaseAttribute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00037">eve::rpg::AttributeSystem::getBase()</a>.</p>
+
+</div>
+</div>
+<a id="ab018bdb64a28231c7dc8bb02a527ab23" name="ab018bdb64a28231c7dc8bb02a527ab23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab018bdb64a28231c7dc8bb02a527ab23">&#9670;&#160;</a></span>getBuffCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getBuffCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00131">getStatusCount()</a>.</p>
+
+</div>
+</div>
+<a id="a68048cc3bc2762ea748c9ef9d9b4a453" name="a68048cc3bc2762ea748c9ef9d9b4a453"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68048cc3bc2762ea748c9ef9d9b4a453">&#9670;&#160;</a></span>getBuffEffectId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getBuffEffectId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00133">getStatusEffectId()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a718f177754a482efe7b1b04fad5cfb62" name="a718f177754a482efe7b1b04fad5cfb62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a718f177754a482efe7b1b04fad5cfb62">&#9670;&#160;</a></span>getBuffInstanceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getBuffInstanceId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00141">getStatusInstanceId()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a75e93b68df57f67fe2ca3b25f48d4029" name="a75e93b68df57f67fe2ca3b25f48d4029"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75e93b68df57f67fe2ca3b25f48d4029">&#9670;&#160;</a></span>getBuffProp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getBuffProp </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00145">getStatusProp()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a9629184b6f3a9bb2cb5b18362a90cb03" name="a9629184b6f3a9bb2cb5b18362a90cb03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9629184b6f3a9bb2cb5b18362a90cb03">&#9670;&#160;</a></span>getBuffRemaining()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rpg::RPGActor::getBuffRemaining </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00139">getStatusRemaining()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aea78d4e20a5a24b032536404aa36fda8" name="aea78d4e20a5a24b032536404aa36fda8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea78d4e20a5a24b032536404aa36fda8">&#9670;&#160;</a></span>getBuffSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getBuffSource </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00143">getStatusSource()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a2aa026bf68da98cdab8576677ec91a81" name="a2aa026bf68da98cdab8576677ec91a81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aa026bf68da98cdab8576677ec91a81">&#9670;&#160;</a></span>getBuffStacks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getBuffStacks </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00137">getStatusStacks()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a0a4ee473bf60213f66c3831236be1aa1" name="a0a4ee473bf60213f66c3831236be1aa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a4ee473bf60213f66c3831236be1aa1">&#9670;&#160;</a></span>getCastingSkillId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getCastingSkillId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00146">eve::rpg::SkillSystem::getCastingSkillId()</a>.</p>
+
+</div>
+</div>
+<a id="a6cb118f87ea36b1b676fc2204f2861c9" name="a6cb118f87ea36b1b676fc2204f2861c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cb118f87ea36b1b676fc2204f2861c9">&#9670;&#160;</a></span>getCastProgress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rpg::RPGActor::getCastProgress </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00150">eve::rpg::SkillSystem::getCastProgress()</a>.</p>
+
+</div>
+</div>
+<a id="a3126ce393516294902c7a1505a69195f" name="a3126ce393516294902c7a1505a69195f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3126ce393516294902c7a1505a69195f">&#9670;&#160;</a></span>getClassId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getClassId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClassSystem_8cpp_source.html#l00032">eve::rpg::ClassSystem::getClassId()</a>.</p>
+
+</div>
+</div>
+<a id="acc23e14e3e92f76b565d31d79662e804" name="acc23e14e3e92f76b565d31d79662e804"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc23e14e3e92f76b565d31d79662e804">&#9670;&#160;</a></span>getClassLearnCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getClassLearnCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClassSystem_8cpp_source.html#l00060">eve::rpg::ClassSystem::getLearnCount()</a>.</p>
+
+</div>
+</div>
+<a id="a41e7155b3e85f51e6867e6dfb44a9e20" name="a41e7155b3e85f51e6867e6dfb44a9e20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41e7155b3e85f51e6867e6dfb44a9e20">&#9670;&#160;</a></span>getClassLearnLevelAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getClassLearnLevelAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClassSystem_8cpp_source.html#l00073">eve::rpg::ClassSystem::getLearnLevelAt()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="abb9a4e1e5ccbd48dbf809bdb377a0bb6" name="abb9a4e1e5ccbd48dbf809bdb377a0bb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb9a4e1e5ccbd48dbf809bdb377a0bb6">&#9670;&#160;</a></span>getClassLearnSkillIdAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getClassLearnSkillIdAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00348">348</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClassSystem_8cpp_source.html#l00066">eve::rpg::ClassSystem::getLearnSkillIdAt()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a413308d7298b70feb0de5b64ac01292b" name="a413308d7298b70feb0de5b64ac01292b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a413308d7298b70feb0de5b64ac01292b">&#9670;&#160;</a></span>getCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getCurrent </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>生命等当前资源（VitalsSystem 的薄转发，max 取同名最终属性）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00030">eve::rpg::VitalsSystem::getCurrent()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a34ffeda4eb1527fda61b240d18306b5c" name="a34ffeda4eb1527fda61b240d18306b5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34ffeda4eb1527fda61b240d18306b5c">&#9670;&#160;</a></span>getElementRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getElementRate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>element</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00138">eve::rpg::TraitSystem::getElementRate()</a>.</p>
+
+</div>
+</div>
+<a id="a743680628ae6cd9cb84895894ea444cc" name="a743680628ae6cd9cb84895894ea444cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a743680628ae6cd9cb84895894ea444cc">&#9670;&#160;</a></span>getExParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getExParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>exParam</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00176">eve::rpg::TraitSystem::getExParam()</a>.</p>
+
+</div>
+</div>
+<a id="ad20a8ff2485a1df898a095c96ca25172" name="ad20a8ff2485a1df898a095c96ca25172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad20a8ff2485a1df898a095c96ca25172">&#9670;&#160;</a></span>getFinalAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getFinalAttribute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00103">eve::rpg::AttributeSystem::getFinal()</a>.</p>
+
+</div>
+</div>
+<a id="a6f039beb7a710ad0a1b57e2df5d1a8fb" name="a6f039beb7a710ad0a1b57e2df5d1a8fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f039beb7a710ad0a1b57e2df5d1a8fb">&#9670;&#160;</a></span>getLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getLevel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>成长进度（LevelSystem 的薄转发）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelSystem_8cpp_source.html#l00016">eve::rpg::LevelSystem::getLevel()</a>.</p>
+
+</div>
+</div>
+<a id="a7f59aca344269cb1bc34b99c1f8c6ebc" name="a7f59aca344269cb1bc34b99c1f8c6ebc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f59aca344269cb1bc34b99c1f8c6ebc">&#9670;&#160;</a></span>getMax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getMax </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00036">eve::rpg::VitalsSystem::getMax()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BattleControl_8cpp_source.html#l00084">eve::rpg::BattleControl::observeGameplay()</a> , 以及 <a class="el" href="BattleTactics_8cpp_source.html#l00146">eve::rpg::BattleTacticsCatalogue::queueAction()</a>.</p>
+
+</div>
+</div>
+<a id="a23e0c8141f69a77c9286b650c85cb608" name="a23e0c8141f69a77c9286b650c85cb608"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23e0c8141f69a77c9286b650c85cb608">&#9670;&#160;</a></span>getParamRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getParamRate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>param</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00125">eve::rpg::TraitSystem::getParamRate()</a>.</p>
+
+</div>
+</div>
+<a id="aedf16e5a7d8d819381f2f43a9737baa1" name="aedf16e5a7d8d819381f2f43a9737baa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedf16e5a7d8d819381f2f43a9737baa1">&#9670;&#160;</a></span>getSkillCooldown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rpg::RPGActor::getSkillCooldown </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00083">eve::rpg::SkillSystem::getCooldownRemaining()</a>.</p>
+
+</div>
+</div>
+<a id="ab80580ecb14e8ab198720dd3ae942f5f" name="ab80580ecb14e8ab198720dd3ae942f5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab80580ecb14e8ab198720dd3ae942f5f">&#9670;&#160;</a></span>getStateRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getStateRate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stateId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00151">eve::rpg::TraitSystem::getStateRate()</a>.</p>
+
+</div>
+</div>
+<a id="aa213b7544640ca11cc409acfd37346d8" name="aa213b7544640ca11cc409acfd37346d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa213b7544640ca11cc409acfd37346d8">&#9670;&#160;</a></span>getStatusCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getStatusCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00673">eve::rpg::StatusSystem::getActiveCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00174">getBuffCount()</a>.</p>
+
+</div>
+</div>
+<a id="a3d53fbf46869f85d30e60f3f1ab9825f" name="a3d53fbf46869f85d30e60f3f1ab9825f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d53fbf46869f85d30e60f3f1ab9825f">&#9670;&#160;</a></span>getStatusEffectId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getStatusEffectId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00675">eve::rpg::StatusSystem::getActiveEffectId()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00176">getBuffEffectId()</a>.</p>
+
+</div>
+</div>
+<a id="ac3a85883db91c565dcf6aa067b4489f8" name="ac3a85883db91c565dcf6aa067b4489f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3a85883db91c565dcf6aa067b4489f8">&#9670;&#160;</a></span>getStatusInstanceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getStatusInstanceId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00696">eve::rpg::StatusSystem::getActiveInstanceId()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00182">getBuffInstanceId()</a>.</p>
+
+</div>
+</div>
+<a id="ad7bf02b0ab972c8d8f0cda7520392786" name="ad7bf02b0ab972c8d8f0cda7520392786"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7bf02b0ab972c8d8f0cda7520392786">&#9670;&#160;</a></span>getStatusProp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getStatusProp </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00708">eve::rpg::StatusSystem::getProp()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00186">getBuffProp()</a>.</p>
+
+</div>
+</div>
+<a id="addeefc52c986e817d8817d6fa7b07392" name="addeefc52c986e817d8817d6fa7b07392"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addeefc52c986e817d8817d6fa7b07392">&#9670;&#160;</a></span>getStatusRemaining()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::rpg::RPGActor::getStatusRemaining </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00690">eve::rpg::StatusSystem::getActiveRemaining()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00180">getBuffRemaining()</a>.</p>
+
+</div>
+</div>
+<a id="ac9d0e7d2f07eb1e6c76a0ab8167d45cf" name="ac9d0e7d2f07eb1e6c76a0ab8167d45cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d0e7d2f07eb1e6c76a0ab8167d45cf">&#9670;&#160;</a></span>getStatusSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getStatusSource </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00702">eve::rpg::StatusSystem::getActiveSource()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00184">getBuffSource()</a>.</p>
+
+</div>
+</div>
+<a id="a9a3d4245248c28a5e44c7c1224db041c" name="a9a3d4245248c28a5e44c7c1224db041c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a3d4245248c28a5e44c7c1224db041c">&#9670;&#160;</a></span>getStatusStacks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getStatusStacks </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00681">eve::rpg::StatusSystem::getActiveStacks()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00178">getBuffStacks()</a>.</p>
+
+</div>
+</div>
+<a id="af10587d077c629ee49ce2f4b254430aa" name="af10587d077c629ee49ce2f4b254430aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af10587d077c629ee49ce2f4b254430aa">&#9670;&#160;</a></span>getTraitCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getTraitCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00106">eve::rpg::TraitSystem::getCount()</a>.</p>
+
+</div>
+</div>
+<a id="a9cc80fc95d00bdf3a775b234e467b1e3" name="a9cc80fc95d00bdf3a775b234e467b1e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cc80fc95d00bdf3a775b234e467b1e3">&#9670;&#160;</a></span>getTraitIdAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getTraitIdAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00298">298</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00115">eve::rpg::TraitSystem::getTraitIdAt()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa683ce0ba52527fd9d9997d39cc20c68" name="aa683ce0ba52527fd9d9997d39cc20c68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa683ce0ba52527fd9d9997d39cc20c68">&#9670;&#160;</a></span>getTraitInstanceIdAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::getTraitInstanceIdAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00110">eve::rpg::TraitSystem::getInstanceIdAt()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a86cd07087258fd9005d1467e1ae8bda6" name="a86cd07087258fd9005d1467e1ae8bda6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86cd07087258fd9005d1467e1ae8bda6">&#9670;&#160;</a></span>getTraitSourceAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGActor::getTraitSourceAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00120">eve::rpg::TraitSystem::getSourceAt()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1b20e38554ac69644f5958b00816e5d0" name="a1b20e38554ac69644f5958b00816e5d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b20e38554ac69644f5958b00816e5d0">&#9670;&#160;</a></span>getXp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getXp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelSystem_8cpp_source.html#l00020">eve::rpg::LevelSystem::getXp()</a>.</p>
+
+</div>
+</div>
+<a id="a82aaa4cd7c01e1c4702f88ef10e42452" name="a82aaa4cd7c01e1c4702f88ef10e42452"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82aaa4cd7c01e1c4702f88ef10e42452">&#9670;&#160;</a></span>getXpToNext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::getXpToNext </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelSystem_8cpp_source.html#l00024">eve::rpg::LevelSystem::getXpToNext()</a>.</p>
+
+</div>
+</div>
+<a id="a694db59306b0051333fb27a78a187887" name="a694db59306b0051333fb27a78a187887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a694db59306b0051333fb27a78a187887">&#9670;&#160;</a></span>hasAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::hasAttribute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00045">eve::rpg::AttributeSystem::hasAttribute()</a>.</p>
+
+</div>
+</div>
+<a id="ac1230de1ed7fd3b3155641b641248c91" name="ac1230de1ed7fd3b3155641b641248c91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1230de1ed7fd3b3155641b641248c91">&#9670;&#160;</a></span>hasBuff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::hasBuff </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>effectId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00127">hasEffect()</a>.</p>
+
+</div>
+</div>
+<a id="ad16ef68e52ba561b61a92719b828ec14" name="ad16ef68e52ba561b61a92719b828ec14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad16ef68e52ba561b61a92719b828ec14">&#9670;&#160;</a></span>hasBuffTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::hasBuffTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00129">hasStatusTag()</a>.</p>
+
+</div>
+</div>
+<a id="a76e62670e8c56e4ac5bb97cea86df8bc" name="a76e62670e8c56e4ac5bb97cea86df8bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76e62670e8c56e4ac5bb97cea86df8bc">&#9670;&#160;</a></span>hasClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::hasClass </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>classId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00225">classId</a> , 以及 <a class="el" href="ClassSystem_8cpp_source.html#l00036">eve::rpg::ClassSystem::hasClass()</a>.</p>
+
+</div>
+</div>
+<a id="ae3f9e39c6be1e8f37ad39064cd33338f" name="ae3f9e39c6be1e8f37ad39064cd33338f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3f9e39c6be1e8f37ad39064cd33338f">&#9670;&#160;</a></span>hasEffect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::hasEffect </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>effectId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00660">eve::rpg::StatusSystem::hasEffect()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00170">hasBuff()</a>.</p>
+
+</div>
+</div>
+<a id="aaef2855ec9b56d7ebc8d997548f8cb98" name="aaef2855ec9b56d7ebc8d997548f8cb98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaef2855ec9b56d7ebc8d997548f8cb98">&#9670;&#160;</a></span>hasStatusTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::hasStatusTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00664">eve::rpg::StatusSystem::hasTag()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00172">hasBuffTag()</a>.</p>
+
+</div>
+</div>
+<a id="a56ddc8c934e2fa1b690cb32c2cf00118" name="a56ddc8c934e2fa1b690cb32c2cf00118"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56ddc8c934e2fa1b690cb32c2cf00118">&#9670;&#160;</a></span>hasTrait()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::hasTrait </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>traitId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00098">eve::rpg::TraitSystem::hasTrait()</a>.</p>
+
+</div>
+</div>
+<a id="a1e3a3404e3399afe10af3f097e77a9c5" name="a1e3a3404e3399afe10af3f097e77a9c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e3a3404e3399afe10af3f097e77a9c5">&#9670;&#160;</a></span>heal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::heal </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00062">eve::rpg::VitalsSystem::heal()</a>.</p>
+
+</div>
+</div>
+<a id="a0e5083571cf515ae18babee186f99972" name="a0e5083571cf515ae18babee186f99972"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e5083571cf515ae18babee186f99972">&#9670;&#160;</a></span>isCastingSkill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::isCastingSkill </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>读条状态查询。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00144">eve::rpg::SkillSystem::isCasting()</a>.</p>
+
+</div>
+</div>
+<a id="a65581a88c9398e69d18a33730e55cd31" name="a65581a88c9398e69d18a33730e55cd31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65581a88c9398e69d18a33730e55cd31">&#9670;&#160;</a></span>isDead()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::isDead </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00083">eve::rpg::VitalsSystem::isDead()</a>.</p>
+
+</div>
+</div>
+<a id="acf8a86953705f04d83141bd56e945f7c" name="acf8a86953705f04d83141bd56e945f7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf8a86953705f04d83141bd56e945f7c">&#9670;&#160;</a></span>isStateResist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::isStateResist </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stateId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00164">eve::rpg::TraitSystem::isStateResist()</a>.</p>
+
+</div>
+</div>
+<a id="aaaf868fa5e99616618e81249f87e8199" name="aaaf868fa5e99616618e81249f87e8199"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaf868fa5e99616618e81249f87e8199">&#9670;&#160;</a></span>knowsSkill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::knowsSkill </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00066">eve::rpg::SkillSystem::knows()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Battle_8cpp_source.html#l00096">eve::rpg::Battle::setActionChecked()</a>.</p>
+
+</div>
+</div>
+<a id="a6d6626ef069ebab0edcac2eec5295c54" name="a6d6626ef069ebab0edcac2eec5295c54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d6626ef069ebab0edcac2eec5295c54">&#9670;&#160;</a></span>learnSkill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::learnSkill </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>技能：学习 / 查询 / 冷却。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00061">eve::rpg::SkillSystem::learn()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00195">eve::rpg::EncounterCatalogue::createMemberActor()</a>.</p>
+
+</div>
+</div>
+<a id="a1fa37e0232f2132dd6a780b781420bf7" name="a1fa37e0232f2132dd6a780b781420bf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fa37e0232f2132dd6a780b781420bf7">&#9670;&#160;</a></span>liveActors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> * &gt; &amp; eve::rpg::RPGActor::liveActors </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>返回所有通过 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672" title="创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。">createActor()</a> 创建、且当前仍存活的 actor。 <a class="el" href="classeve_1_1rpg_1_1StatusSystem.html#ab1ddbf3e3383561aa63fa846d4e92b3b" title="Advance all live RPG status executors with an injected simulation delta.">StatusSystem::update</a> / <a class="el" href="classeve_1_1rpg_1_1SkillSystem.html#a04c6b8510157d23e5d4af231bc03c144" title="遍历 RPGActor::liveActors()：冷却倒计时 + 读条推进/结算。">SkillSystem::update</a> 用它遍历所有 actor 逐帧推进。 直接调用继承自 ENTITY 宏的 RPGActor::create() 不会被跟踪——推荐总是用 <a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a5e60092f746d92a47952cde7b485e672" title="创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。">createActor()</a>。 </p>
+<p>实现细节：内部按 ecs::EntityHandle（而非裸指针）跟踪，每次调用通过 ecs::try_get 按 (id, generation) 校验是否仍是同一个存活实体—— 这样当一个 actor 被销毁、其 id 槽位被新 actor 复用时，不会把新实体 误判为旧的已销毁实体（裸指针 + is_entity_visible 无法区分这种复用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgStateProvider_8cpp_source.html#l00037">eve::rpg::captureRpgState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00111">eve::rpg::resetRpgState()</a>, <a class="el" href="RpgStateProvider_8cpp_source.html#l00062">eve::rpg::restoreRpgState()</a>, <a class="el" href="StatusSystem_8cpp_source.html#l00729">eve::rpg::StatusSystem::update()</a> , 以及 <a class="el" href="SkillSystem_8cpp_source.html#l00158">eve::rpg::SkillSystem::update()</a>.</p>
+
+</div>
+</div>
+<a id="a9d1fddcf1ba76ec1999d206b86c70cff" name="a9d1fddcf1ba76ec1999d206b86c70cff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d1fddcf1ba76ec1999d206b86c70cff">&#9670;&#160;</a></span>modifyBaseAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::modifyBaseAttribute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00041">eve::rpg::AttributeSystem::modifyBase()</a>.</p>
+
+</div>
+</div>
+<a id="a48378d77c37dfceb89884810b907edc8" name="a48378d77c37dfceb89884810b907edc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48378d77c37dfceb89884810b907edc8">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8h_source.html">RPGActor.h</a> 第 <a class="el" href="RPGActor_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ca37d0593e130ef2a3ecea298ace6a9" name="a4ca37d0593e130ef2a3ecea298ace6a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ca37d0593e130ef2a3ecea298ace6a9">&#9670;&#160;</a></span>removeAllAttributeModifiersBySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeAllAttributeModifiersBySource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00098">eve::rpg::AttributeSystem::removeAllModifiersBySource()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="af231997032cfa8a3170608d112ab6e47" name="af231997032cfa8a3170608d112ab6e47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af231997032cfa8a3170608d112ab6e47">&#9670;&#160;</a></span>removeAttributeModifier() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGActor::removeAttributeModifier </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1rpg.html#a4888426f9cf19c0fa100ea736b1c7dbe">ModifierId</a> &amp;&#160;</td>
+          <td class="paramname"><em>modifierId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical modifier removal backed by AttributeSet. </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00081">eve::rpg::AttributeSystem::removeModifier()</a>.</p>
+
+</div>
+</div>
+<a id="af1f45617594d95e17b06a401c6de8bf5" name="af1f45617594d95e17b06a401c6de8bf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1f45617594d95e17b06a401c6de8bf5">&#9670;&#160;</a></span>removeAttributeModifier() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::removeAttributeModifier </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>modifierId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00081">eve::rpg::AttributeSystem::removeModifier()</a>.</p>
+
+</div>
+</div>
+<a id="a42a7c234a76aed475aa097b76473c45f" name="a42a7c234a76aed475aa097b76473c45f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42a7c234a76aed475aa097b76473c45f">&#9670;&#160;</a></span>removeAttributeModifiersBySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeAttributeModifiersBySource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00092">eve::rpg::AttributeSystem::removeModifiersBySource()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a129cd7e1d7f27e3610ec1b0708c527f0" name="a129cd7e1d7f27e3610ec1b0708c527f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a129cd7e1d7f27e3610ec1b0708c527f0">&#9670;&#160;</a></span>removeBuff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::removeBuff </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00113">removeStatus()</a>.</p>
+
+</div>
+</div>
+<a id="aae8e45ab445c6276fb7923e2335a3c9a" name="aae8e45ab445c6276fb7923e2335a3c9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae8e45ab445c6276fb7923e2335a3c9a">&#9670;&#160;</a></span>removeBuffByEffect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeBuffByEffect </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>effectId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00115">removeStatusByEffect()</a>.</p>
+
+</div>
+</div>
+<a id="ab42375a1591757875edac59f417767a2" name="ab42375a1591757875edac59f417767a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab42375a1591757875edac59f417767a2">&#9670;&#160;</a></span>removeBuffBySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeBuffBySource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00119">removeStatusBySource()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="ae4aa8a88ce43dca55f95b574fd264ed9" name="ae4aa8a88ce43dca55f95b574fd264ed9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4aa8a88ce43dca55f95b574fd264ed9">&#9670;&#160;</a></span>removeBuffByTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeBuffByTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00168">168</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RPGActor_8cpp_source.html#l00123">removeStatusByTag()</a>.</p>
+
+</div>
+</div>
+<a id="a1d4e2d3ae0e6ae570d0acee6324f19ad" name="a1d4e2d3ae0e6ae570d0acee6324f19ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d4e2d3ae0e6ae570d0acee6324f19ad">&#9670;&#160;</a></span>removeStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::removeStatus </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00416">eve::Result&lt; void &gt;::ok()</a> , 以及 <a class="el" href="StatusSystem_8cpp_source.html#l00573">eve::rpg::StatusSystem::remove()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00158">removeBuff()</a>.</p>
+
+</div>
+</div>
+<a id="ab324a96129ed27f66340c49071df2ea0" name="ab324a96129ed27f66340c49071df2ea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab324a96129ed27f66340c49071df2ea0">&#9670;&#160;</a></span>removeStatusByEffect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeStatusByEffect </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>effectId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00639">eve::rpg::StatusSystem::removeByEffect()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00160">removeBuffByEffect()</a>.</p>
+
+</div>
+</div>
+<a id="a6321dcc8a75beead11b385d0213964f4" name="a6321dcc8a75beead11b385d0213964f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6321dcc8a75beead11b385d0213964f4">&#9670;&#160;</a></span>removeStatusBySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeStatusBySource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00646">eve::rpg::StatusSystem::removeBySource()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00164">removeBuffBySource()</a>.</p>
+
+</div>
+</div>
+<a id="a5f3b73e1b645ee8bae8606bb48b02eb8" name="a5f3b73e1b645ee8bae8606bb48b02eb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f3b73e1b645ee8bae8606bb48b02eb8">&#9670;&#160;</a></span>removeStatusByTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeStatusByTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StatusSystem_8cpp_source.html#l00653">eve::rpg::StatusSystem::removeByTag()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00168">removeBuffByTag()</a>.</p>
+
+</div>
+</div>
+<a id="ad44647477359047575f32cef8960846e" name="ad44647477359047575f32cef8960846e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad44647477359047575f32cef8960846e">&#9670;&#160;</a></span>removeTrait()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::removeTrait </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>移除一个特征（compatibility facade (脚本兼容门面)；成功返回 true）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00041">eve::rpg::TraitSystem::remove()</a>.</p>
+
+</div>
+</div>
+<a id="a91959eb4924ea77f485905d51fdcf408" name="a91959eb4924ea77f485905d51fdcf408"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91959eb4924ea77f485905d51fdcf408">&#9670;&#160;</a></span>removeTraitsBySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeTraitsBySource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00054">eve::rpg::TraitSystem::removeBySource()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a046f5184e849a6bf9fac137ce8534383" name="a046f5184e849a6bf9fac137ce8534383"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a046f5184e849a6bf9fac137ce8534383">&#9670;&#160;</a></span>removeTraitsByTrait()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::rpg::RPGActor::removeTraitsByTrait </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>traitId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TraitSystem_8cpp_source.html#l00071">eve::rpg::TraitSystem::removeByTrait()</a>.</p>
+
+</div>
+</div>
+<a id="ac809854e92464d601687b5c4eaef261b" name="ac809854e92464d601687b5c4eaef261b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac809854e92464d601687b5c4eaef261b">&#9670;&#160;</a></span>restoreCheckpointJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGActor::restoreCheckpointJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically restore a safe checkpoint into this preconfigured actor. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>UTF-8 JSON produced by <a class="el" href="classeve_1_1rpg_1_1RPGActor.html#a9adff7ad13d0262fb1d8feba0993214b" title="Capture this actor at a persistent safe checkpoint.">checkpointJson()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied state, or a structured failure without mutation. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The destination must have no active effect/cast and must use the same class, trait identities and attribute layout. Skill ids must exist in the current registry. Cooldowns and casting restore to defaults. Unknown version-1 fields are ignored. @thread Call on the actor's owning ECS simulation thread. @reentrancy No callbacks or gameplay events are emitted. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGActorPersistence_8cpp_source.html">RPGActorPersistence.cpp</a> 第 <a class="el" href="RPGActorPersistence_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a49e2127b3e0240c5c27caf6a2b37ca9c" name="a49e2127b3e0240c5c27caf6a2b37ca9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49e2127b3e0240c5c27caf6a2b37ca9c">&#9670;&#160;</a></span>restoreProgression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGActor::restoreProgression </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xpToNext</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically restore this actor's progression checkpoint. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">level</td><td>Positive level. </td></tr>
+    <tr><td class="paramname">xp</td><td>Finite, non-negative progress below xpToNext. </td></tr>
+    <tr><td class="paramname">xpToNext</td><td>Finite positive threshold for the current level. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied state, or a structured failure without mutation. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The actor retains ownership of its progression component and no level-up event or callback is emitted by restoration. @thread Call on the actor's owning ECS simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelSystem_8cpp_source.html#l00038">eve::rpg::LevelSystem::restoreProgression()</a>.</p>
+
+</div>
+</div>
+<a id="a58e3e50e2f40a5eed7b32dd9743e3d47" name="a58e3e50e2f40a5eed7b32dd9743e3d47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58e3e50e2f40a5eed7b32dd9743e3d47">&#9670;&#160;</a></span>revive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::revive </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>amount</em> = <code>-1.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00074">eve::rpg::VitalsSystem::revive()</a>.</p>
+
+</div>
+</div>
+<a id="a99835dda1c2cbb0cf81741cd4d4fdf37" name="a99835dda1c2cbb0cf81741cd4d4fdf37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99835dda1c2cbb0cf81741cd4d4fdf37">&#9670;&#160;</a></span>setBaseAttribute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::setBaseAttribute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>便捷成员方法（转发到 <a class="el" href="classeve_1_1rpg_1_1AttributeSystem.html" title="RPG-facing attribute operations backed by the canonical AttributeSet.">AttributeSystem</a> / <a class="el" href="classeve_1_1rpg_1_1StatusSystem.html">StatusSystem</a> / SkillSystem）。 提供这一层薄封装主要是为了让脚本可以写 <code>actor.setBaseAttribute(...)</code>， 与引擎其他模块（TileLayer / ParticleEmitter 等）的绑定风格保持一致； C++ 侧仍然可以直接使用对应的 *System 静态类。 </p>
+<p>属性访问。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AttributeSystem_8cpp_source.html#l00033">eve::rpg::AttributeSystem::setBase()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00195">eve::rpg::EncounterCatalogue::createMemberActor()</a>.</p>
+
+</div>
+</div>
+<a id="abcdf9c43da23b7abe244e8cd2479be2a" name="abcdf9c43da23b7abe244e8cd2479be2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcdf9c43da23b7abe244e8cd2479be2a">&#9670;&#160;</a></span>setBuffProp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::setBuffProp </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="RPGActor_8cpp_source.html#l00150">setStatusProp()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="ae570f237effedb61d870acf41488cd98" name="ae570f237effedb61d870acf41488cd98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae570f237effedb61d870acf41488cd98">&#9670;&#160;</a></span>setClass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::setClass </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>classId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>职业（ClassSystem 的薄转发）。 </p>
+<p>设定职业（compatibility facade (脚本兼容门面)；成功返回 true）。 </p>
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00225">classId</a> , 以及 <a class="el" href="ClassSystem_8cpp_source.html#l00013">eve::rpg::ClassSystem::setClass()</a>.</p>
+
+</div>
+</div>
+<a id="af27862c09c42a529e6f12ea78cd4567c" name="af27862c09c42a529e6f12ea78cd4567c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af27862c09c42a529e6f12ea78cd4567c">&#9670;&#160;</a></span>setCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::setCurrent </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VitalsSystem_8cpp_source.html#l00040">eve::rpg::VitalsSystem::setCurrent()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EncounterCatalogue_8cpp_source.html#l00195">eve::rpg::EncounterCatalogue::createMemberActor()</a>.</p>
+
+</div>
+</div>
+<a id="a62f35ce20c6de35b184ec4ffc0e7743f" name="a62f35ce20c6de35b184ec4ffc0e7743f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62f35ce20c6de35b184ec4ffc0e7743f">&#9670;&#160;</a></span>setSkillCooldown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::setSkillCooldown </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>skillId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SkillSystem_8cpp_source.html#l00090">eve::rpg::SkillSystem::setCooldownRemaining()</a>.</p>
+
+</div>
+</div>
+<a id="ac78810aca4fb6050a115c3536bc020cc" name="ac78810aca4fb6050a115c3536bc020cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac78810aca4fb6050a115c3536bc020cc">&#9670;&#160;</a></span>setStatusProp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rpg::RPGActor::setStatusProp </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="StatusSystem_8cpp_source.html#l00719">eve::rpg::StatusSystem::setProp()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00191">setBuffProp()</a>.</p>
+
+</div>
+</div>
+<a id="aeb9a56babd41bb42ab85a9f646b577f5" name="aeb9a56babd41bb42ab85a9f646b577f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb9a56babd41bb42ab85a9f646b577f5">&#9670;&#160;</a></span>setXpToNext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGActor::setXpToNext </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LevelSystem_8cpp_source.html#l00028">eve::rpg::LevelSystem::setXpToNext()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a4034bff1293c06f4694ef0303994cfdf" name="a4034bff1293c06f4694ef0303994cfdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4034bff1293c06f4694ef0303994cfdf">&#9670;&#160;</a></span>takeDamage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::rpg::RPGActor::takeDamage </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>resource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>amount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a> 第 <a class="el" href="RPGActor_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a> , 以及 <a class="el" href="VitalsSystem_8cpp_source.html#l00046">eve::rpg::VitalsSystem::takeDamage()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="af73b63c16d5cb76a6a3a319295f27266" name="af73b63c16d5cb76a6a3a319295f27266"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af73b63c16d5cb76a6a3a319295f27266">&#9670;&#160;</a></span>Party</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1rpg_1_1Party.html">Party</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8h_source.html">RPGActor.h</a> 第 <a class="el" href="RPGActor_8h_source.html#l00305">305</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b73581db5c1d678ab66b11676d065c2" name="a0b73581db5c1d678ab66b11676d065c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b73581db5c1d678ab66b11676d065c2">&#9670;&#160;</a></span>RPGSaveSession</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html">RPGSaveSession</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RPGActor_8h_source.html">RPGActor.h</a> 第 <a class="el" href="RPGActor_8h_source.html#l00304">304</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="RPGActor_8h_source.html">RPGActor.h</a></li>
+<li>src/modules/rpg/<a class="el" href="RPGActor_8cpp_source.html">RPGActor.cpp</a></li>
+<li>src/modules/rpg/<a class="el" href="RPGActorPersistence_8cpp_source.html">RPGActorPersistence.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

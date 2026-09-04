@@ -1,0 +1,206 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">IGraphics2D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::IGraphics2D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a949976bc21bacfeb36355d552fb02ff7">clearScreen</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#ab1026954e390e9d14d820101ca95e91d">draw</a>(Drawable *drawable, const glm::mat4 &amp;m)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#acea34c743be9277af3eeec15a2f9bb65">drawOcclusion</a>(Drawable *drawable, const glm::mat4 &amp;m)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#ac2d5109127d7db485b13f50b46d55d27">drawOcclusionSolid</a>(float x, float y, float w, float h)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#ae526e23f019d8def0901b35e2e9ebdfb">drawOcclusionTexture</a>(Texture *texture, float x, float y, float w, float h)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#aa9c13b24424686e569d14ee29a32ca6e">drawPrimitiveCanvas</a>(const PrimitiveCanvas2D &amp;canvas)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a87734e30e733bf57b29c171c82dde4a9">drawSolidRect</a>(float x, float y, float w, float h, const Color &amp;color, BlendMode blend=BlendMode::Alpha)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a2e164ededad8db3fee3acdbcba5fabd6">drawSolidRectRGBA</a>(float x, float y, float w, float h, float r, float g, float b, float a=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a797ede7258f3e392fbdd686dce3a2c77">drawSolidRectRotated</a>(float cx, float cy, float w, float h, float degrees, const Color &amp;color, BlendMode blend=BlendMode::Alpha)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a7b808d417b33d8d4c18625921ad108fd">drawText</a>(Font *font, const std::string &amp;text, float x, float y, const Color &amp;color=Color(1.f, 1.f, 1.f, 1.f), float scale=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a39b2c5881bbd4d479d802979dab3cf08">drawTexturedRect</a>(Texture *texture, float x, float y, float w, float h, const Color &amp;color)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a72f9519e6ee24f2106b2949d5eabbc1a">drawTexturedRectLitUV</a>(Texture *albedo, Texture *normal, float x, float y, float w, float h, float u0, float v0, float u1, float v1, const Color &amp;color)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a2c8485e7448afbbf83a33f9d9013c5af">drawTexturedRectRGBA</a>(Texture *texture, float x, float y, float w, float h, float r, float g, float b, float a=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a70d30baa2c9a5de5e3bed7f37fe13a23">drawTexturedRectShader</a>(Texture *texture, Shader *shader, float x, float y, float w, float h, const Color &amp;color)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a8a1271c8a1feded7b3cced267df86f51">drawTexturedRectShaderDepth</a>(Texture *color, Texture *depth, Shader *shader, float x, float y, float w, float h, const Color &amp;tint)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#afaad69a59e81e6a6b042e851d7864f96">drawTexturedRectShaderUV</a>(Texture *texture, Shader *shader, float x, float y, float w, float h, float u0, float v0, float u1, float v1, const Color &amp;color, bool rotatedUV=false, BlendMode blend=BlendMode::Alpha)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#afabeb3e03a50184ab61060fe77db11b6">drawTexturedRectShaderUVRotated</a>(Texture *texture, Shader *shader, float cx, float cy, float w, float h, float degrees, float u0, float v0, float u1, float v1, const Color &amp;color, bool rotatedUV=false, BlendMode blend=BlendMode::Alpha)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a4f19d324702e28ef60aaec5a21f80214">drawTexturedRectUV</a>(Texture *texture, float x, float y, float w, float h, float u0, float v0, float u1, float v1, const Color &amp;color)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#abc2a0dfea2624befe616a238924ee330">getCanvas</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a650a4085e463ca45bc8cd066b6ab84b3">getFont</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#aec63e8426550fead2ffc8bf866327580">getShader</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#ac46241339374afc44b17d1789f384c53">isCanvasActive</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a75fb218d5ba39a3616fe76a1dd9ad3ba">popValidationScope</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a5f7ce753f62fd7dfd917cfaa7230746f">print</a>(const std::string &amp;text, float x, float y, const Color &amp;color=Color(1.f, 1.f, 1.f, 1.f), float scale=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a41dc2e7adefbdff6d5193cf7d8cf3358">pushValidationScope</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a4ee0560512d0f30be2a5a7ac2c6e26c8">setBackgroundColorRGBA</a>(float r, float g, float b, float a=1.f)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#abb6462e0c053e41f6687a24270d151e1">setCanvas</a>(Canvas *canvas)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a0a92c82e0c5e7bc54e887cc7e7bb3d51">setFont</a>(Font *font)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a0531b32cb30ca365d4276d0dc05d4708">setLighting2D</a>(const Lighting2DUBO &amp;ubo)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#ace79336ea9e83493e4ce6b59369a044d">setShader</a>(Shader *shader)=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#a4c6c07ed73fded7b749478326bf348e6">setShader</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html#ae942cd6b1fe51f7d6e53e63c6ae0a2ac">~IGraphics2D</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1IGraphics2D.html">eve::graphics::IGraphics2D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

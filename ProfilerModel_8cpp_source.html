@@ -1,0 +1,363 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/profiler_editing/ProfilerModel.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6e77c5a196b227d1ac8dcd316a8f7c65.html">profiler_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ProfilerModel.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ProfilerModel_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ProfilerModel_8h.html">profiler_editing/ProfilerModel.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1profiler__editing.html">    9</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1profiler__editing.html">eve::profiler_editing</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;T&gt;</a> failure(<a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1profiler__editing.html#a5678b725c2bf9e3f59a27d06a0318e25">RuleId</a>(rule), std::move(message));</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keywordtype">bool</span> finiteNonNegative(<span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { <span class="keywordflow">return</span> std::isfinite(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) &amp;&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> &gt;= 0.0; }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">bool</span> contains(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>.empty() || <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.find(<a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>) != std::string::npos;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a0c2c579bc9b2b82ca5364b354f5d770c">EditorProfilerModel::EditorProfilerModel</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a6e7ddcb3e90bd4764c2511abdb3f3f4e">   27</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a6e7ddcb3e90bd4764c2511abdb3f3f4e">EditorProfilerModel::configure</a>(<a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html">EditorProfilerBudgets</a> budgets) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (!finiteNonNegative(<a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">budgets</a>.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a1f394aba3b2dae2f222d0032808f9a21">cpuFrameMs</a>) || !finiteNonNegative(<a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">budgets</a>.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#ab876597f0ebe11beb74b2e0adee49a66">gpuFrameMs</a>) ||</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        !finiteNonNegative(<a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">budgets</a>.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a47155d2448cb9cd73ff749c1a1d238c5">zoneSelfMs</a>) || <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">budgets</a>.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#abd912d1cc22fea0bb0185a454b90dc6c">historyFrames</a> &lt; 2 ||</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">budgets</a>.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#abd912d1cc22fea0bb0185a454b90dc6c">historyFrames</a> &gt; 36000) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.profiler.invalid-budgets&quot;</span>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                             <span class="stringliteral">&quot;Profiler budgets or history capacity are invalid&quot;</span>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    budgets_ = <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">budgets</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">while</span> (history_.size() &gt; budgets_.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#abd912d1cc22fea0bb0185a454b90dc6c">historyFrames</a>) history_.pop_front();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a53528ee7cc6b36036cf21374a5783386">   39</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a53528ee7cc6b36036cf21374a5783386">EditorProfilerModel::ingest</a>(<a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html">EditorProfilerFrame</a> frame) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a7305213dd406018bf9eb06e78a7af674">sequence</a> == 0 || !finiteNonNegative(frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a691f5a3d64f8f66f1e4bbcc900aec6d2">cpuFrameMs</a>) ||</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        !finiteNonNegative(frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#ade14b6ba81d8d418e010453f03d3e8b2">gpuFrameMs</a>) || frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">zones</a>.size() &gt; 100000) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.profiler.invalid-frame&quot;</span>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                             <span class="stringliteral">&quot;Profiler frame shape or timing is invalid&quot;</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (!history_.empty() &amp;&amp; frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a7305213dd406018bf9eb06e78a7af674">sequence</a> &lt;= history_.back().sequence) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(EditorStatus::Conflict, <span class="stringliteral">&quot;editor.profiler.stale-frame&quot;</span>,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                             <span class="stringliteral">&quot;Profiler frame sequence is stale&quot;</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; zone : frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">zones</a>) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">if</span> (zone.module.empty() || zone.name.empty() || zone.thread.empty() ||</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            !finiteNonNegative(zone.selfMs) || !finiteNonNegative(zone.totalMs) ||</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            zone.selfMs &gt; zone.totalMs || zone.count &lt; 1 || zone.depth &lt; 0) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordflow">return</span> failure&lt;void&gt;(EditorStatus::Rejected, <span class="stringliteral">&quot;editor.profiler.invalid-zone&quot;</span>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                 <span class="stringliteral">&quot;Profiler zone identity or timing is invalid&quot;</span>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    history_.push_back(std::move(frame));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">while</span> (history_.size() &gt; budgets_.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#abd912d1cc22fea0bb0185a454b90dc6c">historyFrames</a>) history_.pop_front();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a626f87c34ff7a80a9de01d58df5571b4">   62</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a626f87c34ff7a80a9de01d58df5571b4">EditorProfilerModel::clear</a>() { history_.clear(); }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a5753b5f4d2522fe9f19c435b8c16aef2">   64</a></span>std::vector&lt;EditorProfilerZone&gt; <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a5753b5f4d2522fe9f19c435b8c16aef2">EditorProfilerModel::query</a>(</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html">EditorProfilerQuery</a>&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::vector&lt;EditorProfilerZone&gt; result;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (history_.empty() || <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.limit == 0) <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; zone : history_.back().zones) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">if</span> (contains(zone.module, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.module) &amp;&amp; contains(zone.thread, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.thread) &amp;&amp;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            (contains(zone.name, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.text) || contains(zone.module, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.text))) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            result.push_back(zone);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> <span class="keyword">auto</span> less = [&amp;](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html">EditorProfilerZone</a>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html">EditorProfilerZone</a>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">switch</span> (<a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.sort) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a5547f699ec33a786df256c235a17a9f4">EditorProfilerSort::SelfTime</a>: <span class="keywordflow">return</span> <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>.selfMs &lt; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>.selfMs;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9abdb1fc413c8484190aa7a939e8b90a0c">EditorProfilerSort::TotalTime</a>: <span class="keywordflow">return</span> <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>.totalMs &lt; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>.totalMs;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9ae93f994f01c537c4e2f7d8528c3eb5e9">EditorProfilerSort::Count</a>: <span class="keywordflow">return</span> <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>.count &lt; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>.count;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a49ee3087348e8d44e1feda1917443987">EditorProfilerSort::Name</a>:</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                <span class="keywordflow">return</span> std::tie(<a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>.module, <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>.name, <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>.thread) &lt;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                       std::tie(<a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>.module, <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>.name, <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>.thread);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    };</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::stable_sort(result.begin(), result.end(), [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        return options.descending ? less(right, left) : less(left, right);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    });</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (result.size() &gt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.limit) result.resize(<a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.limit);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#ac22566259a61e058c7e2e3edb9ad4e75">   92</a></span>std::vector&lt;EditorProfilerModuleSummary&gt; <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#ac22566259a61e058c7e2e3edb9ad4e75">EditorProfilerModel::moduleSummary</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::map&lt;std::string, EditorProfilerModuleSummary&gt; grouped;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (!history_.empty()) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; zone : history_.back().zones) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keyword">auto</span>&amp; summary = grouped[zone.module];</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            summary.module = zone.module;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            summary.selfMs += zone.selfMs;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            summary.totalMs += zone.totalMs;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            summary.count += zone.count;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            ++summary.zones;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::vector&lt;EditorProfilerModuleSummary&gt; result;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, summary] : grouped) result.push_back(std::move(summary));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::stable_sort(result.begin(), result.end(), [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a>, <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a>) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        if (left.selfMs != right.selfMs) return left.selfMs &gt; right.selfMs;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        return left.module &lt; right.module;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    });</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="foldopen" id="foldopen00113" data-start="{" data-end="}">
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a57fa5e9b41d9a1801e696b24bffc9afc">  113</a></span>std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a57fa5e9b41d9a1801e696b24bffc9afc">EditorProfilerModel::diagnostics</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::vector&lt;EditorDiagnostic&gt; result;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">if</span> (history_.empty()) <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; frame = history_.back();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> (budgets_.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a1f394aba3b2dae2f222d0032808f9a21">cpuFrameMs</a> &gt; 0.0 &amp;&amp; frame.cpuFrameMs &gt; budgets_.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a1f394aba3b2dae2f222d0032808f9a21">cpuFrameMs</a>) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        result.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>, <a class="code hl_typedef" href="namespaceeve_1_1profiler__editing.html#a5678b725c2bf9e3f59a27d06a0318e25">RuleId</a>(<span class="stringliteral">&quot;editor.profiler.cpu-budget&quot;</span>),</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            DiagnosticSeverity::Warning, <span class="stringliteral">&quot;CPU frame time exceeds the editor budget&quot;</span>));</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">if</span> (frame.gpuTimingAvailable &amp;&amp; budgets_.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#ab876597f0ebe11beb74b2e0adee49a66">gpuFrameMs</a> &gt; 0.0 &amp;&amp;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        frame.gpuFrameMs &gt; budgets_.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#ab876597f0ebe11beb74b2e0adee49a66">gpuFrameMs</a>) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        result.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>, <a class="code hl_typedef" href="namespaceeve_1_1profiler__editing.html#a5678b725c2bf9e3f59a27d06a0318e25">RuleId</a>(<span class="stringliteral">&quot;editor.profiler.gpu-budget&quot;</span>),</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            DiagnosticSeverity::Warning, <span class="stringliteral">&quot;GPU frame time exceeds the editor budget&quot;</span>));</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (budgets_.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a47155d2448cb9cd73ff749c1a1d238c5">zoneSelfMs</a> &gt; 0.0) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; zone : frame.zones) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            <span class="keywordflow">if</span> (zone.selfMs &gt; budgets_.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a47155d2448cb9cd73ff749c1a1d238c5">zoneSelfMs</a>) {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                result.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                    <a class="code hl_typedef" href="namespaceeve_1_1profiler__editing.html#a5678b725c2bf9e3f59a27d06a0318e25">RuleId</a>(<span class="stringliteral">&quot;editor.profiler.zone-budget&quot;</span>), DiagnosticSeverity::Warning,</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                    <span class="stringliteral">&quot;Profiler zone exceeds its self-time budget: &quot;</span> + zone.module + <span class="stringliteral">&quot;/&quot;</span> +</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                        zone.name));</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>            }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>}</div>
+</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>}  <span class="comment">// namespace eve::profiler_editing</span></div>
+</div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aProfilerModel_8h_html"><div class="ttname"><a href="ProfilerModel_8h.html">ProfilerModel.h</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a61e0e449fd7e8647d521cafd4f1d55a3"><div class="ttname"><a href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a></div><div class="ttdeci">std::string filter</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00184">SceneLoader.cpp:184</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00017">SquirrelBinding.cpp:17</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a6202f38a97a1c9eb0142baeb338cf1f1"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a></div><div class="ttdeci">float right</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00016">WorldAnchorProjection.cpp:16</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a7d10b0c779bad3aabf067d52035f7052"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a></div><div class="ttdeci">float left</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00014">WorldAnchorProjection.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a0c2c579bc9b2b82ca5364b354f5d770c"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a0c2c579bc9b2b82ca5364b354f5d770c">eve::profiler_editing::EditorProfilerModel::EditorProfilerModel</a></div><div class="ttdeci">EditorProfilerModel()</div><div class="ttdoc">Construct with default budgets and a 300-frame history.</div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a4af9ea2bc5d439ae21aaa98949ffae97"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a4af9ea2bc5d439ae21aaa98949ffae97">eve::profiler_editing::EditorProfilerModel::budgets</a></div><div class="ttdeci">EditorProfilerBudgets budgets() const</div><div class="ttdoc">Return the current editor-only budgets by value.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00100">ProfilerModel.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a53528ee7cc6b36036cf21374a5783386"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a53528ee7cc6b36036cf21374a5783386">eve::profiler_editing::EditorProfilerModel::ingest</a></div><div class="ttdeci">EditorResult&lt; void &gt; ingest(EditorProfilerFrame frame)</div><div class="ttdoc">Append an owning completed-frame snapshot.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00039">ProfilerModel.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a5753b5f4d2522fe9f19c435b8c16aef2"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a5753b5f4d2522fe9f19c435b8c16aef2">eve::profiler_editing::EditorProfilerModel::query</a></div><div class="ttdeci">std::vector&lt; EditorProfilerZone &gt; query(const EditorProfilerQuery &amp;query) const</div><div class="ttdoc">Query and sort copied hotspot rows from the latest frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00064">ProfilerModel.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a57fa5e9b41d9a1801e696b24bffc9afc"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a57fa5e9b41d9a1801e696b24bffc9afc">eve::profiler_editing::EditorProfilerModel::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics() const</div><div class="ttdoc">Produce CPU/GPU/zone budget diagnostics for the latest frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00113">ProfilerModel.cpp:113</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a626f87c34ff7a80a9de01d58df5571b4"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a626f87c34ff7a80a9de01d58df5571b4">eve::profiler_editing::EditorProfilerModel::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clear retained frames without changing configured budgets.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00062">ProfilerModel.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_a6e7ddcb3e90bd4764c2511abdb3f3f4e"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#a6e7ddcb3e90bd4764c2511abdb3f3f4e">eve::profiler_editing::EditorProfilerModel::configure</a></div><div class="ttdeci">EditorResult&lt; void &gt; configure(EditorProfilerBudgets budgets)</div><div class="ttdoc">Validate and atomically replace editor-only performance budgets.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00027">ProfilerModel.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html_ac22566259a61e058c7e2e3edb9ad4e75"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html#ac22566259a61e058c7e2e3edb9ad4e75">eve::profiler_editing::EditorProfilerModel::moduleSummary</a></div><div class="ttdeci">std::vector&lt; EditorProfilerModuleSummary &gt; moduleSummary() const</div><div class="ttdoc">Aggregate copied rows by module for the latest frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00092">ProfilerModel.cpp:92</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html">eve::profiler_editing</a></div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00009">ProfilerModel.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9a49ee3087348e8d44e1feda1917443987"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a49ee3087348e8d44e1feda1917443987">eve::profiler_editing::EditorProfilerSort::Name</a></div><div class="ttdeci">@ Name</div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9a5547f699ec33a786df256c235a17a9f4"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9a5547f699ec33a786df256c235a17a9f4">eve::profiler_editing::EditorProfilerSort::SelfTime</a></div><div class="ttdeci">@ SelfTime</div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9abdb1fc413c8484190aa7a939e8b90a0c"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9abdb1fc413c8484190aa7a939e8b90a0c">eve::profiler_editing::EditorProfilerSort::TotalTime</a></div><div class="ttdeci">@ TotalTime</div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a54f5c24754351980e0c2a2800e24ede9ae93f994f01c537c4e2f7d8528c3eb5e9"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a54f5c24754351980e0c2a2800e24ede9ae93f994f01c537c4e2f7d8528c3eb5e9">eve::profiler_editing::EditorProfilerSort::Count</a></div><div class="ttdeci">@ Count</div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html_a5678b725c2bf9e3f59a27d06a0318e25"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html#a5678b725c2bf9e3f59a27d06a0318e25">eve::profiler_editing::RuleId</a></div><div class="ttdeci">editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00019">ProfilerModel.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html">eve::profiler_editing::EditorProfilerBudgets</a></div><div class="ttdoc">Configurable performance budgets used only for editor diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00064">ProfilerModel.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html_a1f394aba3b2dae2f222d0032808f9a21"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a1f394aba3b2dae2f222d0032808f9a21">eve::profiler_editing::EditorProfilerBudgets::cpuFrameMs</a></div><div class="ttdeci">double cpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00065">ProfilerModel.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html_a47155d2448cb9cd73ff749c1a1d238c5"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#a47155d2448cb9cd73ff749c1a1d238c5">eve::profiler_editing::EditorProfilerBudgets::zoneSelfMs</a></div><div class="ttdeci">double zoneSelfMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00067">ProfilerModel.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html_ab876597f0ebe11beb74b2e0adee49a66"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#ab876597f0ebe11beb74b2e0adee49a66">eve::profiler_editing::EditorProfilerBudgets::gpuFrameMs</a></div><div class="ttdeci">double gpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00066">ProfilerModel.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerBudgets_html_abd912d1cc22fea0bb0185a454b90dc6c"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerBudgets.html#abd912d1cc22fea0bb0185a454b90dc6c">eve::profiler_editing::EditorProfilerBudgets::historyFrames</a></div><div class="ttdeci">std::size_t historyFrames</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00068">ProfilerModel.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html">eve::profiler_editing::EditorProfilerFrame</a></div><div class="ttdoc">One owning completed-frame sample retained by the editor.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00033">ProfilerModel.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a691f5a3d64f8f66f1e4bbcc900aec6d2"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a691f5a3d64f8f66f1e4bbcc900aec6d2">eve::profiler_editing::EditorProfilerFrame::cpuFrameMs</a></div><div class="ttdeci">double cpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00035">ProfilerModel.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a7305213dd406018bf9eb06e78a7af674"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a7305213dd406018bf9eb06e78a7af674">eve::profiler_editing::EditorProfilerFrame::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00034">ProfilerModel.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a8dc9d999ef4e1ecd2112538b35f6c3e4"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">eve::profiler_editing::EditorProfilerFrame::zones</a></div><div class="ttdeci">std::vector&lt; EditorProfilerZone &gt; zones</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00038">ProfilerModel.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_ade14b6ba81d8d418e010453f03d3e8b2"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#ade14b6ba81d8d418e010453f03d3e8b2">eve::profiler_editing::EditorProfilerFrame::gpuFrameMs</a></div><div class="ttdeci">double gpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00036">ProfilerModel.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerQuery_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerQuery.html">eve::profiler_editing::EditorProfilerQuery</a></div><div class="ttdoc">Non-persistent query applied to the latest profiler frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00045">ProfilerModel.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerZone_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerZone.html">eve::profiler_editing::EditorProfilerZone</a></div><div class="ttdoc">One owning profiler hotspot row projected for editor presentation.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00022">ProfilerModel.h:22</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

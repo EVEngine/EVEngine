@@ -1,0 +1,1715 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::avatar_editor::AvatarDocumentEditor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1avatar__editor.html">avatar_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">AvatarDocumentEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::avatar_editor::AvatarDocumentEditor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Timeline-style controller for one authored avatar document.  
+ <a href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8385cccd589e8240823f66a7a9b19e93" id="r_a8385cccd589e8240823f66a7a9b19e93"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a8385cccd589e8240823f66a7a9b19e93">AvatarDocumentEditor</a> (std::string targetId)</td></tr>
+<tr class="memdesc:a8385cccd589e8240823f66a7a9b19e93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a seeded two-layer face with a referenced parameter.  <br /></td></tr>
+<tr class="separator:a8385cccd589e8240823f66a7a9b19e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9e09d895815ee6dc5c618a31e90ec32" id="r_ab9e09d895815ee6dc5c618a31e90ec32"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ab9e09d895815ee6dc5c618a31e90ec32">AvatarDocumentEditor</a> (const <a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">AvatarDocumentEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:ab9e09d895815ee6dc5c618a31e90ec32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add337bba4bb92ca8d1e851f0ba3e5f17" id="r_add337bba4bb92ca8d1e851f0ba3e5f17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">AvatarDocumentEditor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#add337bba4bb92ca8d1e851f0ba3e5f17">operator=</a> (const <a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">AvatarDocumentEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:add337bba4bb92ca8d1e851f0ba3e5f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36613ab464fb5cf6d5ac2e0cc6661ae5" id="r_a36613ab464fb5cf6d5ac2e0cc6661ae5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html">avatar_editing::AvatarDocumentTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a36613ab464fb5cf6d5ac2e0cc6661ae5">target</a> () const noexcept</td></tr>
+<tr class="memdesc:a36613ab464fb5cf6d5ac2e0cc6661ae5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the authoritative avatar document.  <br /></td></tr>
+<tr class="separator:a36613ab464fb5cf6d5ac2e0cc6661ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a090628f42519abe55b9d0cbf887e84fc" id="r_a090628f42519abe55b9d0cbf887e84fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a090628f42519abe55b9d0cbf887e84fc">configureWorkspace</a> (<a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;workspace) const</td></tr>
+<tr class="memdesc:a090628f42519abe55b9d0cbf887e84fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install Layers / Preview / Inspector / Parameters / Expressions panels.  <br /></td></tr>
+<tr class="separator:a090628f42519abe55b9d0cbf887e84fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75523fb94bfb52435267e926f0aff318" id="r_a75523fb94bfb52435267e926f0aff318"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a75523fb94bfb52435267e926f0aff318">selectLayer</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a75523fb94bfb52435267e926f0aff318"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a998b90a1dfbeb299f90c7e3aa373a7b8" id="r_a998b90a1dfbeb299f90c7e3aa373a7b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a998b90a1dfbeb299f90c7e3aa373a7b8">selectParameter</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a998b90a1dfbeb299f90c7e3aa373a7b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fbffe6aa7f932a531f431c78da87a39" id="r_a2fbffe6aa7f932a531f431c78da87a39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a2fbffe6aa7f932a531f431c78da87a39">selectExpression</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a2fbffe6aa7f932a531f431c78da87a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01dd24954b5eccf88b1c9d143a3a7aaf" id="r_a01dd24954b5eccf88b1c9d143a3a7aaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a01dd24954b5eccf88b1c9d143a3a7aaf">pointerDown</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a01dd24954b5eccf88b1c9d143a3a7aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ad408d9bbf5520f78a2fa85e3150216" id="r_a3ad408d9bbf5520f78a2fa85e3150216"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a3ad408d9bbf5520f78a2fa85e3150216">setLayerVisible</a> (bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>)</td></tr>
+<tr class="separator:a3ad408d9bbf5520f78a2fa85e3150216"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ede6db4b5bf395068e808c31d0b5695" id="r_a0ede6db4b5bf395068e808c31d0b5695"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a0ede6db4b5bf395068e808c31d0b5695">setLayerZ</a> (int zIndex)</td></tr>
+<tr class="separator:a0ede6db4b5bf395068e808c31d0b5695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab22eb3e3019632324c8cd53fbaeedb0c" id="r_ab22eb3e3019632324c8cd53fbaeedb0c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ab22eb3e3019632324c8cd53fbaeedb0c">setParameterValue</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ab22eb3e3019632324c8cd53fbaeedb0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a151d13f1969234eaa8628f81e551bc47" id="r_a151d13f1969234eaa8628f81e551bc47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a151d13f1969234eaa8628f81e551bc47">createLayer</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a151d13f1969234eaa8628f81e551bc47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76ad7c1ccc16a40ac7b6825a0c42dc06" id="r_a76ad7c1ccc16a40ac7b6825a0c42dc06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a76ad7c1ccc16a40ac7b6825a0c42dc06">deleteSelectedLayer</a> ()</td></tr>
+<tr class="separator:a76ad7c1ccc16a40ac7b6825a0c42dc06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af513e941789162a412928cf23409175c" id="r_af513e941789162a412928cf23409175c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#af513e941789162a412928cf23409175c">createParameter</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:af513e941789162a412928cf23409175c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d17515b80b333aeb2271eadcae77a64" id="r_a6d17515b80b333aeb2271eadcae77a64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a6d17515b80b333aeb2271eadcae77a64">deleteSelectedParameter</a> ()</td></tr>
+<tr class="separator:a6d17515b80b333aeb2271eadcae77a64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fafb99e429f251c4eaadd42e8b434c9" id="r_a2fafb99e429f251c4eaadd42e8b434c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a2fafb99e429f251c4eaadd42e8b434c9">createExpression</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a2fafb99e429f251c4eaadd42e8b434c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c27c9bdbdd7800bd0ce70bd366dfa10" id="r_a2c27c9bdbdd7800bd0ce70bd366dfa10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a2c27c9bdbdd7800bd0ce70bd366dfa10">deleteSelectedExpression</a> ()</td></tr>
+<tr class="separator:a2c27c9bdbdd7800bd0ce70bd366dfa10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30a3da45dd36dcdc9a3a996d09747146" id="r_a30a3da45dd36dcdc9a3a996d09747146"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a30a3da45dd36dcdc9a3a996d09747146">undo</a> ()</td></tr>
+<tr class="separator:a30a3da45dd36dcdc9a3a996d09747146"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cea1caf1d9b54e7080dc1287dca9e5c" id="r_a1cea1caf1d9b54e7080dc1287dca9e5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a1cea1caf1d9b54e7080dc1287dca9e5c">redo</a> ()</td></tr>
+<tr class="separator:a1cea1caf1d9b54e7080dc1287dca9e5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12ede9b7b4df8c8e19603b1c48e9975c" id="r_a12ede9b7b4df8c8e19603b1c48e9975c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a12ede9b7b4df8c8e19603b1c48e9975c">canUndo</a> () const noexcept</td></tr>
+<tr class="separator:a12ede9b7b4df8c8e19603b1c48e9975c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a995158a7303f0fb118361b7b9d1081f7" id="r_a995158a7303f0fb118361b7b9d1081f7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a995158a7303f0fb118361b7b9d1081f7">canRedo</a> () const noexcept</td></tr>
+<tr class="separator:a995158a7303f0fb118361b7b9d1081f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c2fc3e2be5320b109da8c965af749ff" id="r_a9c2fc3e2be5320b109da8c965af749ff"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a9c2fc3e2be5320b109da8c965af749ff">revision</a> () const noexcept</td></tr>
+<tr class="separator:a9c2fc3e2be5320b109da8c965af749ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ec3953e1cce82aa3237d2fe31103c7" id="r_a72ec3953e1cce82aa3237d2fe31103c7"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a72ec3953e1cce82aa3237d2fe31103c7">previewRevision</a> () const noexcept</td></tr>
+<tr class="separator:a72ec3953e1cce82aa3237d2fe31103c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1b774337b019606bf288f4b7a87109d" id="r_aa1b774337b019606bf288f4b7a87109d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#aa1b774337b019606bf288f4b7a87109d">kind</a> () const</td></tr>
+<tr class="separator:aa1b774337b019606bf288f4b7a87109d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac53beca35a3237b1ffb3c49ac6c37c13" id="r_ac53beca35a3237b1ffb3c49ac6c37c13"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ac53beca35a3237b1ffb3c49ac6c37c13">selectedId</a> () const</td></tr>
+<tr class="separator:ac53beca35a3237b1ffb3c49ac6c37c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3540f02f00fb2942e90423ccdf5980e0" id="r_a3540f02f00fb2942e90423ccdf5980e0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a3540f02f00fb2942e90423ccdf5980e0">selectedType</a> () const</td></tr>
+<tr class="separator:a3540f02f00fb2942e90423ccdf5980e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75ad6d5d3d46ec2869046590c6b58a56" id="r_a75ad6d5d3d46ec2869046590c6b58a56"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a75ad6d5d3d46ec2869046590c6b58a56">layerCount</a> () const</td></tr>
+<tr class="separator:a75ad6d5d3d46ec2869046590c6b58a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1735d2e5273aed0c83e8535e14611e73" id="r_a1735d2e5273aed0c83e8535e14611e73"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a1735d2e5273aed0c83e8535e14611e73">layerId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a1735d2e5273aed0c83e8535e14611e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9cb5913ad64df413ea4972f3518c3b4" id="r_ad9cb5913ad64df413ea4972f3518c3b4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ad9cb5913ad64df413ea4972f3518c3b4">layerName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ad9cb5913ad64df413ea4972f3518c3b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0e25c3b1a91a0ff934ced1fb9657f75" id="r_af0e25c3b1a91a0ff934ced1fb9657f75"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#af0e25c3b1a91a0ff934ced1fb9657f75">layerVisible</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:af0e25c3b1a91a0ff934ced1fb9657f75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a379d76f7e91a38db483807aa356d1b2e" id="r_a379d76f7e91a38db483807aa356d1b2e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a379d76f7e91a38db483807aa356d1b2e">layerZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a379d76f7e91a38db483807aa356d1b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4ae180ed7822f5b4024ec2c73b0cba9" id="r_af4ae180ed7822f5b4024ec2c73b0cba9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#af4ae180ed7822f5b4024ec2c73b0cba9">isLayerSelected</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:af4ae180ed7822f5b4024ec2c73b0cba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ea5d57a29393b8873fd9cdd8d824c75" id="r_a6ea5d57a29393b8873fd9cdd8d824c75"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a6ea5d57a29393b8873fd9cdd8d824c75">previewLayerCount</a> () const</td></tr>
+<tr class="separator:a6ea5d57a29393b8873fd9cdd8d824c75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a333477120e13df505a2bf9ef0cbb07c8" id="r_a333477120e13df505a2bf9ef0cbb07c8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a333477120e13df505a2bf9ef0cbb07c8">previewX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a333477120e13df505a2bf9ef0cbb07c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8d89d5e51d8d71f9cccdb76db9b11d5" id="r_af8d89d5e51d8d71f9cccdb76db9b11d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#af8d89d5e51d8d71f9cccdb76db9b11d5">previewY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:af8d89d5e51d8d71f9cccdb76db9b11d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a977d58458a10fd7b7299122fc77f8a77" id="r_a977d58458a10fd7b7299122fc77f8a77"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a977d58458a10fd7b7299122fc77f8a77">previewW</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a977d58458a10fd7b7299122fc77f8a77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeda413803ea9d34b879a0ec9ab4a61f4" id="r_aeda413803ea9d34b879a0ec9ab4a61f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#aeda413803ea9d34b879a0ec9ab4a61f4">previewH</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aeda413803ea9d34b879a0ec9ab4a61f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae09860c06e21e4be82034c02cc74f81c" id="r_ae09860c06e21e4be82034c02cc74f81c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ae09860c06e21e4be82034c02cc74f81c">previewR</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ae09860c06e21e4be82034c02cc74f81c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0ab1d343eea90f92b0377edad9ae5c2" id="r_aa0ab1d343eea90f92b0377edad9ae5c2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#aa0ab1d343eea90f92b0377edad9ae5c2">previewG</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aa0ab1d343eea90f92b0377edad9ae5c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4960823c498251e96c5059b1c71a4eaf" id="r_a4960823c498251e96c5059b1c71a4eaf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a4960823c498251e96c5059b1c71a4eaf">previewB</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a4960823c498251e96c5059b1c71a4eaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42afb03d9ac7c2d5cce2b67f72d4b8ff" id="r_a42afb03d9ac7c2d5cce2b67f72d4b8ff"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a42afb03d9ac7c2d5cce2b67f72d4b8ff">previewA</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a42afb03d9ac7c2d5cce2b67f72d4b8ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae394c5298bec76e6d60bc9cf92980256" id="r_ae394c5298bec76e6d60bc9cf92980256"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ae394c5298bec76e6d60bc9cf92980256">isPreviewSelected</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ae394c5298bec76e6d60bc9cf92980256"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18cfab50c64c24ecbdfedb400ee18a8f" id="r_a18cfab50c64c24ecbdfedb400ee18a8f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a18cfab50c64c24ecbdfedb400ee18a8f">previewName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a18cfab50c64c24ecbdfedb400ee18a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f6b5abc6314ad5fad5199f38b0e07fc" id="r_a7f6b5abc6314ad5fad5199f38b0e07fc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a7f6b5abc6314ad5fad5199f38b0e07fc">parameterCount</a> () const</td></tr>
+<tr class="separator:a7f6b5abc6314ad5fad5199f38b0e07fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6c1c06cca34f4361b50f7c0f58b86ab" id="r_ad6c1c06cca34f4361b50f7c0f58b86ab"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ad6c1c06cca34f4361b50f7c0f58b86ab">parameterId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ad6c1c06cca34f4361b50f7c0f58b86ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1f0a906318265b0788529ca5bb6888d" id="r_ab1f0a906318265b0788529ca5bb6888d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#ab1f0a906318265b0788529ca5bb6888d">parameterName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab1f0a906318265b0788529ca5bb6888d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1317bdf73eb41e2247b067035b9a76b5" id="r_a1317bdf73eb41e2247b067035b9a76b5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a1317bdf73eb41e2247b067035b9a76b5">parameterValue</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a1317bdf73eb41e2247b067035b9a76b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1afc14cf72719fa3422b361dd3d9e189" id="r_a1afc14cf72719fa3422b361dd3d9e189"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a1afc14cf72719fa3422b361dd3d9e189">parameterMinimum</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a1afc14cf72719fa3422b361dd3d9e189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63e1a367a1c0857255b704e040bf6293" id="r_a63e1a367a1c0857255b704e040bf6293"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a63e1a367a1c0857255b704e040bf6293">parameterMaximum</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a63e1a367a1c0857255b704e040bf6293"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6241c9af67194b06880baaf0e73d1701" id="r_a6241c9af67194b06880baaf0e73d1701"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a6241c9af67194b06880baaf0e73d1701">isParameterSelected</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a6241c9af67194b06880baaf0e73d1701"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9561e0b6aa19273a90a20b0024bc4bad" id="r_a9561e0b6aa19273a90a20b0024bc4bad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a9561e0b6aa19273a90a20b0024bc4bad">expressionCount</a> () const</td></tr>
+<tr class="separator:a9561e0b6aa19273a90a20b0024bc4bad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a224c77637b10ca827a3d2b7e6322238b" id="r_a224c77637b10ca827a3d2b7e6322238b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a224c77637b10ca827a3d2b7e6322238b">expressionId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a224c77637b10ca827a3d2b7e6322238b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40f4cfe1cdceff834fea8ca792413b8a" id="r_a40f4cfe1cdceff834fea8ca792413b8a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a40f4cfe1cdceff834fea8ca792413b8a">expressionName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a40f4cfe1cdceff834fea8ca792413b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cbbfe3e8e2381757b200dd08615e3de" id="r_a7cbbfe3e8e2381757b200dd08615e3de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a7cbbfe3e8e2381757b200dd08615e3de">isExpressionSelected</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a7cbbfe3e8e2381757b200dd08615e3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74743b89599c9786f9432d97842da161" id="r_a74743b89599c9786f9432d97842da161"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a74743b89599c9786f9432d97842da161">expressionChannelCount</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a74743b89599c9786f9432d97842da161"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a004b7f2e5b007033f8b25a2438837178" id="r_a004b7f2e5b007033f8b25a2438837178"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#a004b7f2e5b007033f8b25a2438837178">expressionChannelName</a> (int expression, int channel) const</td></tr>
+<tr class="separator:a004b7f2e5b007033f8b25a2438837178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Timeline-style controller for one authored avatar document. </p>
+<p>Owns the document, local undo and a CPU composite of authored layer rects. Live <code>AvatarInstance</code> publication stays candidate-first and is skipped until a texture resolver is attached; failed publish keeps the last successful layout.</p>
+<p>@ownership Editor owns the document. Preview getters copy values. @threadaffinity Owner thread only. @reentrancy No unknown callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00031">31</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8385cccd589e8240823f66a7a9b19e93" name="a8385cccd589e8240823f66a7a9b19e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8385cccd589e8240823f66a7a9b19e93">&#9670;&#160;</a></span>AvatarDocumentEditor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar_editor::AvatarDocumentEditor::AvatarDocumentEditor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>targetId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a seeded two-layer face with a referenced parameter. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9e09d895815ee6dc5c618a31e90ec32" name="ab9e09d895815ee6dc5c618a31e90ec32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9e09d895815ee6dc5c618a31e90ec32">&#9670;&#160;</a></span>AvatarDocumentEditor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::avatar_editor::AvatarDocumentEditor::AvatarDocumentEditor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">AvatarDocumentEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a995158a7303f0fb118361b7b9d1081f7" name="a995158a7303f0fb118361b7b9d1081f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a995158a7303f0fb118361b7b9d1081f7">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar_editor::AvatarDocumentEditor::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00076">eve::editor::LocalTransactionBackend::canRedo()</a>.</p>
+
+</div>
+</div>
+<a id="a12ede9b7b4df8c8e19603b1c48e9975c" name="a12ede9b7b4df8c8e19603b1c48e9975c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12ede9b7b4df8c8e19603b1c48e9975c">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar_editor::AvatarDocumentEditor::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00074">eve::editor::LocalTransactionBackend::canUndo()</a>.</p>
+
+</div>
+</div>
+<a id="a090628f42519abe55b9d0cbf887e84fc" name="a090628f42519abe55b9d0cbf887e84fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a090628f42519abe55b9d0cbf887e84fc">&#9670;&#160;</a></span>configureWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::configureWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Install Layers / Preview / Inspector / Parameters / Expressions panels. </p>
+<dl class="section note"><dt>注解</dt><dd>Does not retain <code>workspace</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00169">eve::editor::EditorWorkspace::activatePanel()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00053">eve::editor::EditorWorkspace::registerPanel()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00128">eve::editor::EditorWorkspace::setPanelCapability()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00137">eve::editor::EditorWorkspace::setPanelContext()</a> , 以及 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="a2fafb99e429f251c4eaadd42e8b434c9" name="a2fafb99e429f251c4eaadd42e8b434c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fafb99e429f251c4eaadd42e8b434c9">&#9670;&#160;</a></span>createExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::createExpression </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00590">created</a>, <a class="el" href="AvatarTarget_8h_source.html#l00068">eve::avatar_editing::AvatarExpressionValue::id</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00357">eve::avatar_editing::AvatarDocumentTarget::makeCreateExpression()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AvatarTarget_8h_source.html#l00069">eve::avatar_editing::AvatarExpressionValue::name</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00208">selectExpression()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a151d13f1969234eaa8628f81e551bc47" name="a151d13f1969234eaa8628f81e551bc47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a151d13f1969234eaa8628f81e551bc47">&#9670;&#160;</a></span>createLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::createLayer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00590">created</a>, <a class="el" href="AvatarTarget_8h_source.html#l00053">eve::avatar_editing::AvatarLayerValue::id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="AvatarTarget_8h_source.html#l00110">eve::avatar_editing::AvatarDocumentTarget::layers()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00309">eve::avatar_editing::AvatarDocumentTarget::makeCreateLayer()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00179">selectLayer()</a>.</p>
+
+</div>
+</div>
+<a id="af513e941789162a412928cf23409175c" name="af513e941789162a412928cf23409175c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af513e941789162a412928cf23409175c">&#9670;&#160;</a></span>createParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::createParameter </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00590">created</a>, <a class="el" href="AvatarTarget_8h_source.html#l00062">eve::avatar_editing::AvatarParameterValue::id</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00332">eve::avatar_editing::AvatarDocumentTarget::makeCreateParameter()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AvatarTarget_8h_source.html#l00063">eve::avatar_editing::AvatarParameterValue::name</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00193">selectParameter()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a2c27c9bdbdd7800bd0ce70bd366dfa10" name="a2c27c9bdbdd7800bd0ce70bd366dfa10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c27c9bdbdd7800bd0ce70bd366dfa10">&#9670;&#160;</a></span>deleteSelectedExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::deleteSelectedExpression </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00112">eve::avatar_editing::AvatarDocumentTarget::expressions()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00369">eve::avatar_editing::AvatarDocumentTarget::makeDeleteExpression()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00208">selectExpression()</a>.</p>
+
+</div>
+</div>
+<a id="a76ad7c1ccc16a40ac7b6825a0c42dc06" name="a76ad7c1ccc16a40ac7b6825a0c42dc06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76ad7c1ccc16a40ac7b6825a0c42dc06">&#9670;&#160;</a></span>deleteSelectedLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::deleteSelectedLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00110">eve::avatar_editing::AvatarDocumentTarget::layers()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00320">eve::avatar_editing::AvatarDocumentTarget::makeDeleteLayer()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="AvatarDocumentEditor_8h_source.html#l00068">revision()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00179">selectLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a6d17515b80b333aeb2271eadcae77a64" name="a6d17515b80b333aeb2271eadcae77a64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d17515b80b333aeb2271eadcae77a64">&#9670;&#160;</a></span>deleteSelectedParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::deleteSelectedParameter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00302">302</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8cpp_source.html#l00343">eve::avatar_editing::AvatarDocumentTarget::makeDeleteParameter()</a>, <a class="el" href="AvatarTarget_8h_source.html#l00111">eve::avatar_editing::AvatarDocumentTarget::parameters()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="AvatarDocumentEditor_8h_source.html#l00068">revision()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00193">selectParameter()</a>.</p>
+
+</div>
+</div>
+<a id="a74743b89599c9786f9432d97842da161" name="a74743b89599c9786f9432d97842da161"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74743b89599c9786f9432d97842da161">&#9670;&#160;</a></span>expressionChannelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar_editor::AvatarDocumentEditor::expressionChannelCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00457">457</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a004b7f2e5b007033f8b25a2438837178" name="a004b7f2e5b007033f8b25a2438837178"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a004b7f2e5b007033f8b25a2438837178">&#9670;&#160;</a></span>expressionChannelName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::expressionChannelName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>expression</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>channel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a9561e0b6aa19273a90a20b0024bc4bad" name="a9561e0b6aa19273a90a20b0024bc4bad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9561e0b6aa19273a90a20b0024bc4bad">&#9670;&#160;</a></span>expressionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar_editor::AvatarDocumentEditor::expressionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00112">eve::avatar_editing::AvatarDocumentTarget::expressions()</a>.</p>
+
+</div>
+</div>
+<a id="a224c77637b10ca827a3d2b7e6322238b" name="a224c77637b10ca827a3d2b7e6322238b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a224c77637b10ca827a3d2b7e6322238b">&#9670;&#160;</a></span>expressionId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::expressionId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00445">445</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a40f4cfe1cdceff834fea8ca792413b8a" name="a40f4cfe1cdceff834fea8ca792413b8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40f4cfe1cdceff834fea8ca792413b8a">&#9670;&#160;</a></span>expressionName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::expressionName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00449">449</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7cbbfe3e8e2381757b200dd08615e3de" name="a7cbbfe3e8e2381757b200dd08615e3de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cbbfe3e8e2381757b200dd08615e3de">&#9670;&#160;</a></span>isExpressionSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar_editor::AvatarDocumentEditor::isExpressionSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="af4ae180ed7822f5b4024ec2c73b0cba9" name="af4ae180ed7822f5b4024ec2c73b0cba9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4ae180ed7822f5b4024ec2c73b0cba9">&#9670;&#160;</a></span>isLayerSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar_editor::AvatarDocumentEditor::isLayerSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a6241c9af67194b06880baaf0e73d1701" name="a6241c9af67194b06880baaf0e73d1701"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6241c9af67194b06880baaf0e73d1701">&#9670;&#160;</a></span>isParameterSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar_editor::AvatarDocumentEditor::isParameterSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00440">440</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ae394c5298bec76e6d60bc9cf92980256" name="ae394c5298bec76e6d60bc9cf92980256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae394c5298bec76e6d60bc9cf92980256">&#9670;&#160;</a></span>isPreviewSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar_editor::AvatarDocumentEditor::isPreviewSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa1b774337b019606bf288f4b7a87109d" name="aa1b774337b019606bf288f4b7a87109d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1b774337b019606bf288f4b7a87109d">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00108">eve::avatar_editing::AvatarDocumentTarget::kind()</a>.</p>
+
+</div>
+</div>
+<a id="a75ad6d5d3d46ec2869046590c6b58a56" name="a75ad6d5d3d46ec2869046590c6b58a56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75ad6d5d3d46ec2869046590c6b58a56">&#9670;&#160;</a></span>layerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar_editor::AvatarDocumentEditor::layerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00110">eve::avatar_editing::AvatarDocumentTarget::layers()</a>.</p>
+
+</div>
+</div>
+<a id="a1735d2e5273aed0c83e8535e14611e73" name="a1735d2e5273aed0c83e8535e14611e73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1735d2e5273aed0c83e8535e14611e73">&#9670;&#160;</a></span>layerId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::layerId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="ad9cb5913ad64df413ea4972f3518c3b4" name="ad9cb5913ad64df413ea4972f3518c3b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9cb5913ad64df413ea4972f3518c3b4">&#9670;&#160;</a></span>layerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::layerName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="af0e25c3b1a91a0ff934ced1fb9657f75" name="af0e25c3b1a91a0ff934ced1fb9657f75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0e25c3b1a91a0ff934ced1fb9657f75">&#9670;&#160;</a></span>layerVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::avatar_editor::AvatarDocumentEditor::layerVisible </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a379d76f7e91a38db483807aa356d1b2e" name="a379d76f7e91a38db483807aa356d1b2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a379d76f7e91a38db483807aa356d1b2e">&#9670;&#160;</a></span>layerZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar_editor::AvatarDocumentEditor::layerZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="add337bba4bb92ca8d1e851f0ba3e5f17" name="add337bba4bb92ca8d1e851f0ba3e5f17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add337bba4bb92ca8d1e851f0ba3e5f17">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">AvatarDocumentEditor</a> &amp; eve::avatar_editor::AvatarDocumentEditor::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html">AvatarDocumentEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f6b5abc6314ad5fad5199f38b0e07fc" name="a7f6b5abc6314ad5fad5199f38b0e07fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f6b5abc6314ad5fad5199f38b0e07fc">&#9670;&#160;</a></span>parameterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar_editor::AvatarDocumentEditor::parameterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00111">eve::avatar_editing::AvatarDocumentTarget::parameters()</a>.</p>
+
+</div>
+</div>
+<a id="ad6c1c06cca34f4361b50f7c0f58b86ab" name="ad6c1c06cca34f4361b50f7c0f58b86ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6c1c06cca34f4361b50f7c0f58b86ab">&#9670;&#160;</a></span>parameterId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::parameterId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00420">420</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a63e1a367a1c0857255b704e040bf6293" name="a63e1a367a1c0857255b704e040bf6293"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63e1a367a1c0857255b704e040bf6293">&#9670;&#160;</a></span>parameterMaximum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::parameterMaximum </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00436">436</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1afc14cf72719fa3422b361dd3d9e189" name="a1afc14cf72719fa3422b361dd3d9e189"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1afc14cf72719fa3422b361dd3d9e189">&#9670;&#160;</a></span>parameterMinimum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::parameterMinimum </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00432">432</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ab1f0a906318265b0788529ca5bb6888d" name="ab1f0a906318265b0788529ca5bb6888d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1f0a906318265b0788529ca5bb6888d">&#9670;&#160;</a></span>parameterName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::parameterName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1317bdf73eb41e2247b067035b9a76b5" name="a1317bdf73eb41e2247b067035b9a76b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1317bdf73eb41e2247b067035b9a76b5">&#9670;&#160;</a></span>parameterValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::parameterValue </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a01dd24954b5eccf88b1c9d143a3a7aaf" name="a01dd24954b5eccf88b1c9d143a3a7aaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01dd24954b5eccf88b1c9d143a3a7aaf">&#9670;&#160;</a></span>pointerDown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::pointerDown </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00179">selectLayer()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a42afb03d9ac7c2d5cce2b67f72d4b8ff" name="a42afb03d9ac7c2d5cce2b67f72d4b8ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42afb03d9ac7c2d5cce2b67f72d4b8ff">&#9670;&#160;</a></span>previewA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::previewA </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a4960823c498251e96c5059b1c71a4eaf" name="a4960823c498251e96c5059b1c71a4eaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4960823c498251e96c5059b1c71a4eaf">&#9670;&#160;</a></span>previewB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::previewB </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00403">403</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa0ab1d343eea90f92b0377edad9ae5c2" name="aa0ab1d343eea90f92b0377edad9ae5c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0ab1d343eea90f92b0377edad9ae5c2">&#9670;&#160;</a></span>previewG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::previewG </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00399">399</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aeda413803ea9d34b879a0ec9ab4a61f4" name="aeda413803ea9d34b879a0ec9ab4a61f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeda413803ea9d34b879a0ec9ab4a61f4">&#9670;&#160;</a></span>previewH()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::previewH </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00391">391</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a6ea5d57a29393b8873fd9cdd8d824c75" name="a6ea5d57a29393b8873fd9cdd8d824c75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ea5d57a29393b8873fd9cdd8d824c75">&#9670;&#160;</a></span>previewLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::avatar_editor::AvatarDocumentEditor::previewLayerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a18cfab50c64c24ecbdfedb400ee18a8f" name="a18cfab50c64c24ecbdfedb400ee18a8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18cfab50c64c24ecbdfedb400ee18a8f">&#9670;&#160;</a></span>previewName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::previewName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00415">415</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ae09860c06e21e4be82034c02cc74f81c" name="ae09860c06e21e4be82034c02cc74f81c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae09860c06e21e4be82034c02cc74f81c">&#9670;&#160;</a></span>previewR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::previewR </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a72ec3953e1cce82aa3237d2fe31103c7" name="a72ec3953e1cce82aa3237d2fe31103c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72ec3953e1cce82aa3237d2fe31103c7">&#9670;&#160;</a></span>previewRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::avatar_editor::AvatarDocumentEditor::previewRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a977d58458a10fd7b7299122fc77f8a77" name="a977d58458a10fd7b7299122fc77f8a77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a977d58458a10fd7b7299122fc77f8a77">&#9670;&#160;</a></span>previewW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::previewW </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a333477120e13df505a2bf9ef0cbb07c8" name="a333477120e13df505a2bf9ef0cbb07c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a333477120e13df505a2bf9ef0cbb07c8">&#9670;&#160;</a></span>previewX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::previewX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="af8d89d5e51d8d71f9cccdb76db9b11d5" name="af8d89d5e51d8d71f9cccdb76db9b11d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8d89d5e51d8d71f9cccdb76db9b11d5">&#9670;&#160;</a></span>previewY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::avatar_editor::AvatarDocumentEditor::previewY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00383">383</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1cea1caf1d9b54e7080dc1287dca9e5c" name="a1cea1caf1d9b54e7080dc1287dca9e5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cea1caf1d9b54e7080dc1287dca9e5c">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::avatar_editor::AvatarDocumentEditor::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00349">349</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">eve::editor::LocalTransactionBackend::redo()</a>.</p>
+
+</div>
+</div>
+<a id="a9c2fc3e2be5320b109da8c965af749ff" name="a9c2fc3e2be5320b109da8c965af749ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c2fc3e2be5320b109da8c965af749ff">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::avatar_editor::AvatarDocumentEditor::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00081">eve::avatar_editing::AvatarDocumentTarget::revision()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00276">deleteSelectedLayer()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00302">deleteSelectedParameter()</a>.</p>
+
+</div>
+</div>
+<a id="ac53beca35a3237b1ffb3c49ac6c37c13" name="ac53beca35a3237b1ffb3c49ac6c37c13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac53beca35a3237b1ffb3c49ac6c37c13">&#9670;&#160;</a></span>selectedId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::selectedId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3540f02f00fb2942e90423ccdf5980e0" name="a3540f02f00fb2942e90423ccdf5980e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3540f02f00fb2942e90423ccdf5980e0">&#9670;&#160;</a></span>selectedType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::avatar_editor::AvatarDocumentEditor::selectedType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2fbffe6aa7f932a531f431c78da87a39" name="a2fbffe6aa7f932a531f431c78da87a39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fbffe6aa7f932a531f431c78da87a39">&#9670;&#160;</a></span>selectExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::selectExpression </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8h_source.html#l00112">eve::avatar_editing::AvatarDocumentTarget::expressions()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00320">createExpression()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00329">deleteSelectedExpression()</a>.</p>
+
+</div>
+</div>
+<a id="a75523fb94bfb52435267e926f0aff318" name="a75523fb94bfb52435267e926f0aff318"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75523fb94bfb52435267e926f0aff318">&#9670;&#160;</a></span>selectLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::selectLayer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="AvatarTarget_8h_source.html#l00110">eve::avatar_editing::AvatarDocumentTarget::layers()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00263">createLayer()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00276">deleteSelectedLayer()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00223">pointerDown()</a>.</p>
+
+</div>
+</div>
+<a id="a998b90a1dfbeb299f90c7e3aa373a7b8" name="a998b90a1dfbeb299f90c7e3aa373a7b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a998b90a1dfbeb299f90c7e3aa373a7b8">&#9670;&#160;</a></span>selectParameter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::selectParameter </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="AvatarTarget_8h_source.html#l00111">eve::avatar_editing::AvatarDocumentTarget::parameters()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00293">createParameter()</a> , 以及 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00302">deleteSelectedParameter()</a>.</p>
+
+</div>
+</div>
+<a id="a3ad408d9bbf5520f78a2fa85e3150216" name="a3ad408d9bbf5520f78a2fa85e3150216"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ad408d9bbf5520f78a2fa85e3150216">&#9670;&#160;</a></span>setLayerVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::setLayerVisible </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8cpp_source.html#l00254">eve::avatar_editing::AvatarDocumentTarget::makeSet()</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a>.</p>
+
+</div>
+</div>
+<a id="a0ede6db4b5bf395068e808c31d0b5695" name="a0ede6db4b5bf395068e808c31d0b5695"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ede6db4b5bf395068e808c31d0b5695">&#9670;&#160;</a></span>setLayerZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::setLayerZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>zIndex</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8cpp_source.html#l00254">eve::avatar_editing::AvatarDocumentTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="ab22eb3e3019632324c8cd53fbaeedb0c" name="ab22eb3e3019632324c8cd53fbaeedb0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab22eb3e3019632324c8cd53fbaeedb0c">&#9670;&#160;</a></span>setParameterValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; void &gt; eve::avatar_editor::AvatarDocumentEditor::setParameterValue </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AvatarTarget_8cpp_source.html#l00254">eve::avatar_editing::AvatarDocumentTarget::makeSet()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a36613ab464fb5cf6d5ac2e0cc6661ae5" name="a36613ab464fb5cf6d5ac2e0cc6661ae5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36613ab464fb5cf6d5ac2e0cc6661ae5">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html">avatar_editing::AvatarDocumentTarget</a> &amp; eve::avatar_editor::AvatarDocumentEditor::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the authoritative avatar document. </p>
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a> 第 <a class="el" href="AvatarDocumentEditor_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30a3da45dd36dcdc9a3a996d09747146" name="a30a3da45dd36dcdc9a3a996d09747146"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30a3da45dd36dcdc9a3a996d09747146">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1avatar__editing.html#a1d11e38f7feab95b8cd111c2d33299fd">avatar_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::avatar_editor::AvatarDocumentEditor::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a> 第 <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">eve::editor::LocalTransactionBackend::undo()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/avatar_editor/<a class="el" href="AvatarDocumentEditor_8h_source.html">AvatarDocumentEditor.h</a></li>
+<li>src/modules/avatar_editor/<a class="el" href="AvatarDocumentEditor_8cpp_source.html">AvatarDocumentEditor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/queue_editing/QueueInspector.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9eec3243c26570c5439c1a37018ffe58.html">queue_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">QueueInspector.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="QueueInspector_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProtocol_8h.html">editing/EditingProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1orders.html">eve::orders</a> { <span class="keyword">class </span>CommandQueue; }</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1production.html">eve::production</a> { <span class="keyword">class </span>WorkQueue; }</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1queue__editing.html">eve::queue_editing</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1queue__editing.html#a0287c4acdcf3806ceb6ed4d206426cac">   13</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">DiagnosticSeverity</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">editing::DiagnosticSeverity</a>; <span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Diagnostic.html">EditorDiagnostic</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespaceeve_1_1queue__editing.html#a04626cd6e4d12e5db4808140525cf7ab">   14</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>=<a class="code hl_typedef" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html">QueueItemSnapshot</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#abfed03b8a3c1f1bc514c966504eda298">   18</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#abfed03b8a3c1f1bc514c966504eda298">id</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a941975b227092b2c77a64a71267df51f">   19</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a941975b227092b2c77a64a71267df51f">owner</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ab32d1d35b9bbf857316cd630d4e5c3e9">   20</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ab32d1d35b9bbf857316cd630d4e5c3e9">kind</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a522a7e933a23cd3cc8560617d93b9c12">   21</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a522a7e933a23cd3cc8560617d93b9c12">product</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a1fdd21748f49a1ddd4e4828c60df36cc">   22</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a1fdd21748f49a1ddd4e4828c60df36cc">state</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a5b109c8c49fd438762316c8519f3f5bf">   23</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a5b109c8c49fd438762316c8519f3f5bf">priority</a> = 0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ae7715dd5ccfba46063c9d4bc30abd828">   24</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ae7715dd5ccfba46063c9d4bc30abd828">progress</a> = 0.0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ace631f4baace1d6193be212314d08594">   25</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ace631f4baace1d6193be212314d08594">duration</a> = 0.0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#abaac7be40009f58d2be7992081104bae">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#abaac7be40009f58d2be7992081104bae">payloadJson</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html">QueueEventSnapshot</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a451a3a0b408e184e9cd48cfb2593648d">   31</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a451a3a0b408e184e9cd48cfb2593648d">sequence</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a1da6c2a8d1996c56fe5f9aa0a1b14493">   32</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a1da6c2a8d1996c56fe5f9aa0a1b14493">tick</a> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#aee501384e8a7a315d03701d42d0eee59">   33</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#aee501384e8a7a315d03701d42d0eee59">item</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#abe9b6309cbcf988736318d98223254b0">   34</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#abe9b6309cbcf988736318d98223254b0">kind</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a0e6f249ba18890ecd3387e9b4bdf1784">   35</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a0e6f249ba18890ecd3387e9b4bdf1784">from</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a178639ad1c6261d395f989b8ce7bdaed">   36</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a178639ad1c6261d395f989b8ce7bdaed">to</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#aa7f3fbc48b9ffc920ea20fba68c062f6">   37</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#aa7f3fbc48b9ffc920ea20fba68c062f6">reason</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html">   41</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html">QueueInspectionSnapshot</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#af7648383ead33ca638ab2a1cc0cd29bb">   42</a></span>    std::string <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#af7648383ead33ca638ab2a1cc0cd29bb">domain</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a5eabf5936390359009daa55729571ea0">   43</a></span>    std::vector&lt;QueueItemSnapshot&gt; <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a5eabf5936390359009daa55729571ea0">items</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a14f1dba47fd59a8584832f977e9e3ad7">   44</a></span>    std::vector&lt;QueueEventSnapshot&gt; <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a14f1dba47fd59a8584832f977e9e3ad7">events</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a154bf39dcb50f52ec1e9e6c123e46244">   45</a></span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_variable" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a154bf39dcb50f52ec1e9e6c123e46244">diagnostics</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>};</div>
+</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="};">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1queue__editing_1_1RuntimeQueueInspector.html">   49</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1queue__editing_1_1RuntimeQueueInspector.html">RuntimeQueueInspector</a> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_struct" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html">QueueInspectionSnapshot</a> <a class="code hl_function" href="classeve_1_1queue__editing_1_1RuntimeQueueInspector.html#a0cf7c6725e13e13bfdfa417db3bd3632">capture</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1orders_1_1CommandQueue.html">orders::CommandQueue</a>&amp; queue,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                    <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = {},</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                    <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_struct" href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html">QueueInspectionSnapshot</a> <a class="code hl_function" href="classeve_1_1queue__editing_1_1RuntimeQueueInspector.html#a0cf7c6725e13e13bfdfa417db3bd3632">capture</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1production_1_1WorkQueue.html">production::WorkQueue</a>&amp; queue,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                                    <span class="keyword">const</span> std::string&amp; owner = {},</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                    <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = {},</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                    <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}  <span class="comment">// namespace eve::queue_editing</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aEditingProtocol_8h_html"><div class="ttname"><a href="EditingProtocol_8h.html">EditingProtocol.h</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1orders_1_1CommandQueue_html"><div class="ttname"><a href="classeve_1_1orders_1_1CommandQueue.html">eve::orders::CommandQueue</a></div><div class="ttdoc">Generic priority order queue with no gameplay or entity semantics.</div><div class="ttdef"><b>Definition</b> <a href="CommandQueue_8h_source.html#l00087">CommandQueue.h:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1production_1_1WorkQueue_html"><div class="ttname"><a href="classeve_1_1production_1_1WorkQueue.html">eve::production::WorkQueue</a></div><div class="ttdoc">Generic multi-owner, multi-slot continuous-progress work queue.</div><div class="ttdef"><b>Definition</b> <a href="Production_8h_source.html#l00054">Production.h:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1queue__editing_1_1RuntimeQueueInspector_html"><div class="ttname"><a href="classeve_1_1queue__editing_1_1RuntimeQueueInspector.html">eve::queue_editing::RuntimeQueueInspector</a></div><div class="ttdoc">Safely copies short-lived Orders and Production observations for editor use.</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00049">QueueInspector.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1queue__editing_1_1RuntimeQueueInspector_html_a0cf7c6725e13e13bfdfa417db3bd3632"><div class="ttname"><a href="classeve_1_1queue__editing_1_1RuntimeQueueInspector.html#a0cf7c6725e13e13bfdfa417db3bd3632">eve::queue_editing::RuntimeQueueInspector::capture</a></div><div class="ttdeci">QueueInspectionSnapshot capture(const orders::CommandQueue &amp;queue, const std::string &amp;state={}, const std::string &amp;kind={}) const</div><div class="ttdoc">Capture an Orders queue and optionally filter by state or kind.</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8cpp_source.html#l00013">QueueInspector.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a011e7c6c3a26ea959d34a63beca22c19"><div class="ttname"><a href="namespaceeve_1_1editing.html#a011e7c6c3a26ea959d34a63beca22c19">eve::editing::DiagnosticSeverity</a></div><div class="ttdeci">eve::Severity DiagnosticSeverity</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00015">EditingResult.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a637962b2b7ca12ca9c3416d6fd5f2b1b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::editing::RuleId</a></div><div class="ttdeci">StrongId&lt; RuleIdTag &gt; RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00057">EditingIds.h:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1orders_html"><div class="ttname"><a href="namespaceeve_1_1orders.html">eve::orders</a></div><div class="ttdef"><b>Definition</b> <a href="CommandQueue_8cpp_source.html#l00017">CommandQueue.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1production_html"><div class="ttname"><a href="namespaceeve_1_1production.html">eve::production</a></div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00017">Production.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1queue__editing_html"><div class="ttname"><a href="namespaceeve_1_1queue__editing.html">eve::queue_editing</a></div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8cpp_source.html#l00008">QueueInspector.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a835e96ad5cbfc3e4c4c391a6d039e0c7"><div class="ttname"><a href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Stable severity of a diagnostic, independent of its display text.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00020">Diagnostic.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueEventSnapshot_html"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html">eve::queue_editing::QueueEventSnapshot</a></div><div class="ttdoc">Runtime-neutral lifecycle event for timeline presenters.</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00030">QueueInspector.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueEventSnapshot_html_a0e6f249ba18890ecd3387e9b4bdf1784"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a0e6f249ba18890ecd3387e9b4bdf1784">eve::queue_editing::QueueEventSnapshot::from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00035">QueueInspector.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueEventSnapshot_html_a178639ad1c6261d395f989b8ce7bdaed"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a178639ad1c6261d395f989b8ce7bdaed">eve::queue_editing::QueueEventSnapshot::to</a></div><div class="ttdeci">std::string to</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00036">QueueInspector.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueEventSnapshot_html_a1da6c2a8d1996c56fe5f9aa0a1b14493"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a1da6c2a8d1996c56fe5f9aa0a1b14493">eve::queue_editing::QueueEventSnapshot::tick</a></div><div class="ttdeci">std::uint64_t tick</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00032">QueueInspector.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueEventSnapshot_html_a451a3a0b408e184e9cd48cfb2593648d"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#a451a3a0b408e184e9cd48cfb2593648d">eve::queue_editing::QueueEventSnapshot::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00031">QueueInspector.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueEventSnapshot_html_aa7f3fbc48b9ffc920ea20fba68c062f6"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#aa7f3fbc48b9ffc920ea20fba68c062f6">eve::queue_editing::QueueEventSnapshot::reason</a></div><div class="ttdeci">std::string reason</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00037">QueueInspector.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueEventSnapshot_html_abe9b6309cbcf988736318d98223254b0"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#abe9b6309cbcf988736318d98223254b0">eve::queue_editing::QueueEventSnapshot::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00034">QueueInspector.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueEventSnapshot_html_aee501384e8a7a315d03701d42d0eee59"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueEventSnapshot.html#aee501384e8a7a315d03701d42d0eee59">eve::queue_editing::QueueEventSnapshot::item</a></div><div class="ttdeci">std::string item</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00033">QueueInspector.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueInspectionSnapshot_html"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html">eve::queue_editing::QueueInspectionSnapshot</a></div><div class="ttdoc">Immutable queue inspection result with structured diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00041">QueueInspector.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueInspectionSnapshot_html_a14f1dba47fd59a8584832f977e9e3ad7"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a14f1dba47fd59a8584832f977e9e3ad7">eve::queue_editing::QueueInspectionSnapshot::events</a></div><div class="ttdeci">std::vector&lt; QueueEventSnapshot &gt; events</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00044">QueueInspector.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueInspectionSnapshot_html_a154bf39dcb50f52ec1e9e6c123e46244"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a154bf39dcb50f52ec1e9e6c123e46244">eve::queue_editing::QueueInspectionSnapshot::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00045">QueueInspector.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueInspectionSnapshot_html_a5eabf5936390359009daa55729571ea0"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#a5eabf5936390359009daa55729571ea0">eve::queue_editing::QueueInspectionSnapshot::items</a></div><div class="ttdeci">std::vector&lt; QueueItemSnapshot &gt; items</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00043">QueueInspector.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueInspectionSnapshot_html_af7648383ead33ca638ab2a1cc0cd29bb"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueInspectionSnapshot.html#af7648383ead33ca638ab2a1cc0cd29bb">eve::queue_editing::QueueInspectionSnapshot::domain</a></div><div class="ttdeci">std::string domain</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00042">QueueInspector.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html">eve::queue_editing::QueueItemSnapshot</a></div><div class="ttdoc">Runtime-neutral retained queue item for inspector tables.</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00017">QueueInspector.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_a1fdd21748f49a1ddd4e4828c60df36cc"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a1fdd21748f49a1ddd4e4828c60df36cc">eve::queue_editing::QueueItemSnapshot::state</a></div><div class="ttdeci">std::string state</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00022">QueueInspector.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_a522a7e933a23cd3cc8560617d93b9c12"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a522a7e933a23cd3cc8560617d93b9c12">eve::queue_editing::QueueItemSnapshot::product</a></div><div class="ttdeci">std::string product</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00021">QueueInspector.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_a5b109c8c49fd438762316c8519f3f5bf"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a5b109c8c49fd438762316c8519f3f5bf">eve::queue_editing::QueueItemSnapshot::priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00023">QueueInspector.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_a941975b227092b2c77a64a71267df51f"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#a941975b227092b2c77a64a71267df51f">eve::queue_editing::QueueItemSnapshot::owner</a></div><div class="ttdeci">std::string owner</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00019">QueueInspector.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_ab32d1d35b9bbf857316cd630d4e5c3e9"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ab32d1d35b9bbf857316cd630d4e5c3e9">eve::queue_editing::QueueItemSnapshot::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00020">QueueInspector.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_abaac7be40009f58d2be7992081104bae"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#abaac7be40009f58d2be7992081104bae">eve::queue_editing::QueueItemSnapshot::payloadJson</a></div><div class="ttdeci">std::string payloadJson</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00026">QueueInspector.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_abfed03b8a3c1f1bc514c966504eda298"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#abfed03b8a3c1f1bc514c966504eda298">eve::queue_editing::QueueItemSnapshot::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00018">QueueInspector.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_ace631f4baace1d6193be212314d08594"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ace631f4baace1d6193be212314d08594">eve::queue_editing::QueueItemSnapshot::duration</a></div><div class="ttdeci">double duration</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00025">QueueInspector.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1queue__editing_1_1QueueItemSnapshot_html_ae7715dd5ccfba46063c9d4bc30abd828"><div class="ttname"><a href="structeve_1_1queue__editing_1_1QueueItemSnapshot.html#ae7715dd5ccfba46063c9d4bc30abd828">eve::queue_editing::QueueItemSnapshot::progress</a></div><div class="ttdeci">double progress</div><div class="ttdef"><b>Definition</b> <a href="QueueInspector_8h_source.html#l00024">QueueInspector.h:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

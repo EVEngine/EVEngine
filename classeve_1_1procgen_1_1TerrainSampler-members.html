@@ -1,0 +1,216 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen::TerrainSampler 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#adbce487a072c7c103717f1e6dbfad3cc">asFunction</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#ac3aa44708d686fd95b89d8a07b38ef6f">fromParams</a>(const Params &amp;params)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#ac6f1bbbf4d54de8f990ffad82e68faef">getAmplitude</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a8c21bd397e3ea26b4a412ec7d6111583">getBase</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a276c0d6fc3803f1941c6ce04400c9561">getClampMax</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a18e1c2b56b8dd446ec5224f0541096b5">getClampMin</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a5265534a68d149b0cd3d6d111bde83a8">getCoastSoftness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a01a8a025f3dc4ebf02fc376931f43907">getContinent</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a48198c519d00fed08b9902ec03959e0e">getExponent</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a2fab3abe910c99a5e442f85c25bf10d5">getFrequency</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a0bae7758fe3ef90286cbaa01481c2643">getGain</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aec74bd8cbcdff121335f610e8d8dc853">getIsland</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aaa3a023dacf6449819b6a0ae1b39ec0b">getLacunarity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aea0b4a948e67a849559ae9fb98db4617">getOctaves</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a408218f5ca10636d15c27952725e0d4c">getRidge</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a51a9ac7a9151daa1a119036faaabf2a0">getScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a43d577173cb8519e19541813c681217b">getSeed</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a78732c21f3bec4941371de100e578387">getWarp</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#ad5ca1b18bf14f015ab7fd4757cddd2ef">getWavelength</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a9f94eb9bea0809b93f73f0d92cba952a">getWorldHeight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a7337d90eec60e46ac3c5c6ac4ef328e8">getWorldWidth</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a58bfa0318b9b0bef711c6c5a17978381">isClamped</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a15ffc78d7c3d8105e5b3a5376a038b1b">sample</a>(float x, float y) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a18b8de808510529c72cdb0555f24a7c3">sampleTile</a>(int tileX, int tileY) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a8b7151d9d43939cb64d1f47def2f91d6">setAmplitude</a>(float amplitude)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aac502e1d2a5d3842b18385d6d854c1a6">setBase</a>(float base)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a722ded60b19a17193ca95c3758f64fb3">setClamp</a>(bool enabled, float minHeight, float maxHeight)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a9cd05708b500b74f1599b12491687b52">setCoastSoftness</a>(float softness)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a625b430ae88a21f7ac831e9e3bb5f668">setContinent</a>(float continent)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aacdf979fbe2f5f1aeb0a70a92800000c">setExponent</a>(float exponent)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a2d5e2fc47c39fdb2bb550e6666a21b0f">setFrequency</a>(float frequency)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a4bc22e71dbd7eeedbe4c862a9ff470e9">setGain</a>(float gain)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a25ca7462c0b0195c6f2b8a621b4b1879">setIsland</a>(float island)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a2546477019d0d34f4978b906d856936c">setLacunarity</a>(float lacunarity)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a085ee71d1802226a05d4cfd9565abdf0">setOctaves</a>(int octaves)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a1b624ad627faa5561b514e3f6d140c83">setRidge</a>(float ridge)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a96b66f0c6f3545bb3bc531886243c19b">setScale</a>(float scale)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a0f9194163b649cbd1dab347f422d53b0">setSeed</a>(uint32_t seed)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a4f74e7404fe6086853445436275fd9bf">setWarp</a>(float warp)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#adc793e3018614075497ec409aa045270">setWavelength</a>(float wavelength)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#aacc64760bcf367333610d724c958bc13">setWorldSize</a>(int width, int height)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html#a2106b309db7b9a72ddb7a2a3bec31572">TerrainSampler</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">eve::procgen::TerrainSampler</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

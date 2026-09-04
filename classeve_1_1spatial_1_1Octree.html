@@ -1,0 +1,1054 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::spatial::Octree类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1spatial.html">spatial</a></li><li class="navelem"><a class="el" href="classeve_1_1spatial_1_1Octree.html">Octree</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1spatial_1_1Octree-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::spatial::Octree类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Region octree for 3D AABB broad-phase / scene culling. Same storage rules as <a class="el" href="classeve_1_1spatial_1_1QuadTree.html" title="Region quadtree for 2D AABB broad-phase / map culling. Items are stored in the smallest node that ful...">QuadTree</a> (smallest fully-containing node).  
+ <a href="classeve_1_1spatial_1_1Octree.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Octree_8h_source.html">Octree.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac5bbd59aa35b4c62c24b5d009eba5e23" id="r_ac5bbd59aa35b4c62c24b5d009eba5e23"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#ac5bbd59aa35b4c62c24b5d009eba5e23">Octree</a> (float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int maxDepth=8, int maxPerNode=8)</td></tr>
+<tr class="memdesc:ac5bbd59aa35b4c62c24b5d009eba5e23"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建覆盖 [minX..maxX]×[minY..maxY]×[minZ..maxZ] 的八叉树。  <br /></td></tr>
+<tr class="separator:ac5bbd59aa35b4c62c24b5d009eba5e23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc1045d7d3d591b27ddbb92b328cce7f" id="r_afc1045d7d3d591b27ddbb92b328cce7f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#afc1045d7d3d591b27ddbb92b328cce7f">~Octree</a> ()=default</td></tr>
+<tr class="separator:afc1045d7d3d591b27ddbb92b328cce7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a085ae0099c0c935dc692cec14255b384" id="r_a085ae0099c0c935dc692cec14255b384"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a085ae0099c0c935dc692cec14255b384">Octree</a> (const <a class="el" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp;)=delete</td></tr>
+<tr class="separator:a085ae0099c0c935dc692cec14255b384"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0177426af6b2a47cb778fdab43a9b3d" id="r_aa0177426af6b2a47cb778fdab43a9b3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#aa0177426af6b2a47cb778fdab43a9b3d">operator=</a> (const <a class="el" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp;)=delete</td></tr>
+<tr class="separator:aa0177426af6b2a47cb778fdab43a9b3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe18acc183104356ea8b9eb1d737c517" id="r_abe18acc183104356ea8b9eb1d737c517"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#abe18acc183104356ea8b9eb1d737c517">clear</a> ()</td></tr>
+<tr class="memdesc:abe18acc183104356ea8b9eb1d737c517"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空全部对象。  <br /></td></tr>
+<tr class="separator:abe18acc183104356ea8b9eb1d737c517"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3213bd289d006b716d4598a1dbe21cfb" id="r_a3213bd289d006b716d4598a1dbe21cfb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a3213bd289d006b716d4598a1dbe21cfb">insert</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="memdesc:a3213bd289d006b716d4598a1dbe21cfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">插入一个 AABB 对象；false 表示越界或已存在。  <br /></td></tr>
+<tr class="separator:a3213bd289d006b716d4598a1dbe21cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb6a616d5b8de13c0bcf2351d967104e" id="r_aeb6a616d5b8de13c0bcf2351d967104e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#aeb6a616d5b8de13c0bcf2351d967104e">remove</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:aeb6a616d5b8de13c0bcf2351d967104e"><td class="mdescLeft">&#160;</td><td class="mdescRight">移除 / 更新一个对象。  <br /></td></tr>
+<tr class="separator:aeb6a616d5b8de13c0bcf2351d967104e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69cb83c3cc708c2ce61112a5ff1c8079" id="r_a69cb83c3cc708c2ce61112a5ff1c8079"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a69cb83c3cc708c2ce61112a5ff1c8079">update</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="separator:a69cb83c3cc708c2ce61112a5ff1c8079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa41bf191015e5d79ad3f3c360cc0d134" id="r_aa41bf191015e5d79ad3f3c360cc0d134"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#aa41bf191015e5d79ad3f3c360cc0d134">contains</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:aa41bf191015e5d79ad3f3c360cc0d134"><td class="mdescLeft">&#160;</td><td class="mdescRight">对象是否存在。  <br /></td></tr>
+<tr class="separator:aa41bf191015e5d79ad3f3c360cc0d134"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae20e221b770133393425e9b8f0bb1ef6" id="r_ae20e221b770133393425e9b8f0bb1ef6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#ae20e221b770133393425e9b8f0bb1ef6">getCount</a> () const</td></tr>
+<tr class="separator:ae20e221b770133393425e9b8f0bb1ef6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54675dc69c71fdb288957f0116f8350f" id="r_a54675dc69c71fdb288957f0116f8350f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a54675dc69c71fdb288957f0116f8350f">queryPoint</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a54675dc69c71fdb288957f0116f8350f"><td class="mdescLeft">&#160;</td><td class="mdescRight">查询：点 / AABB / 球体，命中写入结果缓冲区。  <br /></td></tr>
+<tr class="separator:a54675dc69c71fdb288957f0116f8350f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68e9b2f82fa7dcca5cf054ad751a5485" id="r_a68e9b2f82fa7dcca5cf054ad751a5485"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a68e9b2f82fa7dcca5cf054ad751a5485">queryAABB</a> (float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td></tr>
+<tr class="separator:a68e9b2f82fa7dcca5cf054ad751a5485"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c0e9410fb20ef1275e8bdc946af24f6" id="r_a6c0e9410fb20ef1275e8bdc946af24f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a6c0e9410fb20ef1275e8bdc946af24f6">querySphere</a> (float <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, float <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, float cz, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a6c0e9410fb20ef1275e8bdc946af24f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf28cbe33c2d9f1b5723f4672e459ed0" id="r_abf28cbe33c2d9f1b5723f4672e459ed0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#abf28cbe33c2d9f1b5723f4672e459ed0">getResultCount</a> () const</td></tr>
+<tr class="memdesc:abf28cbe33c2d9f1b5723f4672e459ed0"><td class="mdescLeft">&#160;</td><td class="mdescRight">最近一次查询的结果。  <br /></td></tr>
+<tr class="separator:abf28cbe33c2d9f1b5723f4672e459ed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b40f2de03d97f66b3c3c9d8f82df13" id="r_ad2b40f2de03d97f66b3c3c9d8f82df13"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#ad2b40f2de03d97f66b3c3c9d8f82df13">getResultId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ad2b40f2de03d97f66b3c3c9d8f82df13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7efc02fe224df1435a65fbc1e88529b2" id="r_a7efc02fe224df1435a65fbc1e88529b2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a7efc02fe224df1435a65fbc1e88529b2">getMinX</a> () const</td></tr>
+<tr class="memdesc:a7efc02fe224df1435a65fbc1e88529b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">根包围盒与分裂参数。  <br /></td></tr>
+<tr class="separator:a7efc02fe224df1435a65fbc1e88529b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6d5cdf90ca88876a0da94be0b0b3198" id="r_ad6d5cdf90ca88876a0da94be0b0b3198"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#ad6d5cdf90ca88876a0da94be0b0b3198">getMinY</a> () const</td></tr>
+<tr class="separator:ad6d5cdf90ca88876a0da94be0b0b3198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75d9a5f9b59426c74783b713ced3a1e0" id="r_a75d9a5f9b59426c74783b713ced3a1e0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a75d9a5f9b59426c74783b713ced3a1e0">getMinZ</a> () const</td></tr>
+<tr class="separator:a75d9a5f9b59426c74783b713ced3a1e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac379a7817185ad6f914e860c2253fa06" id="r_ac379a7817185ad6f914e860c2253fa06"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#ac379a7817185ad6f914e860c2253fa06">getMaxX</a> () const</td></tr>
+<tr class="separator:ac379a7817185ad6f914e860c2253fa06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95f94e579b7bb3589273e14b7ac650e8" id="r_a95f94e579b7bb3589273e14b7ac650e8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a95f94e579b7bb3589273e14b7ac650e8">getMaxY</a> () const</td></tr>
+<tr class="separator:a95f94e579b7bb3589273e14b7ac650e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43c2a193c291a6fd6233f6ed197ff27f" id="r_a43c2a193c291a6fd6233f6ed197ff27f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a43c2a193c291a6fd6233f6ed197ff27f">getMaxZ</a> () const</td></tr>
+<tr class="separator:a43c2a193c291a6fd6233f6ed197ff27f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac00f7e8078a247b8bfa3344fae808171" id="r_ac00f7e8078a247b8bfa3344fae808171"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#ac00f7e8078a247b8bfa3344fae808171">getMaxDepth</a> () const</td></tr>
+<tr class="separator:ac00f7e8078a247b8bfa3344fae808171"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f9f625e93abe7934e567e7161551304" id="r_a5f9f625e93abe7934e567e7161551304"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1spatial_1_1Octree.html#a5f9f625e93abe7934e567e7161551304">getMaxPerNode</a> () const</td></tr>
+<tr class="separator:a5f9f625e93abe7934e567e7161551304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Region octree for 3D AABB broad-phase / scene culling. Same storage rules as <a class="el" href="classeve_1_1spatial_1_1QuadTree.html" title="Region quadtree for 2D AABB broad-phase / map culling. Items are stored in the smallest node that ful...">QuadTree</a> (smallest fully-containing node). </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00016">16</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac5bbd59aa35b4c62c24b5d009eba5e23" name="ac5bbd59aa35b4c62c24b5d009eba5e23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5bbd59aa35b4c62c24b5d009eba5e23">&#9670;&#160;</a></span>Octree() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::Octree::Octree </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxDepth</em> = <code>8</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxPerNode</em> = <code>8</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>创建覆盖 [minX..maxX]×[minY..maxY]×[minZ..maxZ] 的八叉树。 </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00053">eve::spatial::AABB3::depth()</a>, <a class="el" href="Bounds_8h_source.html#l00052">eve::spatial::AABB3::height()</a>, <a class="el" href="Bounds_8h_source.html#l00058">eve::spatial::AABB3::valid()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00051">eve::spatial::AABB3::width()</a>.</p>
+
+</div>
+</div>
+<a id="afc1045d7d3d591b27ddbb92b328cce7f" name="afc1045d7d3d591b27ddbb92b328cce7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc1045d7d3d591b27ddbb92b328cce7f">&#9670;&#160;</a></span>~Octree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::Octree::~Octree </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a085ae0099c0c935dc692cec14255b384" name="a085ae0099c0c935dc692cec14255b384"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a085ae0099c0c935dc692cec14255b384">&#9670;&#160;</a></span>Octree() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::spatial::Octree::Octree </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="abe18acc183104356ea8b9eb1d737c517" name="abe18acc183104356ea8b9eb1d737c517"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe18acc183104356ea8b9eb1d737c517">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::spatial::Octree::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清空全部对象。 </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>.</p>
+
+</div>
+</div>
+<a id="aa41bf191015e5d79ad3f3c360cc0d134" name="aa41bf191015e5d79ad3f3c360cc0d134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa41bf191015e5d79ad3f3c360cc0d134">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::Octree::contains </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>对象是否存在。 </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Octree_8cpp_source.html#l00037">insert()</a>, <a class="el" href="Octree_8cpp_source.html#l00049">remove()</a> , 以及 <a class="el" href="Octree_8cpp_source.html#l00056">update()</a>.</p>
+
+</div>
+</div>
+<a id="ae20e221b770133393425e9b8f0bb1ef6" name="ae20e221b770133393425e9b8f0bb1ef6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae20e221b770133393425e9b8f0bb1ef6">&#9670;&#160;</a></span>getCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::Octree::getCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac00f7e8078a247b8bfa3344fae808171" name="ac00f7e8078a247b8bfa3344fae808171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac00f7e8078a247b8bfa3344fae808171">&#9670;&#160;</a></span>getMaxDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::Octree::getMaxDepth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f9f625e93abe7934e567e7161551304" name="a5f9f625e93abe7934e567e7161551304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f9f625e93abe7934e567e7161551304">&#9670;&#160;</a></span>getMaxPerNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::Octree::getMaxPerNode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac379a7817185ad6f914e860c2253fa06" name="ac379a7817185ad6f914e860c2253fa06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac379a7817185ad6f914e860c2253fa06">&#9670;&#160;</a></span>getMaxX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::Octree::getMaxX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00047">eve::spatial::AABB3::maxX</a>.</p>
+
+</div>
+</div>
+<a id="a95f94e579b7bb3589273e14b7ac650e8" name="a95f94e579b7bb3589273e14b7ac650e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95f94e579b7bb3589273e14b7ac650e8">&#9670;&#160;</a></span>getMaxY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::Octree::getMaxY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00048">eve::spatial::AABB3::maxY</a>.</p>
+
+</div>
+</div>
+<a id="a43c2a193c291a6fd6233f6ed197ff27f" name="a43c2a193c291a6fd6233f6ed197ff27f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43c2a193c291a6fd6233f6ed197ff27f">&#9670;&#160;</a></span>getMaxZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::Octree::getMaxZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00049">eve::spatial::AABB3::maxZ</a>.</p>
+
+</div>
+</div>
+<a id="a7efc02fe224df1435a65fbc1e88529b2" name="a7efc02fe224df1435a65fbc1e88529b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7efc02fe224df1435a65fbc1e88529b2">&#9670;&#160;</a></span>getMinX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::Octree::getMinX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>根包围盒与分裂参数。 </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00044">eve::spatial::AABB3::minX</a>.</p>
+
+</div>
+</div>
+<a id="ad6d5cdf90ca88876a0da94be0b0b3198" name="ad6d5cdf90ca88876a0da94be0b0b3198"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6d5cdf90ca88876a0da94be0b0b3198">&#9670;&#160;</a></span>getMinY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::Octree::getMinY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00045">eve::spatial::AABB3::minY</a>.</p>
+
+</div>
+</div>
+<a id="a75d9a5f9b59426c74783b713ced3a1e0" name="a75d9a5f9b59426c74783b713ced3a1e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75d9a5f9b59426c74783b713ced3a1e0">&#9670;&#160;</a></span>getMinZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::spatial::Octree::getMinZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Bounds_8h_source.html#l00046">eve::spatial::AABB3::minZ</a>.</p>
+
+</div>
+</div>
+<a id="abf28cbe33c2d9f1b5723f4672e459ed0" name="abf28cbe33c2d9f1b5723f4672e459ed0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf28cbe33c2d9f1b5723f4672e459ed0">&#9670;&#160;</a></span>getResultCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::Octree::getResultCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>最近一次查询的结果。 </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a>.</p>
+
+</div>
+</div>
+<a id="ad2b40f2de03d97f66b3c3c9d8f82df13" name="ad2b40f2de03d97f66b3c3c9d8f82df13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2b40f2de03d97f66b3c3c9d8f82df13">&#9670;&#160;</a></span>getResultId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::Octree::getResultId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8h_source.html">Octree.h</a> 第 <a class="el" href="Octree_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00026">eve::spatial::QueryIds::getId()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a3213bd289d006b716d4598a1dbe21cfb" name="a3213bd289d006b716d4598a1dbe21cfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3213bd289d006b716d4598a1dbe21cfb">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::Octree::insert </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>插入一个 AABB 对象；false 表示越界或已存在。 </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Octree_8cpp_source.html#l00035">contains()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Bounds_8h_source.html#l00091">eve::spatial::makeAABB3()</a> , 以及 <a class="el" href="Octree_8cpp_source.html#l00049">remove()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneNodes_8cpp_source.html#l00495">eve::scene::Scene::syncSpatialIndexAt()</a> , 以及 <a class="el" href="Octree_8cpp_source.html#l00056">update()</a>.</p>
+
+</div>
+</div>
+<a id="aa0177426af6b2a47cb778fdab43a9b3d" name="aa0177426af6b2a47cb778fdab43a9b3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0177426af6b2a47cb778fdab43a9b3d">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp; eve::spatial::Octree::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1spatial_1_1Octree.html">Octree</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a68e9b2f82fa7dcca5cf054ad751a5485" name="a68e9b2f82fa7dcca5cf054ad751a5485"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68e9b2f82fa7dcca5cf054ad751a5485">&#9670;&#160;</a></span>queryAABB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::Octree::queryAABB </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>, <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a> , 以及 <a class="el" href="Bounds_8h_source.html#l00091">eve::spatial::makeAABB3()</a>.</p>
+
+</div>
+</div>
+<a id="a54675dc69c71fdb288957f0116f8350f" name="a54675dc69c71fdb288957f0116f8350f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54675dc69c71fdb288957f0116f8350f">&#9670;&#160;</a></span>queryPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::Octree::queryPoint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>查询：点 / AABB / 球体，命中写入结果缓冲区。 </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>, <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a6c0e9410fb20ef1275e8bdc946af24f6" name="a6c0e9410fb20ef1275e8bdc946af24f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c0e9410fb20ef1275e8bdc946af24f6">&#9670;&#160;</a></span>querySphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::spatial::Octree::querySphere </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="QueryIds_8h_source.html#l00013">eve::spatial::QueryIds::clear()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="QueryIds_8h_source.html#l00024">eve::spatial::QueryIds::getCount()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="aeb6a616d5b8de13c0bcf2351d967104e" name="aeb6a616d5b8de13c0bcf2351d967104e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb6a616d5b8de13c0bcf2351d967104e">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::Octree::remove </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>移除 / 更新一个对象。 </p>
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Octree_8cpp_source.html#l00035">contains()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Octree_8cpp_source.html#l00037">insert()</a>.</p>
+
+</div>
+</div>
+<a id="a69cb83c3cc708c2ce61112a5ff1c8079" name="a69cb83c3cc708c2ce61112a5ff1c8079"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69cb83c3cc708c2ce61112a5ff1c8079">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::spatial::Octree::update </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Octree_8cpp_source.html">Octree.cpp</a> 第 <a class="el" href="Octree_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Octree_8cpp_source.html#l00035">contains()</a> , 以及 <a class="el" href="Octree_8cpp_source.html#l00037">insert()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/spatial/<a class="el" href="Octree_8h_source.html">Octree.h</a></li>
+<li>src/modules/spatial/<a class="el" href="Octree_8cpp_source.html">Octree.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

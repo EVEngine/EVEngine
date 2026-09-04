@@ -1,0 +1,252 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/climbing/ClimbingControl.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_137dcb18b75f9f57b9200faf376b7e13.html">climbing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ClimbingControl.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ClimbingControl_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Climbing_8h.html">climbing/Climbing.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="GameplayControl_8h.html">common/GameplayControl.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1climbing.html">eve::climbing</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingControl.html">   20</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1IGameplayControlProvider.html">IGameplayControlProvider</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a>(<a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> character, <a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a>&amp; runtime,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a>&amp; pose);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#aa3f7cd4363abf68d59d47b720a3566bc">~ClimbingControl</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingControl.html#af719859032125cf6c07a2e1da7097890">   35</a></span>    <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#af719859032125cf6c07a2e1da7097890">ClimbingControl</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingControl.html#a4ed2a6a56669d68ffdbdfad606cedadf">   36</a></span>    <a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a>&amp; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#a4ed2a6a56669d68ffdbdfad606cedadf">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingControl.html">ClimbingControl</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    [[nodiscard]] std::string_view <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#a3b882353af3b676f14f46c668c68578f">gameplayDomain</a>() const noexcept override;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1GameplayObservation.html">GameplayObservation</a>&gt; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#a37c8d5f0ab7fe6dac4a2ea3bcd84337e">observeGameplay</a>(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                                               <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance) const override;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_struct" href="structeve_1_1GameplayActionDescriptor.html">GameplayActionDescriptor</a>&gt;&gt; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#a236d6441656d6f8ed16aaf2cff38ce53">availableGameplayActions</a>(</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance, <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> subject) const override;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1GameplayCommandReceipt.html">GameplayCommandReceipt</a>&gt; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#afbfff66f3cab7985d52948cded440613">submitGameplay</a>(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                                                 <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                                                 const <a class="code hl_struct" href="structeve_1_1GameplayCommand.html">GameplayCommand</a>&amp; command) override;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_struct" href="structeve_1_1GameplayObservation.html">GameplayObservation</a>&gt; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#a85c27933de1d1a8b8767d483a1f1fa23">advanceGameplay</a>(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                                               <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                                               const <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) override;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_struct" href="structeve_1_1GameplayEvent.html">GameplayEvent</a>&gt;&gt; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingControl.html#a3a2d5c4fcf6c1674f5b62544ab3bd85c">gameplayEvents</a>(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                                                                     <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                                                                     <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t afterSequence) const override;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>private:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <span class="keywordtype">bool</span> controls(const <a class="code hl_struct" href="structeve_1_1GameplaySession.html">GameplaySession</a>&amp; session) const;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t&gt; refreshRevision() const;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; captureEvents(<a class="code hl_namespace" href="namespacestd.html">std</a>::string_view commandId);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> instance_;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> character_;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a>* runtime_ = <span class="keywordtype">nullptr</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    physics::World3D* world_ = <span class="keywordtype">nullptr</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    const <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a>* pose_ = <span class="keywordtype">nullptr</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> tick_ = <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a>::zero();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    mutable <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t revision_ = 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    mutable <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> stateFingerprint_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::uint64_t nextEventSequence_ = 1;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_struct" href="structeve_1_1GameplayEvent.html">GameplayEvent</a>&gt; events_;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}  <span class="comment">// namespace eve::climbing</span></div>
+<div class="ttc" id="aClimbing_8h_html"><div class="ttname"><a href="Climbing_8h.html">Climbing.h</a></div><div class="ttdoc">Deterministic climbing/parkour planning and capsule-constrained execution.</div></div>
+<div class="ttc" id="aGameplayControl_8h_html"><div class="ttname"><a href="GameplayControl_8h.html">GameplayControl.h</a></div><div class="ttdoc">Host-neutral player-equivalent command and observation protocol.</div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1IGameplayControlProvider_html"><div class="ttname"><a href="classeve_1_1IGameplayControlProvider.html">eve::IGameplayControlProvider</a></div><div class="ttdoc">Multi-provider gameplay boundary consumed by input, scripts and automation.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00090">GameplayControl.h:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html">eve::climbing::ClimbingControl</a></div><div class="ttdoc">Exposes server-probed climbing actions without accepting authored world targets.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingControl_8h_source.html#l00020">ClimbingControl.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_a236d6441656d6f8ed16aaf2cff38ce53"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#a236d6441656d6f8ed16aaf2cff38ce53">eve::climbing::ClimbingControl::availableGameplayActions</a></div><div class="ttdeci">Result&lt; std::vector&lt; GameplayActionDescriptor &gt; &gt; availableGameplayActions(const GameplaySession &amp;session, SubjectRef instance, SubjectRef subject) const override</div><div class="ttdoc">Discover currently legal player-semantic actions for one subject.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingControl_8cpp_source.html#l00115">ClimbingControl.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_a37c8d5f0ab7fe6dac4a2ea3bcd84337e"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#a37c8d5f0ab7fe6dac4a2ea3bcd84337e">eve::climbing::ClimbingControl::observeGameplay</a></div><div class="ttdeci">Result&lt; GameplayObservation &gt; observeGameplay(const GameplaySession &amp;session, SubjectRef instance) const override</div><div class="ttdoc">Observe one provider-owned gameplay instance without mutation.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingControl_8cpp_source.html#l00091">ClimbingControl.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_a3a2d5c4fcf6c1674f5b62544ab3bd85c"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#a3a2d5c4fcf6c1674f5b62544ab3bd85c">eve::climbing::ClimbingControl::gameplayEvents</a></div><div class="ttdeci">Result&lt; std::vector&lt; GameplayEvent &gt; &gt; gameplayEvents(const GameplaySession &amp;session, SubjectRef instance, std::uint64_t afterSequence) const override</div><div class="ttdoc">Return events strictly newer than an instance-local sequence cursor.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingControl_8cpp_source.html#l00236">ClimbingControl.cpp:236</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_a3b882353af3b676f14f46c668c68578f"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#a3b882353af3b676f14f46c668c68578f">eve::climbing::ClimbingControl::gameplayDomain</a></div><div class="ttdeci">std::string_view gameplayDomain() const noexcept override</div><div class="ttdoc">Stable provider domain used for discovery and routing.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingControl_8cpp_source.html#l00070">ClimbingControl.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_a4ed2a6a56669d68ffdbdfad606cedadf"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#a4ed2a6a56669d68ffdbdfad606cedadf">eve::climbing::ClimbingControl::operator=</a></div><div class="ttdeci">ClimbingControl &amp; operator=(const ClimbingControl &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_a85c27933de1d1a8b8767d483a1f1fa23"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#a85c27933de1d1a8b8767d483a1f1fa23">eve::climbing::ClimbingControl::advanceGameplay</a></div><div class="ttdeci">Result&lt; GameplayObservation &gt; advanceGameplay(const GameplaySession &amp;session, SubjectRef instance, const SimulationStep &amp;step) override</div><div class="ttdoc">Advance one provider-owned instance using injected deterministic time.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingControl_8cpp_source.html#l00215">ClimbingControl.cpp:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_aa3f7cd4363abf68d59d47b720a3566bc"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#aa3f7cd4363abf68d59d47b720a3566bc">eve::climbing::ClimbingControl::~ClimbingControl</a></div><div class="ttdeci">~ClimbingControl() override</div><div class="ttdoc">Unpublish the capability without destroying borrowed authorities.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingControl_8cpp_source.html#l00068">ClimbingControl.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_af719859032125cf6c07a2e1da7097890"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#af719859032125cf6c07a2e1da7097890">eve::climbing::ClimbingControl::ClimbingControl</a></div><div class="ttdeci">ClimbingControl(const ClimbingControl &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingControl_html_afbfff66f3cab7985d52948cded440613"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingControl.html#afbfff66f3cab7985d52948cded440613">eve::climbing::ClimbingControl::submitGameplay</a></div><div class="ttdeci">Result&lt; GameplayCommandReceipt &gt; submitGameplay(const GameplaySession &amp;session, SubjectRef instance, const GameplayCommand &amp;command) override</div><div class="ttdoc">Validate authority and atomically submit one domain command.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingControl_8cpp_source.html#l00158">ClimbingControl.cpp:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingRuntime_html"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingRuntime.html">eve::climbing::ClimbingRuntime</a></div><div class="ttdoc">Owner-thread climbing planner and executor for one character.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00624">Climbing.h:624</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00050">World3D.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html"><div class="ttname"><a href="namespaceeve_1_1climbing.html">eve::climbing</a></div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00018">Climbing.cpp:18</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayActionDescriptor_html"><div class="ttname"><a href="structeve_1_1GameplayActionDescriptor.html">eve::GameplayActionDescriptor</a></div><div class="ttdoc">One discoverable domain action and its owning schema projection.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00037">GameplayControl.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommandReceipt_html"><div class="ttname"><a href="structeve_1_1GameplayCommandReceipt.html">eve::GameplayCommandReceipt</a></div><div class="ttdoc">Owning evidence that a gameplay authority accepted one command.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00062">GameplayControl.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayCommand_html"><div class="ttname"><a href="structeve_1_1GameplayCommand.html">eve::GameplayCommand</a></div><div class="ttdoc">One player-semantic command submitted to a domain authority.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00052">GameplayControl.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayEvent_html"><div class="ttname"><a href="structeve_1_1GameplayEvent.html">eve::GameplayEvent</a></div><div class="ttdoc">Owning event projection safe across frames and process boundaries.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00071">GameplayControl.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplayObservation_html"><div class="ttname"><a href="structeve_1_1GameplayObservation.html">eve::GameplayObservation</a></div><div class="ttdoc">Immutable owning observation of one authoritative gameplay instance.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00043">GameplayControl.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1GameplaySession_html"><div class="ttname"><a href="structeve_1_1GameplaySession.html">eve::GameplaySession</a></div><div class="ttdoc">Owning authorization context shared by player, script and automation adapters.</div><div class="ttdef"><b>Definition</b> <a href="GameplayControl_8h_source.html#l00030">GameplayControl.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingPose_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingPose.html">eve::climbing::ClimbingPose</a></div><div class="ttdoc">Input pose used for one deterministic candidate probe.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00274">Climbing.h:274</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1397 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::biome_editor::BiomeRulesEditor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1biome__editor.html">biome_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html">BiomeRulesEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1biome__editor_1_1BiomeRulesEditor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::biome_editor::BiomeRulesEditor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Workspace controller for one authored biome rules document.  
+ <a href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7dba1647049fb5a8ab4c11606c357c28" id="r_a7dba1647049fb5a8ab4c11606c357c28"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a7dba1647049fb5a8ab4c11606c357c28">BiomeRulesEditor</a> (std::string targetId)</td></tr>
+<tr class="memdesc:a7dba1647049fb5a8ab4c11606c357c28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a seeded forest layer with one weighted asset.  <br /></td></tr>
+<tr class="separator:a7dba1647049fb5a8ab4c11606c357c28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd3eb4f0256736ba4da678efafa01f52" id="r_acd3eb4f0256736ba4da678efafa01f52"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#acd3eb4f0256736ba4da678efafa01f52">BiomeRulesEditor</a> (const <a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html">BiomeRulesEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:acd3eb4f0256736ba4da678efafa01f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a038c8f947a130e0e5e396d692eaf721c" id="r_a038c8f947a130e0e5e396d692eaf721c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html">BiomeRulesEditor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a038c8f947a130e0e5e396d692eaf721c">operator=</a> (const <a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html">BiomeRulesEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:a038c8f947a130e0e5e396d692eaf721c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80698663d365882d5503c73d022a17a3" id="r_a80698663d365882d5503c73d022a17a3"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html">biome_editing::BiomeDocumentTarget</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a80698663d365882d5503c73d022a17a3">target</a> () const noexcept</td></tr>
+<tr class="memdesc:a80698663d365882d5503c73d022a17a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the authoritative biome document.  <br /></td></tr>
+<tr class="separator:a80698663d365882d5503c73d022a17a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e12d5648e63d44e149e90d84efc0f7e" id="r_a2e12d5648e63d44e149e90d84efc0f7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a2e12d5648e63d44e149e90d84efc0f7e">configureWorkspace</a> (<a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;workspace) const</td></tr>
+<tr class="memdesc:a2e12d5648e63d44e149e90d84efc0f7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install Layers / Preview / Inspector / Assets panels.  <br /></td></tr>
+<tr class="separator:a2e12d5648e63d44e149e90d84efc0f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49ed869e7d3dd3d71e7f2b2423a324bc" id="r_a49ed869e7d3dd3d71e7f2b2423a324bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a49ed869e7d3dd3d71e7f2b2423a324bc">selectLayer</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a49ed869e7d3dd3d71e7f2b2423a324bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bd2f3ee779f87832f8beec6aac80d80" id="r_a7bd2f3ee779f87832f8beec6aac80d80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a7bd2f3ee779f87832f8beec6aac80d80">selectAsset</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a7bd2f3ee779f87832f8beec6aac80d80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee8259f73e4d9e34da99f5176c4936cc" id="r_aee8259f73e4d9e34da99f5176c4936cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#aee8259f73e4d9e34da99f5176c4936cc">setLayerDensity</a> (double density)</td></tr>
+<tr class="separator:aee8259f73e4d9e34da99f5176c4936cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3aedb78cb64730ce7155306e506f449e" id="r_a3aedb78cb64730ce7155306e506f449e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a3aedb78cb64730ce7155306e506f449e">setLayerPriority</a> (int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>)</td></tr>
+<tr class="separator:a3aedb78cb64730ce7155306e506f449e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a584a2832587eec974537c9283c373bac" id="r_a584a2832587eec974537c9283c373bac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a584a2832587eec974537c9283c373bac">setAssetWeight</a> (double weight)</td></tr>
+<tr class="separator:a584a2832587eec974537c9283c373bac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a553fe3d218fd321f67a5896b32af3181" id="r_a553fe3d218fd321f67a5896b32af3181"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a553fe3d218fd321f67a5896b32af3181">createLayer</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a553fe3d218fd321f67a5896b32af3181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16b81a9709d3d0cedc1ba2db6b475950" id="r_a16b81a9709d3d0cedc1ba2db6b475950"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a16b81a9709d3d0cedc1ba2db6b475950">deleteSelectedLayer</a> ()</td></tr>
+<tr class="separator:a16b81a9709d3d0cedc1ba2db6b475950"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4a229114c21020dc33441b2d6dcd9c6" id="r_ac4a229114c21020dc33441b2d6dcd9c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#ac4a229114c21020dc33441b2d6dcd9c6">createAsset</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string asset)</td></tr>
+<tr class="separator:ac4a229114c21020dc33441b2d6dcd9c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbab74fe7757d6169701539a986457de" id="r_acbab74fe7757d6169701539a986457de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#acbab74fe7757d6169701539a986457de">deleteSelectedAsset</a> ()</td></tr>
+<tr class="separator:acbab74fe7757d6169701539a986457de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23781d8e960206147e823eeb0fb6b95f" id="r_a23781d8e960206147e823eeb0fb6b95f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a23781d8e960206147e823eeb0fb6b95f">addExclusion</a> (std::string spatialAsset)</td></tr>
+<tr class="separator:a23781d8e960206147e823eeb0fb6b95f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0339dbe1e1b439c6a1087281b1dcbc21" id="r_a0339dbe1e1b439c6a1087281b1dcbc21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a0339dbe1e1b439c6a1087281b1dcbc21">removeExclusion</a> (std::string spatialAsset)</td></tr>
+<tr class="separator:a0339dbe1e1b439c6a1087281b1dcbc21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6f3b9154aac72971dc970612ef54f56" id="r_ad6f3b9154aac72971dc970612ef54f56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#ad6f3b9154aac72971dc970612ef54f56">setSeed</a> (std::uint32_t <a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a38e69a811bff032222b0b33eaaebb5f2">seed</a>)</td></tr>
+<tr class="separator:ad6f3b9154aac72971dc970612ef54f56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4df4a3bb0c5791ab81334f83d5ab8a58" id="r_a4df4a3bb0c5791ab81334f83d5ab8a58"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a4df4a3bb0c5791ab81334f83d5ab8a58">setSpacing</a> (float <a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a7a1b502d5e7eb2377030202116986d88">spacing</a>)</td></tr>
+<tr class="separator:a4df4a3bb0c5791ab81334f83d5ab8a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cd71b64c980df8bf32a82621535e461" id="r_a8cd71b64c980df8bf32a82621535e461"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a8cd71b64c980df8bf32a82621535e461">undo</a> ()</td></tr>
+<tr class="separator:a8cd71b64c980df8bf32a82621535e461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5af045eeb17d5b8cc1494856f015e8b" id="r_ad5af045eeb17d5b8cc1494856f015e8b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#ad5af045eeb17d5b8cc1494856f015e8b">redo</a> ()</td></tr>
+<tr class="separator:ad5af045eeb17d5b8cc1494856f015e8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a409beb82d81126accfe522cdb3be6fa7" id="r_a409beb82d81126accfe522cdb3be6fa7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a409beb82d81126accfe522cdb3be6fa7">canUndo</a> () const noexcept</td></tr>
+<tr class="separator:a409beb82d81126accfe522cdb3be6fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addd0ed1544f6de220002fdbda6599747" id="r_addd0ed1544f6de220002fdbda6599747"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#addd0ed1544f6de220002fdbda6599747">canRedo</a> () const noexcept</td></tr>
+<tr class="separator:addd0ed1544f6de220002fdbda6599747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91b688adee8e207e21ff01c4192c3182" id="r_a91b688adee8e207e21ff01c4192c3182"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a91b688adee8e207e21ff01c4192c3182">revision</a> () const noexcept</td></tr>
+<tr class="separator:a91b688adee8e207e21ff01c4192c3182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9219f3b7c1db23784c54ed4f1ea817c" id="r_ab9219f3b7c1db23784c54ed4f1ea817c"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#ab9219f3b7c1db23784c54ed4f1ea817c">previewRevision</a> () const noexcept</td></tr>
+<tr class="separator:ab9219f3b7c1db23784c54ed4f1ea817c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e69a811bff032222b0b33eaaebb5f2" id="r_a38e69a811bff032222b0b33eaaebb5f2"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a38e69a811bff032222b0b33eaaebb5f2">seed</a> () const noexcept</td></tr>
+<tr class="separator:a38e69a811bff032222b0b33eaaebb5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a1b502d5e7eb2377030202116986d88" id="r_a7a1b502d5e7eb2377030202116986d88"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a7a1b502d5e7eb2377030202116986d88">spacing</a> () const noexcept</td></tr>
+<tr class="separator:a7a1b502d5e7eb2377030202116986d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a487f3f94d62ba2252b8aaf0c350525b0" id="r_a487f3f94d62ba2252b8aaf0c350525b0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a487f3f94d62ba2252b8aaf0c350525b0">selectedId</a> () const</td></tr>
+<tr class="separator:a487f3f94d62ba2252b8aaf0c350525b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e9dd99ca00bb7045a4bb9750e66e331" id="r_a1e9dd99ca00bb7045a4bb9750e66e331"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a1e9dd99ca00bb7045a4bb9750e66e331">selectedType</a> () const</td></tr>
+<tr class="separator:a1e9dd99ca00bb7045a4bb9750e66e331"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22ac2b0e0bf892763bbf94a4bdb9ddf7" id="r_a22ac2b0e0bf892763bbf94a4bdb9ddf7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a22ac2b0e0bf892763bbf94a4bdb9ddf7">layerCount</a> () const</td></tr>
+<tr class="separator:a22ac2b0e0bf892763bbf94a4bdb9ddf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaf2bfc87c687f6a7ca6d8cdc4d561ff" id="r_abaf2bfc87c687f6a7ca6d8cdc4d561ff"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#abaf2bfc87c687f6a7ca6d8cdc4d561ff">layerId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:abaf2bfc87c687f6a7ca6d8cdc4d561ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a267d8d83ce2a5bac6c3de24b581a153a" id="r_a267d8d83ce2a5bac6c3de24b581a153a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a267d8d83ce2a5bac6c3de24b581a153a">layerName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a267d8d83ce2a5bac6c3de24b581a153a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ef64d59a9f52be8ac14bffba356f7b3" id="r_a8ef64d59a9f52be8ac14bffba356f7b3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a8ef64d59a9f52be8ac14bffba356f7b3">layerDensity</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a8ef64d59a9f52be8ac14bffba356f7b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a080095d3e21b4224c18ff45d9f4da449" id="r_a080095d3e21b4224c18ff45d9f4da449"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a080095d3e21b4224c18ff45d9f4da449">layerPriority</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a080095d3e21b4224c18ff45d9f4da449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e6004b2165083d26d97efe68b50b9a9" id="r_a0e6004b2165083d26d97efe68b50b9a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a0e6004b2165083d26d97efe68b50b9a9">isLayerSelected</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a0e6004b2165083d26d97efe68b50b9a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b827332e6fa11c0d70e2defffe20649" id="r_a1b827332e6fa11c0d70e2defffe20649"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a1b827332e6fa11c0d70e2defffe20649">assetCount</a> () const</td></tr>
+<tr class="separator:a1b827332e6fa11c0d70e2defffe20649"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05acd9d4a1a5bcf06c93615f09b57370" id="r_a05acd9d4a1a5bcf06c93615f09b57370"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a05acd9d4a1a5bcf06c93615f09b57370">assetId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a05acd9d4a1a5bcf06c93615f09b57370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc224e7990383b6baa40d4b3a8eaa429" id="r_abc224e7990383b6baa40d4b3a8eaa429"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#abc224e7990383b6baa40d4b3a8eaa429">assetRef</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:abc224e7990383b6baa40d4b3a8eaa429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e396be3e9526356b89314a5d7aaf80c" id="r_a7e396be3e9526356b89314a5d7aaf80c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a7e396be3e9526356b89314a5d7aaf80c">assetWeight</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a7e396be3e9526356b89314a5d7aaf80c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1cb73a8786cab94c7e150a5aee3ee55" id="r_ab1cb73a8786cab94c7e150a5aee3ee55"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#ab1cb73a8786cab94c7e150a5aee3ee55">isAssetSelected</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab1cb73a8786cab94c7e150a5aee3ee55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a109902f767250f2097bbbf883479b084" id="r_a109902f767250f2097bbbf883479b084"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a109902f767250f2097bbbf883479b084">exclusionCount</a> () const</td></tr>
+<tr class="separator:a109902f767250f2097bbbf883479b084"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41fb72cd9375b1b724438bdfa48a494e" id="r_a41fb72cd9375b1b724438bdfa48a494e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a41fb72cd9375b1b724438bdfa48a494e">exclusionAsset</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a41fb72cd9375b1b724438bdfa48a494e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05fb34905afe912014fa999671b71589" id="r_a05fb34905afe912014fa999671b71589"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a05fb34905afe912014fa999671b71589">pointCount</a> () const</td></tr>
+<tr class="separator:a05fb34905afe912014fa999671b71589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ca4e1396b89c7c103119f8249b73624" id="r_a4ca4e1396b89c7c103119f8249b73624"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a4ca4e1396b89c7c103119f8249b73624">pointX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a4ca4e1396b89c7c103119f8249b73624"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a513005cd2d7e967897a56da7b2750d30" id="r_a513005cd2d7e967897a56da7b2750d30"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a513005cd2d7e967897a56da7b2750d30">pointZ</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a513005cd2d7e967897a56da7b2750d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9524a42e2ef8163d7f5e9ba89222bc45" id="r_a9524a42e2ef8163d7f5e9ba89222bc45"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html#a9524a42e2ef8163d7f5e9ba89222bc45">pointAsset</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a9524a42e2ef8163d7f5e9ba89222bc45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Workspace controller for one authored biome rules document. </p>
+<p>Owns the document, local undo, borrowed spatial domains and a copied PointSet preview. Preview requests always carry the published revision; a stale or failed generation keeps the last successful points on screen.</p>
+<p>@ownership Editor owns the document and spatial copies. Preview getters copy values. @threadaffinity Owner thread only. @reentrancy No unknown callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7dba1647049fb5a8ab4c11606c357c28" name="a7dba1647049fb5a8ab4c11606c357c28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dba1647049fb5a8ab4c11606c357c28">&#9670;&#160;</a></span>BiomeRulesEditor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::biome_editor::BiomeRulesEditor::BiomeRulesEditor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>targetId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a seeded forest layer with one weighted asset. </p>
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd3eb4f0256736ba4da678efafa01f52" name="acd3eb4f0256736ba4da678efafa01f52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd3eb4f0256736ba4da678efafa01f52">&#9670;&#160;</a></span>BiomeRulesEditor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::biome_editor::BiomeRulesEditor::BiomeRulesEditor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html">BiomeRulesEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a23781d8e960206147e823eeb0fb6b95f" name="a23781d8e960206147e823eeb0fb6b95f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23781d8e960206147e823eeb0fb6b95f">&#9670;&#160;</a></span>addExclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::addExclusion </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>spatialAsset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8h_source.html#l00096">eve::biome_editing::BiomeDocumentTarget::exclusions()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00300">eve::biome_editing::BiomeDocumentTarget::makeSetExclusions()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a> , 以及 <a class="el" href="BiomeRulesEditor_8h_source.html#l00068">revision()</a>.</p>
+
+</div>
+</div>
+<a id="a1b827332e6fa11c0d70e2defffe20649" name="a1b827332e6fa11c0d70e2defffe20649"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b827332e6fa11c0d70e2defffe20649">&#9670;&#160;</a></span>assetCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::biome_editor::BiomeRulesEditor::assetCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00353">353</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a05acd9d4a1a5bcf06c93615f09b57370" name="a05acd9d4a1a5bcf06c93615f09b57370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05acd9d4a1a5bcf06c93615f09b57370">&#9670;&#160;</a></span>assetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::biome_editor::BiomeRulesEditor::assetId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="abc224e7990383b6baa40d4b3a8eaa429" name="abc224e7990383b6baa40d4b3a8eaa429"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc224e7990383b6baa40d4b3a8eaa429">&#9670;&#160;</a></span>assetRef()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::biome_editor::BiomeRulesEditor::assetRef </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7e396be3e9526356b89314a5d7aaf80c" name="a7e396be3e9526356b89314a5d7aaf80c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e396be3e9526356b89314a5d7aaf80c">&#9670;&#160;</a></span>assetWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::biome_editor::BiomeRulesEditor::assetWeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="addd0ed1544f6de220002fdbda6599747" name="addd0ed1544f6de220002fdbda6599747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addd0ed1544f6de220002fdbda6599747">&#9670;&#160;</a></span>canRedo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::biome_editor::BiomeRulesEditor::canRedo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00076">eve::editor::LocalTransactionBackend::canRedo()</a>.</p>
+
+</div>
+</div>
+<a id="a409beb82d81126accfe522cdb3be6fa7" name="a409beb82d81126accfe522cdb3be6fa7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a409beb82d81126accfe522cdb3be6fa7">&#9670;&#160;</a></span>canUndo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::biome_editor::BiomeRulesEditor::canUndo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTransactionService_8h_source.html#l00074">eve::editor::LocalTransactionBackend::canUndo()</a>.</p>
+
+</div>
+</div>
+<a id="a2e12d5648e63d44e149e90d84efc0f7e" name="a2e12d5648e63d44e149e90d84efc0f7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e12d5648e63d44e149e90d84efc0f7e">&#9670;&#160;</a></span>configureWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::configureWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"><em>workspace</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Install Layers / Preview / Inspector / Assets panels. </p>
+<dl class="section note"><dt>注解</dt><dd>Does not retain <code>workspace</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00169">eve::editor::EditorWorkspace::activatePanel()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00053">eve::editor::EditorWorkspace::registerPanel()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00128">eve::editor::EditorWorkspace::setPanelCapability()</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00137">eve::editor::EditorWorkspace::setPanelContext()</a> , 以及 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="ac4a229114c21020dc33441b2d6dcd9c6" name="ac4a229114c21020dc33441b2d6dcd9c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4a229114c21020dc33441b2d6dcd9c6">&#9670;&#160;</a></span>createAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::createAsset </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>asset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00590">created</a>, <a class="el" href="BiomeTarget_8h_source.html#l00045">eve::biome_editing::BiomeAssetValue::id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00272">eve::biome_editing::BiomeDocumentTarget::makeCreateAsset()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00173">selectAsset()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a553fe3d218fd321f67a5896b32af3181" name="a553fe3d218fd321f67a5896b32af3181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a553fe3d218fd321f67a5896b32af3181">&#9670;&#160;</a></span>createLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::createLayer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00590">created</a>, <a class="el" href="BiomeTarget_8h_source.html#l00051">eve::biome_editing::BiomeLayerValue::id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00254">eve::biome_editing::BiomeDocumentTarget::makeCreateLayer()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00162">selectLayer()</a>.</p>
+
+</div>
+</div>
+<a id="acbab74fe7757d6169701539a986457de" name="acbab74fe7757d6169701539a986457de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbab74fe7757d6169701539a986457de">&#9670;&#160;</a></span>deleteSelectedAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::deleteSelectedAsset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00256">256</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8cpp_source.html#l00288">eve::biome_editing::BiomeDocumentTarget::makeDeleteAsset()</a>.</p>
+
+</div>
+</div>
+<a id="a16b81a9709d3d0cedc1ba2db6b475950" name="a16b81a9709d3d0cedc1ba2db6b475950"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16b81a9709d3d0cedc1ba2db6b475950">&#9670;&#160;</a></span>deleteSelectedLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::deleteSelectedLayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8h_source.html#l00095">eve::biome_editing::BiomeDocumentTarget::layers()</a>, <a class="el" href="BiomeTarget_8cpp_source.html#l00265">eve::biome_editing::BiomeDocumentTarget::makeDeleteLayer()</a> , 以及 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00162">selectLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a41fb72cd9375b1b724438bdfa48a494e" name="a41fb72cd9375b1b724438bdfa48a494e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41fb72cd9375b1b724438bdfa48a494e">&#9670;&#160;</a></span>exclusionAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::biome_editor::BiomeRulesEditor::exclusionAsset </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8h_source.html#l00096">eve::biome_editing::BiomeDocumentTarget::exclusions()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a109902f767250f2097bbbf883479b084" name="a109902f767250f2097bbbf883479b084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a109902f767250f2097bbbf883479b084">&#9670;&#160;</a></span>exclusionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::biome_editor::BiomeRulesEditor::exclusionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8h_source.html#l00096">eve::biome_editing::BiomeDocumentTarget::exclusions()</a>.</p>
+
+</div>
+</div>
+<a id="ab1cb73a8786cab94c7e150a5aee3ee55" name="ab1cb73a8786cab94c7e150a5aee3ee55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1cb73a8786cab94c7e150a5aee3ee55">&#9670;&#160;</a></span>isAssetSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::biome_editor::BiomeRulesEditor::isAssetSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00369">369</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a0e6004b2165083d26d97efe68b50b9a9" name="a0e6004b2165083d26d97efe68b50b9a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e6004b2165083d26d97efe68b50b9a9">&#9670;&#160;</a></span>isLayerSelected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::biome_editor::BiomeRulesEditor::isLayerSelected </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00349">349</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00333">layerId()</a>.</p>
+
+</div>
+</div>
+<a id="a22ac2b0e0bf892763bbf94a4bdb9ddf7" name="a22ac2b0e0bf892763bbf94a4bdb9ddf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22ac2b0e0bf892763bbf94a4bdb9ddf7">&#9670;&#160;</a></span>layerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::biome_editor::BiomeRulesEditor::layerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8h_source.html#l00095">eve::biome_editing::BiomeDocumentTarget::layers()</a>.</p>
+
+</div>
+</div>
+<a id="a8ef64d59a9f52be8ac14bffba356f7b3" name="a8ef64d59a9f52be8ac14bffba356f7b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ef64d59a9f52be8ac14bffba356f7b3">&#9670;&#160;</a></span>layerDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::biome_editor::BiomeRulesEditor::layerDensity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="BiomeTarget_8h_source.html#l00095">eve::biome_editing::BiomeDocumentTarget::layers()</a>.</p>
+
+</div>
+</div>
+<a id="abaf2bfc87c687f6a7ca6d8cdc4d561ff" name="abaf2bfc87c687f6a7ca6d8cdc4d561ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaf2bfc87c687f6a7ca6d8cdc4d561ff">&#9670;&#160;</a></span>layerId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::biome_editor::BiomeRulesEditor::layerId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00333">333</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="BiomeTarget_8h_source.html#l00095">eve::biome_editing::BiomeDocumentTarget::layers()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00349">isLayerSelected()</a>.</p>
+
+</div>
+</div>
+<a id="a267d8d83ce2a5bac6c3de24b581a153a" name="a267d8d83ce2a5bac6c3de24b581a153a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a267d8d83ce2a5bac6c3de24b581a153a">&#9670;&#160;</a></span>layerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::biome_editor::BiomeRulesEditor::layerName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00337">337</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="BiomeTarget_8h_source.html#l00095">eve::biome_editing::BiomeDocumentTarget::layers()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a080095d3e21b4224c18ff45d9f4da449" name="a080095d3e21b4224c18ff45d9f4da449"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a080095d3e21b4224c18ff45d9f4da449">&#9670;&#160;</a></span>layerPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::biome_editor::BiomeRulesEditor::layerPriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="BiomeTarget_8h_source.html#l00095">eve::biome_editing::BiomeDocumentTarget::layers()</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+</div>
+</div>
+<a id="a038c8f947a130e0e5e396d692eaf721c" name="a038c8f947a130e0e5e396d692eaf721c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a038c8f947a130e0e5e396d692eaf721c">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html">BiomeRulesEditor</a> &amp; eve::biome_editor::BiomeRulesEditor::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1biome__editor_1_1BiomeRulesEditor.html">BiomeRulesEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9524a42e2ef8163d7f5e9ba89222bc45" name="a9524a42e2ef8163d7f5e9ba89222bc45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9524a42e2ef8163d7f5e9ba89222bc45">&#9670;&#160;</a></span>pointAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::biome_editor::BiomeRulesEditor::pointAsset </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a05fb34905afe912014fa999671b71589" name="a05fb34905afe912014fa999671b71589"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05fb34905afe912014fa999671b71589">&#9670;&#160;</a></span>pointCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::biome_editor::BiomeRulesEditor::pointCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ca4e1396b89c7c103119f8249b73624" name="a4ca4e1396b89c7c103119f8249b73624"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ca4e1396b89c7c103119f8249b73624">&#9670;&#160;</a></span>pointX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::biome_editor::BiomeRulesEditor::pointX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="a513005cd2d7e967897a56da7b2750d30" name="a513005cd2d7e967897a56da7b2750d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a513005cd2d7e967897a56da7b2750d30">&#9670;&#160;</a></span>pointZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::biome_editor::BiomeRulesEditor::pointZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00383">383</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ab9219f3b7c1db23784c54ed4f1ea817c" name="ab9219f3b7c1db23784c54ed4f1ea817c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9219f3b7c1db23784c54ed4f1ea817c">&#9670;&#160;</a></span>previewRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::biome_editor::BiomeRulesEditor::previewRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5af045eeb17d5b8cc1494856f015e8b" name="ad5af045eeb17d5b8cc1494856f015e8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5af045eeb17d5b8cc1494856f015e8b">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::biome_editor::BiomeRulesEditor::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00084">eve::editor::LocalTransactionBackend::redo()</a>.</p>
+
+</div>
+</div>
+<a id="a0339dbe1e1b439c6a1087281b1dcbc21" name="a0339dbe1e1b439c6a1087281b1dcbc21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0339dbe1e1b439c6a1087281b1dcbc21">&#9670;&#160;</a></span>removeExclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::removeExclusion </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>spatialAsset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8h_source.html#l00096">eve::biome_editing::BiomeDocumentTarget::exclusions()</a> , 以及 <a class="el" href="BiomeTarget_8cpp_source.html#l00300">eve::biome_editing::BiomeDocumentTarget::makeSetExclusions()</a>.</p>
+
+</div>
+</div>
+<a id="a91b688adee8e207e21ff01c4192c3182" name="a91b688adee8e207e21ff01c4192c3182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91b688adee8e207e21ff01c4192c3182">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::biome_editor::BiomeRulesEditor::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8h_source.html#l00070">eve::biome_editing::BiomeDocumentTarget::revision()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00263">addExclusion()</a> , 以及 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00185">setLayerDensity()</a>.</p>
+
+</div>
+</div>
+<a id="a38e69a811bff032222b0b33eaaebb5f2" name="a38e69a811bff032222b0b33eaaebb5f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38e69a811bff032222b0b33eaaebb5f2">&#9670;&#160;</a></span>seed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::biome_editor::BiomeRulesEditor::seed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00282">setSeed()</a>.</p>
+
+</div>
+</div>
+<a id="a7bd2f3ee779f87832f8beec6aac80d80" name="a7bd2f3ee779f87832f8beec6aac80d80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bd2f3ee779f87832f8beec6aac80d80">&#9670;&#160;</a></span>selectAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::selectAsset </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="BiomeTarget_8h_source.html#l00095">eve::biome_editing::BiomeDocumentTarget::layers()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00243">createAsset()</a>.</p>
+
+</div>
+</div>
+<a id="a487f3f94d62ba2252b8aaf0c350525b0" name="a487f3f94d62ba2252b8aaf0c350525b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a487f3f94d62ba2252b8aaf0c350525b0">&#9670;&#160;</a></span>selectedId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::biome_editor::BiomeRulesEditor::selectedId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e9dd99ca00bb7045a4bb9750e66e331" name="a1e9dd99ca00bb7045a4bb9750e66e331"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e9dd99ca00bb7045a4bb9750e66e331">&#9670;&#160;</a></span>selectedType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::biome_editor::BiomeRulesEditor::selectedType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a49ed869e7d3dd3d71e7f2b2423a324bc" name="a49ed869e7d3dd3d71e7f2b2423a324bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49ed869e7d3dd3d71e7f2b2423a324bc">&#9670;&#160;</a></span>selectLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::selectLayer </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="BiomeTarget_8h_source.html#l00095">eve::biome_editing::BiomeDocumentTarget::layers()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00221">createLayer()</a> , 以及 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00232">deleteSelectedLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a584a2832587eec974537c9283c373bac" name="a584a2832587eec974537c9283c373bac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a584a2832587eec974537c9283c373bac">&#9670;&#160;</a></span>setAssetWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::setAssetWeight </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8cpp_source.html#l00211">eve::biome_editing::BiomeDocumentTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="aee8259f73e4d9e34da99f5176c4936cc" name="aee8259f73e4d9e34da99f5176c4936cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee8259f73e4d9e34da99f5176c4936cc">&#9670;&#160;</a></span>setLayerDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::setLayerDensity </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>density</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8cpp_source.html#l00211">eve::biome_editing::BiomeDocumentTarget::makeSet()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a> , 以及 <a class="el" href="BiomeRulesEditor_8h_source.html#l00068">revision()</a>.</p>
+
+</div>
+</div>
+<a id="a3aedb78cb64730ce7155306e506f449e" name="a3aedb78cb64730ce7155306e506f449e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3aedb78cb64730ce7155306e506f449e">&#9670;&#160;</a></span>setLayerPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::setLayerPriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeTarget_8cpp_source.html#l00211">eve::biome_editing::BiomeDocumentTarget::makeSet()</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+</div>
+</div>
+<a id="ad6f3b9154aac72971dc970612ef54f56" name="ad6f3b9154aac72971dc970612ef54f56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6f3b9154aac72971dc970612ef54f56">&#9670;&#160;</a></span>setSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::setSeed </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeRulesEditor_8h_source.html#l00070">seed()</a>.</p>
+
+</div>
+</div>
+<a id="a4df4a3bb0c5791ab81334f83d5ab8a58" name="a4df4a3bb0c5791ab81334f83d5ab8a58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4df4a3bb0c5791ab81334f83d5ab8a58">&#9670;&#160;</a></span>setSpacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; void &gt; eve::biome_editor::BiomeRulesEditor::setSpacing </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacing</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00287">287</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BiomeRulesEditor_8h_source.html#l00071">spacing()</a>.</p>
+
+</div>
+</div>
+<a id="a7a1b502d5e7eb2377030202116986d88" name="a7a1b502d5e7eb2377030202116986d88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a1b502d5e7eb2377030202116986d88">&#9670;&#160;</a></span>spacing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::biome_editor::BiomeRulesEditor::spacing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00287">setSpacing()</a>.</p>
+
+</div>
+</div>
+<a id="a80698663d365882d5503c73d022a17a3" name="a80698663d365882d5503c73d022a17a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80698663d365882d5503c73d022a17a3">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html">biome_editing::BiomeDocumentTarget</a> &amp; eve::biome_editor::BiomeRulesEditor::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrow the authoritative biome document. </p>
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a> 第 <a class="el" href="BiomeRulesEditor_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8cd71b64c980df8bf32a82621535e461" name="a8cd71b64c980df8bf32a82621535e461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cd71b64c980df8bf32a82621535e461">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">biome_editing::EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">editor::TransactionReceipt</a> &gt; eve::biome_editor::BiomeRulesEditor::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a> 第 <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="EditorTransactionService_8cpp_source.html#l00082">eve::editor::LocalTransactionBackend::undo()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/biome_editor/<a class="el" href="BiomeRulesEditor_8h_source.html">BiomeRulesEditor.h</a></li>
+<li>src/modules/biome_editor/<a class="el" href="BiomeRulesEditor_8cpp_source.html">BiomeRulesEditor.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

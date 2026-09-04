@@ -1,0 +1,180 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 类成员 - 函数</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">&#160;</div>
+
+<h3><a id="index_k" name="index_k"></a>- k -</h3><ul>
+<li>key()&#160;:&#160;<a class="el" href="classeve_1_1decision_1_1Condition.html#a6e606bf1997de0ac638d0a29ba355861">eve::decision::Condition</a>, <a class="el" href="classeve_1_1rts_1_1ServiceLink.html#aff584c3652c609dd6a7e1b6b5581bcd1">eve::rts::ServiceLink&lt; Tag &gt;</a>, <a class="el" href="structeve_1_1script_1_1BindingContract.html#a07d967ff439c83abadcf68af24f102c3">eve::script::BindingContract</a></li>
+<li>keyAt()&#160;:&#160;<a class="el" href="classeve_1_1VersionedRegistry.html#a009e02f62275f0e27c0420d733c4e44d">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;</a></li>
+<li>Keyboard()&#160;:&#160;<a class="el" href="classeve_1_1keyboard_1_1sdl_1_1Keyboard.html#a371e824ed7810fb90fe0cb38a9af0277">eve::keyboard::sdl::Keyboard</a></li>
+<li>keyCount()&#160;:&#160;<a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a2c9000bc908ad517677813e86c607348">eve::animation_editor::AnimationClipEditor</a></li>
+<li>keyEvent()&#160;:&#160;<a class="el" href="classeve_1_1editor_1_1IEditorTool.html#a8f1bf60757a18bd969528316eaf7c1fe">eve::editor::IEditorTool</a>, <a class="el" href="classeve_1_1editor_1_1ScriptEditorTool.html#a052603eaa3848ca5480af35768778712">eve::editor::ScriptEditorTool</a></li>
+<li>keys()&#160;:&#160;<a class="el" href="classeve_1_1editor_1_1EditorCurveDocument.html#a84873909a25aecb53e8b9d7c151ce89e">eve::editor::EditorCurveDocument</a>, <a class="el" href="classeve_1_1json_1_1Value.html#ad65f4097065cebbc372989b69ddfb9a4">eve::json::Value</a>, <a class="el" href="classeve_1_1StateValue.html#adc8d31383a0d9a631eed5433c8836fed">eve::StateValue</a>, <a class="el" href="classeve_1_1Value.html#a342f35c2d09d7787e2e00f88fb0b08f8">eve::Value</a></li>
+<li>keyX()&#160;:&#160;<a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#ae5c52f77cf6da46f95cf6a12be77b9ef">eve::animation_editor::AnimationClipEditor</a></li>
+<li>keyY()&#160;:&#160;<a class="el" href="classeve_1_1animation__editor_1_1AnimationClipEditor.html#a27173eca916d5f03189adc083351181e">eve::animation_editor::AnimationClipEditor</a></li>
+<li>kind()&#160;:&#160;<a class="el" href="classeve_1_1attributes_1_1AttributeResourceAccountAdapter.html#a26b3b82e09a092e069103721edd90b8e">eve::attributes::AttributeResourceAccountAdapter</a>, <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a82acacfd4b19f9435bab755680fca7d4">eve::avatar_editing::AvatarDocumentTarget</a>, <a class="el" href="classeve_1_1avatar__editor_1_1AvatarDocumentEditor.html#aa1b774337b019606bf288f4b7a87109d">eve::avatar_editor::AvatarDocumentEditor</a>, <a class="el" href="classeve_1_1decision_1_1Condition.html#aa9052fd66f31f8bdec3a1a57b3adc1e6">eve::decision::Condition</a>, <a class="el" href="classeve_1_1editor_1_1HostProfile.html#ad3157914befe38eb3f801bb3d843b6c8">eve::editor::HostProfile</a>, <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a601c7a5db97851bfc4c2d48ae0b83e6c">eve::fluids::FluidSimulator</a>, <a class="el" href="classeve_1_1game__event_1_1CausationRef.html#ade20bf06a16fbee107a9daae693bd516">eve::game_event::CausationRef</a>, <a class="el" href="classeve_1_1game__event_1_1CorrelationId.html#a0d4b4e716e8b4ae1f6aeff6555a4b9e1">eve::game_event::CorrelationId</a>, <a class="el" href="classeve_1_1physics_1_1Cloth3D.html#a9b5bb8e171e4b7da0cbad5530bf90ee8">eve::physics::Cloth3D</a>, <a class="el" href="classeve_1_1physics_1_1Cloth.html#a5c03f4ab2e7f4ac560c5b0dd9bec1479">eve::physics::Cloth</a>, <a class="el" href="classeve_1_1physics_1_1ClothGPU.html#a5b7536f25c046cb86cfb047dd9e880c3">eve::physics::ClothGPU</a>, <a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a82a8e64a28853aa0c51da564a5b136ae">eve::physics::ISimulationBackend</a>, <a class="el" href="classeve_1_1ResourceRef.html#a8fdfe139a09315462afb3fad9c415716">eve::ResourceRef</a>, <a class="el" href="classeve_1_1StateValue.html#a19d94198021f2a5884636161f7daa6da">eve::StateValue</a>, <a class="el" href="classeve_1_1stylize_1_1SkillMeshEffect.html#aa782304a0a0ce720056f2af1d0c959a3">eve::stylize::SkillMeshEffect</a>, <a class="el" href="classeve_1_1Value.html#a2bebd5ee7017d578def6d4dbf3b9062d">eve::Value</a></li>
+<li>knownChunkCount()&#160;:&#160;<a class="el" href="classeve_1_1pixelworld__streaming_1_1PixelChunkStreamCursor.html#a30c83240d94e744eed8291a9b329590e">eve::pixelworld_streaming::PixelChunkStreamCursor</a></li>
+<li>knows()&#160;:&#160;<a class="el" href="classeve_1_1rpg_1_1SkillSystem.html#aadf7c187e0117028a27f86a08c974b5b">eve::rpg::SkillSystem</a></li>
+<li>knowsSkill()&#160;:&#160;<a class="el" href="classeve_1_1rpg_1_1RPGActor.html#aaaf868fa5e99616618e81249f87e8199">eve::rpg::RPGActor</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

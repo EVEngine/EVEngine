@@ -1,0 +1,718 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::script::ScriptModuleResolver类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1script.html">script</a></li><li class="navelem"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1script_1_1ScriptModuleResolver-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::script::ScriptModuleResolver类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owns providers, the static dependency graph, compiled closures, and module instances.  
+ <a href="classeve_1_1script_1_1ScriptModuleResolver.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScriptModule_8h_source.html">ScriptModule.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1script_1_1ScriptModuleResolver_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a2b9feb1959968143d351602fd0c7ccb7" id="r_a2b9feb1959968143d351602fd0c7ccb7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">ProviderId</a> = uint64_t</td></tr>
+<tr class="separator:a2b9feb1959968143d351602fd0c7ccb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae44e0a9f4ffb16cf2f6a0a162719e9db" id="r_ae44e0a9f4ffb16cf2f6a0a162719e9db"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#ae44e0a9f4ffb16cf2f6a0a162719e9db">ScriptModuleResolver</a> (SQVM *<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="separator:ae44e0a9f4ffb16cf2f6a0a162719e9db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac12fe3d74aebe0c16ff1cfb9c17b4b5f" id="r_ac12fe3d74aebe0c16ff1cfb9c17b4b5f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#ac12fe3d74aebe0c16ff1cfb9c17b4b5f">~ScriptModuleResolver</a> ()</td></tr>
+<tr class="separator:ac12fe3d74aebe0c16ff1cfb9c17b4b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaa4872f83c66c564a07e94890649516" id="r_adaa4872f83c66c564a07e94890649516"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#adaa4872f83c66c564a07e94890649516">ScriptModuleResolver</a> (const <a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> &amp;)=delete</td></tr>
+<tr class="separator:adaa4872f83c66c564a07e94890649516"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a950a4a94098e42bf5924e84605533b26" id="r_a950a4a94098e42bf5924e84605533b26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a950a4a94098e42bf5924e84605533b26">operator=</a> (const <a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> &amp;)=delete</td></tr>
+<tr class="separator:a950a4a94098e42bf5924e84605533b26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d6d01575cd54d691ec7bb3514626529" id="r_a2d6d01575cd54d691ec7bb3514626529"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">ProviderId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2d6d01575cd54d691ec7bb3514626529">registerProvider</a> (std::shared_ptr&lt; <a class="el" href="classeve_1_1script_1_1IScriptModuleProvider.html">IScriptModuleProvider</a> &gt; provider, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:a2d6d01575cd54d691ec7bb3514626529"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a provider. Higher priorities are tried first.  <br /></td></tr>
+<tr class="separator:a2d6d01575cd54d691ec7bb3514626529"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefd89e4bcf8d84b8d7588ab1de2f992a" id="r_aefd89e4bcf8d84b8d7588ab1de2f992a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#aefd89e4bcf8d84b8d7588ab1de2f992a">unregisterProvider</a> (<a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">ProviderId</a> <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:aefd89e4bcf8d84b8d7588ab1de2f992a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a provider; existing compiled module records remain valid.  <br /></td></tr>
+<tr class="separator:aefd89e4bcf8d84b8d7588ab1de2f992a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac74563e9e729cb5202cd71111bafb83c" id="r_ac74563e9e729cb5202cd71111bafb83c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#ac74563e9e729cb5202cd71111bafb83c">registerDefaultProviders</a> ()</td></tr>
+<tr class="memdesc:ac74563e9e729cb5202cd71111bafb83c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Installs the default game:/ provider backed by IFileSystem and disk fallback.  <br /></td></tr>
+<tr class="separator:ac74563e9e729cb5202cd71111bafb83c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50fee615b295eea97aea5249fdd7b5a0" id="r_a50fee615b295eea97aea5249fdd7b5a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a50fee615b295eea97aea5249fdd7b5a0">beginCompilation</a> (std::string_view importerUri)</td></tr>
+<tr class="memdesc:a50fee615b295eea97aea5249fdd7b5a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears prior diagnostics and dependency edges before compiling an importer.  <br /></td></tr>
+<tr class="separator:a50fee615b295eea97aea5249fdd7b5a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ce8bcc66ab684ec901c8d05374bc467" id="r_a5ce8bcc66ab684ec901c8d05374bc467"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a5ce8bcc66ab684ec901c8d05374bc467">takeCompilationFailure</a> ()</td></tr>
+<tr class="memdesc:a5ce8bcc66ab684ec901c8d05374bc467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumes the native failure captured while resolving the current compilation.  <br /></td></tr>
+<tr class="separator:a5ce8bcc66ab684ec901c8d05374bc467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd22ea59f8cae2421702f478508e0913" id="r_afd22ea59f8cae2421702f478508e0913"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#afd22ea59f8cae2421702f478508e0913">prepareDependencies</a> (std::string_view importerUri)</td></tr>
+<tr class="memdesc:afd22ea59f8cae2421702f478508e0913"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compiles all imports discovered while compiling an importer.  <br /></td></tr>
+<tr class="separator:afd22ea59f8cae2421702f478508e0913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a109927f290f326369cae47a6df74b2da" id="r_a109927f290f326369cae47a6df74b2da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a109927f290f326369cae47a6df74b2da">instantiateDependencies</a> (std::string_view importerUri)</td></tr>
+<tr class="memdesc:a109927f290f326369cae47a6df74b2da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiates the importer's dependencies in topological order.  <br /></td></tr>
+<tr class="separator:a109927f290f326369cae47a6df74b2da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e21422c122559badc762892476b6411" id="r_a7e21422c122559badc762892476b6411"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a7e21422c122559badc762892476b6411">invalidate</a> (std::string_view canonicalUri)</td></tr>
+<tr class="memdesc:a7e21422c122559badc762892476b6411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalidates a module and all reverse dependencies.  <br /></td></tr>
+<tr class="separator:a7e21422c122559badc762892476b6411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7a085c9db9afb3d5e60610d655b90ad" id="r_aa7a085c9db9afb3d5e60610d655b90ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#aa7a085c9db9afb3d5e60610d655b90ad">reload</a> (std::string_view canonicalUri)</td></tr>
+<tr class="memdesc:aa7a085c9db9afb3d5e60610d655b90ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally reloads one module, retaining the prior generation on failure.  <br /></td></tr>
+<tr class="separator:aa7a085c9db9afb3d5e60610d655b90ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d402f81bce4a4d611c7b352986fe9b3" id="r_a7d402f81bce4a4d611c7b352986fe9b3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a7d402f81bce4a4d611c7b352986fe9b3">reloadAffected</a> (std::string_view canonicalUri)</td></tr>
+<tr class="memdesc:a7d402f81bce4a4d611c7b352986fe9b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally reloads a module and every cached module that imports it.  <br /></td></tr>
+<tr class="separator:a7d402f81bce4a4d611c7b352986fe9b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5066633bf260a4e55b3af0a303f14c86" id="r_a5066633bf260a4e55b3af0a303f14c86"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a5066633bf260a4e55b3af0a303f14c86">dependencies</a> (std::string_view importerUri) const</td></tr>
+<tr class="memdesc:a5066633bf260a4e55b3af0a303f14c86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns canonical direct dependencies for an importer.  <br /></td></tr>
+<tr class="separator:a5066633bf260a4e55b3af0a303f14c86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5defe173cc3cc651316c8bee70831c93" id="r_a5defe173cc3cc651316c8bee70831c93"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a5defe173cc3cc651316c8bee70831c93">reverseDependencies</a> (std::string_view canonicalUri) const</td></tr>
+<tr class="memdesc:a5defe173cc3cc651316c8bee70831c93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns canonical importers that directly depend on a module.  <br /></td></tr>
+<tr class="separator:a5defe173cc3cc651316c8bee70831c93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aeaef2fc951b7fba017cedc7e9078eb00" id="r_aeaef2fc951b7fba017cedc7e9078eb00"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#aeaef2fc951b7fba017cedc7e9078eb00">canonicalize</a> (const <a class="el" href="structeve_1_1script_1_1ScriptModuleRequest.html">ScriptModuleRequest</a> &amp;request, std::string &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, std::string &amp;<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>)</td></tr>
+<tr class="memdesc:aeaef2fc951b7fba017cedc7e9078eb00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes a logical module URI and rejects root traversal.  <br /></td></tr>
+<tr class="separator:aeaef2fc951b7fba017cedc7e9078eb00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owns providers, the static dependency graph, compiled closures, and module instances. </p>
+<p>Providers never execute Squirrel. Dependencies are compiled before their importer executes; the VM import opcode therefore performs a cache-only lookup. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8h_source.html">ScriptModule.h</a> 第 <a class="el" href="ScriptModule_8h_source.html#l00051">51</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a2b9feb1959968143d351602fd0c7ccb7" name="a2b9feb1959968143d351602fd0c7ccb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b9feb1959968143d351602fd0c7ccb7">&#9670;&#160;</a></span>ProviderId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">eve::script::ScriptModuleResolver::ProviderId</a> =  uint64_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8h_source.html">ScriptModule.h</a> 第 <a class="el" href="ScriptModule_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae44e0a9f4ffb16cf2f6a0a162719e9db" name="ae44e0a9f4ffb16cf2f6a0a162719e9db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae44e0a9f4ffb16cf2f6a0a162719e9db">&#9670;&#160;</a></span>ScriptModuleResolver() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::ScriptModuleResolver::ScriptModuleResolver </td>
+          <td>(</td>
+          <td class="paramtype">SQVM *&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac12fe3d74aebe0c16ff1cfb9c17b4b5f" name="ac12fe3d74aebe0c16ff1cfb9c17b4b5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac12fe3d74aebe0c16ff1cfb9c17b4b5f">&#9670;&#160;</a></span>~ScriptModuleResolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::ScriptModuleResolver::~ScriptModuleResolver </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adaa4872f83c66c564a07e94890649516" name="adaa4872f83c66c564a07e94890649516"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaa4872f83c66c564a07e94890649516">&#9670;&#160;</a></span>ScriptModuleResolver() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::script::ScriptModuleResolver::ScriptModuleResolver </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a50fee615b295eea97aea5249fdd7b5a0" name="a50fee615b295eea97aea5249fdd7b5a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50fee615b295eea97aea5249fdd7b5a0">&#9670;&#160;</a></span>beginCompilation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::ScriptModuleResolver::beginCompilation </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>importerUri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears prior diagnostics and dependency edges before compiling an importer. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00341">341</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptCompiler_8cpp_source.html#l00548">eve::script::ScriptCompiler::compileBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="aeaef2fc951b7fba017cedc7e9078eb00" name="aeaef2fc951b7fba017cedc7e9078eb00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaef2fc951b7fba017cedc7e9078eb00">&#9670;&#160;</a></span>canonicalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::script::ScriptModuleResolver::canonicalize </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1script_1_1ScriptModuleRequest.html">ScriptModuleRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Normalizes a logical module URI and rejects root traversal. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="ScriptModule_8h_source.html#l00021">eve::script::ScriptModuleRequest::importerUri</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="ScriptModule_8h_source.html#l00022">eve::script::ScriptModuleRequest::specifier</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Run_8cpp_source.html#l00358">eve::cmd::Cmdline::Run()</a>.</p>
+
+</div>
+</div>
+<a id="a5066633bf260a4e55b3af0a303f14c86" name="a5066633bf260a4e55b3af0a303f14c86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5066633bf260a4e55b3af0a303f14c86">&#9670;&#160;</a></span>dependencies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::script::ScriptModuleResolver::dependencies </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>importerUri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns canonical direct dependencies for an importer. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00427">427</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptCompiler_8cpp_source.html#l00548">eve::script::ScriptCompiler::compileBuffer()</a> , 以及 <a class="el" href="ScriptModule_8cpp_source.html#l00432">reverseDependencies()</a>.</p>
+
+</div>
+</div>
+<a id="a109927f290f326369cae47a6df74b2da" name="a109927f290f326369cae47a6df74b2da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a109927f290f326369cae47a6df74b2da">&#9670;&#160;</a></span>instantiateDependencies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::ScriptModuleResolver::instantiateDependencies </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>importerUri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantiates the importer's dependencies in topological order. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00389">389</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e21422c122559badc762892476b6411" name="a7e21422c122559badc762892476b6411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e21422c122559badc762892476b6411">&#9670;&#160;</a></span>invalidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::ScriptModuleResolver::invalidate </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Invalidates a module and all reverse dependencies. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a950a4a94098e42bf5924e84605533b26" name="a950a4a94098e42bf5924e84605533b26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a950a4a94098e42bf5924e84605533b26">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> &amp; eve::script::ScriptModuleResolver::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html">ScriptModuleResolver</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd22ea59f8cae2421702f478508e0913" name="afd22ea59f8cae2421702f478508e0913"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd22ea59f8cae2421702f478508e0913">&#9670;&#160;</a></span>prepareDependencies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::ScriptModuleResolver::prepareDependencies </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>importerUri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compiles all imports discovered while compiling an importer. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="UrbanGenerator_8cpp_source.html#l00210">edges</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptCompiler_8cpp_source.html#l00548">eve::script::ScriptCompiler::compileBuffer()</a>.</p>
+
+</div>
+</div>
+<a id="ac74563e9e729cb5202cd71111bafb83c" name="ac74563e9e729cb5202cd71111bafb83c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac74563e9e729cb5202cd71111bafb83c">&#9670;&#160;</a></span>registerDefaultProviders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::ScriptModuleResolver::registerDefaultProviders </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Installs the default game:/ provider backed by IFileSystem and disk fallback. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptModule_8cpp_source.html#l00321">registerProvider()</a>.</p>
+
+</div>
+</div>
+<a id="a2d6d01575cd54d691ec7bb3514626529" name="a2d6d01575cd54d691ec7bb3514626529"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d6d01575cd54d691ec7bb3514626529">&#9670;&#160;</a></span>registerProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">ScriptModuleResolver::ProviderId</a> eve::script::ScriptModuleResolver::registerProvider </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeve_1_1script_1_1IScriptModuleProvider.html">IScriptModuleProvider</a> &gt;&#160;</td>
+          <td class="paramname"><em>provider</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers a provider. Higher priorities are tried first. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00609">eve::dev::LanguageServer::Impl::Impl()</a> , 以及 <a class="el" href="ScriptModule_8cpp_source.html#l00339">registerDefaultProviders()</a>.</p>
+
+</div>
+</div>
+<a id="aa7a085c9db9afb3d5e60610d655b90ad" name="aa7a085c9db9afb3d5e60610d655b90ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a085c9db9afb3d5e60610d655b90ad">&#9670;&#160;</a></span>reload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::script::ScriptModuleResolver::reload </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally reloads one module, retaining the prior generation on failure. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d402f81bce4a4d611c7b352986fe9b3" name="a7d402f81bce4a4d611c7b352986fe9b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d402f81bce4a4d611c7b352986fe9b3">&#9670;&#160;</a></span>reloadAffected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::script::ScriptModuleResolver::reloadAffected </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally reloads a module and every cached module that imports it. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00423">423</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5defe173cc3cc651316c8bee70831c93" name="a5defe173cc3cc651316c8bee70831c93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5defe173cc3cc651316c8bee70831c93">&#9670;&#160;</a></span>reverseDependencies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::script::ScriptModuleResolver::reverseDependencies </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>canonicalUri</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns canonical importers that directly depend on a module. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00432">432</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptModule_8cpp_source.html#l00427">dependencies()</a>.</p>
+
+</div>
+</div>
+<a id="a5ce8bcc66ab684ec901c8d05374bc467" name="a5ce8bcc66ab684ec901c8d05374bc467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ce8bcc66ab684ec901c8d05374bc467">&#9670;&#160;</a></span>takeCompilationFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; std::string &gt; eve::script::ScriptModuleResolver::takeCompilationFailure </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Consumes the native failure captured while resolving the current compilation. </p>
+<p>Squirrel's compiler reports only a generic import failure after a native resolver callback returns an error. This one-shot diagnostic bridge lets <a class="el" href="classeve_1_1script_1_1ScriptCompiler.html" title="Unified Runtime compiler facade for metadata, diagnostics, and module preparation.">ScriptCompiler</a> preserve the actionable resolver message without exposing a persistent last-error side channel. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aefd89e4bcf8d84b8d7588ab1de2f992a" name="aefd89e4bcf8d84b8d7588ab1de2f992a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefd89e4bcf8d84b8d7588ab1de2f992a">&#9670;&#160;</a></span>unregisterProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::script::ScriptModuleResolver::unregisterProvider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1script_1_1ScriptModuleResolver.html#a2b9feb1959968143d351602fd0c7ccb7">ProviderId</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a provider; existing compiled module records remain valid. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a> 第 <a class="el" href="ScriptModule_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="ScriptModule_8h_source.html">ScriptModule.h</a></li>
+<li>src/engine/common/<a class="el" href="ScriptModule_8cpp_source.html">ScriptModule.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

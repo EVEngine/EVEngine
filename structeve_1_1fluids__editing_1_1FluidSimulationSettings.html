@@ -1,0 +1,511 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids_editing::FluidSimulationSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids__editing.html">fluids_editing</a></li><li class="navelem"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html">FluidSimulationSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1fluids__editing_1_1FluidSimulationSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids_editing::FluidSimulationSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Serializable parameters matching the CPU/GPU surface fluid solver.  
+ <a href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:adca3b72d5eff6f6894edc762ff1dffd0" id="r_adca3b72d5eff6f6894edc762ff1dffd0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#adca3b72d5eff6f6894edc762ff1dffd0">maxParticles</a> = 10000</td></tr>
+<tr class="separator:adca3b72d5eff6f6894edc762ff1dffd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c2f96bc20d281a0339d22043903f6e" id="r_a73c2f96bc20d281a0339d22043903f6e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a73c2f96bc20d281a0339d22043903f6e">previewParticles</a> = 1000</td></tr>
+<tr class="separator:a73c2f96bc20d281a0339d22043903f6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9e87e49737a6560a4f3ac83e12b41d" id="r_a1f9e87e49737a6560a4f3ac83e12b41d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a1f9e87e49737a6560a4f3ac83e12b41d">particleRadius</a> = 0.05</td></tr>
+<tr class="separator:a1f9e87e49737a6560a4f3ac83e12b41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef22c91086ef8968b923211636c8c732" id="r_aef22c91086ef8968b923211636c8c732"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#aef22c91086ef8968b923211636c8c732">supportRadius</a> = 0.20</td></tr>
+<tr class="separator:aef22c91086ef8968b923211636c8c732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a833ff9cfa9f9aecbea1eb19a9740c306" id="r_a833ff9cfa9f9aecbea1eb19a9740c306"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a833ff9cfa9f9aecbea1eb19a9740c306">restDensity</a> = 1.0</td></tr>
+<tr class="separator:a833ff9cfa9f9aecbea1eb19a9740c306"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61f3eebbd36d531829ddbae4e58510a3" id="r_a61f3eebbd36d531829ddbae4e58510a3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a61f3eebbd36d531829ddbae4e58510a3">gravityX</a> = 0.0</td></tr>
+<tr class="separator:a61f3eebbd36d531829ddbae4e58510a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a936211d0adbfb07271563937fbd1099e" id="r_a936211d0adbfb07271563937fbd1099e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a936211d0adbfb07271563937fbd1099e">gravityY</a> = -9.8</td></tr>
+<tr class="separator:a936211d0adbfb07271563937fbd1099e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec620a5ad34946f0b8dc4fa7133bf50f" id="r_aec620a5ad34946f0b8dc4fa7133bf50f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#aec620a5ad34946f0b8dc4fa7133bf50f">gravityZ</a> = 0.0</td></tr>
+<tr class="separator:aec620a5ad34946f0b8dc4fa7133bf50f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61536ddb2575c5d995d465ba9fcd18ce" id="r_a61536ddb2575c5d995d465ba9fcd18ce"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a61536ddb2575c5d995d465ba9fcd18ce">viscosity</a> = 0.02</td></tr>
+<tr class="separator:a61536ddb2575c5d995d465ba9fcd18ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22b69cbecace313909c45c5db29caa75" id="r_a22b69cbecace313909c45c5db29caa75"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a22b69cbecace313909c45c5db29caa75">yieldStress</a> = 0.0</td></tr>
+<tr class="separator:a22b69cbecace313909c45c5db29caa75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3731f9c0e912eb64f16d41cfe12858bd" id="r_a3731f9c0e912eb64f16d41cfe12858bd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a3731f9c0e912eb64f16d41cfe12858bd">cohesion</a> = 0.0</td></tr>
+<tr class="separator:a3731f9c0e912eb64f16d41cfe12858bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af59c2b29c08ec8b00fcdb30769f4c841" id="r_af59c2b29c08ec8b00fcdb30769f4c841"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#af59c2b29c08ec8b00fcdb30769f4c841">adhesion</a> = 0.0</td></tr>
+<tr class="separator:af59c2b29c08ec8b00fcdb30769f4c841"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa38cd4f43d64319df6b563fd8cdec942" id="r_aa38cd4f43d64319df6b563fd8cdec942"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#aa38cd4f43d64319df6b563fd8cdec942">damping</a> = 0.0</td></tr>
+<tr class="separator:aa38cd4f43d64319df6b563fd8cdec942"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5e642c04f4061e07b1fd8bea35874b9" id="r_ad5e642c04f4061e07b1fd8bea35874b9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#ad5e642c04f4061e07b1fd8bea35874b9">maximumVelocity</a> = 20.0</td></tr>
+<tr class="separator:ad5e642c04f4061e07b1fd8bea35874b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5761e3b6ef177f153703c4fa3e75c303" id="r_a5761e3b6ef177f153703c4fa3e75c303"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a5761e3b6ef177f153703c4fa3e75c303">iterations</a> = 1</td></tr>
+<tr class="separator:a5761e3b6ef177f153703c4fa3e75c303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f0e3e1c3fdcba40c0f6515b1a080605" id="r_a7f0e3e1c3fdcba40c0f6515b1a080605"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids__editing_1_1FluidSimulationSettings.html#a7f0e3e1c3fdcba40c0f6515b1a080605">pbfIterations</a> = 2</td></tr>
+<tr class="separator:a7f0e3e1c3fdcba40c0f6515b1a080605"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Serializable parameters matching the CPU/GPU surface fluid solver. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="af59c2b29c08ec8b00fcdb30769f4c841" name="af59c2b29c08ec8b00fcdb30769f4c841"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af59c2b29c08ec8b00fcdb30769f4c841">&#9670;&#160;</a></span>adhesion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::adhesion = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a3731f9c0e912eb64f16d41cfe12858bd" name="a3731f9c0e912eb64f16d41cfe12858bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3731f9c0e912eb64f16d41cfe12858bd">&#9670;&#160;</a></span>cohesion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::cohesion = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="aa38cd4f43d64319df6b563fd8cdec942" name="aa38cd4f43d64319df6b563fd8cdec942"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa38cd4f43d64319df6b563fd8cdec942">&#9670;&#160;</a></span>damping</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::damping = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a61f3eebbd36d531829ddbae4e58510a3" name="a61f3eebbd36d531829ddbae4e58510a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61f3eebbd36d531829ddbae4e58510a3">&#9670;&#160;</a></span>gravityX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::gravityX = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a936211d0adbfb07271563937fbd1099e" name="a936211d0adbfb07271563937fbd1099e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a936211d0adbfb07271563937fbd1099e">&#9670;&#160;</a></span>gravityY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::gravityY = -9.8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="aec620a5ad34946f0b8dc4fa7133bf50f" name="aec620a5ad34946f0b8dc4fa7133bf50f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec620a5ad34946f0b8dc4fa7133bf50f">&#9670;&#160;</a></span>gravityZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::gravityZ = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a5761e3b6ef177f153703c4fa3e75c303" name="a5761e3b6ef177f153703c4fa3e75c303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5761e3b6ef177f153703c4fa3e75c303">&#9670;&#160;</a></span>iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids_editing::FluidSimulationSettings::iterations = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a> , 以及 <a class="el" href="FluidTarget_8cpp_source.html#l00222">eve::fluids_editing::FluidSimulationTarget::previewBudget()</a>.</p>
+
+</div>
+</div>
+<a id="ad5e642c04f4061e07b1fd8bea35874b9" name="ad5e642c04f4061e07b1fd8bea35874b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5e642c04f4061e07b1fd8bea35874b9">&#9670;&#160;</a></span>maximumVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::maximumVelocity = 20.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="adca3b72d5eff6f6894edc762ff1dffd0" name="adca3b72d5eff6f6894edc762ff1dffd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca3b72d5eff6f6894edc762ff1dffd0">&#9670;&#160;</a></span>maxParticles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids_editing::FluidSimulationSettings::maxParticles = 10000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a1f9e87e49737a6560a4f3ac83e12b41d" name="a1f9e87e49737a6560a4f3ac83e12b41d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f9e87e49737a6560a4f3ac83e12b41d">&#9670;&#160;</a></span>particleRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::particleRadius = 0.05</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>, <a class="el" href="FluidTarget_8cpp_source.html#l00222">eve::fluids_editing::FluidSimulationTarget::previewBudget()</a> , 以及 <a class="el" href="FluidTarget_8cpp_source.html#l00211">eve::fluids_editing::FluidSimulationTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a7f0e3e1c3fdcba40c0f6515b1a080605" name="a7f0e3e1c3fdcba40c0f6515b1a080605"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f0e3e1c3fdcba40c0f6515b1a080605">&#9670;&#160;</a></span>pbfIterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids_editing::FluidSimulationSettings::pbfIterations = 2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a> , 以及 <a class="el" href="FluidTarget_8cpp_source.html#l00222">eve::fluids_editing::FluidSimulationTarget::previewBudget()</a>.</p>
+
+</div>
+</div>
+<a id="a73c2f96bc20d281a0339d22043903f6e" name="a73c2f96bc20d281a0339d22043903f6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73c2f96bc20d281a0339d22043903f6e">&#9670;&#160;</a></span>previewParticles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids_editing::FluidSimulationSettings::previewParticles = 1000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidTarget_8cpp_source.html#l00222">eve::fluids_editing::FluidSimulationTarget::previewBudget()</a>.</p>
+
+</div>
+</div>
+<a id="a833ff9cfa9f9aecbea1eb19a9740c306" name="a833ff9cfa9f9aecbea1eb19a9740c306"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a833ff9cfa9f9aecbea1eb19a9740c306">&#9670;&#160;</a></span>restDensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::restDensity = 1.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="aef22c91086ef8968b923211636c8c732" name="aef22c91086ef8968b923211636c8c732"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef22c91086ef8968b923211636c8c732">&#9670;&#160;</a></span>supportRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::supportRadius = 0.20</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>, <a class="el" href="FluidTarget_8cpp_source.html#l00222">eve::fluids_editing::FluidSimulationTarget::previewBudget()</a> , 以及 <a class="el" href="FluidTarget_8cpp_source.html#l00211">eve::fluids_editing::FluidSimulationTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a61536ddb2575c5d995d465ba9fcd18ce" name="a61536ddb2575c5d995d465ba9fcd18ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61536ddb2575c5d995d465ba9fcd18ce">&#9670;&#160;</a></span>viscosity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::viscosity = 0.02</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a22b69cbecace313909c45c5db29caa75" name="a22b69cbecace313909c45c5db29caa75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22b69cbecace313909c45c5db29caa75">&#9670;&#160;</a></span>yieldStress</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::fluids_editing::FluidSimulationSettings::yieldStress = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a> 第 <a class="el" href="FluidTarget_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidRuntime_8cpp_source.html#l00007">eve::fluids_editing::FluidSimulationRuntimeApplier::apply()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/fluids_editing/<a class="el" href="FluidTarget_8h_source.html">FluidTarget.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

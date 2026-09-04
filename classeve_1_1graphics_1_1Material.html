@@ -1,0 +1,2225 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Material类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1graphics_1_1Material-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Material类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Packages shading method + surface parameters into one attachable asset.  
+ <a href="classeve_1_1graphics_1_1Material.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Material_8h_source.html">Material.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4edc08e515f76630a606c382fc4b0e6f" id="r_a4edc08e515f76630a606c382fc4b0e6f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a4edc08e515f76630a606c382fc4b0e6f">Material</a> ()=default</td></tr>
+<tr class="separator:a4edc08e515f76630a606c382fc4b0e6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22f0bfe399288a0c71c26dc036294a72" id="r_a22f0bfe399288a0c71c26dc036294a72"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a22f0bfe399288a0c71c26dc036294a72">~Material</a> ()=default</td></tr>
+<tr class="separator:a22f0bfe399288a0c71c26dc036294a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ebc329e1bfc62a8c189e82569fc269" id="r_ab1ebc329e1bfc62a8c189e82569fc269"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#ab1ebc329e1bfc62a8c189e82569fc269">Material</a> (const <a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;)=delete</td></tr>
+<tr class="separator:ab1ebc329e1bfc62a8c189e82569fc269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a56582419780f89ad0cef5913a3cee8" id="r_a4a56582419780f89ad0cef5913a3cee8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a4a56582419780f89ad0cef5913a3cee8">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;)=delete</td></tr>
+<tr class="separator:a4a56582419780f89ad0cef5913a3cee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89c19c4d946adfa0b80011bef6d57e5c" id="r_a89c19c4d946adfa0b80011bef6d57e5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a89c19c4d946adfa0b80011bef6d57e5c">setShadingModel</a> (const std::string &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)</td></tr>
+<tr class="memdesc:a89c19c4d946adfa0b80011bef6d57e5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">"pbr" | "unlit" | "hair" | "custom" (unknown → pbr).  <br /></td></tr>
+<tr class="separator:a89c19c4d946adfa0b80011bef6d57e5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1a6b4ee5a8da3a39ae6d4cf6d67a6cb" id="r_aa1a6b4ee5a8da3a39ae6d4cf6d67a6cb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa1a6b4ee5a8da3a39ae6d4cf6d67a6cb">getShadingModel</a> () const</td></tr>
+<tr class="separator:aa1a6b4ee5a8da3a39ae6d4cf6d67a6cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b041de2506392881c47ea2985d9027a" id="r_a0b041de2506392881c47ea2985d9027a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a0b041de2506392881c47ea2985d9027a">setAlbedoTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture)</td></tr>
+<tr class="separator:a0b041de2506392881c47ea2985d9027a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22f30d1363921ae5f5c1fb43f56203af" id="r_a22f30d1363921ae5f5c1fb43f56203af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a22f30d1363921ae5f5c1fb43f56203af">getAlbedoTexture</a> () const</td></tr>
+<tr class="separator:a22f30d1363921ae5f5c1fb43f56203af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a065e6dfd24f53b99bcf31fa6a573591f" id="r_a065e6dfd24f53b99bcf31fa6a573591f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a065e6dfd24f53b99bcf31fa6a573591f">setNormalTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture)</td></tr>
+<tr class="separator:a065e6dfd24f53b99bcf31fa6a573591f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5222ae66472e83cd67f24a11853253f0" id="r_a5222ae66472e83cd67f24a11853253f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a5222ae66472e83cd67f24a11853253f0">getNormalTexture</a> () const</td></tr>
+<tr class="separator:a5222ae66472e83cd67f24a11853253f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f8c6778e15337f594e4ad6f34652539" id="r_a1f8c6778e15337f594e4ad6f34652539"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1f8c6778e15337f594e4ad6f34652539">setHeightTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture)</td></tr>
+<tr class="separator:a1f8c6778e15337f594e4ad6f34652539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0ef953b07d723d0cf63d0682a8c6f26" id="r_af0ef953b07d723d0cf63d0682a8c6f26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#af0ef953b07d723d0cf63d0682a8c6f26">getHeightTexture</a> () const</td></tr>
+<tr class="separator:af0ef953b07d723d0cf63d0682a8c6f26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a837374028cc20ca35123743ad974fa4f" id="r_a837374028cc20ca35123743ad974fa4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a837374028cc20ca35123743ad974fa4f">setVirtualTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *albedoAtlas, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *normalAtlas, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *pageTable, int pageCountX, int pageCountY, int atlasSlotsX, int atlasSlotsY, float borderFraction)</td></tr>
+<tr class="memdesc:a837374028cc20ca35123743ad974fa4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opt this material into physical-atlas virtual-texture sampling.  <br /></td></tr>
+<tr class="separator:a837374028cc20ca35123743ad974fa4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bba734bdb8fcefaf456ade042938813" id="r_a6bba734bdb8fcefaf456ade042938813"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a6bba734bdb8fcefaf456ade042938813">clearVirtualTexture</a> ()</td></tr>
+<tr class="memdesc:a6bba734bdb8fcefaf456ade042938813"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore conventional albedo/normal/height interpretation.  <br /></td></tr>
+<tr class="separator:a6bba734bdb8fcefaf456ade042938813"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74f61368c6963a287769e618ada369e2" id="r_a74f61368c6963a287769e618ada369e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#ac54366d039184dfe3850269189017df9">MaterialVirtualTextureMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a74f61368c6963a287769e618ada369e2">virtualTextureMode</a> () const</td></tr>
+<tr class="memdesc:a74f61368c6963a287769e618ada369e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the active virtual-texture sampling mode.  <br /></td></tr>
+<tr class="separator:a74f61368c6963a287769e618ada369e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af76747192c813d7adc3f0e560cfe3b52" id="r_af76747192c813d7adc3f0e560cfe3b52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#af76747192c813d7adc3f0e560cfe3b52">setShader</a> (<a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>)</td></tr>
+<tr class="memdesc:af76747192c813d7adc3f0e560cfe3b52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional Mesh3D / hair <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a>. nullptr → built-in path for the shading model.  <br /></td></tr>
+<tr class="separator:af76747192c813d7adc3f0e560cfe3b52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c0c937cda58be8c22beabb13ecc947c" id="r_a9c0c937cda58be8c22beabb13ecc947c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a9c0c937cda58be8c22beabb13ecc947c">getShader</a> () const</td></tr>
+<tr class="separator:a9c0c937cda58be8c22beabb13ecc947c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9905067ec869894ae2eab9e5f60fe790" id="r_a9905067ec869894ae2eab9e5f60fe790"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a9905067ec869894ae2eab9e5f60fe790">setTint</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a9905067ec869894ae2eab9e5f60fe790"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a330113255c2e2068257e60976f9a8525" id="r_a330113255c2e2068257e60976f9a8525"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a330113255c2e2068257e60976f9a8525">getTintR</a> () const</td></tr>
+<tr class="separator:a330113255c2e2068257e60976f9a8525"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac205055ee6df7f239ccee8fa170ee6cb" id="r_ac205055ee6df7f239ccee8fa170ee6cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#ac205055ee6df7f239ccee8fa170ee6cb">getTintG</a> () const</td></tr>
+<tr class="separator:ac205055ee6df7f239ccee8fa170ee6cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa59b7df65cd1ad58093fd51cfe1f4703" id="r_aa59b7df65cd1ad58093fd51cfe1f4703"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa59b7df65cd1ad58093fd51cfe1f4703">getTintB</a> () const</td></tr>
+<tr class="separator:aa59b7df65cd1ad58093fd51cfe1f4703"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7780bdd04988f58c676dc3fcc1d5911d" id="r_a7780bdd04988f58c676dc3fcc1d5911d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a7780bdd04988f58c676dc3fcc1d5911d">getTintA</a> () const</td></tr>
+<tr class="separator:a7780bdd04988f58c676dc3fcc1d5911d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ee7db87d9ccb8be4beb6d8bd29429c2" id="r_a3ee7db87d9ccb8be4beb6d8bd29429c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a3ee7db87d9ccb8be4beb6d8bd29429c2">setMetallic</a> (float <a class="el" href="ModelRenderer_8cpp.html#abf199fccc6834e86bd7ca4693eba27bb">metallic</a>)</td></tr>
+<tr class="separator:a3ee7db87d9ccb8be4beb6d8bd29429c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2109523fcfd0d1d4f2f511d2730f1131" id="r_a2109523fcfd0d1d4f2f511d2730f1131"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a2109523fcfd0d1d4f2f511d2730f1131">getMetallic</a> () const</td></tr>
+<tr class="separator:a2109523fcfd0d1d4f2f511d2730f1131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c0411b6e2991ada8e6c2225d6ae5bee" id="r_a6c0411b6e2991ada8e6c2225d6ae5bee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a6c0411b6e2991ada8e6c2225d6ae5bee">setRoughness</a> (float <a class="el" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>)</td></tr>
+<tr class="separator:a6c0411b6e2991ada8e6c2225d6ae5bee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a571a488fc8025d9a5a47603303bda8b8" id="r_a571a488fc8025d9a5a47603303bda8b8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a571a488fc8025d9a5a47603303bda8b8">getRoughness</a> () const</td></tr>
+<tr class="separator:a571a488fc8025d9a5a47603303bda8b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93de19a841d825211ff379ad04421bb7" id="r_a93de19a841d825211ff379ad04421bb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a93de19a841d825211ff379ad04421bb7">setTexCellBomb</a> (float cellScale, float strength, float rotAmount=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a93de19a841d825211ff379ad04421bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f79c34fda1c7ad70668315f3a3ffe5d" id="r_a4f79c34fda1c7ad70668315f3a3ffe5d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a4f79c34fda1c7ad70668315f3a3ffe5d">getTexCellBombScale</a> () const</td></tr>
+<tr class="separator:a4f79c34fda1c7ad70668315f3a3ffe5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26cc096baa013b62f78739c771afe769" id="r_a26cc096baa013b62f78739c771afe769"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a26cc096baa013b62f78739c771afe769">getTexCellBombStrength</a> () const</td></tr>
+<tr class="separator:a26cc096baa013b62f78739c771afe769"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25ae8b08a33ddcc8e84a96bad8ff94d6" id="r_a25ae8b08a33ddcc8e84a96bad8ff94d6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a25ae8b08a33ddcc8e84a96bad8ff94d6">getTexCellBombRotation</a> () const</td></tr>
+<tr class="separator:a25ae8b08a33ddcc8e84a96bad8ff94d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5b920dddf4080c3b582514b957036e6" id="r_aa5b920dddf4080c3b582514b957036e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa5b920dddf4080c3b582514b957036e6">setParallax</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>, float minLayers=8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float maxLayers=32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:aa5b920dddf4080c3b582514b957036e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b7f67e6527f2a63bbc89b8f8fd9a6c3" id="r_a0b7f67e6527f2a63bbc89b8f8fd9a6c3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a0b7f67e6527f2a63bbc89b8f8fd9a6c3">getParallaxScale</a> () const</td></tr>
+<tr class="separator:a0b7f67e6527f2a63bbc89b8f8fd9a6c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57c6bb64428e5792e761f83c99d01c29" id="r_a57c6bb64428e5792e761f83c99d01c29"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a57c6bb64428e5792e761f83c99d01c29">getParallaxMinLayers</a> () const</td></tr>
+<tr class="separator:a57c6bb64428e5792e761f83c99d01c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdbf7ab349752be5847955864591bdd7" id="r_acdbf7ab349752be5847955864591bdd7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#acdbf7ab349752be5847955864591bdd7">getParallaxMaxLayers</a> () const</td></tr>
+<tr class="separator:acdbf7ab349752be5847955864591bdd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a813766224fe2230b3a4e72c5b4802eb0" id="r_a813766224fe2230b3a4e72c5b4802eb0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a813766224fe2230b3a4e72c5b4802eb0">setReceiveLight</a> (bool receive)</td></tr>
+<tr class="separator:a813766224fe2230b3a4e72c5b4802eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc7cde31761e3d6f684f611d0e651ff8" id="r_acc7cde31761e3d6f684f611d0e651ff8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#acc7cde31761e3d6f684f611d0e651ff8">getReceiveLight</a> () const</td></tr>
+<tr class="separator:acc7cde31761e3d6f684f611d0e651ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c525953edb63a272ed816539cbd7bf2" id="r_a1c525953edb63a272ed816539cbd7bf2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1c525953edb63a272ed816539cbd7bf2">setCastShadow</a> (bool cast)</td></tr>
+<tr class="separator:a1c525953edb63a272ed816539cbd7bf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1ee5ebf469ad821318a22118c5158c" id="r_aba1ee5ebf469ad821318a22118c5158c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#aba1ee5ebf469ad821318a22118c5158c">getCastShadow</a> () const</td></tr>
+<tr class="separator:aba1ee5ebf469ad821318a22118c5158c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4236b97469ba0692888b985711120a88" id="r_a4236b97469ba0692888b985711120a88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a4236b97469ba0692888b985711120a88">setReceiveShadow</a> (bool receive)</td></tr>
+<tr class="separator:a4236b97469ba0692888b985711120a88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60d2da1611eb354c0ad1d92e728b0c0c" id="r_a60d2da1611eb354c0ad1d92e728b0c0c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a60d2da1611eb354c0ad1d92e728b0c0c">getReceiveShadow</a> () const</td></tr>
+<tr class="separator:a60d2da1611eb354c0ad1d92e728b0c0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e28a91491d8c32f27ea2c5bbb644642" id="r_a1e28a91491d8c32f27ea2c5bbb644642"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1e28a91491d8c32f27ea2c5bbb644642">setCastOcclusion</a> (bool cast)</td></tr>
+<tr class="separator:a1e28a91491d8c32f27ea2c5bbb644642"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bd4fa06f84c978b0c6e20b779bb9a47" id="r_a7bd4fa06f84c978b0c6e20b779bb9a47"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a7bd4fa06f84c978b0c6e20b779bb9a47">getCastOcclusion</a> () const</td></tr>
+<tr class="separator:a7bd4fa06f84c978b0c6e20b779bb9a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0ea7a460b8033cdb9b80cc0e0c1da8f" id="r_af0ea7a460b8033cdb9b80cc0e0c1da8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#af0ea7a460b8033cdb9b80cc0e0c1da8f">setHair</a> (bool hair)</td></tr>
+<tr class="separator:af0ea7a460b8033cdb9b80cc0e0c1da8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a55b4110849cb7fc2b07eb9ca675187" id="r_a1a55b4110849cb7fc2b07eb9ca675187"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1a55b4110849cb7fc2b07eb9ca675187">getHair</a> () const</td></tr>
+<tr class="separator:a1a55b4110849cb7fc2b07eb9ca675187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1763d9f520ec82ad10a4b9089320278f" id="r_a1763d9f520ec82ad10a4b9089320278f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1763d9f520ec82ad10a4b9089320278f">hasParam</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a1763d9f520ec82ad10a4b9089320278f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional named float knobs (style / custom shader params).  <br /></td></tr>
+<tr class="separator:a1763d9f520ec82ad10a4b9089320278f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3192266fcf559bbcd8832b3abdf33ee" id="r_ad3192266fcf559bbcd8832b3abdf33ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#ad3192266fcf559bbcd8832b3abdf33ee">setFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ad3192266fcf559bbcd8832b3abdf33ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a005567f75b016b34473afdb08df26715" id="r_a005567f75b016b34473afdb08df26715"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a005567f75b016b34473afdb08df26715">getFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a005567f75b016b34473afdb08df26715"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf738993a5b5408e79a90d29769aaf12" id="r_acf738993a5b5408e79a90d29769aaf12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#acf738993a5b5408e79a90d29769aaf12">bind</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;gfx) const</td></tr>
+<tr class="memdesc:acf738993a5b5408e79a90d29769aaf12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push this material onto <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> mesh3d state for the next draw. Does not issue the draw itself.  <br /></td></tr>
+<tr class="separator:acf738993a5b5408e79a90d29769aaf12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad536a53f33108c62bcb6385f9c44e7ec" id="r_ad536a53f33108c62bcb6385f9c44e7ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#ad536a53f33108c62bcb6385f9c44e7ec">effectiveShader</a> () const</td></tr>
+<tr class="memdesc:ad536a53f33108c62bcb6385f9c44e7ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effective shader for Mesh3D draws (may be null → default PBR pipeline).  <br /></td></tr>
+<tr class="separator:ad536a53f33108c62bcb6385f9c44e7ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75235bf7d886528143954ff1560551bb" id="r_a75235bf7d886528143954ff1560551bb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a75235bf7d886528143954ff1560551bb">isTransparentHair</a> () const</td></tr>
+<tr class="memdesc:a75235bf7d886528143954ff1560551bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when this material should go through the hair transparent pass.  <br /></td></tr>
+<tr class="separator:a75235bf7d886528143954ff1560551bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85640119f8756270c1dc4d56fd314870" id="r_a85640119f8756270c1dc4d56fd314870"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a85640119f8756270c1dc4d56fd314870">setSurfaceMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a85640119f8756270c1dc4d56fd314870"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set "opaque", "masked", or "transparent" surface classification.  <br /></td></tr>
+<tr class="separator:a85640119f8756270c1dc4d56fd314870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4109812921c0dac6ca9ce29df8df1db" id="r_aa4109812921c0dac6ca9ce29df8df1db"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa4109812921c0dac6ca9ce29df8df1db">getSurfaceMode</a> () const</td></tr>
+<tr class="separator:aa4109812921c0dac6ca9ce29df8df1db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad89adeb9401ec1ea6e517ff614936866" id="r_ad89adeb9401ec1ea6e517ff614936866"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518f">SurfaceMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#ad89adeb9401ec1ea6e517ff614936866">surfaceMode</a> () const</td></tr>
+<tr class="separator:ad89adeb9401ec1ea6e517ff614936866"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77acbf4e60f51cc5fb53e4dd4ae97572" id="r_a77acbf4e60f51cc5fb53e4dd4ae97572"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a77acbf4e60f51cc5fb53e4dd4ae97572">setAlphaCutoff</a> (float cutoff)</td></tr>
+<tr class="separator:a77acbf4e60f51cc5fb53e4dd4ae97572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a0bb921ba1d76a8d1aa644524458c46" id="r_a5a0bb921ba1d76a8d1aa644524458c46"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a5a0bb921ba1d76a8d1aa644524458c46">getAlphaCutoff</a> () const</td></tr>
+<tr class="separator:a5a0bb921ba1d76a8d1aa644524458c46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a384a4f1aa66ec55647b1d4ac5717255e" id="r_a384a4f1aa66ec55647b1d4ac5717255e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a384a4f1aa66ec55647b1d4ac5717255e">setBlendMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a384a4f1aa66ec55647b1d4ac5717255e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set "alpha", "premultiplied", "additive", or "multiply".  <br /></td></tr>
+<tr class="separator:a384a4f1aa66ec55647b1d4ac5717255e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e72f4d992b9100f45fd2f84385252c5" id="r_a3e72f4d992b9100f45fd2f84385252c5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a3e72f4d992b9100f45fd2f84385252c5">getBlendMode</a> () const</td></tr>
+<tr class="separator:a3e72f4d992b9100f45fd2f84385252c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e9e084af152f3817aaa55b494394ab8" id="r_a6e9e084af152f3817aaa55b494394ab8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a6e9e084af152f3817aaa55b494394ab8">blendMode</a> () const</td></tr>
+<tr class="separator:a6e9e084af152f3817aaa55b494394ab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0f8eed8e33aa0ed074d8c5a127de955" id="r_aa0f8eed8e33aa0ed074d8c5a127de955"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa0f8eed8e33aa0ed074d8c5a127de955">setDepthWrite</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:aa0f8eed8e33aa0ed074d8c5a127de955"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97fe6ef521304ab18d26481fafdb48c3" id="r_a97fe6ef521304ab18d26481fafdb48c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a97fe6ef521304ab18d26481fafdb48c3">getDepthWrite</a> () const</td></tr>
+<tr class="separator:a97fe6ef521304ab18d26481fafdb48c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8e00151d5bff8dafaf535fc3372b89a" id="r_af8e00151d5bff8dafaf535fc3372b89a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#af8e00151d5bff8dafaf535fc3372b89a">setDoubleSided</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:af8e00151d5bff8dafaf535fc3372b89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c4e3d21f70a77b438c25b964b4be2f0" id="r_a7c4e3d21f70a77b438c25b964b4be2f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a7c4e3d21f70a77b438c25b964b4be2f0">getDoubleSided</a> () const</td></tr>
+<tr class="separator:a7c4e3d21f70a77b438c25b964b4be2f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0076e890296774b2e0573730dfbfd34" id="r_ae0076e890296774b2e0573730dfbfd34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#ae0076e890296774b2e0573730dfbfd34">setSortPriority</a> (int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>)</td></tr>
+<tr class="separator:ae0076e890296774b2e0573730dfbfd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71cff01ca609d0921f19fc509e6473b6" id="r_a71cff01ca609d0921f19fc509e6473b6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a71cff01ca609d0921f19fc509e6473b6">getSortPriority</a> () const</td></tr>
+<tr class="separator:a71cff01ca609d0921f19fc509e6473b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33ac6861101b003b0236e6da5f912b1c" id="r_a33ac6861101b003b0236e6da5f912b1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a33ac6861101b003b0236e6da5f912b1c">setAlphaTechnique</a> (const std::string &amp;technique)</td></tr>
+<tr class="memdesc:a33ac6861101b003b0236e6da5f912b1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional masked transparency quality: "cutoff", "dither", "coverage".  <br /></td></tr>
+<tr class="separator:a33ac6861101b003b0236e6da5f912b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d8425ca0215c586a343ddcc498992a9" id="r_a0d8425ca0215c586a343ddcc498992a9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a0d8425ca0215c586a343ddcc498992a9">getAlphaTechnique</a> () const</td></tr>
+<tr class="separator:a0d8425ca0215c586a343ddcc498992a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a70a48f0e99a6acd55545fb59e7c5978a" id="r_a70a48f0e99a6acd55545fb59e7c5978a"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Material.html#a70a48f0e99a6acd55545fb59e7c5978a">kMaxPartsHint</a> = 8</td></tr>
+<tr class="separator:a70a48f0e99a6acd55545fb59e7c5978a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Packages shading method + surface parameters into one attachable asset. </p>
+<p>Shading models (string, engine convention — no enums): "pbr" — default Mesh3D metallic-roughness (optional custom Shader*) "unlit" — forces receiveLight=false "hair" — alpha-blended hair/fur cards (isHair=true) "custom" — requires an explicit Mesh3D Shader*</p>
+<p>Attach via <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a90de07aa2615339ee659e419328d20a3" title="Attach a Material that packages shading method + surface params.">Renderable3D::setMaterial</a> / setPart. When a Material* is set, <a class="el" href="classeve_1_1graphics_1_1RenderSystem3D.html">RenderSystem3D</a> prefers it over the scattered MeshRenderer fields. </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4edc08e515f76630a606c382fc4b0e6f" name="a4edc08e515f76630a606c382fc4b0e6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4edc08e515f76630a606c382fc4b0e6f">&#9670;&#160;</a></span>Material() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Material::Material </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a22f0bfe399288a0c71c26dc036294a72" name="a22f0bfe399288a0c71c26dc036294a72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f0bfe399288a0c71c26dc036294a72">&#9670;&#160;</a></span>~Material()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Material::~Material </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1ebc329e1bfc62a8c189e82569fc269" name="ab1ebc329e1bfc62a8c189e82569fc269"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1ebc329e1bfc62a8c189e82569fc269">&#9670;&#160;</a></span>Material() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Material::Material </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="acf738993a5b5408e79a90d29769aaf12" name="acf738993a5b5408e79a90d29769aaf12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf738993a5b5408e79a90d29769aaf12">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Push this material onto <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> mesh3d state for the next draw. Does not issue the draw itself. </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">eve::Alpha</a>, <a class="el" href="Light_8h_source.html#l00094">eve::graphics::Lighting3DPack::count</a>, <a class="el" href="Texture_8h_source.html#l00038">eve::graphics::Texture::hasPremultipliedAlpha()</a>, <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a39a960b9c0fdfe58f8963d9ee2399459">eve::Premultiplied</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a51772688a6071fc78c6ecb2e8bf6d0ff">eve::graphics::Graphics::setMesh3DClusteredActive()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#af9c1ca97bea9213efbc805d80eb246bc">eve::graphics::Graphics::setMesh3DHeightTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#afcb915811cb2d5ffc49bdae2aaea8e51">eve::graphics::Graphics::setMesh3DLighting()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a2735c2dcecfae69597340587107d8b36">eve::graphics::Graphics::setMesh3DMaterial()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#af93faa3335e8cbadb2d918019b143e5e">eve::graphics::Graphics::setMesh3DNormalTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a70a28d9dd750bb96f072640f4e187183">eve::graphics::Graphics::setMesh3DParallax()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ab626e95d30b4f3d5cf02318569f0d14b">eve::graphics::Graphics::setMesh3DShadowReceive()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#aa1030ad3d6e019b2afcd665d5c37842b">eve::graphics::Graphics::setMesh3DSurface()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a59b3e5abff6e1d28b926b81dcafd8b7e">eve::graphics::Graphics::setMesh3DTexCellBomb()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a7a5ea20b3bc59eca7ba1cae41743f10f">eve::graphics::Graphics::setMesh3DVirtualTexture()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a6e9e084af152f3817aaa55b494394ab8" name="a6e9e084af152f3817aaa55b494394ab8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e9e084af152f3817aaa55b494394ab8">&#9670;&#160;</a></span>blendMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">BlendMode</a> eve::graphics::Material::blendMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6bba734bdb8fcefaf456ade042938813" name="a6bba734bdb8fcefaf456ade042938813"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bba734bdb8fcefaf456ade042938813">&#9670;&#160;</a></span>clearVirtualTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::clearVirtualTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore conventional albedo/normal/height interpretation. </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad536a53f33108c62bcb6385f9c44e7ec" name="ad536a53f33108c62bcb6385f9c44e7ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad536a53f33108c62bcb6385f9c44e7ec">&#9670;&#160;</a></span>effectiveShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::Material::effectiveShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Effective shader for Mesh3D draws (may be null → default PBR pipeline). </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a22f30d1363921ae5f5c1fb43f56203af" name="a22f30d1363921ae5f5c1fb43f56203af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f30d1363921ae5f5c1fb43f56203af">&#9670;&#160;</a></span>getAlbedoTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::Material::getAlbedoTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a5a0bb921ba1d76a8d1aa644524458c46" name="a5a0bb921ba1d76a8d1aa644524458c46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a0bb921ba1d76a8d1aa644524458c46">&#9670;&#160;</a></span>getAlphaCutoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getAlphaCutoff </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00142">142</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0d8425ca0215c586a343ddcc498992a9" name="a0d8425ca0215c586a343ddcc498992a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d8425ca0215c586a343ddcc498992a9">&#9670;&#160;</a></span>getAlphaTechnique()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Material::getAlphaTechnique </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e72f4d992b9100f45fd2f84385252c5" name="a3e72f4d992b9100f45fd2f84385252c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e72f4d992b9100f45fd2f84385252c5">&#9670;&#160;</a></span>getBlendMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Material::getBlendMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a3f7b3d8ee7bf0d542bd50821c083888f">eve::Additive</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980ae257376d913f3b53cbb4a9b19d770648">eve::Multiply</a> , 以及 <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a39a960b9c0fdfe58f8963d9ee2399459">eve::Premultiplied</a>.</p>
+
+</div>
+</div>
+<a id="a7bd4fa06f84c978b0c6e20b779bb9a47" name="a7bd4fa06f84c978b0c6e20b779bb9a47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bd4fa06f84c978b0c6e20b779bb9a47">&#9670;&#160;</a></span>getCastOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::getCastOcclusion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba1ee5ebf469ad821318a22118c5158c" name="aba1ee5ebf469ad821318a22118c5158c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba1ee5ebf469ad821318a22118c5158c">&#9670;&#160;</a></span>getCastShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::getCastShadow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8h_source.html#l00235">eve::graphics::Renderable3D::MeshRenderer::effectiveCastShadow()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a97fe6ef521304ab18d26481fafdb48c3" name="a97fe6ef521304ab18d26481fafdb48c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97fe6ef521304ab18d26481fafdb48c3">&#9670;&#160;</a></span>getDepthWrite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::getDepthWrite </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00148">148</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7c4e3d21f70a77b438c25b964b4be2f0" name="a7c4e3d21f70a77b438c25b964b4be2f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c4e3d21f70a77b438c25b964b4be2f0">&#9670;&#160;</a></span>getDoubleSided()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::getDoubleSided </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00150">150</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a005567f75b016b34473afdb08df26715" name="a005567f75b016b34473afdb08df26715"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a005567f75b016b34473afdb08df26715">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a1a55b4110849cb7fc2b07eb9ca675187" name="a1a55b4110849cb7fc2b07eb9ca675187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a55b4110849cb7fc2b07eb9ca675187">&#9670;&#160;</a></span>getHair()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::getHair </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af0ef953b07d723d0cf63d0682a8c6f26" name="af0ef953b07d723d0cf63d0682a8c6f26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0ef953b07d723d0cf63d0682a8c6f26">&#9670;&#160;</a></span>getHeightTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::Material::getHeightTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2109523fcfd0d1d4f2f511d2730f1131" name="a2109523fcfd0d1d4f2f511d2730f1131"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2109523fcfd0d1d4f2f511d2730f1131">&#9670;&#160;</a></span>getMetallic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getMetallic </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5222ae66472e83cd67f24a11853253f0" name="a5222ae66472e83cd67f24a11853253f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5222ae66472e83cd67f24a11853253f0">&#9670;&#160;</a></span>getNormalTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::Material::getNormalTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acdbf7ab349752be5847955864591bdd7" name="acdbf7ab349752be5847955864591bdd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdbf7ab349752be5847955864591bdd7">&#9670;&#160;</a></span>getParallaxMaxLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getParallaxMaxLayers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a57c6bb64428e5792e761f83c99d01c29" name="a57c6bb64428e5792e761f83c99d01c29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57c6bb64428e5792e761f83c99d01c29">&#9670;&#160;</a></span>getParallaxMinLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getParallaxMinLayers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b7f67e6527f2a63bbc89b8f8fd9a6c3" name="a0b7f67e6527f2a63bbc89b8f8fd9a6c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b7f67e6527f2a63bbc89b8f8fd9a6c3">&#9670;&#160;</a></span>getParallaxScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getParallaxScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc7cde31761e3d6f684f611d0e651ff8" name="acc7cde31761e3d6f684f611d0e651ff8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc7cde31761e3d6f684f611d0e651ff8">&#9670;&#160;</a></span>getReceiveLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::getReceiveLight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a60d2da1611eb354c0ad1d92e728b0c0c" name="a60d2da1611eb354c0ad1d92e728b0c0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60d2da1611eb354c0ad1d92e728b0c0c">&#9670;&#160;</a></span>getReceiveShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::getReceiveShadow </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a571a488fc8025d9a5a47603303bda8b8" name="a571a488fc8025d9a5a47603303bda8b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a571a488fc8025d9a5a47603303bda8b8">&#9670;&#160;</a></span>getRoughness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getRoughness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c0c937cda58be8c22beabb13ecc947c" name="a9c0c937cda58be8c22beabb13ecc947c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c0c937cda58be8c22beabb13ecc947c">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::Material::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa1a6b4ee5a8da3a39ae6d4cf6d67a6cb" name="aa1a6b4ee5a8da3a39ae6d4cf6d67a6cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1a6b4ee5a8da3a39ae6d4cf6d67a6cb">&#9670;&#160;</a></span>getShadingModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Material::getShadingModel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71cff01ca609d0921f19fc509e6473b6" name="a71cff01ca609d0921f19fc509e6473b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71cff01ca609d0921f19fc509e6473b6">&#9670;&#160;</a></span>getSortPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Material::getSortPriority </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00152">152</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa4109812921c0dac6ca9ce29df8df1db" name="aa4109812921c0dac6ca9ce29df8df1db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4109812921c0dac6ca9ce29df8df1db">&#9670;&#160;</a></span>getSurfaceMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Material::getSurfaceMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fa6864311f985d160ad4bd46a9fbe4a4d4">eve::graphics::Masked</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fa3d971943089a3388c01fb297a32d9ba7">eve::graphics::Transparent</a>.</p>
+
+</div>
+</div>
+<a id="a25ae8b08a33ddcc8e84a96bad8ff94d6" name="a25ae8b08a33ddcc8e84a96bad8ff94d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ae8b08a33ddcc8e84a96bad8ff94d6">&#9670;&#160;</a></span>getTexCellBombRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getTexCellBombRotation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4f79c34fda1c7ad70668315f3a3ffe5d" name="a4f79c34fda1c7ad70668315f3a3ffe5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f79c34fda1c7ad70668315f3a3ffe5d">&#9670;&#160;</a></span>getTexCellBombScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getTexCellBombScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a26cc096baa013b62f78739c771afe769" name="a26cc096baa013b62f78739c771afe769"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26cc096baa013b62f78739c771afe769">&#9670;&#160;</a></span>getTexCellBombStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getTexCellBombStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7780bdd04988f58c676dc3fcc1d5911d" name="a7780bdd04988f58c676dc3fcc1d5911d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7780bdd04988f58c676dc3fcc1d5911d">&#9670;&#160;</a></span>getTintA()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getTintA </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="aa59b7df65cd1ad58093fd51cfe1f4703" name="aa59b7df65cd1ad58093fd51cfe1f4703"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa59b7df65cd1ad58093fd51cfe1f4703">&#9670;&#160;</a></span>getTintB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getTintB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ac205055ee6df7f239ccee8fa170ee6cb" name="ac205055ee6df7f239ccee8fa170ee6cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac205055ee6df7f239ccee8fa170ee6cb">&#9670;&#160;</a></span>getTintG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getTintG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a330113255c2e2068257e60976f9a8525" name="a330113255c2e2068257e60976f9a8525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a330113255c2e2068257e60976f9a8525">&#9670;&#160;</a></span>getTintR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Material::getTintR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a1763d9f520ec82ad10a4b9089320278f" name="a1763d9f520ec82ad10a4b9089320278f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1763d9f520ec82ad10a4b9089320278f">&#9670;&#160;</a></span>hasParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::hasParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional named float knobs (style / custom shader params). </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a75235bf7d886528143954ff1560551bb" name="a75235bf7d886528143954ff1560551bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75235bf7d886528143954ff1560551bb">&#9670;&#160;</a></span>isTransparentHair()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Material::isTransparentHair </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when this material should go through the hair transparent pass. </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8h_source.html#l00230">eve::graphics::Renderable3D::MeshRenderer::effectiveHair()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a4a56582419780f89ad0cef5913a3cee8" name="a4a56582419780f89ad0cef5913a3cee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a56582419780f89ad0cef5913a3cee8">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp; eve::graphics::Material::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0b041de2506392881c47ea2985d9027a" name="a0b041de2506392881c47ea2985d9027a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b041de2506392881c47ea2985d9027a">&#9670;&#160;</a></span>setAlbedoTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setAlbedoTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a77acbf4e60f51cc5fb53e4dd4ae97572" name="a77acbf4e60f51cc5fb53e4dd4ae97572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77acbf4e60f51cc5fb53e4dd4ae97572">&#9670;&#160;</a></span>setAlphaCutoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setAlphaCutoff </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cutoff</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33ac6861101b003b0236e6da5f912b1c" name="a33ac6861101b003b0236e6da5f912b1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33ac6861101b003b0236e6da5f912b1c">&#9670;&#160;</a></span>setAlphaTechnique()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setAlphaTechnique </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>technique</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional masked transparency quality: "cutoff", "dither", "coverage". </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a384a4f1aa66ec55647b1d4ac5717255e" name="a384a4f1aa66ec55647b1d4ac5717255e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a384a4f1aa66ec55647b1d4ac5717255e">&#9670;&#160;</a></span>setBlendMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setBlendMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set "alpha", "premultiplied", "additive", or "multiply". </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a3f7b3d8ee7bf0d542bd50821c083888f">eve::Additive</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a6132295fcf5570fb8b0a944ef322a598">eve::Alpha</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980ae257376d913f3b53cbb4a9b19d770648">eve::Multiply</a> , 以及 <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a39a960b9c0fdfe58f8963d9ee2399459">eve::Premultiplied</a>.</p>
+
+</div>
+</div>
+<a id="a1e28a91491d8c32f27ea2c5bbb644642" name="a1e28a91491d8c32f27ea2c5bbb644642"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e28a91491d8c32f27ea2c5bbb644642">&#9670;&#160;</a></span>setCastOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setCastOcclusion </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cast</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1c525953edb63a272ed816539cbd7bf2" name="a1c525953edb63a272ed816539cbd7bf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c525953edb63a272ed816539cbd7bf2">&#9670;&#160;</a></span>setCastShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setCastShadow </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cast</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>.</p>
+
+</div>
+</div>
+<a id="aa0f8eed8e33aa0ed074d8c5a127de955" name="aa0f8eed8e33aa0ed074d8c5a127de955"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0f8eed8e33aa0ed074d8c5a127de955">&#9670;&#160;</a></span>setDepthWrite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setDepthWrite </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="af8e00151d5bff8dafaf535fc3372b89a" name="af8e00151d5bff8dafaf535fc3372b89a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8e00151d5bff8dafaf535fc3372b89a">&#9670;&#160;</a></span>setDoubleSided()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setDoubleSided </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="ad3192266fcf559bbcd8832b3abdf33ee" name="ad3192266fcf559bbcd8832b3abdf33ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3192266fcf559bbcd8832b3abdf33ee">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="af0ea7a460b8033cdb9b80cc0e0c1da8f" name="af0ea7a460b8033cdb9b80cc0e0c1da8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0ea7a460b8033cdb9b80cc0e0c1da8f">&#9670;&#160;</a></span>setHair()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setHair </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hair</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00746">hair</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fa3d971943089a3388c01fb297a32d9ba7">eve::graphics::Transparent</a>.</p>
+
+</div>
+</div>
+<a id="a1f8c6778e15337f594e4ad6f34652539" name="a1f8c6778e15337f594e4ad6f34652539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f8c6778e15337f594e4ad6f34652539">&#9670;&#160;</a></span>setHeightTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setHeightTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ee7db87d9ccb8be4beb6d8bd29429c2" name="a3ee7db87d9ccb8be4beb6d8bd29429c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ee7db87d9ccb8be4beb6d8bd29429c2">&#9670;&#160;</a></span>setMetallic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setMetallic </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>metallic</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00097">metallic</a>.</p>
+
+</div>
+</div>
+<a id="a065e6dfd24f53b99bcf31fa6a573591f" name="a065e6dfd24f53b99bcf31fa6a573591f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a065e6dfd24f53b99bcf31fa6a573591f">&#9670;&#160;</a></span>setNormalTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setNormalTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa5b920dddf4080c3b582514b957036e6" name="aa5b920dddf4080c3b582514b957036e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5b920dddf4080c3b582514b957036e6">&#9670;&#160;</a></span>setParallax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setParallax </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minLayers</em> = <code>8.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxLayers</em> = <code>32.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a813766224fe2230b3a4e72c5b4802eb0" name="a813766224fe2230b3a4e72c5b4802eb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a813766224fe2230b3a4e72c5b4802eb0">&#9670;&#160;</a></span>setReceiveLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setReceiveLight </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>receive</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>.</p>
+
+</div>
+</div>
+<a id="a4236b97469ba0692888b985711120a88" name="a4236b97469ba0692888b985711120a88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4236b97469ba0692888b985711120a88">&#9670;&#160;</a></span>setReceiveShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setReceiveShadow </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>receive</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>.</p>
+
+</div>
+</div>
+<a id="a6c0411b6e2991ada8e6c2225d6ae5bee" name="a6c0411b6e2991ada8e6c2225d6ae5bee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c0411b6e2991ada8e6c2225d6ae5bee">&#9670;&#160;</a></span>setRoughness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setRoughness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>roughness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00098">roughness</a>.</p>
+
+</div>
+</div>
+<a id="af76747192c813d7adc3f0e560cfe3b52" name="af76747192c813d7adc3f0e560cfe3b52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af76747192c813d7adc3f0e560cfe3b52">&#9670;&#160;</a></span>setShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Optional Mesh3D / hair <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a>. nullptr → built-in path for the shading model. </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>.</p>
+
+</div>
+</div>
+<a id="a89c19c4d946adfa0b80011bef6d57e5c" name="a89c19c4d946adfa0b80011bef6d57e5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89c19c4d946adfa0b80011bef6d57e5c">&#9670;&#160;</a></span>setShadingModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setShadingModel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"pbr" | "unlit" | "hair" | "custom" (unknown → pbr). </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00734">model</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fa3d971943089a3388c01fb297a32d9ba7">eve::graphics::Transparent</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>.</p>
+
+</div>
+</div>
+<a id="ae0076e890296774b2e0573730dfbfd34" name="ae0076e890296774b2e0573730dfbfd34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0076e890296774b2e0573730dfbfd34">&#9670;&#160;</a></span>setSortPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setSortPriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+</div>
+</div>
+<a id="a85640119f8756270c1dc4d56fd314870" name="a85640119f8756270c1dc4d56fd314870"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85640119f8756270c1dc4d56fd314870">&#9670;&#160;</a></span>setSurfaceMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setSurfaceMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set "opaque", "masked", or "transparent" surface classification. </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fa6864311f985d160ad4bd46a9fbe4a4d4">eve::graphics::Masked</a>, <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fafaa90538de35640e4b1e31ccf35b6eb5">eve::graphics::Opaque</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518fa3d971943089a3388c01fb297a32d9ba7">eve::graphics::Transparent</a>.</p>
+
+</div>
+</div>
+<a id="a93de19a841d825211ff379ad04421bb7" name="a93de19a841d825211ff379ad04421bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93de19a841d825211ff379ad04421bb7">&#9670;&#160;</a></span>setTexCellBomb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setTexCellBomb </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotAmount</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9905067ec869894ae2eab9e5f60fe790" name="a9905067ec869894ae2eab9e5f60fe790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9905067ec869894ae2eab9e5f60fe790">&#9670;&#160;</a></span>setTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Material::setTint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Weather_8cpp_source.html#l00349">eve::weather::Weather::init()</a>.</p>
+
+</div>
+</div>
+<a id="a837374028cc20ca35123743ad974fa4f" name="a837374028cc20ca35123743ad974fa4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a837374028cc20ca35123743ad974fa4f">&#9670;&#160;</a></span>setVirtualTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::Material::setVirtualTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>albedoAtlas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>normalAtlas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>pageTable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageCountX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageCountY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>atlasSlotsX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>atlasSlotsY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>borderFraction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opt this material into physical-atlas virtual-texture sampling. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">albedoAtlas</td><td>Physical albedo pages; borrowed from <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </td></tr>
+    <tr><td class="paramname">normalAtlas</td><td>Physical tangent-space normal pages; borrowed from <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </td></tr>
+    <tr><td class="paramname">pageTable</td><td>RGBA8 virtual-to-physical page table; borrowed from <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </td></tr>
+    <tr><td class="paramname">pageCountX</td><td>Number of mip-zero virtual pages horizontally. </td></tr>
+    <tr><td class="paramname">pageCountY</td><td>Number of mip-zero virtual pages vertically. </td></tr>
+    <tr><td class="paramname">atlasSlotsX</td><td>Number of physical slots horizontally. </td></tr>
+    <tr><td class="paramname">atlasSlotsY</td><td>Number of physical slots vertically. </td></tr>
+    <tr><td class="paramname">borderFraction</td><td>Border texels divided by stored physical-page extent. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a validation error without changing this material. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Material_8cpp_source.html">Material.cpp</a> 第 <a class="el" href="Material_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad89adeb9401ec1ea6e517ff614936866" name="ad89adeb9401ec1ea6e517ff614936866"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad89adeb9401ec1ea6e517ff614936866">&#9670;&#160;</a></span>surfaceMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a1ed008c4466bcb1a89c2ea28db52518f">SurfaceMode</a> eve::graphics::Material::surfaceMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00140">140</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a74f61368c6963a287769e618ada369e2" name="a74f61368c6963a287769e618ada369e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74f61368c6963a287769e618ada369e2">&#9670;&#160;</a></span>virtualTextureMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#ac54366d039184dfe3850269189017df9">MaterialVirtualTextureMode</a> eve::graphics::Material::virtualTextureMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the active virtual-texture sampling mode. </p>
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1graphics.html#ac54366d039184dfe3850269189017df9a9d8e14f35e632ec543d8f574ceb96abe">eve::graphics::AtlasPageTable</a> , 以及 <a class="el" href="namespaceeve_1_1graphics.html#ac54366d039184dfe3850269189017df9ae593276964d46c43e5b707325fb12b6b">eve::graphics::Conventional</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a70a48f0e99a6acd55545fb59e7c5978a" name="a70a48f0e99a6acd55545fb59e7c5978a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70a48f0e99a6acd55545fb59e7c5978a">&#9670;&#160;</a></span>kMaxPartsHint</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::graphics::Material::kMaxPartsHint = 8</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Material_8h_source.html">Material.h</a> 第 <a class="el" href="Material_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Material_8h_source.html">Material.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Material_8cpp_source.html">Material.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

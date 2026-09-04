@@ -1,0 +1,1823 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditorWorkspace类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html">EditorWorkspace</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1EditorWorkspace-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditorWorkspace类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Composition model shared by project-specific developer and runtime editors.  
+ <a href="classeve_1_1editor_1_1EditorWorkspace.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa196f06e4732685f2fa35490286c56fb" id="r_aa196f06e4732685f2fa35490286c56fb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#aa196f06e4732685f2fa35490286c56fb">EditorWorkspace</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, std::string <a class="el" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>)</td></tr>
+<tr class="memdesc:aa196f06e4732685f2fa35490286c56fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a workspace with stable identity and display title.  <br /></td></tr>
+<tr class="separator:aa196f06e4732685f2fa35490286c56fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca24a21d5a6842150bcd2e1a091c9b23" id="r_aca24a21d5a6842150bcd2e1a091c9b23"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#aca24a21d5a6842150bcd2e1a091c9b23">getId</a> () const</td></tr>
+<tr class="memdesc:aca24a21d5a6842150bcd2e1a091c9b23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable project-defined workspace id.  <br /></td></tr>
+<tr class="separator:aca24a21d5a6842150bcd2e1a091c9b23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd1e5d62803012e9d1dce5f2a0ed5431" id="r_afd1e5d62803012e9d1dce5f2a0ed5431"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#afd1e5d62803012e9d1dce5f2a0ed5431">getTitle</a> () const</td></tr>
+<tr class="memdesc:afd1e5d62803012e9d1dce5f2a0ed5431"><td class="mdescLeft">&#160;</td><td class="mdescRight">User-facing workspace title.  <br /></td></tr>
+<tr class="separator:afd1e5d62803012e9d1dce5f2a0ed5431"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d98eeef31929d8abd3f9c56a99af83c" id="r_a6d98eeef31929d8abd3f9c56a99af83c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a6d98eeef31929d8abd3f9c56a99af83c">setTitle</a> (const std::string &amp;<a class="el" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>)</td></tr>
+<tr class="memdesc:a6d98eeef31929d8abd3f9c56a99af83c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the display title without changing workspace identity.  <br /></td></tr>
+<tr class="separator:a6d98eeef31929d8abd3f9c56a99af83c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa978b247536516b3beab8eec93e8451" id="r_aaa978b247536516b3beab8eec93e8451"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#aaa978b247536516b3beab8eec93e8451">registerPanel</a> (<a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> <a class="el" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>)</td></tr>
+<tr class="memdesc:aaa978b247536516b3beab8eec93e8451"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a checked owning panel descriptor.  <br /></td></tr>
+<tr class="separator:aaa978b247536516b3beab8eec93e8451"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1ba5ca250301c5623de650a0b28cfd" id="r_a2b1ba5ca250301c5623de650a0b28cfd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a2b1ba5ca250301c5623de650a0b28cfd">movePanel</a> (const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="namespaceeve_1_1editor.html#a268de55410656fb914651dc93e294224">WorkspaceRegion</a> region, int <a class="el" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>)</td></tr>
+<tr class="memdesc:a2b1ba5ca250301c5623de650a0b28cfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move a panel using a strongly typed dock region.  <br /></td></tr>
+<tr class="separator:a2b1ba5ca250301c5623de650a0b28cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5998e65b25b22b1b10f6fc0a37c55aa9" id="r_a5998e65b25b22b1b10f6fc0a37c55aa9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a5998e65b25b22b1b10f6fc0a37c55aa9">removePanel</a> (const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a5998e65b25b22b1b10f6fc0a37c55aa9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a panel and return its final owning descriptor.  <br /></td></tr>
+<tr class="separator:a5998e65b25b22b1b10f6fc0a37c55aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a239655a77d6a3b9dde593bf6875beb81" id="r_a239655a77d6a3b9dde593bf6875beb81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a239655a77d6a3b9dde593bf6875beb81">activatePanel</a> (const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a239655a77d6a3b9dde593bf6875beb81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activate a visible panel with structured not-found/rejected results.  <br /></td></tr>
+<tr class="separator:a239655a77d6a3b9dde593bf6875beb81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae171dc171535835cff765efb6f3476dc" id="r_ae171dc171535835cff765efb6f3476dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ae171dc171535835cff765efb6f3476dc">panelAt</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ae171dc171535835cff765efb6f3476dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning panel snapshot instead of an ambiguous empty field.  <br /></td></tr>
+<tr class="separator:ae171dc171535835cff765efb6f3476dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c2bd1179268934afe4d0d1af2d3276a" id="r_a7c2bd1179268934afe4d0d1af2d3276a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a7c2bd1179268934afe4d0d1af2d3276a">registerPanel</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;<a class="el" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>, const std::string &amp;region, int <a class="el" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>)</td></tr>
+<tr class="memdesc:a7c2bd1179268934afe4d0d1af2d3276a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a panel descriptor.  <br /></td></tr>
+<tr class="separator:a7c2bd1179268934afe4d0d1af2d3276a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9df3e199856167620e2b3fea7d36fc3c" id="r_a9df3e199856167620e2b3fea7d36fc3c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a9df3e199856167620e2b3fea7d36fc3c">removePanel</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a9df3e199856167620e2b3fea7d36fc3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a panel descriptor by id.  <br /></td></tr>
+<tr class="separator:a9df3e199856167620e2b3fea7d36fc3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab467993187e3f536fa88bf16acf9ad1" id="r_aab467993187e3f536fa88bf16acf9ad1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#aab467993187e3f536fa88bf16acf9ad1">clearPanels</a> ()</td></tr>
+<tr class="memdesc:aab467993187e3f536fa88bf16acf9ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove every panel descriptor.  <br /></td></tr>
+<tr class="separator:aab467993187e3f536fa88bf16acf9ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb8602b637d9d13b2701dd0e1447e3de" id="r_abb8602b637d9d13b2701dd0e1447e3de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#abb8602b637d9d13b2701dd0e1447e3de">movePanel</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;region, int <a class="el" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a>)</td></tr>
+<tr class="memdesc:abb8602b637d9d13b2701dd0e1447e3de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only string/boolean facade over movePanel(id, region, order).  <br /></td></tr>
+<tr class="separator:abb8602b637d9d13b2701dd0e1447e3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8fdba22133aea1ee0ec94532656fd21" id="r_ac8fdba22133aea1ee0ec94532656fd21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ac8fdba22133aea1ee0ec94532656fd21">setPanelCapability</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;capability)</td></tr>
+<tr class="memdesc:ac8fdba22133aea1ee0ec94532656fd21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach a capability requirement used by the host when filtering panels.  <br /></td></tr>
+<tr class="separator:ac8fdba22133aea1ee0ec94532656fd21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47a87ccb618c59e58483c8a40f06c701" id="r_a47a87ccb618c59e58483c8a40f06c701"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a47a87ccb618c59e58483c8a40f06c701">setPanelContext</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;context)</td></tr>
+<tr class="memdesc:a47a87ccb618c59e58483c8a40f06c701"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach a semantic input context such as scene, graph, or timeline.  <br /></td></tr>
+<tr class="separator:a47a87ccb618c59e58483c8a40f06c701"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb3792e0c4bc845e7af07cdcda42301c" id="r_aeb3792e0c4bc845e7af07cdcda42301c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#aeb3792e0c4bc845e7af07cdcda42301c">setPanelVisible</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>)</td></tr>
+<tr class="memdesc:aeb3792e0c4bc845e7af07cdcda42301c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Show or hide a panel without removing its descriptor.  <br /></td></tr>
+<tr class="separator:aeb3792e0c4bc845e7af07cdcda42301c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad726a8f60ca5e65f798d5ae7cb406f0d" id="r_ad726a8f60ca5e65f798d5ae7cb406f0d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ad726a8f60ca5e65f798d5ae7cb406f0d">setPanelSingleton</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, bool singleton)</td></tr>
+<tr class="memdesc:ad726a8f60ca5e65f798d5ae7cb406f0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark whether hosts should allow more than one instance of this panel type.  <br /></td></tr>
+<tr class="separator:ad726a8f60ca5e65f798d5ae7cb406f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fd24d0ad54fa114af62cc94cccf9675" id="r_a5fd24d0ad54fa114af62cc94cccf9675"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a5fd24d0ad54fa114af62cc94cccf9675">activatePanel</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a5fd24d0ad54fa114af62cc94cccf9675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a registered visible panel the active semantic surface.  <br /></td></tr>
+<tr class="separator:a5fd24d0ad54fa114af62cc94cccf9675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8a01a18e334f412a811100c9ffe7a55" id="r_ae8a01a18e334f412a811100c9ffe7a55"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ae8a01a18e334f412a811100c9ffe7a55">getActivePanel</a> () const</td></tr>
+<tr class="memdesc:ae8a01a18e334f412a811100c9ffe7a55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active panel id, or an empty string.  <br /></td></tr>
+<tr class="separator:ae8a01a18e334f412a811100c9ffe7a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5d436506cfea4bd0a9c99a25780142a" id="r_aa5d436506cfea4bd0a9c99a25780142a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#aa5d436506cfea4bd0a9c99a25780142a">getPanelCount</a> () const</td></tr>
+<tr class="memdesc:aa5d436506cfea4bd0a9c99a25780142a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of registered panels in deterministic region/order/id order.  <br /></td></tr>
+<tr class="separator:aa5d436506cfea4bd0a9c99a25780142a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9a60291df1485e3619725f618b099a7" id="r_ad9a60291df1485e3619725f618b099a7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ad9a60291df1485e3619725f618b099a7">getPanelId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ad9a60291df1485e3619725f618b099a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Panel id by deterministic index.  <br /></td></tr>
+<tr class="separator:ad9a60291df1485e3619725f618b099a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56e4b25414965959cd2a175699015270" id="r_a56e4b25414965959cd2a175699015270"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a56e4b25414965959cd2a175699015270">getPanelTitle</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a56e4b25414965959cd2a175699015270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Panel title by deterministic index.  <br /></td></tr>
+<tr class="separator:a56e4b25414965959cd2a175699015270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2479f97a483cfb6465d18466d83b7e59" id="r_a2479f97a483cfb6465d18466d83b7e59"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a2479f97a483cfb6465d18466d83b7e59">getPanelRegion</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a2479f97a483cfb6465d18466d83b7e59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Panel dock region by deterministic index.  <br /></td></tr>
+<tr class="separator:a2479f97a483cfb6465d18466d83b7e59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e49cf653ed4cfe4879532c7354b2a32" id="r_a1e49cf653ed4cfe4879532c7354b2a32"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a1e49cf653ed4cfe4879532c7354b2a32">getPanelCapability</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a1e49cf653ed4cfe4879532c7354b2a32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Panel capability requirement by deterministic index.  <br /></td></tr>
+<tr class="separator:a1e49cf653ed4cfe4879532c7354b2a32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a7ebb5f293282770f967227f21c442d" id="r_a3a7ebb5f293282770f967227f21c442d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a3a7ebb5f293282770f967227f21c442d">getPanelContext</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a3a7ebb5f293282770f967227f21c442d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Panel input context by deterministic index.  <br /></td></tr>
+<tr class="separator:a3a7ebb5f293282770f967227f21c442d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3a6d207f87ccbff237cc8a45508dbf4" id="r_ad3a6d207f87ccbff237cc8a45508dbf4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ad3a6d207f87ccbff237cc8a45508dbf4">getPanelOrder</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ad3a6d207f87ccbff237cc8a45508dbf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Panel order by deterministic index.  <br /></td></tr>
+<tr class="separator:ad3a6d207f87ccbff237cc8a45508dbf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac433ad8b144e7ac4922190a5ac54c25e" id="r_ac433ad8b144e7ac4922190a5ac54c25e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ac433ad8b144e7ac4922190a5ac54c25e">getPanelVisible</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ac433ad8b144e7ac4922190a5ac54c25e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Panel visibility by deterministic index.  <br /></td></tr>
+<tr class="separator:ac433ad8b144e7ac4922190a5ac54c25e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a648841284b81e681f5a4d1b88cd5b9" id="r_a1a648841284b81e681f5a4d1b88cd5b9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a1a648841284b81e681f5a4d1b88cd5b9">getPanelSingleton</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a1a648841284b81e681f5a4d1b88cd5b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Panel singleton policy by deterministic index.  <br /></td></tr>
+<tr class="separator:a1a648841284b81e681f5a4d1b88cd5b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad95f8e17df17bf753f2500682f1246b8" id="r_ad95f8e17df17bf753f2500682f1246b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ad95f8e17df17bf753f2500682f1246b8">setRegionSize</a> (const std::string &amp;region, float <a class="el" href="PrototypeTextures_8cpp.html#a5e97f2110c1b66c571902dda9b85ab54">pixels</a>)</td></tr>
+<tr class="memdesc:ad95f8e17df17bf753f2500682f1246b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure one standard dock region size in pixels.  <br /></td></tr>
+<tr class="separator:ad95f8e17df17bf753f2500682f1246b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac99d832818d59162878559d4639ebcd1" id="r_ac99d832818d59162878559d4639ebcd1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ac99d832818d59162878559d4639ebcd1">layout</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:ac99d832818d59162878559d4639ebcd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute standard dock rectangles for the requested host size.  <br /></td></tr>
+<tr class="separator:ac99d832818d59162878559d4639ebcd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade572989b66fefd6e70e213eb26d4da9" id="r_ade572989b66fefd6e70e213eb26d4da9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ade572989b66fefd6e70e213eb26d4da9">getRegionX</a> (const std::string &amp;region) const</td></tr>
+<tr class="memdesc:ade572989b66fefd6e70e213eb26d4da9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computed region X coordinate.  <br /></td></tr>
+<tr class="separator:ade572989b66fefd6e70e213eb26d4da9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f94174f07fc55cd71cce458a42dc039" id="r_a8f94174f07fc55cd71cce458a42dc039"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a8f94174f07fc55cd71cce458a42dc039">getRegionY</a> (const std::string &amp;region) const</td></tr>
+<tr class="memdesc:a8f94174f07fc55cd71cce458a42dc039"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computed region Y coordinate.  <br /></td></tr>
+<tr class="separator:a8f94174f07fc55cd71cce458a42dc039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee7ef2a2f32c4aeec5d4607d876fbade" id="r_aee7ef2a2f32c4aeec5d4607d876fbade"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#aee7ef2a2f32c4aeec5d4607d876fbade">getRegionW</a> (const std::string &amp;region) const</td></tr>
+<tr class="memdesc:aee7ef2a2f32c4aeec5d4607d876fbade"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computed region width.  <br /></td></tr>
+<tr class="separator:aee7ef2a2f32c4aeec5d4607d876fbade"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a337549bcf862550244bf586a6c79d9ac" id="r_a337549bcf862550244bf586a6c79d9ac"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a337549bcf862550244bf586a6c79d9ac">getRegionH</a> (const std::string &amp;region) const</td></tr>
+<tr class="memdesc:a337549bcf862550244bf586a6c79d9ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computed region height.  <br /></td></tr>
+<tr class="separator:a337549bcf862550244bf586a6c79d9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83ec2e36aadf838768c4501b3dd7541e" id="r_a83ec2e36aadf838768c4501b3dd7541e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a83ec2e36aadf838768c4501b3dd7541e">setMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a83ec2e36aadf838768c4501b3dd7541e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a project-defined mode such as edit, play, material, or animation.  <br /></td></tr>
+<tr class="separator:a83ec2e36aadf838768c4501b3dd7541e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88cc7127efbee3caff7bad430ce12240" id="r_a88cc7127efbee3caff7bad430ce12240"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a88cc7127efbee3caff7bad430ce12240">setModeId</a> (<a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> mode)</td></tr>
+<tr class="memdesc:a88cc7127efbee3caff7bad430ce12240"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a strongly identified workspace mode.  <br /></td></tr>
+<tr class="separator:a88cc7127efbee3caff7bad430ce12240"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65e2836c79be1f563bfd2e651b58eda2" id="r_a65e2836c79be1f563bfd2e651b58eda2"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a65e2836c79be1f563bfd2e651b58eda2">getMode</a> () const</td></tr>
+<tr class="memdesc:a65e2836c79be1f563bfd2e651b58eda2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current project-defined mode.  <br /></td></tr>
+<tr class="separator:a65e2836c79be1f563bfd2e651b58eda2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78d7c78bf2dc8004ad4adf118af2c462" id="r_a78d7c78bf2dc8004ad4adf118af2c462"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a78d7c78bf2dc8004ad4adf118af2c462">select</a> (const std::string &amp;channel, const std::string &amp;domain, const std::string &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const std::string &amp;item, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, bool additive)</td></tr>
+<tr class="memdesc:a78d7c78bf2dc8004ad4adf118af2c462"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select one stable item in a semantic channel.  <br /></td></tr>
+<tr class="separator:a78d7c78bf2dc8004ad4adf118af2c462"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f2bbd8f0fb4b7be74c833959c8d4a97" id="r_a0f2bbd8f0fb4b7be74c833959c8d4a97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a700d7804628a8d365988f7573578ebc5">SelectionSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a0f2bbd8f0fb4b7be74c833959c8d4a97">selectItem</a> (std::string channel, <a class="el" href="namespaceeve_1_1editor.html#a36feca04e5afdf084192471a16e2e24a">SelectionItem</a> item, bool additive)</td></tr>
+<tr class="memdesc:a0f2bbd8f0fb4b7be74c833959c8d4a97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select one already typed item without string domain parsing.  <br /></td></tr>
+<tr class="separator:a0f2bbd8f0fb4b7be74c833959c8d4a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa518b8e8fc365be67fda82ecb2090c5" id="r_afa518b8e8fc365be67fda82ecb2090c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#afa518b8e8fc365be67fda82ecb2090c5">clearSelection</a> (const std::string &amp;channel)</td></tr>
+<tr class="memdesc:afa518b8e8fc365be67fda82ecb2090c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear one semantic selection channel.  <br /></td></tr>
+<tr class="separator:afa518b8e8fc365be67fda82ecb2090c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae39d018665698d49d8b18c3ee09b3b9d" id="r_ae39d018665698d49d8b18c3ee09b3b9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a700d7804628a8d365988f7573578ebc5">SelectionSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ae39d018665698d49d8b18c3ee09b3b9d">clearSelectionChecked</a> (const std::string &amp;channel)</td></tr>
+<tr class="memdesc:ae39d018665698d49d8b18c3ee09b3b9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear one selection channel without discarding diagnostics.  <br /></td></tr>
+<tr class="separator:ae39d018665698d49d8b18c3ee09b3b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9bdd01efe1b57bc28f1dbfeb297704d" id="r_ae9bdd01efe1b57bc28f1dbfeb297704d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#ae9bdd01efe1b57bc28f1dbfeb297704d">getSelectionCount</a> (const std::string &amp;channel) const</td></tr>
+<tr class="memdesc:ae9bdd01efe1b57bc28f1dbfeb297704d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of selected items in a channel.  <br /></td></tr>
+<tr class="separator:ae9bdd01efe1b57bc28f1dbfeb297704d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65bd2a61599c7f0cec75522ee0d99778" id="r_a65bd2a61599c7f0cec75522ee0d99778"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a65bd2a61599c7f0cec75522ee0d99778">getSelectionItem</a> (const std::string &amp;channel, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a65bd2a61599c7f0cec75522ee0d99778"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selected stable item id by channel/index.  <br /></td></tr>
+<tr class="separator:a65bd2a61599c7f0cec75522ee0d99778"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a784b8f1d978fe0e7aff25fbf624130b1" id="r_a784b8f1d978fe0e7aff25fbf624130b1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a784b8f1d978fe0e7aff25fbf624130b1">getSelectionType</a> (const std::string &amp;channel, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a784b8f1d978fe0e7aff25fbf624130b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selected item type by channel/index.  <br /></td></tr>
+<tr class="separator:a784b8f1d978fe0e7aff25fbf624130b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08671593c5b0605b8d0be9c6705f3d6a" id="r_a08671593c5b0605b8d0be9c6705f3d6a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a08671593c5b0605b8d0be9c6705f3d6a">getPrimarySelection</a> (const std::string &amp;channel) const</td></tr>
+<tr class="memdesc:a08671593c5b0605b8d0be9c6705f3d6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Primary selected item id for a channel.  <br /></td></tr>
+<tr class="separator:a08671593c5b0605b8d0be9c6705f3d6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ad6e50e9b6bd61e8dd83ac0aac75371" id="r_a1ad6e50e9b6bd61e8dd83ac0aac75371"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a1ad6e50e9b6bd61e8dd83ac0aac75371">getSelectionSequence</a> (const std::string &amp;channel) const</td></tr>
+<tr class="memdesc:a1ad6e50e9b6bd61e8dd83ac0aac75371"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic selection sequence for MVVM change detection.  <br /></td></tr>
+<tr class="separator:a1ad6e50e9b6bd61e8dd83ac0aac75371"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c6cc842a18ce2c2970b37359e7a2838" id="r_a5c6cc842a18ce2c2970b37359e7a2838"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a5c6cc842a18ce2c2970b37359e7a2838">focus</a> (const std::string &amp;channel, const std::string &amp;surface, const std::string &amp;item)</td></tr>
+<tr class="memdesc:a5c6cc842a18ce2c2970b37359e7a2838"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set UI-toolkit-independent focus for a channel.  <br /></td></tr>
+<tr class="separator:a5c6cc842a18ce2c2970b37359e7a2838"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1be4903344623ec4d3e3ea25ecf39dcc" id="r_a1be4903344623ec4d3e3ea25ecf39dcc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#ae97f135c7f99ae4a99d770dfd8a8c657">EditorFocusSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a1be4903344623ec4d3e3ea25ecf39dcc">focusItem</a> (const std::string &amp;channel, <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> surface, <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> item)</td></tr>
+<tr class="memdesc:a1be4903344623ec4d3e3ea25ecf39dcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Focus a strongly identified surface and item without discarding diagnostics.  <br /></td></tr>
+<tr class="separator:a1be4903344623ec4d3e3ea25ecf39dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1671bac6b7d519eb40e425cf6d2cdea0" id="r_a1671bac6b7d519eb40e425cf6d2cdea0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a1671bac6b7d519eb40e425cf6d2cdea0">getFocusedSurface</a> (const std::string &amp;channel) const</td></tr>
+<tr class="memdesc:a1671bac6b7d519eb40e425cf6d2cdea0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Focused surface id for a channel.  <br /></td></tr>
+<tr class="separator:a1671bac6b7d519eb40e425cf6d2cdea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46ccf8dfec5588992f1a5bc258f1888a" id="r_a46ccf8dfec5588992f1a5bc258f1888a"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorWorkspace.html#a46ccf8dfec5588992f1a5bc258f1888a">getRevision</a> () const</td></tr>
+<tr class="memdesc:a46ccf8dfec5588992f1a5bc258f1888a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic structural revision for cheap ViewModel synchronization.  <br /></td></tr>
+<tr class="separator:a46ccf8dfec5588992f1a5bc258f1888a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Composition model shared by project-specific developer and runtime editors. </p>
+<p>The workspace deliberately contains no rendering or widget code. Games register semantic panels and render the descriptors with <code>ui</code>, an external toolkit, or an automation host. Selection and focus use the same channelled V2 services used by command/property providers, so a custom editor and an in-game builder can share their model without sharing a pixel layout. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a> 第 <a class="el" href="EditorWorkspace_8h_source.html#l00041">41</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa196f06e4732685f2fa35490286c56fb" name="aa196f06e4732685f2fa35490286c56fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa196f06e4732685f2fa35490286c56fb">&#9670;&#160;</a></span>EditorWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorWorkspace::EditorWorkspace </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>title</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a workspace with stable identity and display title. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a239655a77d6a3b9dde593bf6875beb81" name="a239655a77d6a3b9dde593bf6875beb81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a239655a77d6a3b9dde593bf6875beb81">&#9670;&#160;</a></span>activatePanel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt; eve::editor::EditorWorkspace::activatePanel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Activate a visible panel with structured not-found/rejected results. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="EditorWorkspace_8h_source.html#l00028">eve::editor::WorkspacePanelDescriptor::visible</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorWorkspace_8cpp_source.html#l00165">activatePanel()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00074">eve::animation_editor::AnimationClipEditor::configureWorkspace()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00206">eve::audio_editor::AudioSourceEditor::configureWorkspace()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00077">eve::avatar_editor::AvatarDocumentEditor::configureWorkspace()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00072">eve::biome_editor::BiomeRulesEditor::configureWorkspace()</a> , 以及 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00307">eve::editor::ActionTimelineEditor::configureWorkspace()</a>.</p>
+
+</div>
+</div>
+<a id="a5fd24d0ad54fa114af62cc94cccf9675" name="a5fd24d0ad54fa114af62cc94cccf9675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fd24d0ad54fa114af62cc94cccf9675">&#9670;&#160;</a></span>activatePanel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::activatePanel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Make a registered visible panel the active semantic surface. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00169">activatePanel()</a>.</p>
+
+</div>
+</div>
+<a id="aab467993187e3f536fa88bf16acf9ad1" name="aab467993187e3f536fa88bf16acf9ad1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab467993187e3f536fa88bf16acf9ad1">&#9670;&#160;</a></span>clearPanels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorWorkspace::clearPanels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove every panel descriptor. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa518b8e8fc365be67fda82ecb2090c5" name="afa518b8e8fc365be67fda82ecb2090c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa518b8e8fc365be67fda82ecb2090c5">&#9670;&#160;</a></span>clearSelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::clearSelection </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear one semantic selection channel. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00278">clearSelectionChecked()</a>.</p>
+
+</div>
+</div>
+<a id="ae39d018665698d49d8b18c3ee09b3b9d" name="ae39d018665698d49d8b18c3ee09b3b9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae39d018665698d49d8b18c3ee09b3b9d">&#9670;&#160;</a></span>clearSelectionChecked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a700d7804628a8d365988f7573578ebc5">SelectionSnapshot</a> &gt; eve::editor::EditorWorkspace::clearSelectionChecked </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear one selection channel without discarding diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSelection_8cpp_source.html#l00029">eve::editor::EditorSelectionService::clear()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorWorkspace_8cpp_source.html#l00274">clearSelection()</a>.</p>
+
+</div>
+</div>
+<a id="a5c6cc842a18ce2c2970b37359e7a2838" name="a5c6cc842a18ce2c2970b37359e7a2838"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c6cc842a18ce2c2970b37359e7a2838">&#9670;&#160;</a></span>focus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::focus </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>surface</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>item</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set UI-toolkit-independent focus for a channel. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00315">focusItem()</a>.</p>
+
+</div>
+</div>
+<a id="a1be4903344623ec4d3e3ea25ecf39dcc" name="a1be4903344623ec4d3e3ea25ecf39dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1be4903344623ec4d3e3ea25ecf39dcc">&#9670;&#160;</a></span>focusItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#ae97f135c7f99ae4a99d770dfd8a8c657">EditorFocusSnapshot</a> &gt; eve::editor::EditorWorkspace::focusItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a>&#160;</td>
+          <td class="paramname"><em>surface</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a>&#160;</td>
+          <td class="paramname"><em>item</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Focus a strongly identified surface and item without discarding diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSelection_8cpp_source.html#l00049">eve::editor::EditorFocusService::focus()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorWorkspace_8cpp_source.html#l00311">focus()</a>.</p>
+
+</div>
+</div>
+<a id="ae8a01a18e334f412a811100c9ffe7a55" name="ae8a01a18e334f412a811100c9ffe7a55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8a01a18e334f412a811100c9ffe7a55">&#9670;&#160;</a></span>getActivePanel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::editor::EditorWorkspace::getActivePanel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Active panel id, or an empty string. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a> 第 <a class="el" href="EditorWorkspace_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1671bac6b7d519eb40e425cf6d2cdea0" name="a1671bac6b7d519eb40e425cf6d2cdea0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1671bac6b7d519eb40e425cf6d2cdea0">&#9670;&#160;</a></span>getFocusedSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getFocusedSurface </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Focused surface id for a channel. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00322">322</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorSelection_8cpp_source.html#l00062">eve::editor::EditorFocusService::snapshot()</a>, <a class="el" href="EditingSelection_8h_source.html#l00024">eve::editing::FocusSnapshot::surface</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="aca24a21d5a6842150bcd2e1a091c9b23" name="aca24a21d5a6842150bcd2e1a091c9b23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca24a21d5a6842150bcd2e1a091c9b23">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::editor::EditorWorkspace::getId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable project-defined workspace id. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a> 第 <a class="el" href="EditorWorkspace_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a65e2836c79be1f563bfd2e651b58eda2" name="a65e2836c79be1f563bfd2e651b58eda2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65e2836c79be1f563bfd2e651b58eda2">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::editor::EditorWorkspace::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current project-defined mode. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a> 第 <a class="el" href="EditorWorkspace_8h_source.html#l00127">127</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e49cf653ed4cfe4879532c7354b2a32" name="a1e49cf653ed4cfe4879532c7354b2a32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e49cf653ed4cfe4879532c7354b2a32">&#9670;&#160;</a></span>getPanelCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getPanelCapability </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Panel capability requirement by deterministic index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a3a7ebb5f293282770f967227f21c442d" name="a3a7ebb5f293282770f967227f21c442d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a7ebb5f293282770f967227f21c442d">&#9670;&#160;</a></span>getPanelContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getPanelContext </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Panel input context by deterministic index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="aa5d436506cfea4bd0a9c99a25780142a" name="aa5d436506cfea4bd0a9c99a25780142a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5d436506cfea4bd0a9c99a25780142a">&#9670;&#160;</a></span>getPanelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editor::EditorWorkspace::getPanelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of registered panels in deterministic region/order/id order. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a> 第 <a class="el" href="EditorWorkspace_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad9a60291df1485e3619725f618b099a7" name="ad9a60291df1485e3619725f618b099a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9a60291df1485e3619725f618b099a7">&#9670;&#160;</a></span>getPanelId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getPanelId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Panel id by deterministic index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ad3a6d207f87ccbff237cc8a45508dbf4" name="ad3a6d207f87ccbff237cc8a45508dbf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3a6d207f87ccbff237cc8a45508dbf4">&#9670;&#160;</a></span>getPanelOrder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editor::EditorWorkspace::getPanelOrder </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Panel order by deterministic index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a2479f97a483cfb6465d18466d83b7e59" name="a2479f97a483cfb6465d18466d83b7e59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2479f97a483cfb6465d18466d83b7e59">&#9670;&#160;</a></span>getPanelRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getPanelRegion </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Panel dock region by deterministic index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00196">196</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1a648841284b81e681f5a4d1b88cd5b9" name="a1a648841284b81e681f5a4d1b88cd5b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a648841284b81e681f5a4d1b88cd5b9">&#9670;&#160;</a></span>getPanelSingleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::getPanelSingleton </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Panel singleton policy by deterministic index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a56e4b25414965959cd2a175699015270" name="a56e4b25414965959cd2a175699015270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56e4b25414965959cd2a175699015270">&#9670;&#160;</a></span>getPanelTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getPanelTitle </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Panel title by deterministic index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ac433ad8b144e7ac4922190a5ac54c25e" name="ac433ad8b144e7ac4922190a5ac54c25e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac433ad8b144e7ac4922190a5ac54c25e">&#9670;&#160;</a></span>getPanelVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::getPanelVisible </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Panel visibility by deterministic index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a08671593c5b0605b8d0be9c6705f3d6a" name="a08671593c5b0605b8d0be9c6705f3d6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08671593c5b0605b8d0be9c6705f3d6a">&#9670;&#160;</a></span>getPrimarySelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getPrimarySelection </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Primary selected item id for a channel. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00302">302</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingSelection_8h_source.html#l00019">eve::editing::SelectionSnapshot::primary</a> , 以及 <a class="el" href="EditorSelection_8cpp_source.html#l00031">eve::editor::EditorSelectionService::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a337549bcf862550244bf586a6c79d9ac" name="a337549bcf862550244bf586a6c79d9ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a337549bcf862550244bf586a6c79d9ac">&#9670;&#160;</a></span>getRegionH()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::EditorWorkspace::getRegionH </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>region</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computed region height. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDock_8cpp_source.html#l00076">eve::editor::EditorDock::getRegionH()</a>.</p>
+
+</div>
+</div>
+<a id="aee7ef2a2f32c4aeec5d4607d876fbade" name="aee7ef2a2f32c4aeec5d4607d876fbade"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee7ef2a2f32c4aeec5d4607d876fbade">&#9670;&#160;</a></span>getRegionW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::EditorWorkspace::getRegionW </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>region</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computed region width. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDock_8cpp_source.html#l00071">eve::editor::EditorDock::getRegionW()</a>.</p>
+
+</div>
+</div>
+<a id="ade572989b66fefd6e70e213eb26d4da9" name="ade572989b66fefd6e70e213eb26d4da9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade572989b66fefd6e70e213eb26d4da9">&#9670;&#160;</a></span>getRegionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::EditorWorkspace::getRegionX </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>region</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computed region X coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDock_8cpp_source.html#l00061">eve::editor::EditorDock::getRegionX()</a>.</p>
+
+</div>
+</div>
+<a id="a8f94174f07fc55cd71cce458a42dc039" name="a8f94174f07fc55cd71cce458a42dc039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f94174f07fc55cd71cce458a42dc039">&#9670;&#160;</a></span>getRegionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::editor::EditorWorkspace::getRegionY </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>region</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computed region Y coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorDock_8cpp_source.html#l00066">eve::editor::EditorDock::getRegionY()</a>.</p>
+
+</div>
+</div>
+<a id="a46ccf8dfec5588992f1a5bc258f1888a" name="a46ccf8dfec5588992f1a5bc258f1888a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46ccf8dfec5588992f1a5bc258f1888a">&#9670;&#160;</a></span>getRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::editor::EditorWorkspace::getRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic structural revision for cheap ViewModel synchronization. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a> 第 <a class="el" href="EditorWorkspace_8h_source.html#l00160">160</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9bdd01efe1b57bc28f1dbfeb297704d" name="ae9bdd01efe1b57bc28f1dbfeb297704d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9bdd01efe1b57bc28f1dbfeb297704d">&#9670;&#160;</a></span>getSelectionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editor::EditorWorkspace::getSelectionCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of selected items in a channel. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingSelection_8h_source.html#l00018">eve::editing::SelectionSnapshot::items</a> , 以及 <a class="el" href="EditorSelection_8cpp_source.html#l00031">eve::editor::EditorSelectionService::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a65bd2a61599c7f0cec75522ee0d99778" name="a65bd2a61599c7f0cec75522ee0d99778"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65bd2a61599c7f0cec75522ee0d99778">&#9670;&#160;</a></span>getSelectionItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getSelectionItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selected stable item id by channel/index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="EditingSelection_8h_source.html#l00018">eve::editing::SelectionSnapshot::items</a> , 以及 <a class="el" href="EditorSelection_8cpp_source.html#l00031">eve::editor::EditorSelectionService::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a1ad6e50e9b6bd61e8dd83ac0aac75371" name="a1ad6e50e9b6bd61e8dd83ac0aac75371"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ad6e50e9b6bd61e8dd83ac0aac75371">&#9670;&#160;</a></span>getSelectionSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::editor::EditorWorkspace::getSelectionSequence </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Monotonic selection sequence for MVVM change detection. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingSelection_8h_source.html#l00020">eve::editing::SelectionSnapshot::sequence</a> , 以及 <a class="el" href="EditorSelection_8cpp_source.html#l00031">eve::editor::EditorSelectionService::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a784b8f1d978fe0e7aff25fbf624130b1" name="a784b8f1d978fe0e7aff25fbf624130b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a784b8f1d978fe0e7aff25fbf624130b1">&#9670;&#160;</a></span>getSelectionType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::editor::EditorWorkspace::getSelectionType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Selected item type by channel/index. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="EditingSelection_8h_source.html#l00018">eve::editing::SelectionSnapshot::items</a>, <a class="el" href="EditorSelection_8cpp_source.html#l00031">eve::editor::EditorSelectionService::snapshot()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+</div>
+</div>
+<a id="afd1e5d62803012e9d1dce5f2a0ed5431" name="afd1e5d62803012e9d1dce5f2a0ed5431"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd1e5d62803012e9d1dce5f2a0ed5431">&#9670;&#160;</a></span>getTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::editor::EditorWorkspace::getTitle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>User-facing workspace title. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a> 第 <a class="el" href="EditorWorkspace_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac99d832818d59162878559d4639ebcd1" name="ac99d832818d59162878559d4639ebcd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac99d832818d59162878559d4639ebcd1">&#9670;&#160;</a></span>layout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorWorkspace::layout </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute standard dock rectangles for the requested host size. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="EditorDock_8cpp_source.html#l00029">eve::editor::EditorDock::layout()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="a2b1ba5ca250301c5623de650a0b28cfd" name="a2b1ba5ca250301c5623de650a0b28cfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b1ba5ca250301c5623de650a0b28cfd">&#9670;&#160;</a></span>movePanel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt; eve::editor::EditorWorkspace::movePanel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a268de55410656fb914651dc93e294224">WorkspaceRegion</a>&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move a panel using a strongly typed dock region. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8h_source.html#l00027">eve::editor::WorkspacePanelDescriptor::order</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="EditorWorkspace_8h_source.html#l00024">eve::editor::WorkspacePanelDescriptor::region</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a> , 以及 <a class="el" href="EditorWorkspace_8cpp_source.html#l00027">eve::editor::workspaceRegionName()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorWorkspace_8cpp_source.html#l00098">movePanel()</a>.</p>
+
+</div>
+</div>
+<a id="abb8602b637d9d13b2701dd0e1447e3de" name="abb8602b637d9d13b2701dd0e1447e3de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb8602b637d9d13b2701dd0e1447e3de">&#9670;&#160;</a></span>movePanel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::movePanel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only string/boolean facade over movePanel(id, region, order). </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00103">movePanel()</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>.</p>
+
+</div>
+</div>
+<a id="ae171dc171535835cff765efb6f3476dc" name="ae171dc171535835cff765efb6f3476dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae171dc171535835cff765efb6f3476dc">&#9670;&#160;</a></span>panelAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt; eve::editor::EditorWorkspace::panelAt </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning panel snapshot instead of an ambiguous empty field. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a7c2bd1179268934afe4d0d1af2d3276a" name="a7c2bd1179268934afe4d0d1af2d3276a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c2bd1179268934afe4d0d1af2d3276a">&#9670;&#160;</a></span>registerPanel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::registerPanel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>order</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a panel descriptor. </p>
+<dl class="section return"><dt>返回</dt><dd>False for an empty/duplicate id or an unsupported dock region. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>Compatibility-only string/boolean facade over registerPanel(descriptor). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00053">registerPanel()</a> , 以及 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<a id="aaa978b247536516b3beab8eec93e8451" name="aaa978b247536516b3beab8eec93e8451"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa978b247536516b3beab8eec93e8451">&#9670;&#160;</a></span>registerPanel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt; eve::editor::EditorWorkspace::registerPanel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a>&#160;</td>
+          <td class="paramname"><em>descriptor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register a checked owning panel descriptor. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00074">eve::animation_editor::AnimationClipEditor::configureWorkspace()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00206">eve::audio_editor::AudioSourceEditor::configureWorkspace()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00077">eve::avatar_editor::AvatarDocumentEditor::configureWorkspace()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00072">eve::biome_editor::BiomeRulesEditor::configureWorkspace()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00307">eve::editor::ActionTimelineEditor::configureWorkspace()</a> , 以及 <a class="el" href="EditorWorkspace_8cpp_source.html#l00047">registerPanel()</a>.</p>
+
+</div>
+</div>
+<a id="a5998e65b25b22b1b10f6fc0a37c55aa9" name="a5998e65b25b22b1b10f6fc0a37c55aa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5998e65b25b22b1b10f6fc0a37c55aa9">&#9670;&#160;</a></span>removePanel() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">WorkspacePanelDescriptor</a> &gt; eve::editor::EditorWorkspace::removePanel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a panel and return its final owning descriptor. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorWorkspace_8cpp_source.html#l00074">removePanel()</a>.</p>
+
+</div>
+</div>
+<a id="a9df3e199856167620e2b3fea7d36fc3c" name="a9df3e199856167620e2b3fea7d36fc3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9df3e199856167620e2b3fea7d36fc3c">&#9670;&#160;</a></span>removePanel() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::removePanel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a panel descriptor by id. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00079">removePanel()</a>.</p>
+
+</div>
+</div>
+<a id="a78d7c78bf2dc8004ad4adf118af2c462" name="a78d7c78bf2dc8004ad4adf118af2c462"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d7c78bf2dc8004ad4adf118af2c462">&#9670;&#160;</a></span>select()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::select </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>item</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>additive</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select one stable item in a semantic channel. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">additive</td><td>Preserve existing items in the channel when true. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="EditorWorkspace_8cpp_source.html#l00261">selectItem()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00021">type</a>.</p>
+
+</div>
+</div>
+<a id="a0f2bbd8f0fb4b7be74c833959c8d4a97" name="a0f2bbd8f0fb4b7be74c833959c8d4a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f2bbd8f0fb4b7be74c833959c8d4a97">&#9670;&#160;</a></span>selectItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a700d7804628a8d365988f7573578ebc5">SelectionSnapshot</a> &gt; eve::editor::EditorWorkspace::selectItem </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a36feca04e5afdf084192471a16e2e24a">SelectionItem</a>&#160;</td>
+          <td class="paramname"><em>item</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>additive</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select one already typed item without string domain parsing. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00261">261</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="EditingSelection_8h_source.html#l00012">eve::editing::SelectionItem::item</a>, <a class="el" href="EditingSelection_8h_source.html#l00018">eve::editing::SelectionSnapshot::items</a>, <a class="el" href="EditorSelection_8cpp_source.html#l00007">eve::editor::EditorSelectionService::set()</a>, <a class="el" href="EditorSelection_8cpp_source.html#l00031">eve::editor::EditorSelectionService::snapshot()</a> , 以及 <a class="el" href="EditingSelection_8h_source.html#l00011">eve::editing::SelectionItem::target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorWorkspace_8cpp_source.html#l00254">select()</a>.</p>
+
+</div>
+</div>
+<a id="a83ec2e36aadf838768c4501b3dd7541e" name="a83ec2e36aadf838768c4501b3dd7541e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83ec2e36aadf838768c4501b3dd7541e">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a project-defined mode such as edit, play, material, or animation. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8cpp_source.html#l00242">setModeId()</a>.</p>
+
+</div>
+</div>
+<a id="a88cc7127efbee3caff7bad430ce12240" name="a88cc7127efbee3caff7bad430ce12240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88cc7127efbee3caff7bad430ce12240">&#9670;&#160;</a></span>setModeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a> &gt; eve::editor::EditorWorkspace::setModeId </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a0377b6158f0e722179dde541f17ebf93">StableId</a>&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a strongly identified workspace mode. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00242">242</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Identity_8h_source.html#l00338">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorWorkspace_8cpp_source.html#l00238">setMode()</a>.</p>
+
+</div>
+</div>
+<a id="ac8fdba22133aea1ee0ec94532656fd21" name="ac8fdba22133aea1ee0ec94532656fd21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8fdba22133aea1ee0ec94532656fd21">&#9670;&#160;</a></span>setPanelCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::setPanelCapability </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach a capability requirement used by the host when filtering panels. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8h_source.html#l00025">eve::editor::WorkspacePanelDescriptor::capability</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00074">eve::animation_editor::AnimationClipEditor::configureWorkspace()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00206">eve::audio_editor::AudioSourceEditor::configureWorkspace()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00077">eve::avatar_editor::AvatarDocumentEditor::configureWorkspace()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00072">eve::biome_editor::BiomeRulesEditor::configureWorkspace()</a> , 以及 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00307">eve::editor::ActionTimelineEditor::configureWorkspace()</a>.</p>
+
+</div>
+</div>
+<a id="a47a87ccb618c59e58483c8a40f06c701" name="a47a87ccb618c59e58483c8a40f06c701"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47a87ccb618c59e58483c8a40f06c701">&#9670;&#160;</a></span>setPanelContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::setPanelContext </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>context</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach a semantic input context such as scene, graph, or timeline. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8h_source.html#l00026">eve::editor::WorkspacePanelDescriptor::context</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationClipEditor_8cpp_source.html#l00074">eve::animation_editor::AnimationClipEditor::configureWorkspace()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00206">eve::audio_editor::AudioSourceEditor::configureWorkspace()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00077">eve::avatar_editor::AvatarDocumentEditor::configureWorkspace()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00072">eve::biome_editor::BiomeRulesEditor::configureWorkspace()</a> , 以及 <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00307">eve::editor::ActionTimelineEditor::configureWorkspace()</a>.</p>
+
+</div>
+</div>
+<a id="ad726a8f60ca5e65f798d5ae7cb406f0d" name="ad726a8f60ca5e65f798d5ae7cb406f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad726a8f60ca5e65f798d5ae7cb406f0d">&#9670;&#160;</a></span>setPanelSingleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::setPanelSingleton </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>singleton</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark whether hosts should allow more than one instance of this panel type. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8h_source.html#l00029">eve::editor::WorkspacePanelDescriptor::singleton</a>.</p>
+
+</div>
+</div>
+<a id="aeb3792e0c4bc845e7af07cdcda42301c" name="aeb3792e0c4bc845e7af07cdcda42301c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb3792e0c4bc845e7af07cdcda42301c">&#9670;&#160;</a></span>setPanelVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorWorkspace::setPanelVisible </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Show or hide a panel without removing its descriptor. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8h_source.html#l00028">eve::editor::WorkspacePanelDescriptor::visible</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00920">visible</a>.</p>
+
+</div>
+</div>
+<a id="ad95f8e17df17bf753f2500682f1246b8" name="ad95f8e17df17bf753f2500682f1246b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad95f8e17df17bf753f2500682f1246b8">&#9670;&#160;</a></span>setRegionSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorWorkspace::setRegionSize </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>region</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pixels</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure one standard dock region size in pixels. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a> , 以及 <a class="el" href="EditorDock_8cpp_source.html#l00014">eve::editor::EditorDock::setRegionSize()</a>.</p>
+
+</div>
+</div>
+<a id="a6d98eeef31929d8abd3f9c56a99af83c" name="a6d98eeef31929d8abd3f9c56a99af83c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d98eeef31929d8abd3f9c56a99af83c">&#9670;&#160;</a></span>setTitle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorWorkspace::setTitle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Change the display title without changing workspace identity. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a> 第 <a class="el" href="EditorWorkspace_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00013">title</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorWorkspace_8h_source.html">EditorWorkspace.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorWorkspace_8cpp_source.html">EditorWorkspace.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

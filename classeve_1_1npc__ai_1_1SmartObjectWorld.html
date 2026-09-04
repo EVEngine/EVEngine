@@ -1,0 +1,509 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::npc_ai::SmartObjectWorld类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1npc__ai.html">npc_ai</a></li><li class="navelem"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html">SmartObjectWorld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1npc__ai_1_1SmartObjectWorld-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::npc_ai::SmartObjectWorld类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoritative registry and lease manager for reservable world interactions.  
+ <a href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SmartObject_8h_source.html">SmartObject.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:afd8048a8c7e65e537567b54899884daa" id="r_afd8048a8c7e65e537567b54899884daa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1npc__ai.html#a1c0a8277cc9facf886e18696b35b37c5">SmartObjectHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#afd8048a8c7e65e537567b54899884daa">registerObject</a> (<a class="el" href="structeve_1_1npc__ai_1_1SmartObjectDefinition.html">SmartObjectDefinition</a> definition)</td></tr>
+<tr class="memdesc:afd8048a8c7e65e537567b54899884daa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates and atomically registers one uniquely named object.  <br /></td></tr>
+<tr class="separator:afd8048a8c7e65e537567b54899884daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34bb35d8ec83e9759b41702b7714df3b" id="r_a34bb35d8ec83e9759b41702b7714df3b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a34bb35d8ec83e9759b41702b7714df3b">removeObject</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a1c0a8277cc9facf886e18696b35b37c5">SmartObjectHandle</a> <a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, <a class="el" href="namespaceeve_1_1npc__ai.html#a3dad9e18627b9b2f6d9605aae4f695c4">SmartObjectRemoval</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>)</td></tr>
+<tr class="memdesc:a34bb35d8ec83e9759b41702b7714df3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an object using the explicit live-claim policy.  <br /></td></tr>
+<tr class="separator:a34bb35d8ec83e9759b41702b7714df3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbc5e614563d30fc83ba4f15550d7e36" id="r_adbc5e614563d30fc83ba4f15550d7e36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1npc__ai_1_1SmartObjectCandidate.html">SmartObjectCandidate</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#adbc5e614563d30fc83ba4f15550d7e36">query</a> (const <a class="el" href="structeve_1_1npc__ai_1_1SmartObjectQuery.html">SmartObjectQuery</a> &amp;query) const</td></tr>
+<tr class="memdesc:adbc5e614563d30fc83ba4f15550d7e36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns unclaimed matching slots in deterministic distance/name order.  <br /></td></tr>
+<tr class="separator:adbc5e614563d30fc83ba4f15550d7e36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a102f029118279a03471f92d5078483cb" id="r_a102f029118279a03471f92d5078483cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1npc__ai.html#a74f9504a7b0c3fc0ef03d3be03d1662d">SmartObjectClaimHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a102f029118279a03471f92d5078483cb">claim</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> agent, <a class="el" href="namespaceeve_1_1npc__ai.html#a1c0a8277cc9facf886e18696b35b37c5">SmartObjectHandle</a> <a class="el" href="TileConfig_8cpp.html#a4aa6748beb05520a7015b290be68385b">object</a>, std::string_view slotId, std::uint64_t currentTick, std::uint64_t leaseTicks)</td></tr>
+<tr class="memdesc:a102f029118279a03471f92d5078483cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically leases one free slot to an agent for a bounded tick duration.  <br /></td></tr>
+<tr class="separator:a102f029118279a03471f92d5078483cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55f7477dfcc760790d433dbb66e2a206" id="r_a55f7477dfcc760790d433dbb66e2a206"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a55f7477dfcc760790d433dbb66e2a206">renew</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a74f9504a7b0c3fc0ef03d3be03d1662d">SmartObjectClaimHandle</a> <a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a102f029118279a03471f92d5078483cb">claim</a>, <a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> agent, std::uint64_t currentTick, std::uint64_t leaseTicks)</td></tr>
+<tr class="memdesc:a55f7477dfcc760790d433dbb66e2a206"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extends a live claim after verifying its owner.  <br /></td></tr>
+<tr class="separator:a55f7477dfcc760790d433dbb66e2a206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a082b18912fa4987d7029a0cc9a089cc2" id="r_a082b18912fa4987d7029a0cc9a089cc2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a082b18912fa4987d7029a0cc9a089cc2">release</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a74f9504a7b0c3fc0ef03d3be03d1662d">SmartObjectClaimHandle</a> <a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a102f029118279a03471f92d5078483cb">claim</a>, <a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> agent)</td></tr>
+<tr class="memdesc:a082b18912fa4987d7029a0cc9a089cc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases a live claim after verifying its owner.  <br /></td></tr>
+<tr class="separator:a082b18912fa4987d7029a0cc9a089cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29fdf66017e77fd8ef624ea4fb490cb8" id="r_a29fdf66017e77fd8ef624ea4fb490cb8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a29fdf66017e77fd8ef624ea4fb490cb8">releaseAgentClaims</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a> agent)</td></tr>
+<tr class="memdesc:a29fdf66017e77fd8ef624ea4fb490cb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases every live claim owned by an agent before agent destruction.  <br /></td></tr>
+<tr class="separator:a29fdf66017e77fd8ef624ea4fb490cb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06648c16e4443ddbf0de80d0b4b5658a" id="r_a06648c16e4443ddbf0de80d0b4b5658a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1SmartObjectExpirationReport.html">SmartObjectExpirationReport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a06648c16e4443ddbf0de80d0b4b5658a">expire</a> (std::uint64_t currentTick)</td></tr>
+<tr class="memdesc:a06648c16e4443ddbf0de80d0b4b5658a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expires all elapsed leases in stable claim-slot order.  <br /></td></tr>
+<tr class="separator:a06648c16e4443ddbf0de80d0b4b5658a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a557e22b1f53f449c0917dedc12b32e86" id="r_a557e22b1f53f449c0917dedc12b32e86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1SmartObjectClaimSnapshot.html">SmartObjectClaimSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a557e22b1f53f449c0917dedc12b32e86">snapshot</a> (<a class="el" href="namespaceeve_1_1npc__ai.html#a74f9504a7b0c3fc0ef03d3be03d1662d">SmartObjectClaimHandle</a> <a class="el" href="classeve_1_1npc__ai_1_1SmartObjectWorld.html#a102f029118279a03471f92d5078483cb">claim</a>) const</td></tr>
+<tr class="memdesc:a557e22b1f53f449c0917dedc12b32e86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an owning claim snapshot, or StaleHandle.  <br /></td></tr>
+<tr class="separator:a557e22b1f53f449c0917dedc12b32e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoritative registry and lease manager for reservable world interactions. </p>
+<dl class="section remark"><dt>备注</dt><dd>All handles are process-local and generation checked. The registry owns definitions and claims. Call releaseAgentClaims before destroying an owning NPC, or rely on lease expiry as bounded stale cleanup. Removing an object either rejects live claims or explicitly cancels them according to SmartObjectRemoval. @thread Simulation-thread-affine; no synchronization is provided. @reentrancy Methods do not invoke external callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8h_source.html">SmartObject.h</a> 第 <a class="el" href="SmartObject_8h_source.html#l00073">73</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a102f029118279a03471f92d5078483cb" name="a102f029118279a03471f92d5078483cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a102f029118279a03471f92d5078483cb">&#9670;&#160;</a></span>claim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1npc__ai.html#a74f9504a7b0c3fc0ef03d3be03d1662d">SmartObjectClaimHandle</a> &gt; eve::npc_ai::SmartObjectWorld::claim </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>agent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a1c0a8277cc9facf886e18696b35b37c5">SmartObjectHandle</a>&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>slotId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>currentTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>leaseTicks</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically leases one free slot to an agent for a bounded tick duration. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00067">eve::RuntimeHandle&lt; Tag &gt;::isValid()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SmartObject_8cpp_source.html#l00096">removeObject()</a>.</p>
+
+</div>
+</div>
+<a id="a06648c16e4443ddbf0de80d0b4b5658a" name="a06648c16e4443ddbf0de80d0b4b5658a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06648c16e4443ddbf0de80d0b4b5658a">&#9670;&#160;</a></span>expire()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1SmartObjectExpirationReport.html">SmartObjectExpirationReport</a> &gt; eve::npc_ai::SmartObjectWorld::expire </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>currentTick</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expires all elapsed leases in stable claim-slot order. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="adbc5e614563d30fc83ba4f15550d7e36" name="adbc5e614563d30fc83ba4f15550d7e36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbc5e614563d30fc83ba4f15550d7e36">&#9670;&#160;</a></span>query()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1npc__ai_1_1SmartObjectCandidate.html">SmartObjectCandidate</a> &gt; &gt; eve::npc_ai::SmartObjectWorld::query </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1npc__ai_1_1SmartObjectQuery.html">SmartObjectQuery</a> &amp;&#160;</td>
+          <td class="paramname"><em>query</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns unclaimed matching slots in deterministic distance/name order. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="SmartObject_8h_source.html#l00038">eve::npc_ai::SmartObjectQuery::activity</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="SmartObject_8h_source.html#l00041">eve::npc_ai::SmartObjectQuery::maxDistance</a>, <a class="el" href="SmartObject_8h_source.html#l00040">eve::npc_ai::SmartObjectQuery::origin</a> , 以及 <a class="el" href="SmartObject_8h_source.html#l00039">eve::npc_ai::SmartObjectQuery::requiredTags</a>.</p>
+
+</div>
+</div>
+<a id="afd8048a8c7e65e537567b54899884daa" name="afd8048a8c7e65e537567b54899884daa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd8048a8c7e65e537567b54899884daa">&#9670;&#160;</a></span>registerObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1npc__ai.html#a1c0a8277cc9facf886e18696b35b37c5">SmartObjectHandle</a> &gt; eve::npc_ai::SmartObjectWorld::registerObject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1npc__ai_1_1SmartObjectDefinition.html">SmartObjectDefinition</a>&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validates and atomically registers one uniquely named object. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a47875578d90d59e4994126b161b1487ca497031794414a552435f90151ac3b54b">eve::Object</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a082b18912fa4987d7029a0cc9a089cc2" name="a082b18912fa4987d7029a0cc9a089cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a082b18912fa4987d7029a0cc9a089cc2">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::SmartObjectWorld::release </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a74f9504a7b0c3fc0ef03d3be03d1662d">SmartObjectClaimHandle</a>&#160;</td>
+          <td class="paramname"><em>claim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>agent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases a live claim after verifying its owner. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a29fdf66017e77fd8ef624ea4fb490cb8" name="a29fdf66017e77fd8ef624ea4fb490cb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29fdf66017e77fd8ef624ea4fb490cb8">&#9670;&#160;</a></span>releaseAgentClaims()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint32_t &gt; eve::npc_ai::SmartObjectWorld::releaseAgentClaims </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>agent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases every live claim owned by an agent before agent destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00067">eve::RuntimeHandle&lt; Tag &gt;::isValid()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a34bb35d8ec83e9759b41702b7714df3b" name="a34bb35d8ec83e9759b41702b7714df3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34bb35d8ec83e9759b41702b7714df3b">&#9670;&#160;</a></span>removeObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::SmartObjectWorld::removeObject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a1c0a8277cc9facf886e18696b35b37c5">SmartObjectHandle</a>&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a3dad9e18627b9b2f6d9605aae4f695c4">SmartObjectRemoval</a>&#160;</td>
+          <td class="paramname"><em>policy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes an object using the explicit live-claim policy. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="SmartObject_8cpp_source.html#l00149">claim()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="RuntimeHandle_8h_source.html#l00094">eve::RuntimeHandle&lt; SmartObjectHandleTag &gt;::nextGeneration()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00127">policy</a>, <a class="el" href="namespaceeve_1_1npc__ai.html#a3dad9e18627b9b2f6d9605aae4f695c4a9dc9497e9cbf1e33536727a02de41ed7">eve::npc_ai::RejectClaimed</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a55f7477dfcc760790d433dbb66e2a206" name="a55f7477dfcc760790d433dbb66e2a206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55f7477dfcc760790d433dbb66e2a206">&#9670;&#160;</a></span>renew()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::npc_ai::SmartObjectWorld::renew </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a74f9504a7b0c3fc0ef03d3be03d1662d">SmartObjectClaimHandle</a>&#160;</td>
+          <td class="paramname"><em>claim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a79ec568946db19a9b54e4ed4d6333d09">AgentHandle</a>&#160;</td>
+          <td class="paramname"><em>agent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>currentTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>leaseTicks</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extends a live claim after verifying its owner. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a557e22b1f53f449c0917dedc12b32e86" name="a557e22b1f53f449c0917dedc12b32e86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a557e22b1f53f449c0917dedc12b32e86">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1npc__ai_1_1SmartObjectClaimSnapshot.html">SmartObjectClaimSnapshot</a> &gt; eve::npc_ai::SmartObjectWorld::snapshot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1npc__ai.html#a74f9504a7b0c3fc0ef03d3be03d1662d">SmartObjectClaimHandle</a>&#160;</td>
+          <td class="paramname"><em>claim</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an owning claim snapshot, or StaleHandle. </p>
+
+<p class="definition">在文件 <a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a> 第 <a class="el" href="SmartObject_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/npc_ai/<a class="el" href="SmartObject_8h_source.html">SmartObject.h</a></li>
+<li>src/modules/npc_ai/<a class="el" href="SmartObject_8cpp_source.html">SmartObject.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

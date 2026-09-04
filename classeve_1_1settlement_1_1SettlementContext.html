@@ -1,0 +1,971 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::settlement::SettlementContext类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1settlement.html">settlement</a></li><li class="navelem"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html">SettlementContext</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1settlement_1_1SettlementContext-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::settlement::SettlementContext类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Mutable calculation frame visible to policy and custom stage code.  
+ <a href="classeve_1_1settlement_1_1SettlementContext.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7445180309ce3e8630d4bec4696568ba" id="r_a7445180309ce3e8630d4bec4696568ba"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1settlement_1_1SettlementRequest.html">SettlementRequest</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a7445180309ce3e8630d4bec4696568ba">request</a> () const noexcept</td></tr>
+<tr class="memdesc:a7445180309ce3e8630d4bec4696568ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the immutable request currently being settled.  <br /></td></tr>
+<tr class="separator:a7445180309ce3e8630d4bec4696568ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae03c17739ec0fb04bb6a862969b1fe3a" id="r_ae03c17739ec0fb04bb6a862969b1fe3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1settlement_1_1ISettlementPolicy.html">ISettlementPolicy</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae03c17739ec0fb04bb6a862969b1fe3a">policy</a> () const noexcept</td></tr>
+<tr class="memdesc:ae03c17739ec0fb04bb6a862969b1fe3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the policy participating in this synchronous call.  <br /></td></tr>
+<tr class="separator:ae03c17739ec0fb04bb6a862969b1fe3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80052fba2b8d8af70c2a33b28686934b" id="r_a80052fba2b8d8af70c2a33b28686934b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a80052fba2b8d8af70c2a33b28686934b">magnitude</a> () const noexcept</td></tr>
+<tr class="memdesc:a80052fba2b8d8af70c2a33b28686934b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current amount after all preceding stages.  <br /></td></tr>
+<tr class="separator:a80052fba2b8d8af70c2a33b28686934b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a87321de6d2ee2d3ea17f2beaa15bd" id="r_ae4a87321de6d2ee2d3ea17f2beaa15bd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae4a87321de6d2ee2d3ea17f2beaa15bd">absorbed</a> () const noexcept</td></tr>
+<tr class="memdesc:ae4a87321de6d2ee2d3ea17f2beaa15bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the accumulated amount absorbed by policy barriers.  <br /></td></tr>
+<tr class="separator:ae4a87321de6d2ee2d3ea17f2beaa15bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad114b3a5d32295d1ede489d84873b5ca" id="r_ad114b3a5d32295d1ede489d84873b5ca"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ad114b3a5d32295d1ede489d84873b5ca">resisted</a> () const noexcept</td></tr>
+<tr class="memdesc:ad114b3a5d32295d1ede489d84873b5ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the accumulated amount removed by policy mitigation.  <br /></td></tr>
+<tr class="separator:ad114b3a5d32295d1ede489d84873b5ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8cf875d90ceb1fa51da98cd28abdecf" id="r_ae8cf875d90ceb1fa51da98cd28abdecf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae8cf875d90ceb1fa51da98cd28abdecf">clamped</a> () const noexcept</td></tr>
+<tr class="memdesc:ae8cf875d90ceb1fa51da98cd28abdecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the accumulated amount removed by the generic clamp.  <br /></td></tr>
+<tr class="separator:ae8cf875d90ceb1fa51da98cd28abdecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae56e9005038c0453f8ed87d5791c84b0" id="r_ae56e9005038c0453f8ed87d5791c84b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae56e9005038c0453f8ed87d5791c84b0">setMagnitude</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:ae56e9005038c0453f8ed87d5791c84b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the current amount; late writes after Apply are rejected.  <br /></td></tr>
+<tr class="separator:ae56e9005038c0453f8ed87d5791c84b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b88c417a2acc9b9941bd625558f82ca" id="r_a1b88c417a2acc9b9941bd625558f82ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a1b88c417a2acc9b9941bd625558f82ca">addAbsorbed</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a1b88c417a2acc9b9941bd625558f82ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an amount absorbed by a barrier or shield; late writes are rejected.  <br /></td></tr>
+<tr class="separator:a1b88c417a2acc9b9941bd625558f82ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc0787ed8efb1dd212d327ecb0e17e42" id="r_adc0787ed8efb1dd212d327ecb0e17e42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#adc0787ed8efb1dd212d327ecb0e17e42">addResisted</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:adc0787ed8efb1dd212d327ecb0e17e42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an amount removed by target mitigation; late writes are rejected.  <br /></td></tr>
+<tr class="separator:adc0787ed8efb1dd212d327ecb0e17e42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac865332accc84d4d3ed09b0eab168c2" id="r_aac865332accc84d4d3ed09b0eab168c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#aac865332accc84d4d3ed09b0eab168c2">addClamped</a> (double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:aac865332accc84d4d3ed09b0eab168c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an amount removed by the final clamp stage; late writes are rejected.  <br /></td></tr>
+<tr class="separator:aac865332accc84d4d3ed09b0eab168c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756d05fb28f399dd027ab749f605c7b1" id="r_a756d05fb28f399dd027ab749f605c7b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a756d05fb28f399dd027ab749f605c7b1">setCritical</a> (bool <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) noexcept</td></tr>
+<tr class="memdesc:a756d05fb28f399dd027ab749f605c7b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark the result as critical; late writes are rejected.  <br /></td></tr>
+<tr class="separator:a756d05fb28f399dd027ab749f605c7b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab581fdc5b8e5499b1bf1f59daa13c31d" id="r_ab581fdc5b8e5499b1bf1f59daa13c31d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ab581fdc5b8e5499b1bf1f59daa13c31d">critical</a> () const noexcept</td></tr>
+<tr class="memdesc:ab581fdc5b8e5499b1bf1f59daa13c31d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a source policy marked this settlement critical.  <br /></td></tr>
+<tr class="separator:ab581fdc5b8e5499b1bf1f59daa13c31d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91ca945f3c580813688a47cbbe350d9a" id="r_a91ca945f3c580813688a47cbbe350d9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a91ca945f3c580813688a47cbbe350d9a">setClampMax</a> (std::optional&lt; double &gt; <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a91ca945f3c580813688a47cbbe350d9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set or clear the maximum amount used by the generic clamp stage.  <br /></td></tr>
+<tr class="separator:a91ca945f3c580813688a47cbbe350d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23407e441e84785025faccd94e28c6fd" id="r_a23407e441e84785025faccd94e28c6fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a23407e441e84785025faccd94e28c6fd">setStageDetail</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a23407e441e84785025faccd94e28c6fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach one serializable explanation field to the current stage.  <br /></td></tr>
+<tr class="separator:a23407e441e84785025faccd94e28c6fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc851b16429e3a06fc19f564fa14446c" id="r_abc851b16429e3a06fc19f564fa14446c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#abc851b16429e3a06fc19f564fa14446c">mutationViolation</a> () const noexcept</td></tr>
+<tr class="memdesc:abc851b16429e3a06fc19f564fa14446c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a contract violation recorded by a late frame mutation.  <br /></td></tr>
+<tr class="separator:abc851b16429e3a06fc19f564fa14446c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20ed3b423c550534738cf9ff7052970e" id="r_a20ed3b423c550534738cf9ff7052970e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a20ed3b423c550534738cf9ff7052970e">stageDetails</a> () const noexcept</td></tr>
+<tr class="memdesc:a20ed3b423c550534738cf9ff7052970e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current stage's owned explanation fields.  <br /></td></tr>
+<tr class="separator:a20ed3b423c550534738cf9ff7052970e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a893003f350cf85ba4be7a80d722bd058" id="r_a893003f350cf85ba4be7a80d722bd058"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1settlement_1_1SettlementResult.html">SettlementResult</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a893003f350cf85ba4be7a80d722bd058">projectedResult</a> () const noexcept</td></tr>
+<tr class="memdesc:a893003f350cf85ba4be7a80d722bd058"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the projected result visible to trigger preparation.  <br /></td></tr>
+<tr class="separator:a893003f350cf85ba4be7a80d722bd058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae40ddac5da0aff312c81f541738cc9a4" id="r_ae40ddac5da0aff312c81f541738cc9a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#ae40ddac5da0aff312c81f541738cc9a4">applyClamp</a> ()</td></tr>
+<tr class="memdesc:ae40ddac5da0aff312c81f541738cc9a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the adapter-configured max bound and record any clamp loss.  <br /></td></tr>
+<tr class="separator:ae40ddac5da0aff312c81f541738cc9a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af546dd5535ff56c03518705836a31556" id="r_af546dd5535ff56c03518705836a31556"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#af546dd5535ff56c03518705836a31556">prepareApply</a> ()</td></tr>
+<tr class="memdesc:af546dd5535ff56c03518705836a31556"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare the adapter mutation without publishing domain state.  <br /></td></tr>
+<tr class="separator:af546dd5535ff56c03518705836a31556"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa8b01fda29c8183c81247999d3b2c7e" id="r_aaa8b01fda29c8183c81247999d3b2c7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#aaa8b01fda29c8183c81247999d3b2c7e">prepareEvent</a> ()</td></tr>
+<tr class="memdesc:aaa8b01fda29c8183c81247999d3b2c7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build the canonical GameEvent without appending it.  <br /></td></tr>
+<tr class="separator:aaa8b01fda29c8183c81247999d3b2c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaab4ee5bd8135f5f18515b80d376d590" id="r_aaab4ee5bd8135f5f18515b80d376d590"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1settlement_1_1PreparedApply.html">PreparedApply</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#aaab4ee5bd8135f5f18515b80d376d590">pendingApply</a> () noexcept</td></tr>
+<tr class="memdesc:aaab4ee5bd8135f5f18515b80d376d590"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the staged mutation, if the apply stage prepared one.  <br /></td></tr>
+<tr class="separator:aaab4ee5bd8135f5f18515b80d376d590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d732b790abf0f1def1e4c5d1f47174f" id="r_a8d732b790abf0f1def1e4c5d1f47174f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">game_event::GameEvent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#a8d732b790abf0f1def1e4c5d1f47174f">pendingEvent</a> () const noexcept</td></tr>
+<tr class="memdesc:a8d732b790abf0f1def1e4c5d1f47174f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the prepared event, if the event stage created one.  <br /></td></tr>
+<tr class="separator:a8d732b790abf0f1def1e4c5d1f47174f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf236aaa623c39251781a5301d5023f5" id="r_acf236aaa623c39251781a5301d5023f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#acf236aaa623c39251781a5301d5023f5">synchronizeResult</a> () noexcept</td></tr>
+<tr class="memdesc:acf236aaa623c39251781a5301d5023f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the current frame counters into <a class="el" href="structeve_1_1settlement_1_1SettlementResult.html" title="Complete observable outcome of one successful settlement.">SettlementResult</a>.  <br /></td></tr>
+<tr class="separator:acf236aaa623c39251781a5301d5023f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:aa4908253fa3cf33d52e7872dca1a0ae9" id="r_aa4908253fa3cf33d52e7872dca1a0ae9"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1settlement_1_1SettlementContext.html#aa4908253fa3cf33d52e7872dca1a0ae9">SettlementPipeline</a></td></tr>
+<tr class="separator:aa4908253fa3cf33d52e7872dca1a0ae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Mutable calculation frame visible to policy and custom stage code. </p>
+<p>The frame owns no domain state. It exposes only the working amount and explanation accumulators; adapters keep health/armor/shield facts in their own authoritative store. After canonical Apply preparation, amount and numeric result inputs are frozen. After canonical Event preparation, stage details are frozen too. An attempted late mutation records a fatal pipeline violation instead of silently creating stale prepared data. All methods are synchronous and the frame must not escape a settle call. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00185">185</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ae4a87321de6d2ee2d3ea17f2beaa15bd" name="ae4a87321de6d2ee2d3ea17f2beaa15bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a87321de6d2ee2d3ea17f2beaa15bd">&#9670;&#160;</a></span>absorbed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::settlement::SettlementContext::absorbed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the accumulated amount absorbed by policy barriers. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00322">eve::rpg::RPGSettlementAdapter::prepareApply()</a>.</p>
+
+</div>
+</div>
+<a id="a1b88c417a2acc9b9941bd625558f82ca" name="a1b88c417a2acc9b9941bd625558f82ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b88c417a2acc9b9941bd625558f82ca">&#9670;&#160;</a></span>addAbsorbed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementContext::addAbsorbed </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add an amount absorbed by a barrier or shield; late writes are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00244">eve::rpg::RPGSettlementAdapter::armorShield()</a>.</p>
+
+</div>
+</div>
+<a id="aac865332accc84d4d3ed09b0eab168c2" name="aac865332accc84d4d3ed09b0eab168c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac865332accc84d4d3ed09b0eab168c2">&#9670;&#160;</a></span>addClamped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementContext::addClamped </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add an amount removed by the final clamp stage; late writes are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00342">applyClamp()</a>.</p>
+
+</div>
+</div>
+<a id="adc0787ed8efb1dd212d327ecb0e17e42" name="adc0787ed8efb1dd212d327ecb0e17e42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc0787ed8efb1dd212d327ecb0e17e42">&#9670;&#160;</a></span>addResisted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementContext::addResisted </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add an amount removed by target mitigation; late writes are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00244">eve::rpg::RPGSettlementAdapter::armorShield()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00135">eve::vehicle::VehicleSettlementAdapter::armorShield()</a> , 以及 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00214">eve::rpg::RPGSettlementAdapter::targetMitigation()</a>.</p>
+
+</div>
+</div>
+<a id="ae40ddac5da0aff312c81f541738cc9a4" name="ae40ddac5da0aff312c81f541738cc9a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae40ddac5da0aff312c81f541738cc9a4">&#9670;&#160;</a></span>applyClamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementContext::applyClamp </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply the adapter-configured max bound and record any clamp loss. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00299">addClamped()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00415">eve::settlement::SettlementPipeline::SettlementPipeline()</a>.</p>
+
+</div>
+</div>
+<a id="ae8cf875d90ceb1fa51da98cd28abdecf" name="ae8cf875d90ceb1fa51da98cd28abdecf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8cf875d90ceb1fa51da98cd28abdecf">&#9670;&#160;</a></span>clamped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::settlement::SettlementContext::clamped </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the accumulated amount removed by the generic clamp. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00203">203</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab581fdc5b8e5499b1bf1f59daa13c31d" name="ab581fdc5b8e5499b1bf1f59daa13c31d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab581fdc5b8e5499b1bf1f59daa13c31d">&#9670;&#160;</a></span>critical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::settlement::SettlementContext::critical </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether a source policy marked this settlement critical. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00227">227</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80052fba2b8d8af70c2a33b28686934b" name="a80052fba2b8d8af70c2a33b28686934b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80052fba2b8d8af70c2a33b28686934b">&#9670;&#160;</a></span>magnitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::settlement::SettlementContext::magnitude </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current amount after all preceding stages. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00244">eve::rpg::RPGSettlementAdapter::armorShield()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00135">eve::vehicle::VehicleSettlementAdapter::armorShield()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00322">eve::rpg::RPGSettlementAdapter::prepareApply()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00209">eve::vehicle::VehicleSettlementAdapter::prepareApply()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00145">eve::rpg::RPGSettlementAdapter::sourceModifiers()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00096">eve::vehicle::VehicleSettlementAdapter::sourceModifiers()</a> , 以及 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00214">eve::rpg::RPGSettlementAdapter::targetMitigation()</a>.</p>
+
+</div>
+</div>
+<a id="abc851b16429e3a06fc19f564fa14446c" name="abc851b16429e3a06fc19f564fa14446c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc851b16429e3a06fc19f564fa14446c">&#9670;&#160;</a></span>mutationViolation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a> * eve::settlement::SettlementContext::mutationViolation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a contract violation recorded by a late frame mutation. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable diagnostic owned by this context, or null when valid. @ownership <a class="el" href="classeve_1_1settlement_1_1SettlementContext.html" title="Mutable calculation frame visible to policy and custom stage code.">SettlementContext</a> owns the diagnostic; callers must not delete it. @lifetime Valid until the context is mutated or destroyed. @thread Read on the settlement pipeline's owning thread. @reentrancy Does not invoke callbacks and is invalid across re-entrant context mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>.</p>
+
+</div>
+</div>
+<a id="aaab4ee5bd8135f5f18515b80d376d590" name="aaab4ee5bd8135f5f18515b80d376d590"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaab4ee5bd8135f5f18515b80d376d590">&#9670;&#160;</a></span>pendingApply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1settlement_1_1PreparedApply.html">PreparedApply</a> * eve::settlement::SettlementContext::pendingApply </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the staged mutation, if the apply stage prepared one. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable mutation owned by this context. @ownership <a class="el" href="classeve_1_1settlement_1_1SettlementContext.html" title="Mutable calculation frame visible to policy and custom stage code.">SettlementContext</a> owns the staged mutation; callers must not delete it. @lifetime Valid until commit/rollback or context destruction. @thread Read and consume on the settlement pipeline's owning thread. @reentrancy Do not retain across callbacks or stage mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>.</p>
+
+</div>
+</div>
+<a id="a8d732b790abf0f1def1e4c5d1f47174f" name="a8d732b790abf0f1def1e4c5d1f47174f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d732b790abf0f1def1e4c5d1f47174f">&#9670;&#160;</a></span>pendingEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1game__event_1_1GameEvent.html">game_event::GameEvent</a> * eve::settlement::SettlementContext::pendingEvent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the prepared event, if the event stage created one. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable event owned by this context. @ownership <a class="el" href="classeve_1_1settlement_1_1SettlementContext.html" title="Mutable calculation frame visible to policy and custom stage code.">SettlementContext</a> owns the pending event; callers must not delete it. @lifetime Valid until event commit/rollback or context destruction. @thread Read on the settlement pipeline's owning thread. @reentrancy Do not retain across callbacks or stage mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>.</p>
+
+</div>
+</div>
+<a id="ae03c17739ec0fb04bb6a862969b1fe3a" name="ae03c17739ec0fb04bb6a862969b1fe3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae03c17739ec0fb04bb6a862969b1fe3a">&#9670;&#160;</a></span>policy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1settlement_1_1ISettlementPolicy.html">ISettlementPolicy</a> &amp; eve::settlement::SettlementContext::policy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the policy participating in this synchronous call. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00357">prepareApply()</a> , 以及 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00415">eve::settlement::SettlementPipeline::SettlementPipeline()</a>.</p>
+
+</div>
+</div>
+<a id="af546dd5535ff56c03518705836a31556" name="af546dd5535ff56c03518705836a31556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af546dd5535ff56c03518705836a31556">&#9670;&#160;</a></span>prepareApply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementContext::prepareApply </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepare the adapter mutation without publishing domain state. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00191">policy()</a>, <a class="el" href="classeve_1_1settlement_1_1ISettlementPolicy.html#a9b5599ff0fe5c6d62069981c8358252e">eve::settlement::ISettlementPolicy::prepareApply()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00415">eve::settlement::SettlementPipeline::SettlementPipeline()</a>.</p>
+
+</div>
+</div>
+<a id="aaa8b01fda29c8183c81247999d3b2c7e" name="aaa8b01fda29c8183c81247999d3b2c7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa8b01fda29c8183c81247999d3b2c7e">&#9670;&#160;</a></span>prepareEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementContext::prepareEvent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build the canonical GameEvent without appending it. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00390">synchronizeResult()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00415">eve::settlement::SettlementPipeline::SettlementPipeline()</a>.</p>
+
+</div>
+</div>
+<a id="a893003f350cf85ba4be7a80d722bd058" name="a893003f350cf85ba4be7a80d722bd058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a893003f350cf85ba4be7a80d722bd058">&#9670;&#160;</a></span>projectedResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1settlement_1_1SettlementResult.html">SettlementResult</a> &amp; eve::settlement::SettlementContext::projectedResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the projected result visible to trigger preparation. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00415">eve::settlement::SettlementPipeline::SettlementPipeline()</a>.</p>
+
+</div>
+</div>
+<a id="a7445180309ce3e8630d4bec4696568ba" name="a7445180309ce3e8630d4bec4696568ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7445180309ce3e8630d4bec4696568ba">&#9670;&#160;</a></span>request()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1settlement_1_1SettlementRequest.html">SettlementRequest</a> &amp; eve::settlement::SettlementContext::request </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the immutable request currently being settled. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00415">eve::settlement::SettlementPipeline::SettlementPipeline()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00114">eve::rpg::RPGSettlementAdapter::validate()</a> , 以及 <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00072">eve::vehicle::VehicleSettlementAdapter::validate()</a>.</p>
+
+</div>
+</div>
+<a id="ad114b3a5d32295d1ede489d84873b5ca" name="ad114b3a5d32295d1ede489d84873b5ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad114b3a5d32295d1ede489d84873b5ca">&#9670;&#160;</a></span>resisted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::settlement::SettlementContext::resisted </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the accumulated amount removed by policy mitigation. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91ca945f3c580813688a47cbbe350d9a" name="a91ca945f3c580813688a47cbbe350d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91ca945f3c580813688a47cbbe350d9a">&#9670;&#160;</a></span>setClampMax()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementContext::setClampMax </td>
+          <td>(</td>
+          <td class="paramtype">std::optional&lt; double &gt;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set or clear the maximum amount used by the generic clamp stage. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00298">eve::rpg::RPGSettlementAdapter::clamp()</a> , 以及 <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00191">eve::vehicle::VehicleSettlementAdapter::clamp()</a>.</p>
+
+</div>
+</div>
+<a id="a756d05fb28f399dd027ab749f605c7b1" name="a756d05fb28f399dd027ab749f605c7b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756d05fb28f399dd027ab749f605c7b1">&#9670;&#160;</a></span>setCritical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::settlement::SettlementContext::setCritical </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mark the result as critical; late writes are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00145">eve::rpg::RPGSettlementAdapter::sourceModifiers()</a> , 以及 <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00096">eve::vehicle::VehicleSettlementAdapter::sourceModifiers()</a>.</p>
+
+</div>
+</div>
+<a id="ae56e9005038c0453f8ed87d5791c84b0" name="ae56e9005038c0453f8ed87d5791c84b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae56e9005038c0453f8ed87d5791c84b0">&#9670;&#160;</a></span>setMagnitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::settlement::SettlementContext::setMagnitude </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the current amount; late writes after Apply are rejected. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00244">eve::rpg::RPGSettlementAdapter::armorShield()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00135">eve::vehicle::VehicleSettlementAdapter::armorShield()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00145">eve::rpg::RPGSettlementAdapter::sourceModifiers()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00096">eve::vehicle::VehicleSettlementAdapter::sourceModifiers()</a> , 以及 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00214">eve::rpg::RPGSettlementAdapter::targetMitigation()</a>.</p>
+
+</div>
+</div>
+<a id="a23407e441e84785025faccd94e28c6fd" name="a23407e441e84785025faccd94e28c6fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23407e441e84785025faccd94e28c6fd">&#9670;&#160;</a></span>setStageDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::settlement::SettlementContext::setStageDetail </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach one serializable explanation field to the current stage. </p>
+<dl class="section remark"><dt>备注</dt><dd>Details are rejected after the Event terminal boundary. The pipeline reports such a late mutation as a failed settlement. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00333">333</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00244">eve::rpg::RPGSettlementAdapter::armorShield()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00135">eve::vehicle::VehicleSettlementAdapter::armorShield()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00298">eve::rpg::RPGSettlementAdapter::clamp()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00191">eve::vehicle::VehicleSettlementAdapter::clamp()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00145">eve::rpg::RPGSettlementAdapter::sourceModifiers()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00096">eve::vehicle::VehicleSettlementAdapter::sourceModifiers()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00214">eve::rpg::RPGSettlementAdapter::targetMitigation()</a>, <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00128">eve::vehicle::VehicleSettlementAdapter::targetMitigation()</a>, <a class="el" href="rpg_2SettlementAdapter_8cpp_source.html#l00114">eve::rpg::RPGSettlementAdapter::validate()</a> , 以及 <a class="el" href="vehicle_2SettlementAdapter_8cpp_source.html#l00072">eve::vehicle::VehicleSettlementAdapter::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a20ed3b423c550534738cf9ff7052970e" name="a20ed3b423c550534738cf9ff7052970e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20ed3b423c550534738cf9ff7052970e">&#9670;&#160;</a></span>stageDetails()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp; eve::settlement::SettlementContext::stageDetails </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current stage's owned explanation fields. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00252">252</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a>.</p>
+
+</div>
+</div>
+<a id="acf236aaa623c39251781a5301d5023f5" name="acf236aaa623c39251781a5301d5023f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf236aaa623c39251781a5301d5023f5">&#9670;&#160;</a></span>synchronizeResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::settlement::SettlementContext::synchronizeResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy the current frame counters into <a class="el" href="structeve_1_1settlement_1_1SettlementResult.html" title="Complete observable outcome of one successful settlement.">SettlementResult</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a> 第 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="settlement_2Settlement_8h_source.html#l00100">eve::settlement::SettlementResult::absorbed</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00099">eve::settlement::SettlementResult::applied</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00102">eve::settlement::SettlementResult::clamped</a>, <a class="el" href="settlement_2Settlement_8h_source.html#l00103">eve::settlement::SettlementResult::critical</a> , 以及 <a class="el" href="settlement_2Settlement_8h_source.html#l00101">eve::settlement::SettlementResult::resisted</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00375">prepareEvent()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00480">eve::settlement::SettlementPipeline::settle()</a> , 以及 <a class="el" href="settlement_2Settlement_8cpp_source.html#l00415">eve::settlement::SettlementPipeline::SettlementPipeline()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="aa4908253fa3cf33d52e7872dca1a0ae9" name="aa4908253fa3cf33d52e7872dca1a0ae9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4908253fa3cf33d52e7872dca1a0ae9">&#9670;&#160;</a></span>SettlementPipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1settlement_1_1SettlementPipeline.html">SettlementPipeline</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a> 第 <a class="el" href="settlement_2Settlement_8h_source.html#l00292">292</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/settlement/<a class="el" href="settlement_2Settlement_8h_source.html">Settlement.h</a></li>
+<li>src/modules/settlement/<a class="el" href="settlement_2Settlement_8cpp_source.html">Settlement.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

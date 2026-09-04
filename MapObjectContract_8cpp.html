@@ -1,0 +1,337 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/map/MapObjectContract.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_582b002fc0c2f43475ae6ca1126d8de3.html">map</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">MapObjectContract.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="MapObjectContract_8h_source.html">map/MapObjectContract.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">common/Value.h</a>&quot;</code><br />
+<code>#include &lt;cerrno&gt;</code><br />
+<code>#include &lt;charconv&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+</div>
+<p><a href="MapObjectContract_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1map" id="r_namespaceeve_1_1map"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1map.html">eve::map</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1map"><td class="mdescLeft">&#160;</td><td class="mdescRight">放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。 坐标换算统一走 eve::grid（支持 rectangle / iso / staggered / hex 与 XY/XZ 平面轴）。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a40301c677c6058aeed93dd6722913737" id="r_a40301c677c6058aeed93dd6722913737"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1map.html#a40301c677c6058aeed93dd6722913737">eve::map::validateMapObjects</a> (std::span&lt; const <a class="el" href="structeve_1_1map_1_1MapObject.html">MapObject</a> &gt; objects, std::string_view contractJson)</td></tr>
+<tr class="memdesc:a40301c677c6058aeed93dd6722913737"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate map objects against an owning JSON content contract.  <br /></td></tr>
+<tr class="separator:a40301c677c6058aeed93dd6722913737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a8220d5d7c95de5db4aaf0a3cdd3f3f2e" name="a8220d5d7c95de5db4aaf0a3cdd3f3f2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8220d5d7c95de5db4aaf0a3cdd3f3f2e">&#9670;&#160;</a></span>allowUnknownProperties</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool allowUnknownProperties = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapObjectContract_8cpp_source.html">MapObjectContract.cpp</a> 第 <a class="el" href="MapObjectContract_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc61633d2882ae8efad1625ac43e9951" name="afc61633d2882ae8efad1625ac43e9951"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc61633d2882ae8efad1625ac43e9951">&#9670;&#160;</a></span>choices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt;std::string&gt; choices</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapObjectContract_8cpp_source.html">MapObjectContract.cpp</a> 第 <a class="el" href="MapObjectContract_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Dialogue_8cpp_source.html#l01204">eve::dialogue::Dialogue::captureState()</a>, <a class="el" href="HouseGenerator_8cpp_source.html#l00136">eve::housegen::HouseGenerator::generate()</a>, <a class="el" href="Dialogue_8cpp_source.html#l01252">eve::dialogue::Dialogue::restoreState()</a>, <a class="el" href="ScriptCompiler_8cpp_source.html#l00310">eve::script::ScriptCompiler::ScriptCompiler()</a> , 以及 <a class="el" href="MapObjectContract_8cpp_source.html#l00109">eve::map::validateMapObjects()</a>.</p>
+
+</div>
+</div>
+<a id="aca87c2bbc26e697653e2d8461c76a361" name="aca87c2bbc26e697653e2d8461c76a361"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca87c2bbc26e697653e2d8461c76a361">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string kind</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapObjectContract_8cpp_source.html">MapObjectContract.cpp</a> 第 <a class="el" href="MapObjectContract_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a350f47f4068d319915665c40303503c1" name="a350f47f4068d319915665c40303503c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a350f47f4068d319915665c40303503c1">&#9670;&#160;</a></span>maximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;double&gt; maximum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapObjectContract_8cpp_source.html">MapObjectContract.cpp</a> 第 <a class="el" href="MapObjectContract_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d344009b542947b3e3963727a37d256" name="a3d344009b542947b3e3963727a37d256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d344009b542947b3e3963727a37d256">&#9670;&#160;</a></span>minimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;double&gt; minimum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapObjectContract_8cpp_source.html">MapObjectContract.cpp</a> 第 <a class="el" href="MapObjectContract_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9b45b3e13bd9167aab02e17e08916231" name="a9b45b3e13bd9167aab02e17e08916231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b45b3e13bd9167aab02e17e08916231">&#9670;&#160;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapObjectContract_8cpp_source.html">MapObjectContract.cpp</a> 第 <a class="el" href="MapObjectContract_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40e5a3359abf90a92f01ea7be31f0178" name="a40e5a3359abf90a92f01ea7be31f0178"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40e5a3359abf90a92f01ea7be31f0178">&#9670;&#160;</a></span>properties</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, PropertyRule&gt; properties</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapObjectContract_8cpp_source.html">MapObjectContract.cpp</a> 第 <a class="el" href="MapObjectContract_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalTarget_8cpp_source.html#l00036">eve::decal_editing::DecalDocumentTarget::applyDomainOperation()</a>, <a class="el" href="SceneComponentPayload_8cpp_source.html#l00018">eve::scene_editing::SceneComponentPropertyBindings::bind()</a>, <a class="el" href="DialogueGraphRuntime_8cpp_source.html#l00025">eve::dialogue_editing::DialogueGraphRuntimeBuilder::build()</a>, <a class="el" href="DialogueGraph_8cpp_source.html#l00111">eve::dialogue_editing::DialogueGraphDomain::compile()</a>, <a class="el" href="PcgGraph_8cpp_source.html#l00188">eve::procgen_editing::PcgPointGraphDomain::compile()</a>, <a class="el" href="Map_8cpp_source.html#l00310">eve::map::Map::getObjectProperty()</a>, <a class="el" href="Map_8cpp_source.html#l00291">eve::map::Map::getObjectPropertyCount()</a>, <a class="el" href="Map_8cpp_source.html#l00296">eve::map::Map::getObjectPropertyName()</a>, <a class="el" href="AudioSerialization_8cpp_source.html#l00032">eve::audio_editing::AudioSourceTarget::loadSnapshot()</a>, <a class="el" href="LightingTarget_8cpp_source.html#l00210">eve::lighting_editing::LightingPropertyTargetBase::loadSnapshot()</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00170">eve::material_editing::MaterialDocumentTarget::loadSnapshot()</a>, <a class="el" href="PhysicsSerialization_8cpp_source.html#l00032">eve::physics_editing::PhysicsColliderTarget::loadSnapshot()</a>, <a class="el" href="PcgGraph_8cpp_source.html#l00073">eve::procgen_editing::PcgPointGraphDomain::makeNode()</a>, <a class="el" href="ParticleGraph_8cpp_source.html#l00095">eve::particles_editing::ParticleGraphDomain::makeNode()</a>, <a class="el" href="AnimationGraph_8cpp_source.html#l00054">eve::animation_editing::AnimationStateGraphDomain::makeStateNode()</a>, <a class="el" href="AnimationGraph_8cpp_source.html#l00072">eve::animation_editing::AnimationStateGraphDomain::makeTransitionNode()</a>, <a class="el" href="PcgGraph_8cpp_source.html#l00103">eve::procgen_editing::PcgPointGraphDomain::migrate()</a>, <a class="el" href="ActionEditingCommands_8cpp_source.html#l00036">eve::action_editor::registerEditingCommands()</a>, <a class="el" href="AudioEditingCommands_8cpp_source.html#l00037">eve::audio_editing::registerEditingCommands()</a>, <a class="el" href="MaterialEditingCommands_8cpp_source.html#l00035">eve::material_editing::registerEditingCommands()</a>, <a class="el" href="EditingGraph_8cpp_source.html#l00068">eve::editing::GraphDocument::setNodeProperties()</a>, <a class="el" href="LightingTarget_8cpp_source.html#l00204">eve::lighting_editing::LightingPropertyTargetBase::snapshotValue()</a>, <a class="el" href="PhysicsSerialization_8cpp_source.html#l00022">eve::physics_editing::PhysicsColliderTarget::snapshotValue()</a>, <a class="el" href="PhysicsJointTarget_8cpp_source.html#l00138">eve::physics_editing::PhysicsJointTarget::snapshotValue()</a>, <a class="el" href="AudioSerialization_8cpp_source.html#l00023">eve::audio_editing::AudioSourceTarget::snapshotValue()</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00161">eve::material_editing::MaterialDocumentTarget::snapshotValue()</a> , 以及 <a class="el" href="MapObjectContract_8cpp_source.html#l00109">eve::map::validateMapObjects()</a>.</p>
+
+</div>
+</div>
+<a id="a89ebe0265f74c9919a622df7dccbfe5c" name="a89ebe0265f74c9919a622df7dccbfe5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ebe0265f74c9919a622df7dccbfe5c">&#9670;&#160;</a></span>required</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool required = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapObjectContract_8cpp_source.html">MapObjectContract.cpp</a> 第 <a class="el" href="MapObjectContract_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementWorld_8cpp_source.html#l00315">eve::building::PlacementWorld::channelOccupancy()</a>, <a class="el" href="vulkan_2GraphicsGpuDriven_8cpp_source.html#l01087">eve::graphics::vulkan::Graphics::gpuDrivenSubmitResident()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00330">eve::graphics::webgpu::Graphics::gpuDrivenSubmitResident()</a>, <a class="el" href="EditorHostProfile_8cpp_source.html#l00028">eve::editor::HostProfile::hasFeatures()</a>, <a class="el" href="DefinitionTarget_8cpp_source.html#l00170">eve::definitions_editing::DefinitionDocument::loadSnapshot()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03013">eve::building::PlacementSystem::moveCornerResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="EvaManifest_8cpp_source.html#l00138">eve::asset::parseEvaManifest()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01225">eve::building::PlacementSystem::placeCornerResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01133">eve::building::PlacementSystem::placeEdge()</a>, <a class="el" href="HouseGenRuntime_8cpp_source.html#l00018">eve::housegen_editing::HouseGenPreviewRuntime::publish()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="Quest_8cpp_source.html#l00226">eve::rpg::QuestRegistry::replaceFromJsonStrict()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a>, <a class="el" href="HouseGenTarget_8cpp_source.html#l00446">eve::housegen_editing::HouseGenDocumentTarget::validate()</a> , 以及 <a class="el" href="ScriptCompiler_8cpp_source.html#l00590">eve::script::ScriptCompiler::validateProjectConfig()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

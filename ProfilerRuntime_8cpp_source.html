@@ -1,0 +1,233 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/profiler_editing/ProfilerRuntime.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_6e77c5a196b227d1ac8dcd316a8f7c65.html">profiler_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ProfilerRuntime.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ProfilerRuntime_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ProfilerModel_8h.html">profiler_editing/ProfilerModel.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Profiler_8h.html">profiler/Profiler.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1profiler__editing.html">eve::profiler_editing</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1profiler__editing_1_1EditorProfilerCollector.html#a799828eaf8f78f7f12d2bbdfbbb6356c">    9</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1profiler__editing_1_1EditorProfilerCollector.html#a799828eaf8f78f7f12d2bbdfbbb6356c">EditorProfilerCollector::collect</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1profiler_1_1Profiler.html">profiler::Profiler</a>&amp; profiler,</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>                                                     <a class="code hl_class" href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html">EditorProfilerModel</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">auto</span> captured = profiler.<a class="code hl_function" href="classeve_1_1profiler_1_1Profiler.html#ad87f85aa5549e4be18cc5b04cde344cf">captureFrame</a>();</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (!captured.hasValue()) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        std::vector&lt;EditorDiagnostic&gt; diagnostics;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; diagnostic : captured.diagnostics())</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            diagnostics.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                diagnostic.code(), <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>(<span class="stringliteral">&quot;editor.profiler.capture&quot;</span>),</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                DiagnosticSeverity::Error, diagnostic.message()));</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">const</span> <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a> = captured.code() == <a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa38c300f4fc9ce8a77aad4a30de05cad8">eve::StatusCode::NotFound</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                                        ? EditorStatus::NotFound</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                                        : EditorStatus::Failed;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_class" href="classeve_1_1Status.html">eve::Status</a>(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, std::move(diagnostics)));</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">auto</span> runtimeFrame = std::move(captured).takeValue();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_struct" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html">EditorProfilerFrame</a> frame;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a7305213dd406018bf9eb06e78a7af674">sequence</a> = runtimeFrame.sequence;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a691f5a3d64f8f66f1e4bbcc900aec6d2">cpuFrameMs</a> = runtimeFrame.cpuFrameMs;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#ade14b6ba81d8d418e010453f03d3e8b2">gpuFrameMs</a> = runtimeFrame.gpuFrameMs;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a22cc8d06f21a47e8dd218be69e651da4">gpuTimingAvailable</a> = runtimeFrame.gpuTimingAvailable;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">zones</a>.reserve(runtimeFrame.zones.size());</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; zone : runtimeFrame.zones) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        frame.<a class="code hl_variable" href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">zones</a>.push_back({std::move(zone.module), std::move(zone.name),</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                               std::move(zone.thread), zone.selfMs, zone.totalMs, zone.count,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                               zone.depth});</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>.ingest(std::move(frame));</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}  <span class="comment">// namespace eve::profiler_editing</span></div>
+<div class="ttc" id="aProfilerModel_8h_html"><div class="ttname"><a href="ProfilerModel_8h.html">ProfilerModel.h</a></div></div>
+<div class="ttc" id="aProfiler_8h_html"><div class="ttname"><a href="Profiler_8h.html">Profiler.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ade56622421c713a8290c025626759118"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00734">RenderSystem3D.cpp:734</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00068">Status.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler_1_1Profiler_html"><div class="ttname"><a href="classeve_1_1profiler_1_1Profiler.html">eve::profiler::Profiler</a></div><div class="ttdoc">Script-facing wrapper around the engine-wide profiler core (eve::prof, see common/Profile....</div><div class="ttdef"><b>Definition</b> <a href="Profiler_8h_source.html#l00063">Profiler.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler_1_1Profiler_html_ad87f85aa5549e4be18cc5b04cde344cf"><div class="ttname"><a href="classeve_1_1profiler_1_1Profiler.html#ad87f85aa5549e4be18cc5b04cde344cf">eve::profiler::Profiler::captureFrame</a></div><div class="ttdeci">eve::Result&lt; ProfilerFrameSnapshot &gt; captureFrame() const</div><div class="ttdoc">Copy the latest completed frame for editor and diagnostics consumers.</div><div class="ttdef"><b>Definition</b> <a href="Profiler_8cpp_source.html#l00087">Profiler.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerCollector_html_a799828eaf8f78f7f12d2bbdfbbb6356c"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerCollector.html#a799828eaf8f78f7f12d2bbdfbbb6356c">eve::profiler_editing::EditorProfilerCollector::collect</a></div><div class="ttdeci">EditorResult&lt; void &gt; collect(const profiler::Profiler &amp;profiler, EditorProfilerModel &amp;model) const</div><div class="ttdoc">Copy and ingest the latest runtime frame.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerRuntime_8cpp_source.html#l00009">ProfilerRuntime.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1profiler__editing_1_1EditorProfilerModel_html"><div class="ttname"><a href="classeve_1_1profiler__editing_1_1EditorProfilerModel.html">eve::profiler_editing::EditorProfilerModel</a></div><div class="ttdoc">Bounded owning profiler history and deterministic presentation queries. @thread Main-thread only....</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00077">ProfilerModel.h:77</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1profiler__editing_html"><div class="ttname"><a href="namespaceeve_1_1profiler__editing.html">eve::profiler_editing</a></div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8cpp_source.html#l00009">ProfilerModel.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa38c300f4fc9ce8a77aad4a30de05cad8">eve::StatusCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html">eve::profiler_editing::EditorProfilerFrame</a></div><div class="ttdoc">One owning completed-frame sample retained by the editor.</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00033">ProfilerModel.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a22cc8d06f21a47e8dd218be69e651da4"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a22cc8d06f21a47e8dd218be69e651da4">eve::profiler_editing::EditorProfilerFrame::gpuTimingAvailable</a></div><div class="ttdeci">bool gpuTimingAvailable</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00037">ProfilerModel.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a691f5a3d64f8f66f1e4bbcc900aec6d2"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a691f5a3d64f8f66f1e4bbcc900aec6d2">eve::profiler_editing::EditorProfilerFrame::cpuFrameMs</a></div><div class="ttdeci">double cpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00035">ProfilerModel.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a7305213dd406018bf9eb06e78a7af674"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a7305213dd406018bf9eb06e78a7af674">eve::profiler_editing::EditorProfilerFrame::sequence</a></div><div class="ttdeci">std::uint64_t sequence</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00034">ProfilerModel.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_a8dc9d999ef4e1ecd2112538b35f6c3e4"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#a8dc9d999ef4e1ecd2112538b35f6c3e4">eve::profiler_editing::EditorProfilerFrame::zones</a></div><div class="ttdeci">std::vector&lt; EditorProfilerZone &gt; zones</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00038">ProfilerModel.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1profiler__editing_1_1EditorProfilerFrame_html_ade14b6ba81d8d418e010453f03d3e8b2"><div class="ttname"><a href="structeve_1_1profiler__editing_1_1EditorProfilerFrame.html#ade14b6ba81d8d418e010453f03d3e8b2">eve::profiler_editing::EditorProfilerFrame::gpuFrameMs</a></div><div class="ttdeci">double gpuFrameMs</div><div class="ttdef"><b>Definition</b> <a href="ProfilerModel_8h_source.html#l00036">ProfilerModel.h:36</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

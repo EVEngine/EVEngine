@@ -1,0 +1,283 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editing/EditingIds.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_c30fd2ccc85dff25828f75fb0f9ea243.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditingIds.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditingIds_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Identity_8h.html">common/Identity.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editing.html">eve::editing</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> Tag&gt;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a83862cc43bb747b66aebdbd7cd6085f5">   18</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId</a> = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter&lt;Tag&gt;</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> Id&gt;</div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1StrongIdHash.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1StrongIdHash.html">StrongIdHash</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1StrongIdHash.html#a37e9816db6447dcc209adddb478a4e60">   23</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="structeve_1_1editing_1_1StrongIdHash.html#a37e9816db6447dcc209adddb478a4e60">operator()</a>(<span class="keyword">const</span> Id&amp; <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<span class="keywordtype">id</span>.hash()); }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> Tag&gt;</div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a1b7e1c9d6625a2d65aa65893bd1a3b18">   33</a></span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::StrongUuid&lt;Tag&gt;</a> <a class="code hl_function" href="namespaceeve_1_1editing.html#a1b7e1c9d6625a2d65aa65893bd1a3b18">canonicalUuid</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;Tag&gt;</a>&amp; <span class="keywordtype">id</span>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> <span class="keywordtype">id</span>.uuid();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">struct </span>SessionIdTag;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">struct </span>TargetIdTag;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">struct </span>CommandIdTag;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">struct </span>ToolIdTag;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">struct </span>RuleIdTag;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">struct </span>CapabilityIdTag;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">struct </span>TransactionIdTag;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">struct </span>PlanIdTag;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">struct </span>StableIdTag;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">struct </span>ObjectIdTag;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">struct </span>AssetGuidTag;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">struct </span>DocumentIdTag;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">struct </span>GraphNodeIdTag;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">struct </span>GraphPinIdTag;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">struct </span>TaskIdTag;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#ad1e987167a7524aa0e9fdee20818de5c">   53</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">SessionId</a>     = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;SessionIdTag&gt;</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">   54</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a>      = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;TargetIdTag&gt;</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#abab06456c15fc263bb2c585849371eea">   55</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CommandId</a>     = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;CommandIdTag&gt;</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a8dae4cea7066ce4242fe52a567b7e506">   56</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">ToolId</a>        = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;ToolIdTag&gt;</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">   57</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">RuleId</a>        = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;RuleIdTag&gt;</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">   58</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>  = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;CapabilityIdTag&gt;</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a574edbcd85274c1df908ce3c43bcf939">   59</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TransactionId</a> = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;TransactionIdTag&gt;</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a07f0133613fc769596fb921d57920a56">   60</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">PlanId</a>        = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;PlanIdTag&gt;</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a60962f18b15404d7942fbae13fd833be">   61</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>      = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;StableIdTag&gt;</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">   62</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">ObjectId</a>      = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;ObjectIdTag&gt;</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a39e0554f8a5dce7fdebf1fe770b8c078">   63</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">AssetGuid</a>     = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;AssetGuidTag&gt;</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#aeb5bcefee9d0ff487dfa0fa12db08013">   64</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>    = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;DocumentIdTag&gt;</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a90a3849ec29f2fe1ce5c2322b5c1f3f6">   65</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphNodeId</a>   = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;GraphNodeIdTag&gt;</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#a81debce673234f46d7ab5705ba7cead2">   66</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">GraphPinId</a>    = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;GraphPinIdTag&gt;</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editing.html#aba1406ca4adac6f39880b3e63b1788f3">   67</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TaskId</a>        = <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StrongId&lt;TaskIdTag&gt;</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="};">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html">   75</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#ab3f161eba1f6075ece55c0521a1c82b7">   77</a></span>    <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#ab3f161eba1f6075ece55c0521a1c82b7">PropertyPath</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#a19e74a3074939aa77ffbea5f4318c3da">   78</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a19e74a3074939aa77ffbea5f4318c3da">PropertyPath</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">value</a>) : value_(<a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">value</a> ? <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">value</a> : <span class="stringliteral">&quot;&quot;</span>) {}</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#a071f268a870b505c7c65c2d03b27f68c">   79</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a071f268a870b505c7c65c2d03b27f68c">PropertyPath</a>(std::string <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">value</a>) : value_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">value</a>)) {}</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#a85a13baa5aeb1af2cc04403ce24132c7">   80</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a85a13baa5aeb1af2cc04403ce24132c7">PropertyPath</a>(std::string_view <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">value</a>) : value_(<a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">value</a>) {}</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">   82</a></span>    [[nodiscard]] <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">value</a>() const noexcept { <span class="keywordflow">return</span> value_; }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#a463ad7299b1f6bd9b103311798ed9efa">   83</a></span>    [[nodiscard]] <span class="keywordtype">bool</span>               <a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a463ad7299b1f6bd9b103311798ed9efa">empty</a>() const noexcept { <span class="keywordflow">return</span> value_.empty(); }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#a0eee10616e2cc2fdb84fa47c223a2187">   84</a></span>    [[nodiscard]] <span class="keyword">explicit</span>           <span class="keyword">operator</span> bool() const noexcept { <span class="keywordflow">return</span> !<a class="code hl_function" href="classeve_1_1editing_1_1PropertyPath.html#a463ad7299b1f6bd9b103311798ed9efa">empty</a>(); }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#abc42788b03123d5d3593e57eb66da6d0">   86</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="classeve_1_1editing_1_1PropertyPath.html#abc42788b03123d5d3593e57eb66da6d0">operator==</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classeve_1_1editing_1_1PropertyPath.html#ae41b091d3b3367e83f22c2f378ab4479">   87</a></span>    <span class="keyword">friend</span> <span class="keyword">auto</span> <a class="code hl_friend" href="classeve_1_1editing_1_1PropertyPath.html#ae41b091d3b3367e83f22c2f378ab4479">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp;, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    std::string value_;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="};">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1PropertyPathHash.html">   94</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editing_1_1PropertyPathHash.html">PropertyPathHash</a> {</div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="structeve_1_1editing_1_1PropertyPathHash.html#a97ad0afe3079a5c40fabfe8db1c877dc">   95</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="structeve_1_1editing_1_1PropertyPathHash.html#a97ad0afe3079a5c40fabfe8db1c877dc">operator()</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a>&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordflow">return</span> std::hash&lt;std::string&gt;{}(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.value());</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    }</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>};</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}  <span class="comment">// namespace eve::editing</span></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aIdentity_8h_html"><div class="ttname"><a href="Identity_8h.html">Identity.h</a></div><div class="ttdoc">Strong identity values shared by persistence, content and logical-name APIs.</div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00075">EditingIds.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html_a071f268a870b505c7c65c2d03b27f68c"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html#a071f268a870b505c7c65c2d03b27f68c">eve::editing::PropertyPath::PropertyPath</a></div><div class="ttdeci">PropertyPath(std::string value)</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00079">EditingIds.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html_a080440171bf31a7fc9bda4dba589858d"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html#a080440171bf31a7fc9bda4dba589858d">eve::editing::PropertyPath::value</a></div><div class="ttdeci">const std::string &amp; value() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00082">EditingIds.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html_a19e74a3074939aa77ffbea5f4318c3da"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html#a19e74a3074939aa77ffbea5f4318c3da">eve::editing::PropertyPath::PropertyPath</a></div><div class="ttdeci">PropertyPath(const char *value)</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00078">EditingIds.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html_a463ad7299b1f6bd9b103311798ed9efa"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html#a463ad7299b1f6bd9b103311798ed9efa">eve::editing::PropertyPath::empty</a></div><div class="ttdeci">bool empty() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00083">EditingIds.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html_a85a13baa5aeb1af2cc04403ce24132c7"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html#a85a13baa5aeb1af2cc04403ce24132c7">eve::editing::PropertyPath::PropertyPath</a></div><div class="ttdeci">PropertyPath(std::string_view value)</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00080">EditingIds.h:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html_ab3f161eba1f6075ece55c0521a1c82b7"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html#ab3f161eba1f6075ece55c0521a1c82b7">eve::editing::PropertyPath::PropertyPath</a></div><div class="ttdeci">PropertyPath()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html_abc42788b03123d5d3593e57eb66da6d0"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html#abc42788b03123d5d3593e57eb66da6d0">eve::editing::PropertyPath::operator==</a></div><div class="ttdeci">friend bool operator==(const PropertyPath &amp;, const PropertyPath &amp;)=default</div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html_ae41b091d3b3367e83f22c2f378ab4479"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html#ae41b091d3b3367e83f22c2f378ab4479">eve::editing::PropertyPath::operator&lt;=&gt;</a></div><div class="ttdeci">friend auto operator&lt;=&gt;(const PropertyPath &amp;, const PropertyPath &amp;)=default</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html"><div class="ttname"><a href="namespaceeve_1_1editing.html">eve::editing</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00007">EditableTarget.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a1b7e1c9d6625a2d65aa65893bd1a3b18"><div class="ttname"><a href="namespaceeve_1_1editing.html#a1b7e1c9d6625a2d65aa65893bd1a3b18">eve::editing::canonicalUuid</a></div><div class="ttdeci">eve::StrongUuid&lt; Tag &gt; canonicalUuid(const StrongId&lt; Tag &gt; &amp;id) noexcept</div><div class="ttdoc">Project an authoring identifier to its canonical UUID value.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00033">EditingIds.h:33</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyPathHash_html"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyPathHash.html">eve::editing::PropertyPathHash</a></div><div class="ttdoc">Hash functor for a dotted property path.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00094">EditingIds.h:94</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1PropertyPathHash_html_a97ad0afe3079a5c40fabfe8db1c877dc"><div class="ttname"><a href="structeve_1_1editing_1_1PropertyPathHash.html#a97ad0afe3079a5c40fabfe8db1c877dc">eve::editing::PropertyPathHash::operator()</a></div><div class="ttdeci">std::size_t operator()(const PropertyPath &amp;path) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00095">EditingIds.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1StrongIdHash_html"><div class="ttname"><a href="structeve_1_1editing_1_1StrongIdHash.html">eve::editing::StrongIdHash</a></div><div class="ttdoc">Hash functor for a strong authoring identifier.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00022">EditingIds.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1StrongIdHash_html_a37e9816db6447dcc209adddb478a4e60"><div class="ttname"><a href="structeve_1_1editing_1_1StrongIdHash.html#a37e9816db6447dcc209adddb478a4e60">eve::editing::StrongIdHash::operator()</a></div><div class="ttdeci">std::size_t operator()(const Id &amp;id) const noexcept</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00023">EditingIds.h:23</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

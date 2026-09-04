@@ -1,0 +1,1022 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::authority::Store类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1authority.html">authority</a></li><li class="navelem"><a class="el" href="classeve_1_1authority_1_1Store.html">Store</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1authority_1_1Store-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::authority::Store类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Generic, deterministic capability authority store.  
+ <a href="classeve_1_1authority_1_1Store.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Authority_8h_source.html">Authority.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a089ca4b729a904bdd85994c24fb90b17" id="r_a089ca4b729a904bdd85994c24fb90b17"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a089ca4b729a904bdd85994c24fb90b17">Store</a> (<a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId={})</td></tr>
+<tr class="memdesc:a089ca4b729a904bdd85994c24fb90b17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an authority store with an optional persistent identity.  <br /></td></tr>
+<tr class="separator:a089ca4b729a904bdd85994c24fb90b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a532d848ed85c3cb3589c78880f5c6e6e" id="r_a532d848ed85c3cb3589c78880f5c6e6e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a532d848ed85c3cb3589c78880f5c6e6e">grant</a> (const std::string &amp;actor, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, const std::string &amp;capability, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>=0.0)</td></tr>
+<tr class="memdesc:a532d848ed85c3cb3589c78880f5c6e6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a grant rule and returns its stable ID, or an empty string for invalid input.  <br /></td></tr>
+<tr class="separator:a532d848ed85c3cb3589c78880f5c6e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27ce1d841a63f319ae22d3c05d73e8e4" id="r_a27ce1d841a63f319ae22d3c05d73e8e4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a27ce1d841a63f319ae22d3c05d73e8e4">deny</a> (const std::string &amp;actor, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, const std::string &amp;capability, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>=0.0)</td></tr>
+<tr class="memdesc:a27ce1d841a63f319ae22d3c05d73e8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a deny rule and returns its stable ID, or an empty string for invalid input.  <br /></td></tr>
+<tr class="separator:a27ce1d841a63f319ae22d3c05d73e8e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79a4b1cca9eae347701d0bba327631f8" id="r_a79a4b1cca9eae347701d0bba327631f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a79a4b1cca9eae347701d0bba327631f8">revoke</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;reason=&quot;revoked&quot;)</td></tr>
+<tr class="memdesc:a79a4b1cca9eae347701d0bba327631f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revokes a rule by stable ID.  <br /></td></tr>
+<tr class="separator:a79a4b1cca9eae347701d0bba327631f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a578eeb0340edc6e8a5bd0af5f7712911" id="r_a578eeb0340edc6e8a5bd0af5f7712911"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a578eeb0340edc6e8a5bd0af5f7712911">revokeBySource</a> (const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, const std::string &amp;reason=&quot;source_revoked&quot;)</td></tr>
+<tr class="memdesc:a578eeb0340edc6e8a5bd0af5f7712911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revokes every rule from a source and returns the number removed.  <br /></td></tr>
+<tr class="separator:a578eeb0340edc6e8a5bd0af5f7712911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f06289a51af65be741e8c9119772265" id="r_a2f06289a51af65be741e8c9119772265"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a2f06289a51af65be741e8c9119772265">update</a> (double dtSeconds)</td></tr>
+<tr class="memdesc:a2f06289a51af65be741e8c9119772265"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances finite rule durations and expires rules reaching zero.  <br /></td></tr>
+<tr class="separator:a2f06289a51af65be741e8c9119772265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6455ce70a950b412c174ef1e0f77103" id="r_ad6455ce70a950b412c174ef1e0f77103"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#ad6455ce70a950b412c174ef1e0f77103">can</a> (const std::string &amp;actor, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, const std::string &amp;capability) const</td></tr>
+<tr class="memdesc:ad6455ce70a950b412c174ef1e0f77103"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the winning rule allows a capability.  <br /></td></tr>
+<tr class="separator:ad6455ce70a950b412c174ef1e0f77103"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca218eecd47745536a5710a205e13d8" id="r_adca218eecd47745536a5710a205e13d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1authority_1_1Decision.html">Decision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#adca218eecd47745536a5710a205e13d8">explain</a> (const std::string &amp;actor, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, const std::string &amp;capability) const</td></tr>
+<tr class="memdesc:adca218eecd47745536a5710a205e13d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an explainable decision and its winning rule.  <br /></td></tr>
+<tr class="separator:adca218eecd47745536a5710a205e13d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad64245029b2731ba8a8eeafd144560ba" id="r_ad64245029b2731ba8a8eeafd144560ba"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1authority_1_1Rule.html">Rule</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#ad64245029b2731ba8a8eeafd144560ba">find</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:ad64245029b2731ba8a8eeafd144560ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a rule by stable ID, or nullptr.  <br /></td></tr>
+<tr class="separator:ad64245029b2731ba8a8eeafd144560ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac30829a294ec490fe14c30d1d44be5d8" id="r_ac30829a294ec490fe14c30d1d44be5d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#ac30829a294ec490fe14c30d1d44be5d8">queryActor</a> (const std::string &amp;actor)</td></tr>
+<tr class="memdesc:ac30829a294ec490fe14c30d1d44be5d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries rules for an actor in deterministic creation order.  <br /></td></tr>
+<tr class="separator:ac30829a294ec490fe14c30d1d44be5d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a664c2926cea42bf13a00398ae1f343be" id="r_a664c2926cea42bf13a00398ae1f343be"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a664c2926cea42bf13a00398ae1f343be">queryScope</a> (const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>)</td></tr>
+<tr class="memdesc:a664c2926cea42bf13a00398ae1f343be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries rules for a scope in deterministic creation order.  <br /></td></tr>
+<tr class="separator:a664c2926cea42bf13a00398ae1f343be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3877294b97ab101ebff66cee5d7990a" id="r_af3877294b97ab101ebff66cee5d7990a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#af3877294b97ab101ebff66cee5d7990a">queryCapability</a> (const std::string &amp;capability)</td></tr>
+<tr class="memdesc:af3877294b97ab101ebff66cee5d7990a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries rules for a capability in deterministic creation order.  <br /></td></tr>
+<tr class="separator:af3877294b97ab101ebff66cee5d7990a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6793314eb78dd64d29aee37e4fe6be8" id="r_aa6793314eb78dd64d29aee37e4fe6be8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#aa6793314eb78dd64d29aee37e4fe6be8">query</a> (const std::string &amp;actor, const std::string &amp;<a class="el" href="JobSystemThreadPool_8cpp.html#acca1405ad8722c85f51c891decedadda">scope</a>, const std::string &amp;capability)</td></tr>
+<tr class="memdesc:aa6793314eb78dd64d29aee37e4fe6be8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries rules matching actor, scope, and capability. Empty fields act as wildcards.  <br /></td></tr>
+<tr class="separator:aa6793314eb78dd64d29aee37e4fe6be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a017648aa855beb89a29468309defb5d7" id="r_a017648aa855beb89a29468309defb5d7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1authority_1_1Rule.html">Rule</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a017648aa855beb89a29468309defb5d7">queryAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a017648aa855beb89a29468309defb5d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a rule from the latest query, or nullptr.  <br /></td></tr>
+<tr class="separator:a017648aa855beb89a29468309defb5d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65ddd807b278e5e5a9d010849f536bd5" id="r_a65ddd807b278e5e5a9d010849f536bd5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a65ddd807b278e5e5a9d010849f536bd5">eventCount</a> () const</td></tr>
+<tr class="memdesc:a65ddd807b278e5e5a9d010849f536bd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns retained authority event count.  <br /></td></tr>
+<tr class="separator:a65ddd807b278e5e5a9d010849f536bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8111f18fa0b2f781eef6c5b9b764ad1" id="r_ab8111f18fa0b2f781eef6c5b9b764ad1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1authority_1_1Event.html">Event</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#ab8111f18fa0b2f781eef6c5b9b764ad1">eventAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ab8111f18fa0b2f781eef6c5b9b764ad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a retained event, or nullptr.  <br /></td></tr>
+<tr class="separator:ab8111f18fa0b2f781eef6c5b9b764ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5fa15bb325c7795666bfe4da46034ad" id="r_ab5fa15bb325c7795666bfe4da46034ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#ab5fa15bb325c7795666bfe4da46034ad">clearEvents</a> ()</td></tr>
+<tr class="memdesc:ab5fa15bb325c7795666bfe4da46034ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears retained events without resetting sequence allocation.  <br /></td></tr>
+<tr class="separator:ab5fa15bb325c7795666bfe4da46034ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc2ac7aaca22e49c261601ad60c456d" id="r_afcc2ac7aaca22e49c261601ad60c456d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#afcc2ac7aaca22e49c261601ad60c456d">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:afcc2ac7aaca22e49c261601ad60c456d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exports persistent state as deterministic compact JSON.  <br /></td></tr>
+<tr class="separator:afcc2ac7aaca22e49c261601ad60c456d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae435847fff60cc460ac94bdd27026a6b" id="r_ae435847fff60cc460ac94bdd27026a6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#ae435847fff60cc460ac94bdd27026a6b">restoreJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:ae435847fff60cc460ac94bdd27026a6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally restores a snapshot produced by <a class="el" href="classeve_1_1authority_1_1Store.html#afcc2ac7aaca22e49c261601ad60c456d" title="Exports persistent state as deterministic compact JSON.">snapshotJson()</a>.  <br /></td></tr>
+<tr class="separator:ae435847fff60cc460ac94bdd27026a6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c5e1e08404a88d308ca5ef23e65723" id="r_ae2c5e1e08404a88d308ca5ef23e65723"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#ae2c5e1e08404a88d308ca5ef23e65723">snapshot</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:ae2c5e1e08404a88d308ca5ef23e65723"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures this store in the common versioned snapshot envelope.  <br /></td></tr>
+<tr class="separator:ae2c5e1e08404a88d308ca5ef23e65723"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b122926c5885d7f909fcdeb2cb9317b" id="r_a4b122926c5885d7f909fcdeb2cb9317b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a4b122926c5885d7f909fcdeb2cb9317b">restoreSnapshot</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="classeve_1_1authority_1_1Store.html#ae2c5e1e08404a88d308ca5ef23e65723">snapshot</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a4b122926c5885d7f909fcdeb2cb9317b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a verified or migratable snapshot transactionally.  <br /></td></tr>
+<tr class="separator:a4b122926c5885d7f909fcdeb2cb9317b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a998bf9134608a0cfc67e5240b48034d2" id="r_a998bf9134608a0cfc67e5240b48034d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a998bf9134608a0cfc67e5240b48034d2">snapshotEnvelopeJson</a> (const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider) const</td></tr>
+<tr class="memdesc:a998bf9134608a0cfc67e5240b48034d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the common snapshot envelope as canonical JSON.  <br /></td></tr>
+<tr class="separator:a998bf9134608a0cfc67e5240b48034d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ed889194970e95379c597220c4d0517" id="r_a9ed889194970e95379c597220c4d0517"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1authority_1_1Store.html#a9ed889194970e95379c597220c4d0517">restoreSnapshotJson</a> (std::string_view json, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a9ed889194970e95379c597220c4d0517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses and transactionally restores a common snapshot envelope.  <br /></td></tr>
+<tr class="separator:a9ed889194970e95379c597220c4d0517"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Generic, deterministic capability authority store. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8h_source.html">Authority.h</a> 第 <a class="el" href="Authority_8h_source.html#l00063">63</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a089ca4b729a904bdd85994c24fb90b17" name="a089ca4b729a904bdd85994c24fb90b17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a089ca4b729a904bdd85994c24fb90b17">&#9670;&#160;</a></span>Store()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::authority::Store::Store </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates an authority store with an optional persistent identity. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instanceId</td><td>Identity carried by new <a class="el" href="structeve_1_1SnapshotEnvelope.html" title="Stable outer format shared by persistence and cross-process snapshots.">SnapshotEnvelope</a> values; nil is a valid legacy identity. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad6455ce70a950b412c174ef1e0f77103" name="ad6455ce70a950b412c174ef1e0f77103"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6455ce70a950b412c174ef1e0f77103">&#9670;&#160;</a></span>can()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::authority::Store::can </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether the winning rule allows a capability. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8h_source.html#l00040">eve::authority::Decision::allowed</a>, <a class="el" href="Authority_8cpp_source.html#l00236">explain()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+</div>
+</div>
+<a id="ab5fa15bb325c7795666bfe4da46034ad" name="ab5fa15bb325c7795666bfe4da46034ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5fa15bb325c7795666bfe4da46034ad">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::authority::Store::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears retained events without resetting sequence allocation. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00272">272</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a27ce1d841a63f319ae22d3c05d73e8e4" name="a27ce1d841a63f319ae22d3c05d73e8e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27ce1d841a63f319ae22d3c05d73e8e4">&#9670;&#160;</a></span>deny()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::authority::Store::deny </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>duration</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a deny rule and returns its stable ID, or an empty string for invalid input. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1authority.html#a85f202f55be8cfcf160f67c05cb9b15aa3682d1665cf331373000c20680732d3a">eve::authority::Deny</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="ab8111f18fa0b2f781eef6c5b9b764ad1" name="ab8111f18fa0b2f781eef6c5b9b764ad1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8111f18fa0b2f781eef6c5b9b764ad1">&#9670;&#160;</a></span>eventAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1authority_1_1Event.html">Event</a> * eve::authority::Store::eventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a retained event, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a65ddd807b278e5e5a9d010849f536bd5" name="a65ddd807b278e5e5a9d010849f536bd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65ddd807b278e5e5a9d010849f536bd5">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::authority::Store::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns retained authority event count. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adca218eecd47745536a5710a205e13d8" name="adca218eecd47745536a5710a205e13d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca218eecd47745536a5710a205e13d8">&#9670;&#160;</a></span>explain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1authority_1_1Decision.html">Decision</a> eve::authority::Store::explain </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an explainable decision and its winning rule. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8h_source.html#l00027">eve::authority::Rule::actor</a>, <a class="el" href="Authority_8h_source.html#l00029">eve::authority::Rule::capability</a>, <a class="el" href="Authority_8h_source.html#l00031">eve::authority::Rule::effect</a>, <a class="el" href="namespaceeve_1_1authority.html#a85f202f55be8cfcf160f67c05cb9b15aae6bec5bc048c16f28ba341f878ce654e">eve::authority::Grant</a>, <a class="el" href="Authority_8h_source.html#l00026">eve::authority::Rule::id</a>, <a class="el" href="Authority_8h_source.html#l00032">eve::authority::Rule::priority</a>, <a class="el" href="Authority_8h_source.html#l00028">eve::authority::Rule::scope</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="Authority_8h_source.html#l00030">eve::authority::Rule::source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Authority_8cpp_source.html#l00246">can()</a>.</p>
+
+</div>
+</div>
+<a id="ad64245029b2731ba8a8eeafd144560ba" name="ad64245029b2731ba8a8eeafd144560ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad64245029b2731ba8a8eeafd144560ba">&#9670;&#160;</a></span>find()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1authority_1_1Rule.html">Rule</a> * eve::authority::Store::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a rule by stable ID, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a532d848ed85c3cb3589c78880f5c6e6e" name="a532d848ed85c3cb3589c78880f5c6e6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a532d848ed85c3cb3589c78880f5c6e6e">&#9670;&#160;</a></span>grant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::authority::Store::grant </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>duration</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a grant rule and returns its stable ID, or an empty string for invalid input. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00176">176</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="namespaceeve_1_1authority.html#a85f202f55be8cfcf160f67c05cb9b15aae6bec5bc048c16f28ba341f878ce654e">eve::authority::Grant</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="aa6793314eb78dd64d29aee37e4fe6be8" name="aa6793314eb78dd64d29aee37e4fe6be8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6793314eb78dd64d29aee37e4fe6be8">&#9670;&#160;</a></span>query()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::authority::Store::query </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries rules matching actor, scope, and capability. Empty fields act as wildcards. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8h_source.html#l00027">eve::authority::Rule::actor</a>, <a class="el" href="Authority_8h_source.html#l00029">eve::authority::Rule::capability</a>, <a class="el" href="Authority_8h_source.html#l00028">eve::authority::Rule::scope</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Authority_8cpp_source.html#l00262">queryActor()</a>, <a class="el" href="Authority_8cpp_source.html#l00264">queryCapability()</a> , 以及 <a class="el" href="Authority_8cpp_source.html#l00263">queryScope()</a>.</p>
+
+</div>
+</div>
+<a id="ac30829a294ec490fe14c30d1d44be5d8" name="ac30829a294ec490fe14c30d1d44be5d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac30829a294ec490fe14c30d1d44be5d8">&#9670;&#160;</a></span>queryActor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::authority::Store::queryActor </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>actor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries rules for an actor in deterministic creation order. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8cpp_source.html#l00254">query()</a>.</p>
+
+</div>
+</div>
+<a id="a017648aa855beb89a29468309defb5d7" name="a017648aa855beb89a29468309defb5d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a017648aa855beb89a29468309defb5d7">&#9670;&#160;</a></span>queryAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1authority_1_1Rule.html">Rule</a> * eve::authority::Store::queryAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a rule from the latest query, or nullptr. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="af3877294b97ab101ebff66cee5d7990a" name="af3877294b97ab101ebff66cee5d7990a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3877294b97ab101ebff66cee5d7990a">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::authority::Store::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries rules for a capability in deterministic creation order. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8cpp_source.html#l00254">query()</a>.</p>
+
+</div>
+</div>
+<a id="a664c2926cea42bf13a00398ae1f343be" name="a664c2926cea42bf13a00398ae1f343be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a664c2926cea42bf13a00398ae1f343be">&#9670;&#160;</a></span>queryScope()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::authority::Store::queryScope </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>scope</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queries rules for a scope in deterministic creation order. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00263">263</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8cpp_source.html#l00254">query()</a> , 以及 <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00158">scope</a>.</p>
+
+</div>
+</div>
+<a id="ae435847fff60cc460ac94bdd27026a6b" name="ae435847fff60cc460ac94bdd27026a6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae435847fff60cc460ac94bdd27026a6b">&#9670;&#160;</a></span>restoreJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::authority::Store::restoreJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transactionally restores a snapshot produced by <a class="el" href="classeve_1_1authority_1_1Store.html#afcc2ac7aaca22e49c261601ad60c456d" title="Exports persistent state as deterministic compact JSON.">snapshotJson()</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Snapshot JSON to parse and validate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured parse/invariant diagnostic; failure leaves every observable store field unchanged. @thread Call on the store's owning simulation thread. @reentrancy Does not invoke callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8h_source.html#l00027">eve::authority::Rule::actor</a>, <a class="el" href="Authority_8h_source.html#l00029">eve::authority::Rule::capability</a>, <a class="el" href="namespaceeve_1_1authority.html#a85f202f55be8cfcf160f67c05cb9b15aa3682d1665cf331373000c20680732d3a">eve::authority::Deny</a>, <a class="el" href="Authority_8h_source.html#l00033">eve::authority::Rule::duration</a>, <a class="el" href="Authority_8h_source.html#l00031">eve::authority::Rule::effect</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1authority.html#a85f202f55be8cfcf160f67c05cb9b15aae6bec5bc048c16f28ba341f878ce654e">eve::authority::Grant</a>, <a class="el" href="Authority_8h_source.html#l00026">eve::authority::Rule::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Authority_8h_source.html#l00035">eve::authority::Rule::order</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="Json_8cpp_source.html#l00581">eve::json::Document::parse()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="Authority_8h_source.html#l00032">eve::authority::Rule::priority</a>, <a class="el" href="Authority_8h_source.html#l00034">eve::authority::Rule::remaining</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Authority_8h_source.html#l00028">eve::authority::Rule::scope</a>, <a class="el" href="Authority_8h_source.html#l00030">eve::authority::Rule::source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Authority_8cpp_source.html#l00364">restoreSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a4b122926c5885d7f909fcdeb2cb9317b" name="a4b122926c5885d7f909fcdeb2cb9317b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b122926c5885d7f909fcdeb2cb9317b">&#9670;&#160;</a></span>restoreSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::authority::Store::restoreSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restores a verified or migratable snapshot transactionally. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">snapshot</td><td>Source envelope. Its schema must be <code>authority:store</code>. </td></tr>
+    <tr><td class="paramname">hashProvider</td><td>Explicit provider used to verify and reseal the payload. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a failure leaving all store state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Identity_8h_source.html#l00135">eve::detail::Id128&lt; Tag &gt;::isNil()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="Authority_8cpp_source.html#l00297">restoreJson()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="common_2Snapshot_8cpp_source.html#l00081">eve::validateSnapshotPayloadMetadata()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Authority_8cpp_source.html#l00400">restoreSnapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a9ed889194970e95379c597220c4d0517" name="a9ed889194970e95379c597220c4d0517"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ed889194970e95379c597220c4d0517">&#9670;&#160;</a></span>restoreSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::authority::Store::restoreSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses and transactionally restores a common snapshot envelope. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>Canonical snapshot envelope JSON. </td></tr>
+    <tr><td class="paramname">hashProvider</td><td>Explicit provider used to verify contentHash. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a failure leaving all store state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00189">eve::parseSnapshotEnvelope()</a>, <a class="el" href="Authority_8cpp_source.html#l00364">restoreSnapshot()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="a79a4b1cca9eae347701d0bba327631f8" name="a79a4b1cca9eae347701d0bba327631f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79a4b1cca9eae347701d0bba327631f8">&#9670;&#160;</a></span>revoke()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::authority::Store::revoke </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>&quot;revoked&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Revokes a rule by stable ID. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1authority.html#a7bf8186434a5123980d68167196baa1aaefb216eb79453b9aab85cee34f38c055">eve::authority::Revoked</a>.</p>
+
+</div>
+</div>
+<a id="a578eeb0340edc6e8a5bd0af5f7712911" name="a578eeb0340edc6e8a5bd0af5f7712911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a578eeb0340edc6e8a5bd0af5f7712911">&#9670;&#160;</a></span>revokeBySource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::authority::Store::revokeBySource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>&quot;source_revoked&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Revokes every rule from a source and returns the number removed. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00592">removed</a>, <a class="el" href="namespaceeve_1_1authority.html#a7bf8186434a5123980d68167196baa1aaefb216eb79453b9aab85cee34f38c055">eve::authority::Revoked</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="ae2c5e1e08404a88d308ca5ef23e65723" name="ae2c5e1e08404a88d308ca5ef23e65723"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2c5e1e08404a88d308ca5ef23e65723">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &gt; eve::authority::Store::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captures this store in the common versioned snapshot envelope. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hashProvider</td><td>Explicit content-digest provider; it is never defaulted silently. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A sealed snapshot, or a structured serialization/hash failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00104">eve::makeSnapshotEnvelope()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a> , 以及 <a class="el" href="Authority_8cpp_source.html#l00279">snapshotJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Authority_8cpp_source.html#l00393">snapshotEnvelopeJson()</a>.</p>
+
+</div>
+</div>
+<a id="a998bf9134608a0cfc67e5240b48034d2" name="a998bf9134608a0cfc67e5240b48034d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a998bf9134608a0cfc67e5240b48034d2">&#9670;&#160;</a></span>snapshotEnvelopeJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::authority::Store::snapshotEnvelopeJson </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> &amp;&#160;</td>
+          <td class="paramname"><em>hashProvider</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes the common snapshot envelope as canonical JSON. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hashProvider</td><td>Explicit content-digest provider. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Canonical envelope JSON or a structured failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00393">393</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a>, <a class="el" href="Authority_8cpp_source.html#l00357">snapshot()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="afcc2ac7aaca22e49c261601ad60c456d" name="afcc2ac7aaca22e49c261601ad60c456d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcc2ac7aaca22e49c261601ad60c456d">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::authority::Store::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exports persistent state as deterministic compact JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Authority_8h_source.html#l00027">eve::authority::Rule::actor</a>, <a class="el" href="Authority_8h_source.html#l00029">eve::authority::Rule::capability</a>, <a class="el" href="Authority_8h_source.html#l00033">eve::authority::Rule::duration</a>, <a class="el" href="Authority_8h_source.html#l00031">eve::authority::Rule::effect</a>, <a class="el" href="Authority_8cpp_source.html#l00143">eve::authority::effectName()</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="Authority_8h_source.html#l00026">eve::authority::Rule::id</a>, <a class="el" href="Authority_8h_source.html#l00035">eve::authority::Rule::order</a>, <a class="el" href="Authority_8h_source.html#l00032">eve::authority::Rule::priority</a>, <a class="el" href="LanguageText_8cpp_source.html#l00015">quote</a>, <a class="el" href="Authority_8h_source.html#l00034">eve::authority::Rule::remaining</a>, <a class="el" href="Authority_8h_source.html#l00028">eve::authority::Rule::scope</a> , 以及 <a class="el" href="Authority_8h_source.html#l00030">eve::authority::Rule::source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Authority_8cpp_source.html#l00357">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a2f06289a51af65be741e8c9119772265" name="a2f06289a51af65be741e8c9119772265"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f06289a51af65be741e8c9119772265">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::authority::Store::update </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances finite rule durations and expires rules reaching zero. </p>
+
+<p class="definition">在文件 <a class="el" href="Authority_8cpp_source.html">Authority.cpp</a> 第 <a class="el" href="Authority_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1authority.html#a7bf8186434a5123980d68167196baa1aa24fe48030f7d3097d5882535b04c3fa8">eve::authority::Expired</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/authority/<a class="el" href="Authority_8h_source.html">Authority.h</a></li>
+<li>src/modules/authority/<a class="el" href="Authority_8cpp_source.html">Authority.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

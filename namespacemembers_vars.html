@@ -1,0 +1,370 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 命名空间成员</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">&#160;</div>
+
+<h3><a id="index_a" name="index_a"></a>- a -</h3><ul>
+<li>async_content&#160;:&#160;<a class="el" href="namespaceeve.html#a46eecd0b3a07068f619c081d0a7b99bb">eve</a></li>
+</ul>
+
+
+<h3><a id="index_b" name="index_b"></a>- b -</h3><ul>
+<li>boot_content&#160;:&#160;<a class="el" href="namespaceeve.html#a14bf5e57aea12bfc58cedd7fe1473ced">eve</a></li>
+</ul>
+
+
+<h3><a id="index_c" name="index_c"></a>- c -</h3><ul>
+<li>Class&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#adc268da49436475037b72456659ae560">eve::dev::lsp::SemanticTypes</a></li>
+<li>containerEventSchemaName&#160;:&#160;<a class="el" href="namespaceeve_1_1container.html#a1050ca5144a68addd12dbe92ad079817">eve::container</a></li>
+<li>Corridor&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a69f554caa636d60bc8f0b3944711ec72">eve::procgen::Semantic</a></li>
+</ul>
+
+
+<h3><a id="index_d" name="index_d"></a>- d -</h3><ul>
+<li>Declaration&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#a916848f6ae973cc4a0f902403bc0d955">eve::dev::lsp::SemanticMods</a></li>
+<li>DefaultLibrary&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#af7b74aed53a981c71f390d510d1d9c93">eve::dev::lsp::SemanticMods</a></li>
+<li>demo_content&#160;:&#160;<a class="el" href="namespaceeve.html#ad57a04b0484d11f7b3cb3ec6179064bd">eve</a></li>
+<li>Dirt&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a42717cd85e3f86e2ae4debc8b28f8550">eve::procgen::Semantic</a></li>
+<li>Door&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#aa71a7378111d7c0bc6685e085f86196a">eve::procgen::Semantic</a></li>
+</ul>
+
+
+<h3><a id="index_e" name="index_e"></a>- e -</h3><ul>
+<li>Empty&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a98869f2e92a791c9c10d7eca7062ab64">eve::procgen::Semantic</a></li>
+<li>Enemies&#160;:&#160;<a class="el" href="namespaceeve_1_1rpg_1_1BattleSide.html#a19b0b6a85f860774d7ead153d80836bf">eve::rpg::BattleSide</a></li>
+</ul>
+
+
+<h3><a id="index_f" name="index_f"></a>- f -</h3><ul>
+<li>Floor&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a21300f8aa8278b8c7682583c333e2098">eve::procgen::Semantic</a></li>
+<li>fragment_content&#160;:&#160;<a class="el" href="namespaceeve.html#a7470094950d998af3972db3e42f199a7">eve</a></li>
+<li>Function&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a6793ac52745140cd95d52f8eedc66f8c">eve::dev::lsp::SemanticTypes</a></li>
+</ul>
+
+
+<h3><a id="index_g" name="index_g"></a>- g -</h3><ul>
+<li>GameEventModule_register&#160;:&#160;<a class="el" href="namespaceeve_1_1game__event.html#afd6c6f0d053c74143cbcc2835c398160">eve::game_event</a></li>
+<li>Grass&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a257aca213452997475d73df1dd291cc8">eve::procgen::Semantic</a></li>
+</ul>
+
+
+<h3><a id="index_k" name="index_k"></a>- k -</h3><ul>
+<li>kActionTimelineSchemaId&#160;:&#160;<a class="el" href="namespaceeve_1_1action.html#a5310f98611cfbfe9ee1d88ce458196a8">eve::action</a></li>
+<li>kActionTimelineSchemaVersion&#160;:&#160;<a class="el" href="namespaceeve_1_1action.html#a4a2f84011760be84c26bc5a6b674f5e2">eve::action</a></li>
+<li>kAoCommon&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a9b25ed3076559152d746fe497ae108c0">eve::graphics::shaders</a></li>
+<li>kBloomDownsample&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a0e88e3b0592509e279ee8795819a5d92">eve::graphics::shaders</a></li>
+<li>kBloomUpsample&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a1ec546775e3f211ba56f19855b16aa4e">eve::graphics::shaders</a></li>
+<li>kBlur&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a4fbc502c65cbb465675be9f62cccc34d">eve::graphics::shaders</a></li>
+<li>kBoltFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1weather_1_1shaders.html#a6c01cfef20ef3124e093af41d06f47fa">eve::weather::shaders</a></li>
+<li>kBoltVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1weather_1_1shaders.html#a9bcb0be071740628c66915486caaabf7">eve::weather::shaders</a></li>
+<li>kCartoon&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize_1_1shaders.html#a9e1d03c0e85fdc2d8135a125e03b4508">eve::stylize::shaders</a></li>
+<li>kCartoonMesh&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize_1_1shaders.html#aec1cc1a891abbe92c6f3625afadc8772">eve::stylize::shaders</a></li>
+<li>kChunkSize&#160;:&#160;<a class="el" href="namespaceeve_1_1voxel.html#a0bc3632942a212e240afaf1c156d6f9a">eve::voxel</a></li>
+<li>kColorFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a11aeb3bcf6a2a85c9e46ee27f9b6418c">eve::graphics::webgpu</a></li>
+<li>kColorVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a00d32c957756fd22233ad7c793e3ae98">eve::graphics::webgpu</a></li>
+<li>kCommon&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize_1_1shaders.html#a4a6eecac3fac12d2d8bdf6715b167342">eve::stylize::shaders</a></li>
+<li>kCustom2DFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ae71bd33b7432fe847f405e070b8c20e3">eve::graphics::webgpu</a></li>
+<li>kDecalFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a004ba966d9ff8a9add86b1a5373981f5">eve::graphics::webgpu</a></li>
+<li>kDecalVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a092f0a2a3783926f7b7bb97002e42172">eve::graphics::webgpu</a></li>
+<li>kDepthPyramidDownsample&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#af76c1c22b1d9e4505f29acb1032278e8">eve::graphics::shaders</a></li>
+<li>kExposureAdapt&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a69c42e0740c6c8357e77345a45034ec8">eve::graphics::shaders</a></li>
+<li>kExposureApply&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a6ec2703e5074098e97e7ef3535dcd5c0">eve::graphics::shaders</a></li>
+<li>kExposureMeter&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a3daba0218612110801a339aebf74e712">eve::graphics::shaders</a></li>
+<li>Keyword&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a46621581ba4b7bcc52db504feecc675d">eve::dev::lsp::SemanticTypes</a></li>
+<li>kFluidApplyDelta&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a35541b74e27c5292d633b2dbf5cad5d2">eve::fluids</a></li>
+<li>kFluidBuildGrid&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a5faa1b44e5dd10081f16d63a03c7723b">eve::fluids</a></li>
+<li>kFluidClearGrid&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a050813904511b961753e22f3dd8eac2b">eve::fluids</a></li>
+<li>kFluidComputeDelta&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a2b786a6f470733ae7f73d27ca58b8a97">eve::fluids</a></li>
+<li>kFluidDensityLambda&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a38bf876faa2e0c2738c7b06366775620">eve::fluids</a></li>
+<li>kFluidIntegrate&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a4cefa473443df210342c522c880da980">eve::fluids</a></li>
+<li>kFrag&#160;:&#160;<a class="el" href="namespaceeve_1_1spritestack_1_1shaders.html#ae7e01712528fbec947e10c848268cafc">eve::spritestack::shaders</a></li>
+<li>kFromDepth&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ae2242835a24a1437c7632ebc5960dbc2">eve::graphics::shaders</a></li>
+<li>kFxaa&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a843f8d90dbfbb7f8a6f2bf4d7b0d1c4c">eve::graphics::shaders</a></li>
+<li>kGpuResidentStorageOffsetAlignment&#160;:&#160;<a class="el" href="namespaceeve.html#a36e634765d310e1d403575f9769921fd">eve</a></li>
+<li>kGrassFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a905099afe0ab9b4588616b2c2126544b">eve::graphics::shaders</a></li>
+<li>kGrassVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a283327a8a239d75594031e6ee209f3de">eve::graphics::shaders</a></li>
+<li>kGtao&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a5cedfb82c8138d463a779a57730b709b">eve::graphics::shaders</a></li>
+<li>kHairFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a230066628572f3108edc90ff3c976e3c">eve::graphics::shaders</a></li>
+<li>kHbao&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ad82abca402965d1b97d715747438a803">eve::graphics::shaders</a></li>
+<li>kHZBHeaderWords&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#ab24c8a0769059f1ff117efd8979087e1">eve::graphics::vulkan</a></li>
+<li>kInk&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize_1_1shaders.html#a7029588db349dfc18f0fd3641d1903b2">eve::stylize::shaders</a></li>
+<li>kInkMesh&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize_1_1shaders.html#ab335643ca9f99aedd24d1f39cc760cb6">eve::stylize::shaders</a></li>
+<li>kInvalidBindlessSlot&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#aa5bc3718bb6ab9c6d84c84d38f6dbb90">eve::graphics::vulkan</a></li>
+<li>kInvalidGpuDrivenSlot&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a9ec544d01912754ed851d4d0a0aa97a9">eve::graphics</a></li>
+<li>kInvalidGpuParticleHandle&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a7d9cc90cd54bec0de8a82a40c2c15814">eve::graphics</a></li>
+<li>kLit2DFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a8ab5fc4e11a9db34663a4d156bc0727a">eve::graphics::webgpu</a></li>
+<li>kLit2DVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a755712cf814ac8db84ce421ddc50ad2f">eve::graphics::webgpu</a></li>
+<li>kMaxBindlessCubemaps&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#a49f79cb50d57edf60cd7619c5ed7e732">eve::graphics::vulkan</a></li>
+<li>kMaxBindlessSsbo&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#a4c372e089e852dce8662c6a185dbf19b">eve::graphics::vulkan</a></li>
+<li>kMaxBindlessTextures&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#ac5d8e8a97b6c1491bb5c80d29cff0fc1">eve::graphics::vulkan</a></li>
+<li>kMaxFrameSize&#160;:&#160;<a class="el" href="namespaceeve_1_1network.html#a647d7f2cffb9f484784d232a92bc0668">eve::network</a></li>
+<li>kMaxGpuDrivenBuckets&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#a1f552a84e09cb5b7e635ae0506d1072d">eve::graphics::vulkan</a></li>
+<li>kMaxGpuDrivenCubemaps&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a02580469648c8c27665771f77ca73cf2">eve::graphics</a></li>
+<li>kMaxGpuDrivenInstances&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#a759208f4f2362410277590af919de854">eve::graphics::vulkan</a></li>
+<li>kMaxGpuDrivenTextures&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics.html#a0a7c4c7cc5c0951520b4b58a62fb3847">eve::graphics</a></li>
+<li>kMaxHzbMips&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#a376572615a4c811eae36562916274b44">eve::graphics::vulkan</a></li>
+<li>kMaxKernelBindings&#160;:&#160;<a class="el" href="namespaceeve_1_1tensor.html#ac1236bddbabba3f4b9115cc5d94eb048">eve::tensor</a></li>
+<li>kMaxSendBuffer&#160;:&#160;<a class="el" href="namespaceeve_1_1network.html#aed7df0fbeac1eca875b34517f149aff6">eve::network</a></li>
+<li>kMesh3DClusteredFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ac55692718f374cc75664f14202225a40">eve::graphics::webgpu</a></li>
+<li>kMesh3DClusteredVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ac0fac5178b487f47f895ccd6c4bbbffb">eve::graphics::webgpu</a></li>
+<li>kMesh3DFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a06fe79f1b763c6b2d794aee036590ecd">eve::graphics::webgpu</a></li>
+<li>kMesh3DGbufferAlphaFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ac25cd940c03f20d3f96c8c1b8fbd4dd2">eve::graphics::webgpu</a></li>
+<li>kMesh3DGbufferFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a67132fd2d5476a81e3b5d8732ac8e959">eve::graphics::webgpu</a></li>
+<li>kMesh3DGbufferVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ac9e79277b09d1371619a5e9293bbbfef">eve::graphics::webgpu</a></li>
+<li>kMesh3DShadowAlphaFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ab261f3e406c9b32251d2c0f73cd4b7bf">eve::graphics::webgpu</a></li>
+<li>kMesh3DShadowAlphaVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a749c9e99adc0d8f5679df6ef90b658e9">eve::graphics::webgpu</a></li>
+<li>kMesh3DShadowVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a75f15449e4bbd2d6c6982e55df8431a1">eve::graphics::webgpu</a></li>
+<li>kMesh3DVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a522526bc40c4bf7f9e31e4302bd62ae1">eve::graphics::webgpu</a></li>
+<li>kMeshCommon&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize_1_1shaders.html#a749b1311e96cc2f8e85bff921aaa599f">eve::stylize::shaders</a></li>
+<li>kNfaa&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#aa9c607b715d26413492406ecdcfc4911">eve::graphics::shaders</a></li>
+<li>kOutline&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#af12682c96b4cefb7b791aa21a4ddac3a">eve::graphics::shaders</a></li>
+<li>kOverlay&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a483922e3d7b9763d240dd444f7c18710">eve::graphics::shaders</a></li>
+<li>kPixel&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize_1_1shaders.html#a12955a7c1627e320599348a30c4c5049">eve::stylize::shaders</a></li>
+<li>kPixelChunkSize&#160;:&#160;<a class="el" href="namespaceeve_1_1pixelworld.html#ad88f46af1c67cafe4b1440db2ee5903d">eve::pixelworld</a></li>
+<li>kPixelSleepHysteresisTicks&#160;:&#160;<a class="el" href="namespaceeve_1_1pixelworld.html#a8bcb4f40c58e93cd8151df09704e168c">eve::pixelworld</a></li>
+<li>kPostCommon&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a5a87e44df5de06ff0e3adf232080ea4b">eve::graphics::shaders</a></li>
+<li>kReflectionProbeFilterWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a16fc0c9b62383db5cf0baa45ad31b69a">eve::graphics::shaders</a></li>
+<li>kRuleDiagnosticDetail&#160;:&#160;<a class="el" href="namespaceeve_1_1editing.html#a1529af68ece55e2a133bbc197f007ebc">eve::editing</a></li>
+<li>kScreenEffectCommon&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#aecc7a7fd11acb7d6b81aae8d17f64169">eve::graphics::shaders</a></li>
+<li>kSmaa&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a290c0f6523bc0b3fd8870380ab4fb63c">eve::graphics::shaders</a></li>
+<li>kSsaa&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ae5e1ff1bcb27f1299557a1c696709e46">eve::graphics::shaders</a></li>
+<li>kSsao&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a3b69845eaf9ec26eea6cb0974bb26e9b">eve::graphics::shaders</a></li>
+<li>kSSAOFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a77ae9b37088241dc206b13af0457e979">eve::graphics::webgpu</a></li>
+<li>kSsfClear&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a47eddeaee042c61da0a36a4fea943784">eve::fluids</a></li>
+<li>kSsfNormal&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a89d013841095fd8670c36fa19d75c3c1">eve::fluids</a></li>
+<li>kSsfShade&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a3688ee695c672ee76581b51f024bf9ac">eve::fluids</a></li>
+<li>kSsfSmooth&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a33930af2384466b3e2353ca33b0dc02a">eve::fluids</a></li>
+<li>kSsfSplat&#160;:&#160;<a class="el" href="namespaceeve_1_1fluids.html#a57179a4b5b2aeed126ab4ec3dc53f51c">eve::fluids</a></li>
+<li>kSsgi&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#adf6bcf52aa00607c81a84234c8d15ae4">eve::graphics::shaders</a></li>
+<li>kSsr&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a0f52b0fe98d05eddc295fda81bf487a4">eve::graphics::shaders</a></li>
+<li>kSsrTemporal&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a8e53f17cf6d6b90a73da06692f6626c3">eve::graphics::shaders</a></li>
+<li>kStreamBufferCount&#160;:&#160;<a class="el" href="namespaceeve_1_1audio.html#a9e2276e2e2f7824893283bc3561ae917">eve::audio</a></li>
+<li>kStreamBufferFrames&#160;:&#160;<a class="el" href="namespaceeve_1_1audio.html#a3b05836474e4ff34ab5b92fb5c963ce2">eve::audio</a></li>
+<li>kTaa&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a829ab257b90632a3ce2daec1bfad48a6">eve::graphics::shaders</a></li>
+<li>kTexturedFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a7b4571c8b38858df93ff81c48524cb73">eve::graphics::webgpu</a></li>
+<li>kTexturedVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#a127401ec0f6d34dc65c3eabe21fe2b73">eve::graphics::webgpu</a></li>
+<li>kVert&#160;:&#160;<a class="el" href="namespaceeve_1_1spritestack_1_1shaders.html#ad536286901b5041ce9c73194a2552308">eve::spritestack::shaders</a></li>
+<li>kVolCloud&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a94f21b098b2a1add66b32903bf54fe80">eve::graphics::shaders</a></li>
+<li>kVolCommon&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a10858fd5880e30c4c7c7841fc915834d">eve::graphics::shaders</a></li>
+<li>kVolFog&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#afb9d784fda1ecb288deddb4776d22000">eve::graphics::shaders</a></li>
+<li>kVolFroxel&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ab8f1fb19ef9e1c425457e28843ea0bd5">eve::graphics::shaders</a></li>
+<li>kVolRay&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a2adcadb76c3c9c93cfdd0f05b5c9d270">eve::graphics::shaders</a></li>
+<li>kVolScreen&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a0669d82a8e6766d6ce73fd9431399821">eve::graphics::shaders</a></li>
+<li>kVoxelRectFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#ab7c25c22cb9b47ced5dbe50b9d3ae249">eve::graphics::webgpu</a></li>
+<li>kVoxelRectVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html#aa13a69631d27a1a082cfee2d9d9f768d">eve::graphics::webgpu</a></li>
+<li>kWatercolor&#160;:&#160;<a class="el" href="namespaceeve_1_1stylize_1_1shaders.html#a28f8162fb4e09ab4008a709a82bb1246">eve::stylize::shaders</a></li>
+<li>kWaterfallFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#a67efba44f21f59e2564d70fd8ee9aea0">eve::graphics::shaders</a></li>
+<li>kWaterFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1graphics_1_1shaders.html#ad0ed09ecf18bfab93d495860ba8d4717">eve::graphics::shaders</a></li>
+<li>kWeatherFragWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1weather_1_1shaders.html#a14ff224bf636d2e6d43d506044483802">eve::weather::shaders</a></li>
+<li>kWeatherVertWgsl&#160;:&#160;<a class="el" href="namespaceeve_1_1weather_1_1shaders.html#a3922bdf2844b433e0a1a7f0b17a08a52">eve::weather::shaders</a></li>
+</ul>
+
+
+<h3><a id="index_l" name="index_l"></a>- l -</h3><ul>
+<li>load_content&#160;:&#160;<a class="el" href="namespaceeve.html#a5505da6de1b608d73bf9363e4249099f">eve</a></li>
+</ul>
+
+
+<h3><a id="index_m" name="index_m"></a>- m -</h3><ul>
+<li>Method&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a227d64d48bb941de9fcb731784d705fd">eve::dev::lsp::SemanticTypes</a></li>
+<li>module_list_content&#160;:&#160;<a class="el" href="namespaceeve.html#a736a683bf3975b310f884f8a257b67b5">eve</a></li>
+</ul>
+
+
+<h3><a id="index_n" name="index_n"></a>- n -</h3><ul>
+<li>Namespace&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a23d3dcfb8c30eb5b52591ce400162f7a">eve::dev::lsp::SemanticTypes</a></li>
+</ul>
+
+
+<h3><a id="index_p" name="index_p"></a>- p -</h3><ul>
+<li>Parameter&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a33e6fa9dad394bb6903fd38d8480a8c1">eve::dev::lsp::SemanticTypes</a></li>
+<li>Party&#160;:&#160;<a class="el" href="namespaceeve_1_1rpg_1_1BattleSide.html#ab4c48d3dad3251d18f039f903b4c6510">eve::rpg::BattleSide</a></li>
+<li>Property&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a6ee86f695090811299d9baaeac321591">eve::dev::lsp::SemanticTypes</a></li>
+</ul>
+
+
+<h3><a id="index_r" name="index_r"></a>- r -</h3><ul>
+<li>Readonly&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#a8694449dc1d899ac61037083d68b9975">eve::dev::lsp::SemanticMods</a></li>
+<li>Road&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a331abdb5a6991b65f0ec9912c1f80231">eve::procgen::Semantic</a></li>
+</ul>
+
+
+<h3><a id="index_s" name="index_s"></a>- s -</h3><ul>
+<li>Sand&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a38307da2a8d89724f9383c09c51a8711">eve::procgen::Semantic</a></li>
+<li>scene_director_content&#160;:&#160;<a class="el" href="namespaceeve.html#a8ac75cda875b82d0f827f52e9dc7dd32">eve</a></li>
+<li>Snow&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#ae7b9acc7fe6a647129941b763f351152">eve::procgen::Semantic</a></li>
+<li>Stone&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a29c06f76c165c6f129a5988d0fd5556f">eve::procgen::Semantic</a></li>
+</ul>
+
+
+<h3><a id="index_v" name="index_v"></a>- v -</h3><ul>
+<li>Variable&#160;:&#160;<a class="el" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a0d6509f5292f4e60be44d70e0ae811ad">eve::dev::lsp::SemanticTypes</a></li>
+<li>vertex_content&#160;:&#160;<a class="el" href="namespaceeve.html#a70407b07921e6c573db42c3f496e5ad3">eve</a></li>
+</ul>
+
+
+<h3><a id="index_w" name="index_w"></a>- w -</h3><ul>
+<li>Wall&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#a32bc9e2f55b389c403eba34b03af4cf8">eve::procgen::Semantic</a></li>
+<li>Water&#160;:&#160;<a class="el" href="namespaceeve_1_1procgen_1_1Semantic.html#ae5b92f11f345ebc0bdbfa29d93683e2d">eve::procgen::Semantic</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

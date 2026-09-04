@@ -1,0 +1,934 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::SpriteSheet类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1SpriteSheet-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::SpriteSheet类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Sprite-sheet / texture-atlas frame table (pixel rects).  
+ <a href="classeve_1_1animation_1_1SpriteSheet.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SpriteSheet_8h_source.html">SpriteSheet.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0c438d6c43d5dfeee979e42b1b3e4319" id="r_a0c438d6c43d5dfeee979e42b1b3e4319"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a0c438d6c43d5dfeee979e42b1b3e4319">SpriteSheet</a> ()=default</td></tr>
+<tr class="separator:a0c438d6c43d5dfeee979e42b1b3e4319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f2faa81e8f2eb0febb7b59cef90b211" id="r_a7f2faa81e8f2eb0febb7b59cef90b211"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a7f2faa81e8f2eb0febb7b59cef90b211">~SpriteSheet</a> ()=default</td></tr>
+<tr class="separator:a7f2faa81e8f2eb0febb7b59cef90b211"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a2aa94cec50f3f95b5a822a100577b2" id="r_a5a2aa94cec50f3f95b5a822a100577b2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a5a2aa94cec50f3f95b5a822a100577b2">SpriteSheet</a> (const <a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> &amp;)=delete</td></tr>
+<tr class="separator:a5a2aa94cec50f3f95b5a822a100577b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79332e6ca63013846803338927826f9e" id="r_a79332e6ca63013846803338927826f9e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a79332e6ca63013846803338927826f9e">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> &amp;)=delete</td></tr>
+<tr class="separator:a79332e6ca63013846803338927826f9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cd10c275d2971d40d257419225bcee7" id="r_a5cd10c275d2971d40d257419225bcee7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a5cd10c275d2971d40d257419225bcee7">addFrame</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, int <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="memdesc:a5cd10c275d2971d40d257419225bcee7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a named frame. Returns frame index. Empty name → "frameN".  <br /></td></tr>
+<tr class="separator:a5cd10c275d2971d40d257419225bcee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff935016f3c0eab38dddd9ec36460eac" id="r_aff935016f3c0eab38dddd9ec36460eac"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#aff935016f3c0eab38dddd9ec36460eac">addFrameTrimmed</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, int <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, int sourceW, int sourceH, int <a class="el" href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a>, int <a class="el" href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a>)</td></tr>
+<tr class="memdesc:aff935016f3c0eab38dddd9ec36460eac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a trimmed frame with original canvas size and content offset.  <br /></td></tr>
+<tr class="separator:aff935016f3c0eab38dddd9ec36460eac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62a779a5880d449df85d50b03455465d" id="r_a62a779a5880d449df85d50b03455465d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a62a779a5880d449df85d50b03455465d">setGrid</a> (int <a class="el" href="TileConfig_8cpp.html#a341d2f00089fffc71eb6dbfd29f56c89">columns</a>, int rows, int frameW, int frameH, int <a class="el" href="TileConfig_8cpp.html#a863a6ce49a581dba9da9e7def06f2e1c">margin</a>=0, int <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>=0, int originX=0, int originY=0)</td></tr>
+<tr class="memdesc:a62a779a5880d449df85d50b03455465d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate frames in row-major order from a grid. frameW/frameH are cell sizes; margin is outer padding; spacing is gap between cells. Returns number of frames added.  <br /></td></tr>
+<tr class="separator:a62a779a5880d449df85d50b03455465d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab472a7b8a72253415a8c86b3876135da" id="r_ab472a7b8a72253415a8c86b3876135da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#ab472a7b8a72253415a8c86b3876135da">clear</a> ()</td></tr>
+<tr class="separator:ab472a7b8a72253415a8c86b3876135da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a651c37997a89c6ab6ce6d030aaa67f34" id="r_a651c37997a89c6ab6ce6d030aaa67f34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a651c37997a89c6ab6ce6d030aaa67f34">setTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *texture)</td></tr>
+<tr class="memdesc:a651c37997a89c6ab6ce6d030aaa67f34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional atlas texture produced by a sequence loader or assigned by the user.  <br /></td></tr>
+<tr class="separator:a651c37997a89c6ab6ce6d030aaa67f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ea84fe02a55bbd89a1365725cb31501" id="r_a3ea84fe02a55bbd89a1365725cb31501"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a3ea84fe02a55bbd89a1365725cb31501">getTexture</a> () const</td></tr>
+<tr class="memdesc:a3ea84fe02a55bbd89a1365725cb31501"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the optional atlas texture without transferring ownership.  <br /></td></tr>
+<tr class="separator:a3ea84fe02a55bbd89a1365725cb31501"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30bb42b117cc678ef729d7b6650950c8" id="r_a30bb42b117cc678ef729d7b6650950c8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a30bb42b117cc678ef729d7b6650950c8">getFrameCount</a> () const</td></tr>
+<tr class="separator:a30bb42b117cc678ef729d7b6650950c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3c575ac7be5ca72284c9c9acb855036" id="r_ac3c575ac7be5ca72284c9c9acb855036"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#ac3c575ac7be5ca72284c9c9acb855036">findFrame</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:ac3c575ac7be5ca72284c9c9acb855036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ec132fdf8ddef1000bcd11e81c25aff" id="r_a6ec132fdf8ddef1000bcd11e81c25aff"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a6ec132fdf8ddef1000bcd11e81c25aff">getFrameName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a6ec132fdf8ddef1000bcd11e81c25aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b3205f2907d39ff9f42e94706934de0" id="r_a3b3205f2907d39ff9f42e94706934de0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a3b3205f2907d39ff9f42e94706934de0">getFrameX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a3b3205f2907d39ff9f42e94706934de0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ebad46e68ecd56816579a503edcbfe" id="r_ab1ebad46e68ecd56816579a503edcbfe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#ab1ebad46e68ecd56816579a503edcbfe">getFrameY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab1ebad46e68ecd56816579a503edcbfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f7dfcfc60f68ee0c57c0a306f924fef" id="r_a6f7dfcfc60f68ee0c57c0a306f924fef"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a6f7dfcfc60f68ee0c57c0a306f924fef">getFrameWidth</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a6f7dfcfc60f68ee0c57c0a306f924fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90bf1cc0b14b9abd8ad677e0819f363d" id="r_a90bf1cc0b14b9abd8ad677e0819f363d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a90bf1cc0b14b9abd8ad677e0819f363d">getFrameHeight</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a90bf1cc0b14b9abd8ad677e0819f363d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a605a0252f4b298ccf8bdacaead1256e2" id="r_a605a0252f4b298ccf8bdacaead1256e2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a605a0252f4b298ccf8bdacaead1256e2">getFrameSourceWidth</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a605a0252f4b298ccf8bdacaead1256e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeefdc3d38a194a8bb228e4de7f83517b" id="r_aeefdc3d38a194a8bb228e4de7f83517b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#aeefdc3d38a194a8bb228e4de7f83517b">getFrameSourceHeight</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:aeefdc3d38a194a8bb228e4de7f83517b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43953e170fb3c240ed655bcadcd93f21" id="r_a43953e170fb3c240ed655bcadcd93f21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a43953e170fb3c240ed655bcadcd93f21">getFrameOffsetX</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a43953e170fb3c240ed655bcadcd93f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac273cdc23734ed237508d46c591a535b" id="r_ac273cdc23734ed237508d46c591a535b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#ac273cdc23734ed237508d46c591a535b">getFrameOffsetY</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ac273cdc23734ed237508d46c591a535b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac707e38b45530fcced089ebbb1d3345c" id="r_ac707e38b45530fcced089ebbb1d3345c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#ac707e38b45530fcced089ebbb1d3345c">applyToQuad</a> (<a class="el" href="classeve_1_1graphics_1_1Quad.html">graphics::Quad</a> *quad, int frameIndex) const</td></tr>
+<tr class="memdesc:ac707e38b45530fcced089ebbb1d3345c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write pixel viewport into an existing Quad (does not allocate).  <br /></td></tr>
+<tr class="separator:ac707e38b45530fcced089ebbb1d3345c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88c500d73e9fbc814419b1a1e87181a8" id="r_a88c500d73e9fbc814419b1a1e87181a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a88c500d73e9fbc814419b1a1e87181a8">clone</a> () const</td></tr>
+<tr class="memdesc:a88c500d73e9fbc814419b1a1e87181a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duplicate frame metadata while sharing the borrowed atlas texture.  <br /></td></tr>
+<tr class="separator:a88c500d73e9fbc814419b1a1e87181a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Sprite-sheet / texture-atlas frame table (pixel rects). </p>
+<p>Frames may be added by name or generated from a uniform grid. Does not own a Texture — pair with Graphics textures in script. Script type: <code><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html" title="Sprite-sheet / texture-atlas frame table (pixel rects).">SpriteSheet</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8h_source.html">SpriteSheet.h</a> 第 <a class="el" href="SpriteSheet_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0c438d6c43d5dfeee979e42b1b3e4319" name="a0c438d6c43d5dfeee979e42b1b3e4319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c438d6c43d5dfeee979e42b1b3e4319">&#9670;&#160;</a></span>SpriteSheet() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpriteSheet::SpriteSheet </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteSheet_8cpp_source.html#l00108">clone()</a>.</p>
+
+</div>
+</div>
+<a id="a7f2faa81e8f2eb0febb7b59cef90b211" name="a7f2faa81e8f2eb0febb7b59cef90b211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f2faa81e8f2eb0febb7b59cef90b211">&#9670;&#160;</a></span>~SpriteSheet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpriteSheet::~SpriteSheet </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5a2aa94cec50f3f95b5a822a100577b2" name="a5a2aa94cec50f3f95b5a822a100577b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a2aa94cec50f3f95b5a822a100577b2">&#9670;&#160;</a></span>SpriteSheet() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::SpriteSheet::SpriteSheet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a5cd10c275d2971d40d257419225bcee7" name="a5cd10c275d2971d40d257419225bcee7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cd10c275d2971d40d257419225bcee7">&#9670;&#160;</a></span>addFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::addFrame </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a named frame. Returns frame index. Empty name → "frameN". </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteSheet_8cpp_source.html#l00018">addFrameTrimmed()</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteSheet_8cpp_source.html#l00044">setGrid()</a>.</p>
+
+</div>
+</div>
+<a id="aff935016f3c0eab38dddd9ec36460eac" name="aff935016f3c0eab38dddd9ec36460eac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff935016f3c0eab38dddd9ec36460eac">&#9670;&#160;</a></span>addFrameTrimmed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::addFrameTrimmed </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sourceW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sourceH</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>offsetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>offsetY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a trimmed frame with original canvas size and content offset. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="TileConfig_8cpp_source.html#l00917">offsetX</a>, <a class="el" href="TileConfig_8cpp_source.html#l00918">offsetY</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteSheet_8cpp_source.html#l00014">addFrame()</a>.</p>
+
+</div>
+</div>
+<a id="ac707e38b45530fcced089ebbb1d3345c" name="ac707e38b45530fcced089ebbb1d3345c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac707e38b45530fcced089ebbb1d3345c">&#9670;&#160;</a></span>applyToQuad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteSheet::applyToQuad </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Quad.html">graphics::Quad</a> *&#160;</td>
+          <td class="paramname"><em>quad</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frameIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write pixel viewport into an existing Quad (does not allocate). </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a> , 以及 <a class="el" href="Quad_8cpp_source.html#l00011">eve::graphics::Quad::setViewport()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteAnim_8cpp_source.html#l00183">eve::animation::SpriteAnim::applyToQuad()</a>.</p>
+
+</div>
+</div>
+<a id="ab472a7b8a72253415a8c86b3876135da" name="ab472a7b8a72253415a8c86b3876135da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab472a7b8a72253415a8c86b3876135da">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteSheet::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteSheet_8cpp_source.html#l00044">setGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a88c500d73e9fbc814419b1a1e87181a8" name="a88c500d73e9fbc814419b1a1e87181a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88c500d73e9fbc814419b1a1e87181a8">&#9670;&#160;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> * eve::animation::SpriteSheet::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Duplicate frame metadata while sharing the borrowed atlas texture. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1animation_1_1SpriteSheet.html#a0c438d6c43d5dfeee979e42b1b3e4319">SpriteSheet()</a>.</p>
+
+</div>
+</div>
+<a id="ac3c575ac7be5ca72284c9c9acb855036" name="ac3c575ac7be5ca72284c9c9acb855036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3c575ac7be5ca72284c9c9acb855036">&#9670;&#160;</a></span>findFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::findFrame </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SpriteClip_8cpp_source.html#l00027">eve::animation::SpriteClip::addFrameByName()</a>.</p>
+
+</div>
+</div>
+<a id="a30bb42b117cc678ef729d7b6650950c8" name="a30bb42b117cc678ef729d7b6650950c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30bb42b117cc678ef729d7b6650950c8">&#9670;&#160;</a></span>getFrameCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8h_source.html">SpriteSheet.h</a> 第 <a class="el" href="SpriteSheet_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90bf1cc0b14b9abd8ad677e0819f363d" name="a90bf1cc0b14b9abd8ad677e0819f363d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90bf1cc0b14b9abd8ad677e0819f363d">&#9670;&#160;</a></span>getFrameHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameHeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a6ec132fdf8ddef1000bcd11e81c25aff" name="a6ec132fdf8ddef1000bcd11e81c25aff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ec132fdf8ddef1000bcd11e81c25aff">&#9670;&#160;</a></span>getFrameName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::SpriteSheet::getFrameName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a43953e170fb3c240ed655bcadcd93f21" name="a43953e170fb3c240ed655bcadcd93f21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43953e170fb3c240ed655bcadcd93f21">&#9670;&#160;</a></span>getFrameOffsetX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameOffsetX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac273cdc23734ed237508d46c591a535b" name="ac273cdc23734ed237508d46c591a535b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac273cdc23734ed237508d46c591a535b">&#9670;&#160;</a></span>getFrameOffsetY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameOffsetY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeefdc3d38a194a8bb228e4de7f83517b" name="aeefdc3d38a194a8bb228e4de7f83517b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeefdc3d38a194a8bb228e4de7f83517b">&#9670;&#160;</a></span>getFrameSourceHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameSourceHeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a605a0252f4b298ccf8bdacaead1256e2" name="a605a0252f4b298ccf8bdacaead1256e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a605a0252f4b298ccf8bdacaead1256e2">&#9670;&#160;</a></span>getFrameSourceWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameSourceWidth </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f7dfcfc60f68ee0c57c0a306f924fef" name="a6f7dfcfc60f68ee0c57c0a306f924fef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f7dfcfc60f68ee0c57c0a306f924fef">&#9670;&#160;</a></span>getFrameWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameWidth </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="a3b3205f2907d39ff9f42e94706934de0" name="a3b3205f2907d39ff9f42e94706934de0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b3205f2907d39ff9f42e94706934de0">&#9670;&#160;</a></span>getFrameX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+</div>
+</div>
+<a id="ab1ebad46e68ecd56816579a503edcbfe" name="ab1ebad46e68ecd56816579a503edcbfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1ebad46e68ecd56816579a503edcbfe">&#9670;&#160;</a></span>getFrameY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::getFrameY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a3ea84fe02a55bbd89a1365725cb31501" name="a3ea84fe02a55bbd89a1365725cb31501"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ea84fe02a55bbd89a1365725cb31501">&#9670;&#160;</a></span>getTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> * eve::animation::SpriteSheet::getTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the optional atlas texture without transferring ownership. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8h_source.html">SpriteSheet.h</a> 第 <a class="el" href="SpriteSheet_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79332e6ca63013846803338927826f9e" name="a79332e6ca63013846803338927826f9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79332e6ca63013846803338927826f9e">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> &amp; eve::animation::SpriteSheet::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1SpriteSheet.html">SpriteSheet</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a62a779a5880d449df85d50b03455465d" name="a62a779a5880d449df85d50b03455465d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62a779a5880d449df85d50b03455465d">&#9670;&#160;</a></span>setGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::SpriteSheet::setGrid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>columns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frameW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frameH</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>margin</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>spacing</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>originX</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>originY</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate frames in row-major order from a grid. frameW/frameH are cell sizes; margin is outer padding; spacing is gap between cells. Returns number of frames added. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a> 第 <a class="el" href="SpriteSheet_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteSheet_8cpp_source.html#l00014">addFrame()</a>, <a class="el" href="SpriteSheet_8cpp_source.html#l00066">clear()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00132">columns</a>, <a class="el" href="TileConfig_8cpp_source.html#l00135">margin</a>, <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a651c37997a89c6ab6ce6d030aaa67f34" name="a651c37997a89c6ab6ce6d030aaa67f34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a651c37997a89c6ab6ce6d030aaa67f34">&#9670;&#160;</a></span>setTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::SpriteSheet::setTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Optional atlas texture produced by a sequence loader or assigned by the user. </p>
+
+<p class="definition">在文件 <a class="el" href="SpriteSheet_8h_source.html">SpriteSheet.h</a> 第 <a class="el" href="SpriteSheet_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="SpriteSheet_8h_source.html">SpriteSheet.h</a></li>
+<li>src/modules/animation/<a class="el" href="SpriteSheet_8cpp_source.html">SpriteSheet.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

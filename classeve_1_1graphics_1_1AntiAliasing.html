@@ -1,0 +1,1377 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::AntiAliasing类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1AntiAliasing-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::AntiAliasing类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Classic image-space anti-aliasing.  
+ <a href="classeve_1_1graphics_1_1AntiAliasing.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad043891a3932ad3f0ff72e189c631bbf" id="r_ad043891a3932ad3f0ff72e189c631bbf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ad043891a3932ad3f0ff72e189c631bbf">AntiAliasing</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:ad043891a3932ad3f0ff72e189c631bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab27057fed3a813cab9347fc4181bf3e5" id="r_ab27057fed3a813cab9347fc4181bf3e5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ab27057fed3a813cab9347fc4181bf3e5">~AntiAliasing</a> ()</td></tr>
+<tr class="separator:ab27057fed3a813cab9347fc4181bf3e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af83ee36e3380b310575f766ef11ea5da" id="r_af83ee36e3380b310575f766ef11ea5da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#af83ee36e3380b310575f766ef11ea5da">AntiAliasing</a> (const <a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp;)=delete</td></tr>
+<tr class="separator:af83ee36e3380b310575f766ef11ea5da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addbe31326d9a540e6b561934a567c616" id="r_addbe31326d9a540e6b561934a567c616"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#addbe31326d9a540e6b561934a567c616">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp;)=delete</td></tr>
+<tr class="separator:addbe31326d9a540e6b561934a567c616"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaad5a5690d88472aefab9a0ce96be01" id="r_afaad5a5690d88472aefab9a0ce96be01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#afaad5a5690d88472aefab9a0ce96be01">setQuality</a> (const std::string &amp;quality)</td></tr>
+<tr class="memdesc:afaad5a5690d88472aefab9a0ce96be01"><td class="mdescLeft">&#160;</td><td class="mdescRight">"low" | "medium" | "high" (unknown → medium).  <br /></td></tr>
+<tr class="separator:afaad5a5690d88472aefab9a0ce96be01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a847bf054fcc48269909ea193b8e658ad" id="r_a847bf054fcc48269909ea193b8e658ad"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a847bf054fcc48269909ea193b8e658ad">getQuality</a> () const</td></tr>
+<tr class="separator:a847bf054fcc48269909ea193b8e658ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f3907ee453c170775ce817d91c7bc27" id="r_a3f3907ee453c170775ce817d91c7bc27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a3f3907ee453c170775ce817d91c7bc27">setMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a3f3907ee453c170775ce817d91c7bc27"><td class="mdescLeft">&#160;</td><td class="mdescRight">"fxaa" | "smaa" | "ssaa" | "nfaa" | "taa" (unknown → fxaa).  <br /></td></tr>
+<tr class="separator:a3f3907ee453c170775ce817d91c7bc27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff50461fdce5a15d50dd6844fee9d6c8" id="r_aff50461fdce5a15d50dd6844fee9d6c8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#aff50461fdce5a15d50dd6844fee9d6c8">getMode</a> () const</td></tr>
+<tr class="separator:aff50461fdce5a15d50dd6844fee9d6c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0912841a5950d5dbe0e8a232da8ef352" id="r_a0912841a5950d5dbe0e8a232da8ef352"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a0912841a5950d5dbe0e8a232da8ef352">hasParam</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a0912841a5950d5dbe0e8a232da8ef352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac87de1ab2271e35266037729ea96a547" id="r_ac87de1ab2271e35266037729ea96a547"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ac87de1ab2271e35266037729ea96a547">setFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:ac87de1ab2271e35266037729ea96a547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5cd03d4bd6576f40070acf189454de8" id="r_ab5cd03d4bd6576f40070acf189454de8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ab5cd03d4bd6576f40070acf189454de8">getFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:ab5cd03d4bd6576f40070acf189454de8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a994787d880389a4cbf9d4ce80303314e" id="r_a994787d880389a4cbf9d4ce80303314e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a994787d880389a4cbf9d4ce80303314e">suggestScale</a> () const</td></tr>
+<tr class="memdesc:a994787d880389a4cbf9d4ce80303314e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suggested supersample scale for the active quality when using "ssaa" (2 for low/medium, 4 for high). Callers create the source <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> at destSize * <a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a994787d880389a4cbf9d4ce80303314e" title="Suggested supersample scale for the active quality when using &quot;ssaa&quot; (2 for low/medium,...">suggestScale()</a>.  <br /></td></tr>
+<tr class="separator:a994787d880389a4cbf9d4ce80303314e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0c3dbeea3323e16dd1d7a3e869db1b3" id="r_ae0c3dbeea3323e16dd1d7a3e869db1b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ae0c3dbeea3323e16dd1d7a3e869db1b3">resolutionFor</a> (int destSize) const</td></tr>
+<tr class="separator:ae0c3dbeea3323e16dd1d7a3e869db1b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c141d90fd92625eafd6f744e305fc5" id="r_a13c141d90fd92625eafd6f744e305fc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a13c141d90fd92625eafd6f744e305fc5">apply</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="memdesc:a13c141d90fd92625eafd6f744e305fc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply current mode to <code>source</code>, writing into the currently bound canvas / screen. Uploads texelW/texelH from the source size.  <br /></td></tr>
+<tr class="separator:a13c141d90fd92625eafd6f744e305fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9be04eeb7437e3a11bdab3cd7743ec7" id="r_af9be04eeb7437e3a11bdab3cd7743ec7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#af9be04eeb7437e3a11bdab3cd7743ec7">applyTemporalRect</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:af9be04eeb7437e3a11bdab3cd7743ec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve TAA history and composite it into an arbitrary destination rectangle.  <br /></td></tr>
+<tr class="separator:af9be04eeb7437e3a11bdab3cd7743ec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9407413ad1bb62587e8a7b99e1c2967" id="r_ab9407413ad1bb62587e8a7b99e1c2967"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ab9407413ad1bb62587e8a7b99e1c2967">applyTemporal</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *motion=nullptr)</td></tr>
+<tr class="separator:ab9407413ad1bb62587e8a7b99e1c2967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d2ae49cb1ce210235c475cb99f0594f" id="r_a8d2ae49cb1ce210235c475cb99f0594f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a8d2ae49cb1ce210235c475cb99f0594f">resolveTemporal</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *motion=nullptr)</td></tr>
+<tr class="memdesc:a8d2ae49cb1ce210235c475cb99f0594f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve TAA into history and return the linear HDR result without compositing it. @lifetime Returned texture is borrowed from this resolver until temporal targets are recreated.  <br /></td></tr>
+<tr class="separator:a8d2ae49cb1ce210235c475cb99f0594f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20587aeccc0571d82bf17d8381e54081" id="r_a20587aeccc0571d82bf17d8381e54081"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a20587aeccc0571d82bf17d8381e54081">beginTemporalFrame</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *motion=nullptr)</td></tr>
+<tr class="memdesc:a20587aeccc0571d82bf17d8381e54081"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare uniforms/resources for a backend-recorded temporal pass. @lifetime Returned canvas is borrowed from this resolver until temporal targets are recreated.  <br /></td></tr>
+<tr class="separator:a20587aeccc0571d82bf17d8381e54081"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1670d776853b2a7b47ba865e9ee61e2e" id="r_a1670d776853b2a7b47ba865e9ee61e2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a1670d776853b2a7b47ba865e9ee61e2e">getTemporalReadTexture</a> () const</td></tr>
+<tr class="memdesc:a1670d776853b2a7b47ba865e9ee61e2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Previous resolved frame, or nullptr when history is invalid. @lifetime Returned texture is borrowed from this resolver until temporal targets are recreated.  <br /></td></tr>
+<tr class="separator:a1670d776853b2a7b47ba865e9ee61e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4713241bd2d233460d41f10bc1abd34" id="r_af4713241bd2d233460d41f10bc1abd34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#af4713241bd2d233460d41f10bc1abd34">endTemporalFrame</a> ()</td></tr>
+<tr class="memdesc:af4713241bd2d233460d41f10bc1abd34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark the prepared write target valid and rotate temporal buffers.  <br /></td></tr>
+<tr class="separator:af4713241bd2d233460d41f10bc1abd34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fd348c72654351a81500183a2bb6c9f" id="r_a1fd348c72654351a81500183a2bb6c9f"><td class="memItemLeft" align="right" valign="top">glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a1fd348c72654351a81500183a2bb6c9f">prepareTemporalJitter</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:a1fd348c72654351a81500183a2bb6c9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return this frame's Halton projection jitter in NDC units.  <br /></td></tr>
+<tr class="separator:a1fd348c72654351a81500183a2bb6c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06c778b95dc17241f76ef4dc753cec64" id="r_a06c778b95dc17241f76ef4dc753cec64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a06c778b95dc17241f76ef4dc753cec64">setTemporalCamera</a> (const glm::vec3 &amp;<a class="el" href="RenderSystem3D_8cpp.html#a420d8d8ece65c00c51be184d896cdca9">eye</a>, const glm::vec3 &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, float fovYDeg)</td></tr>
+<tr class="memdesc:a06c778b95dc17241f76ef4dc753cec64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect camera cuts and invalidate incompatible temporal history.  <br /></td></tr>
+<tr class="separator:a06c778b95dc17241f76ef4dc753cec64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a504dec54034bb68c827a1968200d56ed" id="r_a504dec54034bb68c827a1968200d56ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a504dec54034bb68c827a1968200d56ed">invalidateTemporalHistory</a> ()</td></tr>
+<tr class="memdesc:a504dec54034bb68c827a1968200d56ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard TAA history after a render-chain discontinuity.  <br /></td></tr>
+<tr class="separator:a504dec54034bb68c827a1968200d56ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab132e46372ed7dac3d961b6f582f901d" id="r_ab132e46372ed7dac3d961b6f582f901d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ab132e46372ed7dac3d961b6f582f901d">setTemporalViewProjection</a> (const glm::mat4 &amp;viewProjection, float nearZ, float farZ)</td></tr>
+<tr class="memdesc:ab132e46372ed7dac3d961b6f582f901d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the jittered camera matrix used for depth-based history reprojection.  <br /></td></tr>
+<tr class="separator:ab132e46372ed7dac3d961b6f582f901d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a829eac1a481963b1f8dcb335b81f0d96" id="r_a829eac1a481963b1f8dcb335b81f0d96"><td class="memItemLeft" align="right" valign="top">glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a829eac1a481963b1f8dcb335b81f0d96">prepareTemporalObjectMotion</a> (const void *objectKey, const glm::mat4 &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)</td></tr>
+<tr class="memdesc:a829eac1a481963b1f8dcb335b81f0d96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-object UV correction relative to static-world camera reprojection.  <br /></td></tr>
+<tr class="separator:a829eac1a481963b1f8dcb335b81f0d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99f286224076a615e467a130108ab0e9" id="r_a99f286224076a615e467a130108ab0e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a99f286224076a615e467a130108ab0e9">applyTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:a99f286224076a615e467a130108ab0e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad20ed082a18fa07e1639b22c5ce3195c" id="r_ad20ed082a18fa07e1639b22c5ce3195c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ad20ed082a18fa07e1639b22c5ce3195c">applyCanvas</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="separator:ad20ed082a18fa07e1639b22c5ce3195c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3634f4c34d278830cf0d9f0503b3245" id="r_af3634f4c34d278830cf0d9f0503b3245"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#af3634f4c34d278830cf0d9f0503b3245">applyCanvasTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:af3634f4c34d278830cf0d9f0503b3245"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cd8afc2a6bcc466f0ee4faea7bf23ac" id="r_a6cd8afc2a6bcc466f0ee4faea7bf23ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a6cd8afc2a6bcc466f0ee4faea7bf23ac">prepareSource</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>)</td></tr>
+<tr class="memdesc:a6cd8afc2a6bcc466f0ee4faea7bf23ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload texel uniforms from <code>source</code> without drawing (3D scene-color resolve).  <br /></td></tr>
+<tr class="separator:a6cd8afc2a6bcc466f0ee4faea7bf23ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7beb2298bd9a1aff278a1b564fa88b2" id="r_ab7beb2298bd9a1aff278a1b564fa88b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#ab7beb2298bd9a1aff278a1b564fa88b2">getFxaaShader</a> () const</td></tr>
+<tr class="separator:ab7beb2298bd9a1aff278a1b564fa88b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20847a49a2a511e9e1d3d06c4acc447b" id="r_a20847a49a2a511e9e1d3d06c4acc447b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a20847a49a2a511e9e1d3d06c4acc447b">getSmaaShader</a> () const</td></tr>
+<tr class="separator:a20847a49a2a511e9e1d3d06c4acc447b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58a3c8f3e23f8d6339e9107dff6517b5" id="r_a58a3c8f3e23f8d6339e9107dff6517b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a58a3c8f3e23f8d6339e9107dff6517b5">getSsaaShader</a> () const</td></tr>
+<tr class="separator:a58a3c8f3e23f8d6339e9107dff6517b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3aa20cd637b0639651b7be1a5192a81d" id="r_a3aa20cd637b0639651b7be1a5192a81d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a3aa20cd637b0639651b7be1a5192a81d">getNfaaShader</a> () const</td></tr>
+<tr class="separator:a3aa20cd637b0639651b7be1a5192a81d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7081254bf6494a99e64eebbf57f8398d" id="r_a7081254bf6494a99e64eebbf57f8398d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a7081254bf6494a99e64eebbf57f8398d">getTaaShader</a> () const</td></tr>
+<tr class="separator:a7081254bf6494a99e64eebbf57f8398d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbbfe8cede8c8ef8e3d2343d5f26d201" id="r_abbbfe8cede8c8ef8e3d2343d5f26d201"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#abbbfe8cede8c8ef8e3d2343d5f26d201">getShader</a> () const</td></tr>
+<tr class="separator:abbbfe8cede8c8ef8e3d2343d5f26d201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Classic image-space anti-aliasing. </p>
+<p>Modes:</p><ul>
+<li>"fxaa" — FXAA 3.11-style luminance edge search + subpixel blend</li>
+<li>"taa" — temporal-style alias that blends with previous-frame history</li>
+<li>"smaa" — SMAA-inspired single-pass morphological AA (fits 1×MainTex post path)</li>
+<li>"ssaa" — supersample resolve (box / tent / Gaussian); render into a larger <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> first</li>
+<li>"nfaa" — Normal Filter AA (blur along luma-gradient tangent)</li>
+</ul>
+<p>Quality presets ("low" | "medium" | "high") tune thresholds / search / kernel radius. Workflow: render scene → <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> → aa.apply / aa.applyTo → screen or next post. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a> 第 <a class="el" href="AntiAliasing_8h_source.html#l00031">31</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad043891a3932ad3f0ff72e189c631bbf" name="ad043891a3932ad3f0ff72e189c631bbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad043891a3932ad3f0ff72e189c631bbf">&#9670;&#160;</a></span>AntiAliasing() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::AntiAliasing::AntiAliasing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab27057fed3a813cab9347fc4181bf3e5" name="ab27057fed3a813cab9347fc4181bf3e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab27057fed3a813cab9347fc4181bf3e5">&#9670;&#160;</a></span>~AntiAliasing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::AntiAliasing::~AntiAliasing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af83ee36e3380b310575f766ef11ea5da" name="af83ee36e3380b310575f766ef11ea5da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af83ee36e3380b310575f766ef11ea5da">&#9670;&#160;</a></span>AntiAliasing() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::AntiAliasing::AntiAliasing </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a13c141d90fd92625eafd6f744e305fc5" name="a13c141d90fd92625eafd6f744e305fc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13c141d90fd92625eafd6f744e305fc5">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply current mode to <code>source</code>, writing into the currently bound canvas / screen. Uploads texelW/texelH from the source size. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00515">515</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AntiAliasing_8cpp_source.html#l00440">applyTemporal()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AntiAliasing_8cpp_source.html#l00531">applyCanvas()</a> , 以及 <a class="el" href="AntiAliasing_8cpp_source.html#l00522">applyTo()</a>.</p>
+
+</div>
+</div>
+<a id="ad20ed082a18fa07e1639b22c5ce3195c" name="ad20ed082a18fa07e1639b22c5ce3195c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad20ed082a18fa07e1639b22c5ce3195c">&#9670;&#160;</a></span>applyCanvas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::applyCanvas </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00531">531</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AntiAliasing_8cpp_source.html#l00515">apply()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="af3634f4c34d278830cf0d9f0503b3245" name="af3634f4c34d278830cf0d9f0503b3245"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3634f4c34d278830cf0d9f0503b3245">&#9670;&#160;</a></span>applyCanvasTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::applyCanvasTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00538">538</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AntiAliasing_8cpp_source.html#l00522">applyTo()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+</div>
+</div>
+<a id="ab9407413ad1bb62587e8a7b99e1c2967" name="ab9407413ad1bb62587e8a7b99e1c2967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9407413ad1bb62587e8a7b99e1c2967">&#9670;&#160;</a></span>applyTemporal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::applyTemporal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>motion</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00440">440</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AntiAliasing_8cpp_source.html#l00336">beginTemporalFrame()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a9d5185e2bc7a98ad0d45f55decef4799">eve::graphics::Graphics::drawTexturedRectShaderDepthMotion()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">eve::graphics::Graphics::drawTexturedRectShaderUV()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00362">endTemporalFrame()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="Graphics_8h_source.html#l00412">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="AntiAliasing_8h_source.html#l00112">getTaaShader()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00358">getTemporalReadTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a>, <a class="el" href="Graphics_8h_source.html#l00411">eve::graphics::Graphics::getWidth()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980afaa90538de35640e4b1e31ccf35b6eb5">eve::Opaque</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AntiAliasing_8cpp_source.html#l00515">apply()</a>.</p>
+
+</div>
+</div>
+<a id="af9be04eeb7437e3a11bdab3cd7743ec7" name="af9be04eeb7437e3a11bdab3cd7743ec7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9be04eeb7437e3a11bdab3cd7743ec7">&#9670;&#160;</a></span>applyTemporalRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::applyTemporalRect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve TAA history and composite it into an arbitrary destination rectangle. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00487">487</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00336">beginTemporalFrame()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a9d5185e2bc7a98ad0d45f55decef4799">eve::graphics::Graphics::drawTexturedRectShaderDepthMotion()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">eve::graphics::Graphics::drawTexturedRectShaderUV()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00362">endTemporalFrame()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="AntiAliasing_8h_source.html#l00112">getTaaShader()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00358">getTemporalReadTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980afaa90538de35640e4b1e31ccf35b6eb5">eve::Opaque</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a99f286224076a615e467a130108ab0e9" name="a99f286224076a615e467a130108ab0e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99f286224076a615e467a130108ab0e9">&#9670;&#160;</a></span>applyTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::applyTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00522">522</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AntiAliasing_8cpp_source.html#l00515">apply()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AntiAliasing_8cpp_source.html#l00538">applyCanvasTo()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l01446">eve::graphics::Graphics::prepareFinalSceneTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a20587aeccc0571d82bf17d8381e54081" name="a20587aeccc0571d82bf17d8381e54081"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20587aeccc0571d82bf17d8381e54081">&#9670;&#160;</a></span>beginTemporalFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> * eve::graphics::AntiAliasing::beginTemporalFrame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>motion</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepare uniforms/resources for a backend-recorded temporal pass. @lifetime Returned canvas is borrowed from this resolver until temporal targets are recreated. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AntiAliasing_8cpp_source.html#l00440">applyTemporal()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00487">applyTemporalRect()</a> , 以及 <a class="el" href="AntiAliasing_8cpp_source.html#l00467">resolveTemporal()</a>.</p>
+
+</div>
+</div>
+<a id="af4713241bd2d233460d41f10bc1abd34" name="af4713241bd2d233460d41f10bc1abd34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4713241bd2d233460d41f10bc1abd34">&#9670;&#160;</a></span>endTemporalFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::endTemporalFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark the prepared write target valid and rotate temporal buffers. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AntiAliasing_8cpp_source.html#l00440">applyTemporal()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00487">applyTemporalRect()</a> , 以及 <a class="el" href="AntiAliasing_8cpp_source.html#l00467">resolveTemporal()</a>.</p>
+
+</div>
+</div>
+<a id="ab5cd03d4bd6576f40070acf189454de8" name="ab5cd03d4bd6576f40070acf189454de8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5cd03d4bd6576f40070acf189454de8">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AntiAliasing::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00071">eve::graphics::Shader::getFromVar()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="ab7beb2298bd9a1aff278a1b564fa88b2" name="ab7beb2298bd9a1aff278a1b564fa88b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7beb2298bd9a1aff278a1b564fa88b2">&#9670;&#160;</a></span>getFxaaShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AntiAliasing::getFxaaShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>@lifetime <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> getters return Graphics-owned borrowed shaders. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a> 第 <a class="el" href="AntiAliasing_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff50461fdce5a15d50dd6844fee9d6c8" name="aff50461fdce5a15d50dd6844fee9d6c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff50461fdce5a15d50dd6844fee9d6c8">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::AntiAliasing::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a> 第 <a class="el" href="AntiAliasing_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00265">eve::graphics::Graphics::prepareSceneColorResolveShader()</a>.</p>
+
+</div>
+</div>
+<a id="a3aa20cd637b0639651b7be1a5192a81d" name="a3aa20cd637b0639651b7be1a5192a81d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3aa20cd637b0639651b7be1a5192a81d">&#9670;&#160;</a></span>getNfaaShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AntiAliasing::getNfaaShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a> 第 <a class="el" href="AntiAliasing_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a847bf054fcc48269909ea193b8e658ad" name="a847bf054fcc48269909ea193b8e658ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a847bf054fcc48269909ea193b8e658ad">&#9670;&#160;</a></span>getQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::AntiAliasing::getQuality </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a> 第 <a class="el" href="AntiAliasing_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01446">eve::graphics::Graphics::prepareFinalSceneTexture()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00265">eve::graphics::Graphics::prepareSceneColorResolveShader()</a>.</p>
+
+</div>
+</div>
+<a id="abbbfe8cede8c8ef8e3d2343d5f26d201" name="abbbfe8cede8c8ef8e3d2343d5f26d201"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbbfe8cede8c8ef8e3d2343d5f26d201">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AntiAliasing::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00265">eve::graphics::Graphics::prepareSceneColorResolveShader()</a>.</p>
+
+</div>
+</div>
+<a id="a20847a49a2a511e9e1d3d06c4acc447b" name="a20847a49a2a511e9e1d3d06c4acc447b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20847a49a2a511e9e1d3d06c4acc447b">&#9670;&#160;</a></span>getSmaaShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AntiAliasing::getSmaaShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a> 第 <a class="el" href="AntiAliasing_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58a3c8f3e23f8d6339e9107dff6517b5" name="a58a3c8f3e23f8d6339e9107dff6517b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58a3c8f3e23f8d6339e9107dff6517b5">&#9670;&#160;</a></span>getSsaaShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AntiAliasing::getSsaaShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a> 第 <a class="el" href="AntiAliasing_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7081254bf6494a99e64eebbf57f8398d" name="a7081254bf6494a99e64eebbf57f8398d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7081254bf6494a99e64eebbf57f8398d">&#9670;&#160;</a></span>getTaaShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AntiAliasing::getTaaShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a> 第 <a class="el" href="AntiAliasing_8h_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AntiAliasing_8cpp_source.html#l00440">applyTemporal()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00487">applyTemporalRect()</a> , 以及 <a class="el" href="AntiAliasing_8cpp_source.html#l00467">resolveTemporal()</a>.</p>
+
+</div>
+</div>
+<a id="a1670d776853b2a7b47ba865e9ee61e2e" name="a1670d776853b2a7b47ba865e9ee61e2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1670d776853b2a7b47ba865e9ee61e2e">&#9670;&#160;</a></span>getTemporalReadTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::AntiAliasing::getTemporalReadTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Previous resolved frame, or nullptr when history is invalid. @lifetime Returned texture is borrowed from this resolver until temporal targets are recreated. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00358">358</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AntiAliasing_8cpp_source.html#l00440">applyTemporal()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00487">applyTemporalRect()</a> , 以及 <a class="el" href="AntiAliasing_8cpp_source.html#l00467">resolveTemporal()</a>.</p>
+
+</div>
+</div>
+<a id="a0912841a5950d5dbe0e8a232da8ef352" name="a0912841a5950d5dbe0e8a232da8ef352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0912841a5950d5dbe0e8a232da8ef352">&#9670;&#160;</a></span>hasParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::AntiAliasing::hasParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a504dec54034bb68c827a1968200d56ed" name="a504dec54034bb68c827a1968200d56ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a504dec54034bb68c827a1968200d56ed">&#9670;&#160;</a></span>invalidateTemporalHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::invalidateTemporalHistory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Discard TAA history after a render-chain discontinuity. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Exposure_8h_source.html#l00033">eve::graphics::Exposure::invalidateHistory()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l01436">eve::graphics::Graphics::pipelineExposure()</a>.</p>
+
+</div>
+</div>
+<a id="addbe31326d9a540e6b561934a567c616" name="addbe31326d9a540e6b561934a567c616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addbe31326d9a540e6b561934a567c616">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp; eve::graphics::AntiAliasing::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html">AntiAliasing</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6cd8afc2a6bcc466f0ee4faea7bf23ac" name="a6cd8afc2a6bcc466f0ee4faea7bf23ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cd8afc2a6bcc466f0ee4faea7bf23ac">&#9670;&#160;</a></span>prepareSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::prepareSource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload texel uniforms from <code>source</code> without drawing (3D scene-color resolve). </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00265">eve::graphics::Graphics::prepareSceneColorResolveShader()</a>.</p>
+
+</div>
+</div>
+<a id="a1fd348c72654351a81500183a2bb6c9f" name="a1fd348c72654351a81500183a2bb6c9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fd348c72654351a81500183a2bb6c9f">&#9670;&#160;</a></span>prepareTemporalJitter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec2 eve::graphics::AntiAliasing::prepareTemporalJitter </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return this frame's Halton projection jitter in NDC units. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a829eac1a481963b1f8dcb335b81f0d96" name="a829eac1a481963b1f8dcb335b81f0d96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a829eac1a481963b1f8dcb335b81f0d96">&#9670;&#160;</a></span>prepareTemporalObjectMotion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec2 eve::graphics::AntiAliasing::prepareTemporalObjectMotion </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>objectKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>model</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-object UV correction relative to static-world camera reprojection. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00423">423</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00734">model</a> , 以及 <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ae0c3dbeea3323e16dd1d7a3e869db1b3" name="ae0c3dbeea3323e16dd1d7a3e869db1b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c3dbeea3323e16dd1d7a3e869db1b3">&#9670;&#160;</a></span>resolutionFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::AntiAliasing::resolutionFor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>destSize</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Source pixel count helper: floor(dest * suggestScale()), at least 1. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="AntiAliasing_8cpp_source.html#l00293">suggestScale()</a>.</p>
+
+</div>
+</div>
+<a id="a8d2ae49cb1ce210235c475cb99f0594f" name="a8d2ae49cb1ce210235c475cb99f0594f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d2ae49cb1ce210235c475cb99f0594f">&#9670;&#160;</a></span>resolveTemporal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::AntiAliasing::resolveTemporal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>motion</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve TAA into history and return the linear HDR result without compositing it. @lifetime Returned texture is borrowed from this resolver until temporal targets are recreated. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00467">467</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AntiAliasing_8cpp_source.html#l00336">beginTemporalFrame()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a9d5185e2bc7a98ad0d45f55decef4799">eve::graphics::Graphics::drawTexturedRectShaderDepthMotion()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00362">endTemporalFrame()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="AntiAliasing_8h_source.html#l00112">getTaaShader()</a>, <a class="el" href="AntiAliasing_8cpp_source.html#l00358">getTemporalReadTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00733">shader</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01446">eve::graphics::Graphics::prepareFinalSceneTexture()</a>.</p>
+
+</div>
+</div>
+<a id="ac87de1ab2271e35266037729ea96a547" name="ac87de1ab2271e35266037729ea96a547"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac87de1ab2271e35266037729ea96a547">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l00265">eve::graphics::Graphics::prepareSceneColorResolveShader()</a>.</p>
+
+</div>
+</div>
+<a id="a3f3907ee453c170775ce817d91c7bc27" name="a3f3907ee453c170775ce817d91c7bc27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f3907ee453c170775ce817d91c7bc27">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"fxaa" | "smaa" | "ssaa" | "nfaa" | "taa" (unknown → fxaa). </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01446">eve::graphics::Graphics::prepareFinalSceneTexture()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00265">eve::graphics::Graphics::prepareSceneColorResolveShader()</a>.</p>
+
+</div>
+</div>
+<a id="afaad5a5690d88472aefab9a0ce96be01" name="afaad5a5690d88472aefab9a0ce96be01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaad5a5690d88472aefab9a0ce96be01">&#9670;&#160;</a></span>setQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::setQuality </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"low" | "medium" | "high" (unknown → medium). </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics_8cpp_source.html#l01446">eve::graphics::Graphics::prepareFinalSceneTexture()</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00265">eve::graphics::Graphics::prepareSceneColorResolveShader()</a>.</p>
+
+</div>
+</div>
+<a id="a06c778b95dc17241f76ef4dc753cec64" name="a06c778b95dc17241f76ef4dc753cec64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06c778b95dc17241f76ef4dc753cec64">&#9670;&#160;</a></span>setTemporalCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::setTemporalCamera </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>eye</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Detect camera cuts and invalidate incompatible temporal history. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00681">eye</a>, <a class="el" href="Exposure_8h_source.html#l00033">eve::graphics::Exposure::invalidateHistory()</a>, <a class="el" href="Graphics_8cpp_source.html#l01436">eve::graphics::Graphics::pipelineExposure()</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="ab132e46372ed7dac3d961b6f582f901d" name="ab132e46372ed7dac3d961b6f582f901d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab132e46372ed7dac3d961b6f582f901d">&#9670;&#160;</a></span>setTemporalViewProjection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AntiAliasing::setTemporalViewProjection </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>viewProjection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the jittered camera matrix used for depth-based history reprojection. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00416">416</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a994787d880389a4cbf9d4ce80303314e" name="a994787d880389a4cbf9d4ce80303314e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a994787d880389a4cbf9d4ce80303314e">&#9670;&#160;</a></span>suggestScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AntiAliasing::suggestScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Suggested supersample scale for the active quality when using "ssaa" (2 for low/medium, 4 for high). Callers create the source <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> at destSize * <a class="el" href="classeve_1_1graphics_1_1AntiAliasing.html#a994787d880389a4cbf9d4ce80303314e" title="Suggested supersample scale for the active quality when using &quot;ssaa&quot; (2 for low/medium,...">suggestScale()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a> 第 <a class="el" href="AntiAliasing_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AntiAliasing_8cpp_source.html#l00299">resolutionFor()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="AntiAliasing_8h_source.html">AntiAliasing.h</a></li>
+<li>src/modules/graphics/<a class="el" href="AntiAliasing_8cpp_source.html">AntiAliasing.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

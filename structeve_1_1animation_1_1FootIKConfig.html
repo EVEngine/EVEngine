@@ -1,0 +1,471 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::FootIKConfig结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html">FootIKConfig</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1animation_1_1FootIKConfig-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::FootIKConfig结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Persisted paired-foot IK settings; runtime providers are intentionally excluded.  
+ <a href="structeve_1_1animation_1_1FootIKConfig.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a68c1ccd4b255fdd5ad214aeb38f95596" id="r_a68c1ccd4b255fdd5ad214aeb38f95596"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#a68c1ccd4b255fdd5ad214aeb38f95596">enabled</a> =false</td></tr>
+<tr class="separator:a68c1ccd4b255fdd5ad214aeb38f95596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07eba66b557cecc781b56ad40de67e79" id="r_a07eba66b557cecc781b56ad40de67e79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#a07eba66b557cecc781b56ad40de67e79">footLockEnabled</a> =false</td></tr>
+<tr class="separator:a07eba66b557cecc781b56ad40de67e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3275c68719475643c89c25c08d6790f3" id="r_a3275c68719475643c89c25c08d6790f3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#a3275c68719475643c89c25c08d6790f3">pelvisBone</a></td></tr>
+<tr class="separator:a3275c68719475643c89c25c08d6790f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa14172b0f9925d3213a203b68ed645fc" id="r_aa14172b0f9925d3213a203b68ed645fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation_1_1FootIKLegConfig.html">FootIKLegConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#aa14172b0f9925d3213a203b68ed645fc">left</a></td></tr>
+<tr class="separator:aa14172b0f9925d3213a203b68ed645fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc05d314e9f5fee6aea145b8b90f9c18" id="r_afc05d314e9f5fee6aea145b8b90f9c18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation_1_1FootIKLegConfig.html">FootIKLegConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#afc05d314e9f5fee6aea145b8b90f9c18">right</a></td></tr>
+<tr class="separator:afc05d314e9f5fee6aea145b8b90f9c18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74b11cb4303ff799fef7db6ebffe5ac2" id="r_a74b11cb4303ff799fef7db6ebffe5ac2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#a74b11cb4303ff799fef7db6ebffe5ac2">maxPelvisOffset</a> =0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a74b11cb4303ff799fef7db6ebffe5ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad46cf873ad8adec50bb3eb1c1d5ad0c5" id="r_ad46cf873ad8adec50bb3eb1c1d5ad0c5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#ad46cf873ad8adec50bb3eb1c1d5ad0c5">minGroundNormalY</a> =0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad46cf873ad8adec50bb3eb1c1d5ad0c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f1f4c9dd2dba53211a5f93c36b15c39" id="r_a0f1f4c9dd2dba53211a5f93c36b15c39"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#a0f1f4c9dd2dba53211a5f93c36b15c39">positionResponse</a> =18.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0f1f4c9dd2dba53211a5f93c36b15c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa250d07bcaf3f89b968d8c95705f6478" id="r_aa250d07bcaf3f89b968d8c95705f6478"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#aa250d07bcaf3f89b968d8c95705f6478">rotationResponse</a> =14.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa250d07bcaf3f89b968d8c95705f6478"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a243fe885cdde26f61ae6419a554c727a" id="r_a243fe885cdde26f61ae6419a554c727a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#a243fe885cdde26f61ae6419a554c727a">groundStartHeight</a> =0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a243fe885cdde26f61ae6419a554c727a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad172bef8fdd5f31f2a4d171ba698bbea" id="r_ad172bef8fdd5f31f2a4d171ba698bbea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#ad172bef8fdd5f31f2a4d171ba698bbea">groundQueryDistance</a> =1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad172bef8fdd5f31f2a4d171ba698bbea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a558a24c049f1fde96a0dcbf1436d5474" id="r_a558a24c049f1fde96a0dcbf1436d5474"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#a558a24c049f1fde96a0dcbf1436d5474">contactGraceTime</a> =0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a558a24c049f1fde96a0dcbf1436d5474"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0726c28cf669dc2ba1698ab95506854" id="r_ae0726c28cf669dc2ba1698ab95506854"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#ae0726c28cf669dc2ba1698ab95506854">lockEnterWeight</a> =0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae0726c28cf669dc2ba1698ab95506854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a277e0cb5eec98b60560a246c0beff542" id="r_a277e0cb5eec98b60560a246c0beff542"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1FootIKConfig.html#a277e0cb5eec98b60560a246c0beff542">lockExitWeight</a> =0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a277e0cb5eec98b60560a246c0beff542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Persisted paired-foot IK settings; runtime providers are intentionally excluded. </p>
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00045">45</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a558a24c049f1fde96a0dcbf1436d5474" name="a558a24c049f1fde96a0dcbf1436d5474"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a558a24c049f1fde96a0dcbf1436d5474">&#9670;&#160;</a></span>contactGraceTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::contactGraceTime =0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a68c1ccd4b255fdd5ad214aeb38f95596" name="a68c1ccd4b255fdd5ad214aeb38f95596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68c1ccd4b255fdd5ad214aeb38f95596">&#9670;&#160;</a></span>enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::FootIKConfig::enabled =false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a07eba66b557cecc781b56ad40de67e79" name="a07eba66b557cecc781b56ad40de67e79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07eba66b557cecc781b56ad40de67e79">&#9670;&#160;</a></span>footLockEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::FootIKConfig::footLockEnabled =false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a>.</p>
+
+</div>
+</div>
+<a id="ad172bef8fdd5f31f2a4d171ba698bbea" name="ad172bef8fdd5f31f2a4d171ba698bbea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad172bef8fdd5f31f2a4d171ba698bbea">&#9670;&#160;</a></span>groundQueryDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::groundQueryDistance =1.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a243fe885cdde26f61ae6419a554c727a" name="a243fe885cdde26f61ae6419a554c727a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a243fe885cdde26f61ae6419a554c727a">&#9670;&#160;</a></span>groundStartHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::groundStartHeight =0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="aa14172b0f9925d3213a203b68ed645fc" name="aa14172b0f9925d3213a203b68ed645fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa14172b0f9925d3213a203b68ed645fc">&#9670;&#160;</a></span>left</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation_1_1FootIKLegConfig.html">FootIKLegConfig</a> eve::animation::FootIKConfig::left</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="ae0726c28cf669dc2ba1698ab95506854" name="ae0726c28cf669dc2ba1698ab95506854"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0726c28cf669dc2ba1698ab95506854">&#9670;&#160;</a></span>lockEnterWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::lockEnterWeight =0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a277e0cb5eec98b60560a246c0beff542" name="a277e0cb5eec98b60560a246c0beff542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a277e0cb5eec98b60560a246c0beff542">&#9670;&#160;</a></span>lockExitWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::lockExitWeight =0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a74b11cb4303ff799fef7db6ebffe5ac2" name="a74b11cb4303ff799fef7db6ebffe5ac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74b11cb4303ff799fef7db6ebffe5ac2">&#9670;&#160;</a></span>maxPelvisOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::maxPelvisOffset =0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="ad46cf873ad8adec50bb3eb1c1d5ad0c5" name="ad46cf873ad8adec50bb3eb1c1d5ad0c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad46cf873ad8adec50bb3eb1c1d5ad0c5">&#9670;&#160;</a></span>minGroundNormalY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::minGroundNormalY =0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a3275c68719475643c89c25c08d6790f3" name="a3275c68719475643c89c25c08d6790f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3275c68719475643c89c25c08d6790f3">&#9670;&#160;</a></span>pelvisBone</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::FootIKConfig::pelvisBone</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a0f1f4c9dd2dba53211a5f93c36b15c39" name="a0f1f4c9dd2dba53211a5f93c36b15c39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f1f4c9dd2dba53211a5f93c36b15c39">&#9670;&#160;</a></span>positionResponse</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::positionResponse =18.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<a id="afc05d314e9f5fee6aea145b8b90f9c18" name="afc05d314e9f5fee6aea145b8b90f9c18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc05d314e9f5fee6aea145b8b90f9c18">&#9670;&#160;</a></span>right</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation_1_1FootIKLegConfig.html">FootIKLegConfig</a> eve::animation::FootIKConfig::right</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a>.</p>
+
+</div>
+</div>
+<a id="aa250d07bcaf3f89b968d8c95705f6478" name="aa250d07bcaf3f89b968d8c95705f6478"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa250d07bcaf3f89b968d8c95705f6478">&#9670;&#160;</a></span>rotationResponse</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::FootIKConfig::rotationResponse =14.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a> 第 <a class="el" href="ProceduralBoneConfig_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00064">eve::animation::DynamicBoneConfig::apply()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00043">eve::animation::DynamicBoneConfig::fromValue()</a>, <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00033">eve::animation::DynamicBoneConfig::toValue()</a> , 以及 <a class="el" href="ProceduralBoneConfig_8cpp_source.html#l00023">eve::animation::DynamicBoneConfig::validate()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="ProceduralBoneConfig_8h_source.html">ProceduralBoneConfig.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

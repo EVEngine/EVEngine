@@ -1,0 +1,2592 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::ReflectionProbeCapture类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">ReflectionProbeCapture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1graphics_1_1ReflectionProbeCapture-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::ReflectionProbeCapture类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Incremental six-face HDR scene capture for a runtime reflection probe.  
+ <a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7766222b5cec7e331a720753079cd637" id="r_a7766222b5cec7e331a720753079cd637"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7766222b5cec7e331a720753079cd637">ReflectionProbeCapture</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:a7766222b5cec7e331a720753079cd637"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12d4c4bfa8eac466b0e1965b80afb280" id="r_a12d4c4bfa8eac466b0e1965b80afb280"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a12d4c4bfa8eac466b0e1965b80afb280">~ReflectionProbeCapture</a> ()</td></tr>
+<tr class="memdesc:a12d4c4bfa8eac466b0e1965b80afb280"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detach this probe from every registry before script-owned destruction.  <br /></td></tr>
+<tr class="separator:a12d4c4bfa8eac466b0e1965b80afb280"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac435d5018876a48fa1369fe492266dcf" id="r_ac435d5018876a48fa1369fe492266dcf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac435d5018876a48fa1369fe492266dcf">configure</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, int resolution=128, float nearZ=0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float farZ=100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ac435d5018876a48fa1369fe492266dcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the probe origin, face resolution and clipping planes.  <br /></td></tr>
+<tr class="separator:ac435d5018876a48fa1369fe492266dcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0edc2c31adf0fa13b477c70c8f50067c" id="r_a0edc2c31adf0fa13b477c70c8f50067c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0edc2c31adf0fa13b477c70c8f50067c">requestCapture</a> ()</td></tr>
+<tr class="memdesc:a0edc2c31adf0fa13b477c70c8f50067c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark all six faces dirty and restart capture at +X.  <br /></td></tr>
+<tr class="separator:a0edc2c31adf0fa13b477c70c8f50067c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95e855b329ccf1c6a6d2f223c38cf480" id="r_a95e855b329ccf1c6a6d2f223c38cf480"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a95e855b329ccf1c6a6d2f223c38cf480">queueCapture</a> ()</td></tr>
+<tr class="memdesc:a95e855b329ccf1c6a6d2f223c38cf480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue a coherent recapture without restarting a revision already in progress.  <br /></td></tr>
+<tr class="separator:a95e855b329ccf1c6a6d2f223c38cf480"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a958a78a35d9934caa1dd886c9ca2f285" id="r_a958a78a35d9934caa1dd886c9ca2f285"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a958a78a35d9934caa1dd886c9ca2f285">update</a> (int faceBudget=1)</td></tr>
+<tr class="memdesc:a958a78a35d9934caa1dd886c9ca2f285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture up to <code>faceBudget</code> dirty faces.  <br /></td></tr>
+<tr class="separator:a958a78a35d9934caa1dd886c9ca2f285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d8761835849f5c90fb72b8149713650" id="r_a3d8761835849f5c90fb72b8149713650"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3d8761835849f5c90fb72b8149713650">getFaceCanvas</a> (int face) const</td></tr>
+<tr class="memdesc:a3d8761835849f5c90fb72b8149713650"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one captured HDR face <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> in +X,-X,+Y,-Y,+Z,-Z order. @lifetime Returned canvas is borrowed from this capture until destruction.  <br /></td></tr>
+<tr class="separator:a3d8761835849f5c90fb72b8149713650"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5870ed6424e38cc73f7ad94d0e0e4a1f" id="r_a5870ed6424e38cc73f7ad94d0e0e4a1f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5870ed6424e38cc73f7ad94d0e0e4a1f">isCapturePending</a> () const</td></tr>
+<tr class="memdesc:a5870ed6424e38cc73f7ad94d0e0e4a1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">True while one or more faces still need capture.  <br /></td></tr>
+<tr class="separator:a5870ed6424e38cc73f7ad94d0e0e4a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f31d010c75b864159ba4b5de25a2dda" id="r_a7f31d010c75b864159ba4b5de25a2dda"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7f31d010c75b864159ba4b5de25a2dda">isRecaptureQueued</a> () const</td></tr>
+<tr class="memdesc:a7f31d010c75b864159ba4b5de25a2dda"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when changed capture inputs are queued behind the current revision.  <br /></td></tr>
+<tr class="separator:a7f31d010c75b864159ba4b5de25a2dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b7026c9317ce35ced0027f832b65c30" id="r_a6b7026c9317ce35ced0027f832b65c30"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6b7026c9317ce35ced0027f832b65c30">isCaptureComplete</a> () const</td></tr>
+<tr class="memdesc:a6b7026c9317ce35ced0027f832b65c30"><td class="mdescLeft">&#160;</td><td class="mdescRight">True after at least one complete six-face capture.  <br /></td></tr>
+<tr class="separator:a6b7026c9317ce35ced0027f832b65c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47facf4cacc40e841a1c2d3e59524f4f" id="r_a47facf4cacc40e841a1c2d3e59524f4f"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a47facf4cacc40e841a1c2d3e59524f4f">getRevision</a> () const</td></tr>
+<tr class="memdesc:a47facf4cacc40e841a1c2d3e59524f4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic revision incremented after each complete six-face capture.  <br /></td></tr>
+<tr class="separator:a47facf4cacc40e841a1c2d3e59524f4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac536b3e241fd826d51bef122641f266c" id="r_ac536b3e241fd826d51bef122641f266c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac536b3e241fd826d51bef122641f266c">stageCapturedFaces</a> ()</td></tr>
+<tr class="memdesc:ac536b3e241fd826d51bef122641f266c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a complete capture revision into a backend HDR staging cubemap. @compatibility Preserves the scripting API's boolean submitted result.  <br /></td></tr>
+<tr class="separator:ac536b3e241fd826d51bef122641f266c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb035b0315a784e601365e518675f969" id="r_acb035b0315a784e601365e518675f969"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#acb035b0315a784e601365e518675f969">getStagingCubemap</a> () const</td></tr>
+<tr class="memdesc:acb035b0315a784e601365e518675f969"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend HDR staging cubemap; not yet filtered or safe for lighting. @lifetime Returned texture is Graphics-owned and borrowed by this capture.  <br /></td></tr>
+<tr class="separator:acb035b0315a784e601365e518675f969"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5081f1e0530ff2484a64c0f1dd916d71" id="r_a5081f1e0530ff2484a64c0f1dd916d71"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5081f1e0530ff2484a64c0f1dd916d71">getStagedRevision</a> () const</td></tr>
+<tr class="memdesc:a5081f1e0530ff2484a64c0f1dd916d71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last capture revision fully copied into the staging cubemap.  <br /></td></tr>
+<tr class="separator:a5081f1e0530ff2484a64c0f1dd916d71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af57d6b748b4a6879272eab7d9c758bd5" id="r_af57d6b748b4a6879272eab7d9c758bd5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af57d6b748b4a6879272eab7d9c758bd5">filterAndPublish</a> (int sampleCount=64)</td></tr>
+<tr class="memdesc:af57d6b748b4a6879272eab7d9c758bd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filter with 8-512 samples and atomically publish the active cubemap. @compatibility Preserves the scripting API's boolean publication result.  <br /></td></tr>
+<tr class="separator:af57d6b748b4a6879272eab7d9c758bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae414d6e5b5ff3b0966f73a47e4b13f9a" id="r_ae414d6e5b5ff3b0966f73a47e4b13f9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ae414d6e5b5ff3b0966f73a47e4b13f9a">getActiveCubemap</a> () const</td></tr>
+<tr class="memdesc:ae414d6e5b5ff3b0966f73a47e4b13f9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last fully filtered cubemap, safe to assign to <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> reflection probes. @lifetime Returned texture is Graphics-owned and borrowed by this capture.  <br /></td></tr>
+<tr class="separator:ae414d6e5b5ff3b0966f73a47e4b13f9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3daf46fa238a3dbd85690a9e8380bca9" id="r_a3daf46fa238a3dbd85690a9e8380bca9"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3daf46fa238a3dbd85690a9e8380bca9">getPublishedRevision</a> () const</td></tr>
+<tr class="memdesc:a3daf46fa238a3dbd85690a9e8380bca9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last capture revision atomically published for lighting.  <br /></td></tr>
+<tr class="separator:a3daf46fa238a3dbd85690a9e8380bca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a0b01dd566061e7fbc8ac0612ff294c" id="r_a9a0b01dd566061e7fbc8ac0612ff294c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9a0b01dd566061e7fbc8ac0612ff294c">setUpdateMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a9a0b01dd566061e7fbc8ac0612ff294c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set refresh mode: static, on_demand, time_sliced, or realtime.  <br /></td></tr>
+<tr class="separator:a9a0b01dd566061e7fbc8ac0612ff294c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a287e0a8081b485e56ea66e7f8f40cab9" id="r_a287e0a8081b485e56ea66e7f8f40cab9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a287e0a8081b485e56ea66e7f8f40cab9">getUpdateMode</a> () const</td></tr>
+<tr class="memdesc:a287e0a8081b485e56ea66e7f8f40cab9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current refresh mode.  <br /></td></tr>
+<tr class="separator:a287e0a8081b485e56ea66e7f8f40cab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dd70e537c6b1a60024396a7ea945785" id="r_a3dd70e537c6b1a60024396a7ea945785"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3dd70e537c6b1a60024396a7ea945785">setRefreshInterval</a> (int frames)</td></tr>
+<tr class="memdesc:a3dd70e537c6b1a60024396a7ea945785"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set automatic refresh interval in frames for time_sliced mode.  <br /></td></tr>
+<tr class="separator:a3dd70e537c6b1a60024396a7ea945785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a110014123871d0f9878b11e0cc05ed" id="r_a3a110014123871d0f9878b11e0cc05ed"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a3a110014123871d0f9878b11e0cc05ed">getRefreshInterval</a> () const</td></tr>
+<tr class="memdesc:a3a110014123871d0f9878b11e0cc05ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the automatic refresh interval in frames.  <br /></td></tr>
+<tr class="separator:a3a110014123871d0f9878b11e0cc05ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f511c60c864674ff68daf87f016750" id="r_aa9f511c60c864674ff68daf87f016750"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa9f511c60c864674ff68daf87f016750">setCaptureMask</a> (int <a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>)</td></tr>
+<tr class="memdesc:aa9f511c60c864674ff68daf87f016750"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the object-layer mask visible to this reflection capture.  <br /></td></tr>
+<tr class="separator:aa9f511c60c864674ff68daf87f016750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab95ca15b66053cf4dccc2823349af9bf" id="r_ab95ca15b66053cf4dccc2823349af9bf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab95ca15b66053cf4dccc2823349af9bf">getCaptureMask</a> () const</td></tr>
+<tr class="memdesc:ab95ca15b66053cf4dccc2823349af9bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the object-layer mask visible to this reflection capture.  <br /></td></tr>
+<tr class="separator:ab95ca15b66053cf4dccc2823349af9bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ac8246d12b4f8ff26f3b93597c39733" id="r_a2ac8246d12b4f8ff26f3b93597c39733"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2ac8246d12b4f8ff26f3b93597c39733">setEnvironmentLighting</a> (<a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *environment, float intensity=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a2ac8246d12b4f8ff26f3b93597c39733"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set non-recursive global environment lighting for captured geometry.  <br /></td></tr>
+<tr class="separator:a2ac8246d12b4f8ff26f3b93597c39733"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abea42adc5c4163b6cfb2b4757d3d2a74" id="r_abea42adc5c4163b6cfb2b4757d3d2a74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#abea42adc5c4163b6cfb2b4757d3d2a74">getEnvironmentLighting</a> () const</td></tr>
+<tr class="memdesc:abea42adc5c4163b6cfb2b4757d3d2a74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the global environment texture used while capturing. @lifetime Returned texture is borrowed; its owner must outlive this capture.  <br /></td></tr>
+<tr class="separator:abea42adc5c4163b6cfb2b4757d3d2a74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade8a4b475d52a8b54b5536cd8a313fb6" id="r_ade8a4b475d52a8b54b5536cd8a313fb6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ade8a4b475d52a8b54b5536cd8a313fb6">getEnvironmentLightingIntensity</a> () const</td></tr>
+<tr class="memdesc:ade8a4b475d52a8b54b5536cd8a313fb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the global environment-lighting intensity used while capturing.  <br /></td></tr>
+<tr class="separator:ade8a4b475d52a8b54b5536cd8a313fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad85e3af550296ce4168764342eac682b" id="r_ad85e3af550296ce4168764342eac682b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad85e3af550296ce4168764342eac682b">setSkyColor</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float intensity=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ad85e3af550296ce4168764342eac682b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a linear HDR backup sky color for empty capture pixels.  <br /></td></tr>
+<tr class="separator:ad85e3af550296ce4168764342eac682b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97a18284b016974910eb562e16f5c03c" id="r_a97a18284b016974910eb562e16f5c03c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a97a18284b016974910eb562e16f5c03c">setSkyFaceColor</a> (int face, float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="memdesc:a97a18284b016974910eb562e16f5c03c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Override one directional backup sky face in +X,-X,+Y,-Y,+Z,-Z order.  <br /></td></tr>
+<tr class="separator:a97a18284b016974910eb562e16f5c03c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87d3d577c0ac3bd2637e54966b1ca2fb" id="r_a87d3d577c0ac3bd2637e54966b1ca2fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a87d3d577c0ac3bd2637e54966b1ca2fb">setSkyFaceTexture</a> (int face, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *texture)</td></tr>
+<tr class="memdesc:a87d3d577c0ac3bd2637e54966b1ca2fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a directional per-pixel sky texture for one capture face.  <br /></td></tr>
+<tr class="separator:a87d3d577c0ac3bd2637e54966b1ca2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab762f923d3dbf29c78f4d9b9a33265f6" id="r_ab762f923d3dbf29c78f4d9b9a33265f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab762f923d3dbf29c78f4d9b9a33265f6">getSkyFaceTexture</a> (int face) const</td></tr>
+<tr class="memdesc:ab762f923d3dbf29c78f4d9b9a33265f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one directional per-pixel sky texture, or nullptr. @lifetime Returned texture is borrowed; its owner must outlive this capture.  <br /></td></tr>
+<tr class="separator:ab762f923d3dbf29c78f4d9b9a33265f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f283e7e59f060d518d60736e8a4823d" id="r_a6f283e7e59f060d518d60736e8a4823d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6f283e7e59f060d518d60736e8a4823d">setSkyFaceTextureScale</a> (int face, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:a6f283e7e59f060d518d60736e8a4823d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the linear HDR radiance multiplier for one sky face texture.  <br /></td></tr>
+<tr class="separator:a6f283e7e59f060d518d60736e8a4823d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96931d9672c0f483917307e5b5c8648e" id="r_a96931d9672c0f483917307e5b5c8648e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a96931d9672c0f483917307e5b5c8648e">getSkyFaceTextureScale</a> (int face) const</td></tr>
+<tr class="memdesc:a96931d9672c0f483917307e5b5c8648e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one sky face texture's linear HDR radiance multiplier.  <br /></td></tr>
+<tr class="separator:a96931d9672c0f483917307e5b5c8648e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84586ca4c69d1023a8841ae0c49c59c" id="r_af84586ca4c69d1023a8841ae0c49c59c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af84586ca4c69d1023a8841ae0c49c59c">getSkyFaceColor</a> (int face, int component) const</td></tr>
+<tr class="memdesc:af84586ca4c69d1023a8841ae0c49c59c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one directional sky-face color component, or zero for invalid indices.  <br /></td></tr>
+<tr class="separator:af84586ca4c69d1023a8841ae0c49c59c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bf561f01689ef3eb79680af55cb405a" id="r_a7bf561f01689ef3eb79680af55cb405a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7bf561f01689ef3eb79680af55cb405a">getSkyR</a> () const</td></tr>
+<tr class="memdesc:a7bf561f01689ef3eb79680af55cb405a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the unscaled backup sky red channel.  <br /></td></tr>
+<tr class="separator:a7bf561f01689ef3eb79680af55cb405a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a236deae9743609b02d95bd32eeca05cb" id="r_a236deae9743609b02d95bd32eeca05cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a236deae9743609b02d95bd32eeca05cb">getSkyG</a> () const</td></tr>
+<tr class="memdesc:a236deae9743609b02d95bd32eeca05cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the unscaled backup sky green channel.  <br /></td></tr>
+<tr class="separator:a236deae9743609b02d95bd32eeca05cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e8fba3d3d388e8ab83776b129272ad3" id="r_a0e8fba3d3d388e8ab83776b129272ad3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0e8fba3d3d388e8ab83776b129272ad3">getSkyB</a> () const</td></tr>
+<tr class="memdesc:a0e8fba3d3d388e8ab83776b129272ad3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the unscaled backup sky blue channel.  <br /></td></tr>
+<tr class="separator:a0e8fba3d3d388e8ab83776b129272ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab940d4cb17fb9aafad2a9c07b5b806ff" id="r_ab940d4cb17fb9aafad2a9c07b5b806ff"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ab940d4cb17fb9aafad2a9c07b5b806ff">getSkyIntensity</a> () const</td></tr>
+<tr class="memdesc:ab940d4cb17fb9aafad2a9c07b5b806ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the backup sky HDR multiplier.  <br /></td></tr>
+<tr class="separator:ab940d4cb17fb9aafad2a9c07b5b806ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af220eacbc129d63a22d731fb014b299b" id="r_af220eacbc129d63a22d731fb014b299b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#af220eacbc129d63a22d731fb014b299b">getPendingFaceCount</a> () const</td></tr>
+<tr class="memdesc:af220eacbc129d63a22d731fb014b299b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cubemap faces remaining in the current capture revision.  <br /></td></tr>
+<tr class="separator:af220eacbc129d63a22d731fb014b299b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedc83a441fd372974596963eaf9d294f" id="r_aedc83a441fd372974596963eaf9d294f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aedc83a441fd372974596963eaf9d294f">getLastCapturedFaceCount</a> () const</td></tr>
+<tr class="memdesc:aedc83a441fd372974596963eaf9d294f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of faces rendered by the most recent update call.  <br /></td></tr>
+<tr class="separator:aedc83a441fd372974596963eaf9d294f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b1aad8863d1e8ba5998e2e67ffe2544" id="r_a5b1aad8863d1e8ba5998e2e67ffe2544"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5b1aad8863d1e8ba5998e2e67ffe2544">getTotalCapturedFaceCount</a> () const</td></tr>
+<tr class="memdesc:a5b1aad8863d1e8ba5998e2e67ffe2544"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of face renders performed by this capture object.  <br /></td></tr>
+<tr class="separator:a5b1aad8863d1e8ba5998e2e67ffe2544"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a760e6d3ee4fd50503f9aac01e244ad51" id="r_a760e6d3ee4fd50503f9aac01e244ad51"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a760e6d3ee4fd50503f9aac01e244ad51">getLastFilterSampleCount</a> () const</td></tr>
+<tr class="memdesc:a760e6d3ee4fd50503f9aac01e244ad51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample count used by the most recently published filter pass.  <br /></td></tr>
+<tr class="separator:a760e6d3ee4fd50503f9aac01e244ad51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10d1f4e6159b54ee37170073758a0340" id="r_a10d1f4e6159b54ee37170073758a0340"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a10d1f4e6159b54ee37170073758a0340">setGpuBudgetMs</a> (float milliseconds)</td></tr>
+<tr class="memdesc:a10d1f4e6159b54ee37170073758a0340"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the GPU-time budget used by adaptive capture scheduling, in milliseconds.  <br /></td></tr>
+<tr class="separator:a10d1f4e6159b54ee37170073758a0340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cbde5c23b8b31e0ff44d23425001a85" id="r_a4cbde5c23b8b31e0ff44d23425001a85"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a4cbde5c23b8b31e0ff44d23425001a85">getGpuBudgetMs</a> () const</td></tr>
+<tr class="memdesc:a4cbde5c23b8b31e0ff44d23425001a85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the adaptive capture GPU-time budget in milliseconds.  <br /></td></tr>
+<tr class="separator:a4cbde5c23b8b31e0ff44d23425001a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9074116491a8062ff45ebf57fe12a664" id="r_a9074116491a8062ff45ebf57fe12a664"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a9074116491a8062ff45ebf57fe12a664">reportGpuDurationMs</a> (float milliseconds)</td></tr>
+<tr class="memdesc:a9074116491a8062ff45ebf57fe12a664"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report a backend timestamp duration for the most recent probe workload.  <br /></td></tr>
+<tr class="separator:a9074116491a8062ff45ebf57fe12a664"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22a8c4018831020d6a9a642b46501a93" id="r_a22a8c4018831020d6a9a642b46501a93"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a22a8c4018831020d6a9a642b46501a93">getSmoothedGpuDurationMs</a> () const</td></tr>
+<tr class="memdesc:a22a8c4018831020d6a9a642b46501a93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the exponentially smoothed reported GPU duration.  <br /></td></tr>
+<tr class="separator:a22a8c4018831020d6a9a642b46501a93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0cefb7e53e6a443d256351590baf391" id="r_ad0cefb7e53e6a443d256351590baf391"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad0cefb7e53e6a443d256351590baf391">getAdaptiveFaceBudget</a> () const</td></tr>
+<tr class="memdesc:ad0cefb7e53e6a443d256351590baf391"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current adaptive cubemap-face budget.  <br /></td></tr>
+<tr class="separator:ad0cefb7e53e6a443d256351590baf391"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0da67de5db517fad1d0bf5d803a62d6" id="r_ac0da67de5db517fad1d0bf5d803a62d6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac0da67de5db517fad1d0bf5d803a62d6">getAdaptiveFilterSamples</a> () const</td></tr>
+<tr class="memdesc:ac0da67de5db517fad1d0bf5d803a62d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current adaptive filter sample count.  <br /></td></tr>
+<tr class="separator:ac0da67de5db517fad1d0bf5d803a62d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28ef0f3215e476687c6ce9883c826007" id="r_a28ef0f3215e476687c6ce9883c826007"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a28ef0f3215e476687c6ce9883c826007">tickAdaptive</a> ()</td></tr>
+<tr class="memdesc:a28ef0f3215e476687c6ce9883c826007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance capture and filtering using the GPU-budget controller's workload.  <br /></td></tr>
+<tr class="separator:a28ef0f3215e476687c6ce9883c826007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c70c1115877cb207d969e5a02b7679a" id="r_a2c70c1115877cb207d969e5a02b7679a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2c70c1115877cb207d969e5a02b7679a">tick</a> (int faceBudget=1, int filterSamples=64)</td></tr>
+<tr class="memdesc:a2c70c1115877cb207d969e5a02b7679a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance capture, staging, filtering and publishing under the selected policy.  <br /></td></tr>
+<tr class="separator:a2c70c1115877cb207d969e5a02b7679a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f9f1eb022f439cc7af714e7cf27ebb2" id="r_a8f9f1eb022f439cc7af714e7cf27ebb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a8f9f1eb022f439cc7af714e7cf27ebb2">configureInfluence</a> (float extentX, float extentY, float extentZ, float intensity=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float blendDistance=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:a8f9f1eb022f439cc7af714e7cf27ebb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the persistent box influence used for lighting and editor display.  <br /></td></tr>
+<tr class="separator:a8f9f1eb022f439cc7af714e7cf27ebb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21c7da5b001929fe10fb02d87f413828" id="r_a21c7da5b001929fe10fb02d87f413828"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a21c7da5b001929fe10fb02d87f413828">getInfluenceExtentX</a> () const</td></tr>
+<tr class="memdesc:a21c7da5b001929fe10fb02d87f413828"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return persistent influence half extent X.  <br /></td></tr>
+<tr class="separator:a21c7da5b001929fe10fb02d87f413828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03558af46a0d57912cee1b944a495567" id="r_a03558af46a0d57912cee1b944a495567"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a03558af46a0d57912cee1b944a495567">getInfluenceExtentY</a> () const</td></tr>
+<tr class="memdesc:a03558af46a0d57912cee1b944a495567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return persistent influence half extent Y.  <br /></td></tr>
+<tr class="separator:a03558af46a0d57912cee1b944a495567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66e5c6cbddae50ccda84f9e9aa0d1759" id="r_a66e5c6cbddae50ccda84f9e9aa0d1759"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a66e5c6cbddae50ccda84f9e9aa0d1759">getInfluenceExtentZ</a> () const</td></tr>
+<tr class="memdesc:a66e5c6cbddae50ccda84f9e9aa0d1759"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return persistent influence half extent Z.  <br /></td></tr>
+<tr class="separator:a66e5c6cbddae50ccda84f9e9aa0d1759"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a754b1ceb70d4f8ff4464301ed2ae8ea5" id="r_a754b1ceb70d4f8ff4464301ed2ae8ea5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a754b1ceb70d4f8ff4464301ed2ae8ea5">getInfluenceIntensity</a> () const</td></tr>
+<tr class="memdesc:a754b1ceb70d4f8ff4464301ed2ae8ea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return persistent reflection intensity.  <br /></td></tr>
+<tr class="separator:a754b1ceb70d4f8ff4464301ed2ae8ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad684e937d141d1b9fed460d504ad8c87" id="r_ad684e937d141d1b9fed460d504ad8c87"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ad684e937d141d1b9fed460d504ad8c87">getInfluenceBlendDistance</a> () const</td></tr>
+<tr class="memdesc:ad684e937d141d1b9fed460d504ad8c87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return persistent edge blend distance.  <br /></td></tr>
+<tr class="separator:ad684e937d141d1b9fed460d504ad8c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58865b4c48371a946e18dcf5e956d01f" id="r_a58865b4c48371a946e18dcf5e956d01f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a58865b4c48371a946e18dcf5e956d01f">getInfluencePriority</a> () const</td></tr>
+<tr class="memdesc:a58865b4c48371a946e18dcf5e956d01f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return persistent overlap-selection priority.  <br /></td></tr>
+<tr class="separator:a58865b4c48371a946e18dcf5e956d01f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fc19f950dec03782ee4bb0170193138" id="r_a1fc19f950dec03782ee4bb0170193138"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a1fc19f950dec03782ee4bb0170193138">applyConfiguredToCamera</a> (<a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *camera, int slot)</td></tr>
+<tr class="memdesc:a1fc19f950dec03782ee4bb0170193138"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submit the persistent influence and active cubemap to a <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> slot. @compatibility Preserves the scripting API's boolean assignment result.  <br /></td></tr>
+<tr class="separator:a1fc19f950dec03782ee4bb0170193138"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa079380711fc825df1e9dd16d95951d0" id="r_aa079380711fc825df1e9dd16d95951d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#aa079380711fc825df1e9dd16d95951d0">applyToCamera</a> (<a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *camera, int slot, float extentX, float extentY, float extentZ, float intensity=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float blendDistance=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0)</td></tr>
+<tr class="memdesc:aa079380711fc825df1e9dd16d95951d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign the active cubemap to a <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> local reflection-probe slot.  <br /></td></tr>
+<tr class="separator:aa079380711fc825df1e9dd16d95951d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5945be8b5366273e111f41d51bef74f7" id="r_a5945be8b5366273e111f41d51bef74f7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5945be8b5366273e111f41d51bef74f7">getResolution</a> () const</td></tr>
+<tr class="memdesc:a5945be8b5366273e111f41d51bef74f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current square face resolution.  <br /></td></tr>
+<tr class="separator:a5945be8b5366273e111f41d51bef74f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2071bf999efe095d10d2e6a7cee817c" id="r_ac2071bf999efe095d10d2e6a7cee817c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac2071bf999efe095d10d2e6a7cee817c">getCenterX</a> () const</td></tr>
+<tr class="memdesc:ac2071bf999efe095d10d2e6a7cee817c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return probe world-space center X.  <br /></td></tr>
+<tr class="separator:ac2071bf999efe095d10d2e6a7cee817c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ea38c7abb32c0a735446824dda953e4" id="r_a2ea38c7abb32c0a735446824dda953e4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a2ea38c7abb32c0a735446824dda953e4">getCenterY</a> () const</td></tr>
+<tr class="memdesc:a2ea38c7abb32c0a735446824dda953e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return probe world-space center Y.  <br /></td></tr>
+<tr class="separator:a2ea38c7abb32c0a735446824dda953e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99a9b1c97b6ed180cce2b057a313a911" id="r_a99a9b1c97b6ed180cce2b057a313a911"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a99a9b1c97b6ed180cce2b057a313a911">getCenterZ</a> () const</td></tr>
+<tr class="memdesc:a99a9b1c97b6ed180cce2b057a313a911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return probe world-space center Z.  <br /></td></tr>
+<tr class="separator:a99a9b1c97b6ed180cce2b057a313a911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0648dc8220b3314878cd1a7706fd979b" id="r_a0648dc8220b3314878cd1a7706fd979b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a0648dc8220b3314878cd1a7706fd979b">getCaptureFarDistance</a> () const</td></tr>
+<tr class="memdesc:a0648dc8220b3314878cd1a7706fd979b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the capture far distance used for spatial dirty culling.  <br /></td></tr>
+<tr class="separator:a0648dc8220b3314878cd1a7706fd979b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac27fbf96562a1cf31f38df69b2628450" id="r_ac27fbf96562a1cf31f38df69b2628450"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ac27fbf96562a1cf31f38df69b2628450">setCaptureLodDistanceScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:ac27fbf96562a1cf31f38df69b2628450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set capture LOD distance scale; below one retains higher-detail LODs farther away.  <br /></td></tr>
+<tr class="separator:ac27fbf96562a1cf31f38df69b2628450"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6837d2271180009e79274a5bf2dc6361" id="r_a6837d2271180009e79274a5bf2dc6361"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a6837d2271180009e79274a5bf2dc6361">getCaptureLodDistanceScale</a> () const</td></tr>
+<tr class="memdesc:a6837d2271180009e79274a5bf2dc6361"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return capture LOD distance scale.  <br /></td></tr>
+<tr class="separator:a6837d2271180009e79274a5bf2dc6361"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb980e12d1cb82e38198f4f3c38f481d" id="r_afb980e12d1cb82e38198f4f3c38f481d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#afb980e12d1cb82e38198f4f3c38f481d">setCaptureTransparent</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:afb980e12d1cb82e38198f4f3c38f481d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable transparent/hair surfaces in probe captures.  <br /></td></tr>
+<tr class="separator:afb980e12d1cb82e38198f4f3c38f481d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7085afdf13bcfdb71384f15536bd3a7a" id="r_a7085afdf13bcfdb71384f15536bd3a7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a7085afdf13bcfdb71384f15536bd3a7a">getCaptureTransparent</a> () const</td></tr>
+<tr class="memdesc:a7085afdf13bcfdb71384f15536bd3a7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether transparent/hair surfaces are captured.  <br /></td></tr>
+<tr class="separator:a7085afdf13bcfdb71384f15536bd3a7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5324411d3e4ee59318fbdcb8de9b707b" id="r_a5324411d3e4ee59318fbdcb8de9b707b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a5324411d3e4ee59318fbdcb8de9b707b">setCaptureClusteredLighting</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a5324411d3e4ee59318fbdcb8de9b707b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable clustered lighting for captures that exceed the legacy light pack.  <br /></td></tr>
+<tr class="separator:a5324411d3e4ee59318fbdcb8de9b707b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5f4ff0f7e023d6168b8d4e2db5a63ca" id="r_ae5f4ff0f7e023d6168b8d4e2db5a63ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#ae5f4ff0f7e023d6168b8d4e2db5a63ca">getCaptureClusteredLighting</a> () const</td></tr>
+<tr class="memdesc:ae5f4ff0f7e023d6168b8d4e2db5a63ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether probe captures can build clustered light tables.  <br /></td></tr>
+<tr class="separator:ae5f4ff0f7e023d6168b8d4e2db5a63ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a4544a67d25a41b051d75ea8a50ed2f10" id="r_a4544a67d25a41b051d75ea8a50ed2f10"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html#a4544a67d25a41b051d75ea8a50ed2f10">ReflectionProbeRegistry</a></td></tr>
+<tr class="separator:a4544a67d25a41b051d75ea8a50ed2f10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Incremental six-face HDR scene capture for a runtime reflection probe. </p>
+<p>Captured faces remain linear RGBA16F <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> resources. Publishing them as a filtered cubemap is a separate backend operation, so capture completion never exposes an unfiltered or partially updated probe to lighting. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7766222b5cec7e331a720753079cd637" name="a7766222b5cec7e331a720753079cd637"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7766222b5cec7e331a720753079cd637">&#9670;&#160;</a></span>ReflectionProbeCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::ReflectionProbeCapture::ReflectionProbeCapture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12d4c4bfa8eac466b0e1965b80afb280" name="a12d4c4bfa8eac466b0e1965b80afb280"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12d4c4bfa8eac466b0e1965b80afb280">&#9670;&#160;</a></span>~ReflectionProbeCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::ReflectionProbeCapture::~ReflectionProbeCapture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Detach this probe from every registry before script-owned destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1fc19f950dec03782ee4bb0170193138" name="a1fc19f950dec03782ee4bb0170193138"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fc19f950dec03782ee4bb0170193138">&#9670;&#160;</a></span>applyConfiguredToCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::applyConfiguredToCamera </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *&#160;</td>
+          <td class="paramname"><em>camera</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Submit the persistent influence and active cubemap to a <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> slot. @compatibility Preserves the scripting API's boolean assignment result. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00243">eve::graphics::Camera3D::setReflectionProbe()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00406">applyToCamera()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="aa079380711fc825df1e9dd16d95951d0" name="aa079380711fc825df1e9dd16d95951d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa079380711fc825df1e9dd16d95951d0">&#9670;&#160;</a></span>applyToCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::applyToCamera </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *&#160;</td>
+          <td class="paramname"><em>camera</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>blendDistance</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign the active cubemap to a <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> local reflection-probe slot. </p>
+<dl class="section return"><dt>返回</dt><dd>False when no filtered revision has been published yet. @compatibility Preserves the scripting API's boolean assignment result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00398">applyConfiguredToCamera()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00387">configureInfluence()</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+</div>
+</div>
+<a id="ac435d5018876a48fa1369fe492266dcf" name="ac435d5018876a48fa1369fe492266dcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac435d5018876a48fa1369fe492266dcf">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::configure </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>resolution</em> = <code>128</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em> = <code>0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em> = <code>100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the probe origin, face resolution and clipping planes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>Probe world-space X position. </td></tr>
+    <tr><td class="paramname">y</td><td>Probe world-space Y position. </td></tr>
+    <tr><td class="paramname">z</td><td>Probe world-space Z position. </td></tr>
+    <tr><td class="paramname">resolution</td><td>Square face resolution, clamped to [16, 2048]. </td></tr>
+    <tr><td class="paramname">nearZ</td><td>Near clipping distance. </td></tr>
+    <tr><td class="paramname">farZ</td><td>Far clipping distance. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00051">requestCapture()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a8f9f1eb022f439cc7af714e7cf27ebb2" name="a8f9f1eb022f439cc7af714e7cf27ebb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f9f1eb022f439cc7af714e7cf27ebb2">&#9670;&#160;</a></span>configureInfluence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::configureInfluence </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>extentZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>blendDistance</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the persistent box influence used for lighting and editor display. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">extentX</td><td>Positive world-space X half extent. </td></tr>
+    <tr><td class="paramname">extentY</td><td>Positive world-space Y half extent. </td></tr>
+    <tr><td class="paramname">extentZ</td><td>Positive world-space Z half extent. </td></tr>
+    <tr><td class="paramname">intensity</td><td>Non-negative reflection intensity. </td></tr>
+    <tr><td class="paramname">blendDistance</td><td>Non-negative edge blend distance. </td></tr>
+    <tr><td class="paramname">priority</td><td>Stable overlap-selection priority. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00406">applyToCamera()</a> , 以及 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00031">eve::editor::ReflectionProbeVisualizer::setExtents()</a>.</p>
+
+</div>
+</div>
+<a id="af57d6b748b4a6879272eab7d9c758bd5" name="af57d6b748b4a6879272eab7d9c758bd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af57d6b748b4a6879272eab7d9c758bd5">&#9670;&#160;</a></span>filterAndPublish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::filterAndPublish </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sampleCount</em> = <code>64</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Filter with 8-512 samples and atomically publish the active cubemap. @compatibility Preserves the scripting API's boolean publication result. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8h_source.html#l00505">eve::graphics::Graphics::filterHDRReflectionCubemap()</a>, <a class="el" href="Graphics_8h_source.html#l00883">eve::graphics::Graphics::getLastOffscreen3DGpuDurationMs()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00334">reportGpuDurationMs()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00378">tick()</a>.</p>
+
+</div>
+</div>
+<a id="ae414d6e5b5ff3b0966f73a47e4b13f9a" name="ae414d6e5b5ff3b0966f73a47e4b13f9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae414d6e5b5ff3b0966f73a47e4b13f9a">&#9670;&#160;</a></span>getActiveCubemap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::ReflectionProbeCapture::getActiveCubemap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last fully filtered cubemap, safe to assign to <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> reflection probes. @lifetime Returned texture is Graphics-owned and borrowed by this capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="ad0cefb7e53e6a443d256351590baf391" name="ad0cefb7e53e6a443d256351590baf391"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0cefb7e53e6a443d256351590baf391">&#9670;&#160;</a></span>getAdaptiveFaceBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getAdaptiveFaceBudget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current adaptive cubemap-face budget. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac0da67de5db517fad1d0bf5d803a62d6" name="ac0da67de5db517fad1d0bf5d803a62d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0da67de5db517fad1d0bf5d803a62d6">&#9670;&#160;</a></span>getAdaptiveFilterSamples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getAdaptiveFilterSamples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current adaptive filter sample count. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5f4ff0f7e023d6168b8d4e2db5a63ca" name="ae5f4ff0f7e023d6168b8d4e2db5a63ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5f4ff0f7e023d6168b8d4e2db5a63ca">&#9670;&#160;</a></span>getCaptureClusteredLighting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::getCaptureClusteredLighting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether probe captures can build clustered light tables. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00255">255</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0648dc8220b3314878cd1a7706fd979b" name="a0648dc8220b3314878cd1a7706fd979b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0648dc8220b3314878cd1a7706fd979b">&#9670;&#160;</a></span>getCaptureFarDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getCaptureFarDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the capture far distance used for spatial dirty culling. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00241">241</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00060">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB()</a>.</p>
+
+</div>
+</div>
+<a id="a6837d2271180009e79274a5bf2dc6361" name="a6837d2271180009e79274a5bf2dc6361"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6837d2271180009e79274a5bf2dc6361">&#9670;&#160;</a></span>getCaptureLodDistanceScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getCaptureLodDistanceScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return capture LOD distance scale. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00247">247</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab95ca15b66053cf4dccc2823349af9bf" name="ab95ca15b66053cf4dccc2823349af9bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab95ca15b66053cf4dccc2823349af9bf">&#9670;&#160;</a></span>getCaptureMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getCaptureMask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the object-layer mask visible to this reflection capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00060">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB()</a>.</p>
+
+</div>
+</div>
+<a id="a7085afdf13bcfdb71384f15536bd3a7a" name="a7085afdf13bcfdb71384f15536bd3a7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7085afdf13bcfdb71384f15536bd3a7a">&#9670;&#160;</a></span>getCaptureTransparent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::getCaptureTransparent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether transparent/hair surfaces are captured. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00251">251</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2071bf999efe095d10d2e6a7cee817c" name="ac2071bf999efe095d10d2e6a7cee817c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2071bf999efe095d10d2e6a7cee817c">&#9670;&#160;</a></span>getCenterX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getCenterX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return probe world-space center X. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00076">eve::editor::ReflectionProbeVisualizer::getCenterX()</a>, <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00060">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a2ea38c7abb32c0a735446824dda953e4" name="a2ea38c7abb32c0a735446824dda953e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ea38c7abb32c0a735446824dda953e4">&#9670;&#160;</a></span>getCenterY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getCenterY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return probe world-space center Y. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00077">eve::editor::ReflectionProbeVisualizer::getCenterY()</a>, <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00060">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a99a9b1c97b6ed180cce2b057a313a911" name="a99a9b1c97b6ed180cce2b057a313a911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99a9b1c97b6ed180cce2b057a313a911">&#9670;&#160;</a></span>getCenterZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getCenterZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return probe world-space center Z. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00078">eve::editor::ReflectionProbeVisualizer::getCenterZ()</a>, <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00060">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="abea42adc5c4163b6cfb2b4757d3d2a74" name="abea42adc5c4163b6cfb2b4757d3d2a74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abea42adc5c4163b6cfb2b4757d3d2a74">&#9670;&#160;</a></span>getEnvironmentLighting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::ReflectionProbeCapture::getEnvironmentLighting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the global environment texture used while capturing. @lifetime Returned texture is borrowed; its owner must outlive this capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ade8a4b475d52a8b54b5536cd8a313fb6" name="ade8a4b475d52a8b54b5536cd8a313fb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade8a4b475d52a8b54b5536cd8a313fb6">&#9670;&#160;</a></span>getEnvironmentLightingIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getEnvironmentLightingIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the global environment-lighting intensity used while capturing. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d8761835849f5c90fb72b8149713650" name="a3d8761835849f5c90fb72b8149713650"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d8761835849f5c90fb72b8149713650">&#9670;&#160;</a></span>getFaceCanvas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> * eve::graphics::ReflectionProbeCapture::getFaceCanvas </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one captured HDR face <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> in +X,-X,+Y,-Y,+Z,-Z order. @lifetime Returned canvas is borrowed from this capture until destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4cbde5c23b8b31e0ff44d23425001a85" name="a4cbde5c23b8b31e0ff44d23425001a85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cbde5c23b8b31e0ff44d23425001a85">&#9670;&#160;</a></span>getGpuBudgetMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getGpuBudgetMs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the adaptive capture GPU-time budget in milliseconds. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad684e937d141d1b9fed460d504ad8c87" name="ad684e937d141d1b9fed460d504ad8c87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad684e937d141d1b9fed460d504ad8c87">&#9670;&#160;</a></span>getInfluenceBlendDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getInfluenceBlendDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return persistent edge blend distance. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00217">217</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00031">eve::editor::ReflectionProbeVisualizer::setExtents()</a>.</p>
+
+</div>
+</div>
+<a id="a21c7da5b001929fe10fb02d87f413828" name="a21c7da5b001929fe10fb02d87f413828"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21c7da5b001929fe10fb02d87f413828">&#9670;&#160;</a></span>getInfluenceExtentX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getInfluenceExtentX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return persistent influence half extent X. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a03558af46a0d57912cee1b944a495567" name="a03558af46a0d57912cee1b944a495567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03558af46a0d57912cee1b944a495567">&#9670;&#160;</a></span>getInfluenceExtentY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getInfluenceExtentY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return persistent influence half extent Y. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a66e5c6cbddae50ccda84f9e9aa0d1759" name="a66e5c6cbddae50ccda84f9e9aa0d1759"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66e5c6cbddae50ccda84f9e9aa0d1759">&#9670;&#160;</a></span>getInfluenceExtentZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getInfluenceExtentZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return persistent influence half extent Z. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a754b1ceb70d4f8ff4464301ed2ae8ea5" name="a754b1ceb70d4f8ff4464301ed2ae8ea5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a754b1ceb70d4f8ff4464301ed2ae8ea5">&#9670;&#160;</a></span>getInfluenceIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getInfluenceIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return persistent reflection intensity. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00031">eve::editor::ReflectionProbeVisualizer::setExtents()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a58865b4c48371a946e18dcf5e956d01f" name="a58865b4c48371a946e18dcf5e956d01f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58865b4c48371a946e18dcf5e956d01f">&#9670;&#160;</a></span>getInfluencePriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getInfluencePriority </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return persistent overlap-selection priority. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00031">eve::editor::ReflectionProbeVisualizer::setExtents()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="aedc83a441fd372974596963eaf9d294f" name="aedc83a441fd372974596963eaf9d294f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedc83a441fd372974596963eaf9d294f">&#9670;&#160;</a></span>getLastCapturedFaceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getLastCapturedFaceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of faces rendered by the most recent update call. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a760e6d3ee4fd50503f9aac01e244ad51" name="a760e6d3ee4fd50503f9aac01e244ad51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a760e6d3ee4fd50503f9aac01e244ad51">&#9670;&#160;</a></span>getLastFilterSampleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getLastFilterSampleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sample count used by the most recently published filter pass. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00169">169</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af220eacbc129d63a22d731fb014b299b" name="af220eacbc129d63a22d731fb014b299b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af220eacbc129d63a22d731fb014b299b">&#9670;&#160;</a></span>getPendingFaceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getPendingFaceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of cubemap faces remaining in the current capture revision. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00080">eve::editor::ReflectionProbeVisualizer::getStatusLabel()</a>.</p>
+
+</div>
+</div>
+<a id="a3daf46fa238a3dbd85690a9e8380bca9" name="a3daf46fa238a3dbd85690a9e8380bca9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3daf46fa238a3dbd85690a9e8380bca9">&#9670;&#160;</a></span>getPublishedRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::ReflectionProbeCapture::getPublishedRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last capture revision atomically published for lighting. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00069">eve::editor::ReflectionProbeVisualizer::getColorB()</a>, <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00062">eve::editor::ReflectionProbeVisualizer::getColorG()</a>, <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00055">eve::editor::ReflectionProbeVisualizer::getColorR()</a>, <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00080">eve::editor::ReflectionProbeVisualizer::getStatusLabel()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a3a110014123871d0f9878b11e0cc05ed" name="a3a110014123871d0f9878b11e0cc05ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a110014123871d0f9878b11e0cc05ed">&#9670;&#160;</a></span>getRefreshInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getRefreshInterval </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the automatic refresh interval in frames. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5945be8b5366273e111f41d51bef74f7" name="a5945be8b5366273e111f41d51bef74f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5945be8b5366273e111f41d51bef74f7">&#9670;&#160;</a></span>getResolution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::ReflectionProbeCapture::getResolution </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current square face resolution. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00233">233</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47facf4cacc40e841a1c2d3e59524f4f" name="a47facf4cacc40e841a1c2d3e59524f4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47facf4cacc40e841a1c2d3e59524f4f">&#9670;&#160;</a></span>getRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::ReflectionProbeCapture::getRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic revision incremented after each complete six-face capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00069">eve::editor::ReflectionProbeVisualizer::getColorB()</a>, <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00062">eve::editor::ReflectionProbeVisualizer::getColorG()</a>, <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00055">eve::editor::ReflectionProbeVisualizer::getColorR()</a> , 以及 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00080">eve::editor::ReflectionProbeVisualizer::getStatusLabel()</a>.</p>
+
+</div>
+</div>
+<a id="a0e8fba3d3d388e8ab83776b129272ad3" name="a0e8fba3d3d388e8ab83776b129272ad3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e8fba3d3d388e8ab83776b129272ad3">&#9670;&#160;</a></span>getSkyB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getSkyB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the unscaled backup sky blue channel. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00159">159</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af84586ca4c69d1023a8841ae0c49c59c" name="af84586ca4c69d1023a8841ae0c49c59c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84586ca4c69d1023a8841ae0c49c59c">&#9670;&#160;</a></span>getSkyFaceColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getSkyFaceColor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>component</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one directional sky-face color component, or zero for invalid indices. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00302">302</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ab762f923d3dbf29c78f4d9b9a33265f6" name="ab762f923d3dbf29c78f4d9b9a33265f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab762f923d3dbf29c78f4d9b9a33265f6">&#9670;&#160;</a></span>getSkyFaceTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::ReflectionProbeCapture::getSkyFaceTexture </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one directional per-pixel sky texture, or nullptr. @lifetime Returned texture is borrowed; its owner must outlive this capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a96931d9672c0f483917307e5b5c8648e" name="a96931d9672c0f483917307e5b5c8648e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96931d9672c0f483917307e5b5c8648e">&#9670;&#160;</a></span>getSkyFaceTextureScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getSkyFaceTextureScale </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one sky face texture's linear HDR radiance multiplier. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a236deae9743609b02d95bd32eeca05cb" name="a236deae9743609b02d95bd32eeca05cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a236deae9743609b02d95bd32eeca05cb">&#9670;&#160;</a></span>getSkyG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getSkyG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the unscaled backup sky green channel. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00157">157</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab940d4cb17fb9aafad2a9c07b5b806ff" name="ab940d4cb17fb9aafad2a9c07b5b806ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab940d4cb17fb9aafad2a9c07b5b806ff">&#9670;&#160;</a></span>getSkyIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getSkyIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the backup sky HDR multiplier. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00161">161</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7bf561f01689ef3eb79680af55cb405a" name="a7bf561f01689ef3eb79680af55cb405a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bf561f01689ef3eb79680af55cb405a">&#9670;&#160;</a></span>getSkyR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getSkyR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the unscaled backup sky red channel. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a22a8c4018831020d6a9a642b46501a93" name="a22a8c4018831020d6a9a642b46501a93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22a8c4018831020d6a9a642b46501a93">&#9670;&#160;</a></span>getSmoothedGpuDurationMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::ReflectionProbeCapture::getSmoothedGpuDurationMs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the exponentially smoothed reported GPU duration. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00180">180</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5081f1e0530ff2484a64c0f1dd916d71" name="a5081f1e0530ff2484a64c0f1dd916d71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5081f1e0530ff2484a64c0f1dd916d71">&#9670;&#160;</a></span>getStagedRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::ReflectionProbeCapture::getStagedRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last capture revision fully copied into the staging cubemap. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00080">eve::editor::ReflectionProbeVisualizer::getStatusLabel()</a>.</p>
+
+</div>
+</div>
+<a id="acb035b0315a784e601365e518675f969" name="acb035b0315a784e601365e518675f969"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb035b0315a784e601365e518675f969">&#9670;&#160;</a></span>getStagingCubemap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::ReflectionProbeCapture::getStagingCubemap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Backend HDR staging cubemap; not yet filtered or safe for lighting. @lifetime Returned texture is Graphics-owned and borrowed by this capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b1aad8863d1e8ba5998e2e67ffe2544" name="a5b1aad8863d1e8ba5998e2e67ffe2544"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b1aad8863d1e8ba5998e2e67ffe2544">&#9670;&#160;</a></span>getTotalCapturedFaceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::ReflectionProbeCapture::getTotalCapturedFaceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of face renders performed by this capture object. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a287e0a8081b485e56ea66e7f8f40cab9" name="a287e0a8081b485e56ea66e7f8f40cab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a287e0a8081b485e56ea66e7f8f40cab9">&#9670;&#160;</a></span>getUpdateMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::ReflectionProbeCapture::getUpdateMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current refresh mode. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b7026c9317ce35ced0027f832b65c30" name="a6b7026c9317ce35ced0027f832b65c30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b7026c9317ce35ced0027f832b65c30">&#9670;&#160;</a></span>isCaptureComplete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::isCaptureComplete </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True after at least one complete six-face capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00172">stageCapturedFaces()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00147">update()</a>.</p>
+
+</div>
+</div>
+<a id="a5870ed6424e38cc73f7ad94d0e0e4a1f" name="a5870ed6424e38cc73f7ad94d0e0e4a1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5870ed6424e38cc73f7ad94d0e0e4a1f">&#9670;&#160;</a></span>isCapturePending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::isCapturePending </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True while one or more faces still need capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00069">eve::editor::ReflectionProbeVisualizer::getColorB()</a>, <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00062">eve::editor::ReflectionProbeVisualizer::getColorG()</a>, <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00055">eve::editor::ReflectionProbeVisualizer::getColorR()</a> , 以及 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00080">eve::editor::ReflectionProbeVisualizer::getStatusLabel()</a>.</p>
+
+</div>
+</div>
+<a id="a7f31d010c75b864159ba4b5de25a2dda" name="a7f31d010c75b864159ba4b5de25a2dda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f31d010c75b864159ba4b5de25a2dda">&#9670;&#160;</a></span>isRecaptureQueued()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::isRecaptureQueued </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when changed capture inputs are queued behind the current revision. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeVisualizer_8cpp_source.html#l00080">eve::editor::ReflectionProbeVisualizer::getStatusLabel()</a>.</p>
+
+</div>
+</div>
+<a id="a95e855b329ccf1c6a6d2f223c38cf480" name="a95e855b329ccf1c6a6d2f223c38cf480"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95e855b329ccf1c6a6d2f223c38cf480">&#9670;&#160;</a></span>queueCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::queueCapture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Queue a coherent recapture without restarting a revision already in progress. </p>
+<p>If no face has been submitted yet the current input snapshot is refreshed immediately. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00060">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB()</a>.</p>
+
+</div>
+</div>
+<a id="a9074116491a8062ff45ebf57fe12a664" name="a9074116491a8062ff45ebf57fe12a664"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9074116491a8062ff45ebf57fe12a664">&#9670;&#160;</a></span>reportGpuDurationMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::reportGpuDurationMs </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>milliseconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Report a backend timestamp duration for the most recent probe workload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">milliseconds</td><td>GPU duration in milliseconds; non-positive values are ignored. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00188">filterAndPublish()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00172">stageCapturedFaces()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00378">tick()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00147">update()</a>.</p>
+
+</div>
+</div>
+<a id="a0edc2c31adf0fa13b477c70c8f50067c" name="a0edc2c31adf0fa13b477c70c8f50067c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0edc2c31adf0fa13b477c70c8f50067c">&#9670;&#160;</a></span>requestCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::requestCapture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark all six faces dirty and restart capture at +X. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00198">eve::graphics::Camera3D::setEnvIntensity()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00196">eve::graphics::Camera3D::setEnvMap()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00034">configure()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00229">setCaptureMask()</a>.</p>
+
+</div>
+</div>
+<a id="a5324411d3e4ee59318fbdcb8de9b707b" name="a5324411d3e4ee59318fbdcb8de9b707b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5324411d3e4ee59318fbdcb8de9b707b">&#9670;&#160;</a></span>setCaptureClusteredLighting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setCaptureClusteredLighting </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable clustered lighting for captures that exceed the legacy light pack. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="ac27fbf96562a1cf31f38df69b2628450" name="ac27fbf96562a1cf31f38df69b2628450"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac27fbf96562a1cf31f38df69b2628450">&#9670;&#160;</a></span>setCaptureLodDistanceScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setCaptureLodDistanceScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set capture LOD distance scale; below one retains higher-detail LODs farther away. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00310">310</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="aa9f511c60c864674ff68daf87f016750" name="aa9f511c60c864674ff68daf87f016750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9f511c60c864674ff68daf87f016750">&#9670;&#160;</a></span>setCaptureMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setCaptureMask </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mask</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the object-layer mask visible to this reflection capture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00051">requestCapture()</a>.</p>
+
+</div>
+</div>
+<a id="afb980e12d1cb82e38198f4f3c38f481d" name="afb980e12d1cb82e38198f4f3c38f481d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb980e12d1cb82e38198f4f3c38f481d">&#9670;&#160;</a></span>setCaptureTransparent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setCaptureTransparent </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable transparent/hair surfaces in probe captures. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a2ac8246d12b4f8ff26f3b93597c39733" name="a2ac8246d12b4f8ff26f3b93597c39733"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ac8246d12b4f8ff26f3b93597c39733">&#9670;&#160;</a></span>setEnvironmentLighting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setEnvironmentLighting </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>environment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set non-recursive global environment lighting for captured geometry. </p>
+<p>This affects material IBL but does not draw a sky background into empty pixels. Local reflection probes remain disabled on the capture camera. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>.</p>
+
+</div>
+</div>
+<a id="a10d1f4e6159b54ee37170073758a0340" name="a10d1f4e6159b54ee37170073758a0340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10d1f4e6159b54ee37170073758a0340">&#9670;&#160;</a></span>setGpuBudgetMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setGpuBudgetMs </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>milliseconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the GPU-time budget used by adaptive capture scheduling, in milliseconds. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3dd70e537c6b1a60024396a7ea945785" name="a3dd70e537c6b1a60024396a7ea945785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dd70e537c6b1a60024396a7ea945785">&#9670;&#160;</a></span>setRefreshInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setRefreshInterval </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>frames</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set automatic refresh interval in frames for time_sliced mode. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad85e3af550296ce4168764342eac682b" name="ad85e3af550296ce4168764342eac682b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad85e3af550296ce4168764342eac682b">&#9670;&#160;</a></span>setSkyColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setSkyColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a linear HDR backup sky color for empty capture pixels. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>Linear red channel before intensity scaling. </td></tr>
+    <tr><td class="paramname">g</td><td>Linear green channel before intensity scaling. </td></tr>
+    <tr><td class="paramname">b</td><td>Linear blue channel before intensity scaling. </td></tr>
+    <tr><td class="paramname">intensity</td><td>Non-negative HDR multiplier. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a97a18284b016974910eb562e16f5c03c" name="a97a18284b016974910eb562e16f5c03c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97a18284b016974910eb562e16f5c03c">&#9670;&#160;</a></span>setSkyFaceColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setSkyFaceColor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Override one directional backup sky face in +X,-X,+Y,-Y,+Z,-Z order. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">face</td><td>Face index in [0,5]. </td></tr>
+    <tr><td class="paramname">r</td><td>Linear red channel. </td></tr>
+    <tr><td class="paramname">g</td><td>Linear green channel. </td></tr>
+    <tr><td class="paramname">b</td><td>Linear blue channel. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>.</p>
+
+</div>
+</div>
+<a id="a87d3d577c0ac3bd2637e54966b1ca2fb" name="a87d3d577c0ac3bd2637e54966b1ca2fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87d3d577c0ac3bd2637e54966b1ca2fb">&#9670;&#160;</a></span>setSkyFaceTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setSkyFaceTexture </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>texture</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a directional per-pixel sky texture for one capture face. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">face</td><td>Face index in +X,-X,+Y,-Y,+Z,-Z order. </td></tr>
+    <tr><td class="paramname">texture</td><td>RGBA sky face matching cubemap projection, or nullptr for color backup. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>.</p>
+
+</div>
+</div>
+<a id="a6f283e7e59f060d518d60736e8a4823d" name="a6f283e7e59f060d518d60736e8a4823d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f283e7e59f060d518d60736e8a4823d">&#9670;&#160;</a></span>setSkyFaceTextureScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setSkyFaceTextureScale </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>face</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the linear HDR radiance multiplier for one sky face texture. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00362">eve::daynight::DayNight::applyReflectionProbeSky()</a>.</p>
+
+</div>
+</div>
+<a id="a9a0b01dd566061e7fbc8ac0612ff294c" name="a9a0b01dd566061e7fbc8ac0612ff294c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a0b01dd566061e7fbc8ac0612ff294c">&#9670;&#160;</a></span>setUpdateMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::ReflectionProbeCapture::setUpdateMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set refresh mode: static, on_demand, time_sliced, or realtime. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac536b3e241fd826d51bef122641f266c" name="ac536b3e241fd826d51bef122641f266c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac536b3e241fd826d51bef122641f266c">&#9670;&#160;</a></span>stageCapturedFaces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::stageCapturedFaces </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a complete capture revision into a backend HDR staging cubemap. @compatibility Preserves the scripting API's boolean submitted result. </p>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8h_source.html#l00493">eve::graphics::Graphics::copyHDRCanvasesToCubemap()</a>, <a class="el" href="Graphics_8h_source.html#l00883">eve::graphics::Graphics::getLastOffscreen3DGpuDurationMs()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00068">isCaptureComplete()</a>, <a class="el" href="Graphics_8h_source.html#l00465">eve::graphics::Graphics::newHDRCubemap()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00334">reportGpuDurationMs()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00378">tick()</a>.</p>
+
+</div>
+</div>
+<a id="a2c70c1115877cb207d969e5a02b7679a" name="a2c70c1115877cb207d969e5a02b7679a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c70c1115877cb207d969e5a02b7679a">&#9670;&#160;</a></span>tick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::tick </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>faceBudget</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>filterSamples</em> = <code>64</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance capture, staging, filtering and publishing under the selected policy. </p>
+<dl class="section return"><dt>返回</dt><dd>True only when this call publishes a new active revision. @compatibility Preserves the scripting API's boolean publication result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00378">378</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00188">filterAndPublish()</a>, <a class="el" href="Graphics_8h_source.html#l00883">eve::graphics::Graphics::getLastOffscreen3DGpuDurationMs()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00334">reportGpuDurationMs()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00172">stageCapturedFaces()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00147">update()</a>.</p>
+
+</div>
+</div>
+<a id="a28ef0f3215e476687c6ce9883c826007" name="a28ef0f3215e476687c6ce9883c826007"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28ef0f3215e476687c6ce9883c826007">&#9670;&#160;</a></span>tickAdaptive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::tickAdaptive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance capture and filtering using the GPU-budget controller's workload. </p>
+<dl class="section return"><dt>返回</dt><dd>True only when this call publishes a new active revision. @compatibility Preserves the scripting API's boolean publication result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="a958a78a35d9934caa1dd886c9ca2f285" name="a958a78a35d9934caa1dd886c9ca2f285"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a958a78a35d9934caa1dd886c9ca2f285">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::ReflectionProbeCapture::update </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>faceBudget</em> = <code>1</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture up to <code>faceBudget</code> dirty faces. </p>
+<dl class="section return"><dt>返回</dt><dd>True when all six HDR faces are complete. @compatibility Preserves the scripting API's boolean completion result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a> 第 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Graphics_8h_source.html#l00883">eve::graphics::Graphics::getLastOffscreen3DGpuDurationMs()</a>, <a class="el" href="ReflectionProbeCapture_8h_source.html#l00068">isCaptureComplete()</a> , 以及 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00334">reportGpuDurationMs()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00378">tick()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a4544a67d25a41b051d75ea8a50ed2f10" name="a4544a67d25a41b051d75ea8a50ed2f10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4544a67d25a41b051d75ea8a50ed2f10">&#9670;&#160;</a></span>ReflectionProbeRegistry</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html">ReflectionProbeRegistry</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a> 第 <a class="el" href="ReflectionProbeCapture_8h_source.html#l00258">258</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="ReflectionProbeCapture_8h_source.html">ReflectionProbeCapture.h</a></li>
+<li>src/modules/graphics/<a class="el" href="ReflectionProbeCapture_8cpp_source.html">ReflectionProbeCapture.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

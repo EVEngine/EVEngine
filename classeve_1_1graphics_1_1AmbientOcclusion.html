@@ -1,0 +1,1534 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::AmbientOcclusion类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1AmbientOcclusion-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::AmbientOcclusion类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Screen-space ambient occlusion.  
+ <a href="classeve_1_1graphics_1_1AmbientOcclusion.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a448b1de95d088fccaa14a5114c876365" id="r_a448b1de95d088fccaa14a5114c876365"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a448b1de95d088fccaa14a5114c876365">AmbientOcclusion</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:a448b1de95d088fccaa14a5114c876365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab35119c0c1c417e5c08673782e511095" id="r_ab35119c0c1c417e5c08673782e511095"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ab35119c0c1c417e5c08673782e511095">~AmbientOcclusion</a> ()</td></tr>
+<tr class="separator:ab35119c0c1c417e5c08673782e511095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f0a38a08a11800a7a7d7c370f4eaf12" id="r_a5f0a38a08a11800a7a7d7c370f4eaf12"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a5f0a38a08a11800a7a7d7c370f4eaf12">AmbientOcclusion</a> (const <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a> &amp;)=delete</td></tr>
+<tr class="separator:a5f0a38a08a11800a7a7d7c370f4eaf12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c9b5f575f043c05197e8bcbc0f46d5a" id="r_a0c9b5f575f043c05197e8bcbc0f46d5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a0c9b5f575f043c05197e8bcbc0f46d5a">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a> &amp;)=delete</td></tr>
+<tr class="separator:a0c9b5f575f043c05197e8bcbc0f46d5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc3dec698ab372e21ee0af08a807dc32" id="r_adc3dec698ab372e21ee0af08a807dc32"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#adc3dec698ab372e21ee0af08a807dc32">setQuality</a> (const std::string &amp;quality)</td></tr>
+<tr class="memdesc:adc3dec698ab372e21ee0af08a807dc32"><td class="mdescLeft">&#160;</td><td class="mdescRight">"low" | "medium" | "high" (unknown → medium).  <br /></td></tr>
+<tr class="separator:adc3dec698ab372e21ee0af08a807dc32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a344db0417ccf71f90eccfd9bb085c574" id="r_a344db0417ccf71f90eccfd9bb085c574"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a344db0417ccf71f90eccfd9bb085c574">getQuality</a> () const</td></tr>
+<tr class="separator:a344db0417ccf71f90eccfd9bb085c574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5527dd022c13b27f15cbbb3c0225a98f" id="r_a5527dd022c13b27f15cbbb3c0225a98f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a5527dd022c13b27f15cbbb3c0225a98f">setMode</a> (const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a5527dd022c13b27f15cbbb3c0225a98f"><td class="mdescLeft">&#160;</td><td class="mdescRight">"ssao" | "hbao" | "gtao".  <br /></td></tr>
+<tr class="separator:a5527dd022c13b27f15cbbb3c0225a98f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c2d49a4f0e8580b4c914c9eda01589" id="r_a66c2d49a4f0e8580b4c914c9eda01589"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a66c2d49a4f0e8580b4c914c9eda01589">getMode</a> () const</td></tr>
+<tr class="separator:a66c2d49a4f0e8580b4c914c9eda01589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52ec05efd84ee2d7064496458527e6f8" id="r_a52ec05efd84ee2d7064496458527e6f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a52ec05efd84ee2d7064496458527e6f8">setCamera</a> (float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ)</td></tr>
+<tr class="memdesc:a52ec05efd84ee2d7064496458527e6f8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for depth reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by compute*.  <br /></td></tr>
+<tr class="separator:a52ec05efd84ee2d7064496458527e6f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8659555712ed04fee4fe5f8eb3a20188" id="r_a8659555712ed04fee4fe5f8eb3a20188"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a8659555712ed04fee4fe5f8eb3a20188">setInvViewProj</a> (const glm::mat4 &amp;invViewProj)</td></tr>
+<tr class="separator:a8659555712ed04fee4fe5f8eb3a20188"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe337532894ba7270f852d2b191172e6" id="r_afe337532894ba7270f852d2b191172e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#afe337532894ba7270f852d2b191172e6">setRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:afe337532894ba7270f852d2b191172e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01e416dc3f7fb0aee247c501a798ebc2" id="r_a01e416dc3f7fb0aee247c501a798ebc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a01e416dc3f7fb0aee247c501a798ebc2">setBias</a> (float bias)</td></tr>
+<tr class="separator:a01e416dc3f7fb0aee247c501a798ebc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2995a8fdde894f74b7a5affc628952a4" id="r_a2995a8fdde894f74b7a5affc628952a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a2995a8fdde894f74b7a5affc628952a4">setIntensity</a> (float intensity)</td></tr>
+<tr class="separator:a2995a8fdde894f74b7a5affc628952a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a951aced1d7deb60f0d891669a30271ec" id="r_a951aced1d7deb60f0d891669a30271ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a951aced1d7deb60f0d891669a30271ec">setPower</a> (float <a class="el" href="RockMesh_8cpp.html#af2eae6b68aca1a3174f57157c50f58f1">power</a>)</td></tr>
+<tr class="separator:a951aced1d7deb60f0d891669a30271ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99b94e4ad8981ce082c2203c41920fc7" id="r_a99b94e4ad8981ce082c2203c41920fc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a99b94e4ad8981ce082c2203c41920fc7">setThickness</a> (float <a class="el" href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>)</td></tr>
+<tr class="separator:a99b94e4ad8981ce082c2203c41920fc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd1518b6370586885cc2ad718b0a7980" id="r_acd1518b6370586885cc2ad718b0a7980"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#acd1518b6370586885cc2ad718b0a7980">getRadius</a> () const</td></tr>
+<tr class="separator:acd1518b6370586885cc2ad718b0a7980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa344b4a9003c88b008f209d29589b1ab" id="r_aa344b4a9003c88b008f209d29589b1ab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#aa344b4a9003c88b008f209d29589b1ab">getBias</a> () const</td></tr>
+<tr class="separator:aa344b4a9003c88b008f209d29589b1ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1b72e79a25ae132088aba618a57085e" id="r_ae1b72e79a25ae132088aba618a57085e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ae1b72e79a25ae132088aba618a57085e">getIntensity</a> () const</td></tr>
+<tr class="separator:ae1b72e79a25ae132088aba618a57085e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71298b00c4427172b21c5ae02d1c598c" id="r_a71298b00c4427172b21c5ae02d1c598c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a71298b00c4427172b21c5ae02d1c598c">getPower</a> () const</td></tr>
+<tr class="separator:a71298b00c4427172b21c5ae02d1c598c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a910b8b853f9527222ea8310baf2ecaf3" id="r_a910b8b853f9527222ea8310baf2ecaf3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a910b8b853f9527222ea8310baf2ecaf3">hasParam</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a910b8b853f9527222ea8310baf2ecaf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32b50bb12ef37d181dac6a8867d2112f" id="r_a32b50bb12ef37d181dac6a8867d2112f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a32b50bb12ef37d181dac6a8867d2112f">setFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a32b50bb12ef37d181dac6a8867d2112f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab99595ea03d05067c5b4ee7bb71a10c8" id="r_ab99595ea03d05067c5b4ee7bb71a10c8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ab99595ea03d05067c5b4ee7bb71a10c8">getFloat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:ab99595ea03d05067c5b4ee7bb71a10c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae59c48168eb3903dd598076ab3523024" id="r_ae59c48168eb3903dd598076ab3523024"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ae59c48168eb3903dd598076ab3523024">getSampleCount</a> () const</td></tr>
+<tr class="separator:ae59c48168eb3903dd598076ab3523024"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc2ada444eb6df4293258ba6e0ee99d9" id="r_adc2ada444eb6df4293258ba6e0ee99d9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#adc2ada444eb6df4293258ba6e0ee99d9">getDownscale</a> () const</td></tr>
+<tr class="separator:adc2ada444eb6df4293258ba6e0ee99d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a207aa49dbb41395931e0277088feb147" id="r_a207aa49dbb41395931e0277088feb147"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a207aa49dbb41395931e0277088feb147">resolutionFor</a> (int fullSize) const</td></tr>
+<tr class="memdesc:a207aa49dbb41395931e0277088feb147"><td class="mdescLeft">&#160;</td><td class="mdescRight">Downscale helper: returns floor(dim / downscale), at least 1. Callers create AO canvases at this size for the active quality tier.  <br /></td></tr>
+<tr class="separator:a207aa49dbb41395931e0277088feb147"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9b0396ea4f6ebf7e40b66f7cc6f1fb6" id="r_ae9b0396ea4f6ebf7e40b66f7cc6f1fb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ae9b0396ea4f6ebf7e40b66f7cc6f1fb6">compute</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *linearDepth)</td></tr>
+<tr class="memdesc:ae9b0396ea4f6ebf7e40b66f7cc6f1fb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute AO into the currently bound canvas / screen. Output RGB = AO (1=open), A = depth01.  <br /></td></tr>
+<tr class="separator:ae9b0396ea4f6ebf7e40b66f7cc6f1fb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37fe12bc8ae455404e6ec240b44f64f0" id="r_a37fe12bc8ae455404e6ec240b44f64f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a37fe12bc8ae455404e6ec240b44f64f0">computeTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *linearDepth, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:a37fe12bc8ae455404e6ec240b44f64f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb2d76ed8d9716eafc63c960a6ff64a1" id="r_aeb2d76ed8d9716eafc63c960a6ff64a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#aeb2d76ed8d9716eafc63c960a6ff64a1">blur</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *aoMap)</td></tr>
+<tr class="memdesc:aeb2d76ed8d9716eafc63c960a6ff64a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilateral blur of an AO map (RGB=AO, A=depth).  <br /></td></tr>
+<tr class="separator:aeb2d76ed8d9716eafc63c960a6ff64a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ac4c428fa2134ea5ae0eae2e4226845" id="r_a7ac4c428fa2134ea5ae0eae2e4226845"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a7ac4c428fa2134ea5ae0eae2e4226845">blurTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *aoMap, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:a7ac4c428fa2134ea5ae0eae2e4226845"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe25f4586953bd29316c4dd44a57854c" id="r_afe25f4586953bd29316c4dd44a57854c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#afe25f4586953bd29316c4dd44a57854c">applyOverlay</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *aoMap)</td></tr>
+<tr class="memdesc:afe25f4586953bd29316c4dd44a57854c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Darken the current target with AO: black + alpha=(1-ao)*intensity. Draw over an already-rendered scene (SrcAlpha blend).  <br /></td></tr>
+<tr class="separator:afe25f4586953bd29316c4dd44a57854c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeedf78d746a68ca7e3792892feb77358" id="r_aeedf78d746a68ca7e3792892feb77358"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#aeedf78d746a68ca7e3792892feb77358">applyOverlayTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *aoMap, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:aeedf78d746a68ca7e3792892feb77358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19eac75eb1ba69ec5d8b7bf1a996f86e" id="r_a19eac75eb1ba69ec5d8b7bf1a996f86e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a19eac75eb1ba69ec5d8b7bf1a996f86e">applyFromDepth</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth)</td></tr>
+<tr class="memdesc:a19eac75eb1ba69ec5d8b7bf1a996f86e"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-pass SSAO overlay for the 3D swapchain path. Samples hardware D32 (Vulkan NDC z in .r) and darkens the already-drawn scene. Optional worldNormal is <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> RGB = n*0.5+0.5; null reconstructs from depth. Call after forward draws while the swapchain pass is still open. <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ae9b0396ea4f6ebf7e40b66f7cc6f1fb6" title="Compute AO into the currently bound canvas / screen. Output RGB = AO (1=open), A = depth01.">compute()</a> still uses 8-bit linear depth in R.  <br /></td></tr>
+<tr class="separator:a19eac75eb1ba69ec5d8b7bf1a996f86e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a65348abdd44bc1a715891d7602c8d4" id="r_a0a65348abdd44bc1a715891d7602c8d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a0a65348abdd44bc1a715891d7602c8d4">applyFromDepthTo</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *linearDepth, <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *dest)</td></tr>
+<tr class="separator:a0a65348abdd44bc1a715891d7602c8d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a975b1e9f2e26b7d8a63d19a11e6d6df0" id="r_a975b1e9f2e26b7d8a63d19a11e6d6df0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a975b1e9f2e26b7d8a63d19a11e6d6df0">applyFromGBuffer</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *hwDepth, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *worldNormal)</td></tr>
+<tr class="separator:a975b1e9f2e26b7d8a63d19a11e6d6df0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9af46db60cbe0e24e66662b92cc6af5" id="r_aa9af46db60cbe0e24e66662b92cc6af5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#aa9af46db60cbe0e24e66662b92cc6af5">newLinearDepthTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float(*depth01)(int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, void *userdata), void *userdata)</td></tr>
+<tr class="memdesc:aa9af46db60cbe0e24e66662b92cc6af5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build an RGBA8 texture with linear depth in R (G=B=R, A=255). Owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> (same convention as <a class="el" href="classeve_1_1graphics_1_1Volumetric.html" title="Volumetric light + fog.">Volumetric</a>).  <br /></td></tr>
+<tr class="separator:aa9af46db60cbe0e24e66662b92cc6af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bd1a3df285b350916bb125732f2344b" id="r_a9bd1a3df285b350916bb125732f2344b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a9bd1a3df285b350916bb125732f2344b">getShader</a> () const</td></tr>
+<tr class="separator:a9bd1a3df285b350916bb125732f2344b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21a211862dad43a5059758ffbb7a3551" id="r_a21a211862dad43a5059758ffbb7a3551"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a21a211862dad43a5059758ffbb7a3551">getSsaoShader</a> () const</td></tr>
+<tr class="separator:a21a211862dad43a5059758ffbb7a3551"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1d3ff4bd4ef096d3f1bd95bf6a7693c" id="r_ae1d3ff4bd4ef096d3f1bd95bf6a7693c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ae1d3ff4bd4ef096d3f1bd95bf6a7693c">getHbaoShader</a> () const</td></tr>
+<tr class="separator:ae1d3ff4bd4ef096d3f1bd95bf6a7693c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8954d1002e1379f0734cdef6996fa5f6" id="r_a8954d1002e1379f0734cdef6996fa5f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a8954d1002e1379f0734cdef6996fa5f6">getGtaoShader</a> () const</td></tr>
+<tr class="separator:a8954d1002e1379f0734cdef6996fa5f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a435af3dacd07b9a6552376b0be0c4fd9" id="r_a435af3dacd07b9a6552376b0be0c4fd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a435af3dacd07b9a6552376b0be0c4fd9">getBlurShader</a> () const</td></tr>
+<tr class="separator:a435af3dacd07b9a6552376b0be0c4fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5d390908fccbf4a49a35f701f104298" id="r_ae5d390908fccbf4a49a35f701f104298"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ae5d390908fccbf4a49a35f701f104298">getOverlayShader</a> () const</td></tr>
+<tr class="separator:ae5d390908fccbf4a49a35f701f104298"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbf951525b32de1eccfd5f75d32aed56" id="r_adbf951525b32de1eccfd5f75d32aed56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#adbf951525b32de1eccfd5f75d32aed56">getFromDepthShader</a> () const</td></tr>
+<tr class="separator:adbf951525b32de1eccfd5f75d32aed56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Screen-space ambient occlusion. </p>
+<p>Modes:</p><ul>
+<li>"ssao" — Crytek/Mittring hemisphere sampling</li>
+<li>"hbao" — horizon-based AO (NVIDIA-inspired)</li>
+<li>"gtao" — ground-truth AO (Jimenez/Frostbite-inspired, single-frame)</li>
+</ul>
+<p>Quality presets ("low" | "medium" | "high") control sample/dir counts and suggested downscale via <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#a207aa49dbb41395931e0277088feb147" title="Downscale helper: returns floor(dim / downscale), at least 1. Callers create AO canvases at this size...">resolutionFor()</a>.</p>
+<p>Pipeline: compute(depth) → optional blur(ao) → applyOverlay(ao) over scene. Depth input matches <a class="el" href="classeve_1_1graphics_1_1Volumetric.html#a9f6a520b72d6a7b615af3462c40eeb62" title="Build an RGBA8 texture with linear depth in R (G=B=R, A=255). depth01(x,y) should return values in [0...">Volumetric::newLinearDepthTexture</a> (R = linear 0..1). </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a448b1de95d088fccaa14a5114c876365" name="a448b1de95d088fccaa14a5114c876365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a448b1de95d088fccaa14a5114c876365">&#9670;&#160;</a></span>AmbientOcclusion() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::AmbientOcclusion::AmbientOcclusion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab35119c0c1c417e5c08673782e511095" name="ab35119c0c1c417e5c08673782e511095"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab35119c0c1c417e5c08673782e511095">&#9670;&#160;</a></span>~AmbientOcclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::AmbientOcclusion::~AmbientOcclusion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5f0a38a08a11800a7a7d7c370f4eaf12" name="a5f0a38a08a11800a7a7d7c370f4eaf12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f0a38a08a11800a7a7d7c370f4eaf12">&#9670;&#160;</a></span>AmbientOcclusion() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::AmbientOcclusion::AmbientOcclusion </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a19eac75eb1ba69ec5d8b7bf1a996f86e" name="a19eac75eb1ba69ec5d8b7bf1a996f86e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19eac75eb1ba69ec5d8b7bf1a996f86e">&#9670;&#160;</a></span>applyFromDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::applyFromDepth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>One-pass SSAO overlay for the 3D swapchain path. Samples hardware D32 (Vulkan NDC z in .r) and darkens the already-drawn scene. Optional worldNormal is <a class="el" href="classeve_1_1graphics_1_1GBuffer.html" title="Screen-space buffers for mid/post effects (AO, fog, stylize outline, …).">GBuffer</a> RGB = n*0.5+0.5; null reconstructs from depth. Call after forward draws while the swapchain pass is still open. <a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html#ae9b0396ea4f6ebf7e40b66f7cc6f1fb6" title="Compute AO into the currently bound canvas / screen. Output RGB = AO (1=open), A = depth01.">compute()</a> still uses 8-bit linear depth in R. </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00434">applyFromGBuffer()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00452">applyFromDepthTo()</a>.</p>
+
+</div>
+</div>
+<a id="a0a65348abdd44bc1a715891d7602c8d4" name="a0a65348abdd44bc1a715891d7602c8d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a65348abdd44bc1a715891d7602c8d4">&#9670;&#160;</a></span>applyFromDepthTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::applyFromDepthTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>linearDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00430">applyFromDepth()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a975b1e9f2e26b7d8a63d19a11e6d6df0" name="a975b1e9f2e26b7d8a63d19a11e6d6df0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a975b1e9f2e26b7d8a63d19a11e6d6df0">&#9670;&#160;</a></span>applyFromGBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::applyFromGBuffer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>hwDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>worldNormal</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00434">434</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#afdea8a5360160828274df8778f69fca1">eve::graphics::Graphics::drawTexturedRectShaderDepth()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a>, <a class="el" href="Graphics_8h_source.html#l00412">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="Texture_8cpp_source.html#l00033">eve::graphics::Texture::getHeight()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00411">eve::graphics::Graphics::getWidth()</a>, <a class="el" href="Texture_8cpp_source.html#l00028">eve::graphics::Texture::getWidth()</a>, <a class="el" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth()</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00430">applyFromDepth()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="afe25f4586953bd29316c4dd44a57854c" name="afe25f4586953bd29316c4dd44a57854c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe25f4586953bd29316c4dd44a57854c">&#9670;&#160;</a></span>applyOverlay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::applyOverlay </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>aoMap</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Darken the current target with AO: black + alpha=(1-ao)*intensity. Draw over an already-rendered scene (SrcAlpha blend). </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00421">applyOverlayTo()</a>.</p>
+
+</div>
+</div>
+<a id="aeedf78d746a68ca7e3792892feb77358" name="aeedf78d746a68ca7e3792892feb77358"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeedf78d746a68ca7e3792892feb77358">&#9670;&#160;</a></span>applyOverlayTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::applyOverlayTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>aoMap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00421">421</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00410">applyOverlay()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="aeb2d76ed8d9716eafc63c960a6ff64a1" name="aeb2d76ed8d9716eafc63c960a6ff64a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb2d76ed8d9716eafc63c960a6ff64a1">&#9670;&#160;</a></span>blur()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::blur </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>aoMap</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bilateral blur of an AO map (RGB=AO, A=depth). </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00394">394</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8cpp_source.html#l00033">eve::graphics::Texture::getHeight()</a>, <a class="el" href="Texture_8cpp_source.html#l00028">eve::graphics::Texture::getWidth()</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00401">blurTo()</a>.</p>
+
+</div>
+</div>
+<a id="a7ac4c428fa2134ea5ae0eae2e4226845" name="a7ac4c428fa2134ea5ae0eae2e4226845"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac4c428fa2134ea5ae0eae2e4226845">&#9670;&#160;</a></span>blurTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::blurTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>aoMap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00401">401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00394">blur()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="ae9b0396ea4f6ebf7e40b66f7cc6f1fb6" name="ae9b0396ea4f6ebf7e40b66f7cc6f1fb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9b0396ea4f6ebf7e40b66f7cc6f1fb6">&#9670;&#160;</a></span>compute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::compute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>linearDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute AO into the currently bound canvas / screen. Output RGB = AO (1=open), A = depth01. </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00378">378</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Texture_8cpp_source.html#l00033">eve::graphics::Texture::getHeight()</a> , 以及 <a class="el" href="Texture_8cpp_source.html#l00028">eve::graphics::Texture::getWidth()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00385">computeTo()</a>.</p>
+
+</div>
+</div>
+<a id="a37fe12bc8ae455404e6ec240b44f64f0" name="a37fe12bc8ae455404e6ec240b44f64f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37fe12bc8ae455404e6ec240b44f64f0">&#9670;&#160;</a></span>computeTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::computeTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>linearDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00385">385</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00378">compute()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="aa344b4a9003c88b008f209d29589b1ab" name="aa344b4a9003c88b008f209d29589b1ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa344b4a9003c88b008f209d29589b1ab">&#9670;&#160;</a></span>getBias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AmbientOcclusion::getBias </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a435af3dacd07b9a6552376b0be0c4fd9" name="a435af3dacd07b9a6552376b0be0c4fd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a435af3dacd07b9a6552376b0be0c4fd9">&#9670;&#160;</a></span>getBlurShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AmbientOcclusion::getBlurShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc2ada444eb6df4293258ba6e0ee99d9" name="adc2ada444eb6df4293258ba6e0ee99d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc2ada444eb6df4293258ba6e0ee99d9">&#9670;&#160;</a></span>getDownscale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AmbientOcclusion::getDownscale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab99595ea03d05067c5b4ee7bb71a10c8" name="ab99595ea03d05067c5b4ee7bb71a10c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab99595ea03d05067c5b4ee7bb71a10c8">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AmbientOcclusion::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>, <a class="el" href="Shader_8cpp_source.html#l00071">eve::graphics::Shader::getFromVar()</a>, <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00337">getSampleCount()</a>.</p>
+
+</div>
+</div>
+<a id="adbf951525b32de1eccfd5f75d32aed56" name="adbf951525b32de1eccfd5f75d32aed56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbf951525b32de1eccfd5f75d32aed56">&#9670;&#160;</a></span>getFromDepthShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AmbientOcclusion::getFromDepthShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8954d1002e1379f0734cdef6996fa5f6" name="a8954d1002e1379f0734cdef6996fa5f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8954d1002e1379f0734cdef6996fa5f6">&#9670;&#160;</a></span>getGtaoShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AmbientOcclusion::getGtaoShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1d3ff4bd4ef096d3f1bd95bf6a7693c" name="ae1d3ff4bd4ef096d3f1bd95bf6a7693c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1d3ff4bd4ef096d3f1bd95bf6a7693c">&#9670;&#160;</a></span>getHbaoShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AmbientOcclusion::getHbaoShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1b72e79a25ae132088aba618a57085e" name="ae1b72e79a25ae132088aba618a57085e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1b72e79a25ae132088aba618a57085e">&#9670;&#160;</a></span>getIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AmbientOcclusion::getIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66c2d49a4f0e8580b4c914c9eda01589" name="a66c2d49a4f0e8580b4c914c9eda01589"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c2d49a4f0e8580b4c914c9eda01589">&#9670;&#160;</a></span>getMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::AmbientOcclusion::getMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5d390908fccbf4a49a35f701f104298" name="ae5d390908fccbf4a49a35f701f104298"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5d390908fccbf4a49a35f701f104298">&#9670;&#160;</a></span>getOverlayShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AmbientOcclusion::getOverlayShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00119">119</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71298b00c4427172b21c5ae02d1c598c" name="a71298b00c4427172b21c5ae02d1c598c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71298b00c4427172b21c5ae02d1c598c">&#9670;&#160;</a></span>getPower()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AmbientOcclusion::getPower </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a344db0417ccf71f90eccfd9bb085c574" name="a344db0417ccf71f90eccfd9bb085c574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a344db0417ccf71f90eccfd9bb085c574">&#9670;&#160;</a></span>getQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::AmbientOcclusion::getQuality </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd1518b6370586885cc2ad718b0a7980" name="acd1518b6370586885cc2ad718b0a7980"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd1518b6370586885cc2ad718b0a7980">&#9670;&#160;</a></span>getRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::AmbientOcclusion::getRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae59c48168eb3903dd598076ab3523024" name="ae59c48168eb3903dd598076ab3523024"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae59c48168eb3903dd598076ab3523024">&#9670;&#160;</a></span>getSampleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::AmbientOcclusion::getSampleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Effective sample count (ssao) or dirCount*stepCount (hbao/gtao). </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00337">337</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00313">getFloat()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>.</p>
+
+</div>
+</div>
+<a id="a9bd1a3df285b350916bb125732f2344b" name="a9bd1a3df285b350916bb125732f2344b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bd1a3df285b350916bb125732f2344b">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AmbientOcclusion::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a21a211862dad43a5059758ffbb7a3551" name="a21a211862dad43a5059758ffbb7a3551"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21a211862dad43a5059758ffbb7a3551">&#9670;&#160;</a></span>getSsaoShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::AmbientOcclusion::getSsaoShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a> 第 <a class="el" href="AmbientOcclusion_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a910b8b853f9527222ea8310baf2ecaf3" name="a910b8b853f9527222ea8310baf2ecaf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a910b8b853f9527222ea8310baf2ecaf3">&#9670;&#160;</a></span>hasParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::AmbientOcclusion::hasParam </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="aa9af46db60cbe0e24e66662b92cc6af5" name="aa9af46db60cbe0e24e66662b92cc6af5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9af46db60cbe0e24e66662b92cc6af5">&#9670;&#160;</a></span>newLinearDepthTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::AmbientOcclusion::newLinearDepthTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float(*)(int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, void *userdata)&#160;</td>
+          <td class="paramname"><em>depth01</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>userdata</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build an RGBA8 texture with linear depth in R (G=B=R, A=255). Owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> (same convention as <a class="el" href="classeve_1_1graphics_1_1Volumetric.html" title="Volumetric light + fog.">Volumetric</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a0c9b5f575f043c05197e8bcbc0f46d5a" name="a0c9b5f575f043c05197e8bcbc0f46d5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c9b5f575f043c05197e8bcbc0f46d5a">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a> &amp; eve::graphics::AmbientOcclusion::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1AmbientOcclusion.html">AmbientOcclusion</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a207aa49dbb41395931e0277088feb147" name="a207aa49dbb41395931e0277088feb147"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a207aa49dbb41395931e0277088feb147">&#9670;&#160;</a></span>resolutionFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::AmbientOcclusion::resolutionFor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fullSize</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Downscale helper: returns floor(dim / downscale), at least 1. Callers create AO canvases at this size for the active quality tier. </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01e416dc3f7fb0aee247c501a798ebc2" name="a01e416dc3f7fb0aee247c501a798ebc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01e416dc3f7fb0aee247c501a798ebc2">&#9670;&#160;</a></span>setBias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setBias </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bias</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00304">setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a52ec05efd84ee2d7064496458527e6f8" name="a52ec05efd84ee2d7064496458527e6f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52ec05efd84ee2d7064496458527e6f8">&#9670;&#160;</a></span>setCamera()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setCamera </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>targetZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>upZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fovYDeg</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aspect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nearZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>farZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> for depth reconstruction (RH + ZO). Builds inv(viewProj) and near/far used by compute*. </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00687">fovRad</a>, <a class="el" href="ClipSpace_8h_source.html#l00022">eve::graphics::perspectiveVulkanRH_ZO()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00683">proj</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00232">setInvViewProj()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="a32b50bb12ef37d181dac6a8867d2112f" name="a32b50bb12ef37d181dac6a8867d2112f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32b50bb12ef37d181dac6a8867d2112f">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00269">setBias()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00274">setIntensity()</a>, <a class="el" href="AmbientOcclusion_8cpp_source.html#l00280">setPower()</a> , 以及 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00264">setRadius()</a>.</p>
+
+</div>
+</div>
+<a id="a2995a8fdde894f74b7a5affc628952a4" name="a2995a8fdde894f74b7a5affc628952a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2995a8fdde894f74b7a5affc628952a4">&#9670;&#160;</a></span>setIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00304">setFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a8659555712ed04fee4fe5f8eb3a20188" name="a8659555712ed04fee4fe5f8eb3a20188"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8659555712ed04fee4fe5f8eb3a20188">&#9670;&#160;</a></span>setInvViewProj()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setInvViewProj </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>invViewProj</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00099">eve::graphics::Shader::sendMatrix()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00240">setCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a5527dd022c13b27f15cbbb3c0225a98f" name="a5527dd022c13b27f15cbbb3c0225a98f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5527dd022c13b27f15cbbb3c0225a98f">&#9670;&#160;</a></span>setMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"ssao" | "hbao" | "gtao". </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a951aced1d7deb60f0d891669a30271ec" name="a951aced1d7deb60f0d891669a30271ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a951aced1d7deb60f0d891669a30271ec">&#9670;&#160;</a></span>setPower()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setPower </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>power</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RockMesh_8cpp_source.html#l00023">power</a> , 以及 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00304">setFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="adc3dec698ab372e21ee0af08a807dc32" name="adc3dec698ab372e21ee0af08a807dc32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc3dec698ab372e21ee0af08a807dc32">&#9670;&#160;</a></span>setQuality()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setQuality </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"low" | "medium" | "high" (unknown → medium). </p>
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00217">217</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="afe337532894ba7270f852d2b191172e6" name="afe337532894ba7270f852d2b191172e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe337532894ba7270f852d2b191172e6">&#9670;&#160;</a></span>setRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00304">setFloat()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RenderSystem3D_8cpp_source.html#l00752">eve::graphics::RenderSystem3D::render()</a>.</p>
+
+</div>
+</div>
+<a id="a99b94e4ad8981ce082c2203c41920fc7" name="a99b94e4ad8981ce082c2203c41920fc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99b94e4ad8981ce082c2203c41920fc7">&#9670;&#160;</a></span>setThickness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::AmbientOcclusion::setThickness </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>thickness</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a> 第 <a class="el" href="AmbientOcclusion_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00046">eve::graphics::Shader::hasUniform()</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="CaveMesh_8cpp_source.html#l00083">thickness</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="AmbientOcclusion_8h_source.html">AmbientOcclusion.h</a></li>
+<li>src/modules/graphics/<a class="el" href="AmbientOcclusion_8cpp_source.html">AmbientOcclusion.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

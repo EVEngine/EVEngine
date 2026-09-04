@@ -1,0 +1,307 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/pixelworld_replay/PixelWorldReplay.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_03788460bf39e476d251b8951d814647.html">pixelworld_replay</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PixelWorldReplay.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PixelWorldReplay_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Snapshot_8h.html">common/Snapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="PixelWorld_8h.html">pixelworld/PixelWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1pixelworld__replay.html">eve::pixelworld_replay</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html">PixelReplayEntry</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html#ad2b0db0e74b9b074351ea284aba451e8">   17</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html#ad2b0db0e74b9b074351ea284aba451e8">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html#ae199bb1eb6ac0f4b1dbcf262dafff81b">   18</a></span>    <a class="code hl_struct" href="structeve_1_1pixelworld_1_1PixelEditCommand.html">eve::pixelworld::PixelEditCommand</a> <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html#ae199bb1eb6ac0f4b1dbcf262dafff81b">command</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html">PixelChunkDigest</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a1fc9de122f09f16f15d9cf1229662040">   23</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a1fc9de122f09f16f15d9cf1229662040">x</a> = 0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a5ae73eb487fe4ca7fe590bdd75b712ca">   24</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a5ae73eb487fe4ca7fe590bdd75b712ca">y</a> = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a67a5b231bbd82cc1bef372c372fd8d85">   25</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a67a5b231bbd82cc1bef372c372fd8d85">digest</a> = 0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a51345e3c7c10043211afe5a14dafaf15">   26</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a51345e3c7c10043211afe5a14dafaf15">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html">PixelChunkDigest</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html">PixelChunkDigest</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html">PixelReplayCheckpoint</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a332077642f275f4230f4def439d5eb73">   31</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a332077642f275f4230f4def439d5eb73">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#afa2acb5cb9d55d52f64481280639c3fb">   32</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#afa2acb5cb9d55d52f64481280639c3fb">revision</a> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a1fde92ed570eaf1291188f751dfbe01b">   33</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a1fde92ed570eaf1291188f751dfbe01b">worldDigest</a> = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a638ff9c5eb60a91ce353e2bed6a3f540">   34</a></span>    std::vector&lt;PixelChunkDigest&gt; <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a638ff9c5eb60a91ce353e2bed6a3f540">chunks</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255e">   38</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255e">PixelReplayMatch</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255eab65b6f388bb1788248938a5cff5bad1d">Matched</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255ea531b4ea128144242345020b6115538ce">Diverged</a> };</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html">   41</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html">PixelReplayDivergence</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a406585d85871605ca08f6b59970439ae">   42</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a406585d85871605ca08f6b59970439ae">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a9fe0146ab8b166670867be7003d9439c">   43</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a9fe0146ab8b166670867be7003d9439c">expectedRevision</a> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a5d7300360572698fb3e7b409d868d5d1">   44</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a5d7300360572698fb3e7b409d868d5d1">actualRevision</a> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#ab6f1ac642734b3109204825dcf8b9e02">   45</a></span>    std::optional&lt;PixelChunkDigest&gt; <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#ab6f1ac642734b3109204825dcf8b9e02">expectedChunk</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a5e276357d87e93e2ee438c6631ab8dc1">   46</a></span>    std::optional&lt;PixelChunkDigest&gt; <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a5e276357d87e93e2ee438c6631ab8dc1">actualChunk</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00050" data-start="{" data-end="};">
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html">   50</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html">PixelReplayReceipt</a> {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#ac841c80c80682f84278e982b45564f3a">   51</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255e">PixelReplayMatch</a> <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#ac841c80c80682f84278e982b45564f3a">match</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255eab65b6f388bb1788248938a5cff5bad1d">PixelReplayMatch::Matched</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a6b3248c2fbcb1bd73a450424c06b5e60">   52</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a6b3248c2fbcb1bd73a450424c06b5e60">reachedTick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a3f6b84eb80d1d60a456a5dca1cfdedfb">   53</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a3f6b84eb80d1d60a456a5dca1cfdedfb">commandsApplied</a> = 0;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a1291b32f5c9d74f7ea5c4c90c4c6a99d">   54</a></span>    std::optional&lt;PixelReplayDivergence&gt; <a class="code hl_variable" href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a1291b32f5c9d74f7ea5c4c90c4c6a99d">firstDivergence</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="};">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html">   64</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html">PixelReplayLog</a> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a7fc5c993ccc6e384cb7aa55c20a2674d">append</a>(<a class="code hl_struct" href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html">PixelReplayEntry</a> entry);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a2c26f4b45226a2325e33a84cbd488e1c">captureCheckpoint</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PixelReplayReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#aff8ddb8e11d1130021ed742e3e6fc3f4">replay</a>(</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <a class="code hl_class" href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> throughTick) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::SnapshotEnvelope&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#afe3735b48961767a142590f6e32c946f">snapshot</a>(</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> instanceId, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a>&amp; hashProvider) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#af7ac63c58e1c38760210bc4a9b82f9a9">restoreSnapshot</a>(</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a>&amp; <a class="code hl_function" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#afe3735b48961767a142590f6e32c946f">snapshot</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a>&amp; hashProvider);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a1b92e28e81eac01d80bed635ddacb83a">  105</a></span>    [[nodiscard]] std::span&lt;const PixelReplayEntry&gt; <a class="code hl_function" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a1b92e28e81eac01d80bed635ddacb83a">entries</a>() const noexcept { <span class="keywordflow">return</span> entries_; }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a55a3b78ca39f432f88c2beb5193e40db">  106</a></span>    [[nodiscard]] std::span&lt;const PixelReplayCheckpoint&gt; <a class="code hl_function" href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a55a3b78ca39f432f88c2beb5193e40db">checkpoints</a>() const noexcept { <span class="keywordflow">return</span> checkpoints_; }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::vector&lt;PixelReplayEntry&gt; entries_;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::vector&lt;PixelReplayCheckpoint&gt; checkpoints_;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>};</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}  <span class="comment">// namespace eve::pixelworld_replay</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aPixelWorld_8h_html"><div class="ttname"><a href="PixelWorld_8h.html">PixelWorld.h</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSnapshot_8h_html"><div class="ttname"><a href="Snapshot_8h.html">Snapshot.h</a></div><div class="ttdoc">Versioned, integrity-checked persistence envelopes.</div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld_1_1PixelWorld_html"><div class="ttname"><a href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a></div><div class="ttdoc">Sparse, chunked, deterministic 2D falling-material world.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8h_source.html#l00215">PixelWorld.h:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__replay_1_1PixelReplayLog_html"><div class="ttname"><a href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html">eve::pixelworld_replay::PixelReplayLog</a></div><div class="ttdoc">Owning command log and periodic checkpoint projection for PixelWorld.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00064">PixelWorldReplay.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__replay_1_1PixelReplayLog_html_a1b92e28e81eac01d80bed635ddacb83a"><div class="ttname"><a href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a1b92e28e81eac01d80bed635ddacb83a">eve::pixelworld_replay::PixelReplayLog::entries</a></div><div class="ttdeci">std::span&lt; const PixelReplayEntry &gt; entries() const noexcept</div><div class="ttdoc">Immutable owning-log views, valid until this log is mutated or destroyed.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00105">PixelWorldReplay.h:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__replay_1_1PixelReplayLog_html_a2c26f4b45226a2325e33a84cbd488e1c"><div class="ttname"><a href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a2c26f4b45226a2325e33a84cbd488e1c">eve::pixelworld_replay::PixelReplayLog::captureCheckpoint</a></div><div class="ttdeci">eve::Result&lt; void &gt; captureCheckpoint(const eve::pixelworld::PixelWorld &amp;world)</div><div class="ttdoc">Capture a checkpoint from the synchronously borrowed world.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8cpp_source.html#l00227">PixelWorldReplay.cpp:227</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__replay_1_1PixelReplayLog_html_a55a3b78ca39f432f88c2beb5193e40db"><div class="ttname"><a href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a55a3b78ca39f432f88c2beb5193e40db">eve::pixelworld_replay::PixelReplayLog::checkpoints</a></div><div class="ttdeci">std::span&lt; const PixelReplayCheckpoint &gt; checkpoints() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00106">PixelWorldReplay.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__replay_1_1PixelReplayLog_html_a7fc5c993ccc6e384cb7aa55c20a2674d"><div class="ttname"><a href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#a7fc5c993ccc6e384cb7aa55c20a2674d">eve::pixelworld_replay::PixelReplayLog::append</a></div><div class="ttdeci">eve::Result&lt; void &gt; append(PixelReplayEntry entry)</div><div class="ttdoc">Append the next sequenced command; Tick order must be nondecreasing.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8cpp_source.html#l00209">PixelWorldReplay.cpp:209</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__replay_1_1PixelReplayLog_html_af7ac63c58e1c38760210bc4a9b82f9a9"><div class="ttname"><a href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#af7ac63c58e1c38760210bc4a9b82f9a9">eve::pixelworld_replay::PixelReplayLog::restoreSnapshot</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreSnapshot(const eve::SnapshotEnvelope &amp;snapshot, const eve::SnapshotHashProvider &amp;hashProvider)</div><div class="ttdoc">Verify, migrate and transactionally replace this log from an envelope.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8cpp_source.html#l00291">PixelWorldReplay.cpp:291</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__replay_1_1PixelReplayLog_html_afe3735b48961767a142590f6e32c946f"><div class="ttname"><a href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#afe3735b48961767a142590f6e32c946f">eve::pixelworld_replay::PixelReplayLog::snapshot</a></div><div class="ttdeci">eve::Result&lt; eve::SnapshotEnvelope &gt; snapshot(eve::PersistentId instanceId, const eve::SnapshotHashProvider &amp;hashProvider) const</div><div class="ttdoc">Seal this log in the shared versioned SnapshotEnvelope.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8cpp_source.html#l00280">PixelWorldReplay.cpp:280</a></div></div>
+<div class="ttc" id="aclasseve_1_1pixelworld__replay_1_1PixelReplayLog_html_aff8ddb8e11d1130021ed742e3e6fc3f4"><div class="ttname"><a href="classeve_1_1pixelworld__replay_1_1PixelReplayLog.html#aff8ddb8e11d1130021ed742e3e6fc3f4">eve::pixelworld_replay::PixelReplayLog::replay</a></div><div class="ttdeci">eve::Result&lt; PixelReplayReceipt &gt; replay(eve::pixelworld::PixelWorld &amp;target, eve::SimulationTick throughTick) const</div><div class="ttdoc">Replay into an empty target through throughTick and verify checkpoints.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8cpp_source.html#l00238">PixelWorldReplay.cpp:238</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld__replay_html"><div class="ttname"><a href="namespaceeve_1_1pixelworld__replay.html">eve::pixelworld_replay</a></div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8cpp_source.html#l00010">PixelWorldReplay.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld__replay_html_a8a082c76f74cdcd1049f18047594255e"><div class="ttname"><a href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255e">eve::pixelworld_replay::PixelReplayMatch</a></div><div class="ttdeci">PixelReplayMatch</div><div class="ttdoc">Replay verification outcome; divergence is data, not an operational failure.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00038">PixelWorldReplay.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld__replay_html_a8a082c76f74cdcd1049f18047594255ea531b4ea128144242345020b6115538ce"><div class="ttname"><a href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255ea531b4ea128144242345020b6115538ce">eve::pixelworld_replay::PixelReplayMatch::Diverged</a></div><div class="ttdeci">@ Diverged</div></div>
+<div class="ttc" id="anamespaceeve_1_1pixelworld__replay_html_a8a082c76f74cdcd1049f18047594255eab65b6f388bb1788248938a5cff5bad1d"><div class="ttname"><a href="namespaceeve_1_1pixelworld__replay.html#a8a082c76f74cdcd1049f18047594255eab65b6f388bb1788248938a5cff5bad1d">eve::pixelworld_replay::PixelReplayMatch::Matched</a></div><div class="ttdeci">@ Matched</div></div>
+<div class="ttc" id="anamespaceeve_html_af5cd4beecd29f95341ebc417b792f16c"><div class="ttname"><a href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a></div><div class="ttdeci">std::function&lt; Result&lt; ContentId &gt;(std::string_view canonicalInput)&gt; SnapshotHashProvider</div><div class="ttdoc">Injected content-digest implementation used by snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00036">Snapshot.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1SnapshotEnvelope_html"><div class="ttname"><a href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a></div><div class="ttdoc">Stable outer format shared by persistence and cross-process snapshots.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8h_source.html#l00046">Snapshot.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld_1_1PixelEditCommand_html"><div class="ttname"><a href="structeve_1_1pixelworld_1_1PixelEditCommand.html">eve::pixelworld::PixelEditCommand</a></div><div class="ttdoc">Owning replayable edit command. Sequence must be exactly previous + 1.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8h_source.html#l00147">PixelWorld.h:147</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelChunkDigest_html"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html">eve::pixelworld_replay::PixelChunkDigest</a></div><div class="ttdoc">Canonical content digest for one authoritative PixelWorld Chunk.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00022">PixelWorldReplay.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelChunkDigest_html_a1fc9de122f09f16f15d9cf1229662040"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a1fc9de122f09f16f15d9cf1229662040">eve::pixelworld_replay::PixelChunkDigest::x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00023">PixelWorldReplay.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelChunkDigest_html_a51345e3c7c10043211afe5a14dafaf15"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a51345e3c7c10043211afe5a14dafaf15">eve::pixelworld_replay::PixelChunkDigest::operator==</a></div><div class="ttdeci">friend bool operator==(const PixelChunkDigest &amp;, const PixelChunkDigest &amp;)=default</div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelChunkDigest_html_a5ae73eb487fe4ca7fe590bdd75b712ca"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a5ae73eb487fe4ca7fe590bdd75b712ca">eve::pixelworld_replay::PixelChunkDigest::y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00024">PixelWorldReplay.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelChunkDigest_html_a67a5b231bbd82cc1bef372c372fd8d85"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelChunkDigest.html#a67a5b231bbd82cc1bef372c372fd8d85">eve::pixelworld_replay::PixelChunkDigest::digest</a></div><div class="ttdeci">std::uint64_t digest</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00025">PixelWorldReplay.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint_html"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html">eve::pixelworld_replay::PixelReplayCheckpoint</a></div><div class="ttdoc">Periodic replay checkpoint containing world and per-Chunk diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00030">PixelWorldReplay.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint_html_a1fde92ed570eaf1291188f751dfbe01b"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a1fde92ed570eaf1291188f751dfbe01b">eve::pixelworld_replay::PixelReplayCheckpoint::worldDigest</a></div><div class="ttdeci">std::uint64_t worldDigest</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00033">PixelWorldReplay.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint_html_a332077642f275f4230f4def439d5eb73"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a332077642f275f4230f4def439d5eb73">eve::pixelworld_replay::PixelReplayCheckpoint::tick</a></div><div class="ttdeci">eve::SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00031">PixelWorldReplay.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint_html_a638ff9c5eb60a91ce353e2bed6a3f540"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#a638ff9c5eb60a91ce353e2bed6a3f540">eve::pixelworld_replay::PixelReplayCheckpoint::chunks</a></div><div class="ttdeci">std::vector&lt; PixelChunkDigest &gt; chunks</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00034">PixelWorldReplay.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint_html_afa2acb5cb9d55d52f64481280639c3fb"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayCheckpoint.html#afa2acb5cb9d55d52f64481280639c3fb">eve::pixelworld_replay::PixelReplayCheckpoint::revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00032">PixelWorldReplay.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayDivergence_html"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html">eve::pixelworld_replay::PixelReplayDivergence</a></div><div class="ttdoc">First canonical mismatch found while replaying a log.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00041">PixelWorldReplay.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayDivergence_html_a406585d85871605ca08f6b59970439ae"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a406585d85871605ca08f6b59970439ae">eve::pixelworld_replay::PixelReplayDivergence::tick</a></div><div class="ttdeci">eve::SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00042">PixelWorldReplay.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayDivergence_html_a5d7300360572698fb3e7b409d868d5d1"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a5d7300360572698fb3e7b409d868d5d1">eve::pixelworld_replay::PixelReplayDivergence::actualRevision</a></div><div class="ttdeci">std::uint64_t actualRevision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00044">PixelWorldReplay.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayDivergence_html_a5e276357d87e93e2ee438c6631ab8dc1"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a5e276357d87e93e2ee438c6631ab8dc1">eve::pixelworld_replay::PixelReplayDivergence::actualChunk</a></div><div class="ttdeci">std::optional&lt; PixelChunkDigest &gt; actualChunk</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00046">PixelWorldReplay.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayDivergence_html_a9fe0146ab8b166670867be7003d9439c"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#a9fe0146ab8b166670867be7003d9439c">eve::pixelworld_replay::PixelReplayDivergence::expectedRevision</a></div><div class="ttdeci">std::uint64_t expectedRevision</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00043">PixelWorldReplay.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayDivergence_html_ab6f1ac642734b3109204825dcf8b9e02"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayDivergence.html#ab6f1ac642734b3109204825dcf8b9e02">eve::pixelworld_replay::PixelReplayDivergence::expectedChunk</a></div><div class="ttdeci">std::optional&lt; PixelChunkDigest &gt; expectedChunk</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00045">PixelWorldReplay.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayEntry_html"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html">eve::pixelworld_replay::PixelReplayEntry</a></div><div class="ttdoc">One deterministic edit admitted immediately before its simulation Tick.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00016">PixelWorldReplay.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayEntry_html_ad2b0db0e74b9b074351ea284aba451e8"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html#ad2b0db0e74b9b074351ea284aba451e8">eve::pixelworld_replay::PixelReplayEntry::tick</a></div><div class="ttdeci">eve::SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00017">PixelWorldReplay.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayEntry_html_ae199bb1eb6ac0f4b1dbcf262dafff81b"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayEntry.html#ae199bb1eb6ac0f4b1dbcf262dafff81b">eve::pixelworld_replay::PixelReplayEntry::command</a></div><div class="ttdeci">eve::pixelworld::PixelEditCommand command</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00018">PixelWorldReplay.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayReceipt_html"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html">eve::pixelworld_replay::PixelReplayReceipt</a></div><div class="ttdoc">Receipt from deterministic replay through an exact target Tick.</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00050">PixelWorldReplay.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayReceipt_html_a1291b32f5c9d74f7ea5c4c90c4c6a99d"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a1291b32f5c9d74f7ea5c4c90c4c6a99d">eve::pixelworld_replay::PixelReplayReceipt::firstDivergence</a></div><div class="ttdeci">std::optional&lt; PixelReplayDivergence &gt; firstDivergence</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00054">PixelWorldReplay.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayReceipt_html_a3f6b84eb80d1d60a456a5dca1cfdedfb"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a3f6b84eb80d1d60a456a5dca1cfdedfb">eve::pixelworld_replay::PixelReplayReceipt::commandsApplied</a></div><div class="ttdeci">std::uint64_t commandsApplied</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00053">PixelWorldReplay.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayReceipt_html_a6b3248c2fbcb1bd73a450424c06b5e60"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#a6b3248c2fbcb1bd73a450424c06b5e60">eve::pixelworld_replay::PixelReplayReceipt::reachedTick</a></div><div class="ttdeci">eve::SimulationTick reachedTick</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00052">PixelWorldReplay.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1pixelworld__replay_1_1PixelReplayReceipt_html_ac841c80c80682f84278e982b45564f3a"><div class="ttname"><a href="structeve_1_1pixelworld__replay_1_1PixelReplayReceipt.html#ac841c80c80682f84278e982b45564f3a">eve::pixelworld_replay::PixelReplayReceipt::match</a></div><div class="ttdeci">PixelReplayMatch match</div><div class="ttdef"><b>Definition</b> <a href="PixelWorldReplay_8h_source.html#l00051">PixelWorldReplay.h:51</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

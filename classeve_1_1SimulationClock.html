@@ -1,0 +1,626 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::SimulationClock类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1SimulationClock.html">SimulationClock</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1SimulationClock-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::SimulationClock类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread fixed-step scheduler driven by an injected time source.  
+ <a href="classeve_1_1SimulationClock.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Time_8h_source.html">Time.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae73d35c81d1a15e2260a342b23a608ca" id="r_ae73d35c81d1a15e2260a342b23a608ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#ae73d35c81d1a15e2260a342b23a608ca">SimulationClock</a> (<a class="el" href="classeve_1_1ITimeSource.html">ITimeSource</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="classeve_1_1SimulationClock.html#a71ffa5227b6bb5aee79a932fc3ba7683">fixedStep</a>=<a class="el" href="classeve_1_1Duration.html#a3623bb018fddaebe73fe6646d1ea3ebe">Duration::fromNanoseconds</a>(16666667))</td></tr>
+<tr class="memdesc:ae73d35c81d1a15e2260a342b23a608ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a fixed-step clock without reading the source.  <br /></td></tr>
+<tr class="separator:ae73d35c81d1a15e2260a342b23a608ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a1ff4e9f41756e77df73e9429fbacd" id="r_ae4a1ff4e9f41756e77df73e9429fbacd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#ae4a1ff4e9f41756e77df73e9429fbacd">sample</a> ()</td></tr>
+<tr class="memdesc:ae4a1ff4e9f41756e77df73e9429fbacd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the source and emit deterministic steps for one frame.  <br /></td></tr>
+<tr class="separator:ae4a1ff4e9f41756e77df73e9429fbacd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0752096ce2e6aca7c67f482d1eb28e0" id="r_aa0752096ce2e6aca7c67f482d1eb28e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#aa0752096ce2e6aca7c67f482d1eb28e0">advance</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> realDelta)</td></tr>
+<tr class="memdesc:aa0752096ce2e6aca7c67f482d1eb28e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance from supplied monotonic elapsed duration without reading a clock.  <br /></td></tr>
+<tr class="separator:aa0752096ce2e6aca7c67f482d1eb28e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affa3a0c438dd2dac2b4625a89553cbb3" id="r_affa3a0c438dd2dac2b4625a89553cbb3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#affa3a0c438dd2dac2b4625a89553cbb3">setFixedStep</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> <a class="el" href="classeve_1_1SimulationClock.html#a71ffa5227b6bb5aee79a932fc3ba7683">fixedStep</a>)</td></tr>
+<tr class="memdesc:affa3a0c438dd2dac2b4625a89553cbb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the positive fixed-step duration; accumulated time is preserved.  <br /></td></tr>
+<tr class="separator:affa3a0c438dd2dac2b4625a89553cbb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a321ac42aa6cb5afb37822714fe8c2925" id="r_a321ac42aa6cb5afb37822714fe8c2925"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#a321ac42aa6cb5afb37822714fe8c2925">setRate</a> (double <a class="el" href="classeve_1_1SimulationClock.html#a0964cc9bc871b627a2e1184fc396bbce">rate</a>)</td></tr>
+<tr class="memdesc:a321ac42aa6cb5afb37822714fe8c2925"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a finite non-negative simulation rate (1 is normal speed).  <br /></td></tr>
+<tr class="separator:a321ac42aa6cb5afb37822714fe8c2925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23ebf4ff87735c8394ba71ac41c9b4f6" id="r_a23ebf4ff87735c8394ba71ac41c9b4f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#a23ebf4ff87735c8394ba71ac41c9b4f6">setPaused</a> (bool <a class="el" href="classeve_1_1SimulationClock.html#a243f7f5d3cc52bb17113d1b2444df5b4">paused</a>) noexcept</td></tr>
+<tr class="memdesc:a23ebf4ff87735c8394ba71ac41c9b4f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause or resume simulation accumulation.  <br /></td></tr>
+<tr class="separator:a23ebf4ff87735c8394ba71ac41c9b4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59ce63c04b314d1fdc4006062809c238" id="r_a59ce63c04b314d1fdc4006062809c238"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#a59ce63c04b314d1fdc4006062809c238">reset</a> (<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>=<a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>()) noexcept</td></tr>
+<tr class="memdesc:a59ce63c04b314d1fdc4006062809c238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset deterministic state to a supplied tick without reading a clock.  <br /></td></tr>
+<tr class="separator:a59ce63c04b314d1fdc4006062809c238"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae7617683acb9e21e17b61a4f6e1b811" id="r_aae7617683acb9e21e17b61a4f6e1b811"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#aae7617683acb9e21e17b61a4f6e1b811">currentTick</a> () const noexcept</td></tr>
+<tr class="memdesc:aae7617683acb9e21e17b61a4f6e1b811"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current deterministic simulation tick.  <br /></td></tr>
+<tr class="separator:aae7617683acb9e21e17b61a4f6e1b811"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad601ac810e7f4df490bd3a1b6862ed5c" id="r_ad601ac810e7f4df490bd3a1b6862ed5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#ac53091282bf8141ea87c5e51895adf59">FrameIndex</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#ad601ac810e7f4df490bd3a1b6862ed5c">frameIndex</a> () const noexcept</td></tr>
+<tr class="memdesc:ad601ac810e7f4df490bd3a1b6862ed5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current presentation frame ordinal.  <br /></td></tr>
+<tr class="separator:ad601ac810e7f4df490bd3a1b6862ed5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71ffa5227b6bb5aee79a932fc3ba7683" id="r_a71ffa5227b6bb5aee79a932fc3ba7683"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#a71ffa5227b6bb5aee79a932fc3ba7683">fixedStep</a> () const noexcept</td></tr>
+<tr class="memdesc:a71ffa5227b6bb5aee79a932fc3ba7683"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed duration of emitted simulation steps.  <br /></td></tr>
+<tr class="separator:a71ffa5227b6bb5aee79a932fc3ba7683"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0964cc9bc871b627a2e1184fc396bbce" id="r_a0964cc9bc871b627a2e1184fc396bbce"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#a0964cc9bc871b627a2e1184fc396bbce">rate</a> () const noexcept</td></tr>
+<tr class="memdesc:a0964cc9bc871b627a2e1184fc396bbce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current slow-motion rate.  <br /></td></tr>
+<tr class="separator:a0964cc9bc871b627a2e1184fc396bbce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a243f7f5d3cc52bb17113d1b2444df5b4" id="r_a243f7f5d3cc52bb17113d1b2444df5b4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#a243f7f5d3cc52bb17113d1b2444df5b4">paused</a> () const noexcept</td></tr>
+<tr class="memdesc:a243f7f5d3cc52bb17113d1b2444df5b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether simulation accumulation is paused.  <br /></td></tr>
+<tr class="separator:a243f7f5d3cc52bb17113d1b2444df5b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3e91b004ac90b94b89defa98574cdd2" id="r_af3e91b004ac90b94b89defa98574cdd2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SimulationClock.html#af3e91b004ac90b94b89defa98574cdd2">lastFrameDelta</a> () const noexcept</td></tr>
+<tr class="memdesc:af3e91b004ac90b94b89defa98574cdd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real source duration observed during the last frame.  <br /></td></tr>
+<tr class="separator:af3e91b004ac90b94b89defa98574cdd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread fixed-step scheduler driven by an injected time source. </p>
+<p><code><a class="el" href="classeve_1_1SimulationClock.html#ae4a1ff4e9f41756e77df73e9429fbacd" title="Read the source and emit deterministic steps for one frame.">sample()</a></code> reads only monotonic time. <code><a class="el" href="classeve_1_1SimulationClock.html#aa0752096ce2e6aca7c67f482d1eb28e0" title="Advance from supplied monotonic elapsed duration without reading a clock.">advance()</a></code> is the replay/server path and accepts a supplied <a class="el" href="classeve_1_1Duration.html" title="Signed, fixed-resolution simulation duration in nanoseconds.">Duration</a>, so tests and deterministic replays do not need a real clock. Paused clocks do not accumulate catch-up time. A slow rate scales accumulated simulation time while emitted steps remain fixed. The scheduler is not thread-safe; one owner thread must serialize all calls. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00195">195</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae73d35c81d1a15e2260a342b23a608ca" name="ae73d35c81d1a15e2260a342b23a608ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae73d35c81d1a15e2260a342b23a608ca">&#9670;&#160;</a></span>SimulationClock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::SimulationClock::SimulationClock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1ITimeSource.html">ITimeSource</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>fixedStep</em> = <code><a class="el" href="classeve_1_1Duration.html#a3623bb018fddaebe73fe6646d1ea3ebe">Duration::fromNanoseconds</a>(16666667)</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a fixed-step clock without reading the source. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Borrowed source; it must outlive this clock. </td></tr>
+    <tr><td class="paramname">fixedStep</td><td>Positive fixed simulation duration. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00037">EV_ASSERT</a>, <a class="el" href="Time_8h_source.html#l00053">eve::Duration::fromNanoseconds()</a> , 以及 <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa0752096ce2e6aca7c67f482d1eb28e0" name="aa0752096ce2e6aca7c67f482d1eb28e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0752096ce2e6aca7c67f482d1eb28e0">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &gt; &gt; eve::SimulationClock::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>realDelta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance from supplied monotonic elapsed duration without reading a clock. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">realDelta</td><td>Non-negative elapsed frame duration. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Fixed steps; failure leaves scheduler state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a>, <a class="el" href="Time_8cpp_source.html#l00037">eve::Duration::scaled()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00112">steps</a>, <a class="el" href="Time_8cpp_source.html#l00030">eve::Duration::tryAdd()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00025">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Time_8cpp_source.html#l00141">sample()</a>.</p>
+
+</div>
+</div>
+<a id="aae7617683acb9e21e17b61a4f6e1b811" name="aae7617683acb9e21e17b61a4f6e1b811"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae7617683acb9e21e17b61a4f6e1b811">&#9670;&#160;</a></span>currentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> eve::SimulationClock::currentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current deterministic simulation tick. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00225">225</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71ffa5227b6bb5aee79a932fc3ba7683" name="a71ffa5227b6bb5aee79a932fc3ba7683"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71ffa5227b6bb5aee79a932fc3ba7683">&#9670;&#160;</a></span>fixedStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::SimulationClock::fixedStep </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fixed duration of emitted simulation steps. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Time_8cpp_source.html#l00070">setFixedStep()</a>.</p>
+
+</div>
+</div>
+<a id="ad601ac810e7f4df490bd3a1b6862ed5c" name="ad601ac810e7f4df490bd3a1b6862ed5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad601ac810e7f4df490bd3a1b6862ed5c">&#9670;&#160;</a></span>frameIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#ac53091282bf8141ea87c5e51895adf59">FrameIndex</a> eve::SimulationClock::frameIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current presentation frame ordinal. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00227">227</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3e91b004ac90b94b89defa98574cdd2" name="af3e91b004ac90b94b89defa98574cdd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3e91b004ac90b94b89defa98574cdd2">&#9670;&#160;</a></span>lastFrameDelta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::SimulationClock::lastFrameDelta </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Real source duration observed during the last frame. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00235">235</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a243f7f5d3cc52bb17113d1b2444df5b4" name="a243f7f5d3cc52bb17113d1b2444df5b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a243f7f5d3cc52bb17113d1b2444df5b4">&#9670;&#160;</a></span>paused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::SimulationClock::paused </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether simulation accumulation is paused. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00233">233</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0964cc9bc871b627a2e1184fc396bbce" name="a0964cc9bc871b627a2e1184fc396bbce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0964cc9bc871b627a2e1184fc396bbce">&#9670;&#160;</a></span>rate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::SimulationClock::rate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current slow-motion rate. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Time_8cpp_source.html#l00077">setRate()</a>.</p>
+
+</div>
+</div>
+<a id="a59ce63c04b314d1fdc4006062809c238" name="a59ce63c04b314d1fdc4006062809c238"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59ce63c04b314d1fdc4006062809c238">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::SimulationClock::reset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em> = <code><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>()</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reset deterministic state to a supplied tick without reading a clock. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>, <a class="el" href="StrongUint64_8h_source.html#l00023">eve::detail::StrongUint64&lt; detail::FrameIndexTag &gt;::zero()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="ae4a1ff4e9f41756e77df73e9429fbacd" name="ae4a1ff4e9f41756e77df73e9429fbacd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a1ff4e9f41756e77df73e9429fbacd">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &gt; &gt; eve::SimulationClock::sample </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the source and emit deterministic steps for one frame. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Time_8cpp_source.html#l00084">advance()</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="classeve_1_1ITimeSource.html#a2a2c8cb970417c8c2472d8c4f1291e16">eve::ITimeSource::monotonicNow()</a>, <a class="el" href="Time_8cpp_source.html#l00048">eve::MonotonicTimestamp::since()</a> , 以及 <a class="el" href="Time_8h_source.html#l00058">eve::Duration::zero()</a>.</p>
+
+</div>
+</div>
+<a id="affa3a0c438dd2dac2b4625a89553cbb3" name="affa3a0c438dd2dac2b4625a89553cbb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affa3a0c438dd2dac2b4625a89553cbb3">&#9670;&#160;</a></span>setFixedStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::SimulationClock::setFixedStep </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>fixedStep</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the positive fixed-step duration; accumulated time is preserved. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00229">fixedStep()</a>, <a class="el" href="Time_8h_source.html#l00067">eve::Duration::nanoseconds()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a23ebf4ff87735c8394ba71ac41c9b4f6" name="a23ebf4ff87735c8394ba71ac41c9b4f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23ebf4ff87735c8394ba71ac41c9b4f6">&#9670;&#160;</a></span>setPaused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::SimulationClock::setPaused </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>paused</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pause or resume simulation accumulation. </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8h_source.html">Time.h</a> 第 <a class="el" href="Time_8h_source.html#l00219">219</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a321ac42aa6cb5afb37822714fe8c2925" name="a321ac42aa6cb5afb37822714fe8c2925"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a321ac42aa6cb5afb37822714fe8c2925">&#9670;&#160;</a></span>setRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::SimulationClock::setRate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a finite non-negative simulation rate (1 is normal speed). </p>
+
+<p class="definition">在文件 <a class="el" href="Time_8cpp_source.html">Time.cpp</a> 第 <a class="el" href="Time_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00231">rate()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Time_8h_source.html">Time.h</a></li>
+<li>src/engine/common/<a class="el" href="Time_8cpp_source.html">Time.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

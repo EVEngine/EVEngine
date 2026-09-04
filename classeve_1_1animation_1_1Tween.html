@@ -1,0 +1,1517 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::Tween类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1Tween.html">Tween</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1animation_1_1Tween-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::Tween类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Property tween — interpolates named float properties from → to over time.  
+ <a href="classeve_1_1animation_1_1Tween.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Tween_8h_source.html">Tween.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a76f9076d8ffd3d1b6b6e5a556f51cda8" id="r_a76f9076d8ffd3d1b6b6e5a556f51cda8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a76f9076d8ffd3d1b6b6e5a556f51cda8">Tween</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a76f9076d8ffd3d1b6b6e5a556f51cda8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56047564a929fa4e5356c53f0adbbc26" id="r_a56047564a929fa4e5356c53f0adbbc26"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a56047564a929fa4e5356c53f0adbbc26">~Tween</a> ()</td></tr>
+<tr class="separator:a56047564a929fa4e5356c53f0adbbc26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae76486dce8bc32a20d186d19c8ed3e3d" id="r_ae76486dce8bc32a20d186d19c8ed3e3d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#ae76486dce8bc32a20d186d19c8ed3e3d">Tween</a> (const <a class="el" href="classeve_1_1animation_1_1Tween.html">Tween</a> &amp;)=delete</td></tr>
+<tr class="separator:ae76486dce8bc32a20d186d19c8ed3e3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcdc61062b6349ebdf7e894dd5948c9d" id="r_afcdc61062b6349ebdf7e894dd5948c9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1Tween.html">Tween</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#afcdc61062b6349ebdf7e894dd5948c9d">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1Tween.html">Tween</a> &amp;)=delete</td></tr>
+<tr class="separator:afcdc61062b6349ebdf7e894dd5948c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a083335ed9baecf2c41552654b761ef2e" id="r_a083335ed9baecf2c41552654b761ef2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a083335ed9baecf2c41552654b761ef2e">setFrom</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a083335ed9baecf2c41552654b761ef2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc515c0701b096f153c3d41339d8a75c" id="r_adc515c0701b096f153c3d41339d8a75c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#adc515c0701b096f153c3d41339d8a75c">setTo</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:adc515c0701b096f153c3d41339d8a75c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1154a5aeca6a2e68e44f10d369b57b6" id="r_ad1154a5aeca6a2e68e44f10d369b57b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#ad1154a5aeca6a2e68e44f10d369b57b6">setDelta</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float delta)</td></tr>
+<tr class="memdesc:ad1154a5aeca6a2e68e44f10d369b57b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative change: end = start + delta (resolved when <a class="el" href="classeve_1_1animation_1_1Tween.html#a16587b80175fbddd608733fdd96de635">start()</a> runs).  <br /></td></tr>
+<tr class="separator:ad1154a5aeca6a2e68e44f10d369b57b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75490c0ac699e6f32c0e4463682358c1" id="r_a75490c0ac699e6f32c0e4463682358c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a75490c0ac699e6f32c0e4463682358c1">setFromAngle</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float radians)</td></tr>
+<tr class="separator:a75490c0ac699e6f32c0e4463682358c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3906ccba0a80bcb728fe8b2f49499058" id="r_a3906ccba0a80bcb728fe8b2f49499058"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a3906ccba0a80bcb728fe8b2f49499058">setToAngle</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float radians)</td></tr>
+<tr class="separator:a3906ccba0a80bcb728fe8b2f49499058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a309aa472631dc3b4937968daea15783d" id="r_a309aa472631dc3b4937968daea15783d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a309aa472631dc3b4937968daea15783d">setDeltaAngle</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float deltaRadians)</td></tr>
+<tr class="separator:a309aa472631dc3b4937968daea15783d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af574173823ea1b49b8e59e9df5a7bf81" id="r_af574173823ea1b49b8e59e9df5a7bf81"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#af574173823ea1b49b8e59e9df5a7bf81">has</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:af574173823ea1b49b8e59e9df5a7bf81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e7747190a8bc09302f7487c04ba9299" id="r_a7e7747190a8bc09302f7487c04ba9299"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a7e7747190a8bc09302f7487c04ba9299">get</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a7e7747190a8bc09302f7487c04ba9299"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4bbc9c86d2e0fd691b3e84baa6cd4dc" id="r_aa4bbc9c86d2e0fd691b3e84baa6cd4dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#aa4bbc9c86d2e0fd691b3e84baa6cd4dc">getFrom</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:aa4bbc9c86d2e0fd691b3e84baa6cd4dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad26915aa816b5bf5a280776e8caa180e" id="r_ad26915aa816b5bf5a280776e8caa180e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#ad26915aa816b5bf5a280776e8caa180e">getTo</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:ad26915aa816b5bf5a280776e8caa180e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aece6fc483aebed9e92d5e6e45a0bc3f8" id="r_aece6fc483aebed9e92d5e6e45a0bc3f8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#aece6fc483aebed9e92d5e6e45a0bc3f8">getDelta</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:aece6fc483aebed9e92d5e6e45a0bc3f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94cb6b9dfd11b7ec49a76f014438ebf9" id="r_a94cb6b9dfd11b7ec49a76f014438ebf9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a94cb6b9dfd11b7ec49a76f014438ebf9">setDuration</a> (float seconds)</td></tr>
+<tr class="separator:a94cb6b9dfd11b7ec49a76f014438ebf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4522e6ffcbd059da1672cbb1e9abd00e" id="r_a4522e6ffcbd059da1672cbb1e9abd00e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a4522e6ffcbd059da1672cbb1e9abd00e">getDuration</a> () const</td></tr>
+<tr class="separator:a4522e6ffcbd059da1672cbb1e9abd00e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1485cc48243b01a4c8345df4f48514c5" id="r_a1485cc48243b01a4c8345df4f48514c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a1485cc48243b01a4c8345df4f48514c5">setDelay</a> (float seconds)</td></tr>
+<tr class="separator:a1485cc48243b01a4c8345df4f48514c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa673ebb170f9f4fbc2ab06edf20be9be" id="r_aa673ebb170f9f4fbc2ab06edf20be9be"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#aa673ebb170f9f4fbc2ab06edf20be9be">getDelay</a> () const</td></tr>
+<tr class="separator:aa673ebb170f9f4fbc2ab06edf20be9be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40d4c7f8f0d6a91a8ffd74ce498e8d7b" id="r_a40d4c7f8f0d6a91a8ffd74ce498e8d7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a40d4c7f8f0d6a91a8ffd74ce498e8d7b">setEase</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="separator:a40d4c7f8f0d6a91a8ffd74ce498e8d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae41a70df60b2137e7bc90b80aa19ffe8" id="r_ae41a70df60b2137e7bc90b80aa19ffe8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#ae41a70df60b2137e7bc90b80aa19ffe8">getEase</a> () const</td></tr>
+<tr class="separator:ae41a70df60b2137e7bc90b80aa19ffe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab810633178c0d68e7e1eebd5a39626d2" id="r_ab810633178c0d68e7e1eebd5a39626d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#ab810633178c0d68e7e1eebd5a39626d2">setRepeat</a> (int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:ab810633178c0d68e7e1eebd5a39626d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Play count: 1 = once (default), N = N cycles, -1 = infinite. Values &lt; -1 are clamped to -1.  <br /></td></tr>
+<tr class="separator:ab810633178c0d68e7e1eebd5a39626d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d92bb466a33d81ee2554719168a6f68" id="r_a1d92bb466a33d81ee2554719168a6f68"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a1d92bb466a33d81ee2554719168a6f68">getRepeat</a> () const</td></tr>
+<tr class="separator:a1d92bb466a33d81ee2554719168a6f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a859b7f6334127cd2b3c07d446ca98832" id="r_a859b7f6334127cd2b3c07d446ca98832"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a859b7f6334127cd2b3c07d446ca98832">setYoyo</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:a859b7f6334127cd2b3c07d446ca98832"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3774f82643ad6bee8f11023e45d57880" id="r_a3774f82643ad6bee8f11023e45d57880"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a3774f82643ad6bee8f11023e45d57880">getYoyo</a> () const</td></tr>
+<tr class="separator:a3774f82643ad6bee8f11023e45d57880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16587b80175fbddd608733fdd96de635" id="r_a16587b80175fbddd608733fdd96de635"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a16587b80175fbddd608733fdd96de635">start</a> ()</td></tr>
+<tr class="separator:a16587b80175fbddd608733fdd96de635"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f9a82a06288352240ef20b2dc341e56" id="r_a4f9a82a06288352240ef20b2dc341e56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a4f9a82a06288352240ef20b2dc341e56">pause</a> ()</td></tr>
+<tr class="separator:a4f9a82a06288352240ef20b2dc341e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfce88e3b4797102104ccfea03485c5f" id="r_adfce88e3b4797102104ccfea03485c5f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#adfce88e3b4797102104ccfea03485c5f">resume</a> ()</td></tr>
+<tr class="separator:adfce88e3b4797102104ccfea03485c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa01972210077d1fad27aac8992fd5bdc" id="r_aa01972210077d1fad27aac8992fd5bdc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#aa01972210077d1fad27aac8992fd5bdc">stop</a> ()</td></tr>
+<tr class="separator:aa01972210077d1fad27aac8992fd5bdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61c73c132163cc48114aa785f17c8cc3" id="r_a61c73c132163cc48114aa785f17c8cc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a61c73c132163cc48114aa785f17c8cc3">reset</a> ()</td></tr>
+<tr class="separator:a61c73c132163cc48114aa785f17c8cc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fb7a73b8274ac439313e2ebe00dc799" id="r_a0fb7a73b8274ac439313e2ebe00dc799"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a0fb7a73b8274ac439313e2ebe00dc799">isRunning</a> () const</td></tr>
+<tr class="separator:a0fb7a73b8274ac439313e2ebe00dc799"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a665f201c03485a5d825077d8d8c68f59" id="r_a665f201c03485a5d825077d8d8c68f59"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a665f201c03485a5d825077d8d8c68f59">isPaused</a> () const</td></tr>
+<tr class="separator:a665f201c03485a5d825077d8d8c68f59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04e67b4c3b84618450fcd5a8bb4691ca" id="r_a04e67b4c3b84618450fcd5a8bb4691ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a04e67b4c3b84618450fcd5a8bb4691ca">isFinished</a> () const</td></tr>
+<tr class="separator:a04e67b4c3b84618450fcd5a8bb4691ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaf8abb3a1d2ce149b9a9f8c29de6e3c" id="r_afaf8abb3a1d2ce149b9a9f8c29de6e3c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#afaf8abb3a1d2ce149b9a9f8c29de6e3c">isStopped</a> () const</td></tr>
+<tr class="separator:afaf8abb3a1d2ce149b9a9f8c29de6e3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a860ed6b5fa463f68cbea350fd807e17c" id="r_a860ed6b5fa463f68cbea350fd807e17c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a860ed6b5fa463f68cbea350fd807e17c">isDelayed</a> () const</td></tr>
+<tr class="separator:a860ed6b5fa463f68cbea350fd807e17c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e89203cc8c4ee67a794534a617e05c4" id="r_a8e89203cc8c4ee67a794534a617e05c4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a8e89203cc8c4ee67a794534a617e05c4">isActive</a> () const</td></tr>
+<tr class="separator:a8e89203cc8c4ee67a794534a617e05c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6d33d8e17779f98f32f972fdae2f809" id="r_af6d33d8e17779f98f32f972fdae2f809"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#af6d33d8e17779f98f32f972fdae2f809">getElapsed</a> () const</td></tr>
+<tr class="memdesc:af6d33d8e17779f98f32f972fdae2f809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Elapsed time in the current cycle (excludes delay).  <br /></td></tr>
+<tr class="separator:af6d33d8e17779f98f32f972fdae2f809"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9284bd19bcab71fcaffce5e26350b240" id="r_a9284bd19bcab71fcaffce5e26350b240"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a9284bd19bcab71fcaffce5e26350b240">getProgress</a> () const</td></tr>
+<tr class="memdesc:a9284bd19bcab71fcaffce5e26350b240"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear progress in the current cycle, [0,1].  <br /></td></tr>
+<tr class="separator:a9284bd19bcab71fcaffce5e26350b240"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f6933012948808f61d9662ab94dc89b" id="r_a6f6933012948808f61d9662ab94dc89b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a6f6933012948808f61d9662ab94dc89b">getEasedProgress</a> () const</td></tr>
+<tr class="memdesc:a6f6933012948808f61d9662ab94dc89b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eased progress used for interpolation, [0,1].  <br /></td></tr>
+<tr class="separator:a6f6933012948808f61d9662ab94dc89b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9d7b500e44e3bf1de9cb17941a4aad3" id="r_aa9d7b500e44e3bf1de9cb17941a4aad3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#aa9d7b500e44e3bf1de9cb17941a4aad3">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:aa9d7b500e44e3bf1de9cb17941a4aad3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance by one scheduler-owned deterministic step.  <br /></td></tr>
+<tr class="separator:aa9d7b500e44e3bf1de9cb17941a4aad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ec51d03c5ef5d79e61778e39d6ac29f" id="r_a4ec51d03c5ef5d79e61778e39d6ac29f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a4ec51d03c5ef5d79e61778e39d6ac29f">hasCurrentTick</a> () const noexcept</td></tr>
+<tr class="memdesc:a4ec51d03c5ef5d79e61778e39d6ac29f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this tween has consumed a scheduler step.  <br /></td></tr>
+<tr class="separator:a4ec51d03c5ef5d79e61778e39d6ac29f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7b6b1b9631b9852022ffa969ccdc69d" id="r_ac7b6b1b9631b9852022ffa969ccdc69d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#ac7b6b1b9631b9852022ffa969ccdc69d">currentTick</a> () const noexcept</td></tr>
+<tr class="memdesc:ac7b6b1b9631b9852022ffa969ccdc69d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last scheduler tick consumed by this tween.  <br /></td></tr>
+<tr class="separator:ac7b6b1b9631b9852022ffa969ccdc69d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a723242e74ca220e8fec7ac1e6e908761" id="r_a723242e74ca220e8fec7ac1e6e908761"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a723242e74ca220e8fec7ac1e6e908761">update</a> (float dt)</td></tr>
+<tr class="memdesc:a723242e74ca220e8fec7ac1e6e908761"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance by dt seconds; legacy facade that forwards to <a class="el" href="classeve_1_1animation_1_1Tween.html#aa9d7b500e44e3bf1de9cb17941a4aad3" title="Advance by one scheduler-owned deterministic step.">advance()</a>.  <br /></td></tr>
+<tr class="separator:a723242e74ca220e8fec7ac1e6e908761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf26292b4e7e3966b590872cec77e80" id="r_a9cf26292b4e7e3966b590872cec77e80"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a9cf26292b4e7e3966b590872cec77e80">evaluate</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) const</td></tr>
+<tr class="memdesc:a9cf26292b4e7e3966b590872cec77e80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample property at linear t in [0,1] using current from/to (no state change).  <br /></td></tr>
+<tr class="separator:a9cf26292b4e7e3966b590872cec77e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f669a4a335bb4782f99219c0287a0aa" id="r_a3f669a4a335bb4782f99219c0287a0aa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a3f669a4a335bb4782f99219c0287a0aa">getPropertyCount</a> () const</td></tr>
+<tr class="memdesc:a3f669a4a335bb4782f99219c0287a0aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Names of all property tracks (stable order = insertion order).  <br /></td></tr>
+<tr class="separator:a3f669a4a335bb4782f99219c0287a0aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a60d7d3985c2a1069b8c356779ebdc2" id="r_a9a60d7d3985c2a1069b8c356779ebdc2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#a9a60d7d3985c2a1069b8c356779ebdc2">getPropertyName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a9a60d7d3985c2a1069b8c356779ebdc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:af47625f50036c466946f960db7320bcf" id="r_af47625f50036c466946f960db7320bcf"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1Tween.html#af47625f50036c466946f960db7320bcf">Animation</a></td></tr>
+<tr class="separator:af47625f50036c466946f960db7320bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Property tween — interpolates named float properties from → to over time. </p>
+<p>Absolute end: setFrom + setTo. Relative delta (“变动差值”): setFrom + setDelta (to = from + delta at start), or setDelta alone (from defaults to current/0). Angle tracks use shortest-path lerp (setToAngle / setDeltaAngle).</p>
+<p>No API overloads; ease kind is a string (same set as Math.ease). </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a76f9076d8ffd3d1b6b6e5a556f51cda8" name="a76f9076d8ffd3d1b6b6e5a556f51cda8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76f9076d8ffd3d1b6b6e5a556f51cda8">&#9670;&#160;</a></span>Tween() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::Tween::Tween </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>duration</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a> , 以及 <a class="el" href="Tween_8cpp_source.html#l00112">setDuration()</a>.</p>
+
+</div>
+</div>
+<a id="a56047564a929fa4e5356c53f0adbbc26" name="a56047564a929fa4e5356c53f0adbbc26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56047564a929fa4e5356c53f0adbbc26">&#9670;&#160;</a></span>~Tween()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::Tween::~Tween </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae76486dce8bc32a20d186d19c8ed3e3d" name="ae76486dce8bc32a20d186d19c8ed3e3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae76486dce8bc32a20d186d19c8ed3e3d">&#9670;&#160;</a></span>Tween() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::Tween::Tween </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1Tween.html">Tween</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa9d7b500e44e3bf1de9cb17941a4aad3" name="aa9d7b500e44e3bf1de9cb17941a4aad3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9d7b500e44e3bf1de9cb17941a4aad3">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::Tween::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance by one scheduler-owned deterministic step. </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimationTime_8h_source.html#l00013">eve::animation::detail::secondsForStep()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tween_8cpp_source.html#l00304">update()</a>.</p>
+
+</div>
+</div>
+<a id="ac7b6b1b9631b9852022ffa969ccdc69d" name="ac7b6b1b9631b9852022ffa969ccdc69d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7b6b1b9631b9852022ffa969ccdc69d">&#9670;&#160;</a></span>currentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> eve::animation::Tween::currentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last scheduler tick consumed by this tween. </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9cf26292b4e7e3966b590872cec77e80" name="a9cf26292b4e7e3966b590872cec77e80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf26292b4e7e3966b590872cec77e80">&#9670;&#160;</a></span>evaluate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::evaluate </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>t</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample property at linear t in [0,1] using current from/to (no state change). </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="a7e7747190a8bc09302f7487c04ba9299" name="a7e7747190a8bc09302f7487c04ba9299"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e7747190a8bc09302f7487c04ba9299">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::get </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="aa673ebb170f9f4fbc2ab06edf20be9be" name="aa673ebb170f9f4fbc2ab06edf20be9be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa673ebb170f9f4fbc2ab06edf20be9be">&#9670;&#160;</a></span>getDelay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::getDelay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aece6fc483aebed9e92d5e6e45a0bc3f8" name="aece6fc483aebed9e92d5e6e45a0bc3f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aece6fc483aebed9e92d5e6e45a0bc3f8">&#9670;&#160;</a></span>getDelta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::getDelta </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="a4522e6ffcbd059da1672cbb1e9abd00e" name="a4522e6ffcbd059da1672cbb1e9abd00e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4522e6ffcbd059da1672cbb1e9abd00e">&#9670;&#160;</a></span>getDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::getDuration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae41a70df60b2137e7bc90b80aa19ffe8" name="ae41a70df60b2137e7bc90b80aa19ffe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae41a70df60b2137e7bc90b80aa19ffe8">&#9670;&#160;</a></span>getEase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::Tween::getEase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f6933012948808f61d9662ab94dc89b" name="a6f6933012948808f61d9662ab94dc89b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f6933012948808f61d9662ab94dc89b">&#9670;&#160;</a></span>getEasedProgress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::getEasedProgress </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Eased progress used for interpolation, [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tween_8cpp_source.html#l00193">getProgress()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="af6d33d8e17779f98f32f972fdae2f809" name="af6d33d8e17779f98f32f972fdae2f809"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6d33d8e17779f98f32f972fdae2f809">&#9670;&#160;</a></span>getElapsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::getElapsed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Elapsed time in the current cycle (excludes delay). </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa4bbc9c86d2e0fd691b3e84baa6cd4dc" name="aa4bbc9c86d2e0fd691b3e84baa6cd4dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4bbc9c86d2e0fd691b3e84baa6cd4dc">&#9670;&#160;</a></span>getFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::getFrom </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="a9284bd19bcab71fcaffce5e26350b240" name="a9284bd19bcab71fcaffce5e26350b240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9284bd19bcab71fcaffce5e26350b240">&#9670;&#160;</a></span>getProgress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::getProgress </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Linear progress in the current cycle, [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tween_8cpp_source.html#l00198">getEasedProgress()</a>.</p>
+
+</div>
+</div>
+<a id="a3f669a4a335bb4782f99219c0287a0aa" name="a3f669a4a335bb4782f99219c0287a0aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f669a4a335bb4782f99219c0287a0aa">&#9670;&#160;</a></span>getPropertyCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::Tween::getPropertyCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Names of all property tracks (stable order = insertion order). </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a60d7d3985c2a1069b8c356779ebdc2" name="a9a60d7d3985c2a1069b8c356779ebdc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a60d7d3985c2a1069b8c356779ebdc2">&#9670;&#160;</a></span>getPropertyName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::Tween::getPropertyName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1d92bb466a33d81ee2554719168a6f68" name="a1d92bb466a33d81ee2554719168a6f68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d92bb466a33d81ee2554719168a6f68">&#9670;&#160;</a></span>getRepeat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::Tween::getRepeat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad26915aa816b5bf5a280776e8caa180e" name="ad26915aa816b5bf5a280776e8caa180e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad26915aa816b5bf5a280776e8caa180e">&#9670;&#160;</a></span>getTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::Tween::getTo </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="a3774f82643ad6bee8f11023e45d57880" name="a3774f82643ad6bee8f11023e45d57880"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3774f82643ad6bee8f11023e45d57880">&#9670;&#160;</a></span>getYoyo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::getYoyo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af574173823ea1b49b8e59e9df5a7bf81" name="af574173823ea1b49b8e59e9df5a7bf81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af574173823ea1b49b8e59e9df5a7bf81">&#9670;&#160;</a></span>has()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::has </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a4ec51d03c5ef5d79e61778e39d6ac29f" name="a4ec51d03c5ef5d79e61778e39d6ac29f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ec51d03c5ef5d79e61778e39d6ac29f">&#9670;&#160;</a></span>hasCurrentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::hasCurrentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this tween has consumed a scheduler step. </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e89203cc8c4ee67a794534a617e05c4" name="a8e89203cc8c4ee67a794534a617e05c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e89203cc8c4ee67a794534a617e05c4">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tween_8cpp_source.html#l00304">update()</a>.</p>
+
+</div>
+</div>
+<a id="a860ed6b5fa463f68cbea350fd807e17c" name="a860ed6b5fa463f68cbea350fd807e17c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a860ed6b5fa463f68cbea350fd807e17c">&#9670;&#160;</a></span>isDelayed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::isDelayed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a04e67b4c3b84618450fcd5a8bb4691ca" name="a04e67b4c3b84618450fcd5a8bb4691ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04e67b4c3b84618450fcd5a8bb4691ca">&#9670;&#160;</a></span>isFinished()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::isFinished </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a665f201c03485a5d825077d8d8c68f59" name="a665f201c03485a5d825077d8d8c68f59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a665f201c03485a5d825077d8d8c68f59">&#9670;&#160;</a></span>isPaused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::isPaused </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0fb7a73b8274ac439313e2ebe00dc799" name="a0fb7a73b8274ac439313e2ebe00dc799"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fb7a73b8274ac439313e2ebe00dc799">&#9670;&#160;</a></span>isRunning()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::isRunning </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afaf8abb3a1d2ce149b9a9f8c29de6e3c" name="afaf8abb3a1d2ce149b9a9f8c29de6e3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaf8abb3a1d2ce149b9a9f8c29de6e3c">&#9670;&#160;</a></span>isStopped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::isStopped </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afcdc61062b6349ebdf7e894dd5948c9d" name="afcdc61062b6349ebdf7e894dd5948c9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcdc61062b6349ebdf7e894dd5948c9d">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1Tween.html">Tween</a> &amp; eve::animation::Tween::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1Tween.html">Tween</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4f9a82a06288352240ef20b2dc341e56" name="a4f9a82a06288352240ef20b2dc341e56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f9a82a06288352240ef20b2dc341e56">&#9670;&#160;</a></span>pause()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::pause </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a61c73c132163cc48114aa785f17c8cc3" name="a61c73c132163cc48114aa785f17c8cc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61c73c132163cc48114aa785f17c8cc3">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="adfce88e3b4797102104ccfea03485c5f" name="adfce88e3b4797102104ccfea03485c5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfce88e3b4797102104ccfea03485c5f">&#9670;&#160;</a></span>resume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::resume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1485cc48243b01a4c8345df4f48514c5" name="a1485cc48243b01a4c8345df4f48514c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1485cc48243b01a4c8345df4f48514c5">&#9670;&#160;</a></span>setDelay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setDelay </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1154a5aeca6a2e68e44f10d369b57b6" name="ad1154a5aeca6a2e68e44f10d369b57b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1154a5aeca6a2e68e44f10d369b57b6">&#9670;&#160;</a></span>setDelta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setDelta </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Relative change: end = start + delta (resolved when <a class="el" href="classeve_1_1animation_1_1Tween.html#a16587b80175fbddd608733fdd96de635">start()</a> runs). </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="a309aa472631dc3b4937968daea15783d" name="a309aa472631dc3b4937968daea15783d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a309aa472631dc3b4937968daea15783d">&#9670;&#160;</a></span>setDeltaAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setDeltaAngle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaRadians</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="a94cb6b9dfd11b7ec49a76f014438ebf9" name="a94cb6b9dfd11b7ec49a76f014438ebf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94cb6b9dfd11b7ec49a76f014438ebf9">&#9670;&#160;</a></span>setDuration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setDuration </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Tween_8cpp_source.html#l00017">Tween()</a>.</p>
+
+</div>
+</div>
+<a id="a40d4c7f8f0d6a91a8ffd74ce498e8d7b" name="a40d4c7f8f0d6a91a8ffd74ce498e8d7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40d4c7f8f0d6a91a8ffd74ce498e8d7b">&#9670;&#160;</a></span>setEase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setEase </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>.</p>
+
+</div>
+</div>
+<a id="a083335ed9baecf2c41552654b761ef2e" name="a083335ed9baecf2c41552654b761ef2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a083335ed9baecf2c41552654b761ef2e">&#9670;&#160;</a></span>setFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setFrom </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a75490c0ac699e6f32c0e4463682358c1" name="a75490c0ac699e6f32c0e4463682358c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75490c0ac699e6f32c0e4463682358c1">&#9670;&#160;</a></span>setFromAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setFromAngle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="ab810633178c0d68e7e1eebd5a39626d2" name="ab810633178c0d68e7e1eebd5a39626d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab810633178c0d68e7e1eebd5a39626d2">&#9670;&#160;</a></span>setRepeat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setRepeat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Play count: 1 = once (default), N = N cycles, -1 = infinite. Values &lt; -1 are clamped to -1. </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="adc515c0701b096f153c3d41339d8a75c" name="adc515c0701b096f153c3d41339d8a75c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc515c0701b096f153c3d41339d8a75c">&#9670;&#160;</a></span>setTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setTo </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a3906ccba0a80bcb728fe8b2f49499058" name="a3906ccba0a80bcb728fe8b2f49499058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3906ccba0a80bcb728fe8b2f49499058">&#9670;&#160;</a></span>setToAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setToAngle </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radians</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="ModelRenderer_8cpp_source.html#l00096">tr</a>.</p>
+
+</div>
+</div>
+<a id="a859b7f6334127cd2b3c07d446ca98832" name="a859b7f6334127cd2b3c07d446ca98832"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a859b7f6334127cd2b3c07d446ca98832">&#9670;&#160;</a></span>setYoyo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::setYoyo </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a16587b80175fbddd608733fdd96de635" name="a16587b80175fbddd608733fdd96de635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16587b80175fbddd608733fdd96de635">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::start </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa01972210077d1fad27aac8992fd5bdc" name="aa01972210077d1fad27aac8992fd5bdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa01972210077d1fad27aac8992fd5bdc">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::Tween::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a723242e74ca220e8fec7ac1e6e908761" name="a723242e74ca220e8fec7ac1e6e908761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a723242e74ca220e8fec7ac1e6e908761">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::Tween::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance by dt seconds; legacy facade that forwards to <a class="el" href="classeve_1_1animation_1_1Tween.html#aa9d7b500e44e3bf1de9cb17941a4aad3" title="Advance by one scheduler-owned deterministic step.">advance()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Tween_8cpp_source.html">Tween.cpp</a> 第 <a class="el" href="Tween_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Tween_8cpp_source.html#l00295">advance()</a>, <a class="el" href="Tween_8h_source.html#l00073">isActive()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="af47625f50036c466946f960db7320bcf" name="af47625f50036c466946f960db7320bcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af47625f50036c466946f960db7320bcf">&#9670;&#160;</a></span>Animation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1animation_1_1Animation.html">Animation</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Tween_8h_source.html">Tween.h</a> 第 <a class="el" href="Tween_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="Tween_8h_source.html">Tween.h</a></li>
+<li>src/modules/animation/<a class="el" href="Tween_8cpp_source.html">Tween.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

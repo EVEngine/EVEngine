@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/Snapshot.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">Snapshot.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Versioned, integrity-checked persistence envelopes.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="Export_8h_source.html">common/Export.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Identity_8h_source.html">common/Identity.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Revision_8h_source.html">common/Revision.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SchemaVersion_8h_source.html">common/SchemaVersion.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Time_8h_source.html">common/Time.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">common/Value.h</a>&quot;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+</div>
+<p><a href="Snapshot_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable outer format shared by persistence and cross-process snapshots.  <a href="structeve_1_1SnapshotEnvelope.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1SnapshotMigrationChain.html">eve::SnapshotMigrationChain</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One directed payload migration step.  <a href="classeve_1_1SnapshotMigrationChain.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:af5cd4beecd29f95341ebc417b792f16c" id="r_af5cd4beecd29f95341ebc417b792f16c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">eve::SnapshotHashProvider</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve.html#aaaf0d65059bd675715fff4063c9ca9b2">ContentId</a> &gt;(std::string_view canonicalInput)&gt;</td></tr>
+<tr class="memdesc:af5cd4beecd29f95341ebc417b792f16c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Injected content-digest implementation used by snapshots.  <br /></td></tr>
+<tr class="separator:af5cd4beecd29f95341ebc417b792f16c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a6f1e3d1555de64ce15877eb5ce498270" id="r_a6f1e3d1555de64ce15877eb5ce498270"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a6f1e3d1555de64ce15877eb5ce498270">eve::makeSnapshotEnvelope</a> (std::string <a class="el" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> schema, <a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">SchemaVersion</a> schemaVersion, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">PersistentId</a> instanceId, <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> <a class="el" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a6f1e3d1555de64ce15877eb5ce498270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct and seal a snapshot envelope.  <br /></td></tr>
+<tr class="separator:a6f1e3d1555de64ce15877eb5ce498270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38d4cd3452f4f810ab8398955cdc1bbd" id="r_a38d4cd3452f4f810ab8398955cdc1bbd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a38d4cd3452f4f810ab8398955cdc1bbd">eve::snapshotHashInput</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a38d4cd3452f4f810ab8398955cdc1bbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Produce the canonical JSON input used for a snapshot content hash.  <br /></td></tr>
+<tr class="separator:a38d4cd3452f4f810ab8398955cdc1bbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95c07f2b43e52af108438c30085971ca" id="r_a95c07f2b43e52af108438c30085971ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a95c07f2b43e52af108438c30085971ca">eve::verifySnapshotEnvelope</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a> &amp;snapshot, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a95c07f2b43e52af108438c30085971ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verify an envelope's content hash without modifying it.  <br /></td></tr>
+<tr class="separator:a95c07f2b43e52af108438c30085971ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a5f44b6c368ea209ecea563aec9086c" id="r_a9a5f44b6c368ea209ecea563aec9086c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a9a5f44b6c368ea209ecea563aec9086c">eve::validateSnapshotPayloadMetadata</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>, <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> <a class="el" href="PixelWorld_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a9a5f44b6c368ea209ecea563aec9086c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate optional payload copies of envelope revision and tick.  <br /></td></tr>
+<tr class="separator:a9a5f44b6c368ea209ecea563aec9086c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab54007a008bca3af24c466396a848da8" id="r_ab54007a008bca3af24c466396a848da8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#ab54007a008bca3af24c466396a848da8">eve::snapshotEnvelopeValue</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:ab54007a008bca3af24c466396a848da8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert an envelope to its strict canonical value representation.  <br /></td></tr>
+<tr class="separator:ab54007a008bca3af24c466396a848da8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0d550d36952c93706ee575f28fcd5b7" id="r_aa0d550d36952c93706ee575f28fcd5b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#aa0d550d36952c93706ee575f28fcd5b7">eve::parseSnapshotEnvelopeValue</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:aa0d550d36952c93706ee575f28fcd5b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and verify an envelope from an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>.  <br /></td></tr>
+<tr class="separator:aa0d550d36952c93706ee575f28fcd5b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad52ab48eef19da4a75361498ac79fd36" id="r_ad52ab48eef19da4a75361498ac79fd36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#ad52ab48eef19da4a75361498ac79fd36">eve::serializeSnapshotEnvelope</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:ad52ab48eef19da4a75361498ac79fd36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize an envelope as deterministic compact JSON.  <br /></td></tr>
+<tr class="separator:ad52ab48eef19da4a75361498ac79fd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cd576793650a7dacc981b7343f7ad74" id="r_a2cd576793650a7dacc981b7343f7ad74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1SnapshotEnvelope.html">SnapshotEnvelope</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html#a2cd576793650a7dacc981b7343f7ad74">eve::parseSnapshotEnvelope</a> (std::string_view json, const <a class="el" href="namespaceeve.html#af5cd4beecd29f95341ebc417b792f16c">SnapshotHashProvider</a> &amp;hashProvider)</td></tr>
+<tr class="memdesc:a2cd576793650a7dacc981b7343f7ad74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and verify an envelope from canonical or compatible JSON text.  <br /></td></tr>
+<tr class="separator:a2cd576793650a7dacc981b7343f7ad74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Versioned, integrity-checked persistence envelopes. </p>
+<p>SnapshotEnvelope owns the stable header and delegates domain state to an owning <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">eve::Value</a> payload. It deliberately has no wall-clock field: deterministic hash input is assembled only from the stable header and payload. The hash algorithm is injected by the caller because ContentId must not silently imply a cryptographic or weak substitute algorithm. </p>
+
+<p class="definition">在文件 <a class="el" href="Snapshot_8h_source.html">Snapshot.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/pixelworld/PixelWorld.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_72f5911f7825619aacf57c36184744ad.html">pixelworld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a>  </div>
+  <div class="headertitle"><div class="title">PixelWorld.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="PixelWorld_8h_source.html">pixelworld/PixelWorld.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PixelWorldControl_8h_source.html">pixelworld/PixelWorldControl.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Status_8h_source.html">common/Status.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;array&gt;</code><br />
+<code>#include &lt;atomic&gt;</code><br />
+<code>#include &lt;bit&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;deque&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div>
+<p><a href="PixelWorld_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1pixelworld_1_1PixelWorld_1_1Impl.html">eve::pixelworld::PixelWorld::Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1pixelworld" id="r_namespaceeve_1_1pixelworld"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1pixelworld.html">eve::pixelworld</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a03c996f9fcf0e10baeb3e700be0c409a" name="a03c996f9fcf0e10baeb3e700be0c409a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03c996f9fcf0e10baeb3e700be0c409a">&#9670;&#160;</a></span>active</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool active = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd5d8ae03d127bc059a76d4629cf7f6b" name="afd5d8ae03d127bc059a76d4629cf7f6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd5d8ae03d127bc059a76d4629cf7f6b">&#9670;&#160;</a></span>cells</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;PixelCell, kPixelChunkSize * kPixelChunkSize&gt; cells {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainAsset_8cpp_source.html#l00085">eve::procgen::TerrainAsset::bake()</a>, <a class="el" href="DatabasePanel_8cpp_source.html#l00236">eve::ui::DatabasePanel::build()</a>, <a class="el" href="PixelWorldGenerationCodec_8cpp_source.html#l00142">eve::pixelworld::decodePixelWorldGenerationRequestJson()</a>, <a class="el" href="PixelWorldGenerationCodec_8cpp_source.html#l00108">eve::pixelworld::encodePixelWorldGenerationRequestJson()</a>, <a class="el" href="Brush_8cpp_source.html#l00201">eve::level_editing::Brush::eraseAt()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00375">eve::procgen::generateHexTerrainMesh()</a>, <a class="el" href="JsonExport_8cpp_source.html#l00029">eve::procgen::gridToJson()</a>, <a class="el" href="TerrainAsset_8cpp_source.html#l00222">eve::procgen::TerrainAsset::loadChunk()</a>, <a class="el" href="FluidSimulation_8cpp_source.html#l00009">eve::fluids::SimGrid::make()</a>, <a class="el" href="Brush_8cpp_source.html#l00192">eve::level_editing::Brush::paintAt()</a>, <a class="el" href="Brush_8cpp_source.html#l00243">eve::level_editing::Brush::paintLine()</a>, <a class="el" href="Brush_8cpp_source.html#l00250">eve::level_editing::Brush::paintRect()</a>, <a class="el" href="Brush_8cpp_source.html#l00257">eve::level_editing::Brush::previewAt()</a>, <a class="el" href="Brush_8cpp_source.html#l00283">eve::level_editing::Brush::previewLine()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00504">eve::tactics::BattleSystem::previewMove()</a>, <a class="el" href="Brush_8cpp_source.html#l00290">eve::level_editing::Brush::previewRect()</a>, <a class="el" href="Crowd_8cpp_source.html#l00090">eve::crowd::Crowd::Impl::rebuildGrid()</a>, <a class="el" href="map_2ArtifactProvider_8cpp_source.html#l00165">eve::map::MapArtifactProvider::restoreState()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00865">eve::tactics::TacticsPersistence::snapshot()</a> , 以及 <a class="el" href="map_2ArtifactProvider_8cpp_source.html#l00137">eve::map::MapArtifactProvider::snapshotState()</a>.</p>
+
+</div>
+</div>
+<a id="a45b0313f6ff8ad6060695b0786d319d6" name="a45b0313f6ff8ad6060695b0786d319d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45b0313f6ff8ad6060695b0786d319d6">&#9670;&#160;</a></span>idleTicks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint8_t idleTicks = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69250140434ffc8f22e04f23ddc59f76" name="a69250140434ffc8f22e04f23ddc59f76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69250140434ffc8f22e04f23ddc59f76">&#9670;&#160;</a></span>materialCounts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;std::uint16_t, 64&gt; materialCounts {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6fcc6fa2e156a81e57eaedb948d8c49c" name="a6fcc6fa2e156a81e57eaedb948d8c49c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fcc6fa2e156a81e57eaedb948d8c49c">&#9670;&#160;</a></span>materialOverflow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t materialOverflow = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a6a25c0668d51bafdecd319da33bcab" name="a3a6a25c0668d51bafdecd319da33bcab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a6a25c0668d51bafdecd319da33bcab">&#9670;&#160;</a></span>maximumTemperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int16_t maximumTemperature = -32768</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9409820938aad67ecb60fc8432b5a82c" name="a9409820938aad67ecb60fc8432b5a82c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9409820938aad67ecb60fc8432b5a82c">&#9670;&#160;</a></span>minimumTemperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int16_t minimumTemperature = 32767</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a308e2e18e1557a4a23c7cf4e70c0286f" name="a308e2e18e1557a4a23c7cf4e70c0286f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a308e2e18e1557a4a23c7cf4e70c0286f">&#9670;&#160;</a></span>mobile</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t mobile = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneImportTarget_8cpp_source.html#l00087">eve::sceneloader_editing::SceneImportTarget::makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a2fdb616e698e0bfea33a4531c77e89f1" name="a2fdb616e698e0bfea33a4531c77e89f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fdb616e698e0bfea33a4531c77e89f1">&#9670;&#160;</a></span>nonAir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t nonAir = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55dd0dc755bde1067aa82a718ea2288c" name="a55dd0dc755bde1067aa82a718ea2288c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55dd0dc755bde1067aa82a718ea2288c">&#9670;&#160;</a></span>revision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t revision = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TacticsBattle_8cpp_source.html#l00605">eve::tactics::BattleSystem::acceptReaction()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00681">eve::tactics::BattleSystem::addObjective()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00147">eve::tactics::BattleSystem::addSide()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00171">eve::tactics::BattleSystem::addUnit()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00243">eve::tactics::BattleSystem::advance()</a>, <a class="el" href="AudioTransport_8cpp_source.html#l00014">eve::audio_editing::AudioAuditionTransport::bind()</a>, <a class="el" href="SkeletonOverlayRuntime_8cpp_source.html#l00008">eve::animation_editing::AnimationSkeletonOverlayAdapter::build()</a>, <a class="el" href="ProceduralBoneOverlay_8cpp_source.html#l00010">eve::animation_editing::ProceduralBoneOverlayBuilder::build()</a>, <a class="el" href="SkeletonOverlay_8cpp_source.html#l00057">eve::animation_editing::SkeletonOverlayBuilder::build()</a>, <a class="el" href="Tactics_8cpp_source.html#l00682">eve::tactics::Tactics::commandsFrom()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00659">eve::tactics::BattleSystem::declineReaction()</a>, <a class="el" href="PixelWorldArchive_8cpp_source.html#l00197">eve::pixelworld_streaming::decodeChunkBatchArchive()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00727">eve::tactics::BattleSystem::defeatUnit()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">eve::procgen::RuntimeGeneration::deserializeCell()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00343">eve::tactics::BattleSystem::endTurn()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00416">eve::tactics::BattleSystem::faceUnit()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00531">eve::tactics::BattleSystem::finish()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00117">eve::map::TileLayer::getRevision()</a>, <a class="el" href="EditorPrefab_8cpp_source.html#l00377">eve::editor::ScenePrefabService::loadSnapshot()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00104">eve::makeSnapshotEnvelope()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00374">eve::tactics::BattleSystem::moveUnit()</a>, <a class="el" href="ClimbingControl_8cpp_source.html#l00091">eve::climbing::ClimbingControl::observeGameplay()</a>, <a class="el" href="ProductControl_8cpp_source.html#l00143">eve::rpg::ProductControl::observeGameplay()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00551">eve::tactics::BattleSystem::openReaction()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00137">eve::parseSnapshotEnvelopeValue()</a>, <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00072">eve::editor::DiskAtomicDocumentStore::read()</a>, <a class="el" href="Production_8cpp_source.html#l00527">eve::production::WorkQueue::restore()</a>, <a class="el" href="PixelWorldReplay_8cpp_source.html#l00291">eve::pixelworld_replay::PixelReplayLog::restoreSnapshot()</a>, <a class="el" href="MaterialGraph_8cpp_source.html#l00105">eve::material_editing::MaterialEditorService::result()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00767">eve::tactics::BattleSystem::roll()</a>, <a class="el" href="Tactics_8cpp_source.html#l00518">eve::tactics::Tactics::setTopology()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00265">eve::card::CardDefinitionRuntime::snapshot()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00268">eve::rpg::SkillDefinitionRuntime::snapshot()</a>, <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00427">eve::vehicle::VehicleDefinitionRuntime::snapshot()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00507">eve::weapon::WeaponDefinitionRuntime::snapshot()</a>, <a class="el" href="CardDefinitionRuntime_8cpp_source.html#l00274">eve::card::CardDefinitionRuntime::snapshotJson()</a>, <a class="el" href="SkillDefinitionRuntime_8cpp_source.html#l00277">eve::rpg::SkillDefinitionRuntime::snapshotJson()</a>, <a class="el" href="VehicleDefinitionRuntime_8cpp_source.html#l00436">eve::vehicle::VehicleDefinitionRuntime::snapshotJson()</a>, <a class="el" href="WeaponDefinitionRuntime_8cpp_source.html#l00516">eve::weapon::WeaponDefinitionRuntime::snapshotJson()</a>, <a class="el" href="RuntimeSnapshot_8h_source.html#l00083">eve::definition::snapshotRuntimeInstance()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00211">eve::tactics::BattleSystem::start()</a>, <a class="el" href="ClimbingControl_8cpp_source.html#l00158">eve::climbing::ClimbingControl::submitGameplay()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00081">eve::validateSnapshotPayloadMetadata()</a>, <a class="el" href="TacticsBattle_8cpp_source.html#l00466">eve::tactics::BattleSystem::waitUnit()</a> , 以及 <a class="el" href="EditorDiskDocumentStore_8cpp_source.html#l00174">eve::editor::AutosaveService::writeDraft()</a>.</p>
+
+</div>
+</div>
+<a id="a7e31bb74be7a1e757f2978b770f50745" name="a7e31bb74be7a1e757f2978b770f50745"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e31bb74be7a1e757f2978b770f50745">&#9670;&#160;</a></span>temperatureBoundsDirty</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool temperatureBoundsDirty = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa08f66ec9526cfeaaa05bd29c49c8cab" name="aa08f66ec9526cfeaaa05bd29c49c8cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa08f66ec9526cfeaaa05bd29c49c8cab">&#9670;&#160;</a></span>thermalRemainderCells</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t thermalRemainderCells = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8fe66c0c875caf2910531c672f278fe6" name="a8fe66c0c875caf2910531c672f278fe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fe66c0c875caf2910531c672f278fe6">&#9670;&#160;</a></span>touched</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool touched = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0908fbd3c52646ce62d3b26bfe7e72b5" name="a0908fbd3c52646ce62d3b26bfe7e72b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0908fbd3c52646ce62d3b26bfe7e72b5">&#9670;&#160;</a></span>updated</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;std::uint64_t, kPixelChunkSize * kPixelChunkSize&gt; updated {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StatusSystem_8cpp_source.html#l00315">eve::rpg::StatusSystem::apply()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00214">eve::editor::ActionTimelineWidget::pointerUp()</a>, <a class="el" href="Shape3D_8cpp_source.html#l00698">eve::physics::Shape3D::setHeightFieldRegion()</a>, <a class="el" href="Card_8cpp_source.html#l00267">eve::card::Card::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l04260">eve::rts::RTSProjectileSystem::step()</a> , 以及 <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00109">eve::vehicle::VehicleOrderQueueAdapter::update()</a>.</p>
+
+</div>
+</div>
+<a id="a6150e0515f7202e2fb518f7206ed97dc" name="a6150e0515f7202e2fb518f7206ed97dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6150e0515f7202e2fb518f7206ed97dc">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int x = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a2f84ed7838f07779ae24c5a9086d33" name="a0a2f84ed7838f07779ae24c5a9086d33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2f84ed7838f07779ae24c5a9086d33">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int y = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PixelWorld_8cpp_source.html">PixelWorld.cpp</a> 第 <a class="el" href="PixelWorld_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

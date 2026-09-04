@@ -1,0 +1,509 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/EffectShaders.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EffectShaders.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EffectShaders_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EffectShaders_8h.html">stylize/EffectShaders.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Shader_8h.html">graphics/Shader.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;graphics/shaders/mesh3d_toon_vert_spv.inc&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;stylize/shaders/chromatic_post_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;stylize/shaders/dissolve_mesh_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;stylize/shaders/grain_post_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;stylize/shaders/hologram_mesh_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;stylize/shaders/slash_mesh_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;stylize/shaders/ember_mesh_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;stylize/shaders/aura_mesh_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;stylize/shaders/rim_mesh_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;stylize/shaders/snow_mesh_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;stylize/shaders/vignette_post_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">// Mesh effect styles (reuse mesh3d_toon.vert; no scene buffers needed).</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">const</span> StyleDefinition kMeshEffects[] = {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    {<span class="stringliteral">&quot;rim&quot;</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e">graphics::PostEffectStage::AfterOpaque</a>, 40},</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    {<span class="stringliteral">&quot;dissolve&quot;</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e">graphics::PostEffectStage::AfterOpaque</a>, 41},</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    {<span class="stringliteral">&quot;hologram&quot;</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e">graphics::PostEffectStage::AfterOpaque</a>, 42},</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    {<span class="stringliteral">&quot;snow&quot;</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e">graphics::PostEffectStage::AfterOpaque</a>, 43},</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    {<span class="stringliteral">&quot;slash&quot;</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e">graphics::PostEffectStage::AfterOpaque</a>, 44},</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {<span class="stringliteral">&quot;ember&quot;</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e">graphics::PostEffectStage::AfterOpaque</a>, 45},</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    {<span class="stringliteral">&quot;aura&quot;</span>, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e">graphics::PostEffectStage::AfterOpaque</a>, 46},</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">// Post effect styles (full-screen passes, color input only).</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">const</span> StyleDefinition kPostEffects[] = {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    {<span class="stringliteral">&quot;vignette&quot;</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a7357230b1a2b17f4b15ea460bd12658d">graphics::PostEffectStage::AfterTonemap</a>, 260},</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    {<span class="stringliteral">&quot;chromatic&quot;</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a7357230b1a2b17f4b15ea460bd12658d">graphics::PostEffectStage::AfterTonemap</a>, 270},</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    {<span class="stringliteral">&quot;grain&quot;</span>, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a7357230b1a2b17f4b15ea460bd12658d">graphics::PostEffectStage::AfterTonemap</a>, 280},</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">const</span> StyleParameterDesc kRimParams[] = {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    {<span class="stringliteral">&quot;colorR&quot;</span>, 0.4f, 0.f, 2.f},           {<span class="stringliteral">&quot;colorG&quot;</span>, 0.6f, 0.f, 2.f},      {<span class="stringliteral">&quot;colorB&quot;</span>, 1.f, 0.f, 2.f},</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    {<span class="stringliteral">&quot;rimPower&quot;</span>, 3.f, 0.1f, 16.f},        {<span class="stringliteral">&quot;rimIntensity&quot;</span>, 1.f, 0.f, 4.f}, {<span class="stringliteral">&quot;rimMix&quot;</span>, 1.f, 0.f, 1.f},</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    {<span class="stringliteral">&quot;ambientStrength&quot;</span>, 0.15f, 0.f, 1.f}, {<span class="stringliteral">&quot;baseLight&quot;</span>, 1.f, 0.f, 3.f},</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">const</span> StyleParameterDesc kDissolveParams[] = {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    {<span class="stringliteral">&quot;amount&quot;</span>, 0.5f, 0.f, 1.f},      {<span class="stringliteral">&quot;edgeWidth&quot;</span>, 0.1f, 0.01f, 0.5f}, {<span class="stringliteral">&quot;edgeColorR&quot;</span>, 1.f, 0.f, 2.f},</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    {<span class="stringliteral">&quot;edgeColorG&quot;</span>, 0.5f, 0.f, 2.f},  {<span class="stringliteral">&quot;edgeColorB&quot;</span>, 0.1f, 0.f, 2.f},   {<span class="stringliteral">&quot;edgeGlow&quot;</span>, 2.f, 0.f, 6.f},</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    {<span class="stringliteral">&quot;noiseScale&quot;</span>, 2.f, 0.1f, 16.f}, {<span class="stringliteral">&quot;hardness&quot;</span>, 0.5f, 0.f, 1.f},</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">const</span> StyleParameterDesc kHologramParams[] = {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    {<span class="stringliteral">&quot;colorR&quot;</span>, 0.2f, 0.f, 2.f},         {<span class="stringliteral">&quot;colorG&quot;</span>, 0.9f, 0.f, 2.f},      {<span class="stringliteral">&quot;colorB&quot;</span>, 1.f, 0.f, 2.f},</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    {<span class="stringliteral">&quot;fresnelStrength&quot;</span>, 1.f, 0.f, 4.f}, {<span class="stringliteral">&quot;scanDensity&quot;</span>, 8.f, 1.f, 48.f}, {<span class="stringliteral">&quot;scanIntensity&quot;</span>, 0.5f, 0.f, 1.f},</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    {<span class="stringliteral">&quot;flicker&quot;</span>, 0.3f, 0.f, 1.f},        {<span class="stringliteral">&quot;alphaBase&quot;</span>, 0.35f, 0.f, 1.f},  {<span class="stringliteral">&quot;glitchAmplitude&quot;</span>, 0.15f, 0.f, 1.f},</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">const</span> StyleParameterDesc kSnowParams[] = {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    {<span class="stringliteral">&quot;snowAmount&quot;</span>, 0.9f, 0.f, 1.f},       {<span class="stringliteral">&quot;snowHardness&quot;</span>, 0.5f, 0.f, 1.f}, {<span class="stringliteral">&quot;snowColorR&quot;</span>, 0.93f, 0.f, 1.f},</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    {<span class="stringliteral">&quot;snowColorG&quot;</span>, 0.95f, 0.f, 1.f},      {<span class="stringliteral">&quot;snowColorB&quot;</span>, 0.98f, 0.f, 1.f},  {<span class="stringliteral">&quot;noiseScale&quot;</span>, 3.f, 0.1f, 16.f},</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    {<span class="stringliteral">&quot;snowHeight&quot;</span>, 0.f, -1000.f, 1000.f}, {<span class="stringliteral">&quot;heightFade&quot;</span>, 4.f, 0.1f, 100.f},</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">const</span> StyleParameterDesc kSlashParams[] = {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {<span class="stringliteral">&quot;coreR&quot;</span>, 0.85f, 0.f, 2.f},          {<span class="stringliteral">&quot;coreG&quot;</span>, 0.95f, 0.f, 2.f},      {<span class="stringliteral">&quot;coreB&quot;</span>, 1.0f, 0.f, 2.f},</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    {<span class="stringliteral">&quot;edgeR&quot;</span>, 1.0f, 0.f, 2.f},           {<span class="stringliteral">&quot;edgeG&quot;</span>, 0.4f, 0.f, 2.f},       {<span class="stringliteral">&quot;edgeB&quot;</span>, 0.2f, 0.0f, 2.f},</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    {<span class="stringliteral">&quot;intensity&quot;</span>, 1.6f, 0.f, 4.f},       {<span class="stringliteral">&quot;width&quot;</span>, 0.06f, 0.005f, 0.3f}, {<span class="stringliteral">&quot;softness&quot;</span>, 0.12f, 0.001f, 0.5f},</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    {<span class="stringliteral">&quot;noiseScale&quot;</span>, 4.f, 0.1f, 20.f},      {<span class="stringliteral">&quot;time&quot;</span>, 0.f, 0.f, 120.f},      {<span class="stringliteral">&quot;speed&quot;</span>, 0.9f, 0.f, 3.f},</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    {<span class="stringliteral">&quot;flowWarp&quot;</span>, 0.35f, 0.f, 2.f},        {<span class="stringliteral">&quot;edgeDistortion&quot;</span>, 0.08f, 0.f, 0.5f},</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    {<span class="stringliteral">&quot;depthSoftness&quot;</span>, 0.004f, 0.0001f, 0.1f}, {<span class="stringliteral">&quot;intersectionWidth&quot;</span>, 0.006f, 0.0001f, 0.1f},</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    {<span class="stringliteral">&quot;intersectionGlow&quot;</span>, 0.8f, 0.f, 4.f},</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    {<span class="stringliteral">&quot;refractionStrength&quot;</span>, 0.f, 0.f, 1.f},</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">const</span> StyleParameterDesc kEmberParams[] = {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    {<span class="stringliteral">&quot;coreR&quot;</span>, 1.0f, 0.f, 2.f},        {<span class="stringliteral">&quot;coreG&quot;</span>, 0.35f, 0.f, 2.f},    {<span class="stringliteral">&quot;coreB&quot;</span>, 0.08f, 0.f, 2.f},</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    {<span class="stringliteral">&quot;flareR&quot;</span>, 1.0f, 0.f, 2.f},       {<span class="stringliteral">&quot;flareG&quot;</span>, 0.58f, 0.f, 2.f},   {<span class="stringliteral">&quot;flareB&quot;</span>, 0.2f, 0.f, 2.f},</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    {<span class="stringliteral">&quot;burnAmount&quot;</span>, 0.68f, 0.f, 1.f},   {<span class="stringliteral">&quot;flicker&quot;</span>, 0.5f, 0.f, 1.f},   {<span class="stringliteral">&quot;noiseScale&quot;</span>, 2.5f, 0.1f, 16.f},</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    {<span class="stringliteral">&quot;hardness&quot;</span>, 0.6f, 0.f, 1.f},     {<span class="stringliteral">&quot;time&quot;</span>, 0.f, 0.f, 120.f},</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">const</span> StyleParameterDesc kAuraParams[] = {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    {<span class="stringliteral">&quot;auraR&quot;</span>, 0.24f, 0.f, 2.f},        {<span class="stringliteral">&quot;auraG&quot;</span>, 0.62f, 0.f, 2.f},    {<span class="stringliteral">&quot;auraB&quot;</span>, 1.f, 0.f, 2.f},</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    {<span class="stringliteral">&quot;pulse&quot;</span>, 1.1f, 0.f, 4.f},          {<span class="stringliteral">&quot;edge&quot;</span>, 2.f, 0.1f, 8.f},      {<span class="stringliteral">&quot;radius&quot;</span>, 0.65f, 0.1f, 2.f},</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    {<span class="stringliteral">&quot;noiseScale&quot;</span>, 3.f, 0.1f, 16.f},    {<span class="stringliteral">&quot;time&quot;</span>, 0.f, 0.f, 120.f},     {<span class="stringliteral">&quot;intensity&quot;</span>, 1.1f, 0.f, 4.f},</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>};</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">const</span> StyleParameterDesc kVignetteParams[] = {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    {<span class="stringliteral">&quot;strength&quot;</span>, 0.5f, 0.f, 1.f}, {<span class="stringliteral">&quot;smoothness&quot;</span>, 0.5f, 0.01f, 1.f}, {<span class="stringliteral">&quot;roundness&quot;</span>, 0.5f, 0.f, 1.f},</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    {<span class="stringliteral">&quot;colorR&quot;</span>, 0.f, 0.f, 1.f},    {<span class="stringliteral">&quot;colorG&quot;</span>, 0.f, 0.f, 1.f},        {<span class="stringliteral">&quot;colorB&quot;</span>, 0.f, 0.f, 1.f},</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keyword">const</span> StyleParameterDesc kChromaticParams[] = {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    {<span class="stringliteral">&quot;strength&quot;</span>, 0.3f, 0.f, 1.f},</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    {<span class="stringliteral">&quot;radialMix&quot;</span>, 1.f, 0.f, 1.f},</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    {<span class="stringliteral">&quot;rgbSplit&quot;</span>, 0.5f, 0.f, 1.f},</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>};</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">const</span> StyleParameterDesc kGrainParams[] = {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    {<span class="stringliteral">&quot;strength&quot;</span>, 0.15f, 0.f, 1.f},</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    {<span class="stringliteral">&quot;grainSize&quot;</span>, 4.f, 1.f, 32.f},</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    {<span class="stringliteral">&quot;lumaAmount&quot;</span>, 0.7f, 0.f, 1.f},</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    {<span class="stringliteral">&quot;colorAmount&quot;</span>, 0.1f, 0.f, 1.f},</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="keyword">const</span> StyleDefinition* findMesh(<span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> : kMeshEffects)</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        if (style == <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) return &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keyword">const</span> StyleDefinition* findPost(<span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> : kPostEffects)</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        if (style == <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) return &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="keyword">template</span> &lt;<span class="keywordtype">size_t</span> N&gt;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="keyword">const</span> StyleParameterDesc* paramAt(<span class="keyword">const</span> StyleParameterDesc (&amp;arr)[N], <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">return</span> index &lt; 0 || index &gt;= int(N) ? nullptr : &amp;arr[size_t(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)];</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="keywordtype">int</span> meshParamCount(<span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;rim&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kRimParams) / <span class="keyword">sizeof</span>(kRimParams[0]));</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;dissolve&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kDissolveParams) / <span class="keyword">sizeof</span>(kDissolveParams[0]));</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;hologram&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kHologramParams) / <span class="keyword">sizeof</span>(kHologramParams[0]));</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;snow&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kSnowParams) / <span class="keyword">sizeof</span>(kSnowParams[0]));</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;slash&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kSlashParams) / <span class="keyword">sizeof</span>(kSlashParams[0]));</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;ember&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kEmberParams) / <span class="keyword">sizeof</span>(kEmberParams[0]));</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;aura&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kAuraParams) / <span class="keyword">sizeof</span>(kAuraParams[0]));</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="keyword">const</span> StyleParameterDesc* meshParamAt(<span class="keyword">const</span> std::string&amp; style, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;rim&quot;</span>) <span class="keywordflow">return</span> paramAt(kRimParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;dissolve&quot;</span>) <span class="keywordflow">return</span> paramAt(kDissolveParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;hologram&quot;</span>) <span class="keywordflow">return</span> paramAt(kHologramParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;snow&quot;</span>) <span class="keywordflow">return</span> paramAt(kSnowParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;slash&quot;</span>) <span class="keywordflow">return</span> paramAt(kSlashParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;ember&quot;</span>) <span class="keywordflow">return</span> paramAt(kEmberParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;aura&quot;</span>) <span class="keywordflow">return</span> paramAt(kAuraParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>}</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keywordtype">int</span> postParamCount(<span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;vignette&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kVignetteParams) / <span class="keyword">sizeof</span>(kVignetteParams[0]));</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;chromatic&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kChromaticParams) / <span class="keyword">sizeof</span>(kChromaticParams[0]));</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;grain&quot;</span>) <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kGrainParams) / <span class="keyword">sizeof</span>(kGrainParams[0]));</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>}</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="keyword">const</span> StyleParameterDesc* postParamAt(<span class="keyword">const</span> std::string&amp; style, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;vignette&quot;</span>) <span class="keywordflow">return</span> paramAt(kVignetteParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;chromatic&quot;</span>) <span class="keywordflow">return</span> paramAt(kChromaticParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;grain&quot;</span>) <span class="keywordflow">return</span> paramAt(kGrainParams, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>}</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="comment">// The push-constant layout index of a param equals its position in the param</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="comment">// array, so bind in array order.</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="keywordtype">void</span> bindParamArray(graphics::Shader* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keyword">const</span> std::string&amp; style, <span class="keywordtype">bool</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;bindParamArray: null shader&quot;</span>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a> ? meshParamCount(style) : postParamCount(style);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keyword">const</span> StyleParameterDesc* <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a> ? meshParamAt(style, i) : postParamAt(style, i);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;declareFloat(<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>-&gt;id);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;sendFloat(<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>-&gt;id, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>-&gt;defaultValue);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>}</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>std::vector&lt;uint32_t&gt; copySpv(<span class="keyword">const</span> uint32_t* data, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) { <span class="keywordflow">return</span> std::vector&lt;uint32_t&gt;(data, data + <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>); }</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a38b653bb285b9fbec6287f6cb8674aa0">  175</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1stylize.html#a38b653bb285b9fbec6287f6cb8674aa0">isEffectStyle</a>(<span class="keyword">const</span> std::string&amp; style) { <span class="keywordflow">return</span> findMesh(style) != <span class="keyword">nullptr</span> || findPost(style) != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="foldopen" id="foldopen00177" data-start="{" data-end="}">
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#ab8df634abd93b9d5a498dc310b1938dc">  177</a></span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleDefinition.html">StyleDefinition</a>* <a class="code hl_function" href="namespaceeve_1_1stylize.html#ab8df634abd93b9d5a498dc310b1938dc">findEffectDefinition</a>(<span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleDefinition.html">StyleDefinition</a>* <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = findMesh(style)) <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">return</span> findPost(style);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>}</div>
+</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="foldopen" id="foldopen00182" data-start="{" data-end="}">
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a87bd4e0cf9707d98d0fc3e8b75e48f79">  182</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1stylize.html#a87bd4e0cf9707d98d0fc3e8b75e48f79">effectStyleCount</a>() {</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordflow">return</span> int(<span class="keyword">sizeof</span>(kMeshEffects) / <span class="keyword">sizeof</span>(kMeshEffects[0])) + int(<span class="keyword">sizeof</span>(kPostEffects) / <span class="keyword">sizeof</span>(kPostEffects[0]));</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>}</div>
+</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="foldopen" id="foldopen00186" data-start="{" data-end="}">
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#aab0e9f17be2dd7b1741f939a86637263">  186</a></span>std::string <a class="code hl_function" href="namespaceeve_1_1stylize.html#aab0e9f17be2dd7b1741f939a86637263">effectStyleIdAt</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> meshCount = int(<span class="keyword">sizeof</span>(kMeshEffects) / <span class="keyword">sizeof</span>(kMeshEffects[0]));</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; meshCount) <span class="keywordflow">return</span> kMeshEffects[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>].id;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> -= meshCount;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; <span class="keywordtype">int</span>(<span class="keyword">sizeof</span>(kPostEffects) / <span class="keyword">sizeof</span>(kPostEffects[0]))) <span class="keywordflow">return</span> kPostEffects[<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>].id;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>}</div>
+</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="foldopen" id="foldopen00194" data-start="{" data-end="}">
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#acaa91ff6154f0ba13ea5cc17449d2800">  194</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1stylize.html#acaa91ff6154f0ba13ea5cc17449d2800">effectParamCount</a>(<span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordflow">if</span> (findMesh(style)) <span class="keywordflow">return</span> meshParamCount(style);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">return</span> postParamCount(style);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>}</div>
+</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="foldopen" id="foldopen00199" data-start="{" data-end="}">
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a1d4312db4541ee8a305306a8b860d7a7">  199</a></span>std::string <a class="code hl_function" href="namespaceeve_1_1stylize.html#a1d4312db4541ee8a305306a8b860d7a7">effectParamName</a>(<span class="keyword">const</span> std::string&amp; style, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleParameterDesc.html">StyleParameterDesc</a>* <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = <a class="code hl_function" href="namespaceeve_1_1stylize.html#ada49d4225a98e9d33f3125560c716254">effectParameterAt</a>(style, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> ? <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>-&gt;id : std::string{};</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>}</div>
+</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="foldopen" id="foldopen00204" data-start="{" data-end="}">
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a74a2e1499bfa51550bc625f2cf7a446f">  204</a></span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleParameterDesc.html">StyleParameterDesc</a>* <a class="code hl_function" href="namespaceeve_1_1stylize.html#a74a2e1499bfa51550bc625f2cf7a446f">findEffectParameter</a>(<span class="keyword">const</span> std::string&amp; style, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = <a class="code hl_function" href="namespaceeve_1_1stylize.html#acaa91ff6154f0ba13ea5cc17449d2800">effectParamCount</a>(style);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleParameterDesc.html">StyleParameterDesc</a>* <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = <a class="code hl_function" href="namespaceeve_1_1stylize.html#ada49d4225a98e9d33f3125560c716254">effectParameterAt</a>(style, i);</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> &amp;&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> == <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>-&gt;id) <span class="keywordflow">return</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    }</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>}</div>
+</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="foldopen" id="foldopen00213" data-start="{" data-end="}">
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#ada49d4225a98e9d33f3125560c716254">  213</a></span><span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1StyleParameterDesc.html">StyleParameterDesc</a>* <a class="code hl_function" href="namespaceeve_1_1stylize.html#ada49d4225a98e9d33f3125560c716254">effectParameterAt</a>(<span class="keyword">const</span> std::string&amp; style, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordflow">if</span> (findMesh(style)) <span class="keywordflow">return</span> meshParamAt(style, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordflow">return</span> postParamAt(style, <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>}</div>
+</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="foldopen" id="foldopen00218" data-start="{" data-end="}">
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a9f3bd82ebad0e06b9159180f3b86c5e8">  218</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1stylize.html#a9f3bd82ebad0e06b9159180f3b86c5e8">bindEffectPostUniforms</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    bindParamArray(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, style, <span class="comment">/*mesh=*/</span><span class="keyword">false</span>);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="comment">// Chromatic dispersion needs the framebuffer size to keep the RGB split</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="comment">// aspect-correct; StylePass::uploadScreenUniforms refreshes these.</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;chromatic&quot;</span>) {</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;declareFloat(<span class="stringliteral">&quot;screenW&quot;</span>);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;declareFloat(<span class="stringliteral">&quot;screenH&quot;</span>);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;sendFloat(<span class="stringliteral">&quot;screenW&quot;</span>, 256.f);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;sendFloat(<span class="stringliteral">&quot;screenH&quot;</span>, 256.f);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    }</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>}</div>
+</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="foldopen" id="foldopen00230" data-start="{" data-end="}">
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a1623eaf6b028167e186aa02a150b9657">  230</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1stylize.html#a1623eaf6b028167e186aa02a150b9657">bindEffectMeshUniforms</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    bindParamArray(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, style, <span class="comment">/*mesh=*/</span><span class="keyword">true</span>);</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>}</div>
+</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="foldopen" id="foldopen00234" data-start="{" data-end="}">
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a5ee299eb4c365132c123f06db0052d60">  234</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_function" href="namespaceeve_1_1stylize.html#a5ee299eb4c365132c123f06db0052d60">createEffectPostShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* gfx, <span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">if</span> (!gfx) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;createEffectPostShader: null graphics&quot;</span>);</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;vignette&quot;</span>)</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(vignette_post_frag_spv, vignette_post_frag_spv_count);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;chromatic&quot;</span>)</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(chromatic_post_frag_spv, chromatic_post_frag_spv_count);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;grain&quot;</span>)</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(grain_post_frag_spv, grain_post_frag_spv_count);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;createEffectPostShader: not an effect post style &#39;%s&#39;&quot;</span>, style.c_str());</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* sh = gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ab5cd1bae3097d42ba5fb9b798ce321c0">newShaderFromSpv</a>({}, <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keywordflow">if</span> (!sh || !sh-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Shader.html#a8bdb21d0b57398ec65c6d329e55b1ced">gpuHandle</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;createEffectPostShader: failed to create &#39;%s&#39;&quot;</span>, style.c_str());</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <a class="code hl_function" href="namespaceeve_1_1stylize.html#a9f3bd82ebad0e06b9159180f3b86c5e8">bindEffectPostUniforms</a>(sh, style);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordflow">return</span> sh;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>}</div>
+</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="foldopen" id="foldopen00252" data-start="{" data-end="}">
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#a16450d7e9c701595c42008f4f901b683">  252</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* <a class="code hl_function" href="namespaceeve_1_1stylize.html#a16450d7e9c701595c42008f4f901b683">createEffectMeshShader</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>* gfx, <span class="keyword">const</span> std::string&amp; style) {</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keywordflow">if</span> (!gfx) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;createEffectMeshShader: null graphics&quot;</span>);</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;rim&quot;</span>)</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(rim_mesh_frag_spv, rim_mesh_frag_spv_count);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;dissolve&quot;</span>)</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(dissolve_mesh_frag_spv, dissolve_mesh_frag_spv_count);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;hologram&quot;</span>)</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(hologram_mesh_frag_spv, hologram_mesh_frag_spv_count);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;snow&quot;</span>)</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(snow_mesh_frag_spv, snow_mesh_frag_spv_count);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;slash&quot;</span>)</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(slash_mesh_frag_spv, slash_mesh_frag_spv_count);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;ember&quot;</span>)</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(ember_mesh_frag_spv, ember_mesh_frag_spv_count);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (style == <span class="stringliteral">&quot;aura&quot;</span>)</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a> = copySpv(aura_mesh_frag_spv, aura_mesh_frag_spv_count);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;createEffectMeshShader: not an effect mesh style &#39;%s&#39;&quot;</span>, style.c_str());</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keyword">auto</span>              <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a> = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a>* sh   = gfx-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">newMeshShaderFromSpv</a>(<a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>, <a class="code hl_variable" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>);</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keywordflow">if</span> (!sh || !sh-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Shader.html#a8bdb21d0b57398ec65c6d329e55b1ced">gpuHandle</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;createEffectMeshShader: failed to create &#39;%s&#39;&quot;</span>, style.c_str());</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <a class="code hl_function" href="namespaceeve_1_1stylize.html#a1623eaf6b028167e186aa02a150b9657">bindEffectMeshUniforms</a>(sh, style);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordflow">return</span> sh;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>}</div>
+</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aEffectShaders_8h_html"><div class="ttname"><a href="EffectShaders_8h.html">EffectShaders.h</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_a99414c99dbdc7df738b99938089a3298"><div class="ttname"><a href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a></div><div class="ttdeci">vk::ShaderModule vert</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00289">GraphicsInternal.h:289</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_ae743cf0e5d1516ca41060ab8de001134"><div class="ttname"><a href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a></div><div class="ttdeci">vk::ShaderModule frag</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00290">GraphicsInternal.h:290</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00731">RenderSystem3D.cpp:731</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aShader_8h_html"><div class="ttname"><a href="Shader_8h.html">Shader.h</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a7441ef0865bcb3db9b8064dd7375c1ea"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a></div><div class="ttdeci">int id</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00162">WorldSnapshot.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a1a88617c82f58d00a3dd797e857018fe"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a1a88617c82f58d00a3dd797e857018fe">eve::graphics::Graphics::newMeshShaderFromSpv</a></div><div class="ttdeci">virtual Shader * newMeshShaderFromSpv(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</div><div class="ttdoc">Create a Mesh3D custom shader (MeshVertex + Frame UBO + albedo). Empty vert → default mesh3d....</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ab5cd1bae3097d42ba5fb9b798ce321c0"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ab5cd1bae3097d42ba5fb9b798ce321c0">eve::graphics::Graphics::newShaderFromSpv</a></div><div class="ttdeci">virtual Shader * newShaderFromSpv(const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv)=0</div><div class="ttdoc">Create a custom 2D shader from SPIR-V words (vert + frag). Owned by Graphics. Vertex stage may be emp...</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a8bdb21d0b57398ec65c6d329e55b1ced"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a8bdb21d0b57398ec65c6d329e55b1ced">eve::graphics::Shader::gpuHandle</a></div><div class="ttdeci">void * gpuHandle</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00098">Shader.h:98</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e"><div class="ttname"><a href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a015ffb7a40d15fa0608a9d000183519e">eve::graphics::PostEffectStage::AfterOpaque</a></div><div class="ttdeci">@ AfterOpaque</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_af9c48ea817d321342bebbeedea18c452a7357230b1a2b17f4b15ea460bd12658d"><div class="ttname"><a href="namespaceeve_1_1graphics.html#af9c48ea817d321342bebbeedea18c452a7357230b1a2b17f4b15ea460bd12658d">eve::graphics::PostEffectStage::AfterTonemap</a></div><div class="ttdeci">@ AfterTonemap</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a1623eaf6b028167e186aa02a150b9657"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a1623eaf6b028167e186aa02a150b9657">eve::stylize::bindEffectMeshUniforms</a></div><div class="ttdeci">void bindEffectMeshUniforms(graphics::Shader *shader, const std::string &amp;style)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00230">EffectShaders.cpp:230</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a16450d7e9c701595c42008f4f901b683"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a16450d7e9c701595c42008f4f901b683">eve::stylize::createEffectMeshShader</a></div><div class="ttdeci">graphics::Shader * createEffectMeshShader(graphics::Graphics *gfx, const std::string &amp;style)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00252">EffectShaders.cpp:252</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a1d4312db4541ee8a305306a8b860d7a7"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a1d4312db4541ee8a305306a8b860d7a7">eve::stylize::effectParamName</a></div><div class="ttdeci">std::string effectParamName(const std::string &amp;style, int index)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00199">EffectShaders.cpp:199</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a38b653bb285b9fbec6287f6cb8674aa0"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a38b653bb285b9fbec6287f6cb8674aa0">eve::stylize::isEffectStyle</a></div><div class="ttdeci">bool isEffectStyle(const std::string &amp;style)</div><div class="ttdoc">True when style names one of the ported effect shaders.</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00175">EffectShaders.cpp:175</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a5ee299eb4c365132c123f06db0052d60"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a5ee299eb4c365132c123f06db0052d60">eve::stylize::createEffectPostShader</a></div><div class="ttdeci">graphics::Shader * createEffectPostShader(graphics::Graphics *gfx, const std::string &amp;style)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00234">EffectShaders.cpp:234</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a74a2e1499bfa51550bc625f2cf7a446f"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a74a2e1499bfa51550bc625f2cf7a446f">eve::stylize::findEffectParameter</a></div><div class="ttdeci">const StyleParameterDesc * findEffectParameter(const std::string &amp;style, const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00204">EffectShaders.cpp:204</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a87bd4e0cf9707d98d0fc3e8b75e48f79"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a87bd4e0cf9707d98d0fc3e8b75e48f79">eve::stylize::effectStyleCount</a></div><div class="ttdeci">int effectStyleCount()</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00182">EffectShaders.cpp:182</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_a9f3bd82ebad0e06b9159180f3b86c5e8"><div class="ttname"><a href="namespaceeve_1_1stylize.html#a9f3bd82ebad0e06b9159180f3b86c5e8">eve::stylize::bindEffectPostUniforms</a></div><div class="ttdeci">void bindEffectPostUniforms(graphics::Shader *shader, const std::string &amp;style)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00218">EffectShaders.cpp:218</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_aab0e9f17be2dd7b1741f939a86637263"><div class="ttname"><a href="namespaceeve_1_1stylize.html#aab0e9f17be2dd7b1741f939a86637263">eve::stylize::effectStyleIdAt</a></div><div class="ttdeci">std::string effectStyleIdAt(int index)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00186">EffectShaders.cpp:186</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ab8df634abd93b9d5a498dc310b1938dc"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ab8df634abd93b9d5a498dc310b1938dc">eve::stylize::findEffectDefinition</a></div><div class="ttdeci">const StyleDefinition * findEffectDefinition(const std::string &amp;style)</div><div class="ttdoc">Effect-only StyleDefinition lookup, or nullptr when unknown.</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00177">EffectShaders.cpp:177</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_acaa91ff6154f0ba13ea5cc17449d2800"><div class="ttname"><a href="namespaceeve_1_1stylize.html#acaa91ff6154f0ba13ea5cc17449d2800">eve::stylize::effectParamCount</a></div><div class="ttdeci">int effectParamCount(const std::string &amp;style)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00194">EffectShaders.cpp:194</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ada49d4225a98e9d33f3125560c716254"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ada49d4225a98e9d33f3125560c716254">eve::stylize::effectParameterAt</a></div><div class="ttdeci">const StyleParameterDesc * effectParameterAt(const std::string &amp;style, int index)</div><div class="ttdef"><b>Definition</b> <a href="EffectShaders_8cpp_source.html#l00213">EffectShaders.cpp:213</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1StyleDefinition_html"><div class="ttname"><a href="structeve_1_1stylize_1_1StyleDefinition.html">eve::stylize::StyleDefinition</a></div><div class="ttdoc">Immutable capability metadata for one built-in stylization recipe.</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8h_source.html#l00017">StyleShaders.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1StyleParameterDesc_html"><div class="ttname"><a href="structeve_1_1stylize_1_1StyleParameterDesc.html">eve::stylize::StyleParameterDesc</a></div><div class="ttdoc">Tooling metadata for one user-facing float parameter.</div><div class="ttdef"><b>Definition</b> <a href="StyleShaders_8h_source.html#l00029">StyleShaders.h:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

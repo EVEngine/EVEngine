@@ -1,0 +1,1270 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::crowd::Crowd::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1crowd.html">crowd</a></li><li class="navelem"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a></li><li class="navelem"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1crowd_1_1Crowd_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::crowd::Crowd::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a69d5d19ce0be519a982a55dff570c038" id="r_a69d5d19ce0be519a982a55dff570c038"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a69d5d19ce0be519a982a55dff570c038">validId</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:a69d5d19ce0be519a982a55dff570c038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ccda3c9f416864c8167fe0a9248928f" id="r_a5ccda3c9f416864c8167fe0a9248928f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5ccda3c9f416864c8167fe0a9248928f">rebuildGrid</a> ()</td></tr>
+<tr class="separator:a5ccda3c9f416864c8167fe0a9248928f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae390d64413bd731393c897108cce8a9a" id="r_ae390d64413bd731393c897108cce8a9a"><td class="memTemplParams" colspan="2">template&lt;typename Fn &gt; </td></tr>
+<tr class="memitem:ae390d64413bd731393c897108cce8a9a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae390d64413bd731393c897108cce8a9a">forEachNeighbor</a> (float <a class="el" href="WorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a>, float <a class="el" href="WorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, Fn &amp;&amp;<a class="el" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>) const</td></tr>
+<tr class="separator:ae390d64413bd731393c897108cce8a9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40dd1fbf41a876bc7ffdd4dcd1f19cf1" id="r_a40dd1fbf41a876bc7ffdd4dcd1f19cf1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a40dd1fbf41a876bc7ffdd4dcd1f19cf1">stepAgents</a> (float dt)</td></tr>
+<tr class="separator:a40dd1fbf41a876bc7ffdd4dcd1f19cf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3cd09f1066a5d807f891844e617838e" id="r_aa3cd09f1066a5d807f891844e617838e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aa3cd09f1066a5d807f891844e617838e">resolveOverlapsPass</a> ()</td></tr>
+<tr class="separator:aa3cd09f1066a5d807f891844e617838e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c400a63390c330db5ea62c2c61140aa" id="r_a7c400a63390c330db5ea62c2c61140aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7c400a63390c330db5ea62c2c61140aa">resolveWalls</a> ()</td></tr>
+<tr class="separator:a7c400a63390c330db5ea62c2c61140aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a94fc85caea5ba08e64d6ad8aa896efa1" id="r_a94fc85caea5ba08e64d6ad8aa896efa1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a94fc85caea5ba08e64d6ad8aa896efa1">field</a></td></tr>
+<tr class="separator:a94fc85caea5ba08e64d6ad8aa896efa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c6ba9e0e4a0aff74331b6276c50784d" id="r_a0c6ba9e0e4a0aff74331b6276c50784d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a0c6ba9e0e4a0aff74331b6276c50784d">defaultSpeed</a> = 120.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0c6ba9e0e4a0aff74331b6276c50784d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acea0bfab8d7b44c782e74a688aaee375" id="r_acea0bfab8d7b44c782e74a688aaee375"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acea0bfab8d7b44c782e74a688aaee375">defaultRadius</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acea0bfab8d7b44c782e74a688aaee375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a714ba337c2d384eeb719d515383277fa" id="r_a714ba337c2d384eeb719d515383277fa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a714ba337c2d384eeb719d515383277fa">defaultTurnRate</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a714ba337c2d384eeb719d515383277fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43fd03b49db539292ed808800244fdf8" id="r_a43fd03b49db539292ed808800244fdf8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a43fd03b49db539292ed808800244fdf8">arriveRadius</a> = 64.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a43fd03b49db539292ed808800244fdf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29cfc841120ee91a6a5b736fd0bd296f" id="r_a29cfc841120ee91a6a5b736fd0bd296f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a29cfc841120ee91a6a5b736fd0bd296f">sepRadius</a> = 28.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a29cfc841120ee91a6a5b736fd0bd296f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc7d5aad5b906eb6ac84c09300c6bda6" id="r_acc7d5aad5b906eb6ac84c09300c6bda6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acc7d5aad5b906eb6ac84c09300c6bda6">perceiveRadius</a> = 64.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acc7d5aad5b906eb6ac84c09300c6bda6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03c83e96a4d1fdae5e2ab81373ffb795" id="r_a03c83e96a4d1fdae5e2ab81373ffb795"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a03c83e96a4d1fdae5e2ab81373ffb795">sepWeight</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a03c83e96a4d1fdae5e2ab81373ffb795"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bc370b7d3297836baa504f0dad5f0f0" id="r_a9bc370b7d3297836baa504f0dad5f0f0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a9bc370b7d3297836baa504f0dad5f0f0">alignWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9bc370b7d3297836baa504f0dad5f0f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acef81e0033066ee33c426c41967d1cdf" id="r_acef81e0033066ee33c426c41967d1cdf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acef81e0033066ee33c426c41967d1cdf">cohesionWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acef81e0033066ee33c426c41967d1cdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ab1b2f2857d66a8c0d079130ef36821" id="r_a1ab1b2f2857d66a8c0d079130ef36821"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a1ab1b2f2857d66a8c0d079130ef36821">wanderWeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1ab1b2f2857d66a8c0d079130ef36821"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09d4a69141282e59b2beed80acc84452" id="r_a09d4a69141282e59b2beed80acc84452"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a09d4a69141282e59b2beed80acc84452">goalWeight</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a09d4a69141282e59b2beed80acc84452"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c6da0338dac1306a3b4cddcc2b5562d" id="r_a7c6da0338dac1306a3b4cddcc2b5562d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7c6da0338dac1306a3b4cddcc2b5562d">resolveOverlaps</a> = true</td></tr>
+<tr class="separator:a7c6da0338dac1306a3b4cddcc2b5562d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26729da0ee191ca02529394beace65fd" id="r_a26729da0ee191ca02529394beace65fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a26729da0ee191ca02529394beace65fd">clampToField</a> = true</td></tr>
+<tr class="separator:a26729da0ee191ca02529394beace65fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae22f09759460bb3bf12f0a06c0693417" id="r_ae22f09759460bb3bf12f0a06c0693417"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae22f09759460bb3bf12f0a06c0693417">maxAgents</a> = 100000</td></tr>
+<tr class="separator:ae22f09759460bb3bf12f0a06c0693417"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55630481a395e97c908bd3a9ba4c618e" id="r_a55630481a395e97c908bd3a9ba4c618e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a55630481a395e97c908bd3a9ba4c618e">simTime</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a55630481a395e97c908bd3a9ba4c618e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09e8f2bb918a9f7f739e249953679389" id="r_a09e8f2bb918a9f7f739e249953679389"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a09e8f2bb918a9f7f739e249953679389">xs</a></td></tr>
+<tr class="separator:a09e8f2bb918a9f7f739e249953679389"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c866caa66b7329ef940d71a862db6e8" id="r_a5c866caa66b7329ef940d71a862db6e8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5c866caa66b7329ef940d71a862db6e8">ys</a></td></tr>
+<tr class="separator:a5c866caa66b7329ef940d71a862db6e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39e849c97b1b417543adfa9125d9e903" id="r_a39e849c97b1b417543adfa9125d9e903"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a39e849c97b1b417543adfa9125d9e903">headings</a></td></tr>
+<tr class="separator:a39e849c97b1b417543adfa9125d9e903"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1eacf79e8f91ebd7da1b9aed1e56ebc" id="r_ad1eacf79e8f91ebd7da1b9aed1e56ebc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad1eacf79e8f91ebd7da1b9aed1e56ebc">vxs</a></td></tr>
+<tr class="separator:ad1eacf79e8f91ebd7da1b9aed1e56ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bd807a86cc9327890dc0a2bf7c3937a" id="r_a5bd807a86cc9327890dc0a2bf7c3937a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5bd807a86cc9327890dc0a2bf7c3937a">vys</a></td></tr>
+<tr class="separator:a5bd807a86cc9327890dc0a2bf7c3937a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdbb49273b19577105376754291f1031" id="r_afdbb49273b19577105376754291f1031"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#afdbb49273b19577105376754291f1031">speeds</a></td></tr>
+<tr class="separator:afdbb49273b19577105376754291f1031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae671e1f9f1942429985f2d15b341ae45" id="r_ae671e1f9f1942429985f2d15b341ae45"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae671e1f9f1942429985f2d15b341ae45">radii</a></td></tr>
+<tr class="separator:ae671e1f9f1942429985f2d15b341ae45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f50e709f60d68315dbd9f725c1e77c1" id="r_a3f50e709f60d68315dbd9f725c1e77c1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a3f50e709f60d68315dbd9f725c1e77c1">maxSpeeds</a></td></tr>
+<tr class="separator:a3f50e709f60d68315dbd9f725c1e77c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b4bd66ef47c86337f6600579299b8cc" id="r_a9b4bd66ef47c86337f6600579299b8cc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a9b4bd66ef47c86337f6600579299b8cc">maxAccels</a></td></tr>
+<tr class="separator:a9b4bd66ef47c86337f6600579299b8cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6661b4b188a7194f86ff98fc2bbb9a53" id="r_a6661b4b188a7194f86ff98fc2bbb9a53"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a6661b4b188a7194f86ff98fc2bbb9a53">turnRates</a></td></tr>
+<tr class="separator:a6661b4b188a7194f86ff98fc2bbb9a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ed910636eb3b605f7a0f54c291fa90" id="r_ae2ed910636eb3b605f7a0f54c291fa90"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae2ed910636eb3b605f7a0f54c291fa90">actions</a></td></tr>
+<tr class="separator:ae2ed910636eb3b605f7a0f54c291fa90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96c9d063932ede439d3939ba63eec7a1" id="r_a96c9d063932ede439d3939ba63eec7a1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a96c9d063932ede439d3939ba63eec7a1">datas</a></td></tr>
+<tr class="separator:a96c9d063932ede439d3939ba63eec7a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad30214c4abb2293f311c7c3ad47697e7" id="r_ad30214c4abb2293f311c7c3ad47697e7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad30214c4abb2293f311c7c3ad47697e7">avoidancePriorities</a></td></tr>
+<tr class="separator:ad30214c4abb2293f311c7c3ad47697e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae41a74b985e6d5e58540abc62830bfc5" id="r_ae41a74b985e6d5e58540abc62830bfc5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae41a74b985e6d5e58540abc62830bfc5">hasTargets</a></td></tr>
+<tr class="separator:ae41a74b985e6d5e58540abc62830bfc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb3a4c62cda83701f3ffa88e72b823cf" id="r_aeb3a4c62cda83701f3ffa88e72b823cf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aeb3a4c62cda83701f3ffa88e72b823cf">targetXs</a></td></tr>
+<tr class="separator:aeb3a4c62cda83701f3ffa88e72b823cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fe95f39bbc81dd74d7e42748a8cd31c" id="r_a6fe95f39bbc81dd74d7e42748a8cd31c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a6fe95f39bbc81dd74d7e42748a8cd31c">targetYs</a></td></tr>
+<tr class="separator:a6fe95f39bbc81dd74d7e42748a8cd31c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf3f217819f412c6b3b2ed7f299b00b0" id="r_abf3f217819f412c6b3b2ed7f299b00b0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#abf3f217819f412c6b3b2ed7f299b00b0">wanderPhases</a></td></tr>
+<tr class="separator:abf3f217819f412c6b3b2ed7f299b00b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4cdb12d8540ad5b27ba5befd517b5d4" id="r_af4cdb12d8540ad5b27ba5befd517b5d4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#af4cdb12d8540ad5b27ba5befd517b5d4">stableIds</a></td></tr>
+<tr class="separator:af4cdb12d8540ad5b27ba5befd517b5d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5fcdd918e14ae9e031f6355635acb72" id="r_aa5fcdd918e14ae9e031f6355635acb72"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aa5fcdd918e14ae9e031f6355635acb72">namedAgents</a></td></tr>
+<tr class="separator:aa5fcdd918e14ae9e031f6355635acb72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09788a5272b58ec9da46c12c96d5c9a1" id="r_a09788a5272b58ec9da46c12c96d5c9a1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a09788a5272b58ec9da46c12c96d5c9a1">cellCount</a></td></tr>
+<tr class="separator:a09788a5272b58ec9da46c12c96d5c9a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ed040329cae51936b567fbe1accfdc8" id="r_a0ed040329cae51936b567fbe1accfdc8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a0ed040329cae51936b567fbe1accfdc8">cellStart</a></td></tr>
+<tr class="separator:a0ed040329cae51936b567fbe1accfdc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a852df5faeddb98a6affb7aa9da692b69" id="r_a852df5faeddb98a6affb7aa9da692b69"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a852df5faeddb98a6affb7aa9da692b69">cursor</a></td></tr>
+<tr class="separator:a852df5faeddb98a6affb7aa9da692b69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a817a83e788d25b26bbf7464c3553ee" id="r_a7a817a83e788d25b26bbf7464c3553ee"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7a817a83e788d25b26bbf7464c3553ee">sorted</a></td></tr>
+<tr class="separator:a7a817a83e788d25b26bbf7464c3553ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acce45ecb7e3876dd2e482c607e548d9e" id="r_acce45ecb7e3876dd2e482c607e548d9e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acce45ecb7e3876dd2e482c607e548d9e">gridW</a> = 0</td></tr>
+<tr class="separator:acce45ecb7e3876dd2e482c607e548d9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae86b5b1566ff549777059b727a83e9e3" id="r_ae86b5b1566ff549777059b727a83e9e3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae86b5b1566ff549777059b727a83e9e3">gridH</a> = 0</td></tr>
+<tr class="separator:ae86b5b1566ff549777059b727a83e9e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6c7340c9969a75a0115f546f4bf29da" id="r_ab6c7340c9969a75a0115f546f4bf29da"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab6c7340c9969a75a0115f546f4bf29da">gridOriginX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab6c7340c9969a75a0115f546f4bf29da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4576aa1ded08679595de4eb1cc7c3fd7" id="r_a4576aa1ded08679595de4eb1cc7c3fd7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4576aa1ded08679595de4eb1cc7c3fd7">gridOriginY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4576aa1ded08679595de4eb1cc7c3fd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2d8901f463a8d228095c3276aa112e3" id="r_aa2d8901f463a8d228095c3276aa112e3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aa2d8901f463a8d228095c3276aa112e3">gridCell</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa2d8901f463a8d228095c3276aa112e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00051">51</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ae390d64413bd731393c897108cce8a9a" name="ae390d64413bd731393c897108cce8a9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae390d64413bd731393c897108cce8a9a">&#9670;&#160;</a></span>forEachNeighbor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fn &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::Impl::forEachNeighbor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>qx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>qy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Fn &amp;&amp;&#160;</td>
+          <td class="paramname"><em>fn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="Crowd_8cpp_source.html#l00081">cellCount</a>, <a class="el" href="Crowd_8cpp_source.html#l00081">cellStart</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00030">fn</a>, <a class="el" href="Crowd_8cpp_source.html#l00086">gridCell</a>, <a class="el" href="Crowd_8cpp_source.html#l00083">gridH</a>, <a class="el" href="Crowd_8cpp_source.html#l00084">gridOriginX</a>, <a class="el" href="Crowd_8cpp_source.html#l00085">gridOriginY</a>, <a class="el" href="Crowd_8cpp_source.html#l00082">gridW</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00173">qx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00173">qy</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Crowd_8cpp_source.html#l00081">sorted</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">xs</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00071">ys</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00339">resolveOverlapsPass()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a5ccda3c9f416864c8167fe0a9248928f" name="a5ccda3c9f416864c8167fe0a9248928f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ccda3c9f416864c8167fe0a9248928f">&#9670;&#160;</a></span>rebuildGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::Impl::rebuildGrid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8cpp_source.html#l00073">actions</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="Crowd_8cpp_source.html#l00081">cellCount</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="Crowd_8cpp_source.html#l00081">cellStart</a>, <a class="el" href="Crowd_8cpp_source.html#l00081">cursor</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="Crowd_8cpp_source.html#l00086">gridCell</a>, <a class="el" href="Crowd_8cpp_source.html#l00083">gridH</a>, <a class="el" href="Crowd_8cpp_source.html#l00084">gridOriginX</a>, <a class="el" href="Crowd_8cpp_source.html#l00085">gridOriginY</a>, <a class="el" href="Crowd_8cpp_source.html#l00082">gridW</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="Crowd_8cpp_source.html#l00059">perceiveRadius</a>, <a class="el" href="Crowd_8cpp_source.html#l00058">sepRadius</a>, <a class="el" href="Crowd_8cpp_source.html#l00081">sorted</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">xs</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00071">ys</a>.</p>
+
+</div>
+</div>
+<a id="aa3cd09f1066a5d807f891844e617838e" name="aa3cd09f1066a5d807f891844e617838e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3cd09f1066a5d807f891844e617838e">&#9670;&#160;</a></span>resolveOverlapsPass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::Impl::resolveOverlapsPass </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00339">339</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8cpp_source.html#l00073">actions</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00164">angle</a>, <a class="el" href="Crowd_8cpp_source.html#l00073">avoidancePriorities</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a>, <a class="el" href="Evpack_8cpp_source.html#l00177">hash</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="Crowd_8cpp_source.html#l00072">radii</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>, <a class="el" href="Crowd_8cpp_source.html#l00058">sepRadius</a>, <a class="el" href="Crowd_8cpp_source.html#l00077">stableIds</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">xs</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00071">ys</a>.</p>
+
+</div>
+</div>
+<a id="a7c400a63390c330db5ea62c2c61140aa" name="a7c400a63390c330db5ea62c2c61140aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c400a63390c330db5ea62c2c61140aa">&#9670;&#160;</a></span>resolveWalls()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::Impl::resolveWalls </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8cpp_source.html#l00073">actions</a>, <a class="el" href="Crowd_8cpp_source.html#l00052">field</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="Crowd_8cpp_source.html#l00072">radii</a>, <a class="el" href="CrowdField_8cpp_source.html#l00272">eve::crowd::CrowdField::resolvePenetration()</a>, <a class="el" href="CrowdField_8h_source.html#l00041">eve::crowd::CrowdField::valid()</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">xs</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00071">ys</a>.</p>
+
+</div>
+</div>
+<a id="a40dd1fbf41a876bc7ffdd4dcd1f19cf1" name="a40dd1fbf41a876bc7ffdd4dcd1f19cf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40dd1fbf41a876bc7ffdd4dcd1f19cf1">&#9670;&#160;</a></span>stepAgents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::Impl::stepAgents </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8cpp_source.html#l00073">actions</a>, <a class="el" href="Crowd_8cpp_source.html#l00061">alignWeight</a>, <a class="el" href="Crowd_8cpp_source.html#l00057">arriveRadius</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="Crowd_8cpp_source.html#l00066">clampToField</a>, <a class="el" href="Crowd_8cpp_source.html#l00062">cohesionWeight</a>, <a class="el" href="CrowdField_8cpp_source.html#l00199">eve::crowd::CrowdField::costAtWorld()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Crowd_8cpp_source.html#l00052">field</a>, <a class="el" href="CrowdField_8cpp_source.html#l00234">eve::crowd::CrowdField::flowAtWorld()</a>, <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a>, <a class="el" href="CrowdField_8h_source.html#l00046">eve::crowd::CrowdField::getCellSize()</a>, <a class="el" href="CrowdField_8h_source.html#l00045">eve::crowd::CrowdField::getHeight()</a>, <a class="el" href="CrowdField_8h_source.html#l00047">eve::crowd::CrowdField::getOriginX()</a>, <a class="el" href="CrowdField_8h_source.html#l00048">eve::crowd::CrowdField::getOriginY()</a>, <a class="el" href="CrowdField_8h_source.html#l00044">eve::crowd::CrowdField::getWidth()</a>, <a class="el" href="Crowd_8cpp_source.html#l00064">goalWeight</a>, <a class="el" href="Crowd_8cpp_source.html#l00074">hasTargets</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">headings</a>, <a class="el" href="CrowdField_8h_source.html#l00088">eve::crowd::CrowdField::isBuilt()</a>, <a class="el" href="Crowd_8cpp_source.html#l00072">maxAccels</a>, <a class="el" href="Crowd_8cpp_source.html#l00072">maxSpeeds</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="Crowd_8cpp_source.html#l00059">perceiveRadius</a>, <a class="el" href="Crowd_8cpp_source.html#l00058">sepRadius</a>, <a class="el" href="Crowd_8cpp_source.html#l00060">sepWeight</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">speeds</a>, <a class="el" href="Crowd_8cpp_source.html#l00075">targetXs</a>, <a class="el" href="Crowd_8cpp_source.html#l00075">targetYs</a>, <a class="el" href="Crowd_8cpp_source.html#l00072">turnRates</a>, <a class="el" href="CrowdField_8h_source.html#l00041">eve::crowd::CrowdField::valid()</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">vxs</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">vys</a>, <a class="el" href="Crowd_8cpp_source.html#l00076">wanderPhases</a>, <a class="el" href="Crowd_8cpp_source.html#l00063">wanderWeight</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="Crowd_8cpp_source.html#l00071">xs</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00071">ys</a>.</p>
+
+</div>
+</div>
+<a id="a69d5d19ce0be519a982a55dff570c038" name="a69d5d19ce0be519a982a55dff570c038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69d5d19ce0be519a982a55dff570c038">&#9670;&#160;</a></span>validId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::Impl::validId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8cpp_source.html#l00073">actions</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ae2ed910636eb3b605f7a0f54c291fa90" name="ae2ed910636eb3b605f7a0f54c291fa90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2ed910636eb3b605f7a0f54c291fa90">&#9670;&#160;</a></span>actions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int32_t&gt; eve::crowd::Crowd::Impl::actions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>, <a class="el" href="Crowd_8cpp_source.html#l00339">resolveOverlapsPass()</a>, <a class="el" href="Crowd_8cpp_source.html#l00390">resolveWalls()</a>, <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00088">validId()</a>.</p>
+
+</div>
+</div>
+<a id="a9bc370b7d3297836baa504f0dad5f0f0" name="a9bc370b7d3297836baa504f0dad5f0f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bc370b7d3297836baa504f0dad5f0f0">&#9670;&#160;</a></span>alignWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::alignWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a43fd03b49db539292ed808800244fdf8" name="a43fd03b49db539292ed808800244fdf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43fd03b49db539292ed808800244fdf8">&#9670;&#160;</a></span>arriveRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::arriveRadius = 64.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="ad30214c4abb2293f311c7c3ad47697e7" name="ad30214c4abb2293f311c7c3ad47697e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad30214c4abb2293f311c7c3ad47697e7">&#9670;&#160;</a></span>avoidancePriorities</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int32_t&gt; eve::crowd::Crowd::Impl::avoidancePriorities</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00339">resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="a09788a5272b58ec9da46c12c96d5c9a1" name="a09788a5272b58ec9da46c12c96d5c9a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09788a5272b58ec9da46c12c96d5c9a1">&#9670;&#160;</a></span>cellCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int32_t&gt; eve::crowd::Crowd::Impl::cellCount</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a0ed040329cae51936b567fbe1accfdc8" name="a0ed040329cae51936b567fbe1accfdc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ed040329cae51936b567fbe1accfdc8">&#9670;&#160;</a></span>cellStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int32_t&gt; eve::crowd::Crowd::Impl::cellStart</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a26729da0ee191ca02529394beace65fd" name="a26729da0ee191ca02529394beace65fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26729da0ee191ca02529394beace65fd">&#9670;&#160;</a></span>clampToField</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::Impl::clampToField = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="acef81e0033066ee33c426c41967d1cdf" name="acef81e0033066ee33c426c41967d1cdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acef81e0033066ee33c426c41967d1cdf">&#9670;&#160;</a></span>cohesionWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::cohesionWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a852df5faeddb98a6affb7aa9da692b69" name="a852df5faeddb98a6affb7aa9da692b69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a852df5faeddb98a6affb7aa9da692b69">&#9670;&#160;</a></span>cursor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int32_t&gt; eve::crowd::Crowd::Impl::cursor</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a96c9d063932ede439d3939ba63eec7a1" name="a96c9d063932ede439d3939ba63eec7a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96c9d063932ede439d3939ba63eec7a1">&#9670;&#160;</a></span>datas</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int32_t&gt; eve::crowd::Crowd::Impl::datas</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acea0bfab8d7b44c782e74a688aaee375" name="acea0bfab8d7b44c782e74a688aaee375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acea0bfab8d7b44c782e74a688aaee375">&#9670;&#160;</a></span>defaultRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::defaultRadius = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0c6ba9e0e4a0aff74331b6276c50784d" name="a0c6ba9e0e4a0aff74331b6276c50784d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c6ba9e0e4a0aff74331b6276c50784d">&#9670;&#160;</a></span>defaultSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::defaultSpeed = 120.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a714ba337c2d384eeb719d515383277fa" name="a714ba337c2d384eeb719d515383277fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a714ba337c2d384eeb719d515383277fa">&#9670;&#160;</a></span>defaultTurnRate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::defaultTurnRate = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a94fc85caea5ba08e64d6ad8aa896efa1" name="a94fc85caea5ba08e64d6ad8aa896efa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94fc85caea5ba08e64d6ad8aa896efa1">&#9670;&#160;</a></span>field</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a> eve::crowd::Crowd::Impl::field</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00390">resolveWalls()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a09d4a69141282e59b2beed80acc84452" name="a09d4a69141282e59b2beed80acc84452"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09d4a69141282e59b2beed80acc84452">&#9670;&#160;</a></span>goalWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::goalWeight = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="aa2d8901f463a8d228095c3276aa112e3" name="aa2d8901f463a8d228095c3276aa112e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2d8901f463a8d228095c3276aa112e3">&#9670;&#160;</a></span>gridCell</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::gridCell = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="ae86b5b1566ff549777059b727a83e9e3" name="ae86b5b1566ff549777059b727a83e9e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae86b5b1566ff549777059b727a83e9e3">&#9670;&#160;</a></span>gridH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::Impl::gridH = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="ab6c7340c9969a75a0115f546f4bf29da" name="ab6c7340c9969a75a0115f546f4bf29da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6c7340c9969a75a0115f546f4bf29da">&#9670;&#160;</a></span>gridOriginX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::gridOriginX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a4576aa1ded08679595de4eb1cc7c3fd7" name="a4576aa1ded08679595de4eb1cc7c3fd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4576aa1ded08679595de4eb1cc7c3fd7">&#9670;&#160;</a></span>gridOriginY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::gridOriginY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="acce45ecb7e3876dd2e482c607e548d9e" name="acce45ecb7e3876dd2e482c607e548d9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acce45ecb7e3876dd2e482c607e548d9e">&#9670;&#160;</a></span>gridW</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::Impl::gridW = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="ae41a74b985e6d5e58540abc62830bfc5" name="ae41a74b985e6d5e58540abc62830bfc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae41a74b985e6d5e58540abc62830bfc5">&#9670;&#160;</a></span>hasTargets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;uint8_t&gt; eve::crowd::Crowd::Impl::hasTargets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a39e849c97b1b417543adfa9125d9e903" name="a39e849c97b1b417543adfa9125d9e903"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39e849c97b1b417543adfa9125d9e903">&#9670;&#160;</a></span>headings</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::headings</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a9b4bd66ef47c86337f6600579299b8cc" name="a9b4bd66ef47c86337f6600579299b8cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b4bd66ef47c86337f6600579299b8cc">&#9670;&#160;</a></span>maxAccels</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::maxAccels</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="ae22f09759460bb3bf12f0a06c0693417" name="ae22f09759460bb3bf12f0a06c0693417"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae22f09759460bb3bf12f0a06c0693417">&#9670;&#160;</a></span>maxAgents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::Impl::maxAgents = 100000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f50e709f60d68315dbd9f725c1e77c1" name="a3f50e709f60d68315dbd9f725c1e77c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f50e709f60d68315dbd9f725c1e77c1">&#9670;&#160;</a></span>maxSpeeds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::maxSpeeds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="aa5fcdd918e14ae9e031f6355635acb72" name="aa5fcdd918e14ae9e031f6355635acb72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5fcdd918e14ae9e031f6355635acb72">&#9670;&#160;</a></span>namedAgents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, int&gt; eve::crowd::Crowd::Impl::namedAgents</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc7d5aad5b906eb6ac84c09300c6bda6" name="acc7d5aad5b906eb6ac84c09300c6bda6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc7d5aad5b906eb6ac84c09300c6bda6">&#9670;&#160;</a></span>perceiveRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::perceiveRadius = 64.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="ae671e1f9f1942429985f2d15b341ae45" name="ae671e1f9f1942429985f2d15b341ae45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae671e1f9f1942429985f2d15b341ae45">&#9670;&#160;</a></span>radii</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::radii</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00339">resolveOverlapsPass()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00390">resolveWalls()</a>.</p>
+
+</div>
+</div>
+<a id="a7c6da0338dac1306a3b4cddcc2b5562d" name="a7c6da0338dac1306a3b4cddcc2b5562d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c6da0338dac1306a3b4cddcc2b5562d">&#9670;&#160;</a></span>resolveOverlaps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::Impl::resolveOverlaps = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29cfc841120ee91a6a5b736fd0bd296f" name="a29cfc841120ee91a6a5b736fd0bd296f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29cfc841120ee91a6a5b736fd0bd296f">&#9670;&#160;</a></span>sepRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::sepRadius = 28.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>, <a class="el" href="Crowd_8cpp_source.html#l00339">resolveOverlapsPass()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a03c83e96a4d1fdae5e2ab81373ffb795" name="a03c83e96a4d1fdae5e2ab81373ffb795"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03c83e96a4d1fdae5e2ab81373ffb795">&#9670;&#160;</a></span>sepWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::sepWeight = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a55630481a395e97c908bd3a9ba4c618e" name="a55630481a395e97c908bd3a9ba4c618e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55630481a395e97c908bd3a9ba4c618e">&#9670;&#160;</a></span>simTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::simTime = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a817a83e788d25b26bbf7464c3553ee" name="a7a817a83e788d25b26bbf7464c3553ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a817a83e788d25b26bbf7464c3553ee">&#9670;&#160;</a></span>sorted</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int32_t&gt; eve::crowd::Crowd::Impl::sorted</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="afdbb49273b19577105376754291f1031" name="afdbb49273b19577105376754291f1031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdbb49273b19577105376754291f1031">&#9670;&#160;</a></span>speeds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::speeds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="af4cdb12d8540ad5b27ba5befd517b5d4" name="af4cdb12d8540ad5b27ba5befd517b5d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4cdb12d8540ad5b27ba5befd517b5d4">&#9670;&#160;</a></span>stableIds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::crowd::Crowd::Impl::stableIds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00339">resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="aeb3a4c62cda83701f3ffa88e72b823cf" name="aeb3a4c62cda83701f3ffa88e72b823cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb3a4c62cda83701f3ffa88e72b823cf">&#9670;&#160;</a></span>targetXs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::targetXs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a6fe95f39bbc81dd74d7e42748a8cd31c" name="a6fe95f39bbc81dd74d7e42748a8cd31c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fe95f39bbc81dd74d7e42748a8cd31c">&#9670;&#160;</a></span>targetYs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::targetYs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a6661b4b188a7194f86ff98fc2bbb9a53" name="a6661b4b188a7194f86ff98fc2bbb9a53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6661b4b188a7194f86ff98fc2bbb9a53">&#9670;&#160;</a></span>turnRates</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::turnRates</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="ad1eacf79e8f91ebd7da1b9aed1e56ebc" name="ad1eacf79e8f91ebd7da1b9aed1e56ebc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1eacf79e8f91ebd7da1b9aed1e56ebc">&#9670;&#160;</a></span>vxs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::vxs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a5bd807a86cc9327890dc0a2bf7c3937a" name="a5bd807a86cc9327890dc0a2bf7c3937a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bd807a86cc9327890dc0a2bf7c3937a">&#9670;&#160;</a></span>vys</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::vys</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="abf3f217819f412c6b3b2ed7f299b00b0" name="abf3f217819f412c6b3b2ed7f299b00b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf3f217819f412c6b3b2ed7f299b00b0">&#9670;&#160;</a></span>wanderPhases</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::wanderPhases</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a1ab1b2f2857d66a8c0d079130ef36821" name="a1ab1b2f2857d66a8c0d079130ef36821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ab1b2f2857d66a8c0d079130ef36821">&#9670;&#160;</a></span>wanderWeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::Impl::wanderWeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a09e8f2bb918a9f7f739e249953679389" name="a09e8f2bb918a9f7f739e249953679389"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09e8f2bb918a9f7f739e249953679389">&#9670;&#160;</a></span>xs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::xs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a>, <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>, <a class="el" href="Crowd_8cpp_source.html#l00339">resolveOverlapsPass()</a>, <a class="el" href="Crowd_8cpp_source.html#l00390">resolveWalls()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a5c866caa66b7329ef940d71a862db6e8" name="a5c866caa66b7329ef940d71a862db6e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c866caa66b7329ef940d71a862db6e8">&#9670;&#160;</a></span>ys</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::crowd::Crowd::Impl::ys</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00141">forEachNeighbor()</a>, <a class="el" href="Crowd_8cpp_source.html#l00090">rebuildGrid()</a>, <a class="el" href="Crowd_8cpp_source.html#l00339">resolveOverlapsPass()</a>, <a class="el" href="Crowd_8cpp_source.html#l00390">resolveWalls()</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00165">stepAgents()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/crowd/<a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

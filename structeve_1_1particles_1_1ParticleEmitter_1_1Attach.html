@@ -1,0 +1,501 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::particles::ParticleEmitter::Attach结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1particles.html">particles</a></li><li class="navelem"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a></li><li class="navelem"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html">Attach</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::particles::ParticleEmitter::Attach结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Optional bone attachment. When enabled, <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a87741cc00e9715d2c41090097327bf28" title="Sync Config.x/y (and direction) from the attached bone. Also called by ParticleSimSystem.">syncAttach()</a> writes <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab44405b601f5ce83e243fdfa0070be5e">Config.x</a>/y (and optionally direction) from a live skeleton each frame. <a class="el" href="classeve_1_1particles_1_1Particles.html" title="Particles module — factory + script binding. Per-frame: scheduler step → config reload → ParticleSimS...">Particles</a> remain 2D; 3D bone XYZ is projected via plane + scale.  
+ <a href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a572d6d4847565b5749ed3790c2c4a5bb" id="r_a572d6d4847565b5749ed3790c2c4a5bb"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bb">Kind</a> { <br />
+&#160;&#160;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bbaec87f160004d9d71b60c42d3fbe201e9">AnimPose</a>
+, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba299a20601891812eff26320b63f3b4fe">Spine</a>
+, <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba4b0771d52a9b1132ee6179939d27340b">Ik2D</a>
+, <br />
+&#160;&#160;<a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba37eb0740cec54d0a92a3578d21d1366f">Ik3D</a>
+<br />
+ }</td></tr>
+<tr class="separator:a572d6d4847565b5749ed3790c2c4a5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:afbe5295dcb4ca37c684dc0bad796e76c" id="r_afbe5295dcb4ca37c684dc0bad796e76c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bb">Kind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#afbe5295dcb4ca37c684dc0bad796e76c">kind</a> = <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba6adf97f83acf6453d4a6a4b1070f3754">Kind::None</a></td></tr>
+<tr class="separator:afbe5295dcb4ca37c684dc0bad796e76c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa82b0bc8730314a99e3c3c8c2ff08a86" id="r_aa82b0bc8730314a99e3c3c8c2ff08a86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#aa82b0bc8730314a99e3c3c8c2ff08a86">pose</a> = nullptr</td></tr>
+<tr class="separator:aa82b0bc8730314a99e3c3c8c2ff08a86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af15e3371c631be833378c833cfda82e3" id="r_af15e3371c631be833378c833cfda82e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#af15e3371c631be833378c833cfda82e3">skeleton</a> = nullptr</td></tr>
+<tr class="separator:af15e3371c631be833378c833cfda82e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a6011ec8e007ba25c4516eb0a0a0004" id="r_a5a6011ec8e007ba25c4516eb0a0a0004"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1SpineSkeleton.html">animation::SpineSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a5a6011ec8e007ba25c4516eb0a0a0004">spine</a> = nullptr</td></tr>
+<tr class="separator:a5a6011ec8e007ba25c4516eb0a0a0004"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa20a560fa03303a8d81a0ced54792435" id="r_aa20a560fa03303a8d81a0ced54792435"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#aa20a560fa03303a8d81a0ced54792435">ik2d</a> = nullptr</td></tr>
+<tr class="separator:aa20a560fa03303a8d81a0ced54792435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae135c708aadb0f196c82188b63b78fb2" id="r_ae135c708aadb0f196c82188b63b78fb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">eve::ik::Skeleton3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#ae135c708aadb0f196c82188b63b78fb2">ik3d</a> = nullptr</td></tr>
+<tr class="separator:ae135c708aadb0f196c82188b63b78fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d2587afc91aca5c2148e0b5c44be130" id="r_a4d2587afc91aca5c2148e0b5c44be130"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a4d2587afc91aca5c2148e0b5c44be130">boneIndex</a> = -1</td></tr>
+<tr class="separator:a4d2587afc91aca5c2148e0b5c44be130"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adef62d0f0a5b169e66f79f9ab23aa481" id="r_adef62d0f0a5b169e66f79f9ab23aa481"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#adef62d0f0a5b169e66f79f9ab23aa481">offsetX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:adef62d0f0a5b169e66f79f9ab23aa481"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcbcd3dfa8fa0b8fb1e3fb79622ff1a0" id="r_adcbcd3dfa8fa0b8fb1e3fb79622ff1a0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#adcbcd3dfa8fa0b8fb1e3fb79622ff1a0">offsetY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:adcbcd3dfa8fa0b8fb1e3fb79622ff1a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11d3c3a42114809372389777b71fef19" id="r_a11d3c3a42114809372389777b71fef19"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a11d3c3a42114809372389777b71fef19">offsetZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a11d3c3a42114809372389777b71fef19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a477cd3c2f7cd162564cc385aec168648" id="r_a477cd3c2f7cd162564cc385aec168648"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a477cd3c2f7cd162564cc385aec168648">plane</a> = &quot;xy&quot;</td></tr>
+<tr class="memdesc:a477cd3c2f7cd162564cc385aec168648"><td class="mdescLeft">&#160;</td><td class="mdescRight">"xy" | "xz" | "yz" — axes mapped to particle plane (3D sources).  <br /></td></tr>
+<tr class="separator:a477cd3c2f7cd162564cc385aec168648"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a8dcd2e84265d395a9271191efa8ea6" id="r_a9a8dcd2e84265d395a9271191efa8ea6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a9a8dcd2e84265d395a9271191efa8ea6">scale</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9a8dcd2e84265d395a9271191efa8ea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeac7672253e464d5a66ce4c260053bd2" id="r_aeac7672253e464d5a66ce4c260053bd2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#aeac7672253e464d5a66ce4c260053bd2">followRotation</a> = false</td></tr>
+<tr class="separator:aeac7672253e464d5a66ce4c260053bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab663342971b4b32ba385e502c7173fd3" id="r_ab663342971b4b32ba385e502c7173fd3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#ab663342971b4b32ba385e502c7173fd3">enabled</a> = false</td></tr>
+<tr class="separator:ab663342971b4b32ba385e502c7173fd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Optional bone attachment. When enabled, <a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html#a87741cc00e9715d2c41090097327bf28" title="Sync Config.x/y (and direction) from the attached bone. Also called by ParticleSimSystem.">syncAttach()</a> writes <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Config.html#ab44405b601f5ce83e243fdfa0070be5e">Config.x</a>/y (and optionally direction) from a live skeleton each frame. <a class="el" href="classeve_1_1particles_1_1Particles.html" title="Particles module — factory + script binding. Per-frame: scheduler step → config reload → ParticleSimS...">Particles</a> remain 2D; 3D bone XYZ is projected via plane + scale. </p>
+<p>Supported sources (mutually exclusive):</p><ul>
+<li>AnimPose + bone index (3D skeletal animation)</li>
+<li>SpineSkeleton + bone index (2D Spine)</li>
+<li>IK Skeleton2D / Skeleton3D + bone id (FABRIK chains) </li>
+</ul>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00310">310</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a572d6d4847565b5749ed3790c2c4a5bb" name="a572d6d4847565b5749ed3790c2c4a5bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a572d6d4847565b5749ed3790c2c4a5bb">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bb">eve::particles::ParticleEmitter::Attach::Kind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a572d6d4847565b5749ed3790c2c4a5bba6adf97f83acf6453d4a6a4b1070f3754" name="a572d6d4847565b5749ed3790c2c4a5bba6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a572d6d4847565b5749ed3790c2c4a5bbaec87f160004d9d71b60c42d3fbe201e9" name="a572d6d4847565b5749ed3790c2c4a5bbaec87f160004d9d71b60c42d3fbe201e9"></a>AnimPose&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a572d6d4847565b5749ed3790c2c4a5bba299a20601891812eff26320b63f3b4fe" name="a572d6d4847565b5749ed3790c2c4a5bba299a20601891812eff26320b63f3b4fe"></a>Spine&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a572d6d4847565b5749ed3790c2c4a5bba4b0771d52a9b1132ee6179939d27340b" name="a572d6d4847565b5749ed3790c2c4a5bba4b0771d52a9b1132ee6179939d27340b"></a>Ik2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a572d6d4847565b5749ed3790c2c4a5bba37eb0740cec54d0a92a3578d21d1366f" name="a572d6d4847565b5749ed3790c2c4a5bba37eb0740cec54d0a92a3578d21d1366f"></a>Ik3D&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00311">311</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a4d2587afc91aca5c2148e0b5c44be130" name="a4d2587afc91aca5c2148e0b5c44be130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d2587afc91aca5c2148e0b5c44be130">&#9670;&#160;</a></span>boneIndex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::ParticleEmitter::Attach::boneIndex = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00319">319</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab663342971b4b32ba385e502c7173fd3" name="ab663342971b4b32ba385e502c7173fd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab663342971b4b32ba385e502c7173fd3">&#9670;&#160;</a></span>enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::ParticleEmitter::Attach::enabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00387">eve::particles::syncEmitterSources()</a>.</p>
+
+</div>
+</div>
+<a id="aeac7672253e464d5a66ce4c260053bd2" name="aeac7672253e464d5a66ce4c260053bd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeac7672253e464d5a66ce4c260053bd2">&#9670;&#160;</a></span>followRotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::particles::ParticleEmitter::Attach::followRotation = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00326">326</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa20a560fa03303a8d81a0ced54792435" name="aa20a560fa03303a8d81a0ced54792435"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa20a560fa03303a8d81a0ced54792435">&#9670;&#160;</a></span>ik2d</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ik_1_1Skeleton2D.html">eve::ik::Skeleton2D</a>* eve::particles::ParticleEmitter::Attach::ik2d = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00317">317</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae135c708aadb0f196c82188b63b78fb2" name="ae135c708aadb0f196c82188b63b78fb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae135c708aadb0f196c82188b63b78fb2">&#9670;&#160;</a></span>ik3d</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ik_1_1Skeleton3D.html">eve::ik::Skeleton3D</a>* eve::particles::ParticleEmitter::Attach::ik3d = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00318">318</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afbe5295dcb4ca37c684dc0bad796e76c" name="afbe5295dcb4ca37c684dc0bad796e76c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbe5295dcb4ca37c684dc0bad796e76c">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bb">Kind</a> eve::particles::ParticleEmitter::Attach::kind = <a class="el" href="structeve_1_1particles_1_1ParticleEmitter_1_1Attach.html#a572d6d4847565b5749ed3790c2c4a5bba6adf97f83acf6453d4a6a4b1070f3754">Kind::None</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l00387">eve::particles::syncEmitterSources()</a>.</p>
+
+</div>
+</div>
+<a id="adef62d0f0a5b169e66f79f9ab23aa481" name="adef62d0f0a5b169e66f79f9ab23aa481"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adef62d0f0a5b169e66f79f9ab23aa481">&#9670;&#160;</a></span>offsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Attach::offsetX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00320">320</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adcbcd3dfa8fa0b8fb1e3fb79622ff1a0" name="adcbcd3dfa8fa0b8fb1e3fb79622ff1a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcbcd3dfa8fa0b8fb1e3fb79622ff1a0">&#9670;&#160;</a></span>offsetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Attach::offsetY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00321">321</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a11d3c3a42114809372389777b71fef19" name="a11d3c3a42114809372389777b71fef19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11d3c3a42114809372389777b71fef19">&#9670;&#160;</a></span>offsetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Attach::offsetZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00322">322</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a477cd3c2f7cd162564cc385aec168648" name="a477cd3c2f7cd162564cc385aec168648"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a477cd3c2f7cd162564cc385aec168648">&#9670;&#160;</a></span>plane</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::ParticleEmitter::Attach::plane = &quot;xy&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"xy" | "xz" | "yz" — axes mapped to particle plane (3D sources). </p>
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00324">324</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa82b0bc8730314a99e3c3c8c2ff08a86" name="aa82b0bc8730314a99e3c3c8c2ff08a86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa82b0bc8730314a99e3c3c8c2ff08a86">&#9670;&#160;</a></span>pose</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a>* eve::particles::ParticleEmitter::Attach::pose = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00314">314</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a8dcd2e84265d395a9271191efa8ea6" name="a9a8dcd2e84265d395a9271191efa8ea6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a8dcd2e84265d395a9271191efa8ea6">&#9670;&#160;</a></span>scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::ParticleEmitter::Attach::scale = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00325">325</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af15e3371c631be833378c833cfda82e3" name="af15e3371c631be833378c833cfda82e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af15e3371c631be833378c833cfda82e3">&#9670;&#160;</a></span>skeleton</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a>* eve::particles::ParticleEmitter::Attach::skeleton = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00315">315</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a6011ec8e007ba25c4516eb0a0a0004" name="a5a6011ec8e007ba25c4516eb0a0a0004"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a6011ec8e007ba25c4516eb0a0a0004">&#9670;&#160;</a></span>spine</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1SpineSkeleton.html">animation::SpineSkeleton</a>* eve::particles::ParticleEmitter::Attach::spine = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a> 第 <a class="el" href="ParticleEmitter_8h_source.html#l00316">316</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/particles/<a class="el" href="ParticleEmitter_8h_source.html">ParticleEmitter.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

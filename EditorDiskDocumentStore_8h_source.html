@@ -1,0 +1,266 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorDiskDocumentStore.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorDiskDocumentStore.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorDiskDocumentStore_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorDocumentService_8h.html">editor/EditorDocumentService.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;filesystem&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html">DiskAtomicDocumentStore</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editor_1_1IAtomicDocumentStore.html">IAtomicDocumentStore</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html">DiskAtomicDocumentStore</a>(std::filesystem::path projectRoot);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#aff7742bf19eab9633f9fc947afab0191">read</a>(<span class="keyword">const</span> std::string&amp; resourceUri) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#a827b86a60a4d5cc5e32b8fa106c165ef">compareAndSwap</a>(<span class="keyword">const</span> std::string&amp; resourceUri, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a> expectedRevision,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                                <span class="keyword">const</span> std::string&amp; expectedContentHash,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                                                <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; content) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    std::filesystem::path <a class="code hl_function" href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#a89e9f88ad55e71bcc9b17890f2e66c7c">resolve</a>(<span class="keyword">const</span> std::string&amp; resourceUri) <span class="keyword">const</span>;</div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#adcbb0c5b99090af9557e6810bc4e3022">   33</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#adcbb0c5b99090af9557e6810bc4e3022">setBeforeReplaceHook</a>(std::function&lt;<span class="keywordtype">bool</span>(<span class="keyword">const</span> std::filesystem::path&amp;)&gt; hook) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        beforeReplace_ = std::move(hook);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> failure(<a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* rule, std::string message);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">bool</span> replace(<span class="keyword">const</span> std::filesystem::path&amp; temporary, <span class="keyword">const</span> std::filesystem::path&amp; destination) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::filesystem::path                             root_;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::function&lt;bool(<span class="keyword">const</span> std::filesystem::path&amp;)&gt; beforeReplace_;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    std::uint64_t                                     sequence_ = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1AutosaveDraft.html">   47</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1AutosaveDraft.html">AutosaveDraft</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1AutosaveDraft.html#aaf4c211d067e7d9ab06c94a60f06f7c1">   48</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>    <a class="code hl_variable" href="structeve_1_1editor_1_1AutosaveDraft.html#aaf4c211d067e7d9ab06c94a60f06f7c1">document</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1AutosaveDraft.html#a9cbbf7978aa9b9d04d0cbc7a76692c0c">   49</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1editor_1_1AutosaveDraft.html#a9cbbf7978aa9b9d04d0cbc7a76692c0c">baseDiskHash</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1AutosaveDraft.html#a196f590c79446bf87be219a81715a62f">   50</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1editor_1_1AutosaveDraft.html#a196f590c79446bf87be219a81715a62f">schemaVersion</a> = 1;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1AutosaveDraft.html#a5626585d4f8f9a72bdd13b0d71d8d60f">   51</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a>      <a class="code hl_variable" href="structeve_1_1editor_1_1AutosaveDraft.html#a5626585d4f8f9a72bdd13b0d71d8d60f">editRevision</a>  = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1AutosaveDraft.html#a813e0d4d7c2d8a701124e6452fa82eef">   52</a></span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>   <a class="code hl_variable" href="structeve_1_1editor_1_1AutosaveDraft.html#a813e0d4d7c2d8a701124e6452fa82eef">content</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1AutosaveService.html">   56</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1AutosaveService.html">AutosaveService</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1AutosaveService.html#a59a9bb816f05dc5f400bbfb7f33e83fc">   63</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1AutosaveService.html#a59a9bb816f05dc5f400bbfb7f33e83fc">AutosaveService</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IAtomicDocumentStore.html">IAtomicDocumentStore</a>* store, std::string projectId)</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        : store_(store), projectId_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(projectId)) {}</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;StoredDocument&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1AutosaveService.html#a0a3f594263a7cd5fd3c0cb3448a6860c">writeDraft</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a>&amp; snapshot, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; content);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;AutosaveDraft&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1AutosaveService.html#acf3a21fab2196d79d2ec348bf02424a0">readDraft</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1AutosaveService.html#a9bc27c40f6079b9f73cb1a83f2d8775e">shouldOfferRecovery</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1AutosaveDraft.html">AutosaveDraft</a>&amp; draft, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1DocumentSnapshot.html">DocumentSnapshot</a>&amp; formal) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    std::string <a class="code hl_function" href="classeve_1_1editor_1_1AutosaveService.html#ab0b2706937bfd56c196ed1b147ef779e">draftUri</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">DocumentId</a>&amp; document) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_class" href="classeve_1_1editor_1_1IAtomicDocumentStore.html">IAtomicDocumentStore</a>* store_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    std::string           projectId_;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditorDocumentService_8h_html"><div class="ttname"><a href="EditorDocumentService_8h.html">EditorDocumentService.h</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_ab0a7f483f0328466ee0f06390545aef7"><div class="ttname"><a href="TacticsPersistence_8cpp.html#ab0a7f483f0328466ee0f06390545aef7">status</a></div><div class="ttdeci">BattleStatus status</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00125">TacticsPersistence.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1AutosaveService_html"><div class="ttname"><a href="classeve_1_1editor_1_1AutosaveService.html">eve::editor::AutosaveService</a></div><div class="ttdoc">Autosave coordinator that never overwrites the formal document URI.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00056">EditorDiskDocumentStore.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1AutosaveService_html_a0a3f594263a7cd5fd3c0cb3448a6860c"><div class="ttname"><a href="classeve_1_1editor_1_1AutosaveService.html#a0a3f594263a7cd5fd3c0cb3448a6860c">eve::editor::AutosaveService::writeDraft</a></div><div class="ttdeci">EditorResult&lt; StoredDocument &gt; writeDraft(const DocumentSnapshot &amp;snapshot, const EditorValue &amp;content)</div><div class="ttdoc">Write one revisioned draft under autosave://project/document.draft.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8cpp_source.html#l00174">EditorDiskDocumentStore.cpp:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1AutosaveService_html_a59a9bb816f05dc5f400bbfb7f33e83fc"><div class="ttname"><a href="classeve_1_1editor_1_1AutosaveService.html#a59a9bb816f05dc5f400bbfb7f33e83fc">eve::editor::AutosaveService::AutosaveService</a></div><div class="ttdeci">AutosaveService(IAtomicDocumentStore *store, std::string projectId)</div><div class="ttdoc">Create an autosave namespace.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00063">EditorDiskDocumentStore.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1AutosaveService_html_a9bc27c40f6079b9f73cb1a83f2d8775e"><div class="ttname"><a href="classeve_1_1editor_1_1AutosaveService.html#a9bc27c40f6079b9f73cb1a83f2d8775e">eve::editor::AutosaveService::shouldOfferRecovery</a></div><div class="ttdeci">bool shouldOfferRecovery(const AutosaveDraft &amp;draft, const DocumentSnapshot &amp;formal) const</div><div class="ttdoc">True when a newer draft differs from the current formal disk base.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8cpp_source.html#l00216">EditorDiskDocumentStore.cpp:216</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1AutosaveService_html_ab0b2706937bfd56c196ed1b147ef779e"><div class="ttname"><a href="classeve_1_1editor_1_1AutosaveService.html#ab0b2706937bfd56c196ed1b147ef779e">eve::editor::AutosaveService::draftUri</a></div><div class="ttdeci">std::string draftUri(const DocumentId &amp;document) const</div><div class="ttdoc">Return the stable draft URI for one document.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8cpp_source.html#l00166">EditorDiskDocumentStore.cpp:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1AutosaveService_html_acf3a21fab2196d79d2ec348bf02424a0"><div class="ttname"><a href="classeve_1_1editor_1_1AutosaveService.html#acf3a21fab2196d79d2ec348bf02424a0">eve::editor::AutosaveService::readDraft</a></div><div class="ttdeci">EditorResult&lt; AutosaveDraft &gt; readDraft(const DocumentId &amp;document) const</div><div class="ttdoc">Read a draft and validate its schema.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8cpp_source.html#l00197">EditorDiskDocumentStore.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DiskAtomicDocumentStore_html"><div class="ttname"><a href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html">eve::editor::DiskAtomicDocumentStore</a></div><div class="ttdoc">Project-rooted JSON document store with sibling-temp atomic replacement.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00018">EditorDiskDocumentStore.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DiskAtomicDocumentStore_html_a827b86a60a4d5cc5e32b8fa106c165ef"><div class="ttname"><a href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#a827b86a60a4d5cc5e32b8fa106c165ef">eve::editor::DiskAtomicDocumentStore::compareAndSwap</a></div><div class="ttdeci">EditorResult&lt; StoredDocument &gt; compareAndSwap(const std::string &amp;resourceUri, Revision expectedRevision, const std::string &amp;expectedContentHash, const EditorValue &amp;content) override</div><div class="ttdoc">CAS and atomically replace one document envelope on disk.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8cpp_source.html#l00099">EditorDiskDocumentStore.cpp:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DiskAtomicDocumentStore_html_a89e9f88ad55e71bcc9b17890f2e66c7c"><div class="ttname"><a href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#a89e9f88ad55e71bcc9b17890f2e66c7c">eve::editor::DiskAtomicDocumentStore::resolve</a></div><div class="ttdeci">std::filesystem::path resolve(const std::string &amp;resourceUri) const</div><div class="ttdoc">Resolve a logical URI to a canonical project path, or an empty path when rejected.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8cpp_source.html#l00048">EditorDiskDocumentStore.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DiskAtomicDocumentStore_html_adcbb0c5b99090af9557e6810bc4e3022"><div class="ttname"><a href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#adcbb0c5b99090af9557e6810bc4e3022">eve::editor::DiskAtomicDocumentStore::setBeforeReplaceHook</a></div><div class="ttdeci">void setBeforeReplaceHook(std::function&lt; bool(const std::filesystem::path &amp;)&gt; hook)</div><div class="ttdoc">Test seam invoked after temp write and before atomic replacement.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00033">EditorDiskDocumentStore.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1DiskAtomicDocumentStore_html_aff7742bf19eab9633f9fc947afab0191"><div class="ttname"><a href="classeve_1_1editor_1_1DiskAtomicDocumentStore.html#aff7742bf19eab9633f9fc947afab0191">eve::editor::DiskAtomicDocumentStore::read</a></div><div class="ttdeci">EditorResult&lt; StoredDocument &gt; read(const std::string &amp;resourceUri) const override</div><div class="ttdoc">Read and validate the latest atomic document envelope.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8cpp_source.html#l00072">EditorDiskDocumentStore.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IAtomicDocumentStore_html"><div class="ttname"><a href="classeve_1_1editor_1_1IAtomicDocumentStore.html">eve::editor::IAtomicDocumentStore</a></div><div class="ttdoc">Compare-and-swap persistence boundary used by DocumentService.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00081">EditorDocumentService.h:81</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aee556a1a4c69319bef3bea3c87db4db6"><div class="ttname"><a href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">eve::editor::Revision</a></div><div class="ttdeci">eve::editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="EditorProtocol_8h_source.html#l00009">EditorProtocol.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AutosaveDraft_html"><div class="ttname"><a href="structeve_1_1editor_1_1AutosaveDraft.html">eve::editor::AutosaveDraft</a></div><div class="ttdoc">Persisted draft metadata used to decide whether recovery should be offered.</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00047">EditorDiskDocumentStore.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AutosaveDraft_html_a196f590c79446bf87be219a81715a62f"><div class="ttname"><a href="structeve_1_1editor_1_1AutosaveDraft.html#a196f590c79446bf87be219a81715a62f">eve::editor::AutosaveDraft::schemaVersion</a></div><div class="ttdeci">std::uint32_t schemaVersion</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00050">EditorDiskDocumentStore.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AutosaveDraft_html_a5626585d4f8f9a72bdd13b0d71d8d60f"><div class="ttname"><a href="structeve_1_1editor_1_1AutosaveDraft.html#a5626585d4f8f9a72bdd13b0d71d8d60f">eve::editor::AutosaveDraft::editRevision</a></div><div class="ttdeci">Revision editRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00051">EditorDiskDocumentStore.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AutosaveDraft_html_a813e0d4d7c2d8a701124e6452fa82eef"><div class="ttname"><a href="structeve_1_1editor_1_1AutosaveDraft.html#a813e0d4d7c2d8a701124e6452fa82eef">eve::editor::AutosaveDraft::content</a></div><div class="ttdeci">EditorValue content</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00052">EditorDiskDocumentStore.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AutosaveDraft_html_a9cbbf7978aa9b9d04d0cbc7a76692c0c"><div class="ttname"><a href="structeve_1_1editor_1_1AutosaveDraft.html#a9cbbf7978aa9b9d04d0cbc7a76692c0c">eve::editor::AutosaveDraft::baseDiskHash</a></div><div class="ttdeci">std::string baseDiskHash</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00049">EditorDiskDocumentStore.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1AutosaveDraft_html_aaf4c211d067e7d9ab06c94a60f06f7c1"><div class="ttname"><a href="structeve_1_1editor_1_1AutosaveDraft.html#aaf4c211d067e7d9ab06c94a60f06f7c1">eve::editor::AutosaveDraft::document</a></div><div class="ttdeci">DocumentId document</div><div class="ttdef"><b>Definition</b> <a href="EditorDiskDocumentStore_8h_source.html#l00048">EditorDiskDocumentStore.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1DocumentSnapshot_html"><div class="ttname"><a href="structeve_1_1editor_1_1DocumentSnapshot.html">eve::editor::DocumentSnapshot</a></div><div class="ttdoc">Immutable document metadata snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditorDocumentService_8h_source.html#l00049">EditorDocumentService.h:49</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,486 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::audio_editing::AudioAuditionTransport类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1audio__editing.html">audio_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html">AudioAuditionTransport</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1audio__editing_1_1AudioAuditionTransport-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::audio_editing::AudioAuditionTransport类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Revision-safe play/pause/seek/custom-loop state machine for asset audition.  
+ <a href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AudioTransport_8h_source.html">AudioTransport.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a60008168b4498f9792ab823b57f0614e" id="r_a60008168b4498f9792ab823b57f0614e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a60008168b4498f9792ab823b57f0614e">bind</a> (StableId asset, Revision sourceRevision, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html">IAudioTransportBackend</a> *backend)</td></tr>
+<tr class="memdesc:a60008168b4498f9792ab823b57f0614e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a borrowed backend and stop any previously bound audition.  <br /></td></tr>
+<tr class="separator:a60008168b4498f9792ab823b57f0614e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb5e2e7e8c40ef34ebfe82e2621977af" id="r_acb5e2e7e8c40ef34ebfe82e2621977af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#acb5e2e7e8c40ef34ebfe82e2621977af">setLoop</a> (Revision expectedRevision, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, double startSeconds=0.0, double endSeconds=0.0)</td></tr>
+<tr class="memdesc:acb5e2e7e8c40ef34ebfe82e2621977af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure a bounded loop range; zero end uses the clip duration.  <br /></td></tr>
+<tr class="separator:acb5e2e7e8c40ef34ebfe82e2621977af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23c0161f4f535557299d781cc33212bb" id="r_a23c0161f4f535557299d781cc33212bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a23c0161f4f535557299d781cc33212bb">play</a> (Revision expectedRevision)</td></tr>
+<tr class="separator:a23c0161f4f535557299d781cc33212bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa30d280e4561b4c0f071016556e5c49e" id="r_aa30d280e4561b4c0f071016556e5c49e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#aa30d280e4561b4c0f071016556e5c49e">pause</a> (Revision expectedRevision)</td></tr>
+<tr class="separator:aa30d280e4561b4c0f071016556e5c49e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52f9b766b4e14f0e7134ab490d7a542d" id="r_a52f9b766b4e14f0e7134ab490d7a542d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a52f9b766b4e14f0e7134ab490d7a542d">stop</a> (Revision expectedRevision)</td></tr>
+<tr class="separator:a52f9b766b4e14f0e7134ab490d7a542d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc17a5da270a18ec521deba90980a030" id="r_adc17a5da270a18ec521deba90980a030"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#adc17a5da270a18ec521deba90980a030">seek</a> (Revision expectedRevision, double seconds)</td></tr>
+<tr class="separator:adc17a5da270a18ec521deba90980a030"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed2b013b59ff30c5b70e9a3410c06342" id="r_aed2b013b59ff30c5b70e9a3410c06342"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; <a class="el" href="structeve_1_1audio__editing_1_1AudioTransportSnapshot.html">AudioTransportSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#aed2b013b59ff30c5b70e9a3410c06342">update</a> (Revision expectedRevision)</td></tr>
+<tr class="memdesc:aed2b013b59ff30c5b70e9a3410c06342"><td class="mdescLeft">&#160;</td><td class="mdescRight">Poll backend state and wrap the custom loop without changing documents.  <br /></td></tr>
+<tr class="separator:aed2b013b59ff30c5b70e9a3410c06342"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8727f7a955f59df6942487664f80f44" id="r_ac8727f7a955f59df6942487664f80f44"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; <a class="el" href="structeve_1_1audio__editing_1_1AudioTransportSnapshot.html">AudioTransportSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#ac8727f7a955f59df6942487664f80f44">snapshot</a> (Revision expectedRevision) const</td></tr>
+<tr class="memdesc:ac8727f7a955f59df6942487664f80f44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the current playhead only for the bound source revision.  <br /></td></tr>
+<tr class="separator:ac8727f7a955f59df6942487664f80f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c74a05058d6f9064828af30a8031942" id="r_a7c74a05058d6f9064828af30a8031942"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio__editing_1_1AudioAuditionTransport.html#a7c74a05058d6f9064828af30a8031942">unbind</a> ()</td></tr>
+<tr class="memdesc:a7c74a05058d6f9064828af30a8031942"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop and forget the borrowed backend.  <br /></td></tr>
+<tr class="separator:a7c74a05058d6f9064828af30a8031942"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Revision-safe play/pause/seek/custom-loop state machine for asset audition. </p>
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8h_source.html">AudioTransport.h</a> 第 <a class="el" href="AudioTransport_8h_source.html#l00042">42</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a60008168b4498f9792ab823b57f0614e" name="a60008168b4498f9792ab823b57f0614e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60008168b4498f9792ab823b57f0614e">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt; eve::audio_editing::AudioAuditionTransport::bind </td>
+          <td>(</td>
+          <td class="paramtype">StableId&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Revision&#160;</td>
+          <td class="paramname"><em>sourceRevision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html">IAudioTransportBackend</a> *&#160;</td>
+          <td class="paramname"><em>backend</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind a borrowed backend and stop any previously bound audition. </p>
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">eve::audio_editing::IAudioTransportBackend::duration()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a01eb8075dff391ce2ddd127f2efe2fde">eve::audio_editing::IAudioTransportBackend::setNativeLooping()</a> , 以及 <a class="el" href="AudioTransport_8cpp_source.html#l00131">unbind()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00342">eve::audio_editor::AudioSourceEditor::attachLiveAudition()</a>.</p>
+
+</div>
+</div>
+<a id="aa30d280e4561b4c0f071016556e5c49e" name="aa30d280e4561b4c0f071016556e5c49e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa30d280e4561b4c0f071016556e5c49e">&#9670;&#160;</a></span>pause()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt; eve::audio_editing::AudioAuditionTransport::pause </td>
+          <td>(</td>
+          <td class="paramtype">Revision&#160;</td>
+          <td class="paramname"><em>expectedRevision</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingResult_8h_source.html#l00053">eve::editing::noOp()</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a8c6a44feab034fcc7ec0b609873b91b3">eve::audio_editing::IAudioTransportBackend::pause()</a>, <a class="el" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ae99180abf47a8b3a856e0bcb2656990a">eve::audio_editing::Paused</a>, <a class="el" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428">eve::audio_editing::Playing</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00319">eve::audio_editor::AudioSourceEditor::pause()</a>.</p>
+
+</div>
+</div>
+<a id="a23c0161f4f535557299d781cc33212bb" name="a23c0161f4f535557299d781cc33212bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23c0161f4f535557299d781cc33212bb">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt; eve::audio_editing::AudioAuditionTransport::play </td>
+          <td>(</td>
+          <td class="paramtype">Revision&#160;</td>
+          <td class="paramname"><em>expectedRevision</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a039e125c4ab99349e1a1e974db63c773">eve::audio_editing::IAudioTransportBackend::play()</a>, <a class="el" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428">eve::audio_editing::Playing</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac44109aa71930e5bd39e92cbd46c8941">eve::audio_editing::IAudioTransportBackend::seek()</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#af89a392d74b9438f0888e4e2e6f29d1a">eve::audio_editing::IAudioTransportBackend::tell()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00311">eve::audio_editor::AudioSourceEditor::play()</a>.</p>
+
+</div>
+</div>
+<a id="adc17a5da270a18ec521deba90980a030" name="adc17a5da270a18ec521deba90980a030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc17a5da270a18ec521deba90980a030">&#9670;&#160;</a></span>seek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt; eve::audio_editing::AudioAuditionTransport::seek </td>
+          <td>(</td>
+          <td class="paramtype">Revision&#160;</td>
+          <td class="paramname"><em>expectedRevision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">eve::audio_editing::IAudioTransportBackend::duration()</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac44109aa71930e5bd39e92cbd46c8941">eve::audio_editing::IAudioTransportBackend::seek()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00342">eve::audio_editor::AudioSourceEditor::attachLiveAudition()</a> , 以及 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00251">eve::audio_editor::AudioSourceEditor::seekSeconds()</a>.</p>
+
+</div>
+</div>
+<a id="acb5e2e7e8c40ef34ebfe82e2621977af" name="acb5e2e7e8c40ef34ebfe82e2621977af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb5e2e7e8c40ef34ebfe82e2621977af">&#9670;&#160;</a></span>setLoop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt; eve::audio_editing::AudioAuditionTransport::setLoop </td>
+          <td>(</td>
+          <td class="paramtype">Revision&#160;</td>
+          <td class="paramname"><em>expectedRevision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startSeconds</em> = <code>0.0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endSeconds</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure a bounded loop range; zero end uses the clip duration. </p>
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">duration</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">eve::audio_editing::IAudioTransportBackend::duration()</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a01eb8075dff391ce2ddd127f2efe2fde">eve::audio_editing::IAudioTransportBackend::setNativeLooping()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00022">start</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<a id="ac8727f7a955f59df6942487664f80f44" name="ac8727f7a955f59df6942487664f80f44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8727f7a955f59df6942487664f80f44">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; <a class="el" href="structeve_1_1audio__editing_1_1AudioTransportSnapshot.html">AudioTransportSnapshot</a> &gt; eve::audio_editing::AudioAuditionTransport::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">Revision&#160;</td>
+          <td class="paramname"><em>expectedRevision</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the current playhead only for the bound source revision. </p>
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00087">eve::audio_editor::AudioSourceEditor::AudioSourceEditor()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00319">eve::audio_editor::AudioSourceEditor::pause()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00311">eve::audio_editor::AudioSourceEditor::play()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00251">eve::audio_editor::AudioSourceEditor::seekSeconds()</a> , 以及 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00327">eve::audio_editor::AudioSourceEditor::stop()</a>.</p>
+
+</div>
+</div>
+<a id="a52f9b766b4e14f0e7134ab490d7a542d" name="a52f9b766b4e14f0e7134ab490d7a542d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52f9b766b4e14f0e7134ab490d7a542d">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; void &gt; eve::audio_editing::AudioAuditionTransport::stop </td>
+          <td>(</td>
+          <td class="paramtype">Revision&#160;</td>
+          <td class="paramname"><em>expectedRevision</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingResult_8h_source.html#l00053">eve::editing::noOp()</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a9889f072bdf161ca4a223431e8aa9a0b">eve::audio_editing::IAudioTransportBackend::stop()</a>, <a class="el" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::audio_editing::Stopped</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00327">eve::audio_editor::AudioSourceEditor::stop()</a>.</p>
+
+</div>
+</div>
+<a id="a7c74a05058d6f9064828af30a8031942" name="a7c74a05058d6f9064828af30a8031942"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c74a05058d6f9064828af30a8031942">&#9670;&#160;</a></span>unbind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::audio_editing::AudioAuditionTransport::unbind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop and forget the borrowed backend. </p>
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a9889f072bdf161ca4a223431e8aa9a0b">eve::audio_editing::IAudioTransportBackend::stop()</a> , 以及 <a class="el" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::audio_editing::Stopped</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00342">eve::audio_editor::AudioSourceEditor::attachLiveAudition()</a>, <a class="el" href="AudioTransport_8cpp_source.html#l00014">bind()</a>, <a class="el" href="AudioTransport_8cpp_source.html#l00110">update()</a> , 以及 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00103">eve::audio_editor::AudioSourceEditor::~AudioSourceEditor()</a>.</p>
+
+</div>
+</div>
+<a id="aed2b013b59ff30c5b70e9a3410c06342" name="aed2b013b59ff30c5b70e9a3410c06342"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed2b013b59ff30c5b70e9a3410c06342">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1audio__editing.html#a8d1e24d3086008ca4afe3ce6ae7edf6c">EditorResult</a>&lt; <a class="el" href="structeve_1_1audio__editing_1_1AudioTransportSnapshot.html">AudioTransportSnapshot</a> &gt; eve::audio_editing::AudioAuditionTransport::update </td>
+          <td>(</td>
+          <td class="paramtype">Revision&#160;</td>
+          <td class="paramname"><em>expectedRevision</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Poll backend state and wrap the custom loop without changing documents. </p>
+
+<p class="definition">在文件 <a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a> 第 <a class="el" href="AudioTransport_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a6e64b52094591d21ce9c2f188f097693">eve::audio_editing::IAudioTransportBackend::duration()</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#a039e125c4ab99349e1a1e974db63c773">eve::audio_editing::IAudioTransportBackend::play()</a>, <a class="el" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac9dbb2b7c84159b632d71e512eba8428">eve::audio_editing::Playing</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac05bb021690461f4f3f08cf60f57c35c">eve::audio_editing::IAudioTransportBackend::playing()</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#ac44109aa71930e5bd39e92cbd46c8941">eve::audio_editing::IAudioTransportBackend::seek()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="namespaceeve_1_1audio__editing.html#aac3f5fa45c05313eda129688099f3087ac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::audio_editing::Stopped</a>, <a class="el" href="classeve_1_1audio__editing_1_1IAudioTransportBackend.html#af89a392d74b9438f0888e4e2e6f29d1a">eve::audio_editing::IAudioTransportBackend::tell()</a>, <a class="el" href="AudioTransport_8cpp_source.html#l00131">unbind()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AudioSourceEditor_8cpp_source.html#l00335">eve::audio_editor::AudioSourceEditor::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/audio_editing/<a class="el" href="AudioTransport_8h_source.html">AudioTransport.h</a></li>
+<li>src/modules/audio_editing/<a class="el" href="AudioTransport_8cpp_source.html">AudioTransport.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

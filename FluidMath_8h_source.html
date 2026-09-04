@@ -1,0 +1,273 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/FluidMath.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FluidMath.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FluidMath_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html">   26</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1FluidParams.html">FluidParams</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#a4f1bffce1b28dc918c62765fcb8bf15e">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#a4f1bffce1b28dc918c62765fcb8bf15e">particleRadius</a> = 0.05f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#a4a02f465a4eed332247301cae9765cb5">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#a4a02f465a4eed332247301cae9765cb5">supportRadius</a> = 0.20f;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#a0c8a64e0be350bb6ca915624ea0384cb">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#a0c8a64e0be350bb6ca915624ea0384cb">restDensity</a> = 1.0f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#ae9e93b8e2079d1859c115600e6966903">   34</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#ae9e93b8e2079d1859c115600e6966903">gravity</a>{0.f, -9.8f, 0.f};</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#aa6bb4d83f7223a1f67a9196d43c6d43e">   36</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#aa6bb4d83f7223a1f67a9196d43c6d43e">viscosity</a> = 0.02f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#ad5198f7b01e5e8bde9704114e336bc62">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#ad5198f7b01e5e8bde9704114e336bc62">yieldStress</a> = 0.0f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#a6c4bb55cabe135366772edef43433ce8">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#a6c4bb55cabe135366772edef43433ce8">cohesion</a> = 0.0f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#a69a34e7474afdbde12e0223fd0ab7826">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#a69a34e7474afdbde12e0223fd0ab7826">adhesion</a> = 0.0f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#a0bd57a14822db156cad0c0e124e9fbaa">   44</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#a0bd57a14822db156cad0c0e124e9fbaa">damping</a> = 0.0f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#aaf07c8a34a9a1343bd4e29a60a39a06e">   46</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#aaf07c8a34a9a1343bd4e29a60a39a06e">maxVelocity</a> = 20.f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#aa6682de27d563a182aa0103eaf4d1ae8">   48</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#aa6682de27d563a182aa0103eaf4d1ae8">iterations</a> = 1;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParams.html#a69aa817d7764d131267872afe7cb86d9">   50</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParams.html#a69aa817d7764d131267872afe7cb86d9">pbfIterations</a> = 2;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="};">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParticle.html">   54</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1FluidParticle.html">FluidParticle</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParticle.html#a49e14530143c34b1689fd7958675904f">   55</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParticle.html#a49e14530143c34b1689fd7958675904f">pos</a>{0.f};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1FluidParticle.html#a0a39b644eadd4b4fe21417e0505fc3e4">   56</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1FluidParticle.html#a0a39b644eadd4b4fe21417e0505fc3e4">vel</a>{0.f};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>};</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="}">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a13b979ebc973d92fc350e66414d5896a">   65</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1fluids.html#a13b979ebc973d92fc350e66414d5896a">fluidPoly6</a>(<span class="keywordtype">float</span> r2, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">float</span> h2 = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> * <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (r2 &gt;= h2 || r2 &lt;= 0.f) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">float</span> q = h2 - r2;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">return</span> 315.f / (64.f * 3.14159265358979f * std::pow(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, 9.f)) * q * q * q;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#afc544e82d05ce44fdcbe4ba699a5e5fb">   78</a></span><span class="keyword">inline</span> glm::vec3 <a class="code hl_function" href="namespaceeve_1_1fluids.html#afc544e82d05ce44fdcbe4ba699a5e5fb">fluidSpikyGrad</a>(<span class="keyword">const</span> glm::vec3&amp; dx, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">float</span> r2 = glm::dot(dx, dx);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (r2 &gt;= <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> * <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> || r2 &lt;= 1e-12f) <span class="keywordflow">return</span> glm::vec3(0.f);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> = std::sqrt(r2);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">float</span> q = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">float</span> k = -45.f / (3.14159265358979f * std::pow(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, 6.f));</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> dx * (k * q * q / <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a6083606f5d1f53740150feaea40be782">   93</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1fluids.html#a6083606f5d1f53740150feaea40be782">fluidViscLaplacian</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> &gt;= <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> || <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> &lt;= 1e-9f) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> 45.f / (3.14159265358979f * std::pow(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, 6.f)) * (1.f - <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> / <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#aa47f9238dab60e5aa84a44b6a68f17fd">  104</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1fluids.html#aa47f9238dab60e5aa84a44b6a68f17fd">fluidCohesionKernel</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> &gt;= <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> || <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> &lt;= 1e-9f) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> q = <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> 32.f / (3.14159265358979f * std::pow(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>, 9.f)) * q * q * q * <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> * <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a> * <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00113" data-start="{" data-end="}">
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#af0a39bf85336db4fe25daeeb0e4a4302">  113</a></span><span class="keyword">inline</span> glm::vec3 <a class="code hl_function" href="namespaceeve_1_1fluids.html#af0a39bf85336db4fe25daeeb0e4a4302">fluidClampSpeed</a>(<span class="keyword">const</span> glm::vec3&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">float</span> maxSpeed) {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = glm::length(<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> &gt; maxSpeed &amp;&amp; <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> &gt; 1e-9f) <span class="keywordflow">return</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> * (maxSpeed / <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}</div>
+</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidGpuKernels_8h_source.html#l00036">FluidGpuKernels.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a13b979ebc973d92fc350e66414d5896a"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a13b979ebc973d92fc350e66414d5896a">eve::fluids::fluidPoly6</a></div><div class="ttdeci">float fluidPoly6(float r2, float h)</div><div class="ttdoc">Poly6 kernel value W(r2, h).</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00065">FluidMath.h:65</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a6083606f5d1f53740150feaea40be782"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a6083606f5d1f53740150feaea40be782">eve::fluids::fluidViscLaplacian</a></div><div class="ttdeci">float fluidViscLaplacian(float r, float h)</div><div class="ttdoc">Viscosity Laplacian kernel value.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00093">FluidMath.h:93</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_aa47f9238dab60e5aa84a44b6a68f17fd"><div class="ttname"><a href="namespaceeve_1_1fluids.html#aa47f9238dab60e5aa84a44b6a68f17fd">eve::fluids::fluidCohesionKernel</a></div><div class="ttdeci">float fluidCohesionKernel(float r, float h)</div><div class="ttdoc">Akinci-style cohesion kernel C(r) for droplet surface tension.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00104">FluidMath.h:104</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_af0a39bf85336db4fe25daeeb0e4a4302"><div class="ttname"><a href="namespaceeve_1_1fluids.html#af0a39bf85336db4fe25daeeb0e4a4302">eve::fluids::fluidClampSpeed</a></div><div class="ttdeci">glm::vec3 fluidClampSpeed(const glm::vec3 &amp;v, float maxSpeed)</div><div class="ttdoc">Clamp a vector's magnitude to maxSpeed.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00113">FluidMath.h:113</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_afc544e82d05ce44fdcbe4ba699a5e5fb"><div class="ttname"><a href="namespaceeve_1_1fluids.html#afc544e82d05ce44fdcbe4ba699a5e5fb">eve::fluids::fluidSpikyGrad</a></div><div class="ttdeci">glm::vec3 fluidSpikyGrad(const glm::vec3 &amp;dx, float h)</div><div class="ttdoc">Spiky gradient of the kernel w.r.t. particle i position.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00078">FluidMath.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html">eve::fluids::FluidParams</a></div><div class="ttdoc">Tuning knobs of one fluid simulation.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00026">FluidMath.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_a0bd57a14822db156cad0c0e124e9fbaa"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#a0bd57a14822db156cad0c0e124e9fbaa">eve::fluids::FluidParams::damping</a></div><div class="ttdeci">float damping</div><div class="ttdoc">Linear air damping applied each substep.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00044">FluidMath.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_a0c8a64e0be350bb6ca915624ea0384cb"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#a0c8a64e0be350bb6ca915624ea0384cb">eve::fluids::FluidParams::restDensity</a></div><div class="ttdeci">float restDensity</div><div class="ttdoc">Rest density; normalized to 1.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00032">FluidMath.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_a4a02f465a4eed332247301cae9765cb5"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#a4a02f465a4eed332247301cae9765cb5">eve::fluids::FluidParams::supportRadius</a></div><div class="ttdeci">float supportRadius</div><div class="ttdoc">SPH support radius h (kernel cutoff), typically 4x particleRadius.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00030">FluidMath.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_a4f1bffce1b28dc918c62765fcb8bf15e"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#a4f1bffce1b28dc918c62765fcb8bf15e">eve::fluids::FluidParams::particleRadius</a></div><div class="ttdeci">float particleRadius</div><div class="ttdoc">Resting particle radius in world units.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00028">FluidMath.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_a69a34e7474afdbde12e0223fd0ab7826"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#a69a34e7474afdbde12e0223fd0ab7826">eve::fluids::FluidParams::adhesion</a></div><div class="ttdeci">float adhesion</div><div class="ttdoc">Fluid-surface adhesion strength (contact angle / sticking).</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00042">FluidMath.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_a69aa817d7764d131267872afe7cb86d9"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#a69aa817d7764d131267872afe7cb86d9">eve::fluids::FluidParams::pbfIterations</a></div><div class="ttdeci">int pbfIterations</div><div class="ttdoc">PBF density-constraint relaxation passes per substep.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00050">FluidMath.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_a6c4bb55cabe135366772edef43433ce8"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#a6c4bb55cabe135366772edef43433ce8">eve::fluids::FluidParams::cohesion</a></div><div class="ttdeci">float cohesion</div><div class="ttdoc">Fluid-fluid cohesion strength (droplet formation).</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00040">FluidMath.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_aa6682de27d563a182aa0103eaf4d1ae8"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#aa6682de27d563a182aa0103eaf4d1ae8">eve::fluids::FluidParams::iterations</a></div><div class="ttdeci">int iterations</div><div class="ttdoc">Solver substeps per call to step(dt).</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00048">FluidMath.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_aa6bb4d83f7223a1f67a9196d43c6d43e"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#aa6bb4d83f7223a1f67a9196d43c6d43e">eve::fluids::FluidParams::viscosity</a></div><div class="ttdeci">float viscosity</div><div class="ttdoc">XSPH viscosity strength (0 = inviscid).</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00036">FluidMath.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_aaf07c8a34a9a1343bd4e29a60a39a06e"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#aaf07c8a34a9a1343bd4e29a60a39a06e">eve::fluids::FluidParams::maxVelocity</a></div><div class="ttdeci">float maxVelocity</div><div class="ttdoc">Velocity clamp after integration.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00046">FluidMath.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_ad5198f7b01e5e8bde9704114e336bc62"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#ad5198f7b01e5e8bde9704114e336bc62">eve::fluids::FluidParams::yieldStress</a></div><div class="ttdeci">float yieldStress</div><div class="ttdoc">Bingham yield stress: below this shear rate particles &quot;freeze&quot;.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00038">FluidMath.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParams_html_ae9e93b8e2079d1859c115600e6966903"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParams.html#ae9e93b8e2079d1859c115600e6966903">eve::fluids::FluidParams::gravity</a></div><div class="ttdeci">glm::vec3 gravity</div><div class="ttdoc">Gravity vector in world units / s^2.</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00034">FluidMath.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParticle_html"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParticle.html">eve::fluids::FluidParticle</a></div><div class="ttdoc">One simulated particle (CPU reference layout).</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00054">FluidMath.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParticle_html_a0a39b644eadd4b4fe21417e0505fc3e4"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParticle.html#a0a39b644eadd4b4fe21417e0505fc3e4">eve::fluids::FluidParticle::vel</a></div><div class="ttdeci">glm::vec3 vel</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00056">FluidMath.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1FluidParticle_html_a49e14530143c34b1689fd7958675904f"><div class="ttname"><a href="structeve_1_1fluids_1_1FluidParticle.html#a49e14530143c34b1689fd7958675904f">eve::fluids::FluidParticle::pos</a></div><div class="ttdeci">glm::vec3 pos</div><div class="ttdef"><b>Definition</b> <a href="FluidMath_8h_source.html#l00055">FluidMath.h:55</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

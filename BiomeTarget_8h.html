@@ -1,0 +1,270 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/biome_editing/BiomeTarget.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_457e7539f75a0737b09e64f3421b42e7.html">biome_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a>  </div>
+  <div class="headertitle"><div class="title">BiomeTarget.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="EditableTarget_8h_source.html">editing/EditableTarget.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="EditingAuthority_8h_source.html">editing/EditingAuthority.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="EditingProperty_8h_source.html">editing/EditingProperty.h</a>&quot;</code><br />
+</div>
+<p><a href="BiomeTarget_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1biome__editing_1_1BiomeAssetValue.html">eve::biome_editing::BiomeAssetValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable weighted asset entry in one biome layer.  <a href="structeve_1_1biome__editing_1_1BiomeAssetValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1biome__editing_1_1BiomeLayerValue.html">eve::biome_editing::BiomeLayerValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable authored biome layer referencing a spatial asset.  <a href="structeve_1_1biome__editing_1_1BiomeLayerValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html">eve::biome_editing::BiomeDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revisioned BiomeRules asset.  <a href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1IBiomeSpatialResolver.html">eve::biome_editing::IBiomeSpatialResolver</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves copied spatial domains for BiomeRules publication.  <a href="classeve_1_1biome__editing_1_1IBiomeSpatialResolver.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentRuntime.html">eve::biome_editing::BiomeDocumentRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Candidate-first BiomeRules generation.  <a href="classeve_1_1biome__editing_1_1BiomeDocumentRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1biome__editing" id="r_namespaceeve_1_1biome__editing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html">eve::biome_editing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:aeb04cc726bce8a45509f80272aab9c4b" id="r_aeb04cc726bce8a45509f80272aab9c4b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#aeb04cc726bce8a45509f80272aab9c4b">eve::biome_editing::CapabilityId</a> = <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a></td></tr>
+<tr class="separator:aeb04cc726bce8a45509f80272aab9c4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6225c1784fcd0a54411c3ce2e02fa654" id="r_a6225c1784fcd0a54411c3ce2e02fa654"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a6225c1784fcd0a54411c3ce2e02fa654">eve::biome_editing::DiagnosticSeverity</a> = <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td></tr>
+<tr class="separator:a6225c1784fcd0a54411c3ce2e02fa654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4857051469a2f8e09aa1c9513fab3aca" id="r_a4857051469a2f8e09aa1c9513fab3aca"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a4857051469a2f8e09aa1c9513fab3aca">eve::biome_editing::DomainOperation</a> = <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a></td></tr>
+<tr class="separator:a4857051469a2f8e09aa1c9513fab3aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8661ebd8c0d40dc40245446efc93087f" id="r_a8661ebd8c0d40dc40245446efc93087f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a8661ebd8c0d40dc40245446efc93087f">eve::biome_editing::EditRegion</a> = <a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a></td></tr>
+<tr class="separator:a8661ebd8c0d40dc40245446efc93087f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b3b6d948b04c07d46a0ad0aacad8735" id="r_a8b3b6d948b04c07d46a0ad0aacad8735"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a8b3b6d948b04c07d46a0ad0aacad8735">eve::biome_editing::EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:a8b3b6d948b04c07d46a0ad0aacad8735"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabdc3d1f69f73e7a527746fadb40e822" id="r_aabdc3d1f69f73e7a527746fadb40e822"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aabdc3d1f69f73e7a527746fadb40e822"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#aabdc3d1f69f73e7a527746fadb40e822">eve::biome_editing::EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:aabdc3d1f69f73e7a527746fadb40e822"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c79a611b4fe76dadb2a22bdb30d0135" id="r_a7c79a611b4fe76dadb2a22bdb30d0135"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a7c79a611b4fe76dadb2a22bdb30d0135">eve::biome_editing::EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:a7c79a611b4fe76dadb2a22bdb30d0135"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcb5a91a4fa968fb2999a2c802c2c42a" id="r_adcb5a91a4fa968fb2999a2c802c2c42a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#adcb5a91a4fa968fb2999a2c802c2c42a">eve::biome_editing::EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:adcb5a91a4fa968fb2999a2c802c2c42a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaf62990572bc21cbf1ba872815d9cd6" id="r_abaf62990572bc21cbf1ba872815d9cd6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#abaf62990572bc21cbf1ba872815d9cd6">eve::biome_editing::IDomainOperationTarget</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a></td></tr>
+<tr class="separator:abaf62990572bc21cbf1ba872815d9cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf8f18329f372b3ab55c8ce46bd148e" id="r_a4cf8f18329f372b3ab55c8ce46bd148e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a4cf8f18329f372b3ab55c8ce46bd148e">eve::biome_editing::IDomainOperationTargetStaging</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="separator:a4cf8f18329f372b3ab55c8ce46bd148e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adce3736de82da1e01eec3321bce8f83b" id="r_adce3736de82da1e01eec3321bce8f83b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#adce3736de82da1e01eec3321bce8f83b">eve::biome_editing::IEditableTarget</a> = <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a></td></tr>
+<tr class="separator:adce3736de82da1e01eec3321bce8f83b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62792e3c7ab42c9447e8c2a03c63ae08" id="r_a62792e3c7ab42c9447e8c2a03c63ae08"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a62792e3c7ab42c9447e8c2a03c63ae08">eve::biome_editing::IEditingSnapshotProvider</a> = <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="separator:a62792e3c7ab42c9447e8c2a03c63ae08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd7166f795f4b02a5894e8f779492bd7" id="r_acd7166f795f4b02a5894e8f779492bd7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#acd7166f795f4b02a5894e8f779492bd7">eve::biome_editing::IPropertyProvider</a> = <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a></td></tr>
+<tr class="separator:acd7166f795f4b02a5894e8f779492bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa173f0d1a0d6166e089dcfa7f402590" id="r_aaa173f0d1a0d6166e089dcfa7f402590"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#aaa173f0d1a0d6166e089dcfa7f402590">eve::biome_editing::ObjectId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a></td></tr>
+<tr class="separator:aaa173f0d1a0d6166e089dcfa7f402590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0015b6bf46cf82445a43077a46eac934" id="r_a0015b6bf46cf82445a43077a46eac934"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a0015b6bf46cf82445a43077a46eac934">eve::biome_editing::PropertyDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">editing::PropertyDescriptor</a></td></tr>
+<tr class="separator:a0015b6bf46cf82445a43077a46eac934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0049d343b9c8d981e9561bcdc696c333" id="r_a0049d343b9c8d981e9561bcdc696c333"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a0049d343b9c8d981e9561bcdc696c333">eve::biome_editing::PropertyFlag</a> = <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">editing::PropertyFlag</a></td></tr>
+<tr class="separator:a0049d343b9c8d981e9561bcdc696c333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e9896cf9e08ad076124b660b2759302" id="r_a8e9896cf9e08ad076124b660b2759302"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a8e9896cf9e08ad076124b660b2759302">eve::biome_editing::PropertyPath</a> = <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a></td></tr>
+<tr class="separator:a8e9896cf9e08ad076124b660b2759302"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f80abdccac35bf897dd8fc0aa512600" id="r_a4f80abdccac35bf897dd8fc0aa512600"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a4f80abdccac35bf897dd8fc0aa512600">eve::biome_editing::PropertyReadResult</a> = <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a></td></tr>
+<tr class="separator:a4f80abdccac35bf897dd8fc0aa512600"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a222c0ef767ef89b9471baa9d283623a1" id="r_a222c0ef767ef89b9471baa9d283623a1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a222c0ef767ef89b9471baa9d283623a1">eve::biome_editing::PropertyReadState</a> = <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">editing::PropertyReadState</a></td></tr>
+<tr class="separator:a222c0ef767ef89b9471baa9d283623a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51671c1029b2b29f7a34e3b4c3d3b6fe" id="r_a51671c1029b2b29f7a34e3b4c3d3b6fe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a51671c1029b2b29f7a34e3b4c3d3b6fe">eve::biome_editing::PropertySchema</a> = <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a></td></tr>
+<tr class="separator:a51671c1029b2b29f7a34e3b4c3d3b6fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaca6d04b4e01102ce5137d10a8ecf3a8" id="r_aaca6d04b4e01102ce5137d10a8ecf3a8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#aaca6d04b4e01102ce5137d10a8ecf3a8">eve::biome_editing::PropertySetMode</a> = <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a></td></tr>
+<tr class="separator:aaca6d04b4e01102ce5137d10a8ecf3a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cb1543909111fcbb3072937093d52f7" id="r_a7cb1543909111fcbb3072937093d52f7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a7cb1543909111fcbb3072937093d52f7">eve::biome_editing::PropertyType</a> = <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a></td></tr>
+<tr class="separator:a7cb1543909111fcbb3072937093d52f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcfddd1718fb44557c9b79db80d5c629" id="r_afcfddd1718fb44557c9b79db80d5c629"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#afcfddd1718fb44557c9b79db80d5c629">eve::biome_editing::Revision</a> = <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td></tr>
+<tr class="separator:afcfddd1718fb44557c9b79db80d5c629"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbad62d561514b6532af741423dd56c2" id="r_acbad62d561514b6532af741423dd56c2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#acbad62d561514b6532af741423dd56c2">eve::biome_editing::RuleId</a> = <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td></tr>
+<tr class="separator:acbad62d561514b6532af741423dd56c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f99ad252f4753439e09bd591e17548a" id="r_a9f99ad252f4753439e09bd591e17548a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a9f99ad252f4753439e09bd591e17548a">eve::biome_editing::SelectionSnapshot</a> = <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a></td></tr>
+<tr class="separator:a9f99ad252f4753439e09bd591e17548a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68390f821544ad9ebec5a6e29773c32f" id="r_a68390f821544ad9ebec5a6e29773c32f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a68390f821544ad9ebec5a6e29773c32f">eve::biome_editing::TargetDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a></td></tr>
+<tr class="separator:a68390f821544ad9ebec5a6e29773c32f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26697ed7be57f08d7f4a7ef783184a9e" id="r_a26697ed7be57f08d7f4a7ef783184a9e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1biome__editing.html#a26697ed7be57f08d7f4a7ef783184a9e">eve::biome_editing::TargetId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a></td></tr>
+<tr class="separator:a26697ed7be57f08d7f4a7ef783184a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

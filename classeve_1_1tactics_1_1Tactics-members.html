@@ -1,0 +1,219 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tactics.html">tactics</a></li><li class="navelem"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">Tactics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::tactics::Tactics 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#ad4ea7bc34671ef5862311990ea1b0197">acceptReaction</a>(ecs::EntityHandle battle, SubjectRef reactor, const LogicalId &amp;action)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#af345677112233642231b88e7182128df">activeUnit</a>(ecs::EntityHandle battle)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#acec09bf53d79adb81468b734e3e19fe2">addCell</a>(ecs::EntityHandle battle, Cell cell, CellState state={})</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a6a1a25dc3471311e90d0585890cb3530">addObjective</a>(ecs::EntityHandle battle, ObjectiveSpec objective)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#ae574e813153cc8e7491c5f7c54a1fe33">advance</a>(ecs::EntityHandle battle, const SimulationStep &amp;step)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a33be38f2456cae7b000bbd8c47cc3c72">advanceGameplay</a>(const GameplaySession &amp;session, SubjectRef instance, const SimulationStep &amp;step) override</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a9898b306d8fb7dfe927bce19013e1e3c">availableGameplayActions</a>(const GameplaySession &amp;session, SubjectRef instance, SubjectRef subject) const override</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a00525b0492e8002c1cfeeceaaa6bf01d">battleCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aee803ca0d14eadea63f8788e13d10c2b">capabilityName</a></td><td class="entry"><a class="el" href="classeve_1_1IGameplayControlProvider.html">eve::IGameplayControlProvider</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#afc9c3002d4c042dfd0bfe3de74729434">commandsFrom</a>(ecs::EntityHandle battle, Revision revision)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a4e60b630e7ddce3ba5d121ca76dcd523">declineReaction</a>(ecs::EntityHandle battle)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a7bb2f44c0197cd335354a23d898e2db3">defeatUnit</a>(ecs::EntityHandle battle, SubjectRef unit)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#ac090f499f393d854ccac53301d922110">endTurn</a>(ecs::EntityHandle battle, SubjectRef actor)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#acc6080d23ce2229972ba0af453ba5497">faceUnit</a>(ecs::EntityHandle battle, SubjectRef actor, int facing)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a49b95c09c76bd9a745e3992a4d1aefaf">finish</a>(ecs::EntityHandle battle)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a31d55059cc7f43b0294e2ea36db9197a">gameplayDomain</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a1ab70deb6b1afe0456933df9d9dd5cbf">gameplayEvents</a>(const GameplaySession &amp;session, SubjectRef instance, std::uint64_t afterSequence) const override</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#adeca20c35f1e8926c735990b438e4bf1">isStale</a>(TacticsBattleSessionRef reference) noexcept</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a2b1d581e274af74a27fc626728b81a04">Module_REG</a>(Tactics)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a7aaa6425b8b61e6717411656f9ee0e1f">moveUnit</a>(ecs::EntityHandle battle, SubjectRef actor, Cell destination)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a66db0ff3e8f587c70f19d922c1d2fb70">newBattle</a>(SubjectRef subject, std::uint64_t seed=0)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#ae52357705249c05dcf231e272f27642f">newSession</a>(SubjectRef subject, std::uint64_t seed=0)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#abde6b00bb06971a9f941688aaaedcd9d">newSide</a>(ecs::EntityHandle battle, SubjectRef subject)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a0b713e573cf1d39239bf1d747562be7e">newUnit</a>(ecs::EntityHandle battle, ecs::EntityHandle side, SubjectRef subject, LogicalId definition, Cell cell, TurnResourceSpec resources={})</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a95e1af26af31dcd9f40d04da9e1172cb">observeGameplay</a>(const GameplaySession &amp;session, SubjectRef instance) const override</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a685f1314dc103793dbe91675c9e735a8">openReaction</a>(ecs::EntityHandle battle, std::uint64_t triggerSequence, std::vector&lt; ReactionCandidate &gt; candidates)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a1b46cfc0e19219f668af8f68c9e36ae9">phase</a>(ecs::EntityHandle battle)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a986c18ba05099a7c63a4857d2498133b">release</a>(TacticsBattleSessionRef reference)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a4bf2939cf244350cfcec8e8a32141e32">replay</a>(ecs::EntityHandle battle, std::span&lt; const BattleCommand &gt; commands)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a421b6b5ef80504413c014686d60172f5">resolve</a>(TacticsBattleSessionRef reference) noexcept</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#aeacdf86608f52155318cff04c4ff5914">restore</a>(ecs::EntityHandle battle, const SnapshotEnvelope &amp;snapshot, const SnapshotHashProvider &amp;hashProvider)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a2b881a177c98ad41ad24e8e53cd95417">roll</a>(ecs::EntityHandle battle, const LogicalId &amp;stream)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#aadd434794fed640e8c78b7b80f8b5c4f">setTopology</a>(ecs::EntityHandle battle, BoardTopology topology)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a0a2f5fcbfc539ad00f08608b86815e5e">sideCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#aeb3f73daeed99b836b8ec3296fc9763d">snapshot</a>(ecs::EntityHandle battle, const SnapshotHashProvider &amp;hashProvider)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a52ffd143b249f460834b3b31a6efaf4d">start</a>(ecs::EntityHandle battle, TurnPolicyKind policy)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#aa25d59933e821ea8c5a907d42eafc15a">status</a>(ecs::EntityHandle battle)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a285e869b992cce5c2d1540f9b89de00d">submitGameplay</a>(const GameplaySession &amp;session, SubjectRef instance, const GameplayCommand &amp;command) override</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#aba99632f11e033e902fea4941466b1b8">Tactics</a>()</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a518db11a015ff934a7d4b1ce36f3738d">unitCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a779d4310f5625a46060c87fa64404f63">waitUnit</a>(ecs::EntityHandle battle, SubjectRef actor)</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1IGameplayControlProvider.html#aa35341669f898fd0b827036a1fb7361b">~IGameplayControlProvider</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1IGameplayControlProvider.html">eve::IGameplayControlProvider</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a>()</td><td class="entry"><a class="el" href="classeve_1_1Module.html">eve::Module</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html#a2ec94ba86ff0dcf21303a89d212c04cb">~Tactics</a>() override</td><td class="entry"><a class="el" href="classeve_1_1tactics_1_1Tactics.html">eve::tactics::Tactics</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

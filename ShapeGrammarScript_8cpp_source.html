@@ -1,0 +1,221 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/ShapeGrammarScript.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ShapeGrammarScript.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ShapeGrammarScript_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ShapeGrammarScript_8h.html">procgen/ShapeGrammarScript.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ShapeGrammar_8h.html">procgen/ShapeGrammar.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen.html#a9937573786fd8ebe0d71c3acdce2e309">   11</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1procgen.html#a9937573786fd8ebe0d71c3acdce2e309">exposeShapeGrammar</a>(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">auto</span> grammar = table.addClass&lt;<a class="code hl_class" href="classeve_1_1procgen_1_1ShapeGrammar.html">ShapeGrammar</a>&gt;(</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="stringliteral">&quot;ProcgenShapeGrammar&quot;</span>,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        std::function&lt;ShapeGrammar*()&gt;([]() -&gt; <a class="code hl_class" href="classeve_1_1procgen_1_1ShapeGrammar.html">ShapeGrammar</a>* { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }), <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    grammar.addFunc(<span class="stringliteral">&quot;clear&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a32feee88cd39a5286ed44e1e9fee5897">ShapeGrammar::clear</a>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    grammar.addFunc(<span class="stringliteral">&quot;addModule&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#aa9ab4ae1c3aef590902654e59da59406">ShapeGrammar::addModule</a>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    grammar.addFunc(<span class="stringliteral">&quot;removeModule&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a278f37a1eb333f81261e1a0f279763ca">ShapeGrammar::removeModule</a>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    grammar.addFunc(<span class="stringliteral">&quot;hasModule&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a9819f06b213edb742d2a427c93790a71">ShapeGrammar::hasModule</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    grammar.addFunc(<span class="stringliteral">&quot;getModuleCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a4147bd0ebeb0ee8b10b6c4beb0f1aa1c">ShapeGrammar::getModuleCount</a>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    grammar.addFunc(<span class="stringliteral">&quot;getModuleSymbol&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a05cdcab39f74c3d7a1e6ad40e6c1865c">ShapeGrammar::getModuleSymbol</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    grammar.addFunc(<span class="stringliteral">&quot;getVariantCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#aa2920560579a2b2873822fa966d67d67">ShapeGrammar::getVariantCount</a>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    grammar.addFunc(<span class="stringliteral">&quot;getVariantAsset&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#ab3358b748472e2659292c7813129e4d7">ShapeGrammar::getVariantAsset</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    grammar.addFunc(<span class="stringliteral">&quot;getVariantLength&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a431ad22d7c850e1e92965ea99cb9fb03">ShapeGrammar::getVariantLength</a>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    grammar.addFunc(<span class="stringliteral">&quot;validate&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a6accc3129f2ada8fe915ad2c6a9e16e4">ShapeGrammar::validate</a>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    grammar.addFunc(<span class="stringliteral">&quot;generate&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#ac4bb658843490ca9572a7fe26fb43b95">ShapeGrammar::generate</a>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    grammar.addFunc(<span class="stringliteral">&quot;getError&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#a563a96f781dbb6bc4d9f28ad74395022">ShapeGrammar::getError</a>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    grammar.addFunc(<span class="stringliteral">&quot;debugReport&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1ShapeGrammar.html#af8659ca7cd8ccd9b593ce2b00e263d61">ShapeGrammar::debugReport</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aShapeGrammarScript_8h_html"><div class="ttname"><a href="ShapeGrammarScript_8h.html">ShapeGrammarScript.h</a></div></div>
+<div class="ttc" id="aShapeGrammar_8h_html"><div class="ttname"><a href="ShapeGrammar_8h.html">ShapeGrammar.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html">eve::procgen::ShapeGrammar</a></div><div class="ttdoc">Module-based shape grammar expanded continuously along a 3D polyline.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8h_source.html#l00027">ShapeGrammar.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a05cdcab39f74c3d7a1e6ad40e6c1865c"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a05cdcab39f74c3d7a1e6ad40e6c1865c">eve::procgen::ShapeGrammar::getModuleSymbol</a></div><div class="ttdeci">std::string getModuleSymbol(int index) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00085">ShapeGrammar.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a278f37a1eb333f81261e1a0f279763ca"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a278f37a1eb333f81261e1a0f279763ca">eve::procgen::ShapeGrammar::removeModule</a></div><div class="ttdeci">bool removeModule(const std::string &amp;symbol)</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00078">ShapeGrammar.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a32feee88cd39a5286ed44e1e9fee5897"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a32feee88cd39a5286ed44e1e9fee5897">eve::procgen::ShapeGrammar::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Remove every registered symbol and diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00058">ShapeGrammar.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a4147bd0ebeb0ee8b10b6c4beb0f1aa1c"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a4147bd0ebeb0ee8b10b6c4beb0f1aa1c">eve::procgen::ShapeGrammar::getModuleCount</a></div><div class="ttdeci">int getModuleCount() const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00084">ShapeGrammar.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a431ad22d7c850e1e92965ea99cb9fb03"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a431ad22d7c850e1e92965ea99cb9fb03">eve::procgen::ShapeGrammar::getVariantLength</a></div><div class="ttdeci">float getVariantLength(const std::string &amp;symbol, int index) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00098">ShapeGrammar.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a563a96f781dbb6bc4d9f28ad74395022"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a563a96f781dbb6bc4d9f28ad74395022">eve::procgen::ShapeGrammar::getError</a></div><div class="ttdeci">std::string getError() const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00182">ShapeGrammar.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a6accc3129f2ada8fe915ad2c6a9e16e4"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a6accc3129f2ada8fe915ad2c6a9e16e4">eve::procgen::ShapeGrammar::validate</a></div><div class="ttdeci">bool validate(const std::string &amp;grammar)</div><div class="ttdoc">Parse and validate grammar without generating output.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00105">ShapeGrammar.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_a9819f06b213edb742d2a427c93790a71"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#a9819f06b213edb742d2a427c93790a71">eve::procgen::ShapeGrammar::hasModule</a></div><div class="ttdeci">bool hasModule(const std::string &amp;symbol) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00083">ShapeGrammar.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_aa2920560579a2b2873822fa966d67d67"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#aa2920560579a2b2873822fa966d67d67">eve::procgen::ShapeGrammar::getVariantCount</a></div><div class="ttdeci">int getVariantCount(const std::string &amp;symbol) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00088">ShapeGrammar.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_aa9ab4ae1c3aef590902654e59da59406"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#aa9ab4ae1c3aef590902654e59da59406">eve::procgen::ShapeGrammar::addModule</a></div><div class="ttdeci">bool addModule(const std::string &amp;symbol, const std::string &amp;asset, float length, float weight=1.f)</div><div class="ttdoc">Register a weighted asset variant for a symbol.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00067">ShapeGrammar.cpp:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_ab3358b748472e2659292c7813129e4d7"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#ab3358b748472e2659292c7813129e4d7">eve::procgen::ShapeGrammar::getVariantAsset</a></div><div class="ttdeci">std::string getVariantAsset(const std::string &amp;symbol, int index) const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00092">ShapeGrammar.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_ac4bb658843490ca9572a7fe26fb43b95"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#ac4bb658843490ca9572a7fe26fb43b95">eve::procgen::ShapeGrammar::generate</a></div><div class="ttdeci">PointSet * generate(const std::string &amp;grammar, PointSet *controlPoints, uint32_t seed, bool acceptIncomplete)</div><div class="ttdoc">Expand grammar along control points.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00131">ShapeGrammar.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ShapeGrammar_html_af8659ca7cd8ccd9b593ce2b00e263d61"><div class="ttname"><a href="classeve_1_1procgen_1_1ShapeGrammar.html#af8659ca7cd8ccd9b593ce2b00e263d61">eve::procgen::ShapeGrammar::debugReport</a></div><div class="ttdeci">std::string debugReport() const</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammar_8cpp_source.html#l00183">ShapeGrammar.cpp:183</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a9937573786fd8ebe0d71c3acdce2e309"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a9937573786fd8ebe0d71c3acdce2e309">eve::procgen::exposeShapeGrammar</a></div><div class="ttdeci">void exposeShapeGrammar(ssq::Table &amp;table)</div><div class="ttdoc">Register shape-grammar script types on the Procgen module table.</div><div class="ttdef"><b>Definition</b> <a href="ShapeGrammarScript_8cpp_source.html#l00011">ShapeGrammarScript.cpp:11</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

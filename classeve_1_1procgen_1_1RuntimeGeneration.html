@@ -1,0 +1,2096 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::RuntimeGeneration类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">RuntimeGeneration</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1procgen_1_1RuntimeGeneration-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::RuntimeGeneration类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>View-driven partition and hierarchical procedural generation scheduler.  
+ <a href="classeve_1_1procgen_1_1RuntimeGeneration.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RuntimeGeneration_8h_source.html">RuntimeGeneration.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af7f2b5da6b83680f750779f072db42f4" id="r_af7f2b5da6b83680f750779f072db42f4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#af7f2b5da6b83680f750779f072db42f4">RuntimeGeneration</a> (uint32_t worldSeed=1)</td></tr>
+<tr class="memdesc:af7f2b5da6b83680f750779f072db42f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a scheduler with a stable world seed.  <br /></td></tr>
+<tr class="separator:af7f2b5da6b83680f750779f072db42f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af97d89d20303a105d7095753af56b00a" id="r_af97d89d20303a105d7095753af56b00a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#af97d89d20303a105d7095753af56b00a">clear</a> ()</td></tr>
+<tr class="memdesc:af97d89d20303a105d7095753af56b00a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove levels, cells, queues and outputs while retaining the world seed.  <br /></td></tr>
+<tr class="separator:af97d89d20303a105d7095753af56b00a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a348571590be7e16e0a6e312c2afddcc4" id="r_a348571590be7e16e0a6e312c2afddcc4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a348571590be7e16e0a6e312c2afddcc4">addLevel</a> (float cellSize, float generationRadius, float cleanupMultiplier)</td></tr>
+<tr class="memdesc:a348571590be7e16e0a6e312c2afddcc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a hierarchical grid level.  <br /></td></tr>
+<tr class="separator:a348571590be7e16e0a6e312c2afddcc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c4fceff2c683392aac0ae0cc8066a7d" id="r_a3c4fceff2c683392aac0ae0cc8066a7d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a3c4fceff2c683392aac0ae0cc8066a7d">getLevelCount</a> () const</td></tr>
+<tr class="separator:a3c4fceff2c683392aac0ae0cc8066a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33fb9e90e988368a24de7f3fd4af2ee5" id="r_a33fb9e90e988368a24de7f3fd4af2ee5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a33fb9e90e988368a24de7f3fd4af2ee5">getLevelCellSize</a> (int level) const</td></tr>
+<tr class="separator:a33fb9e90e988368a24de7f3fd4af2ee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c26707903d7cb26a255d91a05273898" id="r_a8c26707903d7cb26a255d91a05273898"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a8c26707903d7cb26a255d91a05273898">getLevelGenerationRadius</a> (int level) const</td></tr>
+<tr class="separator:a8c26707903d7cb26a255d91a05273898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a427ce9d675e75a2768f5b6caadc511de" id="r_a427ce9d675e75a2768f5b6caadc511de"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a427ce9d675e75a2768f5b6caadc511de">getLevelCleanupRadius</a> (int level) const</td></tr>
+<tr class="separator:a427ce9d675e75a2768f5b6caadc511de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae41e8fe324c562a9ef27e567772ad30a" id="r_ae41e8fe324c562a9ef27e567772ad30a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ae41e8fe324c562a9ef27e567772ad30a">setDirectionWeight</a> (float weight)</td></tr>
+<tr class="memdesc:ae41e8fe324c562a9ef27e567772ad30a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weight favoring cells in front of the source, clamped to [0,1].  <br /></td></tr>
+<tr class="separator:ae41e8fe324c562a9ef27e567772ad30a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ec452547881679f2898f6d6e9dc2a47" id="r_a4ec452547881679f2898f6d6e9dc2a47"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a4ec452547881679f2898f6d6e9dc2a47">getDirectionWeight</a> () const</td></tr>
+<tr class="separator:a4ec452547881679f2898f6d6e9dc2a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe4afdfedfed3678f1ca5c772fb5cae6" id="r_abe4afdfedfed3678f1ca5c772fb5cae6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#abe4afdfedfed3678f1ca5c772fb5cae6">setMaxGenerating</a> (int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:abe4afdfedfed3678f1ca5c772fb5cae6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum simultaneously issued generation requests.  <br /></td></tr>
+<tr class="separator:abe4afdfedfed3678f1ca5c772fb5cae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bc0608aa0885bd000c053817b950b76" id="r_a9bc0608aa0885bd000c053817b950b76"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a9bc0608aa0885bd000c053817b950b76">getMaxGenerating</a> () const</td></tr>
+<tr class="separator:a9bc0608aa0885bd000c053817b950b76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8376395d99d2e2bf233cc3bd98c7659" id="r_ac8376395d99d2e2bf233cc3bd98c7659"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ac8376395d99d2e2bf233cc3bd98c7659">setMaxActiveCells</a> (int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:ac8376395d99d2e2bf233cc3bd98c7659"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum active plus in-flight cells; zero disables the resident-cell limit.  <br /></td></tr>
+<tr class="separator:ac8376395d99d2e2bf233cc3bd98c7659"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af67135b008893bd609c5eea14078d980" id="r_af67135b008893bd609c5eea14078d980"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#af67135b008893bd609c5eea14078d980">getMaxActiveCells</a> () const</td></tr>
+<tr class="memdesc:af67135b008893bd609c5eea14078d980"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the resident-cell limit, or zero when unlimited.  <br /></td></tr>
+<tr class="separator:af67135b008893bd609c5eea14078d980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a019d34b67afefdd0046b8152e31c839e" id="r_a019d34b67afefdd0046b8152e31c839e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a019d34b67afefdd0046b8152e31c839e">setMaxPointsPerCell</a> (int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:a019d34b67afefdd0046b8152e31c839e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the maximum points allowed in one generated cell; zero disables the limit.  <br /></td></tr>
+<tr class="separator:a019d34b67afefdd0046b8152e31c839e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5b3fe7b26f86ac341d90729996d9763" id="r_ad5b3fe7b26f86ac341d90729996d9763"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ad5b3fe7b26f86ac341d90729996d9763">getMaxPointsPerCell</a> () const</td></tr>
+<tr class="memdesc:ad5b3fe7b26f86ac341d90729996d9763"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the per-cell point limit, or zero when unlimited.  <br /></td></tr>
+<tr class="separator:ad5b3fe7b26f86ac341d90729996d9763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe643f11b3ebcd3fce392750549121ff" id="r_afe643f11b3ebcd3fce392750549121ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#afe643f11b3ebcd3fce392750549121ff">setMaxResidentPoints</a> (int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:afe643f11b3ebcd3fce392750549121ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the total point limit across active cell outputs; zero disables the limit.  <br /></td></tr>
+<tr class="separator:afe643f11b3ebcd3fce392750549121ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7de7643f8df1875cace80402683554a1" id="r_a7de7643f8df1875cace80402683554a1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7de7643f8df1875cace80402683554a1">getMaxResidentPoints</a> () const</td></tr>
+<tr class="memdesc:a7de7643f8df1875cace80402683554a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total resident-point limit, or zero when unlimited.  <br /></td></tr>
+<tr class="separator:a7de7643f8df1875cace80402683554a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7dc9ad9e4e9ac2b86460f47f3ddb984" id="r_ae7dc9ad9e4e9ac2b86460f47f3ddb984"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ae7dc9ad9e4e9ac2b86460f47f3ddb984">getResidentPointCount</a> () const</td></tr>
+<tr class="memdesc:ae7dc9ad9e4e9ac2b86460f47f3ddb984"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return points retained by active or not-yet-acknowledged cleanup cells.  <br /></td></tr>
+<tr class="separator:ae7dc9ad9e4e9ac2b86460f47f3ddb984"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad749db2999548d5b474e9d7d46fb9c80" id="r_ad749db2999548d5b474e9d7d46fb9c80"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ad749db2999548d5b474e9d7d46fb9c80">getRejectedOutputCount</a> () const</td></tr>
+<tr class="memdesc:ad749db2999548d5b474e9d7d46fb9c80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return generation or restore outputs rejected by point budgets.  <br /></td></tr>
+<tr class="separator:ad749db2999548d5b474e9d7d46fb9c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a250c2124a4b08ffdcb6290baa1c697dc" id="r_a250c2124a4b08ffdcb6290baa1c697dc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a250c2124a4b08ffdcb6290baa1c697dc">trimToResidentPoints</a> (int <a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>)</td></tr>
+<tr class="memdesc:a250c2124a4b08ffdcb6290baa1c697dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedule lowest-priority active cells for cleanup until at most target points remain.  <br /></td></tr>
+<tr class="separator:a250c2124a4b08ffdcb6290baa1c697dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3fbece7bb65d7af5f3aac78cb4935d9" id="r_ad3fbece7bb65d7af5f3aac78cb4935d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ad3fbece7bb65d7af5f3aac78cb4935d9">setMaxGenerationRetries</a> (int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:ad3fbece7bb65d7af5f3aac78cb4935d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set retries after the initial generation attempt; zero fails immediately.  <br /></td></tr>
+<tr class="separator:ad3fbece7bb65d7af5f3aac78cb4935d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a615b25371b385d5ef477b99fdc351a66" id="r_a615b25371b385d5ef477b99fdc351a66"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a615b25371b385d5ef477b99fdc351a66">getMaxGenerationRetries</a> () const</td></tr>
+<tr class="memdesc:a615b25371b385d5ef477b99fdc351a66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return retries allowed after the initial generation attempt.  <br /></td></tr>
+<tr class="separator:a615b25371b385d5ef477b99fdc351a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7028e360b3631f683eb3499318f303c3" id="r_a7028e360b3631f683eb3499318f303c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7028e360b3631f683eb3499318f303c3">setFrameTimeBudget</a> (float milliseconds)</td></tr>
+<tr class="memdesc:a7028e360b3631f683eb3499318f303c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU issue budget in milliseconds for one frame; zero disables the limit.  <br /></td></tr>
+<tr class="separator:a7028e360b3631f683eb3499318f303c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8f1dc00eda269a0ce8db043b7f54bd2" id="r_ac8f1dc00eda269a0ce8db043b7f54bd2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ac8f1dc00eda269a0ce8db043b7f54bd2">getFrameTimeBudget</a> () const</td></tr>
+<tr class="separator:ac8f1dc00eda269a0ce8db043b7f54bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a325a8622d5b5cbeca337db6ef239fc1f" id="r_a325a8622d5b5cbeca337db6ef239fc1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a325a8622d5b5cbeca337db6ef239fc1f">beginFrame</a> ()</td></tr>
+<tr class="memdesc:a325a8622d5b5cbeca337db6ef239fc1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a new budget window before consuming generation requests.  <br /></td></tr>
+<tr class="separator:a325a8622d5b5cbeca337db6ef239fc1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb4b7c9b4088d9548c3293e1824d7459" id="r_aeb4b7c9b4088d9548c3293e1824d7459"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#aeb4b7c9b4088d9548c3293e1824d7459">setRefreshWorkBudget</a> (int candidateCells)</td></tr>
+<tr class="memdesc:aeb4b7c9b4088d9548c3293e1824d7459"><td class="mdescLeft">&#160;</td><td class="mdescRight">Limit source-refresh planning work performed by one call.  <br /></td></tr>
+<tr class="separator:aeb4b7c9b4088d9548c3293e1824d7459"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a4b417598bb26fc7a773d8cb8ca73c5" id="r_a7a4b417598bb26fc7a773d8cb8ca73c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7a4b417598bb26fc7a773d8cb8ca73c5">getRefreshWorkBudget</a> () const</td></tr>
+<tr class="memdesc:a7a4b417598bb26fc7a773d8cb8ca73c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the per-call source-refresh candidate budget, or zero when synchronous.  <br /></td></tr>
+<tr class="separator:a7a4b417598bb26fc7a773d8cb8ca73c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a05e4b07db1a365e2685677da059d51" id="r_a6a05e4b07db1a365e2685677da059d51"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a6a05e4b07db1a365e2685677da059d51">isRefreshPending</a> () const</td></tr>
+<tr class="memdesc:a6a05e4b07db1a365e2685677da059d51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a staged source snapshot still needs planning work.  <br /></td></tr>
+<tr class="separator:a6a05e4b07db1a365e2685677da059d51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a648333710b18b9693601e7805691d64f" id="r_a648333710b18b9693601e7805691d64f"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a648333710b18b9693601e7805691d64f">getCommittedRefreshRevision</a> () const</td></tr>
+<tr class="memdesc:a648333710b18b9693601e7805691d64f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the latest source revision atomically published into generation and cleanup queues.  <br /></td></tr>
+<tr class="separator:a648333710b18b9693601e7805691d64f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab63b92204b5a05aba56b2d598f957da9" id="r_ab63b92204b5a05aba56b2d598f957da9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ab63b92204b5a05aba56b2d598f957da9">continueGenerationRefresh</a> ()</td></tr>
+<tr class="memdesc:ab63b92204b5a05aba56b2d598f957da9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance a budgeted source refresh without changing the requested sources.  <br /></td></tr>
+<tr class="separator:ab63b92204b5a05aba56b2d598f957da9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab52dcc5b96a31ddc0af7876a1626a3db" id="r_ab52dcc5b96a31ddc0af7876a1626a3db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ab52dcc5b96a31ddc0af7876a1626a3db">updateSource</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float directionX, float directionZ)</td></tr>
+<tr class="memdesc:ab52dcc5b96a31ddc0af7876a1626a3db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recompute desired cells for a generation source.  <br /></td></tr>
+<tr class="separator:ab52dcc5b96a31ddc0af7876a1626a3db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf49ba6aba684a8163628b7853037584" id="r_aaf49ba6aba684a8163628b7853037584"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#aaf49ba6aba684a8163628b7853037584">setGenerationSource</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float directionX, float directionZ, float radiusScale=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:aaf49ba6aba684a8163628b7853037584"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add or update a named generation source, then rebuild desired cells.  <br /></td></tr>
+<tr class="separator:aaf49ba6aba684a8163628b7853037584"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a885cb0f258cd1a529367aa14b8df7bf5" id="r_a885cb0f258cd1a529367aa14b8df7bf5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a885cb0f258cd1a529367aa14b8df7bf5">removeGenerationSource</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a885cb0f258cd1a529367aa14b8df7bf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b283d1fdf7981f6f8ef92b0abf9a045" id="r_a4b283d1fdf7981f6f8ef92b0abf9a045"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a4b283d1fdf7981f6f8ef92b0abf9a045">clearGenerationSources</a> ()</td></tr>
+<tr class="separator:a4b283d1fdf7981f6f8ef92b0abf9a045"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a895d034d9b883b5f28df7c0cf4270edc" id="r_a895d034d9b883b5f28df7c0cf4270edc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a895d034d9b883b5f28df7c0cf4270edc">getGenerationSourceCount</a> () const</td></tr>
+<tr class="separator:a895d034d9b883b5f28df7c0cf4270edc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5d03232b5515fa4151f205bbbc3e0bf" id="r_ab5d03232b5515fa4151f205bbbc3e0bf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ab5d03232b5515fa4151f205bbbc3e0bf">getGenerationSourceId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ab5d03232b5515fa4151f205bbbc3e0bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5931665e5662d6646413cf2aad3a45a" id="r_af5931665e5662d6646413cf2aad3a45a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#af5931665e5662d6646413cf2aad3a45a">refreshGenerationSources</a> ()</td></tr>
+<tr class="memdesc:af5931665e5662d6646413cf2aad3a45a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-evaluate generation/cleanup queues from every registered source.  <br /></td></tr>
+<tr class="separator:af5931665e5662d6646413cf2aad3a45a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51683b0d7175336bc5d2db3754d8ca18" id="r_a51683b0d7175336bc5d2db3754d8ca18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a51683b0d7175336bc5d2db3754d8ca18">setFrustumCulling</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float halfAngleDegrees, float behindRadius)</td></tr>
+<tr class="memdesc:a51683b0d7175336bc5d2db3754d8ca18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable view-cone scheduling.  <br /></td></tr>
+<tr class="separator:a51683b0d7175336bc5d2db3754d8ca18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a067a3fa7a071f6fc132c0b16a28ed5e5" id="r_a067a3fa7a071f6fc132c0b16a28ed5e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a067a3fa7a071f6fc132c0b16a28ed5e5">isFrustumCullingEnabled</a> () const</td></tr>
+<tr class="separator:a067a3fa7a071f6fc132c0b16a28ed5e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8968cef3587f08a5d824feaa2eaa032" id="r_aa8968cef3587f08a5d824feaa2eaa032"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#aa8968cef3587f08a5d824feaa2eaa032">getFrustumHalfAngle</a> () const</td></tr>
+<tr class="separator:aa8968cef3587f08a5d824feaa2eaa032"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1413a4db6700de159caa0dc40efc315b" id="r_a1413a4db6700de159caa0dc40efc315b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a1413a4db6700de159caa0dc40efc315b">getFrustumBehindRadius</a> () const</td></tr>
+<tr class="separator:a1413a4db6700de159caa0dc40efc315b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22373d771c65219765244d4e506bee2b" id="r_a22373d771c65219765244d4e506bee2b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a22373d771c65219765244d4e506bee2b">getPendingGenerateCount</a> () const</td></tr>
+<tr class="separator:a22373d771c65219765244d4e506bee2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5498b3a7103ccdf1004d4fb88cdce708" id="r_a5498b3a7103ccdf1004d4fb88cdce708"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a5498b3a7103ccdf1004d4fb88cdce708">getGeneratingCount</a> () const</td></tr>
+<tr class="separator:a5498b3a7103ccdf1004d4fb88cdce708"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b2c4c206cae67cfbb171d2f9bccda5d" id="r_a3b2c4c206cae67cfbb171d2f9bccda5d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a3b2c4c206cae67cfbb171d2f9bccda5d">getActiveCellCount</a> () const</td></tr>
+<tr class="separator:a3b2c4c206cae67cfbb171d2f9bccda5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b829cb6dc5b0fce1a03e749957446c6" id="r_a4b829cb6dc5b0fce1a03e749957446c6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a4b829cb6dc5b0fce1a03e749957446c6">getPendingCleanupCount</a> () const</td></tr>
+<tr class="separator:a4b829cb6dc5b0fce1a03e749957446c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35941e3aa8f32a3564364a1f84d29203" id="r_a35941e3aa8f32a3564364a1f84d29203"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a35941e3aa8f32a3564364a1f84d29203">getCancelledGenerationCount</a> () const</td></tr>
+<tr class="memdesc:a35941e3aa8f32a3564364a1f84d29203"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return issued generation requests invalidated before completion.  <br /></td></tr>
+<tr class="separator:a35941e3aa8f32a3564364a1f84d29203"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d25526ac0e7b538a01c7f7097f00e49" id="r_a8d25526ac0e7b538a01c7f7097f00e49"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a8d25526ac0e7b538a01c7f7097f00e49">getFailedCellCount</a> () const</td></tr>
+<tr class="memdesc:a8d25526ac0e7b538a01c7f7097f00e49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return cells stopped after exhausting the generation retry policy.  <br /></td></tr>
+<tr class="separator:a8d25526ac0e7b538a01c7f7097f00e49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b0652bf4b2c755dffc1b082ffa09982" id="r_a9b0652bf4b2c755dffc1b082ffa09982"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a9b0652bf4b2c755dffc1b082ffa09982">retryFailedCells</a> ()</td></tr>
+<tr class="memdesc:a9b0652bf4b2c755dffc1b082ffa09982"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset and requeue all terminally failed cells still tracked by the scheduler.  <br /></td></tr>
+<tr class="separator:a9b0652bf4b2c755dffc1b082ffa09982"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7da3d736c435de28eefcc204220c6d3b" id="r_a7da3d736c435de28eefcc204220c6d3b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7da3d736c435de28eefcc204220c6d3b">nextGenerate</a> ()</td></tr>
+<tr class="separator:a7da3d736c435de28eefcc204220c6d3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9153ac2a51a9f99ff14fe79a4e347c9" id="r_ae9153ac2a51a9f99ff14fe79a4e347c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ae9153ac2a51a9f99ff14fe79a4e347c9">nextCleanup</a> ()</td></tr>
+<tr class="separator:ae9153ac2a51a9f99ff14fe79a4e347c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b318ee92a9fb9bb3c2078e3d1d30693" id="r_a2b318ee92a9fb9bb3c2078e3d1d30693"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a2b318ee92a9fb9bb3c2078e3d1d30693">isRequestCurrent</a> (const <a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *request) const</td></tr>
+<tr class="memdesc:a2b318ee92a9fb9bb3c2078e3d1d30693"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether an issued generation or cleanup request still owns its scheduler ticket.  <br /></td></tr>
+<tr class="separator:a2b318ee92a9fb9bb3c2078e3d1d30693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a023d38fd483c7ea2a527bf66b70a0902" id="r_a023d38fd483c7ea2a527bf66b70a0902"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a023d38fd483c7ea2a527bf66b70a0902">completeGeneration</a> (<a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *request, <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="memdesc:a023d38fd483c7ea2a527bf66b70a0902"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish generated points for an issued request.  <br /></td></tr>
+<tr class="separator:a023d38fd483c7ea2a527bf66b70a0902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7035112c4abb58a327de567c3f8cae6e" id="r_a7035112c4abb58a327de567c3f8cae6e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7035112c4abb58a327de567c3f8cae6e">failGeneration</a> (<a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *request)</td></tr>
+<tr class="memdesc:a7035112c4abb58a327de567c3f8cae6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an issued request to the pending queue after failure or cancellation.  <br /></td></tr>
+<tr class="separator:a7035112c4abb58a327de567c3f8cae6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab70ea7de94d528f5e3fc0f6af54c03e5" id="r_ab70ea7de94d528f5e3fc0f6af54c03e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ab70ea7de94d528f5e3fc0f6af54c03e5">completeCleanup</a> (<a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *request)</td></tr>
+<tr class="memdesc:ab70ea7de94d528f5e3fc0f6af54c03e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acknowledge cleanup after consumers have removed spawned content.  <br /></td></tr>
+<tr class="separator:ab70ea7de94d528f5e3fc0f6af54c03e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bc6dd0374a4627783513c98106436c4" id="r_a9bc6dd0374a4627783513c98106436c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a9bc6dd0374a4627783513c98106436c4">completeCleanupsAtomic</a> (const std::vector&lt; const <a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> * &gt; &amp;requests)</td></tr>
+<tr class="memdesc:a9bc6dd0374a4627783513c98106436c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically acknowledge several cleanup tickets owned by this scheduler.  <br /></td></tr>
+<tr class="separator:a9bc6dd0374a4627783513c98106436c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48a2889d7ba875d32394cc9e7102dc2a" id="r_a48a2889d7ba875d32394cc9e7102dc2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a48a2889d7ba875d32394cc9e7102dc2a">hasCell</a> (int level, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="separator:a48a2889d7ba875d32394cc9e7102dc2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89bd027bba4c75517a9a2bf489c6be80" id="r_a89bd027bba4c75517a9a2bf489c6be80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a89bd027bba4c75517a9a2bf489c6be80">getCellOutput</a> (int level, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="separator:a89bd027bba4c75517a9a2bf489c6be80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d04c6ce6ecad182237521acc86b7347" id="r_a6d04c6ce6ecad182237521acc86b7347"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a6d04c6ce6ecad182237521acc86b7347">getCellRevision</a> (int level, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="separator:a6d04c6ce6ecad182237521acc86b7347"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a755310f0bf56258a93a32a2780419dca" id="r_a755310f0bf56258a93a32a2780419dca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a755310f0bf56258a93a32a2780419dca">applyCellUpdate</a> (int level, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, uint64_t expectedRevision, const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="memdesc:a755310f0bf56258a93a32a2780419dca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace an active cell through an identity-based delta.  <br /></td></tr>
+<tr class="separator:a755310f0bf56258a93a32a2780419dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c282a8cf5f64500866e3f5dbc151898" id="r_a3c282a8cf5f64500866e3f5dbc151898"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a3c282a8cf5f64500866e3f5dbc151898">migrateCellPointIds</a> (int level, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, uint64_t expectedRevision)</td></tr>
+<tr class="memdesc:a3c282a8cf5f64500866e3f5dbc151898"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign deterministic identities to a legacy active cell atomically.  <br /></td></tr>
+<tr class="separator:a3c282a8cf5f64500866e3f5dbc151898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad07de5e53c55b1478a558bcb99b57c9" id="r_aad07de5e53c55b1478a558bcb99b57c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1PointDelta.html">PointDelta</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#aad07de5e53c55b1478a558bcb99b57c9">getCellDelta</a> (int level, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="memdesc:aad07de5e53c55b1478a558bcb99b57c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a caller-owned copy of the latest committed delta, or null when unavailable. @ownership Owned; the caller must delete the returned delta. Script bindings transfer ownership to the VM.  <br /></td></tr>
+<tr class="separator:aad07de5e53c55b1478a558bcb99b57c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d4b76eea06d411abd6c12ce8b8f16f3" id="r_a5d4b76eea06d411abd6c12ce8b8f16f3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a5d4b76eea06d411abd6c12ce8b8f16f3">serializeCell</a> (int level, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const</td></tr>
+<tr class="memdesc:a5d4b76eea06d411abd6c12ce8b8f16f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize one active cell cache entry in a deterministic versioned format.  <br /></td></tr>
+<tr class="separator:a5d4b76eea06d411abd6c12ce8b8f16f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a112ac0bc952de54d4630e1829e951f7a" id="r_a112ac0bc952de54d4630e1829e951f7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a112ac0bc952de54d4630e1829e951f7a">deserializeCell</a> (const std::string &amp;definition)</td></tr>
+<tr class="memdesc:a112ac0bc952de54d4630e1829e951f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically restore one cell produced by serializeCell for this world seed.  <br /></td></tr>
+<tr class="separator:a112ac0bc952de54d4630e1829e951f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8e235039bfbd8b070a461435ae6958c" id="r_ad8e235039bfbd8b070a461435ae6958c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#ad8e235039bfbd8b070a461435ae6958c">debugReport</a> () const</td></tr>
+<tr class="separator:ad8e235039bfbd8b070a461435ae6958c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a7aa57056cc280bc42ccfb7d86fbda393" id="r_a7aa57056cc280bc42ccfb7d86fbda393"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html#a7aa57056cc280bc42ccfb7d86fbda393">Procgen</a></td></tr>
+<tr class="separator:a7aa57056cc280bc42ccfb7d86fbda393"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>View-driven partition and hierarchical procedural generation scheduler. </p>
+<p>updateSource computes desired cells for every configured level. nextGenerate and nextCleanup provide bounded work queues; completeGeneration atomically publishes a cell output. The scheduler owns no scene or graphics objects. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8h_source.html">RuntimeGeneration.h</a> 第 <a class="el" href="RuntimeGeneration_8h_source.html#l00045">45</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af7f2b5da6b83680f750779f072db42f4" name="af7f2b5da6b83680f750779f072db42f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7f2b5da6b83680f750779f072db42f4">&#9670;&#160;</a></span>RuntimeGeneration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::RuntimeGeneration::RuntimeGeneration </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>worldSeed</em> = <code>1</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a scheduler with a stable world seed. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a348571590be7e16e0a6e312c2afddcc4" name="a348571590be7e16e0a6e312c2afddcc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a348571590be7e16e0a6e312c2afddcc4">&#9670;&#160;</a></span>addLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::addLevel </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>generationRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cleanupMultiplier</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a hierarchical grid level. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cellSize</td><td>World-space XZ cell size. </td></tr>
+    <tr><td class="paramname">generationRadius</td><td>Distance around the source that requests generation. </td></tr>
+    <tr><td class="paramname">cleanupMultiplier</td><td>Cleanup radius divided by generation radius; must be at least 1. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Level index, or -1 for invalid settings. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a755310f0bf56258a93a32a2780419dca" name="a755310f0bf56258a93a32a2780419dca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a755310f0bf56258a93a32a2780419dca">&#9670;&#160;</a></span>applyCellUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::procgen::RuntimeGeneration::applyCellUpdate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>expectedRevision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace an active cell through an identity-based delta. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">expectedRevision</td><td>Exact active revision observed by the caller. </td></tr>
+    <tr><td class="paramname">output</td><td>Complete desired snapshot whose points have unique non-zero ids. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The committed revision, or a structured stale/schema/budget failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00538">538</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointDelta_8cpp_source.html#l00212">eve::procgen::applyPointDelta()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="PointDelta_8cpp_source.html#l00179">eve::procgen::diffPointSets()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00086">getResidentPointCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a325a8622d5b5cbeca337db6ef239fc1f" name="a325a8622d5b5cbeca337db6ef239fc1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a325a8622d5b5cbeca337db6ef239fc1f">&#9670;&#160;</a></span>beginFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::beginFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start a new budget window before consuming generation requests. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="af97d89d20303a105d7095753af56b00a" name="af97d89d20303a105d7095753af56b00a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af97d89d20303a105d7095753af56b00a">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove levels, cells, queues and outputs while retaining the world seed. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b283d1fdf7981f6f8ef92b0abf9a045" name="a4b283d1fdf7981f6f8ef92b0abf9a045"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b283d1fdf7981f6f8ef92b0abf9a045">&#9670;&#160;</a></span>clearGenerationSources()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::clearGenerationSources </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00205">refreshGenerationSources()</a>.</p>
+
+</div>
+</div>
+<a id="ab70ea7de94d528f5e3fc0f6af54c03e5" name="ab70ea7de94d528f5e3fc0f6af54c03e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab70ea7de94d528f5e3fc0f6af54c03e5">&#9670;&#160;</a></span>completeCleanup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::completeCleanup </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Acknowledge cleanup after consumers have removed spawned content. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00480">480</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00486">completeCleanupsAtomic()</a>.</p>
+
+</div>
+</div>
+<a id="a9bc6dd0374a4627783513c98106436c4" name="a9bc6dd0374a4627783513c98106436c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bc6dd0374a4627783513c98106436c4">&#9670;&#160;</a></span>completeCleanupsAtomic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::procgen::RuntimeGeneration::completeCleanupsAtomic </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>requests</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically acknowledge several cleanup tickets owned by this scheduler. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">requests</td><td>Non-empty unique cleanup requests. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of erased cells, or a structured failure with no cell changed. @ownership Request references are borrowed only for this call and are not retained.</dd></dl>
+<p>@thread Call synchronously on the scheduler-owning thread. @reentrant Not reentrant for this <a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html" title="View-driven partition and hierarchical procedural generation scheduler.">RuntimeGeneration</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00486">486</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00480">completeCleanup()</a>.</p>
+
+</div>
+</div>
+<a id="a023d38fd483c7ea2a527bf66b70a0902" name="a023d38fd483c7ea2a527bf66b70a0902"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a023d38fd483c7ea2a527bf66b70a0902">&#9670;&#160;</a></span>completeGeneration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::completeGeneration </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *&#160;</td>
+          <td class="paramname"><em>request</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Publish generated points for an issued request. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00438">438</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00086">getResidentPointCount()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a> , 以及 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00093">trimToResidentPoints()</a>.</p>
+
+</div>
+</div>
+<a id="ab63b92204b5a05aba56b2d598f957da9" name="ab63b92204b5a05aba56b2d598f957da9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab63b92204b5a05aba56b2d598f957da9">&#9670;&#160;</a></span>continueGenerationRefresh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::procgen::RuntimeGeneration::continueGenerationRefresh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance a budgeted source refresh without changing the requested sources. </p>
+<dl class="section return"><dt>返回</dt><dd>Candidate cells examined in this call; query isRefreshPending to distinguish completion. @thread Call synchronously on the scheduler-owning thread. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad8e235039bfbd8b070a461435ae6958c" name="ad8e235039bfbd8b070a461435ae6958c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8e235039bfbd8b070a461435ae6958c">&#9670;&#160;</a></span>debugReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RuntimeGeneration::debugReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00599">599</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00372">getActiveCellCount()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00375">getFailedCellCount()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00371">getGeneratingCount()</a> , 以及 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00086">getResidentPointCount()</a>.</p>
+
+</div>
+</div>
+<a id="a112ac0bc952de54d4630e1829e951f7a" name="a112ac0bc952de54d4630e1829e951f7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a112ac0bc952de54d4630e1829e951f7a">&#9670;&#160;</a></span>deserializeCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::deserializeCell </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically restore one cell produced by serializeCell for this world seed. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGenerationAsset_8cpp_source.html">RuntimeGenerationAsset.cpp</a> 第 <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointSet_8cpp_source.html#l00058">eve::procgen::PointSet::appendPoint()</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00372">getActiveCellCount()</a>, <a class="el" href="PointSet_8cpp_source.html#l00045">eve::procgen::PointSet::getCount()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00371">getGeneratingCount()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00086">getResidentPointCount()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Result_8h_source.html#l00416">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="PointSet_8cpp_source.html#l00367">eve::procgen::PointSet::trySetBoolAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00327">eve::procgen::PointSet::trySetFloatAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00347">eve::procgen::PointSet::trySetIntAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00417">eve::procgen::PointSet::trySetStringAttribute()</a>, <a class="el" href="PointSet_8cpp_source.html#l00387">eve::procgen::PointSet::trySetVectorAttribute()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a7035112c4abb58a327de567c3f8cae6e" name="a7035112c4abb58a327de567c3f8cae6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7035112c4abb58a327de567c3f8cae6e">&#9670;&#160;</a></span>failGeneration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::failGeneration </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an issued request to the pending queue after failure or cancellation. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a3b2c4c206cae67cfbb171d2f9bccda5d" name="a3b2c4c206cae67cfbb171d2f9bccda5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b2c4c206cae67cfbb171d2f9bccda5d">&#9670;&#160;</a></span>getActiveCellCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getActiveCellCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00599">debugReport()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">deserializeCell()</a> , 以及 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00395">nextGenerate()</a>.</p>
+
+</div>
+</div>
+<a id="a35941e3aa8f32a3564364a1f84d29203" name="a35941e3aa8f32a3564364a1f84d29203"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35941e3aa8f32a3564364a1f84d29203">&#9670;&#160;</a></span>getCancelledGenerationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getCancelledGenerationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return issued generation requests invalidated before completion. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad07de5e53c55b1478a558bcb99b57c9" name="aad07de5e53c55b1478a558bcb99b57c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad07de5e53c55b1478a558bcb99b57c9">&#9670;&#160;</a></span>getCellDelta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1PointDelta.html">PointDelta</a> * eve::procgen::RuntimeGeneration::getCellDelta </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a caller-owned copy of the latest committed delta, or null when unavailable. @ownership Owned; the caller must delete the returned delta. Script bindings transfer ownership to the VM. </p>
+<dl class="section return"><dt>返回</dt><dd>A heap object owned by the caller; script bindings transfer ownership to the VM. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00592">592</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a89bd027bba4c75517a9a2bf489c6be80" name="a89bd027bba4c75517a9a2bf489c6be80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89bd027bba4c75517a9a2bf489c6be80">&#9670;&#160;</a></span>getCellOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> * eve::procgen::RuntimeGeneration::getCellOutput </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00526">526</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a6d04c6ce6ecad182237521acc86b7347" name="a6d04c6ce6ecad182237521acc86b7347"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d04c6ce6ecad182237521acc86b7347">&#9670;&#160;</a></span>getCellRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::procgen::RuntimeGeneration::getCellRevision </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00533">533</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a648333710b18b9693601e7805691d64f" name="a648333710b18b9693601e7805691d64f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a648333710b18b9693601e7805691d64f">&#9670;&#160;</a></span>getCommittedRefreshRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::procgen::RuntimeGeneration::getCommittedRefreshRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the latest source revision atomically published into generation and cleanup queues. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ec452547881679f2898f6d6e9dc2a47" name="a4ec452547881679f2898f6d6e9dc2a47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ec452547881679f2898f6d6e9dc2a47">&#9670;&#160;</a></span>getDirectionWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RuntimeGeneration::getDirectionWeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8d25526ac0e7b538a01c7f7097f00e49" name="a8d25526ac0e7b538a01c7f7097f00e49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d25526ac0e7b538a01c7f7097f00e49">&#9670;&#160;</a></span>getFailedCellCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getFailedCellCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return cells stopped after exhausting the generation retry policy. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00599">debugReport()</a>.</p>
+
+</div>
+</div>
+<a id="ac8f1dc00eda269a0ce8db043b7f54bd2" name="ac8f1dc00eda269a0ce8db043b7f54bd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8f1dc00eda269a0ce8db043b7f54bd2">&#9670;&#160;</a></span>getFrameTimeBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RuntimeGeneration::getFrameTimeBudget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1413a4db6700de159caa0dc40efc315b" name="a1413a4db6700de159caa0dc40efc315b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1413a4db6700de159caa0dc40efc315b">&#9670;&#160;</a></span>getFrustumBehindRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RuntimeGeneration::getFrustumBehindRadius </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa8968cef3587f08a5d824feaa2eaa032" name="aa8968cef3587f08a5d824feaa2eaa032"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8968cef3587f08a5d824feaa2eaa032">&#9670;&#160;</a></span>getFrustumHalfAngle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RuntimeGeneration::getFrustumHalfAngle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5498b3a7103ccdf1004d4fb88cdce708" name="a5498b3a7103ccdf1004d4fb88cdce708"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5498b3a7103ccdf1004d4fb88cdce708">&#9670;&#160;</a></span>getGeneratingCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getGeneratingCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00371">371</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00599">debugReport()</a>, <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">deserializeCell()</a> , 以及 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00395">nextGenerate()</a>.</p>
+
+</div>
+</div>
+<a id="a895d034d9b883b5f28df7c0cf4270edc" name="a895d034d9b883b5f28df7c0cf4270edc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a895d034d9b883b5f28df7c0cf4270edc">&#9670;&#160;</a></span>getGenerationSourceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getGenerationSourceCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5d03232b5515fa4151f205bbbc3e0bf" name="ab5d03232b5515fa4151f205bbbc3e0bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5d03232b5515fa4151f205bbbc3e0bf">&#9670;&#160;</a></span>getGenerationSourceId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RuntimeGeneration::getGenerationSourceId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a33fb9e90e988368a24de7f3fd4af2ee5" name="a33fb9e90e988368a24de7f3fd4af2ee5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33fb9e90e988368a24de7f3fd4af2ee5">&#9670;&#160;</a></span>getLevelCellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RuntimeGeneration::getLevelCellSize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a427ce9d675e75a2768f5b6caadc511de" name="a427ce9d675e75a2768f5b6caadc511de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a427ce9d675e75a2768f5b6caadc511de">&#9670;&#160;</a></span>getLevelCleanupRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RuntimeGeneration::getLevelCleanupRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c4fceff2c683392aac0ae0cc8066a7d" name="a3c4fceff2c683392aac0ae0cc8066a7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c4fceff2c683392aac0ae0cc8066a7d">&#9670;&#160;</a></span>getLevelCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getLevelCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c26707903d7cb26a255d91a05273898" name="a8c26707903d7cb26a255d91a05273898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c26707903d7cb26a255d91a05273898">&#9670;&#160;</a></span>getLevelGenerationRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::RuntimeGeneration::getLevelGenerationRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af67135b008893bd609c5eea14078d980" name="af67135b008893bd609c5eea14078d980"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af67135b008893bd609c5eea14078d980">&#9670;&#160;</a></span>getMaxActiveCells()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getMaxActiveCells </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the resident-cell limit, or zero when unlimited. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9bc0608aa0885bd000c053817b950b76" name="a9bc0608aa0885bd000c053817b950b76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bc0608aa0885bd000c053817b950b76">&#9670;&#160;</a></span>getMaxGenerating()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getMaxGenerating </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a615b25371b385d5ef477b99fdc351a66" name="a615b25371b385d5ef477b99fdc351a66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a615b25371b385d5ef477b99fdc351a66">&#9670;&#160;</a></span>getMaxGenerationRetries()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getMaxGenerationRetries </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return retries allowed after the initial generation attempt. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5b3fe7b26f86ac341d90729996d9763" name="ad5b3fe7b26f86ac341d90729996d9763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5b3fe7b26f86ac341d90729996d9763">&#9670;&#160;</a></span>getMaxPointsPerCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getMaxPointsPerCell </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the per-cell point limit, or zero when unlimited. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7de7643f8df1875cace80402683554a1" name="a7de7643f8df1875cace80402683554a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7de7643f8df1875cace80402683554a1">&#9670;&#160;</a></span>getMaxResidentPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getMaxResidentPoints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the total resident-point limit, or zero when unlimited. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b829cb6dc5b0fce1a03e749957446c6" name="a4b829cb6dc5b0fce1a03e749957446c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b829cb6dc5b0fce1a03e749957446c6">&#9670;&#160;</a></span>getPendingCleanupCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getPendingCleanupCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00373">373</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a22373d771c65219765244d4e506bee2b" name="a22373d771c65219765244d4e506bee2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22373d771c65219765244d4e506bee2b">&#9670;&#160;</a></span>getPendingGenerateCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getPendingGenerateCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a4b417598bb26fc7a773d8cb8ca73c5" name="a7a4b417598bb26fc7a773d8cb8ca73c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a4b417598bb26fc7a773d8cb8ca73c5">&#9670;&#160;</a></span>getRefreshWorkBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getRefreshWorkBudget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the per-call source-refresh candidate budget, or zero when synchronous. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad749db2999548d5b474e9d7d46fb9c80" name="ad749db2999548d5b474e9d7d46fb9c80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad749db2999548d5b474e9d7d46fb9c80">&#9670;&#160;</a></span>getRejectedOutputCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getRejectedOutputCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return generation or restore outputs rejected by point budgets. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7dc9ad9e4e9ac2b86460f47f3ddb984" name="ae7dc9ad9e4e9ac2b86460f47f3ddb984"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7dc9ad9e4e9ac2b86460f47f3ddb984">&#9670;&#160;</a></span>getResidentPointCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::getResidentPointCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return points retained by active or not-yet-acknowledged cleanup cells. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00538">applyCellUpdate()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00438">completeGeneration()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00599">debugReport()</a> , 以及 <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00067">deserializeCell()</a>.</p>
+
+</div>
+</div>
+<a id="a48a2889d7ba875d32394cc9e7102dc2a" name="a48a2889d7ba875d32394cc9e7102dc2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48a2889d7ba875d32394cc9e7102dc2a">&#9670;&#160;</a></span>hasCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::hasCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00521">521</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a067a3fa7a071f6fc132c0b16a28ed5e5" name="a067a3fa7a071f6fc132c0b16a28ed5e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a067a3fa7a071f6fc132c0b16a28ed5e5">&#9670;&#160;</a></span>isFrustumCullingEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::isFrustumCullingEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a05e4b07db1a365e2685677da059d51" name="a6a05e4b07db1a365e2685677da059d51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a05e4b07db1a365e2685677da059d51">&#9670;&#160;</a></span>isRefreshPending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::isRefreshPending </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether a staged source snapshot still needs planning work. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b318ee92a9fb9bb3c2078e3d1d30693" name="a2b318ee92a9fb9bb3c2078e3d1d30693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b318ee92a9fb9bb3c2078e3d1d30693">&#9670;&#160;</a></span>isRequestCurrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::isRequestCurrent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> *&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether an issued generation or cleanup request still owns its scheduler ticket. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>Borrowed immutable request; null is never current. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True while the matching cell, state and ticket still accept work for this request. @thread Call on the scheduler-owning thread between cooperative generation stages. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00429">429</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a3c282a8cf5f64500866e3f5dbc151898" name="a3c282a8cf5f64500866e3f5dbc151898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c282a8cf5f64500866e3f5dbc151898">&#9670;&#160;</a></span>migrateCellPointIds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::procgen::RuntimeGeneration::migrateCellPointIds </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>expectedRevision</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign deterministic identities to a legacy active cell atomically. </p>
+<dl class="section return"><dt>返回</dt><dd>The committed revision; no revision is consumed when validation fails. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00571">571</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointSet_8cpp_source.html#l00306">eve::procgen::PointSet::assignPointIds()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="PointSet_8cpp_source.html#l00453">eve::procgen::derivePointId()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ae9153ac2a51a9f99ff14fe79a4e347c9" name="ae9153ac2a51a9f99ff14fe79a4e347c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9153ac2a51a9f99ff14fe79a4e347c9">&#9670;&#160;</a></span>nextCleanup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> * eve::procgen::RuntimeGeneration::nextCleanup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00417">417</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a7da3d736c435de28eefcc204220c6d3b" name="a7da3d736c435de28eefcc204220c6d3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7da3d736c435de28eefcc204220c6d3b">&#9670;&#160;</a></span>nextGenerate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1ProcgenCellRequest.html">ProcgenCellRequest</a> * eve::procgen::RuntimeGeneration::nextGenerate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00372">getActiveCellCount()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00371">getGeneratingCount()</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="af5931665e5662d6646413cf2aad3a45a" name="af5931665e5662d6646413cf2aad3a45a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5931665e5662d6646413cf2aad3a45a">&#9670;&#160;</a></span>refreshGenerationSources()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::refreshGenerationSources </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-evaluate generation/cleanup queues from every registered source. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00182">clearGenerationSources()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00174">removeGenerationSource()</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00194">setFrustumCulling()</a> , 以及 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00157">setGenerationSource()</a>.</p>
+
+</div>
+</div>
+<a id="a885cb0f258cd1a529367aa14b8df7bf5" name="a885cb0f258cd1a529367aa14b8df7bf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a885cb0f258cd1a529367aa14b8df7bf5">&#9670;&#160;</a></span>removeGenerationSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::removeGenerationSource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00205">refreshGenerationSources()</a>.</p>
+
+</div>
+</div>
+<a id="a9b0652bf4b2c755dffc1b082ffa09982" name="a9b0652bf4b2c755dffc1b082ffa09982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b0652bf4b2c755dffc1b082ffa09982">&#9670;&#160;</a></span>retryFailedCells()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::retryFailedCells </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reset and requeue all terminally failed cells still tracked by the scheduler. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00381">381</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a5d4b76eea06d411abd6c12ce8b8f16f3" name="a5d4b76eea06d411abd6c12ce8b8f16f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d4b76eea06d411abd6c12ce8b8f16f3">&#9670;&#160;</a></span>serializeCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::RuntimeGeneration::serializeCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize one active cell cache entry in a deterministic versioned format. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGenerationAsset_8cpp_source.html">RuntimeGenerationAsset.cpp</a> 第 <a class="el" href="RuntimeGenerationAsset_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3ac26f15e86e3de4c398a8273272aba034">eve::procgen::Bool</a>, <a class="el" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a22ae0e2b89e5e3d477f988cc36d3272b">eve::procgen::Float</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a1686a6c336b71b36d77354cea19a8b52">eve::procgen::Int</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a27118326006d3829667a400ad23d5d98">eve::procgen::String</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="namespaceeve_1_1procgen.html#a29f088564718a704fa46faf2fb1794b3a57dea6f5039281b7fee517fc43bf3110">eve::procgen::Vector</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="ae41e8fe324c562a9ef27e567772ad30a" name="ae41e8fe324c562a9ef27e567772ad30a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae41e8fe324c562a9ef27e567772ad30a">&#9670;&#160;</a></span>setDirectionWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setDirectionWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Weight favoring cells in front of the source, clamped to [0,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7028e360b3631f683eb3499318f303c3" name="a7028e360b3631f683eb3499318f303c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7028e360b3631f683eb3499318f303c3">&#9670;&#160;</a></span>setFrameTimeBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setFrameTimeBudget </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>milliseconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>CPU issue budget in milliseconds for one frame; zero disables the limit. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51683b0d7175336bc5d2db3754d8ca18" name="a51683b0d7175336bc5d2db3754d8ca18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51683b0d7175336bc5d2db3754d8ca18">&#9670;&#160;</a></span>setFrustumCulling()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setFrustumCulling </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>halfAngleDegrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>behindRadius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable view-cone scheduling. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">halfAngleDegrees</td><td>Horizontal cone half angle in [1,180]. </td></tr>
+    <tr><td class="paramname">behindRadius</td><td>Cells nearer than this distance generate even outside the cone. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a> , 以及 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00205">refreshGenerationSources()</a>.</p>
+
+</div>
+</div>
+<a id="aaf49ba6aba684a8163628b7853037584" name="aaf49ba6aba684a8163628b7853037584"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf49ba6aba684a8163628b7853037584">&#9670;&#160;</a></span>setGenerationSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::RuntimeGeneration::setGenerationSource </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radiusScale</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add or update a named generation source, then rebuild desired cells. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="RuntimeGeneration_8cpp_source.html#l00205">refreshGenerationSources()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00153">updateSource()</a>.</p>
+
+</div>
+</div>
+<a id="ac8376395d99d2e2bf233cc3bd98c7659" name="ac8376395d99d2e2bf233cc3bd98c7659"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8376395d99d2e2bf233cc3bd98c7659">&#9670;&#160;</a></span>setMaxActiveCells()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setMaxActiveCells </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum active plus in-flight cells; zero disables the resident-cell limit. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="abe4afdfedfed3678f1ca5c772fb5cae6" name="abe4afdfedfed3678f1ca5c772fb5cae6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4afdfedfed3678f1ca5c772fb5cae6">&#9670;&#160;</a></span>setMaxGenerating()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setMaxGenerating </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum simultaneously issued generation requests. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="ad3fbece7bb65d7af5f3aac78cb4935d9" name="ad3fbece7bb65d7af5f3aac78cb4935d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3fbece7bb65d7af5f3aac78cb4935d9">&#9670;&#160;</a></span>setMaxGenerationRetries()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setMaxGenerationRetries </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set retries after the initial generation attempt; zero fails immediately. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="a019d34b67afefdd0046b8152e31c839e" name="a019d34b67afefdd0046b8152e31c839e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a019d34b67afefdd0046b8152e31c839e">&#9670;&#160;</a></span>setMaxPointsPerCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setMaxPointsPerCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the maximum points allowed in one generated cell; zero disables the limit. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="afe643f11b3ebcd3fce392750549121ff" name="afe643f11b3ebcd3fce392750549121ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe643f11b3ebcd3fce392750549121ff">&#9670;&#160;</a></span>setMaxResidentPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setMaxResidentPoints </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the total point limit across active cell outputs; zero disables the limit. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="aeb4b7c9b4088d9548c3293e1824d7459" name="aeb4b7c9b4088d9548c3293e1824d7459"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb4b7c9b4088d9548c3293e1824d7459">&#9670;&#160;</a></span>setRefreshWorkBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::setRefreshWorkBudget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>candidateCells</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Limit source-refresh planning work performed by one call. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidateCells</td><td>Bounding-grid candidates examined per call; zero preserves synchronous refresh.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>A positive budget stages desired cells without changing published queues until one complete source snapshot commits. Source changes arriving during a plan are coalesced into a later snapshot instead of restarting it. </p>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a250c2124a4b08ffdcb6290baa1c697dc" name="a250c2124a4b08ffdcb6290baa1c697dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a250c2124a4b08ffdcb6290baa1c697dc">&#9670;&#160;</a></span>trimToResidentPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::RuntimeGeneration::trimToResidentPoints </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Schedule lowest-priority active cells for cleanup until at most target points remain. </p>
+<dl class="section return"><dt>返回</dt><dd>Number of cells newly scheduled for cleanup. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00165">scheduled</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00438">completeGeneration()</a>.</p>
+
+</div>
+</div>
+<a id="ab52dcc5b96a31ddc0af7876a1626a3db" name="ab52dcc5b96a31ddc0af7876a1626a3db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab52dcc5b96a31ddc0af7876a1626a3db">&#9670;&#160;</a></span>updateSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::RuntimeGeneration::updateSource </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>directionZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recompute desired cells for a generation source. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x,z</td><td>World position. </td></tr>
+    <tr><td class="paramname">directionX,directionZ</td><td>Horizontal view direction; zero disables direction priority. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a> 第 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeGeneration_8cpp_source.html#l00157">setGenerationSource()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a7aa57056cc280bc42ccfb7d86fbda393" name="a7aa57056cc280bc42ccfb7d86fbda393"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aa57056cc280bc42ccfb7d86fbda393">&#9670;&#160;</a></span>Procgen</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1procgen_1_1Procgen.html">Procgen</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RuntimeGeneration_8h_source.html">RuntimeGeneration.h</a> 第 <a class="el" href="RuntimeGeneration_8h_source.html#l00221">221</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="RuntimeGeneration_8h_source.html">RuntimeGeneration.h</a></li>
+<li>src/modules/procgen/<a class="el" href="RuntimeGeneration_8cpp_source.html">RuntimeGeneration.cpp</a></li>
+<li>src/modules/procgen/<a class="el" href="RuntimeGenerationAsset_8cpp_source.html">RuntimeGenerationAsset.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/ReflectionProbeRegistry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ReflectionProbeRegistry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ReflectionProbeRegistry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span>Camera3D;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>ReflectionProbeCapture;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html">   12</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html">ReflectionProbeRegistry</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a525b934cd96b81917989f216457e25fa">~ReflectionProbeRegistry</a>();</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#af7bdcf4c5acf619c1a41be2257e36cb4">add</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">ReflectionProbeCapture</a> *probe);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a573ff7e11fb44b9ca65857d67465af15">remove</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">ReflectionProbeCapture</a> *probe);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aac5afe1ba74a126df5cdaf170ca0f21e">clear</a>();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#ae65741a0df58f8e85e0de26e09ef6f3e">   23</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#ae65741a0df58f8e85e0de26e09ef6f3e">getCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(entries_.size()); }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aca051bc2f94960a77c6662a001fd642a">   25</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aca051bc2f94960a77c6662a001fd642a">getLastSelectedCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastSelectedCount_; }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a36104aeb98e99f4e39798bfe16f389b2">   27</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a36104aeb98e99f4e39798bfe16f389b2">getLastCapturedFaceCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastCapturedFaceCount_; }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aae29e1723e2c681c50454d60f7053528">   29</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aae29e1723e2c681c50454d60f7053528">getLastPublishedCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastPublishedCount_; }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aa2cb8308714bedaa379d89b23b8c6bb9">setSelectionHysteresis</a>(<span class="keywordtype">float</span> distance);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a199047e478c17f5740ff1265e89b416c">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a199047e478c17f5740ff1265e89b416c">getSelectionHysteresis</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> selectionHysteresis_; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a6299a085af19a4c16dfe6f1e7e9d8514">   35</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a6299a085af19a4c16dfe6f1e7e9d8514">getLastCandidateCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> lastCandidateCount_; }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#ac4a48637e2ba99bce2eaccf19138cff6">queueCapture</a>(<span class="keywordtype">int</span> changedMask = -1);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aa5d1851916266ef0a28f92b54f8a4bbd">queueCaptureAABB</a>(<span class="keywordtype">float</span> minX, <span class="keywordtype">float</span> minY, <span class="keywordtype">float</span> minZ, <span class="keywordtype">float</span> maxX, <span class="keywordtype">float</span> maxY, <span class="keywordtype">float</span> maxZ,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                         <span class="keywordtype">int</span> changedMask = -1);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>(<span class="keywordtype">int</span> faceBudget = 1, <span class="keywordtype">int</span> filterBudget = 1, <span class="keywordtype">int</span> filterSamples = 64);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#ada6052375b549e2504f428fd39ac703c">updateCamera</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">Camera3D</a> *camera);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">struct </span>Entry {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <a class="code hl_class" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">ReflectionProbeCapture</a> *probe = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        uint64_t <a class="code hl_variable" href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a> = 0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        uint32_t waitAge = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    };</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::vector&lt;Entry&gt; entries_;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    uint64_t nextOrder_ = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">int</span> lastSelectedCount_ = 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">int</span> lastCapturedFaceCount_ = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">int</span> lastPublishedCount_ = 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">int</span> lastCandidateCount_ = 0;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">float</span> selectionHysteresis_ = 0.75f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::vector&lt;ReflectionProbeCapture *&gt; lastSelected_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_a377aed406d9f5138df4526b90a56c3c0"><div class="ttname"><a href="BattleVictory_8cpp.html#a377aed406d9f5138df4526b90a56c3c0">order</a></div><div class="ttdeci">std::vector&lt; std::string &gt; order</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00025">BattleVictory.cpp:25</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html">eve::graphics::Camera3D</a></div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00021">RenderSystem3D.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeCapture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">eve::graphics::ReflectionProbeCapture</a></div><div class="ttdoc">Incremental six-face HDR scene capture for a runtime reflection probe.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeCapture_8h_source.html#l00024">ReflectionProbeCapture.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html">eve::graphics::ReflectionProbeRegistry</a></div><div class="ttdoc">Scene-level stable selection of published reflection probes for a camera.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8h_source.html#l00012">ReflectionProbeRegistry.h:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_a199047e478c17f5740ff1265e89b416c"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a199047e478c17f5740ff1265e89b416c">eve::graphics::ReflectionProbeRegistry::getSelectionHysteresis</a></div><div class="ttdeci">float getSelectionHysteresis() const</div><div class="ttdoc">Return world-space camera-selection hysteresis.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8h_source.html#l00033">ReflectionProbeRegistry.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_a36104aeb98e99f4e39798bfe16f389b2"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a36104aeb98e99f4e39798bfe16f389b2">eve::graphics::ReflectionProbeRegistry::getLastCapturedFaceCount</a></div><div class="ttdeci">int getLastCapturedFaceCount() const</div><div class="ttdoc">Return faces rendered by the most recent scheduled tick.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8h_source.html#l00027">ReflectionProbeRegistry.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_a525b934cd96b81917989f216457e25fa"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a525b934cd96b81917989f216457e25fa">eve::graphics::ReflectionProbeRegistry::~ReflectionProbeRegistry</a></div><div class="ttdeci">~ReflectionProbeRegistry()</div><div class="ttdoc">Detach all probes before script-owned destruction.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8cpp_source.html#l00012">ReflectionProbeRegistry.cpp:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_a573ff7e11fb44b9ca65857d67465af15"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a573ff7e11fb44b9ca65857d67465af15">eve::graphics::ReflectionProbeRegistry::remove</a></div><div class="ttdeci">void remove(ReflectionProbeCapture *probe)</div><div class="ttdoc">Remove a registered probe.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8cpp_source.html#l00024">ReflectionProbeRegistry.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_a6299a085af19a4c16dfe6f1e7e9d8514"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#a6299a085af19a4c16dfe6f1e7e9d8514">eve::graphics::ReflectionProbeRegistry::getLastCandidateCount</a></div><div class="ttdeci">int getLastCandidateCount() const</div><div class="ttdoc">Return published candidates considered by the most recent camera update.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8h_source.html#l00035">ReflectionProbeRegistry.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_aa2cb8308714bedaa379d89b23b8c6bb9"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aa2cb8308714bedaa379d89b23b8c6bb9">eve::graphics::ReflectionProbeRegistry::setSelectionHysteresis</a></div><div class="ttdeci">void setSelectionHysteresis(float distance)</div><div class="ttdoc">Set world-space distance hysteresis used to retain previous camera selections.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8cpp_source.html#l00044">ReflectionProbeRegistry.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_aa5d1851916266ef0a28f92b54f8a4bbd"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aa5d1851916266ef0a28f92b54f8a4bbd">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB</a></div><div class="ttdeci">int queueCaptureAABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int changedMask=-1)</div><div class="ttdoc">Queue probes whose mask and capture-radius sphere overlap a changed world AABB.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8cpp_source.html#l00060">ReflectionProbeRegistry.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_aac5afe1ba74a126df5cdaf170ca0f21e"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aac5afe1ba74a126df5cdaf170ca0f21e">eve::graphics::ReflectionProbeRegistry::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Remove every registered probe.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8cpp_source.html#l00033">ReflectionProbeRegistry.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_aae29e1723e2c681c50454d60f7053528"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aae29e1723e2c681c50454d60f7053528">eve::graphics::ReflectionProbeRegistry::getLastPublishedCount</a></div><div class="ttdeci">int getLastPublishedCount() const</div><div class="ttdoc">Return probe revisions published by the most recent scheduled tick.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8h_source.html#l00029">ReflectionProbeRegistry.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_ac4a48637e2ba99bce2eaccf19138cff6"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#ac4a48637e2ba99bce2eaccf19138cff6">eve::graphics::ReflectionProbeRegistry::queueCapture</a></div><div class="ttdeci">int queueCapture(int changedMask=-1)</div><div class="ttdoc">Queue coherent recapture for probes whose capture mask intersects changedMask.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8cpp_source.html#l00048">ReflectionProbeRegistry.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_aca051bc2f94960a77c6662a001fd642a"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#aca051bc2f94960a77c6662a001fd642a">eve::graphics::ReflectionProbeRegistry::getLastSelectedCount</a></div><div class="ttdeci">int getLastSelectedCount() const</div><div class="ttdoc">Return the number of published probes selected by the last update.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8h_source.html#l00025">ReflectionProbeRegistry.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_ada6052375b549e2504f428fd39ac703c"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#ada6052375b549e2504f428fd39ac703c">eve::graphics::ReflectionProbeRegistry::updateCamera</a></div><div class="ttdeci">int updateCamera(Camera3D *camera)</div><div class="ttdoc">Select eight probes nearest the camera view segment and replace Camera3D slots.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8cpp_source.html#l00141">ReflectionProbeRegistry.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_ae65741a0df58f8e85e0de26e09ef6f3e"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#ae65741a0df58f8e85e0de26e09ef6f3e">eve::graphics::ReflectionProbeRegistry::getCount</a></div><div class="ttdeci">int getCount() const</div><div class="ttdoc">Return the number of registered probes.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8h_source.html#l00023">ReflectionProbeRegistry.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ReflectionProbeRegistry_html_af7bdcf4c5acf619c1a41be2257e36cb4"><div class="ttname"><a href="classeve_1_1graphics_1_1ReflectionProbeRegistry.html#af7bdcf4c5acf619c1a41be2257e36cb4">eve::graphics::ReflectionProbeRegistry::add</a></div><div class="ttdeci">void add(ReflectionProbeCapture *probe)</div><div class="ttdoc">Register a probe once; duplicate registrations are ignored.</div><div class="ttdef"><b>Definition</b> <a href="ReflectionProbeRegistry_8cpp_source.html#l00014">ReflectionProbeRegistry.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

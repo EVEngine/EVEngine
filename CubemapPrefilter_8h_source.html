@@ -1,0 +1,435 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/CubemapPrefilter.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CubemapPrefilter.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CubemapPrefilter_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="}">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html">   14</a></span><span class="keyword">namespace </span>cubemap_prefilter_detail {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a9c0ed39e3e07a35c5c580820c20d3f74">   16</a></span><span class="keyword">inline</span> glm::vec3 <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a9c0ed39e3e07a35c5c580820c20d3f74">faceDirection</a>(uint32_t face, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">switch</span> (face) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">case</span> 0: <span class="keywordflow">return</span> glm::normalize(glm::vec3(1.f, -<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, -<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>));</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">case</span> 1: <span class="keywordflow">return</span> glm::normalize(glm::vec3(-1.f, -<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">case</span> 2: <span class="keywordflow">return</span> glm::normalize(glm::vec3(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, 1.f, <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">case</span> 3: <span class="keywordflow">return</span> glm::normalize(glm::vec3(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, -1.f, -<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>));</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">case</span> 4: <span class="keywordflow">return</span> glm::normalize(glm::vec3(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, -<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, 1.f));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">default</span>: <span class="keywordflow">return</span> glm::normalize(glm::vec3(-<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, -<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, -1.f));</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a16f5fadf9cd04eb447341990db65b71a">   27</a></span><span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a16f5fadf9cd04eb447341990db65b71a">directionFaceUv</a>(<span class="keyword">const</span> glm::vec3 &amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, uint32_t &amp;face, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = glm::abs(<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x &gt;= <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y &amp;&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x &gt;= <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.x &gt;= 0.f) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            face = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = -<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.z / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = -<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.y / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            face = 1;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.z / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = -<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.y / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y &gt;= <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.y &gt;= 0.f) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            face = 2;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.x / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.z / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            face = 3;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.x / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = -<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.z / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.z &gt;= 0.f) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        face = 4;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.x / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = -<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.y / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        face = 5;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = -<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.x / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = -<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.y / <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a12dcf872b2fe1b5255e8c3f1a0d094cd">   60</a></span><span class="keyword">inline</span> glm::vec4 <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a12dcf872b2fe1b5255e8c3f1a0d094cd">sampleBase</a>(<span class="keyword">const</span> uint8_t *faces, uint32_t size, <span class="keyword">const</span> glm::vec3 &amp;direction) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    uint32_t face = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = 0.f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = 0.f;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a16f5fadf9cd04eb447341990db65b71a">directionFaceUv</a>(direction, face, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = (<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> * 0.5f + 0.5f) * <span class="keywordtype">float</span>(size) - 0.5f;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = (<a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> * 0.5f + 0.5f) * <span class="keywordtype">float</span>(size) - 0.5f;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> x0 = int(std::floor(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> y0 = int(std::floor(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> x1 = x0 + 1;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> y1 = y0 + 1;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> tx = <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> - float(x0);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> ty = <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> - float(y0);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">auto</span> load = [&amp;](<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a>) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> tapU = (2.f * (float(<a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>) + 0.5f) / <span class="keywordtype">float</span>(size)) - 1.f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> tapV = (2.f * (float(<a class="code hl_variable" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a>) + 0.5f) / <span class="keywordtype">float</span>(size)) - 1.f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">const</span> glm::vec3 tapDirection = <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a9c0ed39e3e07a35c5c580820c20d3f74">faceDirection</a>(face, tapU, tapV);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        uint32_t tapFace = 0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordtype">float</span> resolvedU = 0.f;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordtype">float</span> resolvedV = 0.f;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a16f5fadf9cd04eb447341990db65b71a">directionFaceUv</a>(tapDirection, tapFace, resolvedU, resolvedV);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keyword">const</span> uint32_t resolvedX = uint32_t(std::clamp(</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordtype">int</span>((resolvedU * 0.5f + 0.5f) * <span class="keywordtype">float</span>(size)), 0, <span class="keywordtype">int</span>(size) - 1));</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keyword">const</span> uint32_t resolvedY = uint32_t(std::clamp(</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordtype">int</span>((resolvedV * 0.5f + 0.5f) * <span class="keywordtype">float</span>(size)), 0, <span class="keywordtype">int</span>(size) - 1));</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keyword">const</span> <span class="keywordtype">size_t</span> faceBase = size_t(tapFace) * size_t(size) * size_t(size) * 4u;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keyword">const</span> <span class="keywordtype">size_t</span> i = faceBase + (size_t(resolvedY) * size + resolvedX) * 4u;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">return</span> glm::vec4(faces[i], faces[i + 1u], faces[i + 2u], faces[i + 3u]);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    };</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">return</span> glm::mix(glm::mix(load(x0, y0), load(x1, y0), tx),</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                    glm::mix(load(x0, y1), load(x1, y1), tx), ty);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a6eb74695a6e6993901e3f6e67e3a0d8b">   93</a></span><span class="keyword">inline</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a6eb74695a6e6993901e3f6e67e3a0d8b">radicalInverse</a>(uint32_t bits) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    bits = (bits &lt;&lt; 16u) | (bits &gt;&gt; 16u);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    bits = ((bits &amp; 0x55555555u) &lt;&lt; 1u) | ((bits &amp; 0xAAAAAAAAu) &gt;&gt; 1u);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    bits = ((bits &amp; 0x33333333u) &lt;&lt; 2u) | ((bits &amp; 0xCCCCCCCCu) &gt;&gt; 2u);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    bits = ((bits &amp; 0x0F0F0F0Fu) &lt;&lt; 4u) | ((bits &amp; 0xF0F0F0F0u) &gt;&gt; 4u);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    bits = ((bits &amp; 0x00FF00FFu) &lt;&lt; 8u) | ((bits &amp; 0xFF00FF00u) &gt;&gt; 8u);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">return</span> float(bits) * 2.3283064365386963e-10f;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a0323a6850ed46be327960cd08681938d">  102</a></span><span class="keyword">inline</span> glm::vec3 <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a0323a6850ed46be327960cd08681938d">importanceSample</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keyword">const</span> glm::vec3 &amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">constexpr</span> <span class="keywordtype">float</span> kTau = 6.2831853071795864769f;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = std::max(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a> * <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>, 0.001f);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> a2 = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="UrbanCrossField_8cpp.html#a07d60620f33b766635e515492784757b">phi</a> = kTau * <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> cosTheta = std::sqrt((1.f - <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) / std::max(1.f + (a2 - 1.f) * <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, 1e-6f));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> sinTheta = std::sqrt(std::max(1.f - cosTheta * cosTheta, 0.f));</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">const</span> glm::vec3 hT(std::cos(<a class="code hl_variable" href="UrbanCrossField_8cpp.html#a07d60620f33b766635e515492784757b">phi</a>) * sinTheta, std::sin(<a class="code hl_variable" href="UrbanCrossField_8cpp.html#a07d60620f33b766635e515492784757b">phi</a>) * sinTheta, cosTheta);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">const</span> glm::vec3 up = std::abs(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.z) &lt; 0.999f ? glm::vec3(0.f, 0.f, 1.f)</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                                                : glm::vec3(1.f, 0.f, 0.f);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> = glm::normalize(glm::cross(up, <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>));</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">const</span> glm::vec3 bitangent = glm::cross(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> glm::normalize(<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> * hT.x + bitangent * hT.y + <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> * hT.z);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="}">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a76efe3df8dd5761bef537bef4dd1c162">  117</a></span><span class="keyword">inline</span> glm::vec3 <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a76efe3df8dd5761bef537bef4dd1c162">cosineSample</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keyword">const</span> glm::vec3 &amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">constexpr</span> <span class="keywordtype">float</span> kTau = 6.2831853071795864769f;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="UrbanCrossField_8cpp.html#a07d60620f33b766635e515492784757b">phi</a> = kTau * <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> = std::sqrt(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * std::cos(<a class="code hl_variable" href="UrbanCrossField_8cpp.html#a07d60620f33b766635e515492784757b">phi</a>), <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * std::sin(<a class="code hl_variable" href="UrbanCrossField_8cpp.html#a07d60620f33b766635e515492784757b">phi</a>),</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                          std::sqrt(std::max(1.f - <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, 0.f)));</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keyword">const</span> glm::vec3 up = std::abs(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.z) &lt; 0.999f ? glm::vec3(0.f, 0.f, 1.f)</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                                : glm::vec3(1.f, 0.f, 0.f);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> = glm::normalize(glm::cross(up, <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>));</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keyword">const</span> glm::vec3 bitangent = glm::cross(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, <a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">return</span> glm::normalize(<a class="code hl_variable" href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a> * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.x + bitangent * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.y + <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> * <a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>.z);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>}</div>
+</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}  <span class="comment">// namespace cubemap_prefilter_detail</span></div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="foldopen" id="foldopen00140" data-start="{" data-end="}">
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a17abf3a867199b7494a4f2be3aeee49f">  140</a></span><span class="keyword">inline</span> std::vector&lt;uint8_t&gt; <a class="code hl_function" href="namespaceeve_1_1graphics.html#a17abf3a867199b7494a4f2be3aeee49f">buildGgxCubemapMipChain</a>(<span class="keyword">const</span> uint8_t *rgbaFaces, uint32_t faceSize,</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                                                    uint32_t mipLevels,</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                                                    uint32_t sampleCount = 32u) {</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordflow">if</span> (!rgbaFaces || faceSize == 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> || mipLevels == 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    sampleCount = std::max(sampleCount, 1u);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keyword">struct </span>CacheEntry {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        uint64_t <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> = 0;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        uint32_t faceSize = 0;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        uint32_t mipLevels = 0;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        uint32_t sampleCount = 0;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        std::vector&lt;uint8_t&gt; bytes;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    };</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keyword">static</span> std::mutex cacheMutex;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">static</span> std::vector&lt;CacheEntry&gt; cache;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> sourceBytes = size_t(faceSize) * faceSize * 4u * 6u;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    uint64_t <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> = 1469598103934665603ull;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; sourceBytes; ++i) {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> ^= uint64_t(rgbaFaces[i]);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> *= 1099511628211ull;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> ^= uint64_t(faceSize) | (uint64_t(mipLevels) &lt;&lt; 32u);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> *= 1099511628211ull;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> ^= uint64_t(sampleCount);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">if</span> (mipLevels &gt; 1u) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        std::lock_guard&lt;std::mutex&gt; lock(cacheMutex);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> CacheEntry &amp;entry : cache) {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            <span class="keywordflow">if</span> (entry.key == <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a> &amp;&amp; entry.faceSize == faceSize &amp;&amp;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                entry.mipLevels == mipLevels &amp;&amp; entry.sampleCount == sampleCount)</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                <span class="keywordflow">return</span> entry.bytes;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    std::vector&lt;uint8_t&gt; packed;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordtype">size_t</span> totalBytes = 0;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">for</span> (uint32_t level = 0, size = faceSize; level &lt; mipLevels;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>         ++level, size = std::max(size &gt;&gt; 1u, 1u))</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        totalBytes += <span class="keywordtype">size_t</span>(size) * size * 4u * 6u;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    packed.reserve(totalBytes);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    packed.insert(packed.end(), rgbaFaces, rgbaFaces + sourceBytes);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">if</span> (mipLevels &lt;= 1u) <span class="keywordflow">return</span> packed;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordflow">for</span> (uint32_t level = 1, size = std::max(faceSize &gt;&gt; 1u, 1u); level &lt; mipLevels;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>         ++level, size = std::max(size &gt;&gt; 1u, 1u)) {</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a> = float(level) / float(mipLevels - 1u);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> diffuseIrradiance = mipLevels &gt;= 3u &amp;&amp; level + 1u == mipLevels;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keyword">const</span> uint32_t levelSamples =</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            diffuseIrradiance</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                ? std::max(64u, sampleCount * 2u)</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                : std::max(8u, uint32_t(std::ceil(<span class="keywordtype">float</span>(sampleCount) * <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>)));</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">for</span> (uint32_t face = 0; face &lt; 6u; ++face) {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            <span class="keywordflow">for</span> (uint32_t <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &lt; size; ++<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                <span class="keywordflow">for</span> (uint32_t <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; size; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> = (2.f * (float(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) + 0.5f) / <span class="keywordtype">float</span>(size)) - 1.f;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> = (2.f * (float(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) + 0.5f) / <span class="keywordtype">float</span>(size)) - 1.f;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                    <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a9c0ed39e3e07a35c5c580820c20d3f74">cubemap_prefilter_detail::faceDirection</a>(face, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                    glm::vec4 sum(0.f);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                    <span class="keywordtype">float</span> weight = 0.f;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; levelSamples; ++i) {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                        <span class="keyword">const</span> <span class="keywordtype">float</span> xiX = (float(i) + 0.5f) / <span class="keywordtype">float</span>(levelSamples);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                        <span class="keyword">const</span> <span class="keywordtype">float</span> xiY = <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a6eb74695a6e6993901e3f6e67e3a0d8b">cubemap_prefilter_detail::radicalInverse</a>(i);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                        <span class="keywordflow">if</span> (diffuseIrradiance) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                            <span class="keyword">const</span> glm::vec3 l =</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                                <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a76efe3df8dd5761bef537bef4dd1c162">cubemap_prefilter_detail::cosineSample</a>(xiX, xiY, <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                            sum += <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a12dcf872b2fe1b5255e8c3f1a0d094cd">cubemap_prefilter_detail::sampleBase</a>(rgbaFaces, faceSize, l);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>                            weight += 1.f;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>                        }</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>                        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a0323a6850ed46be327960cd08681938d">cubemap_prefilter_detail::importanceSample</a>(</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>                            xiX, xiY, <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                        <span class="keyword">const</span> glm::vec3 l = glm::normalize(2.f * glm::dot(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>) * <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> - <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                        <span class="keyword">const</span> <span class="keywordtype">float</span> noL = std::max(glm::dot(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>, l), 0.f);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>                        <span class="keywordflow">if</span> (noL &lt;= 0.f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>                        sum += <a class="code hl_function" href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a12dcf872b2fe1b5255e8c3f1a0d094cd">cubemap_prefilter_detail::sampleBase</a>(rgbaFaces, faceSize, l) * noL;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>                        weight += noL;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                    }</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                    <span class="keyword">const</span> glm::vec4 <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a> = sum / std::max(weight, 1e-6f);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> channel = 0; channel &lt; 4; ++channel)</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                        packed.push_back(<span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                            std::clamp(std::lround(<a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>[channel]), 0l, 255l)));</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                }</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        }</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    }</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        std::lock_guard&lt;std::mutex&gt; lock(cacheMutex);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keywordflow">if</span> (cache.size() &gt;= 2u) cache.erase(cache.begin());</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        cache.push_back(CacheEntry{<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, faceSize, mipLevels, sampleCount, packed});</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    }</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordflow">return</span> packed;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>}</div>
+</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a30e07cd2f88ee881fc71802591f69f60"><div class="ttname"><a href="CaveMesh_8cpp.html#a30e07cd2f88ee881fc71802591f69f60">tangent</a></div><div class="ttdeci">Vec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00080">CaveMesh.cpp:80</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a709aad4619f93afb87fab238013812b2"><div class="ttname"><a href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a></div><div class="ttdeci">float py</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00015">CaveWetness.cpp:15</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00236">Grass.cpp:236</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00066">Grass.cpp:66</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aecb57814a4eed9c5ec6047d3af2a9488"><div class="ttname"><a href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a></div><div class="ttdeci">std::vector&lt; Colorf &gt; px</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00686">ImageData.cpp:686</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a8a71cf98f1ad6795a6d5c2397672e40d"><div class="ttname"><a href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a></div><div class="ttdeci">std::string local</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00025">LanguageIndex.cpp:25</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a2c76422d3e436164284a7dba0b8a9cc4"><div class="ttname"><a href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a></div><div class="ttdeci">float roughness</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00098">ModelRenderer.cpp:98</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aUrbanCrossField_8cpp_html_a07d60620f33b766635e515492784757b"><div class="ttname"><a href="UrbanCrossField_8cpp.html#a07d60620f33b766635e515492784757b">phi</a></div><div class="ttdeci">std::vector&lt; double &gt; phi</div><div class="ttdef"><b>Definition</b> <a href="UrbanCrossField_8cpp_source.html#l00024">UrbanCrossField.cpp:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1cubemap__prefilter__detail_html_a0323a6850ed46be327960cd08681938d"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a0323a6850ed46be327960cd08681938d">eve::graphics::cubemap_prefilter_detail::importanceSample</a></div><div class="ttdeci">glm::vec3 importanceSample(float x, float y, const glm::vec3 &amp;n, float roughness)</div><div class="ttdef"><b>Definition</b> <a href="CubemapPrefilter_8h_source.html#l00102">CubemapPrefilter.h:102</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1cubemap__prefilter__detail_html_a12dcf872b2fe1b5255e8c3f1a0d094cd"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a12dcf872b2fe1b5255e8c3f1a0d094cd">eve::graphics::cubemap_prefilter_detail::sampleBase</a></div><div class="ttdeci">glm::vec4 sampleBase(const uint8_t *faces, uint32_t size, const glm::vec3 &amp;direction)</div><div class="ttdef"><b>Definition</b> <a href="CubemapPrefilter_8h_source.html#l00060">CubemapPrefilter.h:60</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1cubemap__prefilter__detail_html_a16f5fadf9cd04eb447341990db65b71a"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a16f5fadf9cd04eb447341990db65b71a">eve::graphics::cubemap_prefilter_detail::directionFaceUv</a></div><div class="ttdeci">void directionFaceUv(const glm::vec3 &amp;d, uint32_t &amp;face, float &amp;u, float &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="CubemapPrefilter_8h_source.html#l00027">CubemapPrefilter.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1cubemap__prefilter__detail_html_a6eb74695a6e6993901e3f6e67e3a0d8b"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a6eb74695a6e6993901e3f6e67e3a0d8b">eve::graphics::cubemap_prefilter_detail::radicalInverse</a></div><div class="ttdeci">float radicalInverse(uint32_t bits)</div><div class="ttdef"><b>Definition</b> <a href="CubemapPrefilter_8h_source.html#l00093">CubemapPrefilter.h:93</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1cubemap__prefilter__detail_html_a76efe3df8dd5761bef537bef4dd1c162"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a76efe3df8dd5761bef537bef4dd1c162">eve::graphics::cubemap_prefilter_detail::cosineSample</a></div><div class="ttdeci">glm::vec3 cosineSample(float x, float y, const glm::vec3 &amp;n)</div><div class="ttdef"><b>Definition</b> <a href="CubemapPrefilter_8h_source.html#l00117">CubemapPrefilter.h:117</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1cubemap__prefilter__detail_html_a9c0ed39e3e07a35c5c580820c20d3f74"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1cubemap__prefilter__detail.html#a9c0ed39e3e07a35c5c580820c20d3f74">eve::graphics::cubemap_prefilter_detail::faceDirection</a></div><div class="ttdeci">glm::vec3 faceDirection(uint32_t face, float u, float v)</div><div class="ttdef"><b>Definition</b> <a href="CubemapPrefilter_8h_source.html#l00016">CubemapPrefilter.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a17abf3a867199b7494a4f2be3aeee49f"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a17abf3a867199b7494a4f2be3aeee49f">eve::graphics::buildGgxCubemapMipChain</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; buildGgxCubemapMipChain(const uint8_t *rgbaFaces, uint32_t faceSize, uint32_t mipLevels, uint32_t sampleCount=32u)</div><div class="ttdoc">Build a mip-major RGBA8 IBL chain: GGX specular mips plus final diffuse irradiance.</div><div class="ttdef"><b>Definition</b> <a href="CubemapPrefilter_8h_source.html#l00140">CubemapPrefilter.h:140</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

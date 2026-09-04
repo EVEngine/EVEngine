@@ -1,0 +1,254 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen::PointGraph 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af6ef07cf4cdf8762d5a8838f249d50af">addNode</a>(const std::string &amp;id, const std::string &amp;operation)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a2639d01bfc9bebdc3ea7ba13a9d857e7">clearCache</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab402f645323f91eac23b495bfeaac0f9">clearParameterOverride</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a46fbad0186b929df1322eb26910de8c4">connect</a>(const std::string &amp;fromId, const std::string &amp;toId, int inputIndex=0)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#afab71aeeff2e2f57d58fe01a8b3919bc">debugReport</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7fca936dddf0bb87704b64519569dbe3">deserializeDefinition</a>(const std::string &amp;definition)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ad049547256aa9ecdca46f180e913120c">disconnect</a>(const std::string &amp;toId, int inputIndex=0)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a70ed29a7ad0f2dd1a900430f0f599a92">execute</a>(const std::string &amp;outputId)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1f1b06d1867a0df1521db5c292b1585f">exposeParameter</a>(const std::string &amp;name, const std::string &amp;nodeId, const std::string &amp;key)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ac87484116f519d94344fc0e93d995e36">getCacheHitCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1968ff0f863466cede898dbdd74cdd4b">getComputeBufferReuseCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aeab9d2921e1f22e31f7498cb3785f926">getComputeDispatchCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a506c8c9656f12326a7206862339000ca">getComputeFallbackReason</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a51bc76df86bcd7efbeaf2b8a458fe742">getComputeMinimumPoints</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a061cc0cf9900a4655f5be94b0c2c65cc">getComputePeakBufferBytes</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7b4d9220c3b2dff0c4f16b32321bf557">getComputePolicy</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a57a1c45ad1809b8994eee98a0b0ae85b">getComputeReadbackCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab2f0e6d7ead147b5f51371d7f948d000">getComputeUploadCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ac4c73e2caef431101f50516bdaa97da8">getError</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a6156c442a94a0d67314f1ba9b4f0bc6e">getExecutionCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a8211d3a385d099becba1d22c7eff2d99">getExecutionNodeBudget</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a3dad31b6f6ab39c13012f1e8422e0ed7">getInputNode</a>(const std::string &amp;nodeId, int inputIndex) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a73b86fdf1f397a8785f4bc66b0d6166e">getLastFusedTransformCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7f5f1988dc668fceef93601611c9c1cb">getMaxNodeOutputPoints</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a8341d8e1878e2f94f0a114748f68fd12">getMetricAverageDensity</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a82f8129fb98ff3465c7202c4db2d26d0">getMetricBackend</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a386ccb6f9406242cd82ba26435ed073c">getMetricCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a34dc87be7da7d611e799265053e53895">getMetricMaxX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab1dffd36492ef69ad67a730e2b553de9">getMetricMaxY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ad9e848a3abcb1118060b5bf749f6b591">getMetricMaxZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a225f532b67995c3c2334d5603c259b9e">getMetricMilliseconds</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ae220929656a150962ce6c1d9c8cf1bbe">getMetricMinX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aac4a51ab982ef3d4c5ce82fefa360c5e">getMetricMinY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a14d52e9c612dc1989aa61135e015ac4c">getMetricMinZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#adc11c1e91a9f576013058fbc07b64479">getMetricNodeId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af452d21eab7b7b13afbfe03970a8ae88">getMetricOutputCount</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a6971920099029aeae6ab9696691f6583">getNodeCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ade66ba1447213320442e017c228360c6">getNodeId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a45c5a9e4e60ae632e5617264913b44ef">getNodeOperation</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a5481f04dee202477ebfab9e747f6c375">getNodeOutput</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a271db63bdcae2f8619351bb4f97e6275">getOperationCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a81f66ba74cdc09b27713e07199382c69">getOperationId</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aff4b392c85db2a708ed7c0e9f3431660">getOperationInputCount</a>(const std::string &amp;operation)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7d27f8fb12c291a4547061a02c42194b">getOperationParamCount</a>(const std::string &amp;operation)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a09f1d43d7dc761e0cf0d06f85875d165">getOperationParamDefault</a>(const std::string &amp;operation, int index)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aee8f52021d4b58808fc347ad18ea5404">getOperationParamKey</a>(const std::string &amp;operation, int index)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab5f596c08951825afd1765832f0f7d62">getOperationParamKind</a>(const std::string &amp;operation, int index)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a95d8f3df0ad66f40c1b8b4c49a847ba3">getParameterCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ab6d5483c1bbb78c8258af4ad095fcd49">getParameterFloat</a>(const std::string &amp;name, float fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aee0afb34b3a37b5256096aab468f9e4b">getParameterInt</a>(const std::string &amp;name, int fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#acf38f1fd17875aad0ae61eed22a1c895">getParameterKind</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#abc29fd5498059ba297b86ca636ac03cc">getParameterName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ae9cfe0662290ed203af15a8a63ce12f4">getParameterString</a>(const std::string &amp;name, const std::string &amp;fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a4a8eb9b051cb5688ea1bc105e2a2e298">getRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af059e0ecd9e8f11a3e763db807803006">hasNode</a>(const std::string &amp;id) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ad0505c877e9ea3942ad8471a09b682ab">hasParameterOverride</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1e980275ce70aed601e131b315507b2d">instantiate</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a75239d7d760129033963687ecf5c5aa3">isMetricCacheHit</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a8bedc147d1316067ec54f2ca51b5364e">PointGraph</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1b73f919f3b5142fbd694e077890ce9b">removeNode</a>(const std::string &amp;id)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a5b95463c40d60d8fdbece6d7c0d2ea4b">requestCancel</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a00ff022b5051710da4b397246ca17c4d">resetCancellation</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a4a5543c407fc35001ee8f1e88af3275c">serializeDefinition</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#afc8d0aa10f9c6bb57d06b9e17cd7001e">setComputeMinimumPoints</a>(int points)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a6c422a097ca57a792ce4a1a02f67d1ec">setComputePolicy</a>(const std::string &amp;policy)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1c836a029e3d2f3197c805941c547b8f">setExecutionNodeBudget</a>(int nodes)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a91a7615acedeebdbd9e8e35996f8ddcd">setMaxNodeOutputPoints</a>(int points)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af9f6bf1ddc324a910c408175724333ad">setNodeBiomeRules</a>(const std::string &amp;id, BiomeRules *rules)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a1a778c47a58683db537081a41556b870">setNodeFloat</a>(const std::string &amp;id, const std::string &amp;key, float value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ad0ddd62d432f501fe055fb41097b86f9">setNodeInt</a>(const std::string &amp;id, const std::string &amp;key, int value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ae7897d29f01d47a5f6374e6823dda540">setNodePoints</a>(const std::string &amp;id, PointSet *points)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#ae23b64c749333239cc0bfe943ceed97a">setNodeShapeGrammar</a>(const std::string &amp;id, ShapeGrammar *grammar)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aac5a0a73e4b7dfedf47976861c7292cd">setNodeSpatial</a>(const std::string &amp;id, SpatialData *spatial)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a28c4a2268feb3097bccb1c32c673eef1">setNodeString</a>(const std::string &amp;id, const std::string &amp;key, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a8fb7601bc752d6c4bd9457237eab8c6e">setNodeSubgraph</a>(const std::string &amp;id, PointGraph *graph, const std::string &amp;inputNode, const std::string &amp;outputNode)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a109b00ed568a5ac604ce92f71339c9a7">setParameterFloat</a>(const std::string &amp;name, float value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#af543e74a2b1198e797890fedbe83ea97">setParameterInt</a>(const std::string &amp;name, int value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#aeaee3d793f0f150f7a25f419a8162699">setParameterString</a>(const std::string &amp;name, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a7c4346fcc6630a0a1555d0b560c4bb05">validate</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html#a2f804fd9d0d79fa34d1f9eabcfde18ae">wasCancelled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointGraph.html">eve::procgen::PointGraph</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

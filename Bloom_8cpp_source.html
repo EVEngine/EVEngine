@@ -1,0 +1,357 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/Bloom.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Bloom.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Bloom_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Bloom_8h.html">graphics/Bloom.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="BlendMode_8h.html">graphics/BlendMode.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Canvas_8h.html">graphics/Canvas.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Color_8h.html">graphics/Color.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Graphics_8h.html">graphics/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Shader_8h.html">graphics/Shader.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Texture_8h.html">graphics/Texture.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="PostProcessWgsl_8h.html">graphics/shaders/PostProcessWgsl.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;graphics/shaders/bloom_downsample_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;graphics/shaders/bloom_upsample_frag_spv.inc&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>std::vector&lt;uint32_t&gt; copySpv(<span class="keyword">const</span> uint32_t *data, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">return</span> std::vector&lt;uint32_t&gt;(data, data + <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a> *newPostShader(Graphics *gfx, <span class="keyword">const</span> uint32_t *spv, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, <span class="keyword">const</span> <span class="keywordtype">char</span> *wgsl) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a> *<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a> = gfx-&gt;getBackendName() == <span class="stringliteral">&quot;webgpu&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                         ? gfx-&gt;newShaderFromWgsl({}, std::string(<a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a5a87e44df5de06ff0e3adf232080ea4b">shaders::kPostCommon</a>) + wgsl)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                         : gfx-&gt;newShaderFromSpv({}, copySpv(spv, <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>));</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a> || !<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>-&gt;<a class="code hl_variable" href="classeve_1_1graphics_1_1Shader.html#a8bdb21d0b57398ec65c6d329e55b1ced">gpuHandle</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Bloom: failed to create shader&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Bloom.html#a148c6ff7ce34d4b4b4d04fb19101abfb">   35</a></span><a class="code hl_function" href="classeve_1_1graphics_1_1Bloom.html#a148c6ff7ce34d4b4b4d04fb19101abfb">Bloom::Bloom</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx) : gfx_(gfx) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (!gfx_) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Bloom: null graphics&quot;</span>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    downsample_ = newPostShader(gfx_, bloom_downsample_frag_spv,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                bloom_downsample_frag_spv_count, <a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a0e88e3b0592509e279ee8795819a5d92">shaders::kBloomDownsample</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(<span class="stringliteral">&quot;texelW&quot;</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(<span class="stringliteral">&quot;texelH&quot;</span>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(<span class="stringliteral">&quot;firstPass&quot;</span>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(<span class="stringliteral">&quot;threshold&quot;</span>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(<span class="stringliteral">&quot;knee&quot;</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    upsample_ = newPostShader(gfx_, bloom_upsample_frag_spv, bloom_upsample_frag_spv_count,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                              <a class="code hl_variable" href="namespaceeve_1_1graphics_1_1shaders.html#a1ec546775e3f211ba56f19855b16aa4e">shaders::kBloomUpsample</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    upsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(<span class="stringliteral">&quot;texelW&quot;</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    upsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(<span class="stringliteral">&quot;texelH&quot;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    upsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(<span class="stringliteral">&quot;scatter&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keywordtype">void</span> Bloom::ensureTargets(<span class="keywordtype">int</span> sourceWidth, <span class="keywordtype">int</span> sourceHeight) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    sourceWidth = std::max(sourceWidth, 1);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    sourceHeight = std::max(sourceHeight, 1);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (levels_[0] &amp;&amp; sourceWidth_ == sourceWidth &amp;&amp; sourceHeight_ == sourceHeight) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    sourceWidth_ = sourceWidth;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    sourceHeight_ = sourceHeight;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    composite_ = gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ac4290cf6519dff495b47342905d210fa">newHDRCanvas</a>(sourceWidth, sourceHeight);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (!composite_) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Bloom: failed to allocate HDR composite target&quot;</span>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> = sourceWidth;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> = sourceHeight;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">for</span> (<a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *&amp;level : levels_) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> = std::max(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> / 2, 1);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> = std::max(<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> / 2, 1);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        level = gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ac4290cf6519dff495b47342905d210fa">newHDRCanvas</a>(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">if</span> (!level) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Bloom: failed to allocate HDR pyramid target&quot;</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keywordtype">void</span> Bloom::configureDownsample(Texture *<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">bool</span> firstPass, <span class="keywordtype">float</span> threshold) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;texelW&quot;</span>, 1.f / <span class="keywordtype">float</span>(std::max(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>-&gt;getWidth(), 1)));</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;texelH&quot;</span>, 1.f / <span class="keywordtype">float</span>(std::max(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>-&gt;getHeight(), 1)));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;firstPass&quot;</span>, firstPass ? 1.f : 0.f);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;threshold&quot;</span>, std::max(threshold, 0.f));</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    downsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;knee&quot;</span>, std::max(threshold * 0.5f, 1e-4f));</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keywordtype">void</span> Bloom::configureUpsample(Texture *<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">float</span> scatter) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    upsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;texelW&quot;</span>, 1.f / <span class="keywordtype">float</span>(std::max(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>-&gt;getWidth(), 1)));</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    upsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;texelH&quot;</span>, 1.f / <span class="keywordtype">float</span>(std::max(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>-&gt;getHeight(), 1)));</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    upsample_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(<span class="stringliteral">&quot;scatter&quot;</span>, std::clamp(scatter, 0.5f, 2.f));</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Bloom.html#a01018785f7e41870b49e8296e7292e62">   85</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1Bloom.html#a01018785f7e41870b49e8296e7292e62">Bloom::build</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">float</span> threshold, <span class="keywordtype">float</span> scatter) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Bloom.build: null source&quot;</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    ensureTargets(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>-&gt;getWidth(), <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>-&gt;getHeight());</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a> = gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">getCanvas</a>();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; levels_.size(); ++i) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a> = levels_[i];</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;clear(<a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>(0.f, 0.f, 0.f, 0.f), {}, {});</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        configureDownsample(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, i == 0, threshold);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">drawTexturedRectShaderUV</a>(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, downsample_, 0.f, 0.f, <span class="keywordtype">float</span>(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;getWidth()),</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                                       <span class="keywordtype">float</span>(<a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;getHeight()), 0.f, 0.f, 1.f, 1.f,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                                       <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>(1.f, 1.f, 1.f, 1.f), <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve.html#a94b084122b6234e8c62af43363840980afaa90538de35640e4b1e31ccf35b6eb5">BlendMode::Opaque</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a> = <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>-&gt;getTexture();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Bloom: pyramid texture missing&quot;</span>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = levels_.size() - 1; i &gt; 0; --i) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *low = levels_[i]-&gt;getTexture();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *high = levels_[i - 1];</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        configureUpsample(low, scatter);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>(high);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">drawTexturedRectShaderUV</a>(low, upsample_, 0.f, 0.f, <span class="keywordtype">float</span>(high-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">getWidth</a>()),</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                                       <span class="keywordtype">float</span>(high-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">getHeight</a>()), 0.f, 0.f, 1.f, 1.f,</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                                       <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>(1.f, 1.f, 1.f, 1.f), <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a3f7b3d8ee7bf0d542bd50821c083888f">BlendMode::Additive</a>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>(<a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> levels_[0]-&gt;getTexture();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="}">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1Bloom.html#a945b34dbcf63e83ff962e4e1e1b45a8d">  117</a></span><a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_function" href="classeve_1_1graphics_1_1Bloom.html#a945b34dbcf63e83ff962e4e1e1b45a8d">Bloom::apply</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">float</span> intensity, <span class="keywordtype">float</span> threshold, <span class="keywordtype">float</span> scatter) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Bloom.apply: null source&quot;</span>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">if</span> (intensity &lt;= 0.f) <span class="keywordflow">return</span> <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *bloom = <a class="code hl_function" href="classeve_1_1graphics_1_1Bloom.html#a01018785f7e41870b49e8296e7292e62">build</a>(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, threshold, scatter);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Canvas.html">Canvas</a> *<a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a> = gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">getCanvas</a>();</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    composite_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#a814c359e0f393e429926a6230cd99c8c">clear</a>(<a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>(0.f, 0.f, 0.f, 0.f), {}, {});</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>(composite_);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">drawTexturedRectShaderUV</a>(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keyword">nullptr</span>, 0.f, 0.f, <span class="keywordtype">float</span>(sourceWidth_),</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                                   <span class="keywordtype">float</span>(sourceHeight_), 0.f, 0.f, 1.f, 1.f,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                   <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>(1.f, 1.f, 1.f, 1.f), <span class="keyword">false</span>, <a class="code hl_enumvalue" href="namespaceeve.html#a94b084122b6234e8c62af43363840980afaa90538de35640e4b1e31ccf35b6eb5">BlendMode::Opaque</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">drawTexturedRectShaderUV</a>(bloom, <span class="keyword">nullptr</span>, 0.f, 0.f, <span class="keywordtype">float</span>(sourceWidth_),</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                                   <span class="keywordtype">float</span>(sourceHeight_), 0.f, 0.f, 1.f, 1.f,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                                   <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>(intensity, intensity, intensity, 1.f), <span class="keyword">false</span>,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                                   <a class="code hl_enumvalue" href="namespaceeve.html#a94b084122b6234e8c62af43363840980a3f7b3d8ee7bf0d542bd50821c083888f">BlendMode::Additive</a>);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    gfx_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">setCanvas</a>(<a class="code hl_variable" href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a>);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *result = composite_-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">getTexture</a>();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">if</span> (!result) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Bloom: composite texture missing&quot;</span>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}</div>
+</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aBlendMode_8h_html"><div class="ttname"><a href="BlendMode_8h.html">BlendMode.h</a></div></div>
+<div class="ttc" id="aBloom_8h_html"><div class="ttname"><a href="Bloom_8h.html">Bloom.h</a></div></div>
+<div class="ttc" id="aCanvas_8h_html"><div class="ttname"><a href="Canvas_8h.html">Canvas.h</a></div></div>
+<div class="ttc" id="aColor_8h_html"><div class="ttname"><a href="Color_8h.html">Color.h</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aGraphics_8h_html"><div class="ttname"><a href="Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aOffscreenPreview_8cpp_html_ae3297973ca89615d6bee8dc8f02b05b1"><div class="ttname"><a href="OffscreenPreview_8cpp.html#ae3297973ca89615d6bee8dc8f02b05b1">previous</a></div><div class="ttdeci">graphics::Canvas * previous</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8cpp_source.html#l00017">OffscreenPreview.cpp:17</a></div></div>
+<div class="ttc" id="aPostProcessWgsl_8h_html"><div class="ttname"><a href="PostProcessWgsl_8h.html">PostProcessWgsl.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aShader_8h_html"><div class="ttname"><a href="Shader_8h.html">Shader.h</a></div></div>
+<div class="ttc" id="aTexture_8h_html"><div class="ttname"><a href="Texture_8h.html">Texture.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Bloom_html_a01018785f7e41870b49e8296e7292e62"><div class="ttname"><a href="classeve_1_1graphics_1_1Bloom.html#a01018785f7e41870b49e8296e7292e62">eve::graphics::Bloom::build</a></div><div class="ttdeci">Texture * build(Texture *source, float threshold, float scatter=1.f)</div><div class="ttdoc">Build a four-level bloom pyramid from an HDR source.</div><div class="ttdef"><b>Definition</b> <a href="Bloom_8cpp_source.html#l00085">Bloom.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Bloom_html_a148c6ff7ce34d4b4b4d04fb19101abfb"><div class="ttname"><a href="classeve_1_1graphics_1_1Bloom.html#a148c6ff7ce34d4b4b4d04fb19101abfb">eve::graphics::Bloom::Bloom</a></div><div class="ttdeci">Bloom(Graphics *gfx)</div><div class="ttdoc">Create the cross-backend bloom shaders.</div><div class="ttdef"><b>Definition</b> <a href="Bloom_8cpp_source.html#l00035">Bloom.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Bloom_html_a945b34dbcf63e83ff962e4e1e1b45a8d"><div class="ttname"><a href="classeve_1_1graphics_1_1Bloom.html#a945b34dbcf63e83ff962e4e1e1b45a8d">eve::graphics::Bloom::apply</a></div><div class="ttdeci">Texture * apply(Texture *source, float intensity, float threshold, float scatter=1.f)</div><div class="ttdoc">Add the reconstructed bloom to the HDR source in a full-size target.</div><div class="ttdef"><b>Definition</b> <a href="Bloom_8cpp_source.html#l00117">Bloom.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html">eve::graphics::Canvas</a></div><div class="ttdef"><b>Definition</b> <a href="Canvas_8h_source.html#l00016">Canvas.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_a36b54ae2371f612291a02c5f08f0e2ea"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#a36b54ae2371f612291a02c5f08f0e2ea">eve::graphics::Canvas::getWidth</a></div><div class="ttdeci">virtual int getWidth() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_a814c359e0f393e429926a6230cd99c8c"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#a814c359e0f393e429926a6230cd99c8c">eve::graphics::Canvas::clear</a></div><div class="ttdeci">virtual void clear(std::optional&lt; Color &gt; color, std::optional&lt; int &gt; stencil, std::optional&lt; double &gt; depth)=0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_ab6f3d14796e2e6ed6fcf2e0127bfc976"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#ab6f3d14796e2e6ed6fcf2e0127bfc976">eve::graphics::Canvas::getTexture</a></div><div class="ttdeci">virtual Texture * getTexture()=0</div><div class="ttdoc">Sampleable color buffer; screen Canvas returns nullptr.</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Canvas_html_ac72d6748ee3c3ca0263fc0b47c93e1b3"><div class="ttname"><a href="classeve_1_1graphics_1_1Canvas.html#ac72d6748ee3c3ca0263fc0b47c93e1b3">eve::graphics::Canvas::getHeight</a></div><div class="ttdeci">virtual int getHeight() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a33a135bee19f60052f90549a4d3ac74a"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a33a135bee19f60052f90549a4d3ac74a">eve::graphics::Graphics::drawTexturedRectShaderUV</a></div><div class="ttdeci">virtual void drawTexturedRectShaderUV(Texture *texture, Shader *shader, float x, float y, float w, float h, float u0, float v0, float u1, float v1, const Color &amp;color, bool rotatedUV=false, BlendMode blend=BlendMode::Alpha)=0</div><div class="ttdoc">UV draw with an explicit Shader (nullptr = default textured pipeline).</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a5f434930471a7de7991d7f9ae586b7dd"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a5f434930471a7de7991d7f9ae586b7dd">eve::graphics::Graphics::getCanvas</a></div><div class="ttdeci">virtual Canvas * getCanvas() const =0</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a97f5ab4a9dfc44c1ca2ee873edc9fe7c"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a97f5ab4a9dfc44c1ca2ee873edc9fe7c">eve::graphics::Graphics::setCanvas</a></div><div class="ttdeci">virtual void setCanvas(Canvas *canvas)=0</div><div class="ttdoc">nullptr or this → screen. Switching flushes pending draws to the previous target.</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ac4290cf6519dff495b47342905d210fa"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ac4290cf6519dff495b47342905d210fa">eve::graphics::Graphics::newHDRCanvas</a></div><div class="ttdeci">virtual Canvas * newHDRCanvas(int width, int height)=0</div><div class="ttdoc">Create an engine-internal linear RGBA16F post-process target.</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a12384bb0fb5dffc0b0b12732b732b607"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">eve::graphics::Shader::sendFloat</a></div><div class="ttdeci">void sendFloat(const std::string &amp;name, float x)</div><div class="ttdef"><b>Definition</b> <a href="Shader_8cpp_source.html#l00082">Shader.cpp:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a8bdb21d0b57398ec65c6d329e55b1ced"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a8bdb21d0b57398ec65c6d329e55b1ced">eve::graphics::Shader::gpuHandle</a></div><div class="ttdeci">void * gpuHandle</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00098">Shader.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_ab15e58eeeaa70277a2d0b90a9a01c3e6"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">eve::graphics::Shader::declareFloat</a></div><div class="ttdeci">int declareFloat(const std::string &amp;name)</div><div class="ttdoc">Reserve sequential float slots in the push-constant block. Returns start index.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8cpp_source.html#l00030">Shader.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00016">Texture.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a0e88e3b0592509e279ee8795819a5d92"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a0e88e3b0592509e279ee8795819a5d92">eve::graphics::shaders::kBloomDownsample</a></div><div class="ttdeci">constexpr const char * kBloomDownsample</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00029">PostProcessWgsl.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a1ec546775e3f211ba56f19855b16aa4e"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a1ec546775e3f211ba56f19855b16aa4e">eve::graphics::shaders::kBloomUpsample</a></div><div class="ttdeci">constexpr const char * kBloomUpsample</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00038">PostProcessWgsl.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1shaders_html_a5a87e44df5de06ff0e3adf232080ea4b"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1shaders.html#a5a87e44df5de06ff0e3adf232080ea4b">eve::graphics::shaders::kPostCommon</a></div><div class="ttdeci">constexpr const char * kPostCommon</div><div class="ttdef"><b>Definition</b> <a href="PostProcessWgsl_8h_source.html#l00006">PostProcessWgsl.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980a3f7b3d8ee7bf0d542bd50821c083888f"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980a3f7b3d8ee7bf0d542bd50821c083888f">eve::BlendMode::Additive</a></div><div class="ttdeci">@ Additive</div></div>
+<div class="ttc" id="anamespaceeve_html_a94b084122b6234e8c62af43363840980afaa90538de35640e4b1e31ccf35b6eb5"><div class="ttname"><a href="namespaceeve.html#a94b084122b6234e8c62af43363840980afaa90538de35640e4b1e31ccf35b6eb5">eve::BlendMode::Opaque</a></div><div class="ttdeci">@ Opaque</div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

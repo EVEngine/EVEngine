@@ -1,0 +1,273 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/Icons.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">Icons.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Export_8h_source.html">common/Export.h</a>&quot;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+</div>
+<p><a href="Icons_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1ui" id="r_namespaceeve_1_1ui"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html">eve::ui</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a2c1e233b117984754f72bd46ba342d92" id="r_a2c1e233b117984754f72bd46ba342d92"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92">eve::ui::Icon</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a6adf97f83acf6453d4a6a4b1070f3754">eve::ui::None</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a13348442cc6a27032d2b4aa28b75a5d3">eve::ui::Search</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ad3d2e617335f08df83599665eef8a418">eve::ui::Close</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a060bf2d587991d8f090a1309b285291c">eve::ui::Check</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92af4f70727dc34561dfde1a3c529b6205c">eve::ui::Settings</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a8cf04a9734132302f96da8e113e80ce5">eve::ui::Home</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a0b27918290ff5323bea1e3b78a9cf04e">eve::ui::File</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ab0f2b97dc5d2b76b26e040408bb1d8af">eve::ui::Folder</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a3125227c3b2a5d0f36e00838e9cd0973">eve::ui::FolderOpen</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ac9cc8cce247e49bae79f15173ce97354">eve::ui::Save</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a1cdc076b28f70afac5fcedadf99fa119">eve::ui::Undo</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a5afeaba074ef570dc720caaa855d49f6">eve::ui::Redo</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a63a6a88c066880c5ac42394a22803ca6">eve::ui::Refresh</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a32ba78fe43257d3e7f88e3935a8ea0d4">eve::ui::Plus</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a453fb623e752c5993f65bc410fd74fe5">eve::ui::Minus</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ae8033a63d7db40a6c3d44413e416229c">eve::ui::ChevronLeft</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a228b1cca3b567d529631311427251521">eve::ui::ChevronRight</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ac380c1d25f1a544484e671227bc9a71b">eve::ui::ChevronUp</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a326310e8e5a7fb1ead1c8a79e7b058f2">eve::ui::ChevronDown</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ab61541208db7fa7dba42c85224405911">eve::ui::Menu</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a5174d1309f275ba6f275db3af9eb3e18">eve::ui::Grid</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a4ee29ca12c7d126654bd0e5275de6135">eve::ui::List</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92aae160b4691f9e79ba0f78369237218d0">eve::ui::Eye</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a6c2bd0633adc08a7a9062e4bc80d1563">eve::ui::EyeSlash</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ab485167c5b0e59d47009a16f90fe2659">eve::ui::Lock</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a7e7123b0d269ad5d9ec8d12c52a8ed8a">eve::ui::Unlock</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ade3c731be5633838089a07179d301d7b">eve::ui::Play</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a105b296a83f9c105355403f3332af50f">eve::ui::Pause</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a11a755d598c0c417f9a36758c3da7481">eve::ui::Stop</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a6bc362dbf494c61ea117fe3c71ca48a5">eve::ui::Move</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a61cf8510205077b6f5491d38cd44c0f7">eve::ui::Pointer</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ab1e2171bb6be58c408f58debe611ee0f">eve::ui::Pencil</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a0edac49f1bdf18a70d2fc2a8f1a3839e">eve::ui::PaintBrush</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92abe53a0541a6d36f6ecb879fa2c584b08">eve::ui::Image</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a967d35e40f3f95b1f538bd248640bf3b">eve::ui::Camera</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92aa296104f0c61a9cf39f4824d05315e12">eve::ui::Cube</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ae8e116822e8676f257d6fd603cf0f040">eve::ui::Cubes</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ae307db07b3975fef922a80d07455ee5e">eve::ui::Database</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ad0e410ca11db8103b87c4f66e2659067">eve::ui::Wrench</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a9ad46d2d4f10955abfc9ca97565bba87">eve::ui::Sliders</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a4059b0251f66a18cb56f544728796875">eve::ui::Info</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92aa97ea56b0e00b2379736ae60869ff66a">eve::ui::Question</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a0eaadb4fcb48a0a0ed7bc9868be9fbaa">eve::ui::Warning</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92aca0dbad92a874b2f69b549293387925e">eve::ui::Code</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92ac83640c604dd5e0eacbf3de0a1181101">eve::ui::Bug</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a514d8a494f087c0d549b9536c2ef3bd9">eve::ui::Terminal</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a87bfda183c4f851a101e97bbb1bbace7">eve::ui::Layers</a>
+, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92a8f9bfe9d1345237cb3b2b205864da075">eve::ui::User</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92af9aae5fda8d810a29f12d1e61b4ab25f">eve::ui::Users</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a2c1e233b117984754f72bd46ba342d92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Semantic editor icons backed by the bundled Font Awesome 4.7 font.  <a href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92">更多...</a><br /></td></tr>
+<tr class="separator:a2c1e233b117984754f72bd46ba342d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ac4eff9cd826487101e2ab572cfa4f774" id="r_ac4eff9cd826487101e2ab572cfa4f774"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#ac4eff9cd826487101e2ab572cfa4f774">eve::ui::iconGlyph</a> (<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92">Icon</a> <a class="el" href="namespaceeve_1_1ui.html#ad8cfeb4cae91ce37ac9f793b57774717">icon</a>)</td></tr>
+<tr class="memdesc:ac4eff9cd826487101e2ab572cfa4f774"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the UTF-8 glyph for an icon, or an empty string for None.  <br /></td></tr>
+<tr class="separator:ac4eff9cd826487101e2ab572cfa4f774"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36241d95ab5ffe906508a7accc58eaff" id="r_a36241d95ab5ffe906508a7accc58eaff"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a36241d95ab5ffe906508a7accc58eaff">eve::ui::iconName</a> (<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92">Icon</a> <a class="el" href="namespaceeve_1_1ui.html#ad8cfeb4cae91ce37ac9f793b57774717">icon</a>)</td></tr>
+<tr class="memdesc:a36241d95ab5ffe906508a7accc58eaff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable kebab-case semantic name for an icon.  <br /></td></tr>
+<tr class="separator:a36241d95ab5ffe906508a7accc58eaff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4caa9dc67f823bc380c0f57ef97026aa" id="r_a4caa9dc67f823bc380c0f57ef97026aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a4caa9dc67f823bc380c0f57ef97026aa">eve::ui::iconFromName</a> (std::string_view <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92">Icon</a> *out)</td></tr>
+<tr class="memdesc:a4caa9dc67f823bc380c0f57ef97026aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a semantic icon name; accepts kebab-case names case-insensitively.  <br /></td></tr>
+<tr class="separator:a4caa9dc67f823bc380c0f57ef97026aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96474ed61c2b527b9b485d9afe86e90f" id="r_a96474ed61c2b527b9b485d9afe86e90f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1ui.html#a96474ed61c2b527b9b485d9afe86e90f">eve::ui::iconText</a> (<a class="el" href="namespaceeve_1_1ui.html#a2c1e233b117984754f72bd46ba342d92">Icon</a> <a class="el" href="namespaceeve_1_1ui.html#ad8cfeb4cae91ce37ac9f793b57774717">icon</a>, std::string_view label={})</td></tr>
+<tr class="memdesc:a96474ed61c2b527b9b485d9afe86e90f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Composes an icon with an optional visible label.  <br /></td></tr>
+<tr class="separator:a96474ed61c2b527b9b485d9afe86e90f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

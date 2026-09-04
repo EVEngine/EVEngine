@@ -1,0 +1,762 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::stylize::MeshEffectInstance类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1stylize.html">stylize</a></li><li class="navelem"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1stylize_1_1MeshEffectInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::stylize::MeshEffectInstance类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> state for a shader effect attached to a renderable mesh.  
+ <a href="classeve_1_1stylize_1_1MeshEffectInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aeabb5226b862167ae0c31547de46dbca" id="r_aeabb5226b862167ae0c31547de46dbca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#aeabb5226b862167ae0c31547de46dbca">MeshEffectInstance</a> (std::string <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad99eac7e3a2e73737a3a50dc7d46d131">style</a>)</td></tr>
+<tr class="memdesc:aeabb5226b862167ae0c31547de46dbca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an unbound effect from a registered mesh style.  <br /></td></tr>
+<tr class="separator:aeabb5226b862167ae0c31547de46dbca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7b7ecbb2d9731ec66322bf0601fc623" id="r_ad7b7ecbb2d9731ec66322bf0601fc623"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad7b7ecbb2d9731ec66322bf0601fc623">MeshEffectInstance</a> (const <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:ad7b7ecbb2d9731ec66322bf0601fc623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76b766c405c6ebff75f9a1ba07121d84" id="r_a76b766c405c6ebff75f9a1ba07121d84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a76b766c405c6ebff75f9a1ba07121d84">operator=</a> (const <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:a76b766c405c6ebff75f9a1ba07121d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a795eccfce9f3a85491cde0c2004ed145" id="r_a795eccfce9f3a85491cde0c2004ed145"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a795eccfce9f3a85491cde0c2004ed145">bindTarget</a> (<a class="el" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">MeshEffectTargetHandle</a> <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a53736f6a0d6395764825a7cd45106c3e">target</a>)</td></tr>
+<tr class="memdesc:a795eccfce9f3a85491cde0c2004ed145"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a process-local target identity without taking ownership.  <br /></td></tr>
+<tr class="separator:a795eccfce9f3a85491cde0c2004ed145"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22b818f24a8e895dfe0edf28ef1825f7" id="r_a22b818f24a8e895dfe0edf28ef1825f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a22b818f24a8e895dfe0edf28ef1825f7">unbindTarget</a> () noexcept</td></tr>
+<tr class="memdesc:a22b818f24a8e895dfe0edf28ef1825f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the observed target identity.  <br /></td></tr>
+<tr class="separator:a22b818f24a8e895dfe0edf28ef1825f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53736f6a0d6395764825a7cd45106c3e" id="r_a53736f6a0d6395764825a7cd45106c3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">MeshEffectTargetHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a53736f6a0d6395764825a7cd45106c3e">target</a> () const noexcept</td></tr>
+<tr class="memdesc:a53736f6a0d6395764825a7cd45106c3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the observed target identity, possibly invalid.  <br /></td></tr>
+<tr class="separator:a53736f6a0d6395764825a7cd45106c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1e562f6847e02a4f1c1e2e57445139d" id="r_ad1e562f6847e02a4f1c1e2e57445139d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad1e562f6847e02a4f1c1e2e57445139d">isBound</a> () const noexcept</td></tr>
+<tr class="memdesc:ad1e562f6847e02a4f1c1e2e57445139d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a target identity is currently bound.  <br /></td></tr>
+<tr class="separator:ad1e562f6847e02a4f1c1e2e57445139d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79dc161ba3416bd0cd4b3c8e7e8bf1b6" id="r_a79dc161ba3416bd0cd4b3c8e7e8bf1b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a79dc161ba3416bd0cd4b3c8e7e8bf1b6">setPlayback</a> (<a class="el" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">MeshEffectPlayback</a> <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac45d633d4781445f68a00b6fb3bfeda6">playback</a>)</td></tr>
+<tr class="memdesc:a79dc161ba3416bd0cd4b3c8e7e8bf1b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace timing after validating finite non-negative durations.  <br /></td></tr>
+<tr class="separator:a79dc161ba3416bd0cd4b3c8e7e8bf1b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac45d633d4781445f68a00b6fb3bfeda6" id="r_ac45d633d4781445f68a00b6fb3bfeda6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">MeshEffectPlayback</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac45d633d4781445f68a00b6fb3bfeda6">playback</a> () const noexcept</td></tr>
+<tr class="memdesc:ac45d633d4781445f68a00b6fb3bfeda6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a value snapshot of the timing configuration.  <br /></td></tr>
+<tr class="separator:ac45d633d4781445f68a00b6fb3bfeda6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b966f3a332886b7a11e9e21cae8bbf6" id="r_a0b966f3a332886b7a11e9e21cae8bbf6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a0b966f3a332886b7a11e9e21cae8bbf6">play</a> () noexcept</td></tr>
+<tr class="memdesc:a0b966f3a332886b7a11e9e21cae8bbf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restart playback from time zero.  <br /></td></tr>
+<tr class="separator:a0b966f3a332886b7a11e9e21cae8bbf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3f57e6977fa94474d659f5441114644" id="r_ac3f57e6977fa94474d659f5441114644"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ac3f57e6977fa94474d659f5441114644">stop</a> (float fadeOutSeconds=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ac3f57e6977fa94474d659f5441114644"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop immediately or fade from the current envelope intensity.  <br /></td></tr>
+<tr class="separator:ac3f57e6977fa94474d659f5441114644"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c84e5cfb4197f41fc7fcd8c3bdf5f14" id="r_a4c84e5cfb4197f41fc7fcd8c3bdf5f14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a4c84e5cfb4197f41fc7fcd8c3bdf5f14">update</a> (float dtSeconds)</td></tr>
+<tr class="memdesc:a4c84e5cfb4197f41fc7fcd8c3bdf5f14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance playback using caller-provided simulation time.  <br /></td></tr>
+<tr class="separator:a4c84e5cfb4197f41fc7fcd8c3bdf5f14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82fa2b8553d45f1c4e1303d23779242d" id="r_a82fa2b8553d45f1c4e1303d23779242d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244b">MeshEffectState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a82fa2b8553d45f1c4e1303d23779242d">state</a> () const noexcept</td></tr>
+<tr class="memdesc:a82fa2b8553d45f1c4e1303d23779242d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current playback phase.  <br /></td></tr>
+<tr class="separator:a82fa2b8553d45f1c4e1303d23779242d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51fc264f14d352215452afa06387e4e3" id="r_a51fc264f14d352215452afa06387e4e3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a51fc264f14d352215452afa06387e4e3">elapsed</a> () const noexcept</td></tr>
+<tr class="memdesc:a51fc264f14d352215452afa06387e4e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return elapsed playback time in seconds.  <br /></td></tr>
+<tr class="separator:a51fc264f14d352215452afa06387e4e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ae9858108e5f10e2ca9b4d7ffe3dbeb" id="r_a9ae9858108e5f10e2ca9b4d7ffe3dbeb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a9ae9858108e5f10e2ca9b4d7ffe3dbeb">intensity</a> () const noexcept</td></tr>
+<tr class="memdesc:a9ae9858108e5f10e2ca9b4d7ffe3dbeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the normalized lifecycle envelope in [0, 1].  <br /></td></tr>
+<tr class="separator:a9ae9858108e5f10e2ca9b4d7ffe3dbeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad99eac7e3a2e73737a3a50dc7d46d131" id="r_ad99eac7e3a2e73737a3a50dc7d46d131"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#ad99eac7e3a2e73737a3a50dc7d46d131">style</a> () noexcept</td></tr>
+<tr class="memdesc:ad99eac7e3a2e73737a3a50dc7d46d131"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the owned mutable style parameter instance.  <br /></td></tr>
+<tr class="separator:ad99eac7e3a2e73737a3a50dc7d46d131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a309eedfbc700bd37f534ec9506969e07" id="r_a309eedfbc700bd37f534ec9506969e07"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a309eedfbc700bd37f534ec9506969e07">style</a> () const noexcept</td></tr>
+<tr class="memdesc:a309eedfbc700bd37f534ec9506969e07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access the owned immutable style parameter instance.  <br /></td></tr>
+<tr class="separator:a309eedfbc700bd37f534ec9506969e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a496956b00683c4e1b083ccd2aafaf80b" id="r_a496956b00683c4e1b083ccd2aafaf80b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a496956b00683c4e1b083ccd2aafaf80b">newMeshShader</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a496956b00683c4e1b083ccd2aafaf80b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a shader owned by gfx with current overrides and time.  <br /></td></tr>
+<tr class="separator:a496956b00683c4e1b083ccd2aafaf80b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> state for a shader effect attached to a renderable mesh. </p>
+<p>The instance owns style overrides and playback state, but does not own or resolve the target. Graphics supplies and resolves MeshEffectTargetHandle; a stale target must be rejected by that owner before drawing. Time advances only through <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html#a4c84e5cfb4197f41fc7fcd8c3bdf5f14" title="Advance playback using caller-provided simulation time.">update()</a>, making playback deterministic for an identical dt sequence. The object is main-thread affine and invokes no callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a> 第 <a class="el" href="MeshEffect_8h_source.html#l00038">38</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aeabb5226b862167ae0c31547de46dbca" name="aeabb5226b862167ae0c31547de46dbca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeabb5226b862167ae0c31547de46dbca">&#9670;&#160;</a></span>MeshEffectInstance() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::MeshEffectInstance::MeshEffectInstance </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>style</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an unbound effect from a registered mesh style. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleShaders_8cpp_source.html#l00164">eve::stylize::findStyleDefinition()</a> , 以及 <a class="el" href="StyleInstance_8h_source.html#l00030">eve::stylize::StyleInstance::getStyle()</a>.</p>
+
+</div>
+</div>
+<a id="ad7b7ecbb2d9731ec66322bf0601fc623" name="ad7b7ecbb2d9731ec66322bf0601fc623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7b7ecbb2d9731ec66322bf0601fc623">&#9670;&#160;</a></span>MeshEffectInstance() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::stylize::MeshEffectInstance::MeshEffectInstance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a795eccfce9f3a85491cde0c2004ed145" name="a795eccfce9f3a85491cde0c2004ed145"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a795eccfce9f3a85491cde0c2004ed145">&#9670;&#160;</a></span>bindTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshEffectInstance::bindTarget </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">MeshEffectTargetHandle</a>&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind a process-local target identity without taking ownership. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00072">eve::RuntimeHandle&lt; Tag &gt;::isInvalid()</a> , 以及 <a class="el" href="MeshEffect_8h_source.html#l00051">target()</a>.</p>
+
+</div>
+</div>
+<a id="a51fc264f14d352215452afa06387e4e3" name="a51fc264f14d352215452afa06387e4e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51fc264f14d352215452afa06387e4e3">&#9670;&#160;</a></span>elapsed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::stylize::MeshEffectInstance::elapsed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return elapsed playback time in seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a> 第 <a class="el" href="MeshEffect_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ae9858108e5f10e2ca9b4d7ffe3dbeb" name="a9ae9858108e5f10e2ca9b4d7ffe3dbeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ae9858108e5f10e2ca9b4d7ffe3dbeb">&#9670;&#160;</a></span>intensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::stylize::MeshEffectInstance::intensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the normalized lifecycle envelope in [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshEffect_8h_source.html#l00024">eve::stylize::MeshEffectPlayback::duration</a>, <a class="el" href="MeshEffect_8h_source.html#l00023">eve::stylize::MeshEffectPlayback::fadeIn</a>, <a class="el" href="MeshEffect_8h_source.html#l00025">eve::stylize::MeshEffectPlayback::fadeOut</a>, <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba8f3d10eb21bd36347c258679eba9e92b">eve::stylize::Finished</a> , 以及 <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244bac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::stylize::Stopped</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshEffect_8cpp_source.html#l00048">stop()</a>.</p>
+
+</div>
+</div>
+<a id="ad1e562f6847e02a4f1c1e2e57445139d" name="ad1e562f6847e02a4f1c1e2e57445139d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1e562f6847e02a4f1c1e2e57445139d">&#9670;&#160;</a></span>isBound()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::stylize::MeshEffectInstance::isBound </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether a target identity is currently bound. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a> 第 <a class="el" href="MeshEffect_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00067">eve::RuntimeHandle&lt; Tag &gt;::isValid()</a>.</p>
+
+</div>
+</div>
+<a id="a496956b00683c4e1b083ccd2aafaf80b" name="a496956b00683c4e1b083ccd2aafaf80b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a496956b00683c4e1b083ccd2aafaf80b">&#9670;&#160;</a></span>newMeshShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">graphics::Shader</a> * eve::stylize::MeshEffectInstance::newMeshShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a shader owned by gfx with current overrides and time. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StyleInstance_8cpp_source.html#l00052">eve::stylize::StyleInstance::hasParam()</a>, <a class="el" href="StyleInstance_8cpp_source.html#l00087">eve::stylize::StyleInstance::newMeshShader()</a> , 以及 <a class="el" href="StyleInstance_8cpp_source.html#l00056">eve::stylize::StyleInstance::setFloat()</a>.</p>
+
+</div>
+</div>
+<a id="a76b766c405c6ebff75f9a1ba07121d84" name="a76b766c405c6ebff75f9a1ba07121d84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76b766c405c6ebff75f9a1ba07121d84">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp; eve::stylize::MeshEffectInstance::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1stylize_1_1MeshEffectInstance.html">MeshEffectInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0b966f3a332886b7a11e9e21cae8bbf6" name="a0b966f3a332886b7a11e9e21cae8bbf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b966f3a332886b7a11e9e21cae8bbf6">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshEffectInstance::play </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restart playback from time zero. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BeamSkillEffect_8h_source.html#l00037">eve::stylize::BeamSkillEffect::play()</a> , 以及 <a class="el" href="MeshEffect_8cpp_source.html#l00030">setPlayback()</a>.</p>
+
+</div>
+</div>
+<a id="ac45d633d4781445f68a00b6fb3bfeda6" name="ac45d633d4781445f68a00b6fb3bfeda6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac45d633d4781445f68a00b6fb3bfeda6">&#9670;&#160;</a></span>playback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">MeshEffectPlayback</a> eve::stylize::MeshEffectInstance::playback </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a value snapshot of the timing configuration. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a> 第 <a class="el" href="MeshEffect_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshEffect_8cpp_source.html#l00030">setPlayback()</a>.</p>
+
+</div>
+</div>
+<a id="a79dc161ba3416bd0cd4b3c8e7e8bf1b6" name="a79dc161ba3416bd0cd4b3c8e7e8bf1b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79dc161ba3416bd0cd4b3c8e7e8bf1b6">&#9670;&#160;</a></span>setPlayback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshEffectInstance::setPlayback </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1stylize_1_1MeshEffectPlayback.html">MeshEffectPlayback</a>&#160;</td>
+          <td class="paramname"><em>playback</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace timing after validating finite non-negative durations. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshEffect_8h_source.html#l00024">eve::stylize::MeshEffectPlayback::duration</a>, <a class="el" href="MeshEffect_8h_source.html#l00023">eve::stylize::MeshEffectPlayback::fadeIn</a>, <a class="el" href="MeshEffect_8h_source.html#l00025">eve::stylize::MeshEffectPlayback::fadeOut</a>, <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba8f3d10eb21bd36347c258679eba9e92b">eve::stylize::Finished</a>, <a class="el" href="MeshEffect_8h_source.html#l00026">eve::stylize::MeshEffectPlayback::loop</a>, <a class="el" href="MeshEffect_8cpp_source.html#l00040">play()</a>, <a class="el" href="MeshEffect_8h_source.html#l00058">playback()</a> , 以及 <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244bac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::stylize::Stopped</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BeamSkillEffect_8cpp_source.html#l00011">eve::stylize::BeamSkillEffect::BeamSkillEffect()</a>.</p>
+
+</div>
+</div>
+<a id="a82fa2b8553d45f1c4e1303d23779242d" name="a82fa2b8553d45f1c4e1303d23779242d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82fa2b8553d45f1c4e1303d23779242d">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244b">MeshEffectState</a> eve::stylize::MeshEffectInstance::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current playback phase. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a> 第 <a class="el" href="MeshEffect_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac3f57e6977fa94474d659f5441114644" name="ac3f57e6977fa94474d659f5441114644"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3f57e6977fa94474d659f5441114644">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshEffectInstance::stop </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fadeOutSeconds</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop immediately or fade from the current envelope intensity. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba2ddb22b5f505aaafbe118c502a5a56ac">eve::stylize::FadingOut</a>, <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba8f3d10eb21bd36347c258679eba9e92b">eve::stylize::Finished</a>, <a class="el" href="MeshEffect_8cpp_source.html#l00094">intensity()</a> , 以及 <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244bac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::stylize::Stopped</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BeamSkillEffect_8h_source.html#l00040">eve::stylize::BeamSkillEffect::stop()</a>.</p>
+
+</div>
+</div>
+<a id="a309eedfbc700bd37f534ec9506969e07" name="a309eedfbc700bd37f534ec9506969e07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a309eedfbc700bd37f534ec9506969e07">&#9670;&#160;</a></span>style() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp; eve::stylize::MeshEffectInstance::style </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Access the owned immutable style parameter instance. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a> 第 <a class="el" href="MeshEffect_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad99eac7e3a2e73737a3a50dc7d46d131" name="ad99eac7e3a2e73737a3a50dc7d46d131"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad99eac7e3a2e73737a3a50dc7d46d131">&#9670;&#160;</a></span>style() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1stylize_1_1StyleInstance.html">StyleInstance</a> &amp; eve::stylize::MeshEffectInstance::style </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Access the owned mutable style parameter instance. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a> 第 <a class="el" href="MeshEffect_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BeamSkillEffect_8cpp_source.html#l00011">eve::stylize::BeamSkillEffect::BeamSkillEffect()</a>.</p>
+
+</div>
+</div>
+<a id="a53736f6a0d6395764825a7cd45106c3e" name="a53736f6a0d6395764825a7cd45106c3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53736f6a0d6395764825a7cd45106c3e">&#9670;&#160;</a></span>target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1stylize.html#a7afc5d1f8ebaa0bb5ce795131c76e351">MeshEffectTargetHandle</a> eve::stylize::MeshEffectInstance::target </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the observed target identity, possibly invalid. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a> 第 <a class="el" href="MeshEffect_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshEffect_8cpp_source.html#l00018">bindTarget()</a>.</p>
+
+</div>
+</div>
+<a id="a22b818f24a8e895dfe0edf28ef1825f7" name="a22b818f24a8e895dfe0edf28ef1825f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22b818f24a8e895dfe0edf28ef1825f7">&#9670;&#160;</a></span>unbindTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshEffectInstance::unbindTarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove the observed target identity. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RuntimeHandle_8h_source.html#l00064">eve::RuntimeHandle&lt; MeshEffectTargetTag &gt;::invalid()</a>.</p>
+
+</div>
+</div>
+<a id="a4c84e5cfb4197f41fc7fcd8c3bdf5f14" name="a4c84e5cfb4197f41fc7fcd8c3bdf5f14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c84e5cfb4197f41fc7fcd8c3bdf5f14">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::stylize::MeshEffectInstance::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance playback using caller-provided simulation time. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a> 第 <a class="el" href="MeshEffect_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshEffect_8h_source.html#l00024">eve::stylize::MeshEffectPlayback::duration</a>, <a class="el" href="MeshEffect_8h_source.html#l00023">eve::stylize::MeshEffectPlayback::fadeIn</a>, <a class="el" href="MeshEffect_8h_source.html#l00025">eve::stylize::MeshEffectPlayback::fadeOut</a>, <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244ba8f3d10eb21bd36347c258679eba9e92b">eve::stylize::Finished</a>, <a class="el" href="StyleInstance_8cpp_source.html#l00052">eve::stylize::StyleInstance::hasParam()</a>, <a class="el" href="MeshEffect_8h_source.html#l00026">eve::stylize::MeshEffectPlayback::loop</a>, <a class="el" href="StyleInstance_8cpp_source.html#l00056">eve::stylize::StyleInstance::setFloat()</a> , 以及 <a class="el" href="namespaceeve_1_1stylize.html#aecf6f1bf290b9e12ea00efcc3d25244bac23e2b09ebe6bf4cb5e2a9abe85c0be2">eve::stylize::Stopped</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BeamSkillEffect_8h_source.html#l00043">eve::stylize::BeamSkillEffect::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/stylize/<a class="el" href="MeshEffect_8h_source.html">MeshEffect.h</a></li>
+<li>src/modules/stylize/<a class="el" href="MeshEffect_8cpp_source.html">MeshEffect.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

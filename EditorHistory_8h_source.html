@@ -1,0 +1,278 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/level_editing/EditorHistory.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_2142e43bfa76582aedd540e1de648e5c.html">level_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorHistory.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorHistory_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="TileBuffer_8h.html">level_editing/TileBuffer.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditingResult_8h.html">editing/EditingResult.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1level__editing.html">eve::level_editing</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1level__editing_1_1EditorHistory.html">   15</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1level__editing_1_1EditorHistory.html">EditorHistory</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#af8679e4b09673d4ab8afbc9406a10632">clear</a>();</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a3807c326ed90e8886a86c801c3b7a73d">push</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a24b8b3ed02c8af5943b03093734419da">beginGroup</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a6b14951b2c26e96c6d5acdf2c311e1c5">recordTile</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">int</span> oldGid, <span class="keywordtype">int</span> newGid);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#afce10b985e851af3208a65d7386fcbb3">endGroup</a>();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1level__editing_1_1EditorHistory.html#aeea0e87c547303be3372e90597fa6fbf">   24</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#aeea0e87c547303be3372e90597fa6fbf">isGrouping</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> grouping_; }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#ad49b865538064ed3efd5bcee6cdd2c44">canUndo</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a3fb47f951b7e0b1913993ef80b4f81ca">canRedo</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a0d771444da33e9a426e8cc44a8994922">getUndoCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a93d329398429b664dd838f0722ccb93e">getRedoCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a3d820a5145402f2c8f27c834f1a5ce5d">undoAction</a>();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#ad9d134471ee581c8ba2b75528bfa7099">redoAction</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a545354227f075e1d7b8a18ea58a22a87">undo</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a096d61d8490349c97c822648e50b784e">redo</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">editing::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a2b572bcafe71dd5a21817a1c8282c8b1">applyLastToBufferChecked</a>(<a class="code hl_class" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a>&amp; <a class="code hl_variable" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a66197c726973597c5465cc6bc07f840c">applyLastToBuffer</a>(<a class="code hl_class" href="classeve_1_1level__editing_1_1TileBuffer.html">TileBuffer</a> *<a class="code hl_variable" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::string <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#aeeb939e4e640545eb8784fc9518b77c7">getLastActionName</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::string <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a178fda0de4006eccfb623d938715feda">getLastActionKind</a>() <span class="keyword">const</span>;  <span class="comment">// &quot;opaque&quot; | &quot;tiles&quot;</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::string <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a0f4049dcfeed3fe4150d66ef5a16340f">getLastPayload</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a1839dba0a986d1534650f7c85e86eee0">getLastTileCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#aec089632fafb4763ae5e076b494d1cfd">getLastTileX</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a222ba8479ad7d9cde063784136856a50">getLastTileY</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a70de52da17fee3872c9a6c2cc5c53ae3">getLastTileOldGid</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1level__editing_1_1EditorHistory.html#a67ca5e368a02eee912e5c0b9c076ffb8">getLastTileNewGid</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">struct </span>TileChange {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0, oldGid = 0, newGid = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    };</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">struct </span>Action {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        std::string <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>;  <span class="comment">// opaque | tiles</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        std::string <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        std::vector&lt;TileChange&gt; <a class="code hl_variable" href="WfcSimple_8cpp.html#a0c05430de08c4341b29a52bf20bd0ed1">tiles</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    };</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> trimRedo();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">bool</span> validLastTile(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::vector&lt;Action&gt; undoStack_;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::vector&lt;Action&gt; redoStack_;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    Action pending_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">bool</span> grouping_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    Action lastApplied_;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">bool</span> hasLast_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">bool</span> lastWasUndo_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}  <span class="comment">// namespace eve::level_editing</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_aa50532026e25d28aec12f8f0f8b0ebf5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a></div><div class="ttdeci">Value::Object payload</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00024">ActionTimelineWidget.cpp:24</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aEditingResult_8h_html"><div class="ttname"><a href="EditingResult_8h.html">EditingResult.h</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a2730c22d1d3b5f378b4e2d47248ad195"><div class="ttname"><a href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a></div><div class="ttdeci">std::span&lt; const std::uint8_t &gt; buffer</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00143">GltfImporter.cpp:143</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aTileBuffer_8h_html"><div class="ttname"><a href="TileBuffer_8h.html">TileBuffer.h</a></div></div>
+<div class="ttc" id="aWfcSimple_8cpp_html_a0c05430de08c4341b29a52bf20bd0ed1"><div class="ttname"><a href="WfcSimple_8cpp.html#a0c05430de08c4341b29a52bf20bd0ed1">tiles</a></div><div class="ttdeci">std::vector&lt; WfcTile &gt; tiles</div><div class="ttdef"><b>Definition</b> <a href="WfcSimple_8cpp_source.html#l00022">WfcSimple.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html">eve::level_editing::EditorHistory</a></div><div class="ttdoc">Undo/redo stack: opaque string actions + optional tile change groups that can apply directly to a Til...</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8h_source.html#l00015">EditorHistory.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a096d61d8490349c97c822648e50b784e"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a096d61d8490349c97c822648e50b784e">eve::level_editing::EditorHistory::redo</a></div><div class="ttdeci">bool redo()</div><div class="ttdoc">Compatibility-only boolean projection of redoAction().</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00090">EditorHistory.cpp:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a0d771444da33e9a426e8cc44a8994922"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a0d771444da33e9a426e8cc44a8994922">eve::level_editing::EditorHistory::getUndoCount</a></div><div class="ttdeci">int getUndoCount() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00059">EditorHistory.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a0f4049dcfeed3fe4150d66ef5a16340f"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a0f4049dcfeed3fe4150d66ef5a16340f">eve::level_editing::EditorHistory::getLastPayload</a></div><div class="ttdeci">std::string getLastPayload() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00112">EditorHistory.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a178fda0de4006eccfb623d938715feda"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a178fda0de4006eccfb623d938715feda">eve::level_editing::EditorHistory::getLastActionKind</a></div><div class="ttdeci">std::string getLastActionKind() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00111">EditorHistory.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a1839dba0a986d1534650f7c85e86eee0"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a1839dba0a986d1534650f7c85e86eee0">eve::level_editing::EditorHistory::getLastTileCount</a></div><div class="ttdeci">int getLastTileCount() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00114">EditorHistory.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a222ba8479ad7d9cde063784136856a50"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a222ba8479ad7d9cde063784136856a50">eve::level_editing::EditorHistory::getLastTileY</a></div><div class="ttdeci">int getLastTileY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00126">EditorHistory.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a24b8b3ed02c8af5943b03093734419da"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a24b8b3ed02c8af5943b03093734419da">eve::level_editing::EditorHistory::beginGroup</a></div><div class="ttdeci">void beginGroup(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00029">EditorHistory.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a2b572bcafe71dd5a21817a1c8282c8b1"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a2b572bcafe71dd5a21817a1c8282c8b1">eve::level_editing::EditorHistory::applyLastToBufferChecked</a></div><div class="ttdeci">editing::Result&lt; void &gt; applyLastToBufferChecked(TileBuffer &amp;buffer)</div><div class="ttdoc">Apply last undone/redone tile group to buffer (no-op for opaque actions).</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00092">EditorHistory.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a3807c326ed90e8886a86c801c3b7a73d"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a3807c326ed90e8886a86c801c3b7a73d">eve::level_editing::EditorHistory::push</a></div><div class="ttdeci">void push(const std::string &amp;name, const std::string &amp;payload)</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00019">EditorHistory.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a3d820a5145402f2c8f27c834f1a5ce5d"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a3d820a5145402f2c8f27c834f1a5ce5d">eve::level_editing::EditorHistory::undoAction</a></div><div class="ttdeci">editing::Result&lt; std::string &gt; undoAction()</div><div class="ttdoc">Move the latest action to redo history and return its stable name.</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00062">EditorHistory.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a3fb47f951b7e0b1913993ef80b4f81ca"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a3fb47f951b7e0b1913993ef80b4f81ca">eve::level_editing::EditorHistory::canRedo</a></div><div class="ttdeci">bool canRedo() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00058">EditorHistory.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a545354227f075e1d7b8a18ea58a22a87"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a545354227f075e1d7b8a18ea58a22a87">eve::level_editing::EditorHistory::undo</a></div><div class="ttdeci">bool undo()</div><div class="ttdoc">Compatibility-only boolean projection of undoAction().</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00088">EditorHistory.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a66197c726973597c5465cc6bc07f840c"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a66197c726973597c5465cc6bc07f840c">eve::level_editing::EditorHistory::applyLastToBuffer</a></div><div class="ttdeci">bool applyLastToBuffer(TileBuffer *buffer)</div><div class="ttdoc">Compatibility-only nullable pointer projection of applyLastToBufferChecked().</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00106">EditorHistory.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a67ca5e368a02eee912e5c0b9c076ffb8"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a67ca5e368a02eee912e5c0b9c076ffb8">eve::level_editing::EditorHistory::getLastTileNewGid</a></div><div class="ttdeci">int getLastTileNewGid(int index) const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00134">EditorHistory.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a6b14951b2c26e96c6d5acdf2c311e1c5"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a6b14951b2c26e96c6d5acdf2c311e1c5">eve::level_editing::EditorHistory::recordTile</a></div><div class="ttdeci">void recordTile(int x, int y, int oldGid, int newGid)</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00037">EditorHistory.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a70de52da17fee3872c9a6c2cc5c53ae3"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a70de52da17fee3872c9a6c2cc5c53ae3">eve::level_editing::EditorHistory::getLastTileOldGid</a></div><div class="ttdeci">int getLastTileOldGid(int index) const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00130">EditorHistory.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_a93d329398429b664dd838f0722ccb93e"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#a93d329398429b664dd838f0722ccb93e">eve::level_editing::EditorHistory::getRedoCount</a></div><div class="ttdeci">int getRedoCount() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00060">EditorHistory.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_ad49b865538064ed3efd5bcee6cdd2c44"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#ad49b865538064ed3efd5bcee6cdd2c44">eve::level_editing::EditorHistory::canUndo</a></div><div class="ttdeci">bool canUndo() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00057">EditorHistory.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_ad9d134471ee581c8ba2b75528bfa7099"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#ad9d134471ee581c8ba2b75528bfa7099">eve::level_editing::EditorHistory::redoAction</a></div><div class="ttdeci">editing::Result&lt; std::string &gt; redoAction()</div><div class="ttdoc">Move the latest redo action back to undo history and return its stable name.</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00075">EditorHistory.cpp:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_aec089632fafb4763ae5e076b494d1cfd"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#aec089632fafb4763ae5e076b494d1cfd">eve::level_editing::EditorHistory::getLastTileX</a></div><div class="ttdeci">int getLastTileX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00122">EditorHistory.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_aeea0e87c547303be3372e90597fa6fbf"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#aeea0e87c547303be3372e90597fa6fbf">eve::level_editing::EditorHistory::isGrouping</a></div><div class="ttdeci">bool isGrouping() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8h_source.html#l00024">EditorHistory.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_aeeb939e4e640545eb8784fc9518b77c7"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#aeeb939e4e640545eb8784fc9518b77c7">eve::level_editing::EditorHistory::getLastActionName</a></div><div class="ttdeci">std::string getLastActionName() const</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00110">EditorHistory.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_af8679e4b09673d4ab8afbc9406a10632"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#af8679e4b09673d4ab8afbc9406a10632">eve::level_editing::EditorHistory::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00007">EditorHistory.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1EditorHistory_html_afce10b985e851af3208a65d7386fcbb3"><div class="ttname"><a href="classeve_1_1level__editing_1_1EditorHistory.html#afce10b985e851af3208a65d7386fcbb3">eve::level_editing::EditorHistory::endGroup</a></div><div class="ttdeci">void endGroup()</div><div class="ttdef"><b>Definition</b> <a href="EditorHistory_8cpp_source.html#l00047">EditorHistory.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1level__editing_1_1TileBuffer_html"><div class="ttname"><a href="classeve_1_1level__editing_1_1TileBuffer.html">eve::level_editing::TileBuffer</a></div><div class="ttdoc">Independent GID grid for map brushes (no hard dependency on map.TileLayer).</div><div class="ttdef"><b>Definition</b> <a href="TileBuffer_8h_source.html#l00009">TileBuffer.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1level__editing_html"><div class="ttname"><a href="namespaceeve_1_1level__editing.html">eve::level_editing</a></div><div class="ttdef"><b>Definition</b> <a href="Brush_8cpp_source.html#l00010">Brush.cpp:10</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

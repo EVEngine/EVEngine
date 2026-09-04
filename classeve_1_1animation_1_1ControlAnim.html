@@ -1,0 +1,920 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::ControlAnim类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1ControlAnim-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::ControlAnim类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Control-theory procedural animation for named scalar properties.  
+ <a href="classeve_1_1animation_1_1ControlAnim.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ControlAnim_8h_source.html">ControlAnim.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a274309471fe57c6e6e574ed939959785" id="r_a274309471fe57c6e6e574ed939959785"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a274309471fe57c6e6e574ed939959785">ControlAnim</a> (float frequencyHz=3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float dampingZeta=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float response=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a274309471fe57c6e6e574ed939959785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22df937553fd2928d9a98562cab68164" id="r_a22df937553fd2928d9a98562cab68164"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a22df937553fd2928d9a98562cab68164">~ControlAnim</a> ()=default</td></tr>
+<tr class="separator:a22df937553fd2928d9a98562cab68164"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a536e21005032bd135641b44fcd3baae3" id="r_a536e21005032bd135641b44fcd3baae3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a536e21005032bd135641b44fcd3baae3">ControlAnim</a> (const <a class="el" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp;)=delete</td></tr>
+<tr class="separator:a536e21005032bd135641b44fcd3baae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff145533abde69ab160e82457c79a1c4" id="r_aff145533abde69ab160e82457c79a1c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#aff145533abde69ab160e82457c79a1c4">operator=</a> (const <a class="el" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp;)=delete</td></tr>
+<tr class="separator:aff145533abde69ab160e82457c79a1c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79df8f8bf6bf0c6ca0faf9c60b403c91" id="r_a79df8f8bf6bf0c6ca0faf9c60b403c91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a79df8f8bf6bf0c6ca0faf9c60b403c91">setFrequency</a> (float frequencyHz)</td></tr>
+<tr class="separator:a79df8f8bf6bf0c6ca0faf9c60b403c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1f788f0d58634e15804d9797895791b" id="r_aa1f788f0d58634e15804d9797895791b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#aa1f788f0d58634e15804d9797895791b">getFrequency</a> () const</td></tr>
+<tr class="separator:aa1f788f0d58634e15804d9797895791b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a779edd0b0c04b042db24a658c77e8088" id="r_a779edd0b0c04b042db24a658c77e8088"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a779edd0b0c04b042db24a658c77e8088">setDamping</a> (float dampingZeta)</td></tr>
+<tr class="separator:a779edd0b0c04b042db24a658c77e8088"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaade19afdf141efc33c32649acde06dd" id="r_aaade19afdf141efc33c32649acde06dd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#aaade19afdf141efc33c32649acde06dd">getDamping</a> () const</td></tr>
+<tr class="separator:aaade19afdf141efc33c32649acde06dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac24deca216cb34441c1e0df53363d9e2" id="r_ac24deca216cb34441c1e0df53363d9e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#ac24deca216cb34441c1e0df53363d9e2">setResponse</a> (float response)</td></tr>
+<tr class="separator:ac24deca216cb34441c1e0df53363d9e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e8c399764e1b925e0b750b79e6a4330" id="r_a4e8c399764e1b925e0b750b79e6a4330"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a4e8c399764e1b925e0b750b79e6a4330">getResponse</a> () const</td></tr>
+<tr class="separator:a4e8c399764e1b925e0b750b79e6a4330"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb9df71ae190d704c091093580d952d4" id="r_aeb9df71ae190d704c091093580d952d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#aeb9df71ae190d704c091093580d952d4">setIntegrator</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="memdesc:aeb9df71ae190d704c091093580d952d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integrator: "secondOrder" | "spring" | "pd". Invalid → exception.  <br /></td></tr>
+<tr class="separator:aeb9df71ae190d704c091093580d952d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accfbe63914372c01e6149f9b5a2415dd" id="r_accfbe63914372c01e6149f9b5a2415dd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#accfbe63914372c01e6149f9b5a2415dd">getIntegrator</a> () const</td></tr>
+<tr class="separator:accfbe63914372c01e6149f9b5a2415dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a6fa44bbd0a2edfcc076147a2edd027" id="r_a3a6fa44bbd0a2edfcc076147a2edd027"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a3a6fa44bbd0a2edfcc076147a2edd027">set</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a3a6fa44bbd0a2edfcc076147a2edd027"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create/update a channel: current value snaps to <code>value</code>, velocity cleared.  <br /></td></tr>
+<tr class="separator:a3a6fa44bbd0a2edfcc076147a2edd027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55c75aba29a2f241565f5ece7a33cca1" id="r_a55c75aba29a2f241565f5ece7a33cca1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a55c75aba29a2f241565f5ece7a33cca1">setTarget</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a55c75aba29a2f241565f5ece7a33cca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move the tracking target (does not snap state). Creates channel if missing.  <br /></td></tr>
+<tr class="separator:a55c75aba29a2f241565f5ece7a33cca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7d6ab864f171d728f4faab6ac4e6ba8" id="r_af7d6ab864f171d728f4faab6ac4e6ba8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#af7d6ab864f171d728f4faab6ac4e6ba8">setTargetVelocity</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float velocity)</td></tr>
+<tr class="memdesc:af7d6ab864f171d728f4faab6ac4e6ba8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional explicit target velocity (used by secondOrder / pd).  <br /></td></tr>
+<tr class="separator:af7d6ab864f171d728f4faab6ac4e6ba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb188e4d820ab08d7fa08fb3d116aceb" id="r_afb188e4d820ab08d7fa08fb3d116aceb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#afb188e4d820ab08d7fa08fb3d116aceb">impulse</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float deltaVelocity)</td></tr>
+<tr class="memdesc:afb188e4d820ab08d7fa08fb3d116aceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inject an instantaneous velocity impulse (procedural “hit”).  <br /></td></tr>
+<tr class="separator:afb188e4d820ab08d7fa08fb3d116aceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2c41faa88d7ee3b95bb2712f5d96801" id="r_ab2c41faa88d7ee3b95bb2712f5d96801"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#ab2c41faa88d7ee3b95bb2712f5d96801">has</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:ab2c41faa88d7ee3b95bb2712f5d96801"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72017b9882b9feee0e531c11f04ed872" id="r_a72017b9882b9feee0e531c11f04ed872"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a72017b9882b9feee0e531c11f04ed872">get</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a72017b9882b9feee0e531c11f04ed872"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a012be271721e5b515accec7d041a0fe2" id="r_a012be271721e5b515accec7d041a0fe2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a012be271721e5b515accec7d041a0fe2">getVelocity</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a012be271721e5b515accec7d041a0fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba0399e31a76cb435bf5daa601ea52af" id="r_aba0399e31a76cb435bf5daa601ea52af"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#aba0399e31a76cb435bf5daa601ea52af">getTarget</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:aba0399e31a76cb435bf5daa601ea52af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a857e9b2cc991bb4d0dc0d6210cf135b9" id="r_a857e9b2cc991bb4d0dc0d6210cf135b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a857e9b2cc991bb4d0dc0d6210cf135b9">clear</a> ()</td></tr>
+<tr class="separator:a857e9b2cc991bb4d0dc0d6210cf135b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c83eb299697b92b82e0ed27b49ba9ec" id="r_a1c83eb299697b92b82e0ed27b49ba9ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a1c83eb299697b92b82e0ed27b49ba9ec">remove</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a1c83eb299697b92b82e0ed27b49ba9ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b9eecad7d19bfb4c24b1f1c8cfe068a" id="r_a8b9eecad7d19bfb4c24b1f1c8cfe068a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a8b9eecad7d19bfb4c24b1f1c8cfe068a">getPropertyCount</a> () const</td></tr>
+<tr class="separator:a8b9eecad7d19bfb4c24b1f1c8cfe068a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae982808c12d9703c02a63f039334fc02" id="r_ae982808c12d9703c02a63f039334fc02"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#ae982808c12d9703c02a63f039334fc02">getPropertyName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ae982808c12d9703c02a63f039334fc02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6728f519c1e42ea310aea8c240f3ee21" id="r_a6728f519c1e42ea310aea8c240f3ee21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a6728f519c1e42ea310aea8c240f3ee21">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a6728f519c1e42ea310aea8c240f3ee21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance all channels by one scheduler-owned deterministic step.  <br /></td></tr>
+<tr class="separator:a6728f519c1e42ea310aea8c240f3ee21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af051020a13228bda537579101558251d" id="r_af051020a13228bda537579101558251d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html#af051020a13228bda537579101558251d">update</a> (float dt)</td></tr>
+<tr class="memdesc:af051020a13228bda537579101558251d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a6728f519c1e42ea310aea8c240f3ee21" title="Advance all channels by one scheduler-owned deterministic step.">advance()</a>.  <br /></td></tr>
+<tr class="separator:af051020a13228bda537579101558251d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Control-theory procedural animation for named scalar properties. </p>
+<p>Tracks continuous targets with a second-order LTI system (default), a closed-form damped spring, or an explicit unit-mass PD law. Script type: <code><a class="el" href="classeve_1_1animation_1_1ControlAnim.html" title="Control-theory procedural animation for named scalar properties.">ControlAnim</a></code>.</p>
+<p>Integrator kinds (string, no overloads):</p><ul>
+<li>"secondOrder" — ÿ + k1 ẏ + k2 y = x + k3 ẋ (f, ζ, r)</li>
+<li>"spring" — closed-form damped spring about set-point (f, ζ; r ignored)</li>
+<li>"pd" — τ/m = Kp(x − y) + Kd(ẋ − ẏ) with Kp=ω², Kd=2ζω </li>
+</ul>
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8h_source.html">ControlAnim.h</a> 第 <a class="el" href="ControlAnim_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a274309471fe57c6e6e574ed939959785" name="a274309471fe57c6e6e574ed939959785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a274309471fe57c6e6e574ed939959785">&#9670;&#160;</a></span>ControlAnim() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::ControlAnim::ControlAnim </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequencyHz</em> = <code>3.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingZeta</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>response</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a22df937553fd2928d9a98562cab68164" name="a22df937553fd2928d9a98562cab68164"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22df937553fd2928d9a98562cab68164">&#9670;&#160;</a></span>~ControlAnim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::ControlAnim::~ControlAnim </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a536e21005032bd135641b44fcd3baae3" name="a536e21005032bd135641b44fcd3baae3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a536e21005032bd135641b44fcd3baae3">&#9670;&#160;</a></span>ControlAnim() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::ControlAnim::ControlAnim </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a6728f519c1e42ea310aea8c240f3ee21" name="a6728f519c1e42ea310aea8c240f3ee21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6728f519c1e42ea310aea8c240f3ee21">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::ControlAnim::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance all channels by one scheduler-owned deterministic step. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimationTime_8h_source.html#l00013">eve::animation::detail::secondsForStep()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ControlAnim_8cpp_source.html#l00171">update()</a>.</p>
+
+</div>
+</div>
+<a id="a857e9b2cc991bb4d0dc0d6210cf135b9" name="a857e9b2cc991bb4d0dc0d6210cf135b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a857e9b2cc991bb4d0dc0d6210cf135b9">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72017b9882b9feee0e531c11f04ed872" name="a72017b9882b9feee0e531c11f04ed872"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72017b9882b9feee0e531c11f04ed872">&#9670;&#160;</a></span>get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlAnim::get </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="aaade19afdf141efc33c32649acde06dd" name="aaade19afdf141efc33c32649acde06dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaade19afdf141efc33c32649acde06dd">&#9670;&#160;</a></span>getDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlAnim::getDamping </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8h_source.html">ControlAnim.h</a> 第 <a class="el" href="ControlAnim_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa1f788f0d58634e15804d9797895791b" name="aa1f788f0d58634e15804d9797895791b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1f788f0d58634e15804d9797895791b">&#9670;&#160;</a></span>getFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlAnim::getFrequency </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8h_source.html">ControlAnim.h</a> 第 <a class="el" href="ControlAnim_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="accfbe63914372c01e6149f9b5a2415dd" name="accfbe63914372c01e6149f9b5a2415dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accfbe63914372c01e6149f9b5a2415dd">&#9670;&#160;</a></span>getIntegrator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::ControlAnim::getIntegrator </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b9eecad7d19bfb4c24b1f1c8cfe068a" name="a8b9eecad7d19bfb4c24b1f1c8cfe068a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b9eecad7d19bfb4c24b1f1c8cfe068a">&#9670;&#160;</a></span>getPropertyCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::ControlAnim::getPropertyCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8h_source.html">ControlAnim.h</a> 第 <a class="el" href="ControlAnim_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae982808c12d9703c02a63f039334fc02" name="ae982808c12d9703c02a63f039334fc02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae982808c12d9703c02a63f039334fc02">&#9670;&#160;</a></span>getPropertyName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::ControlAnim::getPropertyName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a4e8c399764e1b925e0b750b79e6a4330" name="a4e8c399764e1b925e0b750b79e6a4330"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e8c399764e1b925e0b750b79e6a4330">&#9670;&#160;</a></span>getResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlAnim::getResponse </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8h_source.html">ControlAnim.h</a> 第 <a class="el" href="ControlAnim_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba0399e31a76cb435bf5daa601ea52af" name="aba0399e31a76cb435bf5daa601ea52af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba0399e31a76cb435bf5daa601ea52af">&#9670;&#160;</a></span>getTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlAnim::getTarget </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a012be271721e5b515accec7d041a0fe2" name="a012be271721e5b515accec7d041a0fe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a012be271721e5b515accec7d041a0fe2">&#9670;&#160;</a></span>getVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::ControlAnim::getVelocity </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="ab2c41faa88d7ee3b95bb2712f5d96801" name="ab2c41faa88d7ee3b95bb2712f5d96801"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2c41faa88d7ee3b95bb2712f5d96801">&#9670;&#160;</a></span>has()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::ControlAnim::has </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="afb188e4d820ab08d7fa08fb3d116aceb" name="afb188e4d820ab08d7fa08fb3d116aceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb188e4d820ab08d7fa08fb3d116aceb">&#9670;&#160;</a></span>impulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::impulse </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deltaVelocity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inject an instantaneous velocity impulse (procedural “hit”). </p>
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="aff145533abde69ab160e82457c79a1c4" name="aff145533abde69ab160e82457c79a1c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff145533abde69ab160e82457c79a1c4">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp; eve::animation::ControlAnim::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1ControlAnim.html">ControlAnim</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c83eb299697b92b82e0ed27b49ba9ec" name="a1c83eb299697b92b82e0ed27b49ba9ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c83eb299697b92b82e0ed27b49ba9ec">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::remove </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a3a6fa44bbd0a2edfcc076147a2edd027" name="a3a6fa44bbd0a2edfcc076147a2edd027"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a6fa44bbd0a2edfcc076147a2edd027">&#9670;&#160;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::set </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create/update a channel: current value snaps to <code>value</code>, velocity cleared. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a779edd0b0c04b042db24a658c77e8088" name="a779edd0b0c04b042db24a658c77e8088"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a779edd0b0c04b042db24a658c77e8088">&#9670;&#160;</a></span>setDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::setDamping </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dampingZeta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a79df8f8bf6bf0c6ca0faf9c60b403c91" name="a79df8f8bf6bf0c6ca0faf9c60b403c91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79df8f8bf6bf0c6ca0faf9c60b403c91">&#9670;&#160;</a></span>setFrequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::setFrequency </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequencyHz</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb9df71ae190d704c091093580d952d4" name="aeb9df71ae190d704c091093580d952d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb9df71ae190d704c091093580d952d4">&#9670;&#160;</a></span>setIntegrator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::setIntegrator </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Integrator: "secondOrder" | "spring" | "pd". Invalid → exception. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>.</p>
+
+</div>
+</div>
+<a id="ac24deca216cb34441c1e0df53363d9e2" name="ac24deca216cb34441c1e0df53363d9e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac24deca216cb34441c1e0df53363d9e2">&#9670;&#160;</a></span>setResponse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::setResponse </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>response</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55c75aba29a2f241565f5ece7a33cca1" name="a55c75aba29a2f241565f5ece7a33cca1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55c75aba29a2f241565f5ece7a33cca1">&#9670;&#160;</a></span>setTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::setTarget </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move the tracking target (does not snap state). Creates channel if missing. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="af7d6ab864f171d728f4faab6ac4e6ba8" name="af7d6ab864f171d728f4faab6ac4e6ba8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7d6ab864f171d728f4faab6ac4e6ba8">&#9670;&#160;</a></span>setTargetVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::setTargetVelocity </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>velocity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional explicit target velocity (used by secondOrder / pd). </p>
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="af051020a13228bda537579101558251d" name="af051020a13228bda537579101558251d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af051020a13228bda537579101558251d">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::ControlAnim::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1ControlAnim.html#a6728f519c1e42ea310aea8c240f3ee21" title="Advance all channels by one scheduler-owned deterministic step.">advance()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a> 第 <a class="el" href="ControlAnim_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ControlAnim_8cpp_source.html#l00162">advance()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="ControlAnim_8h_source.html">ControlAnim.h</a></li>
+<li>src/modules/animation/<a class="el" href="ControlAnim_8cpp_source.html">ControlAnim.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

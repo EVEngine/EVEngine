@@ -1,0 +1,924 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::decal_editing::DecalDocumentTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1decal__editing.html">decal_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html">DecalDocumentTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1decal__editing_1_1DecalDocumentTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::decal_editing::DecalDocumentTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Stable, serializable authoring document for one projected decal.  
+ <a href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DecalTarget_8h_source.html">DecalTarget.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::decal_editing::DecalDocumentTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1decal__editing_1_1DecalDocumentTarget.png" usemap="#eve::decal_5Fediting::DecalDocumentTarget_map" alt=""/>
+  <map id="eve::decal_5Fediting::DecalDocumentTarget_map" name="eve::decal_5Fediting::DecalDocumentTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,261,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="271,56,532,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="542,56,803,80"/>
+<area href="classeve_1_1editing_1_1IPropertyProvider.html" title="UI-independent property access for an immutable selection snapshot." alt="eve::editing::IPropertyProvider" shape="rect" coords="813,56,1074,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="271,0,532,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1b266fa2543767a5f5c2ac328bda4750" id="r_a1b266fa2543767a5f5c2ac328bda4750"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a1b266fa2543767a5f5c2ac328bda4750">DecalDocumentTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:a1b266fa2543767a5f5c2ac328bda4750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06d6986a04cb8d5908c3436f0613a97b" id="r_a06d6986a04cb8d5908c3436f0613a97b"><td class="memItemLeft" align="right" valign="top">TargetId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a06d6986a04cb8d5908c3436f0613a97b">targetId</a> () const override</td></tr>
+<tr class="separator:a06d6986a04cb8d5908c3436f0613a97b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f08b7c811d38bfc8173fba73dedc35a" id="r_a6f08b7c811d38bfc8173fba73dedc35a"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a6f08b7c811d38bfc8173fba73dedc35a">revision</a> () const override</td></tr>
+<tr class="separator:a6f08b7c811d38bfc8173fba73dedc35a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3ee33a1e0611c4808ed34b3eb812f0d" id="r_ac3ee33a1e0611c4808ed34b3eb812f0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#ac3ee33a1e0611c4808ed34b3eb812f0d">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:ac3ee33a1e0611c4808ed34b3eb812f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90f5846b7d465d6b214fe22270ba5c1a" id="r_a90f5846b7d465d6b214fe22270ba5c1a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a90f5846b7d465d6b214fe22270ba5c1a">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:a90f5846b7d465d6b214fe22270ba5c1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bb57c22d7b87d0018a8a60541e92f8c" id="r_a3bb57c22d7b87d0018a8a60541e92f8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a3bb57c22d7b87d0018a8a60541e92f8c">describe</a> () const override</td></tr>
+<tr class="memdesc:a3bb57c22d7b87d0018a8a60541e92f8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:a3bb57c22d7b87d0018a8a60541e92f8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1c5c3454424cc4dc14b49fd9e5bf8c3" id="r_ae1c5c3454424cc4dc14b49fd9e5bf8c3"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#ae1c5c3454424cc4dc14b49fd9e5bf8c3">queryCapability</a> (const CapabilityId &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="memdesc:ae1c5c3454424cc4dc14b49fd9e5bf8c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional target capability.  <br /></td></tr>
+<tr class="separator:ae1c5c3454424cc4dc14b49fd9e5bf8c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52a76fedbe9aed3414462b3b8fb8a7e5" id="r_a52a76fedbe9aed3414462b3b8fb8a7e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a52a76fedbe9aed3414462b3b8fb8a7e5">applyDomainOperation</a> (const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;operation) override</td></tr>
+<tr class="memdesc:a52a76fedbe9aed3414462b3b8fb8a7e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a52a76fedbe9aed3414462b3b8fb8a7e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dc8e7b671a72cd8cf8002bc51ac2111" id="r_a2dc8e7b671a72cd8cf8002bc51ac2111"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a2dc8e7b671a72cd8cf8002bc51ac2111">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:a2dc8e7b671a72cd8cf8002bc51ac2111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:a2dc8e7b671a72cd8cf8002bc51ac2111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a056c54644cc8d7839c5bdf95822aff5a" id="r_a056c54644cc8d7839c5bdf95822aff5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a056c54644cc8d7839c5bdf95822aff5a">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:a056c54644cc8d7839c5bdf95822aff5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:a056c54644cc8d7839c5bdf95822aff5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19779a1356b42d8d86ebf6daed08c47f" id="r_a19779a1356b42d8d86ebf6daed08c47f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a19779a1356b42d8d86ebf6daed08c47f">currentRevision</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="separator:a19779a1356b42d8d86ebf6daed08c47f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b036de777967d63e62dd83f1b78412f" id="r_a3b036de777967d63e62dd83f1b78412f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a3b036de777967d63e62dd83f1b78412f">schema</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="separator:a3b036de777967d63e62dd83f1b78412f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50cf7560a83bcb19ac350fc723cfd7fe" id="r_a50cf7560a83bcb19ac350fc723cfd7fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a50cf7560a83bcb19ac350fc723cfd7fe">read</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="separator:a50cf7560a83bcb19ac350fc723cfd7fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81740a8246efaf178c691f3d88983d27" id="r_a81740a8246efaf178c691f3d88983d27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a81740a8246efaf178c691f3d88983d27">makeSet</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="namespaceeve_1_1decal__editing.html#a459b2f3f4d5739b212e380f9186589d2">EditorValue</a> &amp;<a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a0f8e7957ad8f28ea302f03e9d028d099">value</a>, PropertySetMode mode) const override</td></tr>
+<tr class="separator:a81740a8246efaf178c691f3d88983d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7449feae1b03dc8401edca9f40903d64" id="r_a7449feae1b03dc8401edca9f40903d64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a7449feae1b03dc8401edca9f40903d64">makeReset</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="separator:a7449feae1b03dc8401edca9f40903d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f8e7957ad8f28ea302f03e9d028d099" id="r_a0f8e7957ad8f28ea302f03e9d028d099"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceeve_1_1decal__editing.html#a459b2f3f4d5739b212e380f9186589d2">EditorValue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a0f8e7957ad8f28ea302f03e9d028d099">value</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const</td></tr>
+<tr class="memdesc:a0f8e7957ad8f28ea302f03e9d028d099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a renderer-neutral property by stable path.  <br /></td></tr>
+<tr class="separator:a0f8e7957ad8f28ea302f03e9d028d099"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af802287097037bc50c0135b49639c69e" id="r_af802287097037bc50c0135b49639c69e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1decal__editing.html#a4d744976279ecef5ca3409eca89ecbe3">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#af802287097037bc50c0135b49639c69e">validate</a> () const</td></tr>
+<tr class="memdesc:af802287097037bc50c0135b49639c69e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate projection geometry, fades, UVs and texture-channel rules.  <br /></td></tr>
+<tr class="separator:af802287097037bc50c0135b49639c69e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45118eb007c1468f8042ea4cc6130610" id="r_a45118eb007c1468f8042ea4cc6130610"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decal__editing.html#a459b2f3f4d5739b212e380f9186589d2">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a45118eb007c1468f8042ea4cc6130610">snapshotValue</a> () const</td></tr>
+<tr class="memdesc:a45118eb007c1468f8042ea4cc6130610"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture schema-version-one decal content.  <br /></td></tr>
+<tr class="separator:a45118eb007c1468f8042ea4cc6130610"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40815d4595b2531b8376d5657583bf01" id="r_a40815d4595b2531b8376d5657583bf01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a40815d4595b2531b8376d5657583bf01">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1decal__editing.html#a459b2f3f4d5739b212e380f9186589d2">EditorValue</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a40815d4595b2531b8376d5657583bf01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically load and validate persisted decal content.  <br /></td></tr>
+<tr class="separator:a40815d4595b2531b8376d5657583bf01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a3e202dd6b1ca3b75e726a90a82081653"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">queryCapability</a> (const <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>)</td></tr>
+<tr class="memdesc:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional stable capability.  <br /></td></tr>
+<tr class="separator:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a1a2687f093acd0ca7f4f93af7ff93090"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a1a2687f093acd0ca7f4f93af7ff93090">~IPropertyProvider</a> ()=default</td></tr>
+<tr class="separator:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37fd27faadd63ce4dd990ff525b10cc5 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a37fd27faadd63ce4dd990ff525b10cc5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a37fd27faadd63ce4dd990ff525b10cc5">makeSet</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> mode) const =0</td></tr>
+<tr class="separator:a37fd27faadd63ce4dd990ff525b10cc5 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_aa07e163a9dafdd187f5e74a2208192e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity for generic property editing.  <br /></td></tr>
+<tr class="separator:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Stable, serializable authoring document for one projected decal. </p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8h_source.html">DecalTarget.h</a> 第 <a class="el" href="DecalTarget_8h_source.html#l00029">29</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1b266fa2543767a5f5c2ac328bda4750" name="a1b266fa2543767a5f5c2ac328bda4750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b266fa2543767a5f5c2ac328bda4750">&#9670;&#160;</a></span>DecalDocumentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::decal_editing::DecalDocumentTarget::DecalDocumentTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a52a76fedbe9aed3414462b3b8fb8a7e5" name="a52a76fedbe9aed3414462b3b8fb8a7e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52a76fedbe9aed3414462b3b8fb8a7e5">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; void &gt; eve::decal_editing::DecalDocumentTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00077">properties</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalRuntime_8cpp_source.html#l00096">eve::decal_editing::DecalPublishingTarget::applyDomainOperation()</a> , 以及 <a class="el" href="DecalTarget_8cpp_source.html#l00041">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a90f5846b7d465d6b214fe22270ba5c1a" name="a90f5846b7d465d6b214fe22270ba5c1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90f5846b7d465d6b214fe22270ba5c1a">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::decal_editing::DecalDocumentTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8h_source.html">DecalTarget.h</a> 第 <a class="el" href="DecalTarget_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalTarget_8h_source.html#l00109">eve::decal_editing::DecalPublishingTarget::clearDirtyRegion()</a>.</p>
+
+</div>
+</div>
+<a id="a2dc8e7b671a72cd8cf8002bc51ac2111" name="a2dc8e7b671a72cd8cf8002bc51ac2111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dc8e7b671a72cd8cf8002bc51ac2111">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; eve::decal_editing::DecalDocumentTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a056c54644cc8d7839c5bdf95822aff5a" name="a056c54644cc8d7839c5bdf95822aff5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a056c54644cc8d7839c5bdf95822aff5a">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; void &gt; eve::decal_editing::DecalDocumentTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a19779a1356b42d8d86ebf6daed08c47f" name="a19779a1356b42d8d86ebf6daed08c47f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19779a1356b42d8d86ebf6daed08c47f">&#9670;&#160;</a></span>currentRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt; eve::decal_editing::DecalDocumentTarget::currentRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a5aa963e389bf3586ffa808670142c379">eve::editing::IPropertyProvider</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3bb57c22d7b87d0018a8a60541e92f8c" name="a3bb57c22d7b87d0018a8a60541e92f8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bb57c22d7b87d0018a8a60541e92f8c">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> eve::decal_editing::DecalDocumentTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac3ee33a1e0611c4808ed34b3eb812f0d" name="ac3ee33a1e0611c4808ed34b3eb812f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3ee33a1e0611c4808ed34b3eb812f0d">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> eve::decal_editing::DecalDocumentTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8h_source.html">DecalTarget.h</a> 第 <a class="el" href="DecalTarget_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalTarget_8h_source.html#l00108">eve::decal_editing::DecalPublishingTarget::dirtyRegion()</a>.</p>
+
+</div>
+</div>
+<a id="a40815d4595b2531b8376d5657583bf01" name="a40815d4595b2531b8376d5657583bf01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40815d4595b2531b8376d5657583bf01">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; void &gt; eve::decal_editing::DecalDocumentTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1decal__editing.html#a459b2f3f4d5739b212e380f9186589d2">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically load and validate persisted decal content. </p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalTarget_8cpp_source.html#l00036">applyDomainOperation()</a>, <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+</div>
+</div>
+<a id="a7449feae1b03dc8401edca9f40903d64" name="a7449feae1b03dc8401edca9f40903d64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7449feae1b03dc8401edca9f40903d64">&#9670;&#160;</a></span>makeReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::decal_editing::DecalDocumentTarget::makeReset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a6175bdd491af083643d6cac008e99851">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="DecalTarget_8cpp_source.html#l00034">makeSet()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalTarget_8cpp_source.html#l00034">makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a81740a8246efaf178c691f3d88983d27" name="a81740a8246efaf178c691f3d88983d27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81740a8246efaf178c691f3d88983d27">&#9670;&#160;</a></span>makeSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decal__editing.html#ac01e952397e5e26e00c96bcea060764a">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::decal_editing::DecalDocumentTarget::makeSet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1decal__editing.html#a459b2f3f4d5739b212e380f9186589d2">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PropertySetMode&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingProtocol_8h_source.html#l00042">eve::editing::DomainOperation::affectedProperties</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00040">eve::editing::DomainOperation::hasInverse</a>, <a class="el" href="EditingProtocol_8h_source.html#l00039">eve::editing::DomainOperation::inverse</a>, <a class="el" href="EditingProtocol_8h_source.html#l00036">eve::editing::DomainOperation::inverseType</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="DecalTarget_8cpp_source.html#l00035">makeReset()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00043">eve::editing::DomainOperation::mergeKey</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a>, <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalTarget_8cpp_source.html#l00035">makeReset()</a>.</p>
+
+</div>
+</div>
+<a id="ae1c5c3454424cc4dc14b49fd9e5bf8c3" name="ae1c5c3454424cc4dc14b49fd9e5bf8c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1c5c3454424cc4dc14b49fd9e5bf8c3">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::decal_editing::DecalDocumentTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const CapabilityId &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an optional target capability. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="a50cf7560a83bcb19ac350fc723cfd7fe" name="a50cf7560a83bcb19ac350fc723cfd7fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50cf7560a83bcb19ac350fc723cfd7fe">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a> eve::decal_editing::DecalDocumentTarget::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a416f8e8d2ee0880822430acea12f55d8">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+</div>
+</div>
+<a id="a6f08b7c811d38bfc8173fba73dedc35a" name="a6f08b7c811d38bfc8173fba73dedc35a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f08b7c811d38bfc8173fba73dedc35a">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::decal_editing::DecalDocumentTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8h_source.html">DecalTarget.h</a> 第 <a class="el" href="DecalTarget_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalGizmo_8cpp_source.html#l00007">eve::decal_editing::DecalGizmoPreviewService::build()</a> , 以及 <a class="el" href="DecalTarget_8h_source.html#l00107">eve::decal_editing::DecalPublishingTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a3b036de777967d63e62dd83f1b78412f" name="a3b036de777967d63e62dd83f1b78412f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b036de777967d63e62dd83f1b78412f">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> eve::decal_editing::DecalDocumentTarget::schema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aad2055c613e332305f14ecfd7c3ece44">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45118eb007c1468f8042ea4cc6130610" name="a45118eb007c1468f8042ea4cc6130610"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45118eb007c1468f8042ea4cc6130610">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1decal__editing.html#a459b2f3f4d5739b212e380f9186589d2">EditorValue</a> eve::decal_editing::DecalDocumentTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture schema-version-one decal content. </p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a06d6986a04cb8d5908c3436f0613a97b" name="a06d6986a04cb8d5908c3436f0613a97b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06d6986a04cb8d5908c3436f0613a97b">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TargetId eve::decal_editing::DecalDocumentTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8h_source.html">DecalTarget.h</a> 第 <a class="el" href="DecalTarget_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalGizmo_8cpp_source.html#l00007">eve::decal_editing::DecalGizmoPreviewService::build()</a> , 以及 <a class="el" href="DecalTarget_8h_source.html#l00106">eve::decal_editing::DecalPublishingTarget::targetId()</a>.</p>
+
+</div>
+</div>
+<a id="af802287097037bc50c0135b49639c69e" name="af802287097037bc50c0135b49639c69e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af802287097037bc50c0135b49639c69e">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1decal__editing.html#a4d744976279ecef5ca3409eca89ecbe3">EditorDiagnostic</a> &gt; eve::decal_editing::DecalDocumentTarget::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate projection geometry, fades, UVs and texture-channel rules. </p>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00036">blend</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00016">uv</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalGizmo_8cpp_source.html#l00007">eve::decal_editing::DecalGizmoPreviewService::build()</a> , 以及 <a class="el" href="DecalRuntime_8cpp_source.html#l00036">eve::decal_editing::DecalRuntimeBinding::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a0f8e7957ad8f28ea302f03e9d028d099" name="a0f8e7957ad8f28ea302f03e9d028d099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f8e7957ad8f28ea302f03e9d028d099">&#9670;&#160;</a></span>value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespaceeve_1_1decal__editing.html#a459b2f3f4d5739b212e380f9186589d2">EditorValue</a> * eve::decal_editing::DecalDocumentTarget::value </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a renderer-neutral property by stable path. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer into this target, or null. @lifetime Valid until the target is mutated or destroyed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a> 第 <a class="el" href="DecalTarget_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalGizmo_8cpp_source.html#l00007">eve::decal_editing::DecalGizmoPreviewService::build()</a> , 以及 <a class="el" href="DecalRuntime_8cpp_source.html#l00036">eve::decal_editing::DecalRuntimeBinding::publish()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/decal_editing/<a class="el" href="DecalTarget_8h_source.html">DecalTarget.h</a></li>
+<li>src/modules/decal_editing/<a class="el" href="DecalTarget_8cpp_source.html">DecalTarget.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/Capability.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">Capability.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="BootWarmup_8h_source.html">common/BootWarmup.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Capability_8h_source.html">common/Capability.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="Capability_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1cap" id="r_namespaceeve_1_1cap"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap.html">eve::cap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1cap_1_1detail" id="r_namespaceeve_1_1cap_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html">eve::cap::detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1boot" id="r_namespaceeve_1_1boot"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1boot.html">eve::boot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a23439861a4d8f27dd97d58105acbd156" id="r_a23439861a4d8f27dd97d58105acbd156"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html#a23439861a4d8f27dd97d58105acbd156">eve::cap::detail::provideRaw</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, void *<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)</td></tr>
+<tr class="separator:a23439861a4d8f27dd97d58105acbd156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e18fa6af5d451c5ad46575adc1e1b46" id="r_a7e18fa6af5d451c5ad46575adc1e1b46"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html#a7e18fa6af5d451c5ad46575adc1e1b46">eve::cap::detail::queryRaw</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a7e18fa6af5d451c5ad46575adc1e1b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acffc6d1dead043f20006ea472b3107ef" id="r_acffc6d1dead043f20006ea472b3107ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html#acffc6d1dead043f20006ea472b3107ef">eve::cap::detail::revokeRaw</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, void *<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)</td></tr>
+<tr class="separator:acffc6d1dead043f20006ea472b3107ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f9a90d208f3514d28c84334845e68e1" id="r_a0f9a90d208f3514d28c84334845e68e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html#a0f9a90d208f3514d28c84334845e68e1">eve::cap::detail::addListenerRaw</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, void *<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>)</td></tr>
+<tr class="separator:a0f9a90d208f3514d28c84334845e68e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9ce658d578453f7899394794c13555d" id="r_af9ce658d578453f7899394794c13555d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html#af9ce658d578453f7899394794c13555d">eve::cap::detail::removeListenerRaw</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, void *<a class="el" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>)</td></tr>
+<tr class="separator:af9ce658d578453f7899394794c13555d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae214ec817d51bca3a9f642497a300dac" id="r_ae214ec817d51bca3a9f642497a300dac"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html#ae214ec817d51bca3a9f642497a300dac">eve::cap::detail::listenerCountRaw</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:ae214ec817d51bca3a9f642497a300dac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae68eef23e19c9ef5f580fdf092fed33" id="r_aae68eef23e19c9ef5f580fdf092fed33"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html#aae68eef23e19c9ef5f580fdf092fed33">eve::cap::detail::listenerAtRaw</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:aae68eef23e19c9ef5f580fdf092fed33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecf1c3431b19dafc481c698b4219a8ab" id="r_aecf1c3431b19dafc481c698b4219a8ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1cap_1_1detail.html#aecf1c3431b19dafc481c698b4219a8ab">eve::cap::detail::clearAllRaw</a> ()</td></tr>
+<tr class="separator:aecf1c3431b19dafc481c698b4219a8ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe1d7ea68d42d5ad7fb26312bb59b9f2" id="r_abe1d7ea68d42d5ad7fb26312bb59b9f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1boot.html#abe1d7ea68d42d5ad7fb26312bb59b9f2">eve::boot::registerVulkanInstanceWarmup</a> (void(*<a class="el" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>)())</td></tr>
+<tr class="memdesc:abe1d7ea68d42d5ad7fb26312bb59b9f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the graphics-backend function that starts VkInstance creation.  <br /></td></tr>
+<tr class="separator:abe1d7ea68d42d5ad7fb26312bb59b9f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae804cbcb5ab917fb6b45aab84205a8d8" id="r_ae804cbcb5ab917fb6b45aab84205a8d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1boot.html#ae804cbcb5ab917fb6b45aab84205a8d8">eve::boot::startVulkanInstanceWarmup</a> ()</td></tr>
+<tr class="memdesc:ae804cbcb5ab917fb6b45aab84205a8d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Kick off asynchronous VkInstance creation if a backend registered.  <br /></td></tr>
+<tr class="separator:ae804cbcb5ab917fb6b45aab84205a8d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="ad55031c6556322124ec04be72e3244de" name="ad55031c6556322124ec04be72e3244de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad55031c6556322124ec04be72e3244de">&#9670;&#160;</a></span>impl</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* impl = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Capability_8cpp_source.html">Capability.cpp</a> 第 <a class="el" href="Capability_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Capability_8h_source.html#l00089">eve::cap::addListener()</a>, <a class="el" href="Capability_8cpp_source.html#l00056">eve::cap::detail::addListenerRaw()</a>, <a class="el" href="Capability_8h_source.html#l00117">eve::cap::forEach()</a>, <a class="el" href="Capability_8h_source.html#l00135">eve::cap::forEachUntil()</a>, <a class="el" href="Decoder_8h_source.html#l00051">eve::sound::Decoder::getImpl()</a>, <a class="el" href="Sound_8cpp_source.html#l00136">eve::sound::Sound::newDecoder()</a>, <a class="el" href="Capability_8h_source.html#l00071">eve::cap::provide()</a>, <a class="el" href="Capability_8cpp_source.html#l00035">eve::cap::detail::provideRaw()</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00026">eve::audio::registerAudioCapabilities()</a>, <a class="el" href="DecalCapabilities_8cpp_source.html#l00035">eve::decal::registerDecalCapabilities()</a>, <a class="el" href="EditorHostCapabilities_8cpp_source.html#l00078">eve::ui::registerEditorHostCapabilities()</a>, <a class="el" href="GraphicsCapabilities_8cpp_source.html#l00564">eve::graphics::registerGraphicsCapabilities()</a>, <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00037">eve::particles::registerParticlesCapabilities()</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00157">eve::physics::registerPhysicsCapabilities()</a>, <a class="el" href="ProcgenCapabilities_8cpp_source.html#l00142">eve::procgen::registerProcgenCapabilities()</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00631">eve::scene::registerSceneCapabilities()</a>, <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00306">eve::ui::registerUIAutomationCapabilities()</a>, <a class="el" href="Capability_8h_source.html#l00094">eve::cap::removeListener()</a>, <a class="el" href="Capability_8cpp_source.html#l00067">eve::cap::detail::removeListenerRaw()</a>, <a class="el" href="Capability_8h_source.html#l00083">eve::cap::revoke()</a>, <a class="el" href="Capability_8cpp_source.html#l00047">eve::cap::detail::revokeRaw()</a>, <a class="el" href="JobSystemThreadPool_8cpp_source.html#l00609">eve::thread::JobSystemThreadPool::schedule()</a> , 以及 <a class="el" href="GpuBackend_8cpp_source.html#l00168">eve::tensor::GpuProgram::tryBuild()</a>.</p>
+
+</div>
+</div>
+<a id="ad2aa2f85f5727288db0c2d11540ff084" name="ad2aa2f85f5727288db0c2d11540ff084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2aa2f85f5727288db0c2d11540ff084">&#9670;&#160;</a></span>listeners</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;Listener&gt; listeners</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Capability_8cpp_source.html">Capability.cpp</a> 第 <a class="el" href="Capability_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acec9ce2df15222151ad66fcb1d74eb9f" name="acec9ce2df15222151ad66fcb1d74eb9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acec9ce2df15222151ad66fcb1d74eb9f">&#9670;&#160;</a></span>priority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int priority = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Capability_8cpp_source.html">Capability.cpp</a> 第 <a class="el" href="Capability_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RPGActor_8cpp_source.html#l00079">eve::rpg::RPGActor::addAttributeModifier()</a>, <a class="el" href="Biome_8cpp_source.html#l00028">eve::procgen::BiomeRules::addLayer()</a>, <a class="el" href="Capability_8h_source.html#l00089">eve::cap::addListener()</a>, <a class="el" href="Capability_8cpp_source.html#l00056">eve::cap::detail::addListenerRaw()</a>, <a class="el" href="CardAttributes_8cpp_source.html#l00115">eve::card::CardAttributeAdapter::addModifier()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00266">eve::attributes::AttributeSet::addModifier()</a>, <a class="el" href="AttributeSystem_8cpp_source.html#l00054">eve::rpg::AttributeSystem::addModifier()</a>, <a class="el" href="RTSAttributes_8cpp_source.html#l00091">eve::rts::RTSUnitAttributeAdapter::addModifier()</a>, <a class="el" href="VehicleAttributes_8cpp_source.html#l00115">eve::vehicle::VehicleAttributeAdapter::addModifier()</a>, <a class="el" href="WeaponAttributes_8cpp_source.html#l00153">eve::weapon::WeaponAttributeAdapter::addModifier()</a>, <a class="el" href="CameraController_8cpp_source.html#l00137">eve::camera::CameraController::addRig()</a>, <a class="el" href="settlement_2Settlement_8cpp_source.html#l00461">eve::settlement::SettlementPipeline::addStage()</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00280">eve::orders::CommandQueue::append()</a>, <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00054">eve::vehicle::VehicleOrderQueueAdapter::append()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00358">eve::effects::EffectContainer::apply()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00406">eve::graphics::ReflectionProbeCapture::applyToCamera()</a>, <a class="el" href="AttributeSet_8cpp_source.html#l00076">eve::attributes::AttributeModifier::AttributeModifier()</a>, <a class="el" href="RTS_8cpp_source.html#l01624">eve::rts::RTS::build()</a>, <a class="el" href="RTSProductionAction_8cpp_source.html#l00275">eve::rts::RTSProductionActionAdapter::build()</a>, <a class="el" href="MeshEffectRenderer_8cpp_source.html#l00030">eve::stylize::buildMeshParticleRenderInputs()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00387">eve::graphics::ReflectionProbeCapture::configureInfluence()</a>, <a class="el" href="Authority_8cpp_source.html#l00180">eve::authority::Store::deny()</a>, <a class="el" href="RTSTypes_8cpp_source.html#l00552">eve::rts::ProductionComponent::enqueue()</a>, <a class="el" href="Production_8cpp_source.html#l00297">eve::production::WorkQueue::enqueue()</a>, <a class="el" href="BiomeRulesEditorScriptBindings_8cpp_source.html#l00057">eve::biome_editor::exposeBiomeRulesEditorScriptBindings()</a>, <a class="el" href="StyleInstance_8cpp_source.html#l00032">eve::stylize::StyleInstance::getPriority()</a>, <a class="el" href="Authority_8cpp_source.html#l00176">eve::authority::Store::grant()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00218">eve::policyregistry::PolicyRegistry::insert()</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00304">eve::orders::CommandQueue::interrupt()</a>, <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00073">eve::vehicle::VehicleOrderQueueAdapter::interrupt()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00345">eve::biome_editor::BiomeRulesEditor::layerPriority()</a>, <a class="el" href="RTS_8cpp_source.html#l02610">eve::rts::RTS::queueScriptResearch()</a>, <a class="el" href="RTS_8cpp_source.html#l02269">eve::rts::RTS::queueScriptUnit()</a>, <a class="el" href="ScriptModule_8cpp_source.html#l00321">eve::script::ScriptModuleResolver::registerProvider()</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00051">eve::rpg::SettlementPipeline::registerStage()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00238">eve::policyregistry::PolicyRegistry::replace()</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00292">eve::orders::CommandQueue::replace()</a>, <a class="el" href="VehicleOrderQueueAdapter_8cpp_source.html#l00063">eve::vehicle::VehicleOrderQueueAdapter::replace()</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00464">eve::orders::CommandQueue::restore()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00454">eve::policyregistry::PolicyRegistry::restoreJson()</a>, <a class="el" href="Crowd_8cpp_source.html#l00656">eve::crowd::Crowd::setAgentAvoidancePriority()</a>, <a class="el" href="UI_8cpp_source.html#l01168">eve::ui::UI::setHostWorldOverlap()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00202">eve::biome_editor::BiomeRulesEditor::setLayerPriority()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00428">eve::graphics::Renderable3D::setPartSortPriority()</a>, <a class="el" href="ParticleScalability_8cpp_source.html#l00005">eve::particles::ParticleEmitter::setPriority()</a>, <a class="el" href="StyleInstance_8h_source.html#l00034">eve::stylize::StyleInstance::setPriority()</a>, <a class="el" href="StylePass_8h_source.html#l00036">eve::stylize::StylePass::setPriority()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00243">eve::graphics::Camera3D::setReflectionProbe()</a>, <a class="el" href="RTS_8cpp_source.html#l02820">eve::rts::RTS::setReinforcementTypePriority()</a>, <a class="el" href="CameraController_8cpp_source.html#l00159">eve::camera::CameraController::setRigPriority()</a>, <a class="el" href="RPG_8cpp_source.html#l00535">eve::rpg::RPG::setSettlementStagePriority()</a>, <a class="el" href="Material_8h_source.html#l00151">eve::graphics::Material::setSortPriority()</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00088">eve::rpg::SettlementPipeline::setStagePriority()</a>, <a class="el" href="RTS_8cpp_source.html#l00954">eve::rts::RTS::setUnitMovementPriority()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01688">eve::rts::TrafficReservationSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l05238">eve::rts::ReinforcementProductionPolicySystem::step()</a> , 以及 <a class="el" href="ReflectionProbeRegistry_8cpp_source.html#l00141">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>.</p>
+
+</div>
+</div>
+<a id="a09603d44f9c2be966a3329d68337c39b" name="a09603d44f9c2be966a3329d68337c39b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09603d44f9c2be966a3329d68337c39b">&#9670;&#160;</a></span>service</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* service = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Capability_8cpp_source.html">Capability.cpp</a> 第 <a class="el" href="Capability_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorSession_8h_source.html#l00091">eve::editor::EditorSession::bindCommandService()</a>, <a class="el" href="PixelWorldControl_8cpp_source.html#l00038">eve::pixelworld::pixelWorldControlService()</a>, <a class="el" href="NpcAi_8cpp_source.html#l00124">eve::npc_ai::NpcAiWorld::registerTaskService()</a>, <a class="el" href="EditorSession_8h_source.html#l00095">eve::editor::EditorSession::setCommandService()</a> , 以及 <a class="el" href="NpcAi_8cpp_source.html#l00338">eve::npc_ai::NpcAiWorld::tick()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

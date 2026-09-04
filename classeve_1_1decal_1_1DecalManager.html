@@ -1,0 +1,871 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::decal::DecalManager类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1decal.html">decal</a></li><li class="navelem"><a class="el" href="classeve_1_1decal_1_1DecalManager.html">DecalManager</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1decal_1_1DecalManager-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::decal::DecalManager类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>CPU-side decal registry: spawn / remove / fade / quotas, and the per-frame drawer that feeds the graphics decal pass.  
+ <a href="classeve_1_1decal_1_1DecalManager.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DecalManager_8h_source.html">DecalManager.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af75077b00847585a0ac2d0645a7bfdae" id="r_af75077b00847585a0ac2d0645a7bfdae"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#af75077b00847585a0ac2d0645a7bfdae">project</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, float <a class="el" href="CaveWetness_8cpp.html#a9c79b33ae8c9c2a5388a32077d5eed37">ny</a>, float <a class="el" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *<a class="el" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>, const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, float size, float <a class="el" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>, bool randomYaw, int <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, float fadeIn, float <a class="el" href="PhysicsCapabilities_8cpp.html#acb8c56924b6437938d12471ec2ccfe3c">lifetime</a>, float fadeOut, float normalStrength, float roughnessStrength, float metalStrength, float emissiveStrength)</td></tr>
+<tr class="memdesc:af75077b00847585a0ac2d0645a7bfdae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn a decal at a world-space point facing along (nx,ny,nz).  <br /></td></tr>
+<tr class="separator:af75077b00847585a0ac2d0645a7bfdae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb26fc5a7cb47bb62c08b355903b2a28" id="r_adb26fc5a7cb47bb62c08b355903b2a28"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#adb26fc5a7cb47bb62c08b355903b2a28">remove</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:adb26fc5a7cb47bb62c08b355903b2a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25efcee8b03760422a36c26fd30e9c46" id="r_a25efcee8b03760422a36c26fd30e9c46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a25efcee8b03760422a36c26fd30e9c46">clearAll</a> ()</td></tr>
+<tr class="separator:a25efcee8b03760422a36c26fd30e9c46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7c2c3cce3b502014604c2769db3b3ed" id="r_ac7c2c3cce3b502014604c2769db3b3ed"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#ac7c2c3cce3b502014604c2769db3b3ed">count</a> () const</td></tr>
+<tr class="separator:ac7c2c3cce3b502014604c2769db3b3ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c250fffeb27dbb6110c6d3f1465cc05" id="r_a2c250fffeb27dbb6110c6d3f1465cc05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a2c250fffeb27dbb6110c6d3f1465cc05">setStrength</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float normalStrength, float roughnessStrength, float metalStrength, float emissiveStrength)</td></tr>
+<tr class="separator:a2c250fffeb27dbb6110c6d3f1465cc05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0854364812ae155ca4fd076422920290" id="r_a0854364812ae155ca4fd076422920290"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a0854364812ae155ca4fd076422920290">setUvRect</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, float <a class="el" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)</td></tr>
+<tr class="separator:a0854364812ae155ca4fd076422920290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a10e5f1b034e19afc121d321da22e32" id="r_a0a10e5f1b034e19afc121d321da22e32"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a0a10e5f1b034e19afc121d321da22e32">setTextures</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *<a class="el" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *<a class="el" href="PointGraph_8cpp.html#a551d430cf2ccceca90f2f17e1921dc6a">params</a>)</td></tr>
+<tr class="separator:a0a10e5f1b034e19afc121d321da22e32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf0ad0c60a1cc1a36c43bb53895eef49" id="r_acf0ad0c60a1cc1a36c43bb53895eef49"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#acf0ad0c60a1cc1a36c43bb53895eef49">setBlend</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;mode)</td></tr>
+<tr class="separator:acf0ad0c60a1cc1a36c43bb53895eef49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a307d721799ac56420287c2d310b8791a" id="r_a307d721799ac56420287c2d310b8791a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a307d721799ac56420287c2d310b8791a">replace</a> (int previousId, <a class="el" href="structeve_1_1decal_1_1DecalInstance.html">DecalInstance</a> candidate)</td></tr>
+<tr class="memdesc:a307d721799ac56420287c2d310b8791a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically install a fully configured instance and remove a previous generation.  <br /></td></tr>
+<tr class="separator:a307d721799ac56420287c2d310b8791a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9124244588f54771c45bb1c929b44031" id="r_a9124244588f54771c45bb1c929b44031"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a9124244588f54771c45bb1c929b44031">setLimit</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, int limit)</td></tr>
+<tr class="memdesc:a9124244588f54771c45bb1c929b44031"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-kind quota ("blood" -&gt; 64 etc.); oldest of the kind is evicted.  <br /></td></tr>
+<tr class="separator:a9124244588f54771c45bb1c929b44031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9edc630d896f13437f6cd186976a3223" id="r_a9edc630d896f13437f6cd186976a3223"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a9edc630d896f13437f6cd186976a3223">update</a> (float dt)</td></tr>
+<tr class="memdesc:a9edc630d896f13437f6cd186976a3223"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance instance ages; expire and evict finished decals.  <br /></td></tr>
+<tr class="separator:a9edc630d896f13437f6cd186976a3223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c44c1e89916866be4a38fd02a79edc1" id="r_a0c44c1e89916866be4a38fd02a79edc1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a0c44c1e89916866be4a38fd02a79edc1">drawAll</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;gfx, float eyeX, float eyeY, float eyeZ, const glm::mat4 &amp;<a class="el" href="RenderSystem3D_8cpp.html#ac41dbdc48ce0f5da3bc8c2dbbfc4f5f6">viewProj</a>, float aspect)</td></tr>
+<tr class="memdesc:a0c44c1e89916866be4a38fd02a79edc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws all live instances into the active graphics decal pass.  <br /></td></tr>
+<tr class="separator:a0c44c1e89916866be4a38fd02a79edc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca8f1b5f744f8895b64a0b3903e6c19f" id="r_aca8f1b5f744f8895b64a0b3903e6c19f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1decal_1_1DecalInstance.html">DecalInstance</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#aca8f1b5f744f8895b64a0b3903e6c19f">instances</a> ()</td></tr>
+<tr class="separator:aca8f1b5f744f8895b64a0b3903e6c19f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61d681cf6ceed23262b555ab75ded696" id="r_a61d681cf6ceed23262b555ab75ded696"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="structeve_1_1decal_1_1DecalInstance.html">DecalInstance</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a61d681cf6ceed23262b555ab75ded696">instances</a> () const</td></tr>
+<tr class="separator:a61d681cf6ceed23262b555ab75ded696"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a7ff780a127bcc82dec446071b9e92a4a" id="r_a7ff780a127bcc82dec446071b9e92a4a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1decal_1_1DecalManager.html">DecalManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1decal_1_1DecalManager.html#a7ff780a127bcc82dec446071b9e92a4a">inst</a> ()</td></tr>
+<tr class="separator:a7ff780a127bcc82dec446071b9e92a4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>CPU-side decal registry: spawn / remove / fade / quotas, and the per-frame drawer that feeds the graphics decal pass. </p>
+<p>Rendering path: <a class="el" href="classeve_1_1decal_1_1DecalManager.html" title="CPU-side decal registry: spawn / remove / fade / quotas, and the per-frame drawer that feeds the grap...">DecalManager</a> registers a RenderSystem3D::DecalExtraDrawer, which runs between the G-buffer and the forward pass. For each visible instance it builds the box transform (Z axis = surface normal, optional random yaw) and calls gfx.drawDecal. </p>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8h_source.html">DecalManager.h</a> 第 <a class="el" href="DecalManager_8h_source.html#l00049">49</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a25efcee8b03760422a36c26fd30e9c46" name="a25efcee8b03760422a36c26fd30e9c46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25efcee8b03760422a36c26fd30e9c46">&#9670;&#160;</a></span>clearAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::decal::DecalManager::clearAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00052">eve::decal::Decal::clearAll()</a>.</p>
+
+</div>
+</div>
+<a id="ac7c2c3cce3b502014604c2769db3b3ed" name="ac7c2c3cce3b502014604c2769db3b3ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7c2c3cce3b502014604c2769db3b3ed">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::decal::DecalManager::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00054">eve::decal::Decal::count()</a>.</p>
+
+</div>
+</div>
+<a id="a0c44c1e89916866be4a38fd02a79edc1" name="a0c44c1e89916866be4a38fd02a79edc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c44c1e89916866be4a38fd02a79edc1">&#9670;&#160;</a></span>drawAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::decal::DecalManager::drawAll </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eyeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>viewProj</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>aspect</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draws all live instances into the active graphics decal pass. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Active graphics service. </td></tr>
+    <tr><td class="paramname">eyeX</td><td>Camera world-space X coordinate. </td></tr>
+    <tr><td class="paramname">eyeY</td><td>Camera world-space Y coordinate. </td></tr>
+    <tr><td class="paramname">eyeZ</td><td>Camera world-space Z coordinate. </td></tr>
+    <tr><td class="paramname">viewProj</td><td>Camera view-projection matrix. </td></tr>
+    <tr><td class="paramname">aspect</td><td>Viewport aspect ratio. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a80625f681667df729e4b22386e90b091">eve::graphics::Graphics::drawDecal()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00681">eye</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00686">frustum</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00684">viewProj</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00015">eve::decal::Decal::Decal()</a>.</p>
+
+</div>
+</div>
+<a id="a7ff780a127bcc82dec446071b9e92a4a" name="a7ff780a127bcc82dec446071b9e92a4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ff780a127bcc82dec446071b9e92a4a">&#9670;&#160;</a></span>inst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1decal_1_1DecalManager.html">DecalManager</a> &amp; eve::decal::DecalManager::inst </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00052">eve::decal::Decal::clearAll()</a>, <a class="el" href="Decal_8cpp_source.html#l00054">eve::decal::Decal::count()</a>, <a class="el" href="Decal_8cpp_source.html#l00015">eve::decal::Decal::Decal()</a>, <a class="el" href="Decal_8cpp_source.html#l00024">eve::decal::Decal::project()</a>, <a class="el" href="Decal_8cpp_source.html#l00050">eve::decal::Decal::remove()</a>, <a class="el" href="Decal_8cpp_source.html#l00046">eve::decal::Decal::setBlend()</a>, <a class="el" href="Decal_8cpp_source.html#l00056">eve::decal::Decal::setLimit()</a>, <a class="el" href="Decal_8cpp_source.html#l00032">eve::decal::Decal::setStrength()</a>, <a class="el" href="Decal_8cpp_source.html#l00042">eve::decal::Decal::setTextures()</a>, <a class="el" href="Decal_8cpp_source.html#l00038">eve::decal::Decal::setUvRect()</a> , 以及 <a class="el" href="Decal_8cpp_source.html#l00060">eve::decal::Decal::update()</a>.</p>
+
+</div>
+</div>
+<a id="aca8f1b5f744f8895b64a0b3903e6c19f" name="aca8f1b5f744f8895b64a0b3903e6c19f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca8f1b5f744f8895b64a0b3903e6c19f">&#9670;&#160;</a></span>instances() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1decal_1_1DecalInstance.html">DecalInstance</a> &gt; &amp; eve::decal::DecalManager::instances </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8h_source.html">DecalManager.h</a> 第 <a class="el" href="DecalManager_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a61d681cf6ceed23262b555ab75ded696" name="a61d681cf6ceed23262b555ab75ded696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61d681cf6ceed23262b555ab75ded696">&#9670;&#160;</a></span>instances() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="structeve_1_1decal_1_1DecalInstance.html">DecalInstance</a> &gt; &amp; eve::decal::DecalManager::instances </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8h_source.html">DecalManager.h</a> 第 <a class="el" href="DecalManager_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af75077b00847585a0ac2d0645a7bfdae" name="af75077b00847585a0ac2d0645a7bfdae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af75077b00847585a0ac2d0645a7bfdae">&#9670;&#160;</a></span>project()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::decal::DecalManager::project </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ny</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>albedo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>randomYaw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fadeIn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lifetime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fadeOut</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>normalStrength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>roughnessStrength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>metalStrength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>emissiveStrength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn a decal at a world-space point facing along (nx,ny,nz). </p>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00093">albedo</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00031">depth</a>, <a class="el" href="DecalManager_8h_source.html#l00018">eve::decal::DecalInstance::id</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00116">lifetime</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00024">eve::decal::Decal::project()</a>.</p>
+
+</div>
+</div>
+<a id="adb26fc5a7cb47bb62c08b355903b2a28" name="adb26fc5a7cb47bb62c08b355903b2a28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb26fc5a7cb47bb62c08b355903b2a28">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::decal::DecalManager::remove </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalRuntime_8cpp_source.html#l00087">eve::decal_editing::DecalRuntimeBinding::clear()</a> , 以及 <a class="el" href="Decal_8cpp_source.html#l00050">eve::decal::Decal::remove()</a>.</p>
+
+</div>
+</div>
+<a id="a307d721799ac56420287c2d310b8791a" name="a307d721799ac56420287c2d310b8791a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a307d721799ac56420287c2d310b8791a">&#9670;&#160;</a></span>replace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::decal::DecalManager::replace </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>previousId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1decal_1_1DecalInstance.html">DecalInstance</a>&#160;</td>
+          <td class="paramname"><em>candidate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically install a fully configured instance and remove a previous generation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">previousId</td><td>Existing runtime id, or zero for first publication. </td></tr>
+    <tr><td class="paramname">candidate</td><td>Complete value; its input id/age are ignored. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>New runtime id, or zero when the candidate is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8h_source.html#l00024">eve::decal::DecalInstance::age</a>, <a class="el" href="DecalManager_8h_source.html#l00036">eve::decal::DecalInstance::blendMode</a>, <a class="el" href="DecalManager_8h_source.html#l00023">eve::decal::DecalInstance::depth</a>, <a class="el" href="DecalManager_8h_source.html#l00018">eve::decal::DecalInstance::id</a>, <a class="el" href="DecalManager_8h_source.html#l00037">eve::decal::DecalInstance::kind</a>, <a class="el" href="DecalManager_8h_source.html#l00020">eve::decal::DecalInstance::nx</a>, <a class="el" href="DecalManager_8h_source.html#l00020">eve::decal::DecalInstance::ny</a>, <a class="el" href="DecalManager_8h_source.html#l00020">eve::decal::DecalInstance::nz</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a> , 以及 <a class="el" href="DecalManager_8h_source.html#l00022">eve::decal::DecalInstance::size</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DecalRuntime_8cpp_source.html#l00036">eve::decal_editing::DecalRuntimeBinding::publish()</a>.</p>
+
+</div>
+</div>
+<a id="acf0ad0c60a1cc1a36c43bb53895eef49" name="acf0ad0c60a1cc1a36c43bb53895eef49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf0ad0c60a1cc1a36c43bb53895eef49">&#9670;&#160;</a></span>setBlend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::decal::DecalManager::setBlend </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00036">blend</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00046">eve::decal::Decal::setBlend()</a>.</p>
+
+</div>
+</div>
+<a id="a9124244588f54771c45bb1c929b44031" name="a9124244588f54771c45bb1c929b44031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9124244588f54771c45bb1c929b44031">&#9670;&#160;</a></span>setLimit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::decal::DecalManager::setLimit </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>limit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-kind quota ("blood" -&gt; 64 etc.); oldest of the kind is evicted. </p>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00056">eve::decal::Decal::setLimit()</a>.</p>
+
+</div>
+</div>
+<a id="a2c250fffeb27dbb6110c6d3f1465cc05" name="a2c250fffeb27dbb6110c6d3f1465cc05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c250fffeb27dbb6110c6d3f1465cc05">&#9670;&#160;</a></span>setStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::decal::DecalManager::setStrength </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>normalStrength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>roughnessStrength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>metalStrength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>emissiveStrength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00032">eve::decal::Decal::setStrength()</a>.</p>
+
+</div>
+</div>
+<a id="a0a10e5f1b034e19afc121d321da22e32" name="a0a10e5f1b034e19afc121d321da22e32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a10e5f1b034e19afc121d321da22e32">&#9670;&#160;</a></span>setTextures()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::decal::DecalManager::setTextures </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>normal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> *&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00094">normal</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00024">params</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00042">eve::decal::Decal::setTextures()</a>.</p>
+
+</div>
+</div>
+<a id="a0854364812ae155ca4fd076422920290" name="a0854364812ae155ca4fd076422920290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0854364812ae155ca4fd076422920290">&#9670;&#160;</a></span>setUvRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::decal::DecalManager::setUvRect </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>w</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>h</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ImageData_8cpp_source.html#l00685">h</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00038">eve::decal::Decal::setUvRect()</a>.</p>
+
+</div>
+</div>
+<a id="a9edc630d896f13437f6cd186976a3223" name="a9edc630d896f13437f6cd186976a3223"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9edc630d896f13437f6cd186976a3223">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::decal::DecalManager::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance instance ages; expire and evict finished decals. </p>
+
+<p class="definition">在文件 <a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a> 第 <a class="el" href="DecalManager_8cpp_source.html#l00237">237</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Decal_8cpp_source.html#l00060">eve::decal::Decal::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/decal/<a class="el" href="DecalManager_8h_source.html">DecalManager.h</a></li>
+<li>src/modules/decal/<a class="el" href="DecalManager_8cpp_source.html">DecalManager.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/PointCompute.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PointCompute.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PointCompute_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="PointSet_8h.html">procgen/PointSet.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PointCompute.html">   13</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1PointCompute.html">PointCompute</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html">   16</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html">Transform</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#afac8691dca3e7566363006d690182e06">   17</a></span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#afac8691dca3e7566363006d690182e06">x</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a118c5d75a5cb93e8786b1ab1ad0788c3">y</a> = 0.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a1c4d6c4e8e1ed78a9b8e2ab8ef16f90f">z</a> = 0.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a32066b2aaa8c628c7641b3a9df965a42">   18</a></span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a32066b2aaa8c628c7641b3a9df965a42">yaw</a>    = 0.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a3bb26a26fb891f3f4c41a230c4bd42af">   19</a></span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a3bb26a26fb891f3f4c41a230c4bd42af">scaleX</a> = 1.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a4f221d80353b40cd2ea562ca6b9c9cb7">scaleY</a> = 1.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a010d72dd810d46d8f54daacce4256f32">scaleZ</a> = 1.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    };</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a04cc30e15d2cdd2f815e1b3e5afb8073">PointCompute</a>();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PointCompute.html#a03ec953af17c26067e964fd6279099f6">   23</a></span>    <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a03ec953af17c26067e964fd6279099f6">~PointCompute</a>();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PointCompute.html#a1d917bb599830b6342dbafac5f257863">   24</a></span>    <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a1d917bb599830b6342dbafac5f257863">PointCompute</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PointCompute.html">PointCompute</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PointCompute.html#a281ad8dd94b247919f7eca4f4199c62e">   25</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PointCompute.html">PointCompute</a>&amp; <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a281ad8dd94b247919f7eca4f4199c62e">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PointCompute.html">PointCompute</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#ab89ab51559d7e5df8698ae3c822fdbb8">transform</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, <span class="keywordtype">float</span> translateX, <span class="keywordtype">float</span> translateY, <span class="keywordtype">float</span> translateZ,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                   <span class="keywordtype">float</span> yawDegrees, <span class="keywordtype">float</span> scaleX, <span class="keywordtype">float</span> scaleY, <span class="keywordtype">float</span> scaleZ);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a13b0cf4458eb7db48383e0b030cb57b1">transformChain</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, <span class="keyword">const</span> std::vector&lt;Transform&gt;&amp; transforms);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1PointCompute.html#a0412d449fca4ae5fda0802491af78418">   42</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a0412d449fca4ae5fda0802491af78418">getError</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> error_; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    uint64_t <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#afa4de40c41818daaded22d9b9d5d4fba">getUploadCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    uint64_t <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a94e6481248e03be31fe274eef5fc8203">getDispatchCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    uint64_t <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a0136a1a07c208fde021f58b7dab6bdb3">getReadbackCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    uint64_t <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a838d7a94f639a6692981027544af1cdb">getBufferReuseCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    uint64_t <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a97351e635373fb94f9fec3de98dd7f69">getPeakBufferBytes</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1procgen_1_1PointCompute.html#a3fc9ee741634f84e0a1494486823bc01">getLastFusedTransformCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">struct </span>Impl;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    std::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::string           error_;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a69da28b7f372dd6b6fffa28d0214e4de"><div class="ttname"><a href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00112">AssetCommand.cpp:112</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aPointSet_8h_html"><div class="ttname"><a href="PointSet_8h.html">PointSet.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html">eve::procgen::PointCompute</a></div><div class="ttdoc">Backend-neutral GPU kernels used by PointGraph with deterministic CPU fallback.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00013">PointCompute.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a0136a1a07c208fde021f58b7dab6bdb3"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a0136a1a07c208fde021f58b7dab6bdb3">eve::procgen::PointCompute::getReadbackCount</a></div><div class="ttdeci">uint64_t getReadbackCount() const</div><div class="ttdoc">Return successful GPU-to-host readback count for this executor.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00280">PointCompute.cpp:280</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a03ec953af17c26067e964fd6279099f6"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a03ec953af17c26067e964fd6279099f6">eve::procgen::PointCompute::~PointCompute</a></div><div class="ttdeci">~PointCompute()</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a0412d449fca4ae5fda0802491af78418"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a0412d449fca4ae5fda0802491af78418">eve::procgen::PointCompute::getError</a></div><div class="ttdeci">const std::string &amp; getError() const</div><div class="ttdoc">Return the last GPU unavailability, compilation, dispatch, or readback error.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00042">PointCompute.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a04cc30e15d2cdd2f815e1b3e5afb8073"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a04cc30e15d2cdd2f815e1b3e5afb8073">eve::procgen::PointCompute::PointCompute</a></div><div class="ttdeci">PointCompute()</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00143">PointCompute.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a13b0cf4458eb7db48383e0b030cb57b1"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a13b0cf4458eb7db48383e0b030cb57b1">eve::procgen::PointCompute::transformChain</a></div><div class="ttdeci">bool transformChain(const PointSet &amp;input, PointSet &amp;output, const std::vector&lt; Transform &gt; &amp;transforms)</div><div class="ttdoc">Execute one to four transforms in one upload, dispatch and readback.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00151">PointCompute.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a1d917bb599830b6342dbafac5f257863"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a1d917bb599830b6342dbafac5f257863">eve::procgen::PointCompute::PointCompute</a></div><div class="ttdeci">PointCompute(const PointCompute &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a281ad8dd94b247919f7eca4f4199c62e"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a281ad8dd94b247919f7eca4f4199c62e">eve::procgen::PointCompute::operator=</a></div><div class="ttdeci">PointCompute &amp; operator=(const PointCompute &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a3fc9ee741634f84e0a1494486823bc01"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a3fc9ee741634f84e0a1494486823bc01">eve::procgen::PointCompute::getLastFusedTransformCount</a></div><div class="ttdeci">int getLastFusedTransformCount() const</div><div class="ttdoc">Return logical transform count in the most recent successful dispatch.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00283">PointCompute.cpp:283</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a838d7a94f639a6692981027544af1cdb"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a838d7a94f639a6692981027544af1cdb">eve::procgen::PointCompute::getBufferReuseCount</a></div><div class="ttdeci">uint64_t getBufferReuseCount() const</div><div class="ttdoc">Return executions that reused existing GPU buffers.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00281">PointCompute.cpp:281</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a94e6481248e03be31fe274eef5fc8203"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a94e6481248e03be31fe274eef5fc8203">eve::procgen::PointCompute::getDispatchCount</a></div><div class="ttdeci">uint64_t getDispatchCount() const</div><div class="ttdoc">Return successful compute dispatch count for this executor.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00279">PointCompute.cpp:279</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_a97351e635373fb94f9fec3de98dd7f69"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#a97351e635373fb94f9fec3de98dd7f69">eve::procgen::PointCompute::getPeakBufferBytes</a></div><div class="ttdeci">uint64_t getPeakBufferBytes() const</div><div class="ttdoc">Return peak bytes reserved in each reusable GPU point buffer.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00282">PointCompute.cpp:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_ab89ab51559d7e5df8698ae3c822fdbb8"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#ab89ab51559d7e5df8698ae3c822fdbb8">eve::procgen::PointCompute::transform</a></div><div class="ttdeci">bool transform(const PointSet &amp;input, PointSet &amp;output, float translateX, float translateY, float translateZ, float yawDegrees, float scaleX, float scaleY, float scaleZ)</div><div class="ttdoc">Transform attributed points through the active Vulkan or WebGPU compute backend.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00146">PointCompute.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointCompute_html_afa4de40c41818daaded22d9b9d5d4fba"><div class="ttname"><a href="classeve_1_1procgen_1_1PointCompute.html#afa4de40c41818daaded22d9b9d5d4fba">eve::procgen::PointCompute::getUploadCount</a></div><div class="ttdeci">uint64_t getUploadCount() const</div><div class="ttdoc">Return successful host-to-GPU upload count for this executor.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8cpp_source.html#l00278">PointCompute.cpp:278</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></div><div class="ttdoc">Script-friendly collection of attributed 3D samples.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00056">PointSet.h:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PointCompute_1_1Transform_html"><div class="ttname"><a href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html">eve::procgen::PointCompute::Transform</a></div><div class="ttdoc">One transform operation in a fused point-compute dispatch.</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00016">PointCompute.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PointCompute_1_1Transform_html_a010d72dd810d46d8f54daacce4256f32"><div class="ttname"><a href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a010d72dd810d46d8f54daacce4256f32">eve::procgen::PointCompute::Transform::scaleZ</a></div><div class="ttdeci">float scaleZ</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00019">PointCompute.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PointCompute_1_1Transform_html_a118c5d75a5cb93e8786b1ab1ad0788c3"><div class="ttname"><a href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a118c5d75a5cb93e8786b1ab1ad0788c3">eve::procgen::PointCompute::Transform::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00017">PointCompute.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PointCompute_1_1Transform_html_a1c4d6c4e8e1ed78a9b8e2ab8ef16f90f"><div class="ttname"><a href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a1c4d6c4e8e1ed78a9b8e2ab8ef16f90f">eve::procgen::PointCompute::Transform::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00017">PointCompute.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PointCompute_1_1Transform_html_a32066b2aaa8c628c7641b3a9df965a42"><div class="ttname"><a href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a32066b2aaa8c628c7641b3a9df965a42">eve::procgen::PointCompute::Transform::yaw</a></div><div class="ttdeci">float yaw</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00018">PointCompute.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PointCompute_1_1Transform_html_a3bb26a26fb891f3f4c41a230c4bd42af"><div class="ttname"><a href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a3bb26a26fb891f3f4c41a230c4bd42af">eve::procgen::PointCompute::Transform::scaleX</a></div><div class="ttdeci">float scaleX</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00019">PointCompute.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PointCompute_1_1Transform_html_a4f221d80353b40cd2ea562ca6b9c9cb7"><div class="ttname"><a href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#a4f221d80353b40cd2ea562ca6b9c9cb7">eve::procgen::PointCompute::Transform::scaleY</a></div><div class="ttdeci">float scaleY</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00019">PointCompute.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PointCompute_1_1Transform_html_afac8691dca3e7566363006d690182e06"><div class="ttname"><a href="structeve_1_1procgen_1_1PointCompute_1_1Transform.html#afac8691dca3e7566363006d690182e06">eve::procgen::PointCompute::Transform::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="PointCompute_8h_source.html#l00017">PointCompute.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

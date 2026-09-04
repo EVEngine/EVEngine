@@ -1,0 +1,366 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/EvpackRegistry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EvpackRegistry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EvpackRegistry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="EvpackResourceReader_8h.html">asset/EvpackResourceReader.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset.html">eve::asset</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackHandle.html">   18</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackHandle.html#aa7346a0b5db15d4d1a778ca5591f0a99">   19</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackHandle.html#aa7346a0b5db15d4d1a778ca5591f0a99">packageId</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackHandle.html#a1711a7cf28e45a5ac0eb9eabc4cd78b8">   20</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a> <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackHandle.html#a1711a7cf28e45a5ac0eb9eabc4cd78b8">buildId</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackHandle.html#a504e1cfa6edf1469b55e641fcc3a9afd">   21</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackHandle.html#a504e1cfa6edf1469b55e641fcc3a9afd">generation</a> = 0;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackHandle.html#aaf982d98fc8ad382c7930a0b68668d50">   23</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1asset_1_1EvpackHandle.html#aaf982d98fc8ad382c7930a0b68668d50">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackChunkHandle.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvpackChunkHandle.html">EvpackChunkHandle</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackChunkHandle.html#ac6229d21f8429c653f036b17bfc6aa9d">   28</a></span>    <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a> <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackChunkHandle.html#ac6229d21f8429c653f036b17bfc6aa9d">package</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackChunkHandle.html#a97b14db0ee66903c920c73cf257412fe">   29</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackChunkHandle.html#a97b14db0ee66903c920c73cf257412fe">chunkIndex</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackAssetHandle.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvpackAssetHandle.html">EvpackAssetHandle</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackAssetHandle.html#affb14d97f83bff76c92395ebda45f6fe">   34</a></span>    <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a>       <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackAssetHandle.html#affb14d97f83bff76c92395ebda45f6fe">package</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackAssetHandle.html#aa723645b50031e9c8e951c84411f761c">   35</a></span>    <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>           <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackAssetHandle.html#aa723645b50031e9c8e951c84411f761c">asset</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackAssetHandle.html#a11f7b6038c12cb48eb5ea409a863d891">   36</a></span>    std::string        <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackAssetHandle.html#a11f7b6038c12cb48eb5ea409a863d891">expectedType</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackAssetHandle.html#afd9484c27b020035843f523631d6a702">   37</a></span>    <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackCapabilities.html">EvpackCapabilities</a> <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackAssetHandle.html#afd9484c27b020035843f523631d6a702">capabilities</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackMountReceipt.html">   41</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvpackMountReceipt.html">EvpackMountReceipt</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackMountReceipt.html#a9459c7516e19902c4787a13dee96a776">   42</a></span>    <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a> <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackMountReceipt.html#a9459c7516e19902c4787a13dee96a776">handle</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackMountReceipt.html#a21d8476b0d8d4fbe20cfc822382d8c6d">   43</a></span>    <span class="keywordtype">bool</span>         <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackMountReceipt.html#a21d8476b0d8d4fbe20cfc822382d8c6d">replacedExisting</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackMountReceipt.html#a0f8d7b8d1fa74e42d4b9239c19f223bd">   44</a></span>    std::vector&lt;Diagnostic&gt; <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackMountReceipt.html#a0f8d7b8d1fa74e42d4b9239c19f223bd">callbackDiagnostics</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845">   48</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845">EvpackRegistryEventKind</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845aab4e7334a8f96cc4068b7de43e57b9e4">Mounted</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845ab3f23170be598de0771ac94684114f94">Replaced</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845afe64567c054d4cc06578a041b1f88296">Unmounted</a> };</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackRegistryEvent.html">   51</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvpackRegistryEvent.html">EvpackRegistryEvent</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackRegistryEvent.html#aef21534e8bf5bc815bc447094993968c">   52</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845">EvpackRegistryEventKind</a> <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackRegistryEvent.html#aef21534e8bf5bc815bc447094993968c">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845aab4e7334a8f96cc4068b7de43e57b9e4">EvpackRegistryEventKind::Mounted</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackRegistryEvent.html#a7f6cdb5d8fd545a1674e1ff3f902a9ca">   53</a></span>    <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a>            <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackRegistryEvent.html#a7f6cdb5d8fd545a1674e1ff3f902a9ca">handle</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html">   57</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html">EvpackRegistrySubscription</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html#ab8437473bf54380d2cb36b171a013a91">   58</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html#ab8437473bf54380d2cb36b171a013a91">value</a> = 0;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html#a045e011c7131cc641b00f68b3231253f">   59</a></span>    <span class="keyword">friend</span> <span class="keywordtype">bool</span> <a class="code hl_friend" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html#a045e011c7131cc641b00f68b3231253f">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html">EvpackRegistrySubscription</a>&amp;,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                           <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html">EvpackRegistrySubscription</a>&amp;) <span class="keyword">noexcept</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>};</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="};">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackUnmountReceipt.html">   64</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1asset_1_1EvpackUnmountReceipt.html">EvpackUnmountReceipt</a> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackUnmountReceipt.html#aae70ae1f841be8fc279f0b864a36500f">   65</a></span>    <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a>            <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackUnmountReceipt.html#aae70ae1f841be8fc279f0b864a36500f">handle</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1asset_1_1EvpackUnmountReceipt.html#a0e084fffadb7b181c29f2bfd5d75be1e">   66</a></span>    std::vector&lt;Diagnostic&gt; <a class="code hl_variable" href="structeve_1_1asset_1_1EvpackUnmountReceipt.html#a0e084fffadb7b181c29f2bfd5d75be1e">callbackDiagnostics</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="};">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1PreparedEvpackMount.html">   73</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a> {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a6fe0b7ab14ef6ad7170165f96b2641bb">   75</a></span>    <a class="code hl_function" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a6fe0b7ab14ef6ad7170165f96b2641bb">PreparedEvpackMount</a>(<a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a>&amp;&amp;) noexcept = default;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a1edfb51e264fd120910825c06affac15">   76</a></span>    <a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a>&amp;&amp;) noexcept = default;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a537140e1a47810c21c7be274ac009e5a">   77</a></span>    <a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a>(const <a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a>&amp;) = delete;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1PreparedEvpackMount.html#abca0f9359a3ae6f6ed563afaaf4d3603">   78</a></span>    <a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a>&amp; operator=(const <a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a>&amp;) = delete;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a5f74815f1327008fb4c6dc691785aad3">   81</a></span>    [[nodiscard]] const <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a>&amp; <a class="code hl_function" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a5f74815f1327008fb4c6dc691785aad3">packageId</a>() const noexcept { <span class="keywordflow">return</span> pack_-&gt;packageId(); }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a8614a336f473cff9a583f7e9c0c0d4b8">   83</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a>&amp; <a class="code hl_function" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a8614a336f473cff9a583f7e9c0c0d4b8">buildId</a>() const noexcept { <span class="keywordflow">return</span> pack_-&gt;buildId(); }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">friend</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedEvpackMount&gt;</a> <a class="code hl_friend" href="classeve_1_1asset_1_1PreparedEvpackMount.html#a6d3ccd4060db2a8b7452781fff2b55d7">prepareEvpackMount</a>(</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        std::span&lt;const std::uint8_t&gt;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackLimits.html">EvpackLimits</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackTrust.html">EvpackTrust</a>&amp;);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1PreparedEvpackMount.html#aa3fc346d7586d42667de23fad80a86d5">   88</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1asset_1_1EvpackRegistry.html">EvpackRegistry</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a>(std::shared_ptr&lt;const Evpack&gt; pack) : pack_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(pack)) {}</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    std::shared_ptr&lt;const Evpack&gt; pack_;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PreparedEvpackMount&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset.html#a28b621a2df48e34a41db33b5c679bb02">prepareEvpackMount</a>(</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::span&lt;const std::uint8_t&gt; bytes, <span class="keyword">const</span> EvpackLimits&amp; limits = {},</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">const</span> EvpackTrust&amp; trust = {});</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="};">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1EvpackRegistry.html">  106</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1asset_1_1EvpackRegistry.html">EvpackRegistry</a> {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeve_1_1asset_1_1EvpackRegistry.html#acfecf4e283cd0510c72766b7fda717f2">  108</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1asset_1_1EvpackRegistry.html#acfecf4e283cd0510c72766b7fda717f2">Callback</a> = std::function&lt;Result&lt;void&gt;(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackRegistryEvent.html">EvpackRegistryEvent</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EvpackRegistrySubscription&gt;</a> <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#a674498e29942abe33e901c323c9203e3">subscribe</a>(<a class="code hl_typedef" href="classeve_1_1asset_1_1EvpackRegistry.html#acfecf4e283cd0510c72766b7fda717f2">Callback</a> callback);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#a39d4e3454dd8b1767b0fe630b9c0a2b4">unsubscribe</a>(<a class="code hl_struct" href="structeve_1_1asset_1_1EvpackRegistrySubscription.html">EvpackRegistrySubscription</a> subscription);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EvpackMountReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#afa8369796953e09f83855f085fbedf55">commit</a>(<a class="code hl_class" href="classeve_1_1asset_1_1PreparedEvpackMount.html">PreparedEvpackMount</a> candidate);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::shared_ptr&lt;const Evpack&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#a2a6da3fd57e2d0b3cd39e0b1ec636499">resolve</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a>&amp; <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EvpackAssetHandle&gt;</a> <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#a7cdd3f46c2c003a3bb40c621c951d646">resolveAsset</a>(</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1AssetRef.html">AssetRef</a>&amp; asset, std::string_view expectedType,</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackCapabilities.html">EvpackCapabilities</a>&amp; capabilities) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RuntimeAssetPayload&gt;</a> <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#a1a0ce8413f679d4729bf41a157bb0824">readAsset</a>(</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackAssetHandle.html">EvpackAssetHandle</a>&amp; <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::uint64_t maximumDecodedBytes) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EvpackChunkHandle&gt;</a> <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#a33266363fb06d05157071c2057d36f8c">resolveChunk</a>(</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a>&amp; <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">PersistentId</a>&amp; assetId, std::string_view <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>,</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <a class="code hl_enumeration" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5">EvpackChunkKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, std::uint32_t chunkId, std::uint32_t variantIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;std::uint8_t&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#a1c0bffcadcbc03d4344ed673680afa2c">copyChunkBytes</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackChunkHandle.html">EvpackChunkHandle</a>&amp; <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EvpackUnmountReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1asset_1_1EvpackRegistry.html#adb8f6d68fe52f5726d26f1d42619dd21">unmount</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset_1_1EvpackHandle.html">EvpackHandle</a>&amp; <a class="code hl_variable" href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">struct </span>Entry {</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        std::shared_ptr&lt;const Evpack&gt; pack;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        std::uint64_t generation = 0;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    };</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">mutable</span> std::mutex             mutex_;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    std::map&lt;PersistentId, Entry&gt; packages_;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    std::map&lt;PersistentId, std::uint64_t&gt; nextGenerations_;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    std::map&lt;std::uint64_t, Callback&gt; callbacks_;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    std::uint64_t nextSubscription_ = 0;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>};</div>
+</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>}  <span class="comment">// namespace eve::asset</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00021">ActionTimelineWidget.cpp:21</a></div></div>
+<div class="ttc" id="aEvpackResourceReader_8h_html"><div class="ttname"><a href="EvpackResourceReader_8h.html">EvpackResourceReader.h</a></div><div class="ttdoc">Typed capability-aware runtime access to admitted packs.</div></div>
+<div class="ttc" id="aGraphics_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="Graphics_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00079">Graphics.cpp:79</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1AssetRef_html"><div class="ttname"><a href="classeve_1_1AssetRef.html">eve::AssetRef</a></div><div class="ttdoc">Stable asset identity backed by PersistentId.</div><div class="ttdef"><b>Definition</b> <a href="ResourceRef_8h_source.html#l00051">ResourceRef.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html">eve::asset::EvpackRegistry</a></div><div class="ttdoc">Thread-safe owner of current runtime package generations.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00106">EvpackRegistry.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_a1a0ce8413f679d4729bf41a157bb0824"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#a1a0ce8413f679d4729bf41a157bb0824">eve::asset::EvpackRegistry::readAsset</a></div><div class="ttdeci">Result&lt; RuntimeAssetPayload &gt; readAsset(const EvpackAssetHandle &amp;handle, std::uint64_t maximumDecodedBytes) const</div><div class="ttdoc">Decode an asset through its generation-qualified provider handle.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00206">EvpackRegistry.cpp:206</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_a1c0bffcadcbc03d4344ed673680afa2c"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#a1c0bffcadcbc03d4344ed673680afa2c">eve::asset::EvpackRegistry::copyChunkBytes</a></div><div class="ttdeci">Result&lt; std::vector&lt; std::uint8_t &gt; &gt; copyChunkBytes(const EvpackChunkHandle &amp;handle) const</div><div class="ttdoc">Copy verified chunk bytes so the result remains valid across hot replacement.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00233">EvpackRegistry.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_a2a6da3fd57e2d0b3cd39e0b1ec636499"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#a2a6da3fd57e2d0b3cd39e0b1ec636499">eve::asset::EvpackRegistry::resolve</a></div><div class="ttdeci">Result&lt; std::shared_ptr&lt; const Evpack &gt; &gt; resolve(const EvpackHandle &amp;handle) const</div><div class="ttdoc">Resolve a current package handle to shared immutable ownership.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00153">EvpackRegistry.cpp:153</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_a33266363fb06d05157071c2057d36f8c"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#a33266363fb06d05157071c2057d36f8c">eve::asset::EvpackRegistry::resolveChunk</a></div><div class="ttdeci">Result&lt; EvpackChunkHandle &gt; resolveChunk(const EvpackHandle &amp;handle, const PersistentId &amp;assetId, std::string_view type, EvpackChunkKind kind, std::uint32_t chunkId, std::uint32_t variantIndex) const</div><div class="ttdoc">Resolve an exact asset/type/kind/variant tuple to a generation-scoped chunk handle.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00215">EvpackRegistry.cpp:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_a39d4e3454dd8b1767b0fe630b9c0a2b4"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#a39d4e3454dd8b1767b0fe630b9c0a2b4">eve::asset::EvpackRegistry::unsubscribe</a></div><div class="ttdeci">Result&lt; void &gt; unsubscribe(EvpackRegistrySubscription subscription)</div><div class="ttdoc">Cancel a live subscription; an unknown token returns NotFound.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00073">EvpackRegistry.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_a674498e29942abe33e901c323c9203e3"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#a674498e29942abe33e901c323c9203e3">eve::asset::EvpackRegistry::subscribe</a></div><div class="ttdeci">Result&lt; EvpackRegistrySubscription &gt; subscribe(Callback callback)</div><div class="ttdoc">Subscribe to committed lifecycle changes.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00060">EvpackRegistry.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_a7cdd3f46c2c003a3bb40c621c951d646"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#a7cdd3f46c2c003a3bb40c621c951d646">eve::asset::EvpackRegistry::resolveAsset</a></div><div class="ttdeci">Result&lt; EvpackAssetHandle &gt; resolveAsset(const AssetRef &amp;asset, std::string_view expectedType, const EvpackCapabilities &amp;capabilities) const</div><div class="ttdoc">Resolve one stable AssetRef across uniquely owning mounted packages.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00167">EvpackRegistry.cpp:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_acfecf4e283cd0510c72766b7fda717f2"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#acfecf4e283cd0510c72766b7fda717f2">eve::asset::EvpackRegistry::Callback</a></div><div class="ttdeci">std::function&lt; Result&lt; void &gt;(const EvpackRegistryEvent &amp;)&gt; Callback</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00108">EvpackRegistry.h:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_adb8f6d68fe52f5726d26f1d42619dd21"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#adb8f6d68fe52f5726d26f1d42619dd21">eve::asset::EvpackRegistry::unmount</a></div><div class="ttdeci">Result&lt; EvpackUnmountReceipt &gt; unmount(const EvpackHandle &amp;handle)</div><div class="ttdoc">Unmount exactly the referenced current generation and dispatch a lock-free event.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00243">EvpackRegistry.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1EvpackRegistry_html_afa8369796953e09f83855f085fbedf55"><div class="ttname"><a href="classeve_1_1asset_1_1EvpackRegistry.html#afa8369796953e09f83855f085fbedf55">eve::asset::EvpackRegistry::commit</a></div><div class="ttdeci">Result&lt; EvpackMountReceipt &gt; commit(PreparedEvpackMount candidate)</div><div class="ttdoc">Atomically publish an admitted package and invalidate its previous generation.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00084">EvpackRegistry.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1PreparedEvpackMount_html"><div class="ttname"><a href="classeve_1_1asset_1_1PreparedEvpackMount.html">eve::asset::PreparedEvpackMount</a></div><div class="ttdoc">Owning admitted mount candidate that has not changed observable registry state.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00073">EvpackRegistry.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1PreparedEvpackMount_html_a5f74815f1327008fb4c6dc691785aad3"><div class="ttname"><a href="classeve_1_1asset_1_1PreparedEvpackMount.html#a5f74815f1327008fb4c6dc691785aad3">eve::asset::PreparedEvpackMount::packageId</a></div><div class="ttdeci">const PersistentId &amp; packageId() const noexcept</div><div class="ttdoc">Identity of the fully admitted candidate package.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00081">EvpackRegistry.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1PreparedEvpackMount_html_a6d3ccd4060db2a8b7452781fff2b55d7"><div class="ttname"><a href="classeve_1_1asset_1_1PreparedEvpackMount.html#a6d3ccd4060db2a8b7452781fff2b55d7">eve::asset::PreparedEvpackMount::prepareEvpackMount</a></div><div class="ttdeci">friend Result&lt; PreparedEvpackMount &gt; prepareEvpackMount(std::span&lt; const std::uint8_t &gt;, const EvpackLimits &amp;, const EvpackTrust &amp;)</div><div class="ttdoc">Fully parse and verify package bytes without publishing them.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00051">EvpackRegistry.cpp:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1PreparedEvpackMount_html_a6fe0b7ab14ef6ad7170165f96b2641bb"><div class="ttname"><a href="classeve_1_1asset_1_1PreparedEvpackMount.html#a6fe0b7ab14ef6ad7170165f96b2641bb">eve::asset::PreparedEvpackMount::PreparedEvpackMount</a></div><div class="ttdeci">PreparedEvpackMount(PreparedEvpackMount &amp;&amp;) noexcept=default</div></div>
+<div class="ttc" id="aclasseve_1_1asset_1_1PreparedEvpackMount_html_a8614a336f473cff9a583f7e9c0c0d4b8"><div class="ttname"><a href="classeve_1_1asset_1_1PreparedEvpackMount.html#a8614a336f473cff9a583f7e9c0c0d4b8">eve::asset::PreparedEvpackMount::buildId</a></div><div class="ttdeci">const PersistentId &amp; buildId() const noexcept</div><div class="ttdoc">Build identity of the fully admitted candidate package.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00083">EvpackRegistry.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html"><div class="ttname"><a href="namespaceeve_1_1asset.html">eve::asset</a></div><div class="ttdef"><b>Definition</b> <a href="AssetCooker_8cpp_source.html#l00015">AssetCooker.cpp:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a28b621a2df48e34a41db33b5c679bb02"><div class="ttname"><a href="namespaceeve_1_1asset.html#a28b621a2df48e34a41db33b5c679bb02">eve::asset::prepareEvpackMount</a></div><div class="ttdeci">Result&lt; PreparedEvpackMount &gt; prepareEvpackMount(std::span&lt; const std::uint8_t &gt; bytes, const EvpackLimits &amp;limits, const EvpackTrust &amp;trust)</div><div class="ttdoc">Fully parse and verify package bytes without publishing them.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8cpp_source.html#l00051">EvpackRegistry.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a465daee04418e183de6a96a50613e845"><div class="ttname"><a href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845">eve::asset::EvpackRegistryEventKind</a></div><div class="ttdeci">EvpackRegistryEventKind</div><div class="ttdoc">Observable registry lifecycle operation dispatched after commit and outside locks.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00048">EvpackRegistry.h:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a465daee04418e183de6a96a50613e845aab4e7334a8f96cc4068b7de43e57b9e4"><div class="ttname"><a href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845aab4e7334a8f96cc4068b7de43e57b9e4">eve::asset::EvpackRegistryEventKind::Mounted</a></div><div class="ttdeci">@ Mounted</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a465daee04418e183de6a96a50613e845ab3f23170be598de0771ac94684114f94"><div class="ttname"><a href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845ab3f23170be598de0771ac94684114f94">eve::asset::EvpackRegistryEventKind::Replaced</a></div><div class="ttdeci">@ Replaced</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a465daee04418e183de6a96a50613e845afe64567c054d4cc06578a041b1f88296"><div class="ttname"><a href="namespaceeve_1_1asset.html#a465daee04418e183de6a96a50613e845afe64567c054d4cc06578a041b1f88296">eve::asset::EvpackRegistryEventKind::Unmounted</a></div><div class="ttdeci">@ Unmounted</div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5">eve::asset::EvpackChunkKind</a></div><div class="ttdeci">EvpackChunkKind</div><div class="ttdoc">Semantic role of a runtime chunk.</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00024">Evpack.h:24</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackAssetHandle_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackAssetHandle.html">eve::asset::EvpackAssetHandle</a></div><div class="ttdoc">Generation-scoped stable-reference resolution across mounted packages.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00033">EvpackRegistry.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackAssetHandle_html_a11f7b6038c12cb48eb5ea409a863d891"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackAssetHandle.html#a11f7b6038c12cb48eb5ea409a863d891">eve::asset::EvpackAssetHandle::expectedType</a></div><div class="ttdeci">std::string expectedType</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00036">EvpackRegistry.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackAssetHandle_html_aa723645b50031e9c8e951c84411f761c"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackAssetHandle.html#aa723645b50031e9c8e951c84411f761c">eve::asset::EvpackAssetHandle::asset</a></div><div class="ttdeci">AssetRef asset</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00035">EvpackRegistry.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackAssetHandle_html_afd9484c27b020035843f523631d6a702"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackAssetHandle.html#afd9484c27b020035843f523631d6a702">eve::asset::EvpackAssetHandle::capabilities</a></div><div class="ttdeci">EvpackCapabilities capabilities</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00037">EvpackRegistry.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackAssetHandle_html_affb14d97f83bff76c92395ebda45f6fe"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackAssetHandle.html#affb14d97f83bff76c92395ebda45f6fe">eve::asset::EvpackAssetHandle::package</a></div><div class="ttdeci">EvpackHandle package</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00034">EvpackRegistry.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackCapabilities_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackCapabilities.html">eve::asset::EvpackCapabilities</a></div><div class="ttdoc">Actual runtime device capabilities used for variant selection.</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00088">Evpack.h:88</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackChunkHandle_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackChunkHandle.html">eve::asset::EvpackChunkHandle</a></div><div class="ttdoc">Generation-scoped handle to one verified chunk in a mounted package.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00027">EvpackRegistry.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackChunkHandle_html_a97b14db0ee66903c920c73cf257412fe"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackChunkHandle.html#a97b14db0ee66903c920c73cf257412fe">eve::asset::EvpackChunkHandle::chunkIndex</a></div><div class="ttdeci">std::uint32_t chunkIndex</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00029">EvpackRegistry.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackChunkHandle_html_ac6229d21f8429c653f036b17bfc6aa9d"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackChunkHandle.html#ac6229d21f8429c653f036b17bfc6aa9d">eve::asset::EvpackChunkHandle::package</a></div><div class="ttdeci">EvpackHandle package</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00028">EvpackRegistry.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackHandle_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackHandle.html">eve::asset::EvpackHandle</a></div><div class="ttdoc">Generation-scoped handle to one mounted runtime package.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00018">EvpackRegistry.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackHandle_html_a1711a7cf28e45a5ac0eb9eabc4cd78b8"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackHandle.html#a1711a7cf28e45a5ac0eb9eabc4cd78b8">eve::asset::EvpackHandle::buildId</a></div><div class="ttdeci">PersistentId buildId</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00020">EvpackRegistry.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackHandle_html_a504e1cfa6edf1469b55e641fcc3a9afd"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackHandle.html#a504e1cfa6edf1469b55e641fcc3a9afd">eve::asset::EvpackHandle::generation</a></div><div class="ttdeci">std::uint64_t generation</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00021">EvpackRegistry.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackHandle_html_aa7346a0b5db15d4d1a778ca5591f0a99"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackHandle.html#aa7346a0b5db15d4d1a778ca5591f0a99">eve::asset::EvpackHandle::packageId</a></div><div class="ttdeci">PersistentId packageId</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00019">EvpackRegistry.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackHandle_html_aaf982d98fc8ad382c7930a0b68668d50"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackHandle.html#aaf982d98fc8ad382c7930a0b68668d50">eve::asset::EvpackHandle::operator==</a></div><div class="ttdeci">friend bool operator==(const EvpackHandle &amp;, const EvpackHandle &amp;) noexcept=default</div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackLimits_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackLimits.html">eve::asset::EvpackLimits</a></div><div class="ttdoc">Resource limits checked before package allocations and hash work.</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00122">Evpack.h:122</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackMountReceipt_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackMountReceipt.html">eve::asset::EvpackMountReceipt</a></div><div class="ttdoc">Receipt returned after an atomic registry publication.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00041">EvpackRegistry.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackMountReceipt_html_a0f8d7b8d1fa74e42d4b9239c19f223bd"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackMountReceipt.html#a0f8d7b8d1fa74e42d4b9239c19f223bd">eve::asset::EvpackMountReceipt::callbackDiagnostics</a></div><div class="ttdeci">std::vector&lt; Diagnostic &gt; callbackDiagnostics</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00044">EvpackRegistry.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackMountReceipt_html_a21d8476b0d8d4fbe20cfc822382d8c6d"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackMountReceipt.html#a21d8476b0d8d4fbe20cfc822382d8c6d">eve::asset::EvpackMountReceipt::replacedExisting</a></div><div class="ttdeci">bool replacedExisting</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00043">EvpackRegistry.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackMountReceipt_html_a9459c7516e19902c4787a13dee96a776"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackMountReceipt.html#a9459c7516e19902c4787a13dee96a776">eve::asset::EvpackMountReceipt::handle</a></div><div class="ttdeci">EvpackHandle handle</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00042">EvpackRegistry.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackRegistryEvent_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackRegistryEvent.html">eve::asset::EvpackRegistryEvent</a></div><div class="ttdoc">Immutable lifecycle event delivered to registry subscribers.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00051">EvpackRegistry.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackRegistryEvent_html_a7f6cdb5d8fd545a1674e1ff3f902a9ca"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackRegistryEvent.html#a7f6cdb5d8fd545a1674e1ff3f902a9ca">eve::asset::EvpackRegistryEvent::handle</a></div><div class="ttdeci">EvpackHandle handle</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00053">EvpackRegistry.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackRegistryEvent_html_aef21534e8bf5bc815bc447094993968c"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackRegistryEvent.html#aef21534e8bf5bc815bc447094993968c">eve::asset::EvpackRegistryEvent::kind</a></div><div class="ttdeci">EvpackRegistryEventKind kind</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00052">EvpackRegistry.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackRegistrySubscription_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackRegistrySubscription.html">eve::asset::EvpackRegistrySubscription</a></div><div class="ttdoc">Opaque identity used to cancel a registry subscription.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00057">EvpackRegistry.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackRegistrySubscription_html_a045e011c7131cc641b00f68b3231253f"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackRegistrySubscription.html#a045e011c7131cc641b00f68b3231253f">eve::asset::EvpackRegistrySubscription::operator==</a></div><div class="ttdeci">friend bool operator==(const EvpackRegistrySubscription &amp;, const EvpackRegistrySubscription &amp;) noexcept=default</div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackRegistrySubscription_html_ab8437473bf54380d2cb36b171a013a91"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackRegistrySubscription.html#ab8437473bf54380d2cb36b171a013a91">eve::asset::EvpackRegistrySubscription::value</a></div><div class="ttdeci">std::uint64_t value</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00058">EvpackRegistry.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackTrust_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackTrust.html">eve::asset::EvpackTrust</a></div><div class="ttdoc">Trust inputs kept separate from size/resource limits.</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8h_source.html#l00071">Evpack.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackUnmountReceipt_html"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackUnmountReceipt.html">eve::asset::EvpackUnmountReceipt</a></div><div class="ttdoc">Receipt proving one generation was atomically unmounted.</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00064">EvpackRegistry.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackUnmountReceipt_html_a0e084fffadb7b181c29f2bfd5d75be1e"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackUnmountReceipt.html#a0e084fffadb7b181c29f2bfd5d75be1e">eve::asset::EvpackUnmountReceipt::callbackDiagnostics</a></div><div class="ttdeci">std::vector&lt; Diagnostic &gt; callbackDiagnostics</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00066">EvpackRegistry.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1EvpackUnmountReceipt_html_aae70ae1f841be8fc279f0b864a36500f"><div class="ttname"><a href="structeve_1_1asset_1_1EvpackUnmountReceipt.html#aae70ae1f841be8fc279f0b864a36500f">eve::asset::EvpackUnmountReceipt::handle</a></div><div class="ttdeci">EvpackHandle handle</div><div class="ttdef"><b>Definition</b> <a href="EvpackRegistry_8h_source.html#l00065">EvpackRegistry.h:65</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

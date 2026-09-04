@@ -1,0 +1,1554 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::daynight::DayNight类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1daynight.html">daynight</a></li><li class="navelem"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">DayNight</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1daynight_1_1DayNight-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::daynight::DayNight类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1daynight_1_1DayNight.html" title="DayNight module — a time-of-day cycle that drives the sun, sky and light.">DayNight</a> module — a time-of-day cycle that drives the sun, sky and light.  
+ <a href="classeve_1_1daynight_1_1DayNight.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DayNight_8h_source.html">DayNight.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::daynight::DayNight 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1daynight_1_1DayNight.png" usemap="#eve::daynight::DayNight_map" alt=""/>
+  <map id="eve::daynight::DayNight_map" name="eve::daynight::DayNight_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,145,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1daynight_1_1DayNight_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a62e9df834ae5aad412aa8419a11350de" id="r_a62e9df834ae5aad412aa8419a11350de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a62e9df834ae5aad412aa8419a11350de">Module_REG</a> (<a class="el" href="classeve_1_1daynight_1_1DayNight.html">DayNight</a>)</td></tr>
+<tr class="separator:a62e9df834ae5aad412aa8419a11350de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e0506e4f728d91bb96e45e4d31a752" id="r_a38e0506e4f728d91bb96e45e4d31a752"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a38e0506e4f728d91bb96e45e4d31a752">DayNight</a> ()</td></tr>
+<tr class="separator:a38e0506e4f728d91bb96e45e4d31a752"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c1161f516b7a2f306a7d219b66b958c" id="r_a9c1161f516b7a2f306a7d219b66b958c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a9c1161f516b7a2f306a7d219b66b958c">~DayNight</a> () override</td></tr>
+<tr class="separator:a9c1161f516b7a2f306a7d219b66b958c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4df5641d851f4ab34a929cb77c21ebb2" id="r_a4df5641d851f4ab34a929cb77c21ebb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a4df5641d851f4ab34a929cb77c21ebb2">init</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a4df5641d851f4ab34a929cb77c21ebb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idempotent; builds lights / sky cubemap on first call.  <br /></td></tr>
+<tr class="separator:a4df5641d851f4ab34a929cb77c21ebb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbf0474ae1f64c97ad6e6fafe46b834a" id="r_afbf0474ae1f64c97ad6e6fafe46b834a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#afbf0474ae1f64c97ad6e6fafe46b834a">update</a> (float dt, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:afbf0474ae1f64c97ad6e6fafe46b834a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the clock and push sun/sky/light state; before gfx.render3D().  <br /></td></tr>
+<tr class="separator:afbf0474ae1f64c97ad6e6fafe46b834a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb2713cd8b6eb60f947e9809e66c0bfa" id="r_adb2713cd8b6eb60f947e9809e66c0bfa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#adb2713cd8b6eb60f947e9809e66c0bfa">setTimeOfDay</a> (float hours)</td></tr>
+<tr class="separator:adb2713cd8b6eb60f947e9809e66c0bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55f19c686e979c1b91eee65066defb45" id="r_a55f19c686e979c1b91eee65066defb45"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a55f19c686e979c1b91eee65066defb45">getTimeOfDay</a> () const</td></tr>
+<tr class="separator:a55f19c686e979c1b91eee65066defb45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aade679f226ae41358f1f2ba1a46e94e1" id="r_aade679f226ae41358f1f2ba1a46e94e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aade679f226ae41358f1f2ba1a46e94e1">setSpeed</a> (float hoursPerRealHour)</td></tr>
+<tr class="separator:aade679f226ae41358f1f2ba1a46e94e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ba18c6a7fde971466068a45317a420c" id="r_a0ba18c6a7fde971466068a45317a420c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a0ba18c6a7fde971466068a45317a420c">getSpeed</a> () const</td></tr>
+<tr class="separator:a0ba18c6a7fde971466068a45317a420c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4035cf82a32ffbd41583bb31e2ec8e91" id="r_a4035cf82a32ffbd41583bb31e2ec8e91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a4035cf82a32ffbd41583bb31e2ec8e91">setPaused</a> (bool paused)</td></tr>
+<tr class="separator:a4035cf82a32ffbd41583bb31e2ec8e91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14b2087301947bdf6fffd71e848a002a" id="r_a14b2087301947bdf6fffd71e848a002a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a14b2087301947bdf6fffd71e848a002a">isPaused</a> () const</td></tr>
+<tr class="separator:a14b2087301947bdf6fffd71e848a002a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38c1d6e753ea6fd4f806bce83c9d68af" id="r_a38c1d6e753ea6fd4f806bce83c9d68af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a38c1d6e753ea6fd4f806bce83c9d68af">isNight</a> () const</td></tr>
+<tr class="memdesc:a38c1d6e753ea6fd4f806bce83c9d68af"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the sun is below the horizon (night).  <br /></td></tr>
+<tr class="separator:a38c1d6e753ea6fd4f806bce83c9d68af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2098bfe0abffd9c7d9cf78867e98eca" id="r_ab2098bfe0abffd9c7d9cf78867e98eca"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#ab2098bfe0abffd9c7d9cf78867e98eca">getSunElevation</a> () const</td></tr>
+<tr class="memdesc:ab2098bfe0abffd9c7d9cf78867e98eca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solar elevation in degrees (max at local noon, ~70°).  <br /></td></tr>
+<tr class="separator:ab2098bfe0abffd9c7d9cf78867e98eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71e5c3aa059004764bee883412956ffc" id="r_a71e5c3aa059004764bee883412956ffc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a71e5c3aa059004764bee883412956ffc">getSunAzimuth</a> () const</td></tr>
+<tr class="memdesc:a71e5c3aa059004764bee883412956ffc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solar azimuth in degrees, measured clockwise from +Z.  <br /></td></tr>
+<tr class="separator:a71e5c3aa059004764bee883412956ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5ebddcc45549545b6dcc4054de0ffb1" id="r_ac5ebddcc45549545b6dcc4054de0ffb1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#ac5ebddcc45549545b6dcc4054de0ffb1">getSunDirX</a> () const</td></tr>
+<tr class="memdesc:ac5ebddcc45549545b6dcc4054de0ffb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">World-space direction pointing AT the sun (normalized).  <br /></td></tr>
+<tr class="separator:ac5ebddcc45549545b6dcc4054de0ffb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24afd498ce79079edf4761296e545e03" id="r_a24afd498ce79079edf4761296e545e03"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a24afd498ce79079edf4761296e545e03">getSunDirY</a> () const</td></tr>
+<tr class="separator:a24afd498ce79079edf4761296e545e03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f526434daeb02862f437394049898bc" id="r_a3f526434daeb02862f437394049898bc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a3f526434daeb02862f437394049898bc">getSunDirZ</a> () const</td></tr>
+<tr class="separator:a3f526434daeb02862f437394049898bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5534037c919536060035f37db031f669" id="r_a5534037c919536060035f37db031f669"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a5534037c919536060035f37db031f669">getSunIntensity</a> () const</td></tr>
+<tr class="memdesc:a5534037c919536060035f37db031f669"><td class="mdescLeft">&#160;</td><td class="mdescRight">0..1 sun energy; ramps to 0 below the horizon.  <br /></td></tr>
+<tr class="separator:a5534037c919536060035f37db031f669"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a145ddaee947bc61d29625d8603ca673d" id="r_a145ddaee947bc61d29625d8603ca673d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a145ddaee947bc61d29625d8603ca673d">getSunR</a> () const</td></tr>
+<tr class="memdesc:a145ddaee947bc61d29625d8603ca673d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atmosphere-attenuated direct sunlight red channel, including intensity.  <br /></td></tr>
+<tr class="separator:a145ddaee947bc61d29625d8603ca673d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18f338924f3eb6f46e07a4ac624125b0" id="r_a18f338924f3eb6f46e07a4ac624125b0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a18f338924f3eb6f46e07a4ac624125b0">getSunG</a> () const</td></tr>
+<tr class="memdesc:a18f338924f3eb6f46e07a4ac624125b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atmosphere-attenuated direct sunlight green channel, including intensity.  <br /></td></tr>
+<tr class="separator:a18f338924f3eb6f46e07a4ac624125b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8528147218f54e64029b2f1a2c9ff634" id="r_a8528147218f54e64029b2f1a2c9ff634"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a8528147218f54e64029b2f1a2c9ff634">getSunB</a> () const</td></tr>
+<tr class="memdesc:a8528147218f54e64029b2f1a2c9ff634"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atmosphere-attenuated direct sunlight blue channel, including intensity.  <br /></td></tr>
+<tr class="separator:a8528147218f54e64029b2f1a2c9ff634"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b4ffd99a0abe272b630f92fe271fc44" id="r_a8b4ffd99a0abe272b630f92fe271fc44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a8b4ffd99a0abe272b630f92fe271fc44">setTurbidity</a> (float turbidity)</td></tr>
+<tr class="memdesc:a8b4ffd99a0abe272b630f92fe271fc44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set aerosol turbidity. 1.5 is very clear; 10 is hazy.  <br /></td></tr>
+<tr class="separator:a8b4ffd99a0abe272b630f92fe271fc44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa82fe4d40ac9997cb4e6d7fe025717f4" id="r_aa82fe4d40ac9997cb4e6d7fe025717f4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aa82fe4d40ac9997cb4e6d7fe025717f4">getTurbidity</a> () const</td></tr>
+<tr class="separator:aa82fe4d40ac9997cb4e6d7fe025717f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa98e6dfe4901a069954e66625bb70a2f" id="r_aa98e6dfe4901a069954e66625bb70a2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aa98e6dfe4901a069954e66625bb70a2f">setSkyExposure</a> (float exposure)</td></tr>
+<tr class="memdesc:aa98e6dfe4901a069954e66625bb70a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exposure used when mapping physical sky radiance to the RGBA8 sky cubemap.  <br /></td></tr>
+<tr class="separator:aa98e6dfe4901a069954e66625bb70a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7866e0176340c8f667c22eb43047b6c6" id="r_a7866e0176340c8f667c22eb43047b6c6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a7866e0176340c8f667c22eb43047b6c6">getSkyExposure</a> () const</td></tr>
+<tr class="separator:a7866e0176340c8f667c22eb43047b6c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc84436637091f2e162b277ccd7dc851" id="r_abc84436637091f2e162b277ccd7dc851"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#abc84436637091f2e162b277ccd7dc851">setMieStrength</a> (float strength)</td></tr>
+<tr class="memdesc:abc84436637091f2e162b277ccd7dc851"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative Mie aerosol density; controls horizon haze and solar halo.  <br /></td></tr>
+<tr class="separator:abc84436637091f2e162b277ccd7dc851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84ca5ef929ebe653ae7a05d695bf4197" id="r_a84ca5ef929ebe653ae7a05d695bf4197"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a84ca5ef929ebe653ae7a05d695bf4197">getMieStrength</a> () const</td></tr>
+<tr class="separator:a84ca5ef929ebe653ae7a05d695bf4197"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24cc1cc0e976108d04fd4f5689a822b2" id="r_a24cc1cc0e976108d04fd4f5689a822b2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a24cc1cc0e976108d04fd4f5689a822b2">getSkyR</a> () const</td></tr>
+<tr class="separator:a24cc1cc0e976108d04fd4f5689a822b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bafc79a0f240b755d4a6d5ed9784398" id="r_a2bafc79a0f240b755d4a6d5ed9784398"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a2bafc79a0f240b755d4a6d5ed9784398">getSkyG</a> () const</td></tr>
+<tr class="separator:a2bafc79a0f240b755d4a6d5ed9784398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a389af79c20e2e07ae1143c8dac574035" id="r_a389af79c20e2e07ae1143c8dac574035"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a389af79c20e2e07ae1143c8dac574035">getSkyB</a> () const</td></tr>
+<tr class="separator:a389af79c20e2e07ae1143c8dac574035"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f135c90218aa94b8903dc575c4242b9" id="r_a5f135c90218aa94b8903dc575c4242b9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a5f135c90218aa94b8903dc575c4242b9">getAmbientR</a> () const</td></tr>
+<tr class="separator:a5f135c90218aa94b8903dc575c4242b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a997ceb1e681c8d4dcd19effaf4078f1a" id="r_a997ceb1e681c8d4dcd19effaf4078f1a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a997ceb1e681c8d4dcd19effaf4078f1a">getAmbientG</a> () const</td></tr>
+<tr class="separator:a997ceb1e681c8d4dcd19effaf4078f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6348601d243ce99083de1c55cea24083" id="r_a6348601d243ce99083de1c55cea24083"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a6348601d243ce99083de1c55cea24083">getAmbientB</a> () const</td></tr>
+<tr class="separator:a6348601d243ce99083de1c55cea24083"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4ff4ada1484faabc2b731fbbd5f54a7" id="r_ac4ff4ada1484faabc2b731fbbd5f54a7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#ac4ff4ada1484faabc2b731fbbd5f54a7">getAmbientBrightness</a> () const</td></tr>
+<tr class="separator:ac4ff4ada1484faabc2b731fbbd5f54a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a93a6e0ab69e6f44d9ab8d611c66073" id="r_a2a93a6e0ab69e6f44d9ab8d611c66073"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a2a93a6e0ab69e6f44d9ab8d611c66073">applyAtmosphere</a> (<a class="el" href="classeve_1_1graphics_1_1Volumetric.html">graphics::Volumetric</a> *fog) const</td></tr>
+<tr class="memdesc:a2a93a6e0ab69e6f44d9ab8d611c66073"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronize sun direction and atmosphere-derived fog lighting.  <br /></td></tr>
+<tr class="separator:a2a93a6e0ab69e6f44d9ab8d611c66073"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fc3c67e3782b61700a4efda3a839422" id="r_a1fc3c67e3782b61700a4efda3a839422"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a1fc3c67e3782b61700a4efda3a839422">applyReflectionProbeSky</a> (<a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">graphics::ReflectionProbeCapture</a> *probe) const</td></tr>
+<tr class="memdesc:a1fc3c67e3782b61700a4efda3a839422"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronize linear directional sky radiance and sky IBL to a reflection probe.  <br /></td></tr>
+<tr class="separator:a1fc3c67e3782b61700a4efda3a839422"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa037b4f3fbfcc03fb3ae624bb7bf3b1d" id="r_aa037b4f3fbfcc03fb3ae624bb7bf3b1d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aa037b4f3fbfcc03fb3ae624bb7bf3b1d">setWeatherInfluence</a> (float cloudiness, float lightningFlash)</td></tr>
+<tr class="memdesc:aa037b4f3fbfcc03fb3ae624bb7bf3b1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply cloud cover and lightning exposure to the unified sky/lighting model.  <br /></td></tr>
+<tr class="separator:aa037b4f3fbfcc03fb3ae624bb7bf3b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9bdc50f9f7e390795bb1dff6bcfc0e3" id="r_ad9bdc50f9f7e390795bb1dff6bcfc0e3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#ad9bdc50f9f7e390795bb1dff6bcfc0e3">getWeatherCloudiness</a> () const</td></tr>
+<tr class="separator:ad9bdc50f9f7e390795bb1dff6bcfc0e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f3a43b528b7d72edda16ce45351aa80" id="r_a0f3a43b528b7d72edda16ce45351aa80"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a0f3a43b528b7d72edda16ce45351aa80">getWeatherFlash</a> () const</td></tr>
+<tr class="separator:a0f3a43b528b7d72edda16ce45351aa80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a419997913ef7c5144b55bb5ea7dd0ce9" id="r_a419997913ef7c5144b55bb5ea7dd0ce9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a419997913ef7c5144b55bb5ea7dd0ce9">setSkyboxEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:a419997913ef7c5144b55bb5ea7dd0ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9ad2b8ed3b44a986217940a06bfdd1" id="r_a7e9ad2b8ed3b44a986217940a06bfdd1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a7e9ad2b8ed3b44a986217940a06bfdd1">isSkyboxEnabled</a> () const</td></tr>
+<tr class="separator:a7e9ad2b8ed3b44a986217940a06bfdd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaf293021775b777a2f802522accb896" id="r_abaf293021775b777a2f802522accb896"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#abaf293021775b777a2f802522accb896">setNightLight</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:abaf293021775b777a2f802522accb896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable a named light system: "moonlight"|"starlight"|"fire"|"fireflies".  <br /></td></tr>
+<tr class="separator:abaf293021775b777a2f802522accb896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f394a311fd934be44603517b2177018" id="r_a5f394a311fd934be44603517b2177018"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a5f394a311fd934be44603517b2177018">isNightLight</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a5f394a311fd934be44603517b2177018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fa53733888d33442d7930e8311ed412" id="r_a7fa53733888d33442d7930e8311ed412"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a7fa53733888d33442d7930e8311ed412">setFirePosition</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a7fa53733888d33442d7930e8311ed412"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position of the campfire point light (fire system).  <br /></td></tr>
+<tr class="separator:a7fa53733888d33442d7930e8311ed412"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a813b7777b6e44c3862b7ea5ad365d119" id="r_a813b7777b6e44c3862b7ea5ad365d119"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a813b7777b6e44c3862b7ea5ad365d119">addFirefly</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a813b7777b6e44c3862b7ea5ad365d119"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add one firefly anchor (world space); up to kMaxFireflies.  <br /></td></tr>
+<tr class="separator:a813b7777b6e44c3862b7ea5ad365d119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a429e7bdef790da7cf63d5311095a3642" id="r_a429e7bdef790da7cf63d5311095a3642"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a429e7bdef790da7cf63d5311095a3642">clearFireflies</a> ()</td></tr>
+<tr class="separator:a429e7bdef790da7cf63d5311095a3642"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a177bedd623f1c00c3cf0b8d7e6d72dca" id="r_a177bedd623f1c00c3cf0b8d7e6d72dca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a177bedd623f1c00c3cf0b8d7e6d72dca">getFireflyCount</a> () const</td></tr>
+<tr class="separator:a177bedd623f1c00c3cf0b8d7e6d72dca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:aa2f9218a6284f6090311b10bb54f8963" id="r_aa2f9218a6284f6090311b10bb54f8963"><td class="memItemLeft" align="right" valign="top">static const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#aa2f9218a6284f6090311b10bb54f8963">kNamedLights</a> [] = {&quot;moonlight&quot;, &quot;starlight&quot;, &quot;fire&quot;, &quot;fireflies&quot;}</td></tr>
+<tr class="separator:aa2f9218a6284f6090311b10bb54f8963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51029307965d67e280476ebbb3a72b56" id="r_a51029307965d67e280476ebbb3a72b56"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1daynight_1_1DayNight.html#a51029307965d67e280476ebbb3a72b56">kNamedLightCount</a> = 4</td></tr>
+<tr class="separator:a51029307965d67e280476ebbb3a72b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1daynight_1_1DayNight.html" title="DayNight module — a time-of-day cycle that drives the sun, sky and light.">DayNight</a> module — a time-of-day cycle that drives the sun, sky and light. </p>
+<p>Advances a 24-hour clock (configurable speed) and, each frame, repositions the directional sun to match the current solar elevation / azimuth. A procedural sky cubemap (sky gradient + sun disc + night stars) is generated on demand and registered as the 3D IBL environment so both the skybox angle and the reflected sky follow the sun as time flows.</p>
+<p>At night the module can switch between complementary lighting systems, each implemented as a pool of Light3D entities:</p><ul>
+<li>moonlight : a cool, low directional light from the moon direction</li>
+<li>starlight : a faint, slightly-blue ambient that softens the dark</li>
+<li>fire : a warm point light at a caller-provided campfire position</li>
+<li>fireflies : a set of warm, gently-drifting point lights</li>
+</ul>
+<p>Usage from script: daynight.setTimeOfDay(12.0); // solar noon daynight.setSpeed(1.0); // 1 real hour per simulated hour daynight.setNightLight("fireflies", true); // each frame before gfx.render3D(): daynight.update(dt, gfx); camera.setAmbient(daynight.getAmbientR(), ...); </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8h_source.html">DayNight.h</a> 第 <a class="el" href="DayNight_8h_source.html#l00041">41</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a38e0506e4f728d91bb96e45e4d31a752" name="a38e0506e4f728d91bb96e45e4d31a752"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38e0506e4f728d91bb96e45e4d31a752">&#9670;&#160;</a></span>DayNight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::daynight::DayNight::DayNight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c1161f516b7a2f306a7d219b66b958c" name="a9c1161f516b7a2f306a7d219b66b958c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c1161f516b7a2f306a7d219b66b958c">&#9670;&#160;</a></span>~DayNight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::daynight::DayNight::~DayNight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00244">244</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a813b7777b6e44c3862b7ea5ad365d119" name="a813b7777b6e44c3862b7ea5ad365d119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a813b7777b6e44c3862b7ea5ad365d119">&#9670;&#160;</a></span>addFirefly()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::addFirefly </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add one firefly anchor (world space); up to kMaxFireflies. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00437">437</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00201">eve::daynight::DayNight::Impl::built</a>, <a class="el" href="Light_8cpp_source.html#l00063">eve::graphics::Light3D::createLight()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="DayNight_8cpp_source.html#l00234">eve::daynight::DayNight::Impl::flies</a>, <a class="el" href="DayNight_8cpp_source.html#l00237">eve::daynight::DayNight::Impl::flyLights</a>, <a class="el" href="Light_8cpp_source.html#l00103">eve::graphics::Light3D::setColor()</a>, <a class="el" href="Light_8cpp_source.html#l00114">eve::graphics::Light3D::setEnabled()</a>, <a class="el" href="Light_8cpp_source.html#l00081">eve::graphics::Light3D::setPosition()</a>, <a class="el" href="Light_8cpp_source.html#l00111">eve::graphics::Light3D::setRadius()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="DayNight_8cpp_source.html#l00231">eve::daynight::DayNight::Impl::Fly::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a2a93a6e0ab69e6f44d9ab8d611c66073" name="a2a93a6e0ab69e6f44d9ab8d611c66073"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a93a6e0ab69e6f44d9ab8d611c66073">&#9670;&#160;</a></span>applyAtmosphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::applyAtmosphere </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html">graphics::Volumetric</a> *&#160;</td>
+          <td class="paramname"><em>fog</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Synchronize sun direction and atmosphere-derived fog lighting. </p>
+<p>This is the supported bridge between the day/night atmosphere and a graphics Volumetric instance. Density and height remain scene/weather controls; sky color, sun direction, exposure and animation time are supplied by this module. </p><dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fog</td><td>Target volumetric fog or cloud renderer; null is ignored. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00315">getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00278">getSunB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00266">getSunDirX()</a>, <a class="el" href="DayNight_8cpp_source.html#l00267">getSunDirY()</a>, <a class="el" href="DayNight_8cpp_source.html#l00268">getSunDirZ()</a>, <a class="el" href="DayNight_8cpp_source.html#l00274">getSunG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00270">getSunR()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00475">eve::graphics::Volumetric::setCloudLightColor()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00399">eve::graphics::Volumetric::setFogColor()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00408">eve::graphics::Volumetric::setIntensity()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00349">eve::graphics::Volumetric::setLightDirection()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00414">eve::graphics::Volumetric::setTime()</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00204">eve::daynight::DayNight::Impl::timeOfDay</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a>.</p>
+
+</div>
+</div>
+<a id="a1fc3c67e3782b61700a4efda3a839422" name="a1fc3c67e3782b61700a4efda3a839422"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fc3c67e3782b61700a4efda3a839422">&#9670;&#160;</a></span>applyReflectionProbeSky()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::applyReflectionProbeSky </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1ReflectionProbeCapture.html">graphics::ReflectionProbeCapture</a> *&#160;</td>
+          <td class="paramname"><em>probe</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Synchronize linear directional sky radiance and sky IBL to a reflection probe. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">probe</td><td>Target runtime probe; null is ignored. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SpriteStack_8cpp_source.html#l00039">color</a>, <a class="el" href="DayNight_8cpp_source.html#l00209">eve::daynight::DayNight::Impl::elevDeg</a>, <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00236">eve::graphics::ReflectionProbeCapture::setEnvironmentLighting()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00262">eve::graphics::ReflectionProbeCapture::setSkyFaceColor()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00275">eve::graphics::ReflectionProbeCapture::setSkyFaceTexture()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00288">eve::graphics::ReflectionProbeCapture::setSkyFaceTextureScale()</a>, <a class="el" href="DayNight_8cpp_source.html#l00221">eve::daynight::DayNight::Impl::skyCube</a>, <a class="el" href="DayNight_8cpp_source.html#l00214">eve::daynight::DayNight::Impl::skyExposure</a>, <a class="el" href="DayNight_8cpp_source.html#l00223">eve::daynight::DayNight::Impl::skyFaceCenterLuminance</a>, <a class="el" href="DayNight_8cpp_source.html#l00222">eve::daynight::DayNight::Impl::skyFaces</a>, <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>, <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a>.</p>
+
+</div>
+</div>
+<a id="a429e7bdef790da7cf63d5311095a3642" name="a429e7bdef790da7cf63d5311095a3642"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a429e7bdef790da7cf63d5311095a3642">&#9670;&#160;</a></span>clearFireflies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::clearFireflies </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00234">eve::daynight::DayNight::Impl::flies</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00237">eve::daynight::DayNight::Impl::flyLights</a>.</p>
+
+</div>
+</div>
+<a id="a6348601d243ce99083de1c55cea24083" name="a6348601d243ce99083de1c55cea24083"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6348601d243ce99083de1c55cea24083">&#9670;&#160;</a></span>getAmbientB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getAmbientB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00323">getAmbientBrightness()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>.</p>
+
+</div>
+</div>
+<a id="ac4ff4ada1484faabc2b731fbbd5f54a7" name="ac4ff4ada1484faabc2b731fbbd5f54a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4ff4ada1484faabc2b731fbbd5f54a7">&#9670;&#160;</a></span>getAmbientBrightness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getAmbientBrightness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00227">eve::daynight::DayNight::Impl::nightLight</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00346">getAmbientB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00342">getAmbientG()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00338">getAmbientR()</a>.</p>
+
+</div>
+</div>
+<a id="a997ceb1e681c8d4dcd19effaf4078f1a" name="a997ceb1e681c8d4dcd19effaf4078f1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a997ceb1e681c8d4dcd19effaf4078f1a">&#9670;&#160;</a></span>getAmbientG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getAmbientG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00323">getAmbientBrightness()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>.</p>
+
+</div>
+</div>
+<a id="a5f135c90218aa94b8903dc575c4242b9" name="a5f135c90218aa94b8903dc575c4242b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f135c90218aa94b8903dc575c4242b9">&#9670;&#160;</a></span>getAmbientR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getAmbientR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00323">getAmbientBrightness()</a>.</p>
+
+</div>
+</div>
+<a id="a177bedd623f1c00c3cf0b8d7e6d72dca" name="a177bedd623f1c00c3cf0b8d7e6d72dca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a177bedd623f1c00c3cf0b8d7e6d72dca">&#9670;&#160;</a></span>getFireflyCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::daynight::DayNight::getFireflyCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00234">eve::daynight::DayNight::Impl::flies</a>.</p>
+
+</div>
+</div>
+<a id="a84ca5ef929ebe653ae7a05d695bf4197" name="a84ca5ef929ebe653ae7a05d695bf4197"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84ca5ef929ebe653ae7a05d695bf4197">&#9670;&#160;</a></span>getMieStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getMieStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>.</p>
+
+</div>
+</div>
+<a id="a389af79c20e2e07ae1143c8dac574035" name="a389af79c20e2e07ae1143c8dac574035"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a389af79c20e2e07ae1143c8dac574035">&#9670;&#160;</a></span>getSkyB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSkyB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>, <a class="el" href="DayNight_8cpp_source.html#l00214">eve::daynight::DayNight::Impl::skyExposure</a>, <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a>, <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">update()</a>.</p>
+
+</div>
+</div>
+<a id="a7866e0176340c8f667c22eb43047b6c6" name="a7866e0176340c8f667c22eb43047b6c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7866e0176340c8f667c22eb43047b6c6">&#9670;&#160;</a></span>getSkyExposure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSkyExposure </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00214">eve::daynight::DayNight::Impl::skyExposure</a>.</p>
+
+</div>
+</div>
+<a id="a2bafc79a0f240b755d4a6d5ed9784398" name="a2bafc79a0f240b755d4a6d5ed9784398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bafc79a0f240b755d4a6d5ed9784398">&#9670;&#160;</a></span>getSkyG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSkyG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>, <a class="el" href="DayNight_8cpp_source.html#l00214">eve::daynight::DayNight::Impl::skyExposure</a>, <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a>, <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">update()</a>.</p>
+
+</div>
+</div>
+<a id="a24cc1cc0e976108d04fd4f5689a822b2" name="a24cc1cc0e976108d04fd4f5689a822b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24cc1cc0e976108d04fd4f5689a822b2">&#9670;&#160;</a></span>getSkyR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSkyR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>, <a class="el" href="DayNight_8cpp_source.html#l00214">eve::daynight::DayNight::Impl::skyExposure</a>, <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a>, <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00492">update()</a>.</p>
+
+</div>
+</div>
+<a id="a0ba18c6a7fde971466068a45317a420c" name="a0ba18c6a7fde971466068a45317a420c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ba18c6a7fde971466068a45317a420c">&#9670;&#160;</a></span>getSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00258">258</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00205">eve::daynight::DayNight::Impl::speed</a>.</p>
+
+</div>
+</div>
+<a id="a71e5c3aa059004764bee883412956ffc" name="a71e5c3aa059004764bee883412956ffc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71e5c3aa059004764bee883412956ffc">&#9670;&#160;</a></span>getSunAzimuth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunAzimuth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solar azimuth in degrees, measured clockwise from +Z. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00265">265</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00210">eve::daynight::DayNight::Impl::azimDeg</a>.</p>
+
+</div>
+</div>
+<a id="a8528147218f54e64029b2f1a2c9ff634" name="a8528147218f54e64029b2f1a2c9ff634"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8528147218f54e64029b2f1a2c9ff634">&#9670;&#160;</a></span>getSunB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunB </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atmosphere-attenuated direct sunlight blue channel, including intensity. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>, <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a>.</p>
+
+</div>
+</div>
+<a id="ac5ebddcc45549545b6dcc4054de0ffb1" name="ac5ebddcc45549545b6dcc4054de0ffb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5ebddcc45549545b6dcc4054de0ffb1">&#9670;&#160;</a></span>getSunDirX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunDirX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World-space direction pointing AT the sun (normalized). </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00266">266</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a>.</p>
+
+</div>
+</div>
+<a id="a24afd498ce79079edf4761296e545e03" name="a24afd498ce79079edf4761296e545e03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24afd498ce79079edf4761296e545e03">&#9670;&#160;</a></span>getSunDirY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunDirY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a>.</p>
+
+</div>
+</div>
+<a id="a3f526434daeb02862f437394049898bc" name="a3f526434daeb02862f437394049898bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f526434daeb02862f437394049898bc">&#9670;&#160;</a></span>getSunDirZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunDirZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a>.</p>
+
+</div>
+</div>
+<a id="ab2098bfe0abffd9c7d9cf78867e98eca" name="ab2098bfe0abffd9c7d9cf78867e98eca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2098bfe0abffd9c7d9cf78867e98eca">&#9670;&#160;</a></span>getSunElevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunElevation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solar elevation in degrees (max at local noon, ~70°). </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00209">eve::daynight::DayNight::Impl::elevDeg</a>.</p>
+
+</div>
+</div>
+<a id="a18f338924f3eb6f46e07a4ac624125b0" name="a18f338924f3eb6f46e07a4ac624125b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18f338924f3eb6f46e07a4ac624125b0">&#9670;&#160;</a></span>getSunG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atmosphere-attenuated direct sunlight green channel, including intensity. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>, <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a>.</p>
+
+</div>
+</div>
+<a id="a5534037c919536060035f37db031f669" name="a5534037c919536060035f37db031f669"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5534037c919536060035f37db031f669">&#9670;&#160;</a></span>getSunIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>0..1 sun energy; ramps to 0 below the horizon. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>.</p>
+
+</div>
+</div>
+<a id="a145ddaee947bc61d29625d8603ca673d" name="a145ddaee947bc61d29625d8603ca673d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a145ddaee947bc61d29625d8603ca673d">&#9670;&#160;</a></span>getSunR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getSunR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atmosphere-attenuated direct sunlight red channel, including intensity. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>, <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00351">applyAtmosphere()</a>.</p>
+
+</div>
+</div>
+<a id="a55f19c686e979c1b91eee65066defb45" name="a55f19c686e979c1b91eee65066defb45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55f19c686e979c1b91eee65066defb45">&#9670;&#160;</a></span>getTimeOfDay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getTimeOfDay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00204">eve::daynight::DayNight::Impl::timeOfDay</a>.</p>
+
+</div>
+</div>
+<a id="aa82fe4d40ac9997cb4e6d7fe025717f4" name="aa82fe4d40ac9997cb4e6d7fe025717f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa82fe4d40ac9997cb4e6d7fe025717f4">&#9670;&#160;</a></span>getTurbidity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getTurbidity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a>.</p>
+
+</div>
+</div>
+<a id="ad9bdc50f9f7e390795bb1dff6bcfc0e3" name="ad9bdc50f9f7e390795bb1dff6bcfc0e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9bdc50f9f7e390795bb1dff6bcfc0e3">&#9670;&#160;</a></span>getWeatherCloudiness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getWeatherCloudiness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00336">336</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a>.</p>
+
+</div>
+</div>
+<a id="a0f3a43b528b7d72edda16ce45351aa80" name="a0f3a43b528b7d72edda16ce45351aa80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f3a43b528b7d72edda16ce45351aa80">&#9670;&#160;</a></span>getWeatherFlash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::daynight::DayNight::getWeatherFlash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00337">337</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a>.</p>
+
+</div>
+</div>
+<a id="a4df5641d851f4ab34a929cb77c21ebb2" name="a4df5641d851f4ab34a929cb77c21ebb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4df5641d851f4ab34a929cb77c21ebb2">&#9670;&#160;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Idempotent; builds lights / sky cubemap on first call. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00462">462</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00201">eve::daynight::DayNight::Impl::built</a>, <a class="el" href="Light_8cpp_source.html#l00063">eve::graphics::Light3D::createLight()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="DayNight_8cpp_source.html#l00236">eve::daynight::DayNight::Impl::fireLight</a>, <a class="el" href="DayNight_8cpp_source.html#l00228">eve::daynight::DayNight::Impl::fireX</a>, <a class="el" href="DayNight_8cpp_source.html#l00228">eve::daynight::DayNight::Impl::fireY</a>, <a class="el" href="DayNight_8cpp_source.html#l00228">eve::daynight::DayNight::Impl::fireZ</a>, <a class="el" href="DayNight_8cpp_source.html#l00234">eve::daynight::DayNight::Impl::flies</a>, <a class="el" href="DayNight_8cpp_source.html#l00237">eve::daynight::DayNight::Impl::flyLights</a>, <a class="el" href="DayNight_8cpp_source.html#l00200">eve::daynight::DayNight::Impl::gfx</a>, <a class="el" href="DayNight_8cpp_source.html#l00235">eve::daynight::DayNight::Impl::moonLight</a>, <a class="el" href="Light_8cpp_source.html#l00103">eve::graphics::Light3D::setColor()</a>, <a class="el" href="Light_8cpp_source.html#l00092">eve::graphics::Light3D::setDirection()</a>, <a class="el" href="Light_8cpp_source.html#l00114">eve::graphics::Light3D::setEnabled()</a>, <a class="el" href="Light_8cpp_source.html#l00081">eve::graphics::Light3D::setPosition()</a> , 以及 <a class="el" href="Light_8cpp_source.html#l00111">eve::graphics::Light3D::setRadius()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00492">update()</a>.</p>
+
+</div>
+</div>
+<a id="a38c1d6e753ea6fd4f806bce83c9d68af" name="a38c1d6e753ea6fd4f806bce83c9d68af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38c1d6e753ea6fd4f806bce83c9d68af">&#9670;&#160;</a></span>isNight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::daynight::DayNight::isNight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when the sun is below the horizon (night). </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00209">eve::daynight::DayNight::Impl::elevDeg</a>.</p>
+
+</div>
+</div>
+<a id="a5f394a311fd934be44603517b2177018" name="a5f394a311fd934be44603517b2177018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f394a311fd934be44603517b2177018">&#9670;&#160;</a></span>isNightLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::daynight::DayNight::isNightLight </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00421">421</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8h_source.html#l00136">kNamedLightCount</a>, <a class="el" href="DayNight_8h_source.html#l00135">kNamedLights</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00227">eve::daynight::DayNight::Impl::nightLight</a>.</p>
+
+</div>
+</div>
+<a id="a14b2087301947bdf6fffd71e848a002a" name="a14b2087301947bdf6fffd71e848a002a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14b2087301947bdf6fffd71e848a002a">&#9670;&#160;</a></span>isPaused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::daynight::DayNight::isPaused </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00206">eve::daynight::DayNight::Impl::paused</a>.</p>
+
+</div>
+</div>
+<a id="a7e9ad2b8ed3b44a986217940a06bfdd1" name="a7e9ad2b8ed3b44a986217940a06bfdd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e9ad2b8ed3b44a986217940a06bfdd1">&#9670;&#160;</a></span>isSkyboxEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::daynight::DayNight::isSkyboxEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00407">407</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00220">eve::daynight::DayNight::Impl::skyboxEnabled</a>.</p>
+
+</div>
+</div>
+<a id="a62e9df834ae5aad412aa8419a11350de" name="a62e9df834ae5aad412aa8419a11350de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62e9df834ae5aad412aa8419a11350de">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::daynight::DayNight::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1daynight_1_1DayNight.html">DayNight</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7fa53733888d33442d7930e8311ed412" name="a7fa53733888d33442d7930e8311ed412"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fa53733888d33442d7930e8311ed412">&#9670;&#160;</a></span>setFirePosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setFirePosition </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Position of the campfire point light (fire system). </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00428">428</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00236">eve::daynight::DayNight::Impl::fireLight</a>, <a class="el" href="DayNight_8cpp_source.html#l00228">eve::daynight::DayNight::Impl::fireX</a>, <a class="el" href="DayNight_8cpp_source.html#l00228">eve::daynight::DayNight::Impl::fireY</a>, <a class="el" href="DayNight_8cpp_source.html#l00228">eve::daynight::DayNight::Impl::fireZ</a>, <a class="el" href="Light_8cpp_source.html#l00103">eve::graphics::Light3D::setColor()</a>, <a class="el" href="Light_8cpp_source.html#l00081">eve::graphics::Light3D::setPosition()</a>, <a class="el" href="Light_8cpp_source.html#l00111">eve::graphics::Light3D::setRadius()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="abc84436637091f2e162b277ccd7dc851" name="abc84436637091f2e162b277ccd7dc851"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc84436637091f2e162b277ccd7dc851">&#9670;&#160;</a></span>setMieStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setMieStrength </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Relative Mie aerosol density; controls horizon haze and solar halo. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00224">eve::daynight::DayNight::Impl::lastSkyBucket</a>, <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EnvironmentDayNightRuntime_8cpp_source.html#l00009">eve::lighting_editing::EnvironmentRuntimeApplier::applyDayNight()</a>.</p>
+
+</div>
+</div>
+<a id="abaf293021775b777a2f802522accb896" name="abaf293021775b777a2f802522accb896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaf293021775b777a2f802522accb896">&#9670;&#160;</a></span>setNightLight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setNightLight </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable a named light system: "moonlight"|"starlight"|"fire"|"fireflies". </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00413">413</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="DayNight_8h_source.html#l00136">kNamedLightCount</a>, <a class="el" href="DayNight_8h_source.html#l00135">kNamedLights</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00227">eve::daynight::DayNight::Impl::nightLight</a>.</p>
+
+</div>
+</div>
+<a id="a4035cf82a32ffbd41583bb31e2ec8e91" name="a4035cf82a32ffbd41583bb31e2ec8e91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4035cf82a32ffbd41583bb31e2ec8e91">&#9670;&#160;</a></span>setPaused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setPaused </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>paused</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00206">eve::daynight::DayNight::Impl::paused</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EnvironmentDayNightRuntime_8cpp_source.html#l00009">eve::lighting_editing::EnvironmentRuntimeApplier::applyDayNight()</a>.</p>
+
+</div>
+</div>
+<a id="a419997913ef7c5144b55bb5ea7dd0ce9" name="a419997913ef7c5144b55bb5ea7dd0ce9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a419997913ef7c5144b55bb5ea7dd0ce9">&#9670;&#160;</a></span>setSkyboxEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setSkyboxEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00403">403</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="DayNight_8cpp_source.html#l00224">eve::daynight::DayNight::Impl::lastSkyBucket</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00220">eve::daynight::DayNight::Impl::skyboxEnabled</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EnvironmentDayNightRuntime_8cpp_source.html#l00009">eve::lighting_editing::EnvironmentRuntimeApplier::applyDayNight()</a>.</p>
+
+</div>
+</div>
+<a id="aa98e6dfe4901a069954e66625bb70a2f" name="aa98e6dfe4901a069954e66625bb70a2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa98e6dfe4901a069954e66625bb70a2f">&#9670;&#160;</a></span>setSkyExposure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setSkyExposure </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>exposure</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Exposure used when mapping physical sky radiance to the RGBA8 sky cubemap. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00287">287</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00224">eve::daynight::DayNight::Impl::lastSkyBucket</a>, <a class="el" href="DayNight_8cpp_source.html#l00214">eve::daynight::DayNight::Impl::skyExposure</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EnvironmentDayNightRuntime_8cpp_source.html#l00009">eve::lighting_editing::EnvironmentRuntimeApplier::applyDayNight()</a>.</p>
+
+</div>
+</div>
+<a id="aade679f226ae41358f1f2ba1a46e94e1" name="aade679f226ae41358f1f2ba1a46e94e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aade679f226ae41358f1f2ba1a46e94e1">&#9670;&#160;</a></span>setSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hoursPerRealHour</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00205">eve::daynight::DayNight::Impl::speed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EnvironmentDayNightRuntime_8cpp_source.html#l00009">eve::lighting_editing::EnvironmentRuntimeApplier::applyDayNight()</a>.</p>
+
+</div>
+</div>
+<a id="adb2713cd8b6eb60f947e9809e66c0bfa" name="adb2713cd8b6eb60f947e9809e66c0bfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb2713cd8b6eb60f947e9809e66c0bfa">&#9670;&#160;</a></span>setTimeOfDay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setTimeOfDay </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hours</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00204">eve::daynight::DayNight::Impl::timeOfDay</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EnvironmentDayNightRuntime_8cpp_source.html#l00009">eve::lighting_editing::EnvironmentRuntimeApplier::applyDayNight()</a>.</p>
+
+</div>
+</div>
+<a id="a8b4ffd99a0abe272b630f92fe271fc44" name="a8b4ffd99a0abe272b630f92fe271fc44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b4ffd99a0abe272b630f92fe271fc44">&#9670;&#160;</a></span>setTurbidity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setTurbidity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>turbidity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set aerosol turbidity. 1.5 is very clear; 10 is hazy. </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00224">eve::daynight::DayNight::Impl::lastSkyBucket</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EnvironmentDayNightRuntime_8cpp_source.html#l00009">eve::lighting_editing::EnvironmentRuntimeApplier::applyDayNight()</a>.</p>
+
+</div>
+</div>
+<a id="aa037b4f3fbfcc03fb3ae624bb7bf3b1d" name="aa037b4f3fbfcc03fb3ae624bb7bf3b1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa037b4f3fbfcc03fb3ae624bb7bf3b1d">&#9670;&#160;</a></span>setWeatherInfluence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::setWeatherInfluence </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cloudiness</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lightningFlash</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply cloud cover and lightning exposure to the unified sky/lighting model. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cloudiness</td><td>Cloud attenuation in [0,1]. </td></tr>
+    <tr><td class="paramname">lightningFlash</td><td>Transient lightning energy in [0,1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00224">eve::daynight::DayNight::Impl::lastSkyBucket</a>, <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a>.</p>
+
+</div>
+</div>
+<a id="afbf0474ae1f64c97ad6e6fafe46b834a" name="afbf0474ae1f64c97ad6e6fafe46b834a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbf0474ae1f64c97ad6e6fafe46b834a">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::daynight::DayNight::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance the clock and push sun/sky/light state; before gfx.render3D(). </p>
+
+<p class="definition">在文件 <a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a> 第 <a class="el" href="DayNight_8cpp_source.html#l00492">492</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DayNight_8cpp_source.html#l00210">eve::daynight::DayNight::Impl::azimDeg</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00049">bucket</a>, <a class="el" href="DayNight_8cpp_source.html#l00201">eve::daynight::DayNight::Impl::built</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00055">center</a>, <a class="el" href="DayNight_8cpp_source.html#l00209">eve::daynight::DayNight::Impl::elevDeg</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="DayNight_8cpp_source.html#l00236">eve::daynight::DayNight::Impl::fireLight</a>, <a class="el" href="DayNight_8cpp_source.html#l00234">eve::daynight::DayNight::Impl::flies</a>, <a class="el" href="DayNight_8cpp_source.html#l00237">eve::daynight::DayNight::Impl::flyLights</a>, <a class="el" href="DayNight_8cpp_source.html#l00315">getSkyB()</a>, <a class="el" href="DayNight_8cpp_source.html#l00307">getSkyG()</a>, <a class="el" href="DayNight_8cpp_source.html#l00299">getSkyR()</a>, <a class="el" href="DayNight_8cpp_source.html#l00200">eve::daynight::DayNight::Impl::gfx</a>, <a class="el" href="DayNight_8cpp_source.html#l00462">init()</a>, <a class="el" href="DayNight_8cpp_source.html#l00224">eve::daynight::DayNight::Impl::lastSkyBucket</a>, <a class="el" href="DayNight_8cpp_source.html#l00215">eve::daynight::DayNight::Impl::mieStrength</a>, <a class="el" href="DayNight_8cpp_source.html#l00235">eve::daynight::DayNight::Impl::moonLight</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a03f776d2d37e9b834f4d7d134870d1d8">eve::graphics::Graphics::newCubemap()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>, <a class="el" href="DayNight_8cpp_source.html#l00227">eve::daynight::DayNight::Impl::nightLight</a>, <a class="el" href="DayNight_8cpp_source.html#l00206">eve::daynight::DayNight::Impl::paused</a>, <a class="el" href="Graphics_8cpp_source.html#l01596">eve::graphics::Graphics::setBackgroundColorRGBA()</a>, <a class="el" href="Light_8cpp_source.html#l00092">eve::graphics::Light3D::setDirection()</a>, <a class="el" href="Graphics_8cpp_source.html#l00305">eve::graphics::Graphics::setDirectionalLight()</a>, <a class="el" href="Light_8cpp_source.html#l00114">eve::graphics::Light3D::setEnabled()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a55b9dc52456ebbc4984370ee570312ae">eve::graphics::Graphics::setMesh3DEnv()</a>, <a class="el" href="Light_8cpp_source.html#l00081">eve::graphics::Light3D::setPosition()</a>, <a class="el" href="DayNight_8cpp_source.html#l00220">eve::daynight::DayNight::Impl::skyboxEnabled</a>, <a class="el" href="DayNight_8cpp_source.html#l00221">eve::daynight::DayNight::Impl::skyCube</a>, <a class="el" href="DayNight_8cpp_source.html#l00214">eve::daynight::DayNight::Impl::skyExposure</a>, <a class="el" href="DayNight_8cpp_source.html#l00223">eve::daynight::DayNight::Impl::skyFaceCenterLuminance</a>, <a class="el" href="DayNight_8cpp_source.html#l00222">eve::daynight::DayNight::Impl::skyFaces</a>, <a class="el" href="DayNight_8cpp_source.html#l00205">eve::daynight::DayNight::Impl::speed</a>, <a class="el" href="DayNight_8cpp_source.html#l00211">eve::daynight::DayNight::Impl::sunDir</a>, <a class="el" href="DayNight_8cpp_source.html#l00212">eve::daynight::DayNight::Impl::sunEnergy</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="DayNight_8cpp_source.html#l00204">eve::daynight::DayNight::Impl::timeOfDay</a>, <a class="el" href="DayNight_8cpp_source.html#l00213">eve::daynight::DayNight::Impl::turbidity</a>, <a class="el" href="DayNight_8cpp_source.html#l00216">eve::daynight::DayNight::Impl::weatherCloudiness</a>, <a class="el" href="DayNight_8cpp_source.html#l00217">eve::daynight::DayNight::Impl::weatherFlash</a> , 以及 <a class="el" href="TextureSampler_8h_source.html#l00110">eve::graphics::TextureCreateInfo::withMipmaps()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a51029307965d67e280476ebbb3a72b56" name="a51029307965d67e280476ebbb3a72b56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51029307965d67e280476ebbb3a72b56">&#9670;&#160;</a></span>kNamedLightCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int eve::daynight::DayNight::kNamedLightCount = 4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8h_source.html">DayNight.h</a> 第 <a class="el" href="DayNight_8h_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00421">isNightLight()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00413">setNightLight()</a>.</p>
+
+</div>
+</div>
+<a id="aa2f9218a6284f6090311b10bb54f8963" name="aa2f9218a6284f6090311b10bb54f8963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2f9218a6284f6090311b10bb54f8963">&#9670;&#160;</a></span>kNamedLights</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char *const eve::daynight::DayNight::kNamedLights = {&quot;moonlight&quot;, &quot;starlight&quot;, &quot;fire&quot;, &quot;fireflies&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="DayNight_8h_source.html">DayNight.h</a> 第 <a class="el" href="DayNight_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DayNight_8cpp_source.html#l00421">isNightLight()</a> , 以及 <a class="el" href="DayNight_8cpp_source.html#l00413">setNightLight()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/daynight/<a class="el" href="DayNight_8h_source.html">DayNight.h</a></li>
+<li>src/modules/daynight/<a class="el" href="DayNight_8cpp_source.html">DayNight.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

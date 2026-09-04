@@ -1,0 +1,829 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::profiler::Profiler类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1profiler.html">profiler</a></li><li class="navelem"><a class="el" href="classeve_1_1profiler_1_1Profiler.html">Profiler</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1profiler_1_1Profiler-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::profiler::Profiler类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script-facing wrapper around the engine-wide profiler core (<a class="el" href="namespaceeve_1_1prof.html">eve::prof</a>, see <a class="el" href="Profile_8h.html">common/Profile.h</a>).  
+ <a href="classeve_1_1profiler_1_1Profiler.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Profiler_8h_source.html">Profiler.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::profiler::Profiler 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1profiler_1_1Profiler.png" usemap="#eve::profiler::Profiler_map" alt=""/>
+  <map id="eve::profiler::Profiler_map" name="eve::profiler::Profiler_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,162,24"/>
+<area href="classeve_1_1debug_1_1IRenderTracer.html" title="Optional render-pipeline tracer. Graphics / RenderSystem call the rt* helpers; when no tracer is inst..." alt="eve::debug::IRenderTracer" shape="rect" coords="172,0,334,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4a5f6d04150a1450af6e3bcf744daa79" id="r_a4a5f6d04150a1450af6e3bcf744daa79"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a4a5f6d04150a1450af6e3bcf744daa79">Module_REG</a> (<a class="el" href="classeve_1_1profiler_1_1Profiler.html">Profiler</a>)</td></tr>
+<tr class="separator:a4a5f6d04150a1450af6e3bcf744daa79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3505945fdf1599c271b65f383811dee0" id="r_a3505945fdf1599c271b65f383811dee0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a3505945fdf1599c271b65f383811dee0">Profiler</a> ()</td></tr>
+<tr class="separator:a3505945fdf1599c271b65f383811dee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b4078697f96985cd27361a0b97a226" id="r_ad2b4078697f96985cd27361a0b97a226"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#ad2b4078697f96985cd27361a0b97a226">~Profiler</a> () override</td></tr>
+<tr class="separator:ad2b4078697f96985cd27361a0b97a226"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf4b9367b2b2c11a7bf88cb616289b62" id="r_abf4b9367b2b2c11a7bf88cb616289b62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#abf4b9367b2b2c11a7bf88cb616289b62">setEnabled</a> (bool on)</td></tr>
+<tr class="memdesc:abf4b9367b2b2c11a7bf88cb616289b62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables/disables engine-wide collection. Disabled = cheap no-op.  <br /></td></tr>
+<tr class="separator:abf4b9367b2b2c11a7bf88cb616289b62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cb7b5ac15d6df07abb524d6542a0b56" id="r_a7cb7b5ac15d6df07abb524d6542a0b56"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a7cb7b5ac15d6df07abb524d6542a0b56">enabled</a> () const</td></tr>
+<tr class="memdesc:a7cb7b5ac15d6df07abb524d6542a0b56"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when collection is active.  <br /></td></tr>
+<tr class="separator:a7cb7b5ac15d6df07abb524d6542a0b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33cf8c5b2c01087ff146f831a0b0f33e" id="r_a33cf8c5b2c01087ff146f831a0b0f33e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a33cf8c5b2c01087ff146f831a0b0f33e">reset</a> ()</td></tr>
+<tr class="memdesc:a33cf8c5b2c01087ff146f831a0b0f33e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears all collected data.  <br /></td></tr>
+<tr class="separator:a33cf8c5b2c01087ff146f831a0b0f33e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd23cd9e18acc42986478455b2f5754c" id="r_afd23cd9e18acc42986478455b2f5754c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#afd23cd9e18acc42986478455b2f5754c">beginFrame</a> ()</td></tr>
+<tr class="memdesc:afd23cd9e18acc42986478455b2f5754c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks the start of a frame for total-frame timing.  <br /></td></tr>
+<tr class="separator:afd23cd9e18acc42986478455b2f5754c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af99808977d290572b47679bb61f55554" id="r_af99808977d290572b47679bb61f55554"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#af99808977d290572b47679bb61f55554">endFrame</a> ()</td></tr>
+<tr class="memdesc:af99808977d290572b47679bb61f55554"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes the current frame and aggregates the collected zones.  <br /></td></tr>
+<tr class="separator:af99808977d290572b47679bb61f55554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a217ae28304c63b9a2d759a7b4fd4d403" id="r_a217ae28304c63b9a2d759a7b4fd4d403"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a217ae28304c63b9a2d759a7b4fd4d403">begin</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a217ae28304c63b9a2d759a7b4fd4d403"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens a user timing scope under the current frame.  <br /></td></tr>
+<tr class="separator:a217ae28304c63b9a2d759a7b4fd4d403"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1976e3f0c180ab9673eae6660dc48f69" id="r_a1976e3f0c180ab9673eae6660dc48f69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a1976e3f0c180ab9673eae6660dc48f69">end</a> ()</td></tr>
+<tr class="memdesc:a1976e3f0c180ab9673eae6660dc48f69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the innermost open user scope.  <br /></td></tr>
+<tr class="separator:a1976e3f0c180ab9673eae6660dc48f69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3699fe7413c13d5a3db9c294dc037960" id="r_a3699fe7413c13d5a3db9c294dc037960"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a3699fe7413c13d5a3db9c294dc037960">hasFrame</a> () const</td></tr>
+<tr class="memdesc:a3699fe7413c13d5a3db9c294dc037960"><td class="mdescLeft">&#160;</td><td class="mdescRight">True once at least one frame has been aggregated.  <br /></td></tr>
+<tr class="separator:a3699fe7413c13d5a3db9c294dc037960"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40a07057126afbabc924d0af79400a09" id="r_a40a07057126afbabc924d0af79400a09"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a40a07057126afbabc924d0af79400a09">frameMs</a> () const</td></tr>
+<tr class="memdesc:a40a07057126afbabc924d0af79400a09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total CPU frame time of the last frame, in milliseconds.  <br /></td></tr>
+<tr class="separator:a40a07057126afbabc924d0af79400a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d659d113a0014c6808a29916f862edd" id="r_a1d659d113a0014c6808a29916f862edd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a1d659d113a0014c6808a29916f862edd">gpuFrameMs</a> () const</td></tr>
+<tr class="memdesc:a1d659d113a0014c6808a29916f862edd"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU execution time of the last presented frame (0 when unavailable).  <br /></td></tr>
+<tr class="separator:a1d659d113a0014c6808a29916f862edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad87f85aa5549e4be18cc5b04cde344cf" id="r_ad87f85aa5549e4be18cc5b04cde344cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1profiler_1_1ProfilerFrameSnapshot.html">ProfilerFrameSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#ad87f85aa5549e4be18cc5b04cde344cf">captureFrame</a> () const</td></tr>
+<tr class="memdesc:ad87f85aa5549e4be18cc5b04cde344cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the latest completed frame for editor and diagnostics consumers.  <br /></td></tr>
+<tr class="separator:ad87f85aa5549e4be18cc5b04cde344cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4e0705538a781be78bf7f34d7676476" id="r_af4e0705538a781be78bf7f34d7676476"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#af4e0705538a781be78bf7f34d7676476">textReport</a> () const</td></tr>
+<tr class="memdesc:af4e0705538a781be78bf7f34d7676476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable hotspot report (per module / per zone).  <br /></td></tr>
+<tr class="separator:af4e0705538a781be78bf7f34d7676476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c3be454be36f133d68a205c51234016" id="r_a9c3be454be36f133d68a205c51234016"><td class="memItemLeft" align="right" valign="top">ssq::Object&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a9c3be454be36f133d68a205c51234016">capture</a> ()</td></tr>
+<tr class="memdesc:a9c3be454be36f133d68a205c51234016"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured report of the last frame.  <br /></td></tr>
+<tr class="separator:a9c3be454be36f133d68a205c51234016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1817db77bf4a2564d8c14458aca14c42" id="r_a1817db77bf4a2564d8c14458aca14c42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a1817db77bf4a2564d8c14458aca14c42">frameBegin</a> () override</td></tr>
+<tr class="separator:a1817db77bf4a2564d8c14458aca14c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5062d7be9027c1ba0d62fb7fb4dba93" id="r_ad5062d7be9027c1ba0d62fb7fb4dba93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#ad5062d7be9027c1ba0d62fb7fb4dba93">frameEnd</a> () override</td></tr>
+<tr class="separator:ad5062d7be9027c1ba0d62fb7fb4dba93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b32ea54e42bcf886e1e200fa5c13291" id="r_a7b32ea54e42bcf886e1e200fa5c13291"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a7b32ea54e42bcf886e1e200fa5c13291">passBegin</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) override</td></tr>
+<tr class="separator:a7b32ea54e42bcf886e1e200fa5c13291"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c72604f2d286f187c80b2143640b6e1" id="r_a1c72604f2d286f187c80b2143640b6e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a1c72604f2d286f187c80b2143640b6e1">passEnd</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) override</td></tr>
+<tr class="separator:a1c72604f2d286f187c80b2143640b6e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d7d8c5376e2bef37eba1844f1ee4e66" id="r_a2d7d8c5376e2bef37eba1844f1ee4e66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1profiler_1_1Profiler.html#a2d7d8c5376e2bef37eba1844f1ee4e66">draw</a> (const char *api, const char *detail) override</td></tr>
+<tr class="separator:a2d7d8c5376e2bef37eba1844f1ee4e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1debug_1_1IRenderTracer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1debug_1_1IRenderTracer')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html">eve::debug::IRenderTracer</a></td></tr>
+<tr class="memitem:adfcd1c50038e6868e5e026334953cfa8 inherit pub_methods_classeve_1_1debug_1_1IRenderTracer" id="r_adfcd1c50038e6868e5e026334953cfa8"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#adfcd1c50038e6868e5e026334953cfa8">~IRenderTracer</a> ()=default</td></tr>
+<tr class="separator:adfcd1c50038e6868e5e026334953cfa8 inherit pub_methods_classeve_1_1debug_1_1IRenderTracer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3c13bc8e7f350b9236c4b32455710dd inherit pub_methods_classeve_1_1debug_1_1IRenderTracer" id="r_af3c13bc8e7f350b9236c4b32455710dd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#af3c13bc8e7f350b9236c4b32455710dd">target</a> (const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:af3c13bc8e7f350b9236c4b32455710dd inherit pub_methods_classeve_1_1debug_1_1IRenderTracer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a877e3636b0701c2b958efbe955261c5d inherit pub_methods_classeve_1_1debug_1_1IRenderTracer" id="r_a877e3636b0701c2b958efbe955261c5d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#a877e3636b0701c2b958efbe955261c5d">bind</a> (const char *<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, const char *<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a877e3636b0701c2b958efbe955261c5d inherit pub_methods_classeve_1_1debug_1_1IRenderTracer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04beecd64c289b1d110093e0b08f6435 inherit pub_methods_classeve_1_1debug_1_1IRenderTracer" id="r_a04beecd64c289b1d110093e0b08f6435"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#a04beecd64c289b1d110093e0b08f6435">error</a> (const char *message)</td></tr>
+<tr class="separator:a04beecd64c289b1d110093e0b08f6435 inherit pub_methods_classeve_1_1debug_1_1IRenderTracer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script-facing wrapper around the engine-wide profiler core (<a class="el" href="namespaceeve_1_1prof.html">eve::prof</a>, see <a class="el" href="Profile_8h.html">common/Profile.h</a>). </p>
+<p>The core collects scoped zones from every engine system (physics, animation, particles, audio, ui, scene, graphics passes, ...) into a per-frame call tree with self/total time per module and per zone. This module exposes that data to Squirrel and adds GPU frame timing (via <a class="el" href="classeve_1_1service_1_1IGpuTimer.html" title="Reads the GPU frame timing captured by the renderer via Vulkan timestamp queries. Providers: eve::gra...">eve::service::IGpuTimer</a>).</p>
+<p>Script usage: </p><div class="fragment"><div class="line">profiler.setEnabled(<span class="keyword">true</span>);         <span class="comment">// start collecting engine-wide zones</span></div>
+<div class="line"><span class="comment">// ... run a few frames ...</span></div>
+<div class="line">print(profiler.textReport());      <span class="comment">// per-module/per-zone hotspot report</span></div>
+<div class="line"><a class="code hl_variable" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a> rows = profiler.capture();   <span class="comment">// array of {module,name,selfMs,totalMs,count,thread}</span></div>
+<div class="line">profiler.setEnabled(<span class="keyword">false</span>);</div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a8a71cf98f1ad6795a6d5c2397672e40d"><div class="ttname"><a href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a></div><div class="ttdeci">std::string local</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00025">LanguageIndex.cpp:25</a></div></div>
+</div><!-- fragment --><p>The module installs itself as the IRenderTracer, so each render pass becomes a "graphics" zone and the render frame boundary drives automatic per-frame aggregation (no game script changes required). <a class="el" href="classeve_1_1profiler_1_1Profiler.html#afd23cd9e18acc42986478455b2f5754c" title="Marks the start of a frame for total-frame timing.">beginFrame()</a>/endFrame() are also exposed for manual frame delimitation around arbitrary code. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8h_source.html">Profiler.h</a> 第 <a class="el" href="Profiler_8h_source.html#l00063">63</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3505945fdf1599c271b65f383811dee0" name="a3505945fdf1599c271b65f383811dee0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3505945fdf1599c271b65f383811dee0">&#9670;&#160;</a></span>Profiler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::profiler::Profiler::Profiler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderTrace_8cpp_source.html#l00008">eve::debug::setRenderTracer()</a>.</p>
+
+</div>
+</div>
+<a id="ad2b4078697f96985cd27361a0b97a226" name="ad2b4078697f96985cd27361a0b97a226"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2b4078697f96985cd27361a0b97a226">&#9670;&#160;</a></span>~Profiler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::profiler::Profiler::~Profiler </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderTrace_8cpp_source.html#l00010">eve::debug::renderTracer()</a> , 以及 <a class="el" href="RenderTrace_8cpp_source.html#l00008">eve::debug::setRenderTracer()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a217ae28304c63b9a2d759a7b4fd4d403" name="a217ae28304c63b9a2d759a7b4fd4d403"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a217ae28304c63b9a2d759a7b4fd4d403">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::begin </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opens a user timing scope under the current frame. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Scope name (must be non-null). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profiler_8cpp_source.html#l00036">enabled()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="Profile_8cpp_source.html#l00096">eve::prof::Profiler::zoneBegin()</a>.</p>
+
+</div>
+</div>
+<a id="afd23cd9e18acc42986478455b2f5754c" name="afd23cd9e18acc42986478455b2f5754c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd23cd9e18acc42986478455b2f5754c">&#9670;&#160;</a></span>beginFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::beginFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Marks the start of a frame for total-frame timing. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Profiler_8cpp_source.html#l00064">frameBegin()</a>.</p>
+
+</div>
+</div>
+<a id="a9c3be454be36f133d68a205c51234016" name="a9c3be454be36f133d68a205c51234016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c3be454be36f133d68a205c51234016">&#9670;&#160;</a></span>capture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Object eve::profiler::Profiler::capture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Structured report of the last frame. </p>
+<dl class="section return"><dt>返回</dt><dd>Array of tables {module, name, thread, selfMs, totalMs, count}, sorted by self time descending. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profile_8cpp_source.html#l00224">eve::prof::Profiler::lastFrame()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="ad87f85aa5549e4be18cc5b04cde344cf" name="ad87f85aa5549e4be18cc5b04cde344cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad87f85aa5549e4be18cc5b04cde344cf">&#9670;&#160;</a></span>captureFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1profiler_1_1ProfilerFrameSnapshot.html">ProfilerFrameSnapshot</a> &gt; eve::profiler::Profiler::captureFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy the latest completed frame for editor and diagnostics consumers. </p>
+<dl class="section return"><dt>返回</dt><dd>An owning snapshot, or NotFound before the first completed frame. @thread Main-thread only; call after frameEnd/frameEnd render tracing completes. @reentrancy Does not invoke callbacks or scripts. @ownership The returned value owns all strings and rows and may be retained indefinitely. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profiler_8h_source.html#l00034">eve::profiler::ProfilerFrameSnapshot::cpuFrameMs</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Profiler_8h_source.html#l00035">eve::profiler::ProfilerFrameSnapshot::gpuFrameMs</a>, <a class="el" href="Profiler_8h_source.html#l00036">eve::profiler::ProfilerFrameSnapshot::gpuTimingAvailable</a>, <a class="el" href="Profiler_8cpp_source.html#l00078">hasFrame()</a>, <a class="el" href="Profile_8cpp_source.html#l00224">eve::prof::Profiler::lastFrame()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Profiler_8h_source.html#l00033">eve::profiler::ProfilerFrameSnapshot::sequence</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Profiler_8h_source.html#l00037">eve::profiler::ProfilerFrameSnapshot::zones</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProfilerRuntime_8cpp_source.html#l00009">eve::profiler_editing::EditorProfilerCollector::collect()</a>.</p>
+
+</div>
+</div>
+<a id="a2d7d8c5376e2bef37eba1844f1ee4e66" name="a2d7d8c5376e2bef37eba1844f1ee4e66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d7d8c5376e2bef37eba1844f1ee4e66">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::draw </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>api</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>detail</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#ad29202300ee107fd4f278ae1c1f16b65">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8h_source.html">Profiler.h</a> 第 <a class="el" href="Profiler_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7cb7b5ac15d6df07abb524d6542a0b56" name="a7cb7b5ac15d6df07abb524d6542a0b56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cb7b5ac15d6df07abb524d6542a0b56">&#9670;&#160;</a></span>enabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::profiler::Profiler::enabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True when collection is active. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profile_8cpp_source.html#l00094">eve::prof::Profiler::enabled()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Profiler_8cpp_source.html#l00054">begin()</a>, <a class="el" href="Profiler_8cpp_source.html#l00059">end()</a>, <a class="el" href="Profiler_8cpp_source.html#l00046">endFrame()</a>, <a class="el" href="Profiler_8cpp_source.html#l00068">passBegin()</a> , 以及 <a class="el" href="Profiler_8cpp_source.html#l00073">passEnd()</a>.</p>
+
+</div>
+</div>
+<a id="a1976e3f0c180ab9673eae6660dc48f69" name="a1976e3f0c180ab9673eae6660dc48f69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1976e3f0c180ab9673eae6660dc48f69">&#9670;&#160;</a></span>end()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::end </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Closes the innermost open user scope. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profiler_8cpp_source.html#l00036">enabled()</a> , 以及 <a class="el" href="Profile_8cpp_source.html#l00113">eve::prof::Profiler::zoneEnd()</a>.</p>
+
+</div>
+</div>
+<a id="af99808977d290572b47679bb61f55554" name="af99808977d290572b47679bb61f55554"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af99808977d290572b47679bb61f55554">&#9670;&#160;</a></span>endFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::endFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finalizes the current frame and aggregates the collected zones. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profiler_8cpp_source.html#l00036">enabled()</a> , 以及 <a class="el" href="Profile_8cpp_source.html#l00132">eve::prof::Profiler::frameMark()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Profiler_8cpp_source.html#l00066">frameEnd()</a>.</p>
+
+</div>
+</div>
+<a id="a1817db77bf4a2564d8c14458aca14c42" name="a1817db77bf4a2564d8c14458aca14c42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1817db77bf4a2564d8c14458aca14c42">&#9670;&#160;</a></span>frameBegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::frameBegin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#aa28233e22dab9c1a63c9a469315f91f5">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profiler_8cpp_source.html#l00044">beginFrame()</a>.</p>
+
+</div>
+</div>
+<a id="ad5062d7be9027c1ba0d62fb7fb4dba93" name="ad5062d7be9027c1ba0d62fb7fb4dba93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5062d7be9027c1ba0d62fb7fb4dba93">&#9670;&#160;</a></span>frameEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::frameEnd </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#aff70e0d011d464a1a35ef88ea350d8b6">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profiler_8cpp_source.html#l00046">endFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a40a07057126afbabc924d0af79400a09" name="a40a07057126afbabc924d0af79400a09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40a07057126afbabc924d0af79400a09">&#9670;&#160;</a></span>frameMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::profiler::Profiler::frameMs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Total CPU frame time of the last frame, in milliseconds. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d659d113a0014c6808a29916f862edd" name="a1d659d113a0014c6808a29916f862edd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d659d113a0014c6808a29916f862edd">&#9670;&#160;</a></span>gpuFrameMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::profiler::Profiler::gpuFrameMs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>GPU execution time of the last presented frame (0 when unavailable). </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a3699fe7413c13d5a3db9c294dc037960" name="a3699fe7413c13d5a3db9c294dc037960"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3699fe7413c13d5a3db9c294dc037960">&#9670;&#160;</a></span>hasFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::profiler::Profiler::hasFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>True once at least one frame has been aggregated. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profile_8cpp_source.html#l00222">eve::prof::Profiler::hasFrame()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Profiler_8cpp_source.html#l00087">captureFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a4a5f6d04150a1450af6e3bcf744daa79" name="a4a5f6d04150a1450af6e3bcf744daa79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a5f6d04150a1450af6e3bcf744daa79">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::profiler::Profiler::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1profiler_1_1Profiler.html">Profiler</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7b32ea54e42bcf886e1e200fa5c13291" name="a7b32ea54e42bcf886e1e200fa5c13291"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b32ea54e42bcf886e1e200fa5c13291">&#9670;&#160;</a></span>passBegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::passBegin </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#a9f9c59c280d253701df5c7968382298f">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profiler_8cpp_source.html#l00036">enabled()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="Profile_8cpp_source.html#l00096">eve::prof::Profiler::zoneBegin()</a>.</p>
+
+</div>
+</div>
+<a id="a1c72604f2d286f187c80b2143640b6e1" name="a1c72604f2d286f187c80b2143640b6e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c72604f2d286f187c80b2143640b6e1">&#9670;&#160;</a></span>passEnd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::passEnd </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1debug_1_1IRenderTracer.html#ae0dc1b140a43d183606673361d7de531">eve::debug::IRenderTracer</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profiler_8cpp_source.html#l00036">enabled()</a> , 以及 <a class="el" href="Profile_8cpp_source.html#l00113">eve::prof::Profiler::zoneEnd()</a>.</p>
+
+</div>
+</div>
+<a id="a33cf8c5b2c01087ff146f831a0b0f33e" name="a33cf8c5b2c01087ff146f831a0b0f33e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33cf8c5b2c01087ff146f831a0b0f33e">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears all collected data. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profile_8cpp_source.html#l00122">eve::prof::Profiler::reset()</a>.</p>
+
+</div>
+</div>
+<a id="abf4b9367b2b2c11a7bf88cb616289b62" name="abf4b9367b2b2c11a7bf88cb616289b62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf4b9367b2b2c11a7bf88cb616289b62">&#9670;&#160;</a></span>setEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::profiler::Profiler::setEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables/disables engine-wide collection. Disabled = cheap no-op. </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profile_8cpp_source.html#l00092">eve::prof::Profiler::setEnabled()</a>.</p>
+
+</div>
+</div>
+<a id="af4e0705538a781be78bf7f34d7676476" name="af4e0705538a781be78bf7f34d7676476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4e0705538a781be78bf7f34d7676476">&#9670;&#160;</a></span>textReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::profiler::Profiler::textReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Human-readable hotspot report (per module / per zone). </p>
+
+<p class="definition">在文件 <a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a> 第 <a class="el" href="Profiler_8cpp_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="Profile_8cpp_source.html#l00226">eve::prof::Profiler::textReport()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/profiler/<a class="el" href="Profiler_8h_source.html">Profiler.h</a></li>
+<li>src/modules/profiler/<a class="el" href="Profiler_8cpp_source.html">Profiler.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

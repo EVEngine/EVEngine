@@ -1,0 +1,469 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::urban::UrbanLayout结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen_1_1urban.html">urban</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html">UrbanLayout</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1urban_1_1UrbanLayout-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::urban::UrbanLayout结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Structured urban layout produced by the hierarchical co-generation (paper Section 4) plus the geometric optimization (paper Section 5).  
+ <a href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8e2a1c509d9e72ae9b19c6a4d1573aeb" id="r_a8e2a1c509d9e72ae9b19c6a4d1573aeb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a8e2a1c509d9e72ae9b19c6a4d1573aeb">clear</a> ()</td></tr>
+<tr class="separator:a8e2a1c509d9e72ae9b19c6a4d1573aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a3ffed9e11282ae06a12803d73838ecfd" id="r_a3ffed9e11282ae06a12803d73838ecfd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a3ffed9e11282ae06a12803d73838ecfd">corners</a></td></tr>
+<tr class="separator:a3ffed9e11282ae06a12803d73838ecfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a526378b71c9a65c53e9e4b4365259764" id="r_a526378b71c9a65c53e9e4b4365259764"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1Parcel.html">Parcel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a526378b71c9a65c53e9e4b4365259764">parcels</a></td></tr>
+<tr class="separator:a526378b71c9a65c53e9e4b4365259764"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada18fa36614350f86052d78090f1d99f" id="r_ada18fa36614350f86052d78090f1d99f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1GraphEdge.html">GraphEdge</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#ada18fa36614350f86052d78090f1d99f">edges</a></td></tr>
+<tr class="separator:ada18fa36614350f86052d78090f1d99f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32d2c6ebf738c04849d689ca4c722389" id="r_a32d2c6ebf738c04849d689ca4c722389"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1urban_1_1Street.html">Street</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a32d2c6ebf738c04849d689ca4c722389">streets</a></td></tr>
+<tr class="separator:a32d2c6ebf738c04849d689ca4c722389"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2e969d7d8163a76a8117267aa52329a" id="r_ac2e969d7d8163a76a8117267aa52329a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; int, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#ac2e969d7d8163a76a8117267aa52329a">streetSegments</a></td></tr>
+<tr class="separator:ac2e969d7d8163a76a8117267aa52329a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08c2399c044fb3f2d917d1e9b07d30e7" id="r_a08c2399c044fb3f2d917d1e9b07d30e7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a08c2399c044fb3f2d917d1e9b07d30e7">streetJunctions</a> = 0</td></tr>
+<tr class="separator:a08c2399c044fb3f2d917d1e9b07d30e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaad90ebdc3bdf5ef94d2bf0dea13937c" id="r_aaad90ebdc3bdf5ef94d2bf0dea13937c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#aaad90ebdc3bdf5ef94d2bf0dea13937c">streetEnds</a> = 0</td></tr>
+<tr class="separator:aaad90ebdc3bdf5ef94d2bf0dea13937c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c46993d8e0083471387c8e24ba3f200" id="r_a8c46993d8e0083471387c8e24ba3f200"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a8c46993d8e0083471387c8e24ba3f200">totalStreetLength</a> = 0.0</td></tr>
+<tr class="separator:a8c46993d8e0083471387c8e24ba3f200"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b74274288c5f70bcd905e417ed28f02" id="r_a1b74274288c5f70bcd905e417ed28f02"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a1b74274288c5f70bcd905e417ed28f02">avgIrregularity</a> = 0.0</td></tr>
+<tr class="separator:a1b74274288c5f70bcd905e417ed28f02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a431dfc274b87af3087076f8f6b6b41d4" id="r_a431dfc274b87af3087076f8f6b6b41d4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a431dfc274b87af3087076f8f6b6b41d4">minIrregularity</a> = 0.0</td></tr>
+<tr class="separator:a431dfc274b87af3087076f8f6b6b41d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4742e400a476b6a659f7daedf12f4800" id="r_a4742e400a476b6a659f7daedf12f4800"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a4742e400a476b6a659f7daedf12f4800">maxIrregularity</a> = 0.0</td></tr>
+<tr class="separator:a4742e400a476b6a659f7daedf12f4800"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46c1ac0cc3013a22b207785fad1d5e58" id="r_a46c1ac0cc3013a22b207785fad1d5e58"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1urban_1_1UrbanLayout.html#a46c1ac0cc3013a22b207785fad1d5e58">levelsUsed</a> = 0</td></tr>
+<tr class="separator:a46c1ac0cc3013a22b207785fad1d5e58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Structured urban layout produced by the hierarchical co-generation (paper Section 4) plus the geometric optimization (paper Section 5). </p>
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00070">70</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a8e2a1c509d9e72ae9b19c6a4d1573aeb" name="a8e2a1c509d9e72ae9b19c6a4d1573aeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e2a1c509d9e72ae9b19c6a4d1573aeb">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::urban::UrbanLayout::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UrbanTypes_8h_source.html#l00080">avgIrregularity</a>, <a class="el" href="UrbanTypes_8h_source.html#l00071">corners</a>, <a class="el" href="UrbanTypes_8h_source.html#l00073">edges</a>, <a class="el" href="UrbanTypes_8h_source.html#l00083">levelsUsed</a>, <a class="el" href="UrbanTypes_8h_source.html#l00082">maxIrregularity</a>, <a class="el" href="UrbanTypes_8h_source.html#l00081">minIrregularity</a>, <a class="el" href="UrbanTypes_8h_source.html#l00072">parcels</a>, <a class="el" href="UrbanTypes_8h_source.html#l00078">streetEnds</a>, <a class="el" href="UrbanTypes_8h_source.html#l00077">streetJunctions</a>, <a class="el" href="UrbanTypes_8h_source.html#l00074">streets</a>, <a class="el" href="UrbanTypes_8h_source.html#l00075">streetSegments</a> , 以及 <a class="el" href="UrbanTypes_8h_source.html#l00079">totalStreetLength</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanGenerator_8cpp_source.html#l00479">eve::procgen::urban::UrbanGenerator::generate()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a1b74274288c5f70bcd905e417ed28f02" name="a1b74274288c5f70bcd905e417ed28f02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b74274288c5f70bcd905e417ed28f02">&#9670;&#160;</a></span>avgIrregularity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::UrbanLayout::avgIrregularity = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a3ffed9e11282ae06a12803d73838ecfd" name="a3ffed9e11282ae06a12803d73838ecfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ffed9e11282ae06a12803d73838ecfd">&#9670;&#160;</a></span>corners</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1urban_1_1Vec2.html">Vec2</a>&gt; eve::procgen::urban::UrbanLayout::corners</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="ada18fa36614350f86052d78090f1d99f" name="ada18fa36614350f86052d78090f1d99f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada18fa36614350f86052d78090f1d99f">&#9670;&#160;</a></span>edges</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1urban_1_1GraphEdge.html">GraphEdge</a>&gt; eve::procgen::urban::UrbanLayout::edges</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a46c1ac0cc3013a22b207785fad1d5e58" name="a46c1ac0cc3013a22b207785fad1d5e58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46c1ac0cc3013a22b207785fad1d5e58">&#9670;&#160;</a></span>levelsUsed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::urban::UrbanLayout::levelsUsed = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a> , 以及 <a class="el" href="UrbanGenerator_8cpp_source.html#l00479">eve::procgen::urban::UrbanGenerator::generate()</a>.</p>
+
+</div>
+</div>
+<a id="a4742e400a476b6a659f7daedf12f4800" name="a4742e400a476b6a659f7daedf12f4800"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4742e400a476b6a659f7daedf12f4800">&#9670;&#160;</a></span>maxIrregularity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::UrbanLayout::maxIrregularity = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a431dfc274b87af3087076f8f6b6b41d4" name="a431dfc274b87af3087076f8f6b6b41d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a431dfc274b87af3087076f8f6b6b41d4">&#9670;&#160;</a></span>minIrregularity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::UrbanLayout::minIrregularity = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a526378b71c9a65c53e9e4b4365259764" name="a526378b71c9a65c53e9e4b4365259764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a526378b71c9a65c53e9e4b4365259764">&#9670;&#160;</a></span>parcels</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1urban_1_1Parcel.html">Parcel</a>&gt; eve::procgen::urban::UrbanLayout::parcels</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="aaad90ebdc3bdf5ef94d2bf0dea13937c" name="aaad90ebdc3bdf5ef94d2bf0dea13937c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaad90ebdc3bdf5ef94d2bf0dea13937c">&#9670;&#160;</a></span>streetEnds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::urban::UrbanLayout::streetEnds = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a08c2399c044fb3f2d917d1e9b07d30e7" name="a08c2399c044fb3f2d917d1e9b07d30e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08c2399c044fb3f2d917d1e9b07d30e7">&#9670;&#160;</a></span>streetJunctions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::urban::UrbanLayout::streetJunctions = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a32d2c6ebf738c04849d689ca4c722389" name="a32d2c6ebf738c04849d689ca4c722389"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32d2c6ebf738c04849d689ca4c722389">&#9670;&#160;</a></span>streets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1urban_1_1Street.html">Street</a>&gt; eve::procgen::urban::UrbanLayout::streets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="ac2e969d7d8163a76a8117267aa52329a" name="ac2e969d7d8163a76a8117267aa52329a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2e969d7d8163a76a8117267aa52329a">&#9670;&#160;</a></span>streetSegments</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::pair&lt;int, int&gt; &gt; eve::procgen::urban::UrbanLayout::streetSegments</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<a id="a8c46993d8e0083471387c8e24ba3f200" name="a8c46993d8e0083471387c8e24ba3f200"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c46993d8e0083471387c8e24ba3f200">&#9670;&#160;</a></span>totalStreetLength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::urban::UrbanLayout::totalStreetLength = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a> 第 <a class="el" href="UrbanTypes_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="UrbanTypes_8h_source.html#l00085">clear()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/urban/<a class="el" href="UrbanTypes_8h_source.html">UrbanTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

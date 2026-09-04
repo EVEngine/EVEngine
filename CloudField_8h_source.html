@@ -1,0 +1,269 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/texture/CloudField.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_58df875c20f4dbb0276e827a5bf00a98.html">texture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CloudField.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CloudField_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1CloudField.html">   17</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html">   19</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CloudField_1_1Params.html">Params</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a07c791e9fc1d8ef3ae21fe2ef0ddc79a">   20</a></span>        uint32_t <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a07c791e9fc1d8ef3ae21fe2ef0ddc79a">seed</a>        = 1337;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#aa73c4ffb77ba10a272d0e38b14d41e1a">   21</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#aa73c4ffb77ba10a272d0e38b14d41e1a">worldScale</a>  = 96.f;   <span class="comment">// world units per tile (larger = larger clouds)</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a923955fa65b736e1601df5a30af00d60">   22</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a923955fa65b736e1601df5a30af00d60">coverage</a>    = 0.55f;  <span class="comment">// 0..1 fraction of sky covered (threshold)</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a34453a733f5c425647a584288680fa18">   23</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a34453a733f5c425647a584288680fa18">softness</a>    = 0.12f;  <span class="comment">// 0..1 edge softness of cloud blobs</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#ac528d34926621053feccd7be5414d5e6">   24</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#ac528d34926621053feccd7be5414d5e6">detail</a>      = 0.5f;   <span class="comment">// 0..1 high-frequency wisp detail amount</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a66cad85e8098a37f4f24d67bf7e026bb">   25</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a66cad85e8098a37f4f24d67bf7e026bb">windSpeed</a>   = 4.f;    <span class="comment">// world units / second drift speed</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a78e7080c248626b181097b89a7857ace">   26</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a78e7080c248626b181097b89a7857ace">windAngle</a>   = 0.f;    <span class="comment">// drift direction (radians, +z axis = 0)</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a6edbdec4b12dd2aea6a1cf98a75d8940">   27</a></span>        <span class="keywordtype">int</span>      <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a6edbdec4b12dd2aea6a1cf98a75d8940">octaves</a>     = 4;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a56fc2bbcfe893638ced9bf5dc0dcd57b">   28</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a56fc2bbcfe893638ced9bf5dc0dcd57b">lacunarity</a>  = 2.f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a52c7b58d77cb81464eff3afbbbaff031">   29</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a52c7b58d77cb81464eff3afbbbaff031">gain</a>        = 0.5f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a1bc3e6c7b39114b1bf10e0e958ee50dd">   30</a></span>        <span class="keywordtype">float</span>    <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a1bc3e6c7b39114b1bf10e0e958ee50dd">warp</a>        = 2.2f;   <span class="comment">// domain-warp amplitude (organic puffs)</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#aa6e49795c734d4405c71b1ac2b53688f">   31</a></span>        <span class="keywordtype">bool</span>     <a class="code hl_variable" href="structeve_1_1procgen_1_1CloudField_1_1Params.html#aa6e49795c734d4405c71b1ac2b53688f">seamless</a>    = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    };</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1CloudField.html#afd50df3f25f5c2631f193040e2a582cc">   34</a></span>    <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#afd50df3f25f5c2631f193040e2a582cc">CloudField</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1CloudField.html#ac64f88868c6df3242b59e9358fcb2513">   35</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#ac64f88868c6df3242b59e9358fcb2513">CloudField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CloudField_1_1Params.html">Params</a> &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#ac6ccc8cdf3f8605ed1688509249bd72b">params</a>) { <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a43dd72bd7c675b0cc21c87debf024df3">setParams</a>(<a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#ac6ccc8cdf3f8605ed1688509249bd72b">params</a>); }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1CloudField.html#ac6ccc8cdf3f8605ed1688509249bd72b">   37</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CloudField_1_1Params.html">Params</a> &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#ac6ccc8cdf3f8605ed1688509249bd72b">params</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> params_; }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">void</span>          <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a43dd72bd7c675b0cc21c87debf024df3">setParams</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#ac6ccc8cdf3f8605ed1688509249bd72b">params</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#ab2a04dcc9cbfd6a57151efbe701d8958">setSeed</a>(uint32_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a56c8d7b65129c48ae03c14e3b2340b37">setWorldScale</a>(<span class="keywordtype">float</span> worldScale);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#aba2810167b5012fb7260a7c2ea7ec3ee">setCoverage</a>(<span class="keywordtype">float</span> coverage);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a9bf26bbd6989ff9d4dbf36538a42565e">setSoftness</a>(<span class="keywordtype">float</span> softness);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a967586a19c1bac935abb3db7af12aed0">setDetail</a>(<span class="keywordtype">float</span> detail);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#af74534ee65d31c06e0792c24fc5176e0">setWind</a>(<span class="keywordtype">float</span> speed, <span class="keywordtype">float</span> angleRad);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#aa7cd3421b8b2aa159dc3b697f017aee7">setOctaves</a>(<span class="keywordtype">int</span> octaves);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a62c182492321d716624c9cdbf141a3b0">setWarp</a>(<span class="keywordtype">float</span> warp);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a3c9149cfc6e806334ce30e306653b62e">setSeamless</a>(<span class="keywordtype">bool</span> seamless);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a6757b1896a04213de8f9dab5e5dd26d4">coverageAt</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#abc0ffeed0b5a5fb9d15f3e3af7526358">sample</a>(<span class="keywordtype">float</span> *out, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a>, <span class="keywordtype">float</span> x0, <span class="keywordtype">float</span> z0,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                <span class="keywordtype">float</span> extent) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1procgen_1_1CloudField.html#a68768a7300ac973b3c8a6a06de355ec8">windVelocity</a>(<span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a81574a53ca33ab2f60f6481c61e3da21">vx</a>, <span class="keywordtype">float</span> &amp;<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a2dc1a0fcac235a430dd8c493502e09e1">vz</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1CloudField.html#aba05f00266288f5f1f7f2f3c7844bf45">   61</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classeve_1_1procgen_1_1CloudField.html#aba05f00266288f5f1f7f2f3c7844bf45">kLattice</a> = 64;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CloudField_1_1Params.html">Params</a> params_;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a8b8dfe2335a5bf90695960dc6a1c5d3b"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a8b8dfe2335a5bf90695960dc6a1c5d3b">time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00749">PointSet.cpp:749</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a2dc1a0fcac235a430dd8c493502e09e1"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a2dc1a0fcac235a430dd8c493502e09e1">vz</a></div><div class="ttdeci">float vz</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00174">WorldSnapshot.cpp:174</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a81574a53ca33ab2f60f6481c61e3da21"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a81574a53ca33ab2f60f6481c61e3da21">vx</a></div><div class="ttdeci">float vx</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00165">WorldSnapshot.cpp:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html">eve::procgen::CloudField</a></div><div class="ttdoc">Deterministic, seamlessly-tiling, time-animated procedural cloud field.</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00017">CloudField.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_a3c9149cfc6e806334ce30e306653b62e"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#a3c9149cfc6e806334ce30e306653b62e">eve::procgen::CloudField::setSeamless</a></div><div class="ttdeci">void setSeamless(bool seamless)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00079">CloudField.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_a43dd72bd7c675b0cc21c87debf024df3"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#a43dd72bd7c675b0cc21c87debf024df3">eve::procgen::CloudField::setParams</a></div><div class="ttdeci">void setParams(const Params &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00066">CloudField.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_a56c8d7b65129c48ae03c14e3b2340b37"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#a56c8d7b65129c48ae03c14e3b2340b37">eve::procgen::CloudField::setWorldScale</a></div><div class="ttdeci">void setWorldScale(float worldScale)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00069">CloudField.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_a62c182492321d716624c9cdbf141a3b0"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#a62c182492321d716624c9cdbf141a3b0">eve::procgen::CloudField::setWarp</a></div><div class="ttdeci">void setWarp(float warp)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00078">CloudField.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_a6757b1896a04213de8f9dab5e5dd26d4"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#a6757b1896a04213de8f9dab5e5dd26d4">eve::procgen::CloudField::coverageAt</a></div><div class="ttdeci">float coverageAt(float x, float z, float time) const</div><div class="ttdoc">Cloud coverage at world (x, z) and time t, in [0,1].</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00086">CloudField.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_a68768a7300ac973b3c8a6a06de355ec8"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#a68768a7300ac973b3c8a6a06de355ec8">eve::procgen::CloudField::windVelocity</a></div><div class="ttdeci">void windVelocity(float &amp;vx, float &amp;vz) const</div><div class="ttdoc">Drift vector (world units/sec) implied by windSpeed + windAngle.</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00081">CloudField.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_a967586a19c1bac935abb3db7af12aed0"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#a967586a19c1bac935abb3db7af12aed0">eve::procgen::CloudField::setDetail</a></div><div class="ttdeci">void setDetail(float detail)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00072">CloudField.cpp:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_a9bf26bbd6989ff9d4dbf36538a42565e"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#a9bf26bbd6989ff9d4dbf36538a42565e">eve::procgen::CloudField::setSoftness</a></div><div class="ttdeci">void setSoftness(float softness)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00071">CloudField.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_aa7cd3421b8b2aa159dc3b697f017aee7"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#aa7cd3421b8b2aa159dc3b697f017aee7">eve::procgen::CloudField::setOctaves</a></div><div class="ttdeci">void setOctaves(int octaves)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00077">CloudField.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_ab2a04dcc9cbfd6a57151efbe701d8958"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#ab2a04dcc9cbfd6a57151efbe701d8958">eve::procgen::CloudField::setSeed</a></div><div class="ttdeci">void setSeed(uint32_t seed)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00068">CloudField.cpp:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_aba05f00266288f5f1f7f2f3c7844bf45"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#aba05f00266288f5f1f7f2f3c7844bf45">eve::procgen::CloudField::kLattice</a></div><div class="ttdeci">static constexpr int kLattice</div><div class="ttdoc">Internal lattice resolution per tile (also the noise wrap period).</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00061">CloudField.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_aba2810167b5012fb7260a7c2ea7ec3ee"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#aba2810167b5012fb7260a7c2ea7ec3ee">eve::procgen::CloudField::setCoverage</a></div><div class="ttdeci">void setCoverage(float coverage)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00070">CloudField.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_abc0ffeed0b5a5fb9d15f3e3af7526358"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#abc0ffeed0b5a5fb9d15f3e3af7526358">eve::procgen::CloudField::sample</a></div><div class="ttdeci">void sample(float *out, int width, int height, float time, float x0, float z0, float extent) const</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00125">CloudField.cpp:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_ac64f88868c6df3242b59e9358fcb2513"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#ac64f88868c6df3242b59e9358fcb2513">eve::procgen::CloudField::CloudField</a></div><div class="ttdeci">CloudField(const Params &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00035">CloudField.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_ac6ccc8cdf3f8605ed1688509249bd72b"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#ac6ccc8cdf3f8605ed1688509249bd72b">eve::procgen::CloudField::params</a></div><div class="ttdeci">const Params &amp; params() const</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00037">CloudField.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_af74534ee65d31c06e0792c24fc5176e0"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#af74534ee65d31c06e0792c24fc5176e0">eve::procgen::CloudField::setWind</a></div><div class="ttdeci">void setWind(float speed, float angleRad)</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8cpp_source.html#l00073">CloudField.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1CloudField_html_afd50df3f25f5c2631f193040e2a582cc"><div class="ttname"><a href="classeve_1_1procgen_1_1CloudField.html#afd50df3f25f5c2631f193040e2a582cc">eve::procgen::CloudField::CloudField</a></div><div class="ttdeci">CloudField()=default</div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html">eve::procgen::Params</a></div><div class="ttdoc">Owning, typed generation parameters.</div><div class="ttdef"><b>Definition</b> <a href="Params_8h_source.html#l00025">Params.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html">eve::procgen::CloudField::Params</a></div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00019">CloudField.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a07c791e9fc1d8ef3ae21fe2ef0ddc79a"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a07c791e9fc1d8ef3ae21fe2ef0ddc79a">eve::procgen::CloudField::Params::seed</a></div><div class="ttdeci">uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00020">CloudField.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a1bc3e6c7b39114b1bf10e0e958ee50dd"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a1bc3e6c7b39114b1bf10e0e958ee50dd">eve::procgen::CloudField::Params::warp</a></div><div class="ttdeci">float warp</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00030">CloudField.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a34453a733f5c425647a584288680fa18"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a34453a733f5c425647a584288680fa18">eve::procgen::CloudField::Params::softness</a></div><div class="ttdeci">float softness</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00023">CloudField.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a52c7b58d77cb81464eff3afbbbaff031"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a52c7b58d77cb81464eff3afbbbaff031">eve::procgen::CloudField::Params::gain</a></div><div class="ttdeci">float gain</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00029">CloudField.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a56fc2bbcfe893638ced9bf5dc0dcd57b"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a56fc2bbcfe893638ced9bf5dc0dcd57b">eve::procgen::CloudField::Params::lacunarity</a></div><div class="ttdeci">float lacunarity</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00028">CloudField.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a66cad85e8098a37f4f24d67bf7e026bb"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a66cad85e8098a37f4f24d67bf7e026bb">eve::procgen::CloudField::Params::windSpeed</a></div><div class="ttdeci">float windSpeed</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00025">CloudField.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a6edbdec4b12dd2aea6a1cf98a75d8940"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a6edbdec4b12dd2aea6a1cf98a75d8940">eve::procgen::CloudField::Params::octaves</a></div><div class="ttdeci">int octaves</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00027">CloudField.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a78e7080c248626b181097b89a7857ace"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a78e7080c248626b181097b89a7857ace">eve::procgen::CloudField::Params::windAngle</a></div><div class="ttdeci">float windAngle</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00026">CloudField.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_a923955fa65b736e1601df5a30af00d60"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#a923955fa65b736e1601df5a30af00d60">eve::procgen::CloudField::Params::coverage</a></div><div class="ttdeci">float coverage</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00022">CloudField.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_aa6e49795c734d4405c71b1ac2b53688f"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#aa6e49795c734d4405c71b1ac2b53688f">eve::procgen::CloudField::Params::seamless</a></div><div class="ttdeci">bool seamless</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00031">CloudField.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_aa73c4ffb77ba10a272d0e38b14d41e1a"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#aa73c4ffb77ba10a272d0e38b14d41e1a">eve::procgen::CloudField::Params::worldScale</a></div><div class="ttdeci">float worldScale</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00021">CloudField.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CloudField_1_1Params_html_ac528d34926621053feccd7be5414d5e6"><div class="ttname"><a href="structeve_1_1procgen_1_1CloudField_1_1Params.html#ac528d34926621053feccd7be5414d5e6">eve::procgen::CloudField::Params::detail</a></div><div class="ttdeci">float detail</div><div class="ttdef"><b>Definition</b> <a href="CloudField_8h_source.html#l00024">CloudField.h:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

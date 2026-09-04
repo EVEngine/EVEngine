@@ -1,0 +1,941 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Optional physics backend for vehicle mobility and body attach.  
+<a href="namespaceeve_1_1physics.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1physics_1_1detail" id="r_namespaceeve_1_1physics_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1detail.html">detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body.html">Body</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D rigid body (Box2D) in pixel-space coordinates. Owned by a <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>; create shapes with newRectangleFixture/newCircleFixture.  <a href="classeve_1_1physics_1_1Body.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D rigid body (Box3D) in meter-space coordinates (+Y up by convention). Owned by a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>; create primitive or convex-hull shapes with the new*Shape APIs.  <a href="classeve_1_1physics_1_1Body3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1BroadPhaseAabb3D.html">BroadPhaseAabb3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed-capacity deterministic result of one AABB broad-phase query.  <a href="structeve_1_1physics_1_1BroadPhaseAabb3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1BroadPhaseHit3D.html">BroadPhaseHit3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One generation-qualified shape returned by an owning broad-phase query.  <a href="structeve_1_1physics_1_1BroadPhaseHit3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CameraSphereHit3D.html">CameraSphereHit3D</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMove3D.html">CapsuleMove3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result of continuous capsule movement.  <a href="structeve_1_1physics_1_1CapsuleMove3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleMovePolicy3D.html">CapsuleMovePolicy3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-call capsule mover classification policy; never mutates persistent <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> settings.  <a href="structeve_1_1physics_1_1CapsuleMovePolicy3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1CapsuleOverlap3D.html">CapsuleOverlap3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning summary of a capsule overlap query.  <a href="structeve_1_1physics_1_1CapsuleOverlap3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth.html">Cloth</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactive 2D cloth — Verlet particles + distance constraints. Pixel space (same convention as Box2D <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>). Script-owned.  <a href="classeve_1_1physics_1_1Cloth.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactive 3D cloth — Verlet particles + distance constraints. Meter space, +Y up, grid laid out in the XZ plane with the top row pinned.  <a href="classeve_1_1physics_1_1Cloth3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1ClothContact3D.html">ClothContact3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of a 3D point probe: deepest non-sensor shape within radius. Normal points from the shape toward the probed point (meters).  <a href="structeve_1_1physics_1_1ClothContact3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ClothGPU.html">ClothGPU</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU-accelerated 2D cloth — Verlet integration and distance-constraint relaxation run in a Vulkan compute shader; positions are read back each frame for drawing. Same pixel-space conventions and script API shape as <a class="el" href="classeve_1_1physics_1_1Cloth.html" title="Interactive 2D cloth — Verlet particles + distance constraints. Pixel space (same convention as Box2D...">Cloth</a>.  <a href="classeve_1_1physics_1_1ClothGPU.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ContactRelay.html">ContactRelay</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1DistanceField3D.html">DistanceField3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regular 3D signed-distance grid for terrain and voxel collision queries. Negative samples are solid, positive samples are empty. Samples are stored at grid vertices and queried with trilinear interpolation.  <a href="classeve_1_1physics_1_1DistanceField3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D fixture: a shape attached to a <a class="el" href="classeve_1_1physics_1_1Body.html" title="2D rigid body (Box2D) in pixel-space coordinates. Owned by a World; create shapes with newRectangleFi...">Body</a> with material + filter settings. Also carries a string tag used by contact events.  <a href="classeve_1_1physics_1_1Fixture.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Fluid2D.html">Fluid2D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactive 2D particle fluid (double-density relaxation) in pixel space. Script-owned; independent of Box2D <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a>.  <a href="classeve_1_1physics_1_1Fluid2D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html">IAcceleratorBackendProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional provider that creates an accelerator backend for domain state.  <a href="classeve_1_1physics_1_1IAcceleratorBackendProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">ISimulationBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal observable contract for physics simulation providers.  <a href="classeve_1_1physics_1_1ISimulationBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script-facing Box3D joint owned by a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>.  <a href="classeve_1_1physics_1_1Joint3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Physics.html">Physics</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1physics_1_1Physics.html" title="Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive 2D/3D cloth (Verlet,...">Physics</a> module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive 2D/3D cloth (Verlet, self-collision, fold limit, body collision) and SPH fluid. Script: <code>physics &lt;- eve.Physics(); world &lt;- physics.newWorld(0, 900);</code> <code>world3 &lt;- physics.newWorld3D(0, -9.8, 0);</code> <code>cloth3 &lt;- physics.newCloth3D(18, 12, 0.5, 0, 5, 0);</code>  <a href="classeve_1_1physics_1_1Physics.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsArtifactCollider.html">PhysicsArtifactCollider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queryable CPU collider resource owned by the physics module.  <a href="structeve_1_1physics_1_1PhysicsArtifactCollider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsArtifactHandleTag.html">PhysicsArtifactHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner tag for physics artifact runtime handles.  <a href="structeve_1_1physics_1_1PhysicsArtifactHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html">PhysicsArtifactProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Real physics-module provider for generated collider publication.  <a href="classeve_1_1physics_1_1PhysicsArtifactProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsArtifactRayHit.html">PhysicsArtifactRayHit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral ray-query result used for parity tests.  <a href="structeve_1_1physics_1_1PhysicsArtifactRayHit.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactStage.html">PhysicsArtifactStage</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Staged, owning Box3D construction for one provider mutation.  <a href="classeve_1_1physics_1_1PhysicsArtifactStage.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsBodyHandleTag.html">PhysicsBodyHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag for a process-local physics-body handle.  <a href="structeve_1_1physics_1_1PhysicsBodyHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsJointHandleTag.html">PhysicsJointHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag for a process-local physics-joint handle.  <a href="structeve_1_1physics_1_1PhysicsJointHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsJointLink.html">PhysicsJointLink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified relationship between a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> and one joint.  <a href="structeve_1_1physics_1_1PhysicsJointLink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsLink.html">PhysicsLink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified relationship between one world and one body.  <a href="structeve_1_1physics_1_1PhysicsLink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsShapeHandleTag.html">PhysicsShapeHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag for a process-local physics-shape handle.  <a href="structeve_1_1physics_1_1PhysicsShapeHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsShapeLink.html">PhysicsShapeLink</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified relationship between a <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> and one shape.  <a href="structeve_1_1physics_1_1PhysicsShapeLink.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsVector3D.html">PhysicsVector3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocation-free owning three-dimensional physics value.  <a href="structeve_1_1physics_1_1PhysicsVector3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1PhysicsWorldHandleTag.html">PhysicsWorldHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag for a process-local physics-world handle.  <a href="structeve_1_1physics_1_1PhysicsWorldHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1QueryFilter3D.html">QueryFilter3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query filter applied atomically for one owning query operation.  <a href="structeve_1_1physics_1_1QueryFilter3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1RayHit3D.html">RayHit3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning snapshot of the closest ray intersection.  <a href="structeve_1_1physics_1_1RayHit3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D shape (box/sphere/capsule) attached to a <a class="el" href="classeve_1_1physics_1_1Body3D.html" title="3D rigid body (Box3D) in meter-space coordinates (+Y up by convention). Owned by a World3D; create pr...">Body3D</a> with material settings. Created via Body3D::new*Shape; owned by the world.  <a href="classeve_1_1physics_1_1Shape3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SimulationBackendSelection.html">SimulationBackendSelection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of choosing an optional accelerator or CPU alternate path.  <a href="structeve_1_1physics_1_1SimulationBackendSelection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable backend progress shared by CPU and accelerator providers.  <a href="structeve_1_1physics_1_1SimulationObservation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validated solver policy for one simulation step.  <a href="structeve_1_1physics_1_1SimulationSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1TargetingLineOfSightAdapter.html">TargetingLineOfSightAdapter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only 3D physics implementation of sensing's LOS capability.  <a href="classeve_1_1physics_1_1TargetingLineOfSightAdapter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World.html">World</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity, raycasts, AABB queries and contact/impact events.  <a href="classeve_1_1physics_1_1World.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D <a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> which uses pixels + <a class="el" href="classeve_1_1physics_1_1Physics.html#a739f9086f8cf0bcafaf3cc4f7c06eb60" title="Pixels per meter for 2D Box2D worlds (default 30, same as LÖVE).">Physics.setMeter</a>.  <a href="classeve_1_1physics_1_1World3D.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:adaab508c1e6a7dc57ae112943b21beed" id="r_adaab508c1e6a7dc57ae112943b21beed"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#adaab508c1e6a7dc57ae112943b21beed">PhysicsArtifactHandle</a> = <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; <a class="el" href="structeve_1_1physics_1_1PhysicsArtifactHandleTag.html">PhysicsArtifactHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:adaab508c1e6a7dc57ae112943b21beed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified handle for a physics artifact collider.  <br /></td></tr>
+<tr class="separator:adaab508c1e6a7dc57ae112943b21beed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfb417bf113fda3ce332253c1cd30cd4" id="r_acfb417bf113fda3ce332253c1cd30cd4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#acfb417bf113fda3ce332253c1cd30cd4">PhysicsWorldHandle</a> = <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; <a class="el" href="structeve_1_1physics_1_1PhysicsWorldHandleTag.html">PhysicsWorldHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:acfb417bf113fda3ce332253c1cd30cd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified runtime identity for a physics world.  <br /></td></tr>
+<tr class="separator:acfb417bf113fda3ce332253c1cd30cd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af19be51edf7c02c551a459bc96bd2058" id="r_af19be51edf7c02c551a459bc96bd2058"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#af19be51edf7c02c551a459bc96bd2058">PhysicsBodyHandle</a> = <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; <a class="el" href="structeve_1_1physics_1_1PhysicsBodyHandleTag.html">PhysicsBodyHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:af19be51edf7c02c551a459bc96bd2058"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified runtime identity for a physics body.  <br /></td></tr>
+<tr class="separator:af19be51edf7c02c551a459bc96bd2058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12dfb74a16ce0dd4fb57d3a038fa32bf" id="r_a12dfb74a16ce0dd4fb57d3a038fa32bf"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a12dfb74a16ce0dd4fb57d3a038fa32bf">PhysicsShapeHandle</a> = <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; <a class="el" href="structeve_1_1physics_1_1PhysicsShapeHandleTag.html">PhysicsShapeHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:a12dfb74a16ce0dd4fb57d3a038fa32bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified runtime identity for a physics shape.  <br /></td></tr>
+<tr class="separator:a12dfb74a16ce0dd4fb57d3a038fa32bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9a01f3ceda5dd6ab7c8e780116567c3" id="r_ae9a01f3ceda5dd6ab7c8e780116567c3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">PhysicsJointHandle</a> = <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt; <a class="el" href="structeve_1_1physics_1_1PhysicsJointHandleTag.html">PhysicsJointHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:ae9a01f3ceda5dd6ab7c8e780116567c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified runtime identity for a physics joint.  <br /></td></tr>
+<tr class="separator:ae9a01f3ceda5dd6ab7c8e780116567c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae90b9d63f8076e9ec80145c36fcb8d8" id="r_aae90b9d63f8076e9ec80145c36fcb8d8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#aae90b9d63f8076e9ec80145c36fcb8d8">SimulationStep</a> = <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></td></tr>
+<tr class="memdesc:aae90b9d63f8076e9ec80145c36fcb8d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility alias for the common injected simulation step.  <br /></td></tr>
+<tr class="separator:aae90b9d63f8076e9ec80145c36fcb8d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d8dc68b18c894df92a1492ff51671d9" id="r_a1d8dc68b18c894df92a1492ff51671d9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a1d8dc68b18c894df92a1492ff51671d9">SimulationStepCallback</a> = void(*)(void *context, const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;settings) noexcept</td></tr>
+<tr class="memdesc:a1d8dc68b18c894df92a1492ff51671d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback used by a domain-owned CPU or test backend adapter.  <br /></td></tr>
+<tr class="separator:a1d8dc68b18c894df92a1492ff51671d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a335229e81e1591383f68f144d175c0fb" id="r_a335229e81e1591383f68f144d175c0fb"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> { <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">Cpu</a>
+, <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38">Gpu</a>
+, <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba9134493b11bb1d7801d8a1e1fe31ef8a">MockAccelerator</a>
+ }</td></tr>
+<tr class="memdesc:a335229e81e1591383f68f144d175c0fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Kind of implementation that owns a simulation step.  <a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">更多...</a><br /></td></tr>
+<tr class="separator:a335229e81e1591383f68f144d175c0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d8538622ecace62d228f842ec9c31f9" id="r_a7d8538622ecace62d228f842ec9c31f9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">SimulationBackendDomain</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a4d76529bd9ee0e72a21141dd19475aac">World2D</a>
+, <a class="el" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f">World3D</a>
+, <a class="el" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a1bae019c5bafde4144268902e62dbf5e">Cloth2D</a>
+, <a class="el" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a912eefe59cc36b190aecdab602c1c185">Cloth3D</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9a29ae03aad9b5970bf4ecabc20b8529a1">SurfaceFluid</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a7d8538622ecace62d228f842ec9c31f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Domain state consumed by an accelerator provider.  <a href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">更多...</a><br /></td></tr>
+<tr class="separator:a7d8538622ecace62d228f842ec9c31f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa67e2557397fd06af07a4a5fd74f8d14" id="r_aa67e2557397fd06af07a4a5fd74f8d14"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> { <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a90875be77cd9edc14c16d939b34cfbbb">BitExact</a>
+, <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">ToleranceBounded</a>
+, <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a98c30e0498572049c798ca03ec44b44b">ExplicitlyNondeterministic</a>
+ }</td></tr>
+<tr class="memdesc:aa67e2557397fd06af07a4a5fd74f8d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determinism guarantee made by a simulation backend.  <a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">更多...</a><br /></td></tr>
+<tr class="separator:aa67e2557397fd06af07a4a5fd74f8d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a4d9e89219c937bca623c4b6102c1f665" id="r_a4d9e89219c937bca623c4b6102c1f665"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html">PhysicsArtifactProvider</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a4d9e89219c937bca623c4b6102c1f665">physicsArtifactProvider</a> () noexcept</td></tr>
+<tr class="memdesc:a4d9e89219c937bca623c4b6102c1f665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the process-owned physics artifact provider singleton.  <br /></td></tr>
+<tr class="separator:a4d9e89219c937bca623c4b6102c1f665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7eb76f471a6afcd3fa30156c076a68d" id="r_ab7eb76f471a6afcd3fa30156c076a68d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#ab7eb76f471a6afcd3fa30156c076a68d">registerPhysicsArtifactProvider</a> ()</td></tr>
+<tr class="memdesc:ab7eb76f471a6afcd3fa30156c076a68d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the physics provider in the common capability registry.  <br /></td></tr>
+<tr class="separator:ab7eb76f471a6afcd3fa30156c076a68d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1b579ec02115b250491e211cff7d4f8" id="r_ad1b579ec02115b250491e211cff7d4f8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#ad1b579ec02115b250491e211cff7d4f8">Module_IMPL</a> (<a class="el" href="classeve_1_1physics_1_1Physics.html">Physics</a>, new <a class="el" href="classeve_1_1physics_1_1Physics.html">Physics</a>())</td></tr>
+<tr class="separator:ad1b579ec02115b250491e211cff7d4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbd44d9c865d76a785d70fe36a5d1ea9" id="r_abbd44d9c865d76a785d70fe36a5d1ea9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#abbd44d9c865d76a785d70fe36a5d1ea9">registerPhysicsCapabilities</a> ()</td></tr>
+<tr class="separator:abbd44d9c865d76a785d70fe36a5d1ea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4d1b48d2cc3f74f26d498b7f8c7de18" id="r_ac4d1b48d2cc3f74f26d498b7f8c7de18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#ac4d1b48d2cc3f74f26d498b7f8c7de18">registerCameraObstructionWorld</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="separator:ac4d1b48d2cc3f74f26d498b7f8c7de18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1960bec62ff0ca0de98aa820491234c3" id="r_a1960bec62ff0ca0de98aa820491234c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a1960bec62ff0ca0de98aa820491234c3">registerTargetingLineOfSightWorld</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>)</td></tr>
+<tr class="memdesc:a1960bec62ff0ca0de98aa820491234c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers a borrowed live <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> with the targeting LOS adapter.  <br /></td></tr>
+<tr class="separator:a1960bec62ff0ca0de98aa820491234c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2913d37c7743eab656eb4cb53efc71e9" id="r_a2913d37c7743eab656eb4cb53efc71e9"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a2913d37c7743eab656eb4cb53efc71e9">simulationBackendKindName</a> (<a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:a2913d37c7743eab656eb4cb53efc71e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable backend-kind spelling.  <br /></td></tr>
+<tr class="separator:a2913d37c7743eab656eb4cb53efc71e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af69bfc7c156c5fc220e5cdc074c2b746" id="r_af69bfc7c156c5fc220e5cdc074c2b746"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#af69bfc7c156c5fc220e5cdc074c2b746">simulationDeterminismName</a> (<a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> determinism) noexcept</td></tr>
+<tr class="memdesc:af69bfc7c156c5fc220e5cdc074c2b746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable determinism-contract spelling.  <br /></td></tr>
+<tr class="separator:af69bfc7c156c5fc220e5cdc074c2b746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a147ce914e496902ed5af36bde2bfc28f" id="r_a147ce914e496902ed5af36bde2bfc28f"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a147ce914e496902ed5af36bde2bfc28f">operator&lt;&lt;</a> (std::ostream &amp;stream, <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="memdesc:a147ce914e496902ed5af36bde2bfc28f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a backend kind for diagnostics.  <br /></td></tr>
+<tr class="separator:a147ce914e496902ed5af36bde2bfc28f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab17a0745282b122938f2cd9de8cf88c1" id="r_ab17a0745282b122938f2cd9de8cf88c1"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#ab17a0745282b122938f2cd9de8cf88c1">operator&lt;&lt;</a> (std::ostream &amp;stream, <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> determinism)</td></tr>
+<tr class="memdesc:ab17a0745282b122938f2cd9de8cf88c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a determinism contract for diagnostics.  <br /></td></tr>
+<tr class="separator:ab17a0745282b122938f2cd9de8cf88c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Optional physics backend for vehicle mobility and body attach. </p>
+<p>载具模块数据模型：载具模板 / 命令 / 载具实体。</p>
+<p><a class="el" href="VehiclePhysics_8cpp.html">VehiclePhysics.cpp</a> is compiled only when the physics module is enabled; <a class="el" href="VehiclePhysicsAbsent_8cpp.html">VehiclePhysicsAbsent.cpp</a> is compiled otherwise. Callers always link one of the two and must not include physics headers.</p>
+<p>与引擎其他玩法模块一致（参考 card / weapon / rpg）：组件是纯数据结构体， 行为放在 VehicleSystem（静态类）与 IVehicleMobility（可插拔移动模型）里。 载具可以声明武器挂点（MountDef），运行时由 Vehicle 模块通过 weapon 模块 创建 WeaponMountEntity 并挂载武器——RTS / 坦克 / FPS 的区别只体现在 命令队列 / 驾驶输入 / 座位（Phase 4）这些可选面上。 </p>
+</div><h2 class="groupheader">类型定义说明</h2>
+<a id="adaab508c1e6a7dc57ae112943b21beed" name="adaab508c1e6a7dc57ae112943b21beed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaab508c1e6a7dc57ae112943b21beed">&#9670;&#160;</a></span>PhysicsArtifactHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1physics.html#adaab508c1e6a7dc57ae112943b21beed">eve::physics::PhysicsArtifactHandle</a> = typedef <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt;<a class="el" href="structeve_1_1physics_1_1PhysicsArtifactHandleTag.html">PhysicsArtifactHandleTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation-qualified handle for a physics artifact collider. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8h_source.html">ArtifactProvider.h</a> 第 <a class="el" href="physics_2ArtifactProvider_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af19be51edf7c02c551a459bc96bd2058" name="af19be51edf7c02c551a459bc96bd2058"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af19be51edf7c02c551a459bc96bd2058">&#9670;&#160;</a></span>PhysicsBodyHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1physics.html#af19be51edf7c02c551a459bc96bd2058">eve::physics::PhysicsBodyHandle</a> = typedef <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt;<a class="el" href="structeve_1_1physics_1_1PhysicsBodyHandleTag.html">PhysicsBodyHandleTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation-qualified runtime identity for a physics body. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsHandles_8h_source.html">PhysicsHandles.h</a> 第 <a class="el" href="PhysicsHandles_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9a01f3ceda5dd6ab7c8e780116567c3" name="ae9a01f3ceda5dd6ab7c8e780116567c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9a01f3ceda5dd6ab7c8e780116567c3">&#9670;&#160;</a></span>PhysicsJointHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1physics.html#ae9a01f3ceda5dd6ab7c8e780116567c3">eve::physics::PhysicsJointHandle</a> = typedef <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt;<a class="el" href="structeve_1_1physics_1_1PhysicsJointHandleTag.html">PhysicsJointHandleTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation-qualified runtime identity for a physics joint. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsHandles_8h_source.html">PhysicsHandles.h</a> 第 <a class="el" href="PhysicsHandles_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a12dfb74a16ce0dd4fb57d3a038fa32bf" name="a12dfb74a16ce0dd4fb57d3a038fa32bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12dfb74a16ce0dd4fb57d3a038fa32bf">&#9670;&#160;</a></span>PhysicsShapeHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1physics.html#a12dfb74a16ce0dd4fb57d3a038fa32bf">eve::physics::PhysicsShapeHandle</a> = typedef <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt;<a class="el" href="structeve_1_1physics_1_1PhysicsShapeHandleTag.html">PhysicsShapeHandleTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation-qualified runtime identity for a physics shape. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsHandles_8h_source.html">PhysicsHandles.h</a> 第 <a class="el" href="PhysicsHandles_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfb417bf113fda3ce332253c1cd30cd4" name="acfb417bf113fda3ce332253c1cd30cd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfb417bf113fda3ce332253c1cd30cd4">&#9670;&#160;</a></span>PhysicsWorldHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1physics.html#acfb417bf113fda3ce332253c1cd30cd4">eve::physics::PhysicsWorldHandle</a> = typedef <a class="el" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a>&lt;<a class="el" href="structeve_1_1physics_1_1PhysicsWorldHandleTag.html">PhysicsWorldHandleTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation-qualified runtime identity for a physics world. </p>
+
+<p class="definition">在文件 <a class="el" href="PhysicsHandles_8h_source.html">PhysicsHandles.h</a> 第 <a class="el" href="PhysicsHandles_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aae90b9d63f8076e9ec80145c36fcb8d8" name="aae90b9d63f8076e9ec80145c36fcb8d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae90b9d63f8076e9ec80145c36fcb8d8">&#9670;&#160;</a></span>SimulationStep</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1physics.html#aae90b9d63f8076e9ec80145c36fcb8d8">eve::physics::SimulationStep</a> = typedef <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility alias for the common injected simulation step. </p>
+<p><a class="el" href="classeve_1_1physics_1_1Physics.html" title="Physics module — Box2D (2D) + Box3D (3D) rigid bodies, plus interactive 2D/3D cloth (Verlet,...">Physics</a> does not define a second time value. <code><a class="el" href="structeve_1_1SimulationStep.html" title="One deterministic fixed-step emitted by SimulationClock.">eve::SimulationStep</a></code> carries both the monotonically increasing persisted tick and the fixed duration. </p>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d8dc68b18c894df92a1492ff51671d9" name="a1d8dc68b18c894df92a1492ff51671d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d8dc68b18c894df92a1492ff51671d9">&#9670;&#160;</a></span>SimulationStepCallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1physics.html#a1d8dc68b18c894df92a1492ff51671d9">eve::physics::SimulationStepCallback</a> = typedef void (*)(void* context, const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a>&amp; <a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, const <a class="el" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a>&amp; settings) noexcept</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Callback used by a domain-owned CPU or test backend adapter. </p>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00238">238</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a7d8538622ecace62d228f842ec9c31f9" name="a7d8538622ecace62d228f842ec9c31f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d8538622ecace62d228f842ec9c31f9">&#9670;&#160;</a></span>SimulationBackendDomain</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1physics.html#a7d8538622ecace62d228f842ec9c31f9">eve::physics::SimulationBackendDomain</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Domain state consumed by an accelerator provider. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a7d8538622ecace62d228f842ec9c31f9a4d76529bd9ee0e72a21141dd19475aac" name="a7d8538622ecace62d228f842ec9c31f9a4d76529bd9ee0e72a21141dd19475aac"></a>World2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f" name="a7d8538622ecace62d228f842ec9c31f9a166716ea7db45e888f81b52ce91a716f"></a>World3D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7d8538622ecace62d228f842ec9c31f9a1bae019c5bafde4144268902e62dbf5e" name="a7d8538622ecace62d228f842ec9c31f9a1bae019c5bafde4144268902e62dbf5e"></a>Cloth2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7d8538622ecace62d228f842ec9c31f9a912eefe59cc36b190aecdab602c1c185" name="a7d8538622ecace62d228f842ec9c31f9a912eefe59cc36b190aecdab602c1c185"></a>Cloth3D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a7d8538622ecace62d228f842ec9c31f9a29ae03aad9b5970bf4ecabc20b8529a1" name="a7d8538622ecace62d228f842ec9c31f9a29ae03aad9b5970bf4ecabc20b8529a1"></a>SurfaceFluid&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a335229e81e1591383f68f144d175c0fb" name="a335229e81e1591383f68f144d175c0fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a335229e81e1591383f68f144d175c0fb">&#9670;&#160;</a></span>SimulationBackendKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">eve::physics::SimulationBackendKind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Kind of implementation that owns a simulation step. </p>
+<p><code>Gpu</code> is reserved for a real accelerator provider. <code>MockAccelerator</code> is a provider used by contract tests and headless integrations; it deliberately has no graphics or device dependency. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e" name="a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e"></a>Cpu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38" name="a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38"></a>Gpu&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a335229e81e1591383f68f144d175c0fba9134493b11bb1d7801d8a1e1fe31ef8a" name="a335229e81e1591383f68f144d175c0fba9134493b11bb1d7801d8a1e1fe31ef8a"></a>MockAccelerator&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa67e2557397fd06af07a4a5fd74f8d14" name="aa67e2557397fd06af07a4a5fd74f8d14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa67e2557397fd06af07a4a5fd74f8d14">&#9670;&#160;</a></span>SimulationDeterminism</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">eve::physics::SimulationDeterminism</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Determinism guarantee made by a simulation backend. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa67e2557397fd06af07a4a5fd74f8d14a90875be77cd9edc14c16d939b34cfbbb" name="aa67e2557397fd06af07a4a5fd74f8d14a90875be77cd9edc14c16d939b34cfbbb"></a>BitExact&#160;</td><td class="fielddoc"><p>Same inputs produce identical bits under the declared runtime. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059" name="aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059"></a>ToleranceBounded&#160;</td><td class="fielddoc"><p>Results are equivalent within a documented numeric tolerance. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aa67e2557397fd06af07a4a5fd74f8d14a98c30e0498572049c798ca03ec44b44b" name="aa67e2557397fd06af07a4a5fd74f8d14a98c30e0498572049c798ca03ec44b44b"></a>ExplicitlyNondeterministic&#160;</td><td class="fielddoc"><p>Results may vary and are not suitable for replay equality. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ad1b579ec02115b250491e211cff7d4f8" name="ad1b579ec02115b250491e211cff7d4f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1b579ec02115b250491e211cff7d4f8">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Physics.html">Physics</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Physics</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a147ce914e496902ed5af36bde2bfc28f" name="a147ce914e496902ed5af36bde2bfc28f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a147ce914e496902ed5af36bde2bfc28f">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; eve::physics::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes a backend kind for diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="SimulationBackend_8h_source.html#l00057">simulationBackendKindName()</a>.</p>
+
+</div>
+</div>
+<a id="ab17a0745282b122938f2cd9de8cf88c1" name="ab17a0745282b122938f2cd9de8cf88c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab17a0745282b122938f2cd9de8cf88c1">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; eve::physics::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a>&#160;</td>
+          <td class="paramname"><em>determinism</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes a determinism contract for diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SimulationBackend_8h_source.html#l00067">simulationDeterminismName()</a>.</p>
+
+</div>
+</div>
+<a id="a4d9e89219c937bca623c4b6102c1f665" name="a4d9e89219c937bca623c4b6102c1f665"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d9e89219c937bca623c4b6102c1f665">&#9670;&#160;</a></span>physicsArtifactProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1PhysicsArtifactProvider.html">PhysicsArtifactProvider</a> &amp; eve::physics::physicsArtifactProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the process-owned physics artifact provider singleton. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00500">500</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00505">registerPhysicsArtifactProvider()</a>.</p>
+
+</div>
+</div>
+<a id="ac4d1b48d2cc3f74f26d498b7f8c7de18" name="ac4d1b48d2cc3f74f26d498b7f8c7de18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4d1b48d2cc3f74f26d498b7f8c7de18">&#9670;&#160;</a></span>registerCameraObstructionWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::registerCameraObstructionWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicsCapabilities_8cpp_source.html">PhysicsCapabilities.cpp</a> 第 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7eb76f471a6afcd3fa30156c076a68d" name="ab7eb76f471a6afcd3fa30156c076a68d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7eb76f471a6afcd3fa30156c076a68d">&#9670;&#160;</a></span>registerPhysicsArtifactProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::registerPhysicsArtifactProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register the physics provider in the common capability registry. </p>
+<p>Registers the backend-neutral generated-artifact collider provider. </p>
+
+<p class="definition">在文件 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html">ArtifactProvider.cpp</a> 第 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00505">505</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00500">physicsArtifactProvider()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00157">registerPhysicsCapabilities()</a>.</p>
+
+</div>
+</div>
+<a id="abbd44d9c865d76a785d70fe36a5d1ea9" name="abbd44d9c865d76a785d70fe36a5d1ea9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbd44d9c865d76a785d70fe36a5d1ea9">&#9670;&#160;</a></span>registerPhysicsCapabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::registerPhysicsCapabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PhysicsCapabilities_8cpp_source.html">PhysicsCapabilities.cpp</a> 第 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00014">impl</a> , 以及 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00505">registerPhysicsArtifactProvider()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Physics_8cpp_source.html#l00026">eve::physics::Physics::Physics()</a>.</p>
+
+</div>
+</div>
+<a id="a1960bec62ff0ca0de98aa820491234c3" name="a1960bec62ff0ca0de98aa820491234c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1960bec62ff0ca0de98aa820491234c3">&#9670;&#160;</a></span>registerTargetingLineOfSightWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::registerTargetingLineOfSightWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> *&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers a borrowed live <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> with the targeting LOS adapter. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td>Non-null live <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>. Its lifetime is tracked weakly. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, NoOp for the same world, Conflict for another active world, or a structured failure for an invalid world. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>Synchronous simulation-thread operation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="PhysicsCapabilities_8cpp_source.html">PhysicsCapabilities.cpp</a> 第 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3D_8cpp_source.html#l00161">eve::physics::World3D::World3D()</a>.</p>
+
+</div>
+</div>
+<a id="a2913d37c7743eab656eb4cb53efc71e9" name="a2913d37c7743eab656eb4cb53efc71e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2913d37c7743eab656eb4cb53efc71e9">&#9670;&#160;</a></span>simulationBackendKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::physics::simulationBackendKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the stable backend-kind spelling. </p>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">Cpu</a>, <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba3432ca64f06615abf07ab44c10cada38">Gpu</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba9134493b11bb1d7801d8a1e1fe31ef8a">MockAccelerator</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SimulationBackend_8h_source.html#l00077">operator&lt;&lt;()</a>.</p>
+
+</div>
+</div>
+<a id="af69bfc7c156c5fc220e5cdc074c2b746" name="af69bfc7c156c5fc220e5cdc074c2b746"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af69bfc7c156c5fc220e5cdc074c2b746">&#9670;&#160;</a></span>simulationDeterminismName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::physics::simulationDeterminismName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a>&#160;</td>
+          <td class="paramname"><em>determinism</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the stable determinism-contract spelling. </p>
+
+<p class="definition">在文件 <a class="el" href="SimulationBackend_8h_source.html">SimulationBackend.h</a> 第 <a class="el" href="SimulationBackend_8h_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a90875be77cd9edc14c16d939b34cfbbb">BitExact</a>, <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a98c30e0498572049c798ca03ec44b44b">ExplicitlyNondeterministic</a> , 以及 <a class="el" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">ToleranceBounded</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SimulationBackend_8h_source.html#l00082">operator&lt;&lt;()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

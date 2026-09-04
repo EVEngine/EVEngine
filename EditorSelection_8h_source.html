@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorSelection.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorSelection.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorSelection_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingSelection_8h.html">editing/EditingSelection.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorIds_8h.html">editor/EditorIds.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EditorResult_8h.html">editor/EditorResult.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a830dc7374e1cc0a2d55eef105278f51e">   17</a></span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120d">SelectionDomain</a> = <a class="code hl_enumeration" href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120d">eve::editing::SelectionDomain</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a36feca04e5afdf084192471a16e2e24a">   20</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1SelectionItem.html">SelectionItem</a> = <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionItem.html">eve::editing::SelectionItem</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a700d7804628a8d365988f7573578ebc5">   23</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> = <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::editing::SelectionSnapshot</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#ae97f135c7f99ae4a99d770dfd8a8c657">   26</a></span><span class="keyword">using </span><a class="code hl_struct" href="structeve_1_1editing_1_1FocusSnapshot.html">EditorFocusSnapshot</a> = <a class="code hl_struct" href="structeve_1_1editing_1_1FocusSnapshot.html">eve::editing::FocusSnapshot</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorSelectionService.html">   29</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1EditorSelectionService.html">EditorSelectionService</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorSelectionService.html#a184a2625cde4c9f63216653c33994ba1">   31</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1editor_1_1EditorSelectionService.html#a184a2625cde4c9f63216653c33994ba1">Listener</a> = std::function&lt;void(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;SelectionSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorSelectionService.html#afea13bfbe078710e7c1686602ea33d11">set</a>(std::string channel, std::vector&lt;SelectionItem&gt; items,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                        std::optional&lt;SelectionItem&gt; primary = std::nullopt);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;SelectionSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorSelectionService.html#a79c427c7e7c6e441d5d74e646f1b7e04">clear</a>(<span class="keyword">const</span> std::string&amp; channel);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorSelectionService.html#a2a22361113f71bf1334ce19788a558b2">snapshot</a>(<span class="keyword">const</span> std::string&amp; channel) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorSelectionService.html#a8b556ba6dfba5a49581867725ed5e1e2">subscribe</a>(std::string owner, <a class="code hl_typedef" href="classeve_1_1editor_1_1EditorSelectionService.html#a184a2625cde4c9f63216653c33994ba1">Listener</a> listener);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorSelectionService.html#a4c67f7bdd3d90ba13f32771143ad02a5">unsubscribe</a>(<span class="keyword">const</span> std::string&amp; owner);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::map&lt;std::string, SelectionSnapshot&gt; selections_;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::map&lt;std::string, Listener&gt;          listeners_;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    std::uint64_t                            sequence_ = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="};">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorFocusService.html">   52</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1EditorFocusService.html">EditorFocusService</a> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EditorFocusSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorFocusService.html#ad888ee41e76497aaf9f5398400159b7f">focus</a>(std::string channel, <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a> surface, <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a> item = {});</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1FocusSnapshot.html">EditorFocusSnapshot</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorFocusService.html#a9eac27be3c7716459d8980e6201a4e73">snapshot</a>(<span class="keyword">const</span> std::string&amp; channel) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::map&lt;std::string, EditorFocusSnapshot&gt; focus_;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::uint64_t                              sequence_ = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aEditingSelection_8h_html"><div class="ttname"><a href="EditingSelection_8h.html">EditingSelection.h</a></div></div>
+<div class="ttc" id="aEditorIds_8h_html"><div class="ttname"><a href="EditorIds_8h.html">EditorIds.h</a></div></div>
+<div class="ttc" id="aEditorResult_8h_html"><div class="ttname"><a href="EditorResult_8h.html">EditorResult.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorFocusService_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorFocusService.html">eve::editor::EditorFocusService</a></div><div class="ttdoc">Shared semantic focus service for docked editor and game HUD surfaces.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8h_source.html#l00052">EditorSelection.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorFocusService_html_a9eac27be3c7716459d8980e6201a4e73"><div class="ttname"><a href="classeve_1_1editor_1_1EditorFocusService.html#a9eac27be3c7716459d8980e6201a4e73">eve::editor::EditorFocusService::snapshot</a></div><div class="ttdeci">EditorFocusSnapshot snapshot(const std::string &amp;channel) const</div><div class="ttdoc">Read the current focus of one channel.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8cpp_source.html#l00062">EditorSelection.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorFocusService_html_ad888ee41e76497aaf9f5398400159b7f"><div class="ttname"><a href="classeve_1_1editor_1_1EditorFocusService.html#ad888ee41e76497aaf9f5398400159b7f">eve::editor::EditorFocusService::focus</a></div><div class="ttdeci">EditorResult&lt; EditorFocusSnapshot &gt; focus(std::string channel, StableId surface, StableId item={})</div><div class="ttdoc">Set the focused surface/item for one channel.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8cpp_source.html#l00049">EditorSelection.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorSelectionService_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorSelectionService.html">eve::editor::EditorSelectionService</a></div><div class="ttdoc">Channelled selection/focus state shared by editor and in-game presentations.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8h_source.html#l00029">EditorSelection.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorSelectionService_html_a184a2625cde4c9f63216653c33994ba1"><div class="ttname"><a href="classeve_1_1editor_1_1EditorSelectionService.html#a184a2625cde4c9f63216653c33994ba1">eve::editor::EditorSelectionService::Listener</a></div><div class="ttdeci">std::function&lt; void(const SelectionSnapshot &amp;)&gt; Listener</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8h_source.html#l00031">EditorSelection.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorSelectionService_html_a2a22361113f71bf1334ce19788a558b2"><div class="ttname"><a href="classeve_1_1editor_1_1EditorSelectionService.html#a2a22361113f71bf1334ce19788a558b2">eve::editor::EditorSelectionService::snapshot</a></div><div class="ttdeci">SelectionSnapshot snapshot(const std::string &amp;channel) const</div><div class="ttdoc">Read one channel, returning an empty sequence-zero snapshot when absent.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8cpp_source.html#l00031">EditorSelection.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorSelectionService_html_a4c67f7bdd3d90ba13f32771143ad02a5"><div class="ttname"><a href="classeve_1_1editor_1_1EditorSelectionService.html#a4c67f7bdd3d90ba13f32771143ad02a5">eve::editor::EditorSelectionService::unsubscribe</a></div><div class="ttdeci">bool unsubscribe(const std::string &amp;owner)</div><div class="ttdoc">Remove one listener owner.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8cpp_source.html#l00047">EditorSelection.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorSelectionService_html_a79c427c7e7c6e441d5d74e646f1b7e04"><div class="ttname"><a href="classeve_1_1editor_1_1EditorSelectionService.html#a79c427c7e7c6e441d5d74e646f1b7e04">eve::editor::EditorSelectionService::clear</a></div><div class="ttdeci">EditorResult&lt; SelectionSnapshot &gt; clear(const std::string &amp;channel)</div><div class="ttdoc">Clear a channel while retaining a monotonic sequence.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8cpp_source.html#l00029">EditorSelection.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorSelectionService_html_a8b556ba6dfba5a49581867725ed5e1e2"><div class="ttname"><a href="classeve_1_1editor_1_1EditorSelectionService.html#a8b556ba6dfba5a49581867725ed5e1e2">eve::editor::EditorSelectionService::subscribe</a></div><div class="ttdeci">EditorResult&lt; void &gt; subscribe(std::string owner, Listener listener)</div><div class="ttdoc">Subscribe an owner callback; owner replacement and unload are deterministic.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8cpp_source.html#l00039">EditorSelection.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorSelectionService_html_afea13bfbe078710e7c1686602ea33d11"><div class="ttname"><a href="classeve_1_1editor_1_1EditorSelectionService.html#afea13bfbe078710e7c1686602ea33d11">eve::editor::EditorSelectionService::set</a></div><div class="ttdeci">EditorResult&lt; SelectionSnapshot &gt; set(std::string channel, std::vector&lt; SelectionItem &gt; items, std::optional&lt; SelectionItem &gt; primary=std::nullopt)</div><div class="ttdoc">Atomically replace a channel selection and optional primary item.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelection_8cpp_source.html#l00007">EditorSelection.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_acad0563ee185b57a7f139690f3b2120d"><div class="ttname"><a href="namespaceeve_1_1editing.html#acad0563ee185b57a7f139690f3b2120d">eve::editing::SelectionDomain</a></div><div class="ttdeci">SelectionDomain</div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00008">EditingSelection.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1FocusSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1FocusSnapshot.html">eve::editing::FocusSnapshot</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00022">EditingSelection.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionItem_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionItem.html">eve::editing::SelectionItem</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00009">EditingSelection.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1SelectionSnapshot_html"><div class="ttname"><a href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::editing::SelectionSnapshot</a></div><div class="ttdef"><b>Definition</b> <a href="EditingSelection_8h_source.html#l00016">EditingSelection.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

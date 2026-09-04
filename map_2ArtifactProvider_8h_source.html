@@ -1,0 +1,263 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/map/ArtifactProvider.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_582b002fc0c2f43475ae6ca1126d8de3.html">map</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ArtifactProvider.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="map_2ArtifactProvider_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ArtifactPublication_8h.html">common/ArtifactPublication.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeHandle_8h.html">common/RuntimeHandle.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1map.html">eve::map</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1map_1_1MapArtifactHandleTag.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1map_1_1MapArtifactHandleTag.html">MapArtifactHandleTag</a> {};</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1map.html#a0f7e352ad783d261c3f302bba0b2677b">   22</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MapArtifactHandle</a> = <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt;MapArtifactHandleTag&gt;</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1map_1_1MapArtifactRecord.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1map_1_1MapArtifactRecord.html">MapArtifactRecord</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1map_1_1MapArtifactRecord.html#a5c3a0962b30a86c0ee04cf38eb12c932">   26</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a>          <a class="code hl_variable" href="structeve_1_1map_1_1MapArtifactRecord.html#a5c3a0962b30a86c0ee04cf38eb12c932">id</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1map_1_1MapArtifactRecord.html#a284cc26352937db8a9dc839dbfdd0d09">   27</a></span>    std::string                <a class="code hl_variable" href="structeve_1_1map_1_1MapArtifactRecord.html#a284cc26352937db8a9dc839dbfdd0d09">buildKey</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1map_1_1MapArtifactRecord.html#a1f2f07b042798e60503c0b23d32820b8">   28</a></span>    <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MapArtifactHandle</a>          <a class="code hl_variable" href="structeve_1_1map_1_1MapArtifactRecord.html#a1f2f07b042798e60503c0b23d32820b8">handle</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1map_1_1MapArtifactRecord.html#aebb22ffd876f8ca23be9f2384e4218c0">   29</a></span>    std::int32_t               <a class="code hl_variable" href="structeve_1_1map_1_1MapArtifactRecord.html#aebb22ffd876f8ca23be9f2384e4218c0">width</a>  = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1map_1_1MapArtifactRecord.html#aff95d7b8b61ebd42ccbae941d1e7915b">   30</a></span>    std::int32_t               <a class="code hl_variable" href="structeve_1_1map_1_1MapArtifactRecord.html#aff95d7b8b61ebd42ccbae941d1e7915b">height</a> = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1map_1_1MapArtifactRecord.html#ae2b0e357c54191b03c278e14012290c7">   31</a></span>    std::vector&lt;std::uint32_t&gt; <a class="code hl_variable" href="structeve_1_1map_1_1MapArtifactRecord.html#ae2b0e357c54191b03c278e14012290c7">cells</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1MapArtifactProvider.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1map_1_1MapArtifactProvider.html">MapArtifactProvider</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1artifact_1_1IMapArtifactAdapter.html">eve::artifact::IMapArtifactAdapter</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;eve::artifact::PreparedPublication&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#a61c762418285bf1eb69b329f2b3e9317">prepare</a>(</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a>&amp; publication) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::Value&gt;</a> <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#aedd14f1de645b67e29a425c146507717">snapshotState</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#abe2610c1b8cb1fb0fae6ccebc11aaa2b">restoreState</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1MapArtifactProvider.html#a2c1cbaf16a1634cac060d4ccd5f5d3e1">   51</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#a2c1cbaf16a1634cac060d4ccd5f5d3e1">emptyState</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> records_.empty(); }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1MapArtifactProvider.html#ac6610b4aff1d4e7fbb6ea031ec8edb6f">   53</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#ac6610b4aff1d4e7fbb6ea031ec8edb6f">clearState</a>() noexcept<span class="keyword"> override </span>{ <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#a0e27880bcd8c5a873e50ee8d0135d49d">clear</a>(); }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1map_1_1MapArtifactRecord.html">MapArtifactRecord</a>* <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#a933badd778ff7d3dab347ed4cb98c226">find</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> <span class="keywordtype">id</span>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] std::optional&lt;std::uint32_t&gt; <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>(<a class="code hl_class" href="classeve_1_1detail_1_1Id128.html">eve::PersistentId</a> <span class="keywordtype">id</span>, std::int32_t <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                                    std::int32_t <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1MapArtifactProvider.html#abf237e7fcc8f9925cd0399cc65a055ee">   69</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#abf237e7fcc8f9925cd0399cc65a055ee">size</a>() const noexcept { <span class="keywordflow">return</span> records_.size(); }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#a0e27880bcd8c5a873e50ee8d0135d49d">clear</a>() noexcept;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1MapArtifactProvider.html#a4e363b7323e56f2104a687fb6833fc1c">   73</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1map_1_1MapArtifactProvider.html#a4e363b7323e56f2104a687fb6833fc1c">setPrepareFailure</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) noexcept { failPrepare_ = <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>; }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1map_1_1MapArtifactProvider.html#a6ae9f7594fb0174e9972722477f5e311">   76</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1map_1_1MapArtifactStage.html">MapArtifactStage</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span>                           commit(<a class="code hl_struct" href="structeve_1_1map_1_1MapArtifactRecord.html">MapArtifactRecord</a> record) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::vector&lt;MapArtifactRecord&gt; records_;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    std::uint32_t                  nextIndex_   = 0;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">bool</span>                           failPrepare_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>};</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1map_1_1MapArtifactProvider.html">MapArtifactProvider</a>&amp; <a class="code hl_function" href="namespaceeve_1_1map.html#a039d03f9ecc86a705136ca5e8d3b26a8">mapArtifactProvider</a>() noexcept;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1map.html#a3ba254092f51b8328d3fd724c23c1931">registerMapArtifactProvider</a>();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}  <span class="comment">// namespace eve::map</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aArtifactPublication_8h_html"><div class="ttname"><a href="ArtifactPublication_8h.html">ArtifactPublication.h</a></div><div class="ttdoc">Low-level capability contracts for publishing backend-neutral artifacts.</div></div>
+<div class="ttc" id="aRuntimeHandle_8h_html"><div class="ttname"><a href="RuntimeHandle_8h.html">RuntimeHandle.h</a></div><div class="ttdoc">Strong generation-qualified handles for non-ECS runtime registries.</div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_ac09c70a19f04817cd37f78fe3e752066"><div class="ttname"><a href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00019">TacticsPath.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; MapArtifactHandleTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1artifact_1_1IMapArtifactAdapter_html"><div class="ttname"><a href="classeve_1_1artifact_1_1IMapArtifactAdapter.html">eve::artifact::IMapArtifactAdapter</a></div><div class="ttdoc">Tile/map publication capability, implemented by the map module.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00150">ArtifactPublication.h:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html">eve::detail::Id128</a></div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00043">Identity.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html">eve::map::MapArtifactProvider</a></div><div class="ttdoc">Real map-module provider for generated grid publication.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00041">ArtifactProvider.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_a0e27880bcd8c5a873e50ee8d0135d49d"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#a0e27880bcd8c5a873e50ee8d0135d49d">eve::map::MapArtifactProvider::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Remove all records and reset the local handle allocator.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00131">ArtifactProvider.cpp:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_a2c1cbaf16a1634cac060d4ccd5f5d3e1"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#a2c1cbaf16a1634cac060d4ccd5f5d3e1">eve::map::MapArtifactProvider::emptyState</a></div><div class="ttdeci">bool emptyState() const noexcept override</div><div class="ttdoc">Return whether the map registry has no committed records.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00051">ArtifactProvider.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_a4e363b7323e56f2104a687fb6833fc1c"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#a4e363b7323e56f2104a687fb6833fc1c">eve::map::MapArtifactProvider::setPrepareFailure</a></div><div class="ttdeci">void setPrepareFailure(bool enabled) noexcept</div><div class="ttdoc">Inject a prepare failure for composition tests.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00073">ArtifactProvider.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_a61c762418285bf1eb69b329f2b3e9317"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#a61c762418285bf1eb69b329f2b3e9317">eve::map::MapArtifactProvider::prepare</a></div><div class="ttdeci">eve::Result&lt; std::unique_ptr&lt; eve::artifact::PreparedPublication &gt; &gt; prepare(const eve::artifact::PublicationView &amp;publication) override</div><div class="ttdoc">Stage a topology grid and copy its cells before commit.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00069">ArtifactProvider.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_a933badd778ff7d3dab347ed4cb98c226"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#a933badd778ff7d3dab347ed4cb98c226">eve::map::MapArtifactProvider::find</a></div><div class="ttdeci">const MapArtifactRecord * find(eve::PersistentId id) const noexcept</div><div class="ttdoc">Find a committed map artifact; the pointer is borrowed. @ownership Borrowed from this provider; calle...</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00117">ArtifactProvider.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_abe2610c1b8cb1fb0fae6ccebc11aaa2b"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#abe2610c1b8cb1fb0fae6ccebc11aaa2b">eve::map::MapArtifactProvider::restoreState</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreState(const eve::Value &amp;state) override</div><div class="ttdoc">Replace the registry from validated topology state.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00165">ArtifactProvider.cpp:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_abf237e7fcc8f9925cd0399cc65a055ee"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#abf237e7fcc8f9925cd0399cc65a055ee">eve::map::MapArtifactProvider::size</a></div><div class="ttdeci">std::size_t size() const noexcept</div><div class="ttdoc">Return the number of committed map artifact records.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00069">ArtifactProvider.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_ac6610b4aff1d4e7fbb6ea031ec8edb6f"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#ac6610b4aff1d4e7fbb6ea031ec8edb6f">eve::map::MapArtifactProvider::clearState</a></div><div class="ttdeci">void clearState() noexcept override</div><div class="ttdoc">Clear provider state through the common restore-cleanup hook.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00053">ArtifactProvider.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactProvider_html_aedd14f1de645b67e29a425c146507717"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactProvider.html#aedd14f1de645b67e29a425c146507717">eve::map::MapArtifactProvider::snapshotState</a></div><div class="ttdeci">eve::Result&lt; eve::Value &gt; snapshotState() const override</div><div class="ttdoc">Export map identity, build keys, handles and topology cells.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00137">ArtifactProvider.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1MapArtifactStage_html"><div class="ttname"><a href="classeve_1_1map_1_1MapArtifactStage.html">eve::map::MapArtifactStage</a></div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00051">ArtifactProvider.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html"><div class="ttname"><a href="namespaceeve_1_1map.html">eve::map</a></div><div class="ttdoc">放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。 坐标换算统一走 eve::grid（支持 rectang...</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00017">PlacementWorld.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a039d03f9ecc86a705136ca5e8d3b26a8"><div class="ttname"><a href="namespaceeve_1_1map.html#a039d03f9ecc86a705136ca5e8d3b26a8">eve::map::mapArtifactProvider</a></div><div class="ttdeci">MapArtifactProvider &amp; mapArtifactProvider() noexcept</div><div class="ttdoc">Return the process-owned map artifact provider singleton.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00231">ArtifactProvider.cpp:231</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_a3ba254092f51b8328d3fd724c23c1931"><div class="ttname"><a href="namespaceeve_1_1map.html#a3ba254092f51b8328d3fd724c23c1931">eve::map::registerMapArtifactProvider</a></div><div class="ttdeci">void registerMapArtifactProvider()</div><div class="ttdoc">Register the map provider in the common capability registry.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8cpp_source.html#l00236">ArtifactProvider.cpp:236</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1artifact_1_1PublicationView_html"><div class="ttname"><a href="structeve_1_1artifact_1_1PublicationView.html">eve::artifact::PublicationView</a></div><div class="ttdoc">Borrowed immutable view of one complete generated publication.</div><div class="ttdef"><b>Definition</b> <a href="ArtifactPublication_8h_source.html#l00083">ArtifactPublication.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1MapArtifactHandleTag_html"><div class="ttname"><a href="structeve_1_1map_1_1MapArtifactHandleTag.html">eve::map::MapArtifactHandleTag</a></div><div class="ttdoc">Owner tag for map artifact runtime handles.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00020">ArtifactProvider.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1MapArtifactRecord_html"><div class="ttname"><a href="structeve_1_1map_1_1MapArtifactRecord.html">eve::map::MapArtifactRecord</a></div><div class="ttdoc">Queryable map record containing the copied semantic topology.</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00025">ArtifactProvider.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1MapArtifactRecord_html_a1f2f07b042798e60503c0b23d32820b8"><div class="ttname"><a href="structeve_1_1map_1_1MapArtifactRecord.html#a1f2f07b042798e60503c0b23d32820b8">eve::map::MapArtifactRecord::handle</a></div><div class="ttdeci">MapArtifactHandle handle</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00028">ArtifactProvider.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1MapArtifactRecord_html_a284cc26352937db8a9dc839dbfdd0d09"><div class="ttname"><a href="structeve_1_1map_1_1MapArtifactRecord.html#a284cc26352937db8a9dc839dbfdd0d09">eve::map::MapArtifactRecord::buildKey</a></div><div class="ttdeci">std::string buildKey</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00027">ArtifactProvider.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1MapArtifactRecord_html_a5c3a0962b30a86c0ee04cf38eb12c932"><div class="ttname"><a href="structeve_1_1map_1_1MapArtifactRecord.html#a5c3a0962b30a86c0ee04cf38eb12c932">eve::map::MapArtifactRecord::id</a></div><div class="ttdeci">eve::PersistentId id</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00026">ArtifactProvider.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1MapArtifactRecord_html_ae2b0e357c54191b03c278e14012290c7"><div class="ttname"><a href="structeve_1_1map_1_1MapArtifactRecord.html#ae2b0e357c54191b03c278e14012290c7">eve::map::MapArtifactRecord::cells</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; cells</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00031">ArtifactProvider.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1MapArtifactRecord_html_aebb22ffd876f8ca23be9f2384e4218c0"><div class="ttname"><a href="structeve_1_1map_1_1MapArtifactRecord.html#aebb22ffd876f8ca23be9f2384e4218c0">eve::map::MapArtifactRecord::width</a></div><div class="ttdeci">std::int32_t width</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00029">ArtifactProvider.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1MapArtifactRecord_html_aff95d7b8b61ebd42ccbae941d1e7915b"><div class="ttname"><a href="structeve_1_1map_1_1MapArtifactRecord.html#aff95d7b8b61ebd42ccbae941d1e7915b">eve::map::MapArtifactRecord::height</a></div><div class="ttdeci">std::int32_t height</div><div class="ttdef"><b>Definition</b> <a href="map_2ArtifactProvider_8h_source.html#l00030">ArtifactProvider.h:30</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

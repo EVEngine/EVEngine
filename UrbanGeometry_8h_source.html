@@ -1,0 +1,262 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/urban/UrbanGeometry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_fb1aea313d660c36e35455d48fc25e92.html">urban</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UrbanGeometry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UrbanGeometry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="UrbanTypes_8h.html">procgen/urban/UrbanTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen_1_1urban.html">eve::procgen::urban</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#ab2d032dea1baf87ebadcf72801ddbb02">signedArea</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keywordtype">double</span> <a class="code hl_variable" href="Grass_8cpp.html#a97ab43f6fd28920a42d987c8fec4afec">area</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#ada151ac88430c72fd7623362561d3838">polylineLength</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a>&amp; pl);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a0456b279e421c73e09ea3f32ff642f7d">centroid</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#aa18d6c5770b92f07d70d39b8503005d8">perimeter</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#afa4d225764791e353de591ea590a05d3">ensureCCW</a>(<a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#ad832d569e30b82063b1bca103bbb1255">cleanupRing</a>(<a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly, <span class="keywordtype">double</span> eps = 1e-9);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a2c7b61d38cda2f8246f70a91d75a0f4c">pointInPolygon</a>(<span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#ab4f86366294c2375da199ee9a8e71c29">pointOnSegment</a>(<span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">double</span> eps = 1e-9);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a9cd354ae904473265586fd9a1ce7ad23">segmentsIntersect</a>(<span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, Vec2* out);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#aea49479cdf0b5164827feba9faaff74f">segmentIntersectsPolyline</a>(<span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a>&amp; pl);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a4261ca872ba9ca1c53994478f1a0fd30">polylineSelfIntersects</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a>&amp; pl);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a1b6f0d80ac4f106e1e9d9a0663941fa5">polygonIsSimple</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a516f53e77bb6feb96e14a67d439db442">closestPointOnSegment</a>(<span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, Vec2* out);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a57d72490904f4442903b7d28b207755f">closestPointOnBoundary</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, BoundaryPosition* <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a3304dcdbbe988bd3d0f36bd178cd8c01">pointAtBoundaryLength</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly, <span class="keywordtype">double</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, BoundaryPosition* <a class="code hl_variable" href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>std::vector&lt;BoundarySample&gt; <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#aa8dd65b3aa133925edeb21aa4ea22068">sampleBoundary</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly, <span class="keywordtype">int</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a2a57abb309067b9017597cbcac070e75">includedAngleDeg</a>(<span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#afb48057d8291042eb7725783472fc097">isCollinear</a>(<span class="keyword">const</span> Vec2&amp; prev, <span class="keyword">const</span> Vec2&amp; shared, <span class="keyword">const</span> Vec2&amp; next);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#aa75486b5fa617a1c4d7aea6ac5bc91b3">approximatePolygon</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; ring);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#abc8d10060245ffd56a86f64d95b608b3">shapeIrregularity</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; approxRing, <span class="keywordtype">double</span> gammaAngle = 0.75, <span class="keywordtype">double</span> gammaSide = 0.25);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#ac1bf30ade86a6c3ca631ab441d568e3f">splitPolygonByPolyline</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a>&amp; <a class="code hl_variable" href="CaveMesh_8cpp.html#a6c60dc17b672ec14207e7588641907c6">split</a>, <span class="keyword">const</span> BoundaryPosition&amp; posA,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                            <span class="keyword">const</span> BoundaryPosition&amp; posB, <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; outA, <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; outB);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a1d9736e9704f22239d8f17d574a523ce">validSplit</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">Polyline</a>&amp; <a class="code hl_variable" href="CaveMesh_8cpp.html#a6c60dc17b672ec14207e7588641907c6">split</a>, <span class="keywordtype">double</span> minHalfArea, <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>* outA, <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>* outB,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                <span class="keywordtype">double</span>* fracA);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a34db807d2c8096098c72ff7aaeb64d88">triangulatePolygon</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">Polygon</a>&amp; poly, std::vector&lt;int&gt;&amp; outTriangles);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a6bdffee1ea1e446d0fac01c99dc02413">distanceToSegment</a>(<span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> Vec2&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}  <span class="comment">// namespace eve::procgen::urban</span></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6c60dc17b672ec14207e7588641907c6"><div class="ttname"><a href="CaveMesh_8cpp.html#a6c60dc17b672ec14207e7588641907c6">split</a></div><div class="ttdeci">bool split</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00123">CaveMesh.cpp:123</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00017">CaveWetness.cpp:17</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00236">Grass.cpp:236</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a97ab43f6fd28920a42d987c8fec4afec"><div class="ttname"><a href="Grass_8cpp.html#a97ab43f6fd28920a42d987c8fec4afec">area</a></div><div class="ttdeci">float area</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00065">Grass.cpp:65</a></div></div>
+<div class="ttc" id="aMarchingCubes_8cpp_html_aaf5d342e977c5857e99310eea0e72e4b"><div class="ttname"><a href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a></div><div class="ttdeci">uint32_t c</div><div class="ttdef"><b>Definition</b> <a href="MarchingCubes_8cpp_source.html#l00126">MarchingCubes.cpp:126</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a5438a597ee291f523ae04a9fe355924f"><div class="ttname"><a href="UdpLink_8cpp.html#a5438a597ee291f523ae04a9fe355924f">pos</a></div><div class="ttdeci">size_t pos</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00058">UdpLink.cpp:58</a></div></div>
+<div class="ttc" id="aUrbanTypes_8h_html"><div class="ttname"><a href="UrbanTypes_8h.html">UrbanTypes.h</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">eve::editing::PropertyType::Vec2</a></div><div class="ttdeci">@ Vec2</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html">eve::procgen::urban</a></div><div class="ttdef"><b>Definition</b> <a href="UrbanCrossField_8cpp_source.html#l00012">UrbanCrossField.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a0456b279e421c73e09ea3f32ff642f7d"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a0456b279e421c73e09ea3f32ff642f7d">eve::procgen::urban::centroid</a></div><div class="ttdeci">Vec2 centroid(const Polygon &amp;poly)</div><div class="ttdoc">Centroid (area-weighted) of a simple polygon.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00054">UrbanGeometry.cpp:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a1b6f0d80ac4f106e1e9d9a0663941fa5"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a1b6f0d80ac4f106e1e9d9a0663941fa5">eve::procgen::urban::polygonIsSimple</a></div><div class="ttdeci">bool polygonIsSimple(const Polygon &amp;poly)</div><div class="ttdoc">Simple polygon test: no self intersections among non-adjacent ring edges.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00159">UrbanGeometry.cpp:159</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a1d9736e9704f22239d8f17d574a523ce"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a1d9736e9704f22239d8f17d574a523ce">eve::procgen::urban::validSplit</a></div><div class="ttdeci">bool validSplit(const Polygon &amp;poly, const Polyline &amp;split, double minHalfArea, Polygon *outA, Polygon *outB, double *fracA)</div><div class="ttdoc">Validity of a candidate split: both halves simple, positive area, inside the original.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00425">UrbanGeometry.cpp:425</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a28c467007a373b1d611ad53183cb097c"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a28c467007a373b1d611ad53183cb097c">eve::procgen::urban::Polyline</a></div><div class="ttdeci">std::vector&lt; Vec2 &gt; Polyline</div><div class="ttdoc">Open polyline (e.g. a streamline candidate or a street centerline).</div><div class="ttdef"><b>Definition</b> <a href="UrbanTypes_8h_source.html#l00043">UrbanTypes.h:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a2a57abb309067b9017597cbcac070e75"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a2a57abb309067b9017597cbcac070e75">eve::procgen::urban::includedAngleDeg</a></div><div class="ttdeci">double includedAngleDeg(const Vec2 &amp;u, const Vec2 &amp;v)</div><div class="ttdoc">Included angle in degrees at the shared vertex between edge u (prev-&gt;shared) and v (shared-&gt;next),...</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00266">UrbanGeometry.cpp:266</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a2c7b61d38cda2f8246f70a91d75a0f4c"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a2c7b61d38cda2f8246f70a91d75a0f4c">eve::procgen::urban::pointInPolygon</a></div><div class="ttdeci">bool pointInPolygon(const Vec2 &amp;p, const Polygon &amp;poly)</div><div class="ttdoc">Point-in-polygon test (ray casting; boundary counts as inside).</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00112">UrbanGeometry.cpp:112</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a3304dcdbbe988bd3d0f36bd178cd8c01"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a3304dcdbbe988bd3d0f36bd178cd8c01">eve::procgen::urban::pointAtBoundaryLength</a></div><div class="ttdeci">Vec2 pointAtBoundaryLength(const Polygon &amp;poly, double s, BoundaryPosition *pos)</div><div class="ttdoc">Interpolate the boundary point at arc length s in [0, perimeter).</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00219">UrbanGeometry.cpp:219</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a34db807d2c8096098c72ff7aaeb64d88"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a34db807d2c8096098c72ff7aaeb64d88">eve::procgen::urban::triangulatePolygon</a></div><div class="ttdeci">bool triangulatePolygon(const Polygon &amp;poly, std::vector&lt; int &gt; &amp;outTriangles)</div><div class="ttdoc">Triangulate a simple polygon by ear clipping; returns CCW triangles (3*i..3*i+2).</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00462">UrbanGeometry.cpp:462</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a4261ca872ba9ca1c53994478f1a0fd30"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a4261ca872ba9ca1c53994478f1a0fd30">eve::procgen::urban::polylineSelfIntersects</a></div><div class="ttdeci">bool polylineSelfIntersects(const Polyline &amp;pl)</div><div class="ttdoc">True if any two non-adjacent segments of the open polyline cross.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00149">UrbanGeometry.cpp:149</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a516f53e77bb6feb96e14a67d439db442"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a516f53e77bb6feb96e14a67d439db442">eve::procgen::urban::closestPointOnSegment</a></div><div class="ttdeci">double closestPointOnSegment(const Vec2 &amp;p, const Vec2 &amp;a, const Vec2 &amp;b, Vec2 *out)</div><div class="ttdoc">Closest point on segment a-b; returns distance and writes out.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00177">UrbanGeometry.cpp:177</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a57d72490904f4442903b7d28b207755f"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a57d72490904f4442903b7d28b207755f">eve::procgen::urban::closestPointOnBoundary</a></div><div class="ttdeci">Vec2 closestPointOnBoundary(const Polygon &amp;poly, const Vec2 &amp;p, BoundaryPosition *pos)</div><div class="ttdoc">Closest point on the polygon boundary; writes edge index + t in [0,1].</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00189">UrbanGeometry.cpp:189</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a6bdffee1ea1e446d0fac01c99dc02413"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a6bdffee1ea1e446d0fac01c99dc02413">eve::procgen::urban::distanceToSegment</a></div><div class="ttdeci">double distanceToSegment(const Vec2 &amp;p, const Vec2 &amp;a, const Vec2 &amp;b)</div><div class="ttdoc">Raster helper: does the pixel-center fall within eps of segment a-b?</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00513">UrbanGeometry.cpp:513</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a87d21595a43119e7ad3a669c5e526d79"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a87d21595a43119e7ad3a669c5e526d79">eve::procgen::urban::Polygon</a></div><div class="ttdeci">std::vector&lt; Vec2 &gt; Polygon</div><div class="ttdoc">Closed polygon ring, stored CCW, without repeating the first point.</div><div class="ttdef"><b>Definition</b> <a href="UrbanTypes_8h_source.html#l00041">UrbanTypes.h:41</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a9cd354ae904473265586fd9a1ce7ad23"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a9cd354ae904473265586fd9a1ce7ad23">eve::procgen::urban::segmentsIntersect</a></div><div class="ttdeci">bool segmentsIntersect(const Vec2 &amp;a, const Vec2 &amp;b, const Vec2 &amp;c, const Vec2 &amp;d, Vec2 *out)</div><div class="ttdoc">True if the open segments a-b and c-d properly cross; out receives the crossing.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00127">UrbanGeometry.cpp:127</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_aa18d6c5770b92f07d70d39b8503005d8"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#aa18d6c5770b92f07d70d39b8503005d8">eve::procgen::urban::perimeter</a></div><div class="ttdeci">double perimeter(const Polygon &amp;poly)</div><div class="ttdoc">Perimeter length of a closed ring.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00072">UrbanGeometry.cpp:72</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_aa75486b5fa617a1c4d7aea6ac5bc91b3"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#aa75486b5fa617a1c4d7aea6ac5bc91b3">eve::procgen::urban::approximatePolygon</a></div><div class="ttdeci">Polygon approximatePolygon(const Polygon &amp;ring)</div><div class="ttdoc">Simplify a ring to its approximate polygon: consecutive edges with included angle &gt; 135° are merged i...</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00277">UrbanGeometry.cpp:277</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_aa8dd65b3aa133925edeb21aa4ea22068"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#aa8dd65b3aa133925edeb21aa4ea22068">eve::procgen::urban::sampleBoundary</a></div><div class="ttdeci">std::vector&lt; BoundarySample &gt; sampleBoundary(const Polygon &amp;poly, int count)</div><div class="ttdoc">Uniformly sample the polygon boundary (approx. count samples, at least 8). Samples are ordered along ...</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00247">UrbanGeometry.cpp:247</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_ab2d032dea1baf87ebadcf72801ddbb02"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#ab2d032dea1baf87ebadcf72801ddbb02">eve::procgen::urban::signedArea</a></div><div class="ttdeci">double signedArea(const Polygon &amp;poly)</div><div class="ttdoc">Return the raw (possibly negative) signed area of a polygon ring.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00034">UrbanGeometry.cpp:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_ab4f86366294c2375da199ee9a8e71c29"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#ab4f86366294c2375da199ee9a8e71c29">eve::procgen::urban::pointOnSegment</a></div><div class="ttdeci">bool pointOnSegment(const Vec2 &amp;p, const Vec2 &amp;a, const Vec2 &amp;b, double eps)</div><div class="ttdoc">True if p lies on segment a-b (within tolerance).</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00125">UrbanGeometry.cpp:125</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_abc8d10060245ffd56a86f64d95b608b3"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#abc8d10060245ffd56a86f64d95b608b3">eve::procgen::urban::shapeIrregularity</a></div><div class="ttdeci">double shapeIrregularity(const Polygon &amp;approxRing, double gammaAngle, double gammaSide)</div><div class="ttdoc">Shape irregularity metric of Eq. (1) over the approximate polygon: I = γ1·(1/N)·Σ(θi−θ̄)² + γ2·(1/(N·...</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00314">UrbanGeometry.cpp:314</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_ac1bf30ade86a6c3ca631ab441d568e3f"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#ac1bf30ade86a6c3ca631ab441d568e3f">eve::procgen::urban::splitPolygonByPolyline</a></div><div class="ttdeci">bool splitPolygonByPolyline(const Polygon &amp;poly, const Polyline &amp;split, const BoundaryPosition &amp;posA, const BoundaryPosition &amp;posB, Polygon &amp;outA, Polygon &amp;outB)</div><div class="ttdoc">Split a CCW simple polygon by a polyline whose endpoints lie on the boundary and whose interior point...</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00399">UrbanGeometry.cpp:399</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_ad832d569e30b82063b1bca103bbb1255"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#ad832d569e30b82063b1bca103bbb1255">eve::procgen::urban::cleanupRing</a></div><div class="ttdeci">void cleanupRing(Polygon &amp;poly, double eps)</div><div class="ttdoc">Remove consecutive duplicate points (within eps) and points that create zero spikes.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00086">UrbanGeometry.cpp:86</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_ada151ac88430c72fd7623362561d3838"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#ada151ac88430c72fd7623362561d3838">eve::procgen::urban::polylineLength</a></div><div class="ttdeci">double polylineLength(const Polyline &amp;pl)</div><div class="ttdoc">Total length of an open polyline.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00048">UrbanGeometry.cpp:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_aea49479cdf0b5164827feba9faaff74f"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#aea49479cdf0b5164827feba9faaff74f">eve::procgen::urban::segmentIntersectsPolyline</a></div><div class="ttdeci">bool segmentIntersectsPolyline(const Vec2 &amp;a, const Vec2 &amp;b, const Polyline &amp;pl)</div><div class="ttdoc">True if a segment crosses any segment of an open polyline (excluding shared endpoints).</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00141">UrbanGeometry.cpp:141</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_afa4d225764791e353de591ea590a05d3"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#afa4d225764791e353de591ea590a05d3">eve::procgen::urban::ensureCCW</a></div><div class="ttdeci">bool ensureCCW(Polygon &amp;poly)</div><div class="ttdoc">Ensure the ring is CCW (positive signed area); returns whether it was flipped.</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00078">UrbanGeometry.cpp:78</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_afb48057d8291042eb7725783472fc097"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#afb48057d8291042eb7725783472fc097">eve::procgen::urban::isCollinear</a></div><div class="ttdeci">bool isCollinear(const Vec2 &amp;prev, const Vec2 &amp;shared, const Vec2 &amp;next)</div><div class="ttdoc">True when two consecutive edges are considered collinear (included angle &gt; 135°).</div><div class="ttdef"><b>Definition</b> <a href="UrbanGeometry_8cpp_source.html#l00273">UrbanGeometry.cpp:273</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

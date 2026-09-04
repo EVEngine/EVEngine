@@ -1,0 +1,246 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::procgen::PointSet 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a2c3811fd5cd8af4506b59dac6fffa024">add</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa69713749e79221e2c343d66371324a1">appendPoint</a>(ProcgenPoint point)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aef919bd50b87e2a746d6c23b95d11f37">appendPointFrom</a>(const PointSet &amp;source, std::size_t sourceIndex)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a8244dd25e3e4225625df81644b8e6cab">assignPointIds</a>(std::uint64_t namespaceId)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af564cf829d15f70838eb06e0e0fee3e9">attributes</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aee6099099072739def776ba44c5377c6">clear</a>()</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a37a8076dc053b5bbd226dc10fae94b5a">clearPointAttributes</a>(std::size_t index)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a21a9d39b95bf763a08f5997b6ad49580">empty</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a05c3cc4bff1d4c007811842f22cbc742">getAttributeType</a>(int index, const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa4f63926ce1b51f4b097db44965a7ba4">getBoolAttribute</a>(int index, const std::string &amp;name, bool fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a3d910b34b81489dbdbe92a1c12a4367f">getBoundsMaxX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a351988d9058fa77587fe36acdf93df19">getBoundsMaxY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a32c3c9613338f624f11da4fc7922b183">getBoundsMaxZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a15d5fadabe8f2316a8b8b4e714a94113">getBoundsMinX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a66556b8ab3f1989ea84d7f8d978af7e7">getBoundsMinY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af733814fe0e02c4e0e2a5cabacaac9bb">getBoundsMinZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ade84813e03fdfd77adaa4e98c2e52629">getColorA</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af80ebba22a90a7572776676ff57bd757">getColorB</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a45b1b88640b095837a1a73fdae697ea2">getColorG</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a27805706c1a1fcdebd4e62b9dcfe63d5">getColorR</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aec412ab94ec5268fa85c83b124787762">getCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af7eb8912dfe80f058499deeddf20be8e">getDensity</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a2f8c552f9429ec7cfee61f93e6f2d732">getFloatAttribute</a>(int index, const std::string &amp;name, float fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ae554d6958a4e6fad9c8cfe8e9004d27f">getIntAttribute</a>(int index, const std::string &amp;name, std::int64_t fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa1ced541d6ca0f028276c7fba7c92f85">getNormalX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab8122f083efd9e4adc842e1139f9aac9">getNormalY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a1947183225bfbe429a8b05a1bdb55789">getNormalZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a84851412a059de9dead1d5493bc4435f">getPitch</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a916dd1cb95cd8d468bfb0c2270006c2d">getPointId</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a989a0e9b918f50a416f529a61cd1b632">getPointSeed</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa9bffa1a573f070df179b695f34c19a3">getRoll</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a54757103143dc4bb2ad6cbc851182799">getScaleX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ac0a2ec72112504aaed5e73dc88283b7b">getScaleY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aabaec36f3e0b52d271408a314cfcc338">getScaleZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aef4d751bea6016b64bc2251f67bd6d3a">getSteepness</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a4e17ded5658530572da93a678d1d1da8">getStringAttribute</a>(int index, const std::string &amp;name, const std::string &amp;fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#abdda7d7c7ecef93056fff58e1d65f3b2">getVectorAttributeX</a>(int index, const std::string &amp;name, float fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a57ae7f2a37c18b90822553d53358197b">getVectorAttributeY</a>(int index, const std::string &amp;name, float fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a91c69593264ab4f6b1289ef7a931a14e">getVectorAttributeZ</a>(int index, const std::string &amp;name, float fallback) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa1695a1d2429430eaa85af278495a5f7">getX</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a543be20b04c981d0bec7e5f13567df80">getY</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a5f39e1ecf5015fa58212a69d2e72b1ff">getYaw</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aaeab4f4325c71b98eed50e95568ea90f">getZ</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a29a885c2d5e8b3b5e7ff7d76b8c9646f">hasBoolAttribute</a>(int index, const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a8287e8e790debaec7efa62f281b99dab">hasFloatAttribute</a>(int index, const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a23f2b8e9216fe475a3b11ed2ad99b448">hasIntAttribute</a>(int index, const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a2171a7b8e6f80a46bff2545c50ffc3c8">hasStringAttribute</a>(int index, const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a17a4e5fdc5ffee6ae7b6aae8ef9eb127">hasVectorAttribute</a>(int index, const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a672df9f37fa7d4290bf338f37d9d4359">mutablePoint</a>(std::size_t index)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab660f2ffdd15bde1c7d2abb843306b2e">points</a>() const</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#afe6de6d317388fabf7bea1fea5a18bab">reserve</a>(std::size_t count)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a8dabc5de17b6b331a63133e3ea01436e">setBoolAttribute</a>(int index, const std::string &amp;name, bool value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a813c65227e0e8a18c19e8c5d02fdc6a5">setBounds</a>(int index, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a5267da29b3db90308440b528692bbd66">setColor</a>(int index, float red, float green, float blue, float alpha)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ad9d7d0d26b0153f37a5d7626580575af">setDensity</a>(int index, float density)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a1015e688aea73ecfe91755886b3b5ed4">setFloatAttribute</a>(int index, const std::string &amp;name, float value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a620c7bb5eb21b2acaa066445595183db">setIntAttribute</a>(int index, const std::string &amp;name, std::int64_t value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab8b5747a22a316e94b3270a0ab15cfe8">setNormal</a>(int index, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab3d84c37d24c936caf9743e1c3276d7d">setPointSeed</a>(int index, uint32_t seed)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a94290b4a450aace6627325903a7667f3">setPosition</a>(int index, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af1ac0d92e73096d73dbf6876f8b4b1eb">setRotation</a>(int index, float pitch, float yaw, float roll)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a314586d8bc3cecbc71546bc7fdf25d35">setScale</a>(int index, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aa0214be832e1fe7f4a72a6aba77936ab">setSteepness</a>(int index, float steepness)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ab226331d3b6b1164eb75601e7dd394db">setStringAttribute</a>(int index, const std::string &amp;name, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a9330442409616d2d86893633b862a224">setVectorAttribute</a>(int index, const std::string &amp;name, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#aab00111512952ebe1f1d861719749139">setYaw</a>(int index, float yaw)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a5d603a7c28257752d30f11256916ef18">trySetBoolAttribute</a>(int index, const std::string &amp;name, bool value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#af9bd6b0a0e1b1f08f1413990855dbcb7">trySetFloatAttribute</a>(int index, const std::string &amp;name, float value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#ae1a7675250e62bcebf261c4a1e052159">trySetIntAttribute</a>(int index, const std::string &amp;name, std::int64_t value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a0db21e87c08baad34e38cf54e83b2fe2">trySetPointId</a>(int index, std::uint64_t id)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a3fc5bd45089bc32d225b1c90884df11b">trySetStringAttribute</a>(int index, const std::string &amp;name, const std::string &amp;value)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html#a698431b4d482126a8bfe5171d0193d0c">trySetVectorAttribute</a>(int index, const std::string &amp;name, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

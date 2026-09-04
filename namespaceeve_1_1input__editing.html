@@ -1,0 +1,667 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::input_editing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1input__editing.html">input_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a>  </div>
+  <div class="headertitle"><div class="title">eve::input_editing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1input__editing_1_1InputActionValue.html">InputActionValue</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1input__editing_1_1InputBindingCapture.html">InputBindingCapture</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captures the first intentional control movement for a rebind UI.  <a href="classeve_1_1input__editing_1_1InputBindingCapture.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1input__editing_1_1InputBindingValue.html">InputBindingValue</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1input__editing_1_1InputControlSample.html">InputControlSample</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1input__editing_1_1InputMapEvaluator.html">InputMapEvaluator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministically evaluates raw device samples against an authored action map.  <a href="classeve_1_1input__editing_1_1InputMapEvaluator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1input__editing_1_1InputMapTarget.html">InputMapTarget</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a9da41cd78043d06010c0d61a092d7f58" id="r_a9da41cd78043d06010c0d61a092d7f58"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a9da41cd78043d06010c0d61a092d7f58">CapabilityId</a> = <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a></td></tr>
+<tr class="separator:a9da41cd78043d06010c0d61a092d7f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59b5c9186f7b57d9ccc4fecced85f5f7" id="r_a59b5c9186f7b57d9ccc4fecced85f5f7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a59b5c9186f7b57d9ccc4fecced85f5f7">DiagnosticSeverity</a> = <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td></tr>
+<tr class="separator:a59b5c9186f7b57d9ccc4fecced85f5f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a656717f9e93597e65d13a12855e37af6" id="r_a656717f9e93597e65d13a12855e37af6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a656717f9e93597e65d13a12855e37af6">DomainOperation</a> = <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a></td></tr>
+<tr class="separator:a656717f9e93597e65d13a12855e37af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9469b9f864436fdc6949deef789d6c32" id="r_a9469b9f864436fdc6949deef789d6c32"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a9469b9f864436fdc6949deef789d6c32">EditRegion</a> = <a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a></td></tr>
+<tr class="separator:a9469b9f864436fdc6949deef789d6c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc4d871287eda70e93b93320877aa4d" id="r_a8cc4d871287eda70e93b93320877aa4d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a8cc4d871287eda70e93b93320877aa4d">EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:a8cc4d871287eda70e93b93320877aa4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb900f6114d6cf37321e84cf6719c31" id="r_aabb900f6114d6cf37321e84cf6719c31"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aabb900f6114d6cf37321e84cf6719c31"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#aabb900f6114d6cf37321e84cf6719c31">EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:aabb900f6114d6cf37321e84cf6719c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73d22bc1c8742fe041e948b45af3d18c" id="r_a73d22bc1c8742fe041e948b45af3d18c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a73d22bc1c8742fe041e948b45af3d18c">EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:a73d22bc1c8742fe041e948b45af3d18c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad182f74455755ceea6f1cec474dcbe6" id="r_aad182f74455755ceea6f1cec474dcbe6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#aad182f74455755ceea6f1cec474dcbe6">EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:aad182f74455755ceea6f1cec474dcbe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1530348c324c928f29032711affc02e1" id="r_a1530348c324c928f29032711affc02e1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a1530348c324c928f29032711affc02e1">IDomainOperationTarget</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a></td></tr>
+<tr class="separator:a1530348c324c928f29032711affc02e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd0c667becfb6b194731210914cb24fb" id="r_acd0c667becfb6b194731210914cb24fb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#acd0c667becfb6b194731210914cb24fb">IDomainOperationTargetStaging</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="separator:acd0c667becfb6b194731210914cb24fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab207915a84a6348eda1d5347e426b40a" id="r_ab207915a84a6348eda1d5347e426b40a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#ab207915a84a6348eda1d5347e426b40a">IEditableTarget</a> = <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a></td></tr>
+<tr class="separator:ab207915a84a6348eda1d5347e426b40a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a330b4311c61700ab375b9ffeb8547571" id="r_a330b4311c61700ab375b9ffeb8547571"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a330b4311c61700ab375b9ffeb8547571">IPropertyProvider</a> = <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a></td></tr>
+<tr class="separator:a330b4311c61700ab375b9ffeb8547571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cab700c7d168e8d2757335728547887" id="r_a7cab700c7d168e8d2757335728547887"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a7cab700c7d168e8d2757335728547887">ObjectId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a></td></tr>
+<tr class="separator:a7cab700c7d168e8d2757335728547887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab436d3d80eb310133fe55071bacabf5f" id="r_ab436d3d80eb310133fe55071bacabf5f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#ab436d3d80eb310133fe55071bacabf5f">PropertyDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">editing::PropertyDescriptor</a></td></tr>
+<tr class="separator:ab436d3d80eb310133fe55071bacabf5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae01cbf4f0f67b672be47cfc7ba5752b8" id="r_ae01cbf4f0f67b672be47cfc7ba5752b8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#ae01cbf4f0f67b672be47cfc7ba5752b8">PropertyFlag</a> = <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">editing::PropertyFlag</a></td></tr>
+<tr class="separator:ae01cbf4f0f67b672be47cfc7ba5752b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5572c5728ae62d18827189baa7a46550" id="r_a5572c5728ae62d18827189baa7a46550"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a5572c5728ae62d18827189baa7a46550">PropertyPath</a> = <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a></td></tr>
+<tr class="separator:a5572c5728ae62d18827189baa7a46550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70852c1b4d57e4c4dd6f43ba919572b7" id="r_a70852c1b4d57e4c4dd6f43ba919572b7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a70852c1b4d57e4c4dd6f43ba919572b7">PropertyReadResult</a> = <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a></td></tr>
+<tr class="separator:a70852c1b4d57e4c4dd6f43ba919572b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fab00a175e7c77b0256f11213709240" id="r_a6fab00a175e7c77b0256f11213709240"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a6fab00a175e7c77b0256f11213709240">PropertyReadState</a> = <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">editing::PropertyReadState</a></td></tr>
+<tr class="separator:a6fab00a175e7c77b0256f11213709240"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a266c2b85b2609e683a1c1c281583824e" id="r_a266c2b85b2609e683a1c1c281583824e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a266c2b85b2609e683a1c1c281583824e">PropertySchema</a> = <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a></td></tr>
+<tr class="separator:a266c2b85b2609e683a1c1c281583824e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40abfd3c6bfe39a5c362760bb1d98814" id="r_a40abfd3c6bfe39a5c362760bb1d98814"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a40abfd3c6bfe39a5c362760bb1d98814">PropertySetMode</a> = <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a></td></tr>
+<tr class="separator:a40abfd3c6bfe39a5c362760bb1d98814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a506e9ae917ca639265727fd8f74284ed" id="r_a506e9ae917ca639265727fd8f74284ed"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a506e9ae917ca639265727fd8f74284ed">PropertyType</a> = <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a></td></tr>
+<tr class="separator:a506e9ae917ca639265727fd8f74284ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54fe50929bbcbf36009046217bc35db0" id="r_a54fe50929bbcbf36009046217bc35db0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a54fe50929bbcbf36009046217bc35db0">Revision</a> = <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td></tr>
+<tr class="separator:a54fe50929bbcbf36009046217bc35db0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ddd833b418648c1848b764a32415e3" id="r_ac6ddd833b418648c1848b764a32415e3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#ac6ddd833b418648c1848b764a32415e3">RuleId</a> = <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td></tr>
+<tr class="separator:ac6ddd833b418648c1848b764a32415e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a304b9d512cb61a162fd859e285fea70f" id="r_a304b9d512cb61a162fd859e285fea70f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a304b9d512cb61a162fd859e285fea70f">SelectionSnapshot</a> = <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a></td></tr>
+<tr class="separator:a304b9d512cb61a162fd859e285fea70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b29b13594f62f25146c67b9c42378e5" id="r_a6b29b13594f62f25146c67b9c42378e5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#a6b29b13594f62f25146c67b9c42378e5">TargetDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a></td></tr>
+<tr class="separator:a6b29b13594f62f25146c67b9c42378e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa83c007b9dd3723565383f3923bae51c" id="r_aa83c007b9dd3723565383f3923bae51c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1input__editing.html#aa83c007b9dd3723565383f3923bae51c">TargetId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a></td></tr>
+<tr class="separator:aa83c007b9dd3723565383f3923bae51c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a9da41cd78043d06010c0d61a092d7f58" name="a9da41cd78043d06010c0d61a092d7f58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9da41cd78043d06010c0d61a092d7f58">&#9670;&#160;</a></span>CapabilityId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">eve::input_editing::CapabilityId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00010">10</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a59b5c9186f7b57d9ccc4fecced85f5f7" name="a59b5c9186f7b57d9ccc4fecced85f5f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59b5c9186f7b57d9ccc4fecced85f5f7">&#9670;&#160;</a></span>DiagnosticSeverity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">eve::input_editing::DiagnosticSeverity</a> = typedef <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a656717f9e93597e65d13a12855e37af6" name="a656717f9e93597e65d13a12855e37af6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a656717f9e93597e65d13a12855e37af6">&#9670;&#160;</a></span>DomainOperation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">eve::input_editing::DomainOperation</a> = typedef <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8cc4d871287eda70e93b93320877aa4d" name="a8cc4d871287eda70e93b93320877aa4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cc4d871287eda70e93b93320877aa4d">&#9670;&#160;</a></span>EditorDiagnostic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1input__editing.html#a8cc4d871287eda70e93b93320877aa4d">eve::input_editing::EditorDiagnostic</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aabb900f6114d6cf37321e84cf6719c31" name="aabb900f6114d6cf37321e84cf6719c31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb900f6114d6cf37321e84cf6719c31">&#9670;&#160;</a></span>EditorResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#aa0a4032a9ee9adfb533ff1081f983f04">eve::input_editing::EditorResult</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a73d22bc1c8742fe041e948b45af3d18c" name="a73d22bc1c8742fe041e948b45af3d18c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73d22bc1c8742fe041e948b45af3d18c">&#9670;&#160;</a></span>EditorStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::input_editing::EditorStatus</a> = typedef <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad182f74455755ceea6f1cec474dcbe6" name="aad182f74455755ceea6f1cec474dcbe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad182f74455755ceea6f1cec474dcbe6">&#9670;&#160;</a></span>EditorValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">eve::input_editing::EditorValue</a> = typedef <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9469b9f864436fdc6949deef789d6c32" name="a9469b9f864436fdc6949deef789d6c32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9469b9f864436fdc6949deef789d6c32">&#9670;&#160;</a></span>EditRegion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1EditRegion.html">eve::input_editing::EditRegion</a> = typedef <a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1530348c324c928f29032711affc02e1" name="a1530348c324c928f29032711affc02e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1530348c324c928f29032711affc02e1">&#9670;&#160;</a></span>IDomainOperationTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::input_editing::IDomainOperationTarget</a> = typedef <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd0c667becfb6b194731210914cb24fb" name="acd0c667becfb6b194731210914cb24fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd0c667becfb6b194731210914cb24fb">&#9670;&#160;</a></span>IDomainOperationTargetStaging</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::input_editing::IDomainOperationTargetStaging</a> = typedef <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">editing::IDomainOperationTargetStaging</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab207915a84a6348eda1d5347e426b40a" name="ab207915a84a6348eda1d5347e426b40a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab207915a84a6348eda1d5347e426b40a">&#9670;&#160;</a></span>IEditableTarget</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::input_editing::IEditableTarget</a> = typedef <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a330b4311c61700ab375b9ffeb8547571" name="a330b4311c61700ab375b9ffeb8547571"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a330b4311c61700ab375b9ffeb8547571">&#9670;&#160;</a></span>IPropertyProvider</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::input_editing::IPropertyProvider</a> = typedef <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7cab700c7d168e8d2757335728547887" name="a7cab700c7d168e8d2757335728547887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cab700c7d168e8d2757335728547887">&#9670;&#160;</a></span>ObjectId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">eve::input_editing::ObjectId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab436d3d80eb310133fe55071bacabf5f" name="ab436d3d80eb310133fe55071bacabf5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab436d3d80eb310133fe55071bacabf5f">&#9670;&#160;</a></span>PropertyDescriptor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">eve::input_editing::PropertyDescriptor</a> = typedef <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">editing::PropertyDescriptor</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae01cbf4f0f67b672be47cfc7ba5752b8" name="ae01cbf4f0f67b672be47cfc7ba5752b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae01cbf4f0f67b672be47cfc7ba5752b8">&#9670;&#160;</a></span>PropertyFlag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">eve::input_editing::PropertyFlag</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">editing::PropertyFlag</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5572c5728ae62d18827189baa7a46550" name="a5572c5728ae62d18827189baa7a46550"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5572c5728ae62d18827189baa7a46550">&#9670;&#160;</a></span>PropertyPath</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">eve::input_editing::PropertyPath</a> = typedef <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70852c1b4d57e4c4dd6f43ba919572b7" name="a70852c1b4d57e4c4dd6f43ba919572b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70852c1b4d57e4c4dd6f43ba919572b7">&#9670;&#160;</a></span>PropertyReadResult</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">eve::input_editing::PropertyReadResult</a> = typedef <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6fab00a175e7c77b0256f11213709240" name="a6fab00a175e7c77b0256f11213709240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fab00a175e7c77b0256f11213709240">&#9670;&#160;</a></span>PropertyReadState</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">eve::input_editing::PropertyReadState</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">editing::PropertyReadState</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a266c2b85b2609e683a1c1c281583824e" name="a266c2b85b2609e683a1c1c281583824e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a266c2b85b2609e683a1c1c281583824e">&#9670;&#160;</a></span>PropertySchema</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">eve::input_editing::PropertySchema</a> = typedef <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40abfd3c6bfe39a5c362760bb1d98814" name="a40abfd3c6bfe39a5c362760bb1d98814"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40abfd3c6bfe39a5c362760bb1d98814">&#9670;&#160;</a></span>PropertySetMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">eve::input_editing::PropertySetMode</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a506e9ae917ca639265727fd8f74284ed" name="a506e9ae917ca639265727fd8f74284ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a506e9ae917ca639265727fd8f74284ed">&#9670;&#160;</a></span>PropertyType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">eve::input_editing::PropertyType</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54fe50929bbcbf36009046217bc35db0" name="a54fe50929bbcbf36009046217bc35db0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54fe50929bbcbf36009046217bc35db0">&#9670;&#160;</a></span>Revision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::input_editing::Revision</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac6ddd833b418648c1848b764a32415e3" name="ac6ddd833b418648c1848b764a32415e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6ddd833b418648c1848b764a32415e3">&#9670;&#160;</a></span>RuleId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">eve::input_editing::RuleId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a304b9d512cb61a162fd859e285fea70f" name="a304b9d512cb61a162fd859e285fea70f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a304b9d512cb61a162fd859e285fea70f">&#9670;&#160;</a></span>SelectionSnapshot</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">eve::input_editing::SelectionSnapshot</a> = typedef <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b29b13594f62f25146c67b9c42378e5" name="a6b29b13594f62f25146c67b9c42378e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b29b13594f62f25146c67b9c42378e5">&#9670;&#160;</a></span>TargetDescriptor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">eve::input_editing::TargetDescriptor</a> = typedef <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa83c007b9dd3723565383f3923bae51c" name="aa83c007b9dd3723565383f3923bae51c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa83c007b9dd3723565383f3923bae51c">&#9670;&#160;</a></span>TargetId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::input_editing::TargetId</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="InputMapTarget_8h_source.html">InputMapTarget.h</a> 第 <a class="el" href="InputMapTarget_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,685 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ISceneQuery类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1ISceneQuery.html">ISceneQuery</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1ISceneQuery-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ISceneQuery类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Scene graph query/mutation surface (provided by the scene module).  
+ <a href="classeve_1_1ISceneQuery.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SceneQuery_8h_source.html">SceneQuery.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a26f328c832effe493352ef99d7a46979" id="r_a26f328c832effe493352ef99d7a46979"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a26f328c832effe493352ef99d7a46979">~ISceneQuery</a> ()=default</td></tr>
+<tr class="separator:a26f328c832effe493352ef99d7a46979"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a544a7f9c2d0d8fbe662245dedc79c71d" id="r_a544a7f9c2d0d8fbe662245dedc79c71d"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a544a7f9c2d0d8fbe662245dedc79c71d">activeHost</a> () const =0</td></tr>
+<tr class="memdesc:a544a7f9c2d0d8fbe662245dedc79c71d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the currently selected host, or "" when none.  <br /></td></tr>
+<tr class="separator:a544a7f9c2d0d8fbe662245dedc79c71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6eb86b45607e88d4dc183d9a35edfde9" id="r_a6eb86b45607e88d4dc183d9a35edfde9"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a6eb86b45607e88d4dc183d9a35edfde9">hostCount</a> () const =0</td></tr>
+<tr class="memdesc:a6eb86b45607e88d4dc183d9a35edfde9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of mounted hosts.  <br /></td></tr>
+<tr class="separator:a6eb86b45607e88d4dc183d9a35edfde9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e5bc7b58693bd3cecd8fd80cd2cb0bb" id="r_a3e5bc7b58693bd3cecd8fd80cd2cb0bb"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a3e5bc7b58693bd3cecd8fd80cd2cb0bb">hostNameAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const =0</td></tr>
+<tr class="memdesc:a3e5bc7b58693bd3cecd8fd80cd2cb0bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the host at <code>index</code>.  <br /></td></tr>
+<tr class="separator:a3e5bc7b58693bd3cecd8fd80cd2cb0bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0be445fc97254b9f61be1f2f9b571ab" id="r_ae0be445fc97254b9f61be1f2f9b571ab"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#ae0be445fc97254b9f61be1f2f9b571ab">nodeCount</a> () const =0</td></tr>
+<tr class="memdesc:ae0be445fc97254b9f61be1f2f9b571ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Node count of the active host (0 when none).  <br /></td></tr>
+<tr class="separator:ae0be445fc97254b9f61be1f2f9b571ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4d6883beb88acdf697d45aa73b27d07" id="r_aa4d6883beb88acdf697d45aa73b27d07"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#aa4d6883beb88acdf697d45aa73b27d07">rootId</a> () const =0</td></tr>
+<tr class="memdesc:aa4d6883beb88acdf697d45aa73b27d07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Root node id of the active host, or "".  <br /></td></tr>
+<tr class="separator:aa4d6883beb88acdf697d45aa73b27d07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98beb0f875dd7a028290dd9910e31d78" id="r_a98beb0f875dd7a028290dd9910e31d78"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a98beb0f875dd7a028290dd9910e31d78">nodes</a> (int limit) const =0</td></tr>
+<tr class="memdesc:a98beb0f875dd7a028290dd9910e31d78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Depth-first node list of the active host, capped at <code>limit</code>.  <br /></td></tr>
+<tr class="separator:a98beb0f875dd7a028290dd9910e31d78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5b8807c14397e1d31cf0637a713c9f5" id="r_ac5b8807c14397e1d31cf0637a713c9f5"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#ac5b8807c14397e1d31cf0637a713c9f5">nodesOf</a> (const std::string &amp;<a class="el" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>, int limit) const =0</td></tr>
+<tr class="memdesc:ac5b8807c14397e1d31cf0637a713c9f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Node list of a named host, capped at <code>limit</code>.  <br /></td></tr>
+<tr class="separator:ac5b8807c14397e1d31cf0637a713c9f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c690cda5ac17bf11d87d9422b6d406" id="r_a71c690cda5ac17bf11d87d9422b6d406"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a71c690cda5ac17bf11d87d9422b6d406">getNode</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a> *out) const =0</td></tr>
+<tr class="memdesc:a71c690cda5ac17bf11d87d9422b6d406"><td class="mdescLeft">&#160;</td><td class="mdescRight">Look up one node in the active host.  <br /></td></tr>
+<tr class="separator:a71c690cda5ac17bf11d87d9422b6d406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3743a9559f74b91ff3cecef0f64352" id="r_a1a3743a9559f74b91ff3cecef0f64352"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a1a3743a9559f74b91ff3cecef0f64352">getNodeIn</a> (const std::string &amp;<a class="el" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>, const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a> *out) const =0</td></tr>
+<tr class="memdesc:a1a3743a9559f74b91ff3cecef0f64352"><td class="mdescLeft">&#160;</td><td class="mdescRight">Look up one node in a named host.  <br /></td></tr>
+<tr class="separator:a1a3743a9559f74b91ff3cecef0f64352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a707c1877af50b5c847928aad111f1928" id="r_a707c1877af50b5c847928aad111f1928"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a707c1877af50b5c847928aad111f1928">setNodeTransform</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)=0</td></tr>
+<tr class="memdesc:a707c1877af50b5c847928aad111f1928"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mutate the active host's node transform (marks subtree dirty).  <br /></td></tr>
+<tr class="separator:a707c1877af50b5c847928aad111f1928"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa210524bb3e460fe5788767b5cba8807" id="r_aa210524bb3e460fe5788767b5cba8807"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#aa210524bb3e460fe5788767b5cba8807">setNodeVisible</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, bool <a class="el" href="TileConfig_8cpp.html#aa54a57ae048476d840caf6d4d2c47aa3">visible</a>)=0</td></tr>
+<tr class="memdesc:aa210524bb3e460fe5788767b5cba8807"><td class="mdescLeft">&#160;</td><td class="mdescRight">Show/hide a node in the active host.  <br /></td></tr>
+<tr class="separator:aa210524bb3e460fe5788767b5cba8807"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d59fedaf8ab15d59bed0e4e9dd6ad84" id="r_a2d59fedaf8ab15d59bed0e4e9dd6ad84"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a2d59fedaf8ab15d59bed0e4e9dd6ad84">syncTransforms</a> ()=0</td></tr>
+<tr class="memdesc:a2d59fedaf8ab15d59bed0e4e9dd6ad84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Propagate local transforms -&gt; world for every host.  <br /></td></tr>
+<tr class="separator:a2d59fedaf8ab15d59bed0e4e9dd6ad84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a4d79b655932ab145e7a3d5710ecf621d" id="r_a4d79b655932ab145e7a3d5710ecf621d"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ISceneQuery.html#a4d79b655932ab145e7a3d5710ecf621d">capabilityName</a> = &quot;ISceneQuery&quot;</td></tr>
+<tr class="separator:a4d79b655932ab145e7a3d5710ecf621d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Scene graph query/mutation surface (provided by the scene module). </p>
+
+<p class="definition">在文件 <a class="el" href="SceneQuery_8h_source.html">SceneQuery.h</a> 第 <a class="el" href="SceneQuery_8h_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a26f328c832effe493352ef99d7a46979" name="a26f328c832effe493352ef99d7a46979"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26f328c832effe493352ef99d7a46979">&#9670;&#160;</a></span>~ISceneQuery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::ISceneQuery::~ISceneQuery </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a544a7f9c2d0d8fbe662245dedc79c71d" name="a544a7f9c2d0d8fbe662245dedc79c71d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a544a7f9c2d0d8fbe662245dedc79c71d">&#9670;&#160;</a></span>activeHost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::ISceneQuery::activeHost </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of the currently selected host, or "" when none. </p>
+
+</div>
+</div>
+<a id="a71c690cda5ac17bf11d87d9422b6d406" name="a71c690cda5ac17bf11d87d9422b6d406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c690cda5ac17bf11d87d9422b6d406">&#9670;&#160;</a></span>getNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::ISceneQuery::getNode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a> *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Look up one node in the active host. </p>
+
+</div>
+</div>
+<a id="a1a3743a9559f74b91ff3cecef0f64352" name="a1a3743a9559f74b91ff3cecef0f64352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a3743a9559f74b91ff3cecef0f64352">&#9670;&#160;</a></span>getNodeIn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::ISceneQuery::getNodeIn </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a> *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Look up one node in a named host. </p>
+
+</div>
+</div>
+<a id="a6eb86b45607e88d4dc183d9a35edfde9" name="a6eb86b45607e88d4dc183d9a35edfde9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6eb86b45607e88d4dc183d9a35edfde9">&#9670;&#160;</a></span>hostCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::ISceneQuery::hostCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of mounted hosts. </p>
+
+</div>
+</div>
+<a id="a3e5bc7b58693bd3cecd8fd80cd2cb0bb" name="a3e5bc7b58693bd3cecd8fd80cd2cb0bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e5bc7b58693bd3cecd8fd80cd2cb0bb">&#9670;&#160;</a></span>hostNameAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::ISceneQuery::hostNameAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of the host at <code>index</code>. </p>
+
+</div>
+</div>
+<a id="ae0be445fc97254b9f61be1f2f9b571ab" name="ae0be445fc97254b9f61be1f2f9b571ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0be445fc97254b9f61be1f2f9b571ab">&#9670;&#160;</a></span>nodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int eve::ISceneQuery::nodeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Node count of the active host (0 when none). </p>
+
+</div>
+</div>
+<a id="a98beb0f875dd7a028290dd9910e31d78" name="a98beb0f875dd7a028290dd9910e31d78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98beb0f875dd7a028290dd9910e31d78">&#9670;&#160;</a></span>nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt; <a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a> &gt; eve::ISceneQuery::nodes </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>limit</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Depth-first node list of the active host, capped at <code>limit</code>. </p>
+
+</div>
+</div>
+<a id="ac5b8807c14397e1d31cf0637a713c9f5" name="ac5b8807c14397e1d31cf0637a713c9f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5b8807c14397e1d31cf0637a713c9f5">&#9670;&#160;</a></span>nodesOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt; <a class="el" href="structeve_1_1SceneNodeInfo.html">SceneNodeInfo</a> &gt; eve::ISceneQuery::nodesOf </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>limit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Node list of a named host, capped at <code>limit</code>. </p>
+
+</div>
+</div>
+<a id="aa4d6883beb88acdf697d45aa73b27d07" name="aa4d6883beb88acdf697d45aa73b27d07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4d6883beb88acdf697d45aa73b27d07">&#9670;&#160;</a></span>rootId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string eve::ISceneQuery::rootId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Root node id of the active host, or "". </p>
+
+</div>
+</div>
+<a id="a707c1877af50b5c847928aad111f1928" name="a707c1877af50b5c847928aad111f1928"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a707c1877af50b5c847928aad111f1928">&#9670;&#160;</a></span>setNodeTransform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::ISceneQuery::setNodeTransform </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mutate the active host's node transform (marks subtree dirty). </p>
+
+</div>
+</div>
+<a id="aa210524bb3e460fe5788767b5cba8807" name="aa210524bb3e460fe5788767b5cba8807"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa210524bb3e460fe5788767b5cba8807">&#9670;&#160;</a></span>setNodeVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::ISceneQuery::setNodeVisible </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Show/hide a node in the active host. </p>
+
+</div>
+</div>
+<a id="a2d59fedaf8ab15d59bed0e4e9dd6ad84" name="a2d59fedaf8ab15d59bed0e4e9dd6ad84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d59fedaf8ab15d59bed0e4e9dd6ad84">&#9670;&#160;</a></span>syncTransforms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::ISceneQuery::syncTransforms </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Propagate local transforms -&gt; world for every host. </p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a4d79b655932ab145e7a3d5710ecf621d" name="a4d79b655932ab145e7a3d5710ecf621d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d79b655932ab145e7a3d5710ecf621d">&#9670;&#160;</a></span>capabilityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* eve::ISceneQuery::capabilityName = &quot;ISceneQuery&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneQuery_8h_source.html">SceneQuery.h</a> 第 <a class="el" href="SceneQuery_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="SceneQuery_8h_source.html">SceneQuery.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

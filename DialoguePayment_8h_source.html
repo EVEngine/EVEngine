@@ -1,0 +1,296 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dialogue/DialoguePayment.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9d7eb5392a4fb7dccc4284e89fdc9c92.html">dialogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DialoguePayment.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DialoguePayment_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="ResourceAccount_8h.html">common/ResourceAccount.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="StateAccess_8h.html">common/StateAccess.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="Transaction_8h.html">transaction/Transaction.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dialogue.html">eve::dialogue</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1PaymentSpec.html">   34</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dialogue_1_1PaymentSpec.html">PaymentSpec</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1PaymentSpec.html#a2d24cd096346b0cc5b1c7e4877e82075">   36</a></span>    std::optional&lt;std::int64_t&gt; <a class="code hl_variable" href="structeve_1_1dialogue_1_1PaymentSpec.html#a2d24cd096346b0cc5b1c7e4877e82075">money</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1PaymentSpec.html#aca8f394051b85f256f6353fcd9a03a56">   38</a></span>    std::optional&lt;std::int64_t&gt; <a class="code hl_variable" href="structeve_1_1dialogue_1_1PaymentSpec.html#aca8f394051b85f256f6353fcd9a03a56">reputation</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1PaymentSpec.html#a1d30c4bcb3cf6e1f2f6d8ba4fc7b86a0">   41</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1dialogue_1_1PaymentSpec.html#a1d30c4bcb3cf6e1f2f6d8ba4fc7b86a0">empty</a>() const noexcept { <span class="keywordflow">return</span> !<a class="code hl_variable" href="structeve_1_1dialogue_1_1PaymentSpec.html#a2d24cd096346b0cc5b1c7e4877e82075">money</a> &amp;&amp; !<a class="code hl_variable" href="structeve_1_1dialogue_1_1PaymentSpec.html#aca8f394051b85f256f6353fcd9a03a56">reputation</a>; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1dialogue_1_1PaymentSpec.html#a30d7e1c08496b17bd2844d9c7fa06eec">validate</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PaymentSpec&gt;</a> <a class="code hl_function" href="structeve_1_1dialogue_1_1PaymentSpec.html#aca4c5e64fe36ba37c386281fa3e0b1f4">fromValue</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_function" href="structeve_1_1dialogue_1_1PaymentSpec.html#a94ea46cacc6fe4844502f9bef69b2a19">toValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">   59</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">DialogueAccountBindings</a> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a02901df8f0283f34b58ad6df6b41cd31">   61</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a>* <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a02901df8f0283f34b58ad6df6b41cd31">money</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a47ca1a00f13b02060520e51b015ef3ba">   63</a></span>    <a class="code hl_class" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a>* <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a47ca1a00f13b02060520e51b015ef3ba">reputation</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#ab42a204b1db3886614f127937a57c9fa">   65</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#ab42a204b1db3886614f127937a57c9fa">moneyResource</a> = <span class="stringliteral">&quot;gold&quot;</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a4d1286aa13f57704646cff9ea4907561">   67</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a4d1286aa13f57704646cff9ea4907561">reputationResource</a> = <span class="stringliteral">&quot;reputation&quot;</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="};">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">   79</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">DialogueStateMutationParticipant</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a> {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">DialogueStateMutationParticipant</a>(<a class="code hl_class" href="classeve_1_1state_1_1IStateMutation.html">eve::IStateMutation</a>&amp; provider, std::span&lt;const eve::StateMutation&gt; mutations);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a06d3010977022ed423f88ea338bf1e43">   88</a></span>    <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a06d3010977022ed423f88ea338bf1e43">DialogueStateMutationParticipant</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">DialogueStateMutationParticipant</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a1411171c2ce9f4942b14175858e88b7f">   89</a></span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">DialogueStateMutationParticipant</a>&amp; <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a1411171c2ce9f4942b14175858e88b7f">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">DialogueStateMutationParticipant</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a9921aa72bf86f427140b97f9271e8cb5">   90</a></span>    <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a9921aa72bf86f427140b97f9271e8cb5">DialogueStateMutationParticipant</a>(<a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">DialogueStateMutationParticipant</a>&amp;&amp;)                 = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a285b81cfcef4579d7729cc02bae1139a">   91</a></span>    <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">DialogueStateMutationParticipant</a>&amp; <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a285b81cfcef4579d7729cc02bae1139a">operator=</a>(<a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">DialogueStateMutationParticipant</a>&amp;&amp;)      = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a793230c9a848cb9993e242d1ecd63385">   92</a></span>    <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a793230c9a848cb9993e242d1ecd63385">~DialogueStateMutationParticipant</a>() <span class="keyword">override</span>                                         = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a06a22867b3273d3f199312f0c70990d1">   95</a></span>    [[nodiscard]] std::string_view <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a06a22867b3273d3f199312f0c70990d1">name</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;dialogue.state-mutation&quot;</span>; }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ad408945b11bdec67a6bba62242397033">prepare</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ac251affb010b8656f0b64da54642e237">commit</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ac5b43f84e4d8e2fc16022e08430007bc">rollback</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ab67032d7f1860d9e56effe1c943f5841">compensate</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a>&amp; context) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">enum class</span> Phase : std::uint8_t { Idle, Prepared, Committed, RolledBack };</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_class" href="classeve_1_1state_1_1IStateMutation.html">eve::IStateMutation</a>&amp;            provider_;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::vector&lt;eve::StateMutation&gt; mutations_;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    Phase                           phase_ = Phase::Idle;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>};</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="foldopen" id="foldopen00123" data-start="{" data-end="};">
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html">  123</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html">DialoguePaymentAdapter</a> final {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html">DialoguePaymentAdapter</a>(<a class="code hl_struct" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">DialogueAccountBindings</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#a5f7c7c90b52fb46a74adad7e94a688c0">bindings</a> = {});</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#a0a567100e5558b310a6301b4089accd9">setBindings</a>(<a class="code hl_struct" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">DialogueAccountBindings</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#a5f7c7c90b52fb46a74adad7e94a688c0">bindings</a>);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#a5f7c7c90b52fb46a74adad7e94a688c0">  131</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">DialogueAccountBindings</a>&amp; <a class="code hl_function" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#a5f7c7c90b52fb46a74adad7e94a688c0">bindings</a>() const noexcept { <span class="keywordflow">return</span> bindings_; }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::transaction::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#ab86d447f2beeef90e95640f164e28856">execute</a>(</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        std::string transactionId, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dialogue_1_1PaymentSpec.html">PaymentSpec</a>&amp; payment,</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        std::span&lt;eve::transaction::ITransactionParticipant*&gt; effects) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;eve::transaction::TransactionReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#aa85714eafdb3afee3850e6ef5350cabb">executeStateMutation</a>(</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        std::string transactionId, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dialogue_1_1PaymentSpec.html">PaymentSpec</a>&amp; payment, <a class="code hl_class" href="classeve_1_1state_1_1IStateMutation.html">eve::IStateMutation</a>&amp; provider,</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        std::span&lt;const eve::StateMutation&gt; mutations) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <a class="code hl_struct" href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">DialogueAccountBindings</a> bindings_;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>};</div>
+</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>}  <span class="comment">// namespace eve::dialogue</span></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aResourceAccount_8h_html"><div class="ttname"><a href="ResourceAccount_8h.html">ResourceAccount.h</a></div><div class="ttdoc">Strongly typed, transaction-friendly resource cost protocol.</div></div>
+<div class="ttc" id="aStateAccess_8h_html"><div class="ttname"><a href="StateAccess_8h.html">StateAccess.h</a></div><div class="ttdoc">Consumer-owned query and mutation contracts for authoritative world state.</div></div>
+<div class="ttc" id="aTransaction_8h_html"><div class="ttname"><a href="Transaction_8h.html">Transaction.h</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialoguePaymentAdapter_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html">eve::dialogue::DialoguePaymentAdapter</a></div><div class="ttdoc">Composes Dialogue accounts with StatePatch or Action participants.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00123">DialoguePayment.h:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialoguePaymentAdapter_html_a0a567100e5558b310a6301b4089accd9"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#a0a567100e5558b310a6301b4089accd9">eve::dialogue::DialoguePaymentAdapter::setBindings</a></div><div class="ttdeci">void setBindings(DialogueAccountBindings bindings)</div><div class="ttdoc">Replace borrowed account bindings; no balance is copied.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00166">DialoguePayment.cpp:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialoguePaymentAdapter_html_a5f7c7c90b52fb46a74adad7e94a688c0"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#a5f7c7c90b52fb46a74adad7e94a688c0">eve::dialogue::DialoguePaymentAdapter::bindings</a></div><div class="ttdeci">const DialogueAccountBindings &amp; bindings() const noexcept</div><div class="ttdoc">Return the current borrowed bindings for diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00131">DialoguePayment.h:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialoguePaymentAdapter_html_aa85714eafdb3afee3850e6ef5350cabb"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#aa85714eafdb3afee3850e6ef5350cabb">eve::dialogue::DialoguePaymentAdapter::executeStateMutation</a></div><div class="ttdeci">eve::Result&lt; eve::transaction::TransactionReceipt &gt; executeStateMutation(std::string transactionId, const PaymentSpec &amp;payment, eve::IStateMutation &amp;provider, std::span&lt; const eve::StateMutation &gt; mutations) const</div><div class="ttdoc">Execute a payment together with one StatePatch-compatible mutation set.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00211">DialoguePayment.cpp:211</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialoguePaymentAdapter_html_ab86d447f2beeef90e95640f164e28856"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialoguePaymentAdapter.html#ab86d447f2beeef90e95640f164e28856">eve::dialogue::DialoguePaymentAdapter::execute</a></div><div class="ttdeci">eve::Result&lt; eve::transaction::TransactionReceipt &gt; execute(std::string transactionId, const PaymentSpec &amp;payment, std::span&lt; eve::transaction::ITransactionParticipant * &gt; effects) const</div><div class="ttdoc">Execute a payment and zero or more staged domain effects atomically.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00168">DialoguePayment.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html">eve::dialogue::DialogueStateMutationParticipant</a></div><div class="ttdoc">Transaction participant that delegates an atomic state mutation.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00079">DialoguePayment.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_a06a22867b3273d3f199312f0c70990d1"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a06a22867b3273d3f199312f0c70990d1">eve::dialogue::DialogueStateMutationParticipant::name</a></div><div class="ttdeci">std::string_view name() const noexcept override</div><div class="ttdoc">Stable diagnostic name.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00095">DialoguePayment.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_a06d3010977022ed423f88ea338bf1e43"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a06d3010977022ed423f88ea338bf1e43">eve::dialogue::DialogueStateMutationParticipant::DialogueStateMutationParticipant</a></div><div class="ttdeci">DialogueStateMutationParticipant(const DialogueStateMutationParticipant &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_a1411171c2ce9f4942b14175858e88b7f"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a1411171c2ce9f4942b14175858e88b7f">eve::dialogue::DialogueStateMutationParticipant::operator=</a></div><div class="ttdeci">DialogueStateMutationParticipant &amp; operator=(const DialogueStateMutationParticipant &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_a285b81cfcef4579d7729cc02bae1139a"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a285b81cfcef4579d7729cc02bae1139a">eve::dialogue::DialogueStateMutationParticipant::operator=</a></div><div class="ttdeci">DialogueStateMutationParticipant &amp; operator=(DialogueStateMutationParticipant &amp;&amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_a793230c9a848cb9993e242d1ecd63385"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a793230c9a848cb9993e242d1ecd63385">eve::dialogue::DialogueStateMutationParticipant::~DialogueStateMutationParticipant</a></div><div class="ttdeci">~DialogueStateMutationParticipant() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_a9921aa72bf86f427140b97f9271e8cb5"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#a9921aa72bf86f427140b97f9271e8cb5">eve::dialogue::DialogueStateMutationParticipant::DialogueStateMutationParticipant</a></div><div class="ttdeci">DialogueStateMutationParticipant(DialogueStateMutationParticipant &amp;&amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_ab67032d7f1860d9e56effe1c943f5841"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ab67032d7f1860d9e56effe1c943f5841">eve::dialogue::DialogueStateMutationParticipant::compensate</a></div><div class="ttdeci">eve::Result&lt; void &gt; compensate(const eve::transaction::TransactionContext &amp;context) override</div><div class="ttdoc">Undo an already committed external effect by compensation.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00159">DialoguePayment.cpp:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_ac251affb010b8656f0b64da54642e237"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ac251affb010b8656f0b64da54642e237">eve::dialogue::DialogueStateMutationParticipant::commit</a></div><div class="ttdeci">eve::Result&lt; void &gt; commit(const eve::transaction::TransactionContext &amp;context) override</div><div class="ttdoc">Publish this participant's staged changes.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00142">DialoguePayment.cpp:142</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_ac5b43f84e4d8e2fc16022e08430007bc"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ac5b43f84e4d8e2fc16022e08430007bc">eve::dialogue::DialogueStateMutationParticipant::rollback</a></div><div class="ttdeci">eve::Result&lt; void &gt; rollback(const eve::transaction::TransactionContext &amp;context) override</div><div class="ttdoc">Discard a prepared but not committed stage.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00152">DialoguePayment.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueStateMutationParticipant_html_ad408945b11bdec67a6bba62242397033"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueStateMutationParticipant.html#ad408945b11bdec67a6bba62242397033">eve::dialogue::DialogueStateMutationParticipant::prepare</a></div><div class="ttdeci">eve::Result&lt; void &gt; prepare(const eve::transaction::TransactionContext &amp;context) override</div><div class="ttdoc">Validate and stage local changes for the transaction.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00133">DialoguePayment.cpp:133</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1IResourceAccount_html"><div class="ttname"><a href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a></div><div class="ttdoc">Provider-neutral resource account contract.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00308">ResourceAccount.h:308</a></div></div>
+<div class="ttc" id="aclasseve_1_1state_1_1IStateMutation_html"><div class="ttname"><a href="classeve_1_1state_1_1IStateMutation.html">eve::state::IStateMutation</a></div><div class="ttdoc">All-or-nothing mutation boundary owned by the consumer.</div><div class="ttdef"><b>Definition</b> <a href="StateAccess_8h_source.html#l00106">StateAccess.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ITransactionParticipant_html"><div class="ttname"><a href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a></div><div class="ttdoc">Synchronous participant contract for one coordinator transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00119">Transaction.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1TransactionContext_html"><div class="ttname"><a href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a></div><div class="ttdoc">Immutable context shared by every participant of one transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00028">Transaction.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html"><div class="ttname"><a href="namespaceeve_1_1dialogue.html">eve::dialogue</a></div><div class="ttdef"><b>Definition</b> <a href="Conversation_8cpp_source.html#l00006">Conversation.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueAccountBindings_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueAccountBindings.html">eve::dialogue::DialogueAccountBindings</a></div><div class="ttdoc">Borrowed account bindings used by one DialogueFlow integration.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00059">DialoguePayment.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueAccountBindings_html_a02901df8f0283f34b58ad6df6b41cd31"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a02901df8f0283f34b58ad6df6b41cd31">eve::dialogue::DialogueAccountBindings::money</a></div><div class="ttdeci">eve::resource::IResourceAccount * money</div><div class="ttdoc">Borrowed authoritative account for money.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00061">DialoguePayment.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueAccountBindings_html_a47ca1a00f13b02060520e51b015ef3ba"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a47ca1a00f13b02060520e51b015ef3ba">eve::dialogue::DialogueAccountBindings::reputation</a></div><div class="ttdeci">eve::resource::IResourceAccount * reputation</div><div class="ttdoc">Borrowed authoritative account for reputation.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00063">DialoguePayment.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueAccountBindings_html_a4d1286aa13f57704646cff9ea4907561"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#a4d1286aa13f57704646cff9ea4907561">eve::dialogue::DialogueAccountBindings::reputationResource</a></div><div class="ttdeci">std::string reputationResource</div><div class="ttdoc">ResourceId used inside the reputation account.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00067">DialoguePayment.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1DialogueAccountBindings_html_ab42a204b1db3886614f127937a57c9fa"><div class="ttname"><a href="structeve_1_1dialogue_1_1DialogueAccountBindings.html#ab42a204b1db3886614f127937a57c9fa">eve::dialogue::DialogueAccountBindings::moneyResource</a></div><div class="ttdeci">std::string moneyResource</div><div class="ttdoc">ResourceId used inside the money account.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00065">DialoguePayment.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1PaymentSpec_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1PaymentSpec.html">eve::dialogue::PaymentSpec</a></div><div class="ttdoc">Canonical money/reputation cost attached to a dialogue choice or command.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00034">DialoguePayment.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1PaymentSpec_html_a1d30c4bcb3cf6e1f2f6d8ba4fc7b86a0"><div class="ttname"><a href="structeve_1_1dialogue_1_1PaymentSpec.html#a1d30c4bcb3cf6e1f2f6d8ba4fc7b86a0">eve::dialogue::PaymentSpec::empty</a></div><div class="ttdeci">bool empty() const noexcept</div><div class="ttdoc">Whether this specification contains no charge.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00041">DialoguePayment.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1PaymentSpec_html_a2d24cd096346b0cc5b1c7e4877e82075"><div class="ttname"><a href="structeve_1_1dialogue_1_1PaymentSpec.html#a2d24cd096346b0cc5b1c7e4877e82075">eve::dialogue::PaymentSpec::money</a></div><div class="ttdeci">std::optional&lt; std::int64_t &gt; money</div><div class="ttdoc">Optional money amount, in the configured money resource.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00036">DialoguePayment.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1PaymentSpec_html_a30d7e1c08496b17bd2844d9c7fa06eec"><div class="ttname"><a href="structeve_1_1dialogue_1_1PaymentSpec.html#a30d7e1c08496b17bd2844d9c7fa06eec">eve::dialogue::PaymentSpec::validate</a></div><div class="ttdeci">eve::Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate that every present amount is a positive integer.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00090">DialoguePayment.cpp:90</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1PaymentSpec_html_a94ea46cacc6fe4844502f9bef69b2a19"><div class="ttname"><a href="structeve_1_1dialogue_1_1PaymentSpec.html#a94ea46cacc6fe4844502f9bef69b2a19">eve::dialogue::PaymentSpec::toValue</a></div><div class="ttdeci">eve::Value toValue() const</div><div class="ttdoc">Project this payment into a deterministic canonical Value object.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00122">DialoguePayment.cpp:122</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1PaymentSpec_html_aca4c5e64fe36ba37c386281fa3e0b1f4"><div class="ttname"><a href="structeve_1_1dialogue_1_1PaymentSpec.html#aca4c5e64fe36ba37c386281fa3e0b1f4">eve::dialogue::PaymentSpec::fromValue</a></div><div class="ttdeci">static eve::Result&lt; PaymentSpec &gt; fromValue(const eve::Value &amp;value)</div><div class="ttdoc">Parse { &quot;money&quot;: n, &quot;reputation&quot;: n } from canonical Value.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00099">DialoguePayment.cpp:99</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1PaymentSpec_html_aca8f394051b85f256f6353fcd9a03a56"><div class="ttname"><a href="structeve_1_1dialogue_1_1PaymentSpec.html#aca8f394051b85f256f6353fcd9a03a56">eve::dialogue::PaymentSpec::reputation</a></div><div class="ttdeci">std::optional&lt; std::int64_t &gt; reputation</div><div class="ttdoc">Optional reputation amount, in the configured reputation resource.</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8h_source.html#l00038">DialoguePayment.h:38</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

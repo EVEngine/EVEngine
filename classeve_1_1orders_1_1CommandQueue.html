@@ -1,0 +1,869 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::orders::CommandQueue类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1orders.html">orders</a></li><li class="navelem"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html">CommandQueue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1orders_1_1CommandQueue-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::orders::CommandQueue类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Generic priority order queue with no gameplay or entity semantics.  
+ <a href="classeve_1_1orders_1_1CommandQueue.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CommandQueue_8h_source.html">CommandQueue.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7fd1e5aeed3ac91d91d108fb441ea65d" id="r_a7fd1e5aeed3ac91d91d108fb441ea65d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a7fd1e5aeed3ac91d91d108fb441ea65d">append</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0, double timeoutSeconds=0.0)</td></tr>
+<tr class="memdesc:a7fd1e5aeed3ac91d91d108fb441ea65d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a command and returns its stable identity or validation failure.  <br /></td></tr>
+<tr class="separator:a7fd1e5aeed3ac91d91d108fb441ea65d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3466e126bc45f1165a9f5aeada71fc6" id="r_ab3466e126bc45f1165a9f5aeada71fc6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#ab3466e126bc45f1165a9f5aeada71fc6">replace</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0, double timeoutSeconds=0.0)</td></tr>
+<tr class="memdesc:ab3466e126bc45f1165a9f5aeada71fc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels unfinished commands and starts a replacement.  <br /></td></tr>
+<tr class="separator:ab3466e126bc45f1165a9f5aeada71fc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5be475c98f5016c2ded5493d5f47d67c" id="r_a5be475c98f5016c2ded5493d5f47d67c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a5be475c98f5016c2ded5493d5f47d67c">interrupt</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>=0, double timeoutSeconds=0.0)</td></tr>
+<tr class="memdesc:a5be475c98f5016c2ded5493d5f47d67c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preempts the active command when priority permits.  <br /></td></tr>
+<tr class="separator:a5be475c98f5016c2ded5493d5f47d67c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b23d161806b02c3a501396c2292f4f0" id="r_a5b23d161806b02c3a501396c2292f4f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a5b23d161806b02c3a501396c2292f4f0">complete</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a5b23d161806b02c3a501396c2292f4f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes the active command.  <br /></td></tr>
+<tr class="separator:a5b23d161806b02c3a501396c2292f4f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b692d23d096c6d5ce0152267cc28b44" id="r_a1b692d23d096c6d5ce0152267cc28b44"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a1b692d23d096c6d5ce0152267cc28b44">fail</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;reason)</td></tr>
+<tr class="memdesc:a1b692d23d096c6d5ce0152267cc28b44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fails the active command.  <br /></td></tr>
+<tr class="separator:a1b692d23d096c6d5ce0152267cc28b44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af74b39f1325b7a02b2547696c901a345" id="r_af74b39f1325b7a02b2547696c901a345"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#af74b39f1325b7a02b2547696c901a345">cancel</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;reason=&quot;cancelled&quot;)</td></tr>
+<tr class="memdesc:af74b39f1325b7a02b2547696c901a345"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels an active or queued command.  <br /></td></tr>
+<tr class="separator:af74b39f1325b7a02b2547696c901a345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eb765f6b1ac62a3cda54c1d710984d8" id="r_a8eb765f6b1ac62a3cda54c1d710984d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a8eb765f6b1ac62a3cda54c1d710984d8">update</a> (double dtSeconds)</td></tr>
+<tr class="memdesc:a8eb765f6b1ac62a3cda54c1d710984d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked simulation update.  <br /></td></tr>
+<tr class="separator:a8eb765f6b1ac62a3cda54c1d710984d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a117929101a81990433d900d05dcf52b5" id="r_a117929101a81990433d900d05dcf52b5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5">clear</a> ()</td></tr>
+<tr class="memdesc:a117929101a81990433d900d05dcf52b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the queue, retained history, ids, and event sequences.  <br /></td></tr>
+<tr class="separator:a117929101a81990433d900d05dcf52b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57d43d9036f4f09941ba833ca13833c5" id="r_a57d43d9036f4f09941ba833ca13833c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a57d43d9036f4f09941ba833ca13833c5">current</a> ()</td></tr>
+<tr class="memdesc:a57d43d9036f4f09941ba833ca13833c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the active order, or a null observation when the queue is idle.  <br /></td></tr>
+<tr class="separator:a57d43d9036f4f09941ba833ca13833c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d90ffe43318048ffcf279cd12cb95e1" id="r_a1d90ffe43318048ffcf279cd12cb95e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a1d90ffe43318048ffcf279cd12cb95e1">current</a> () const</td></tr>
+<tr class="memdesc:a1d90ffe43318048ffcf279cd12cb95e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the active order as a read-only observation, or null when idle.  <br /></td></tr>
+<tr class="separator:a1d90ffe43318048ffcf279cd12cb95e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a7f3ecadb10e4c07fbf6b74d0b48e46" id="r_a1a7f3ecadb10e4c07fbf6b74d0b48e46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a1a7f3ecadb10e4c07fbf6b74d0b48e46">find</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a1a7f3ecadb10e4c07fbf6b74d0b48e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an order by stable id, including terminal history.  <br /></td></tr>
+<tr class="separator:a1a7f3ecadb10e4c07fbf6b74d0b48e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88e19f868d895d2f0d02925b0b7fd4cc" id="r_a88e19f868d895d2f0d02925b0b7fd4cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a88e19f868d895d2f0d02925b0b7fd4cc">find</a> (const std::string &amp;<a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a88e19f868d895d2f0d02925b0b7fd4cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an order by stable id as a read-only observation.  <br /></td></tr>
+<tr class="separator:a88e19f868d895d2f0d02925b0b7fd4cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addfe8b0f6116ef58aa48b2ad8d62b27e" id="r_addfe8b0f6116ef58aa48b2ad8d62b27e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#addfe8b0f6116ef58aa48b2ad8d62b27e">queuedCount</a> () const</td></tr>
+<tr class="memdesc:addfe8b0f6116ef58aa48b2ad8d62b27e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of queued orders, excluding the active order.  <br /></td></tr>
+<tr class="separator:addfe8b0f6116ef58aa48b2ad8d62b27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77f1f93341573c5fa26308aac72abc89" id="r_a77f1f93341573c5fa26308aac72abc89"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a77f1f93341573c5fa26308aac72abc89">orderCount</a> () const</td></tr>
+<tr class="memdesc:a77f1f93341573c5fa26308aac72abc89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total retained order count.  <br /></td></tr>
+<tr class="separator:a77f1f93341573c5fa26308aac72abc89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad372ce0989f69cde29976af92195bd8" id="r_aad372ce0989f69cde29976af92195bd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#aad372ce0989f69cde29976af92195bd8">orderAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:aad372ce0989f69cde29976af92195bd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an order in creation order, or null for an invalid index.  <br /></td></tr>
+<tr class="separator:aad372ce0989f69cde29976af92195bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad181421dc31e5303698585536993695f" id="r_ad181421dc31e5303698585536993695f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#ad181421dc31e5303698585536993695f">orderAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:ad181421dc31e5303698585536993695f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an order in creation order as a read-only observation.  <br /></td></tr>
+<tr class="separator:ad181421dc31e5303698585536993695f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3fd552259961f7e1e2e043c494daf1a" id="r_ab3fd552259961f7e1e2e043c494daf1a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#ab3fd552259961f7e1e2e043c494daf1a">eventCount</a> () const</td></tr>
+<tr class="memdesc:ab3fd552259961f7e1e2e043c494daf1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of retained deterministic events.  <br /></td></tr>
+<tr class="separator:ab3fd552259961f7e1e2e043c494daf1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a308a210649d8e76f5d39afccc823a4b6" id="r_a308a210649d8e76f5d39afccc823a4b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1orders_1_1OrderEvent.html">OrderEvent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a308a210649d8e76f5d39afccc823a4b6">eventAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="memdesc:a308a210649d8e76f5d39afccc823a4b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an event by sequence order, or null for an invalid index.  <br /></td></tr>
+<tr class="separator:a308a210649d8e76f5d39afccc823a4b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a721f5df8c9dc2f1a152ef108ae616c57" id="r_a721f5df8c9dc2f1a152ef108ae616c57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1orders_1_1OrderEvent.html">OrderEvent</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a721f5df8c9dc2f1a152ef108ae616c57">eventAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a721f5df8c9dc2f1a152ef108ae616c57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a read-only event by sequence order, or null for an invalid index.  <br /></td></tr>
+<tr class="separator:a721f5df8c9dc2f1a152ef108ae616c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf6ed96afcba8c72cb3f9edaade240b9" id="r_adf6ed96afcba8c72cb3f9edaade240b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#adf6ed96afcba8c72cb3f9edaade240b9">clearEvents</a> ()</td></tr>
+<tr class="memdesc:adf6ed96afcba8c72cb3f9edaade240b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears retained events without resetting their sequence counter.  <br /></td></tr>
+<tr class="separator:adf6ed96afcba8c72cb3f9edaade240b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37acd92838cde289092bf49fe7da70d6" id="r_a37acd92838cde289092bf49fe7da70d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a37acd92838cde289092bf49fe7da70d6">snapshot</a> () const</td></tr>
+<tr class="memdesc:a37acd92838cde289092bf49fe7da70d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes the complete command queue as deterministic JSON.  <br /></td></tr>
+<tr class="separator:a37acd92838cde289092bf49fe7da70d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a150d6d0b6dd705d763443d839b5387d1" id="r_a150d6d0b6dd705d763443d839b5387d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a150d6d0b6dd705d763443d839b5387d1">restore</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a150d6d0b6dd705d763443d839b5387d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restores a command queue transactionally from a JSON snapshot.  <br /></td></tr>
+<tr class="separator:a150d6d0b6dd705d763443d839b5387d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Generic priority order queue with no gameplay or entity semantics. </p>
+<p>Queued orders are selected by descending priority and then insertion order. The queue owns returned <a class="el" href="structeve_1_1orders_1_1Order.html" title="One entity-agnostic command and its lifecycle metadata.">Order</a> pointers; pointers remain valid until <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5" title="Resets the queue, retained history, ids, and event sequences.">clear()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8h_source.html">CommandQueue.h</a> 第 <a class="el" href="CommandQueue_8h_source.html#l00087">87</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a7fd1e5aeed3ac91d91d108fb441ea65d" name="a7fd1e5aeed3ac91d91d108fb441ea65d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fd1e5aeed3ac91d91d108fb441ea65d">&#9670;&#160;</a></span>append()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::orders::CommandQueue::append </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeoutSeconds</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Appends a command and returns its stable identity or validation failure. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af74b39f1325b7a02b2547696c901a345" name="af74b39f1325b7a02b2547696c901a345"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af74b39f1325b7a02b2547696c901a345">&#9670;&#160;</a></span>cancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::orders::CommandQueue::cancel </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>&quot;cancelled&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels an active or queued command. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00333">333</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSProductionAction_8cpp_source.html#l00402">eve::rts::RTSProductionActionAdapter::cancel()</a>.</p>
+
+</div>
+</div>
+<a id="a117929101a81990433d900d05dcf52b5" name="a117929101a81990433d900d05dcf52b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a117929101a81990433d900d05dcf52b5">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::orders::CommandQueue::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resets the queue, retained history, ids, and event sequences. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf6ed96afcba8c72cb3f9edaade240b9" name="adf6ed96afcba8c72cb3f9edaade240b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf6ed96afcba8c72cb3f9edaade240b9">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::orders::CommandQueue::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears retained events without resetting their sequence counter. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b23d161806b02c3a501396c2292f4f0" name="a5b23d161806b02c3a501396c2292f4f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b23d161806b02c3a501396c2292f4f0">&#9670;&#160;</a></span>complete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::orders::CommandQueue::complete </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Completes the active command. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a57d43d9036f4f09941ba833ca13833c5" name="a57d43d9036f4f09941ba833ca13833c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57d43d9036f4f09941ba833ca13833c5">&#9670;&#160;</a></span>current() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt; eve::orders::CommandQueue::current </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the active order, or a null observation when the queue is idle. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed mutable view owned by this queue; nullable when no order is active. @ownership <a class="el" href="classeve_1_1orders_1_1CommandQueue.html" title="Generic priority order queue with no gameplay or entity semantics.">CommandQueue</a> retains ownership and callers must not delete the result. @lifetime Valid until the next mutating queue operation or <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5" title="Resets the queue, retained history, ids, and event sequences.">clear()</a>. @thread Call on the queue's owning simulation thread. @reentrancy The returned object must not be used from a re-entrant callback. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00366">366</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d90ffe43318048ffcf279cd12cb95e1" name="a1d90ffe43318048ffcf279cd12cb95e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d90ffe43318048ffcf279cd12cb95e1">&#9670;&#160;</a></span>current() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt; eve::orders::CommandQueue::current </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the active order as a read-only observation, or null when idle. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable pointer owned by this queue. @ownership The queue owns the order; callers never release it. @lifetime Valid until the next mutating queue operation or <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5" title="Resets the queue, retained history, ids, and event sequences.">clear()</a>. @thread Call on the queue's owning simulation thread. @reentrancy Do not retain this observation across callbacks or queue mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a308a210649d8e76f5d39afccc823a4b6" name="a308a210649d8e76f5d39afccc823a4b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a308a210649d8e76f5d39afccc823a4b6">&#9670;&#160;</a></span>eventAt() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1orders_1_1OrderEvent.html">OrderEvent</a> &gt; eve::orders::CommandQueue::eventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an event by sequence order, or null for an invalid index. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable mutable pointer owned by this queue's event log. @ownership <a class="el" href="classeve_1_1orders_1_1CommandQueue.html" title="Generic priority order queue with no gameplay or entity semantics.">CommandQueue</a> owns retained events; callers must not delete the result. @lifetime Valid until <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#adf6ed96afcba8c72cb3f9edaade240b9" title="Clears retained events without resetting their sequence counter.">clearEvents()</a>, <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5" title="Resets the queue, retained history, ids, and event sequences.">clear()</a>, or another operation that reallocates the log. @thread Call on the queue's owning simulation thread. @reentrancy Do not retain across event callbacks or queue mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QueueInspector_8cpp_source.html#l00013">eve::queue_editing::RuntimeQueueInspector::capture()</a>.</p>
+
+</div>
+</div>
+<a id="a721f5df8c9dc2f1a152ef108ae616c57" name="a721f5df8c9dc2f1a152ef108ae616c57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a721f5df8c9dc2f1a152ef108ae616c57">&#9670;&#160;</a></span>eventAt() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1orders_1_1OrderEvent.html">OrderEvent</a> &gt; eve::orders::CommandQueue::eventAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a read-only event by sequence order, or null for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00405">405</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="ab3fd552259961f7e1e2e043c494daf1a" name="ab3fd552259961f7e1e2e043c494daf1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3fd552259961f7e1e2e043c494daf1a">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::orders::CommandQueue::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of retained deterministic events. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00398">398</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QueueInspector_8cpp_source.html#l00013">eve::queue_editing::RuntimeQueueInspector::capture()</a>.</p>
+
+</div>
+</div>
+<a id="a1b692d23d096c6d5ce0152267cc28b44" name="a1b692d23d096c6d5ce0152267cc28b44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b692d23d096c6d5ce0152267cc28b44">&#9670;&#160;</a></span>fail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::orders::CommandQueue::fail </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fails the active command. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a1a7f3ecadb10e4c07fbf6b74d0b48e46" name="a1a7f3ecadb10e4c07fbf6b74d0b48e46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a7f3ecadb10e4c07fbf6b74d0b48e46">&#9670;&#160;</a></span>find() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt; eve::orders::CommandQueue::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an order by stable id, including terminal history. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable mutable pointer owned by this queue. @ownership <a class="el" href="classeve_1_1orders_1_1CommandQueue.html" title="Generic priority order queue with no gameplay or entity semantics.">CommandQueue</a> owns every returned order; callers must not delete it. @lifetime Valid until the next mutating queue operation or <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5" title="Resets the queue, retained history, ids, and event sequences.">clear()</a>. @thread Call on the queue's owning simulation thread. @reentrancy Do not use the pointer after a re-entrant queue mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00374">374</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00501">eve::rts::OrderComponent::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="a88e19f868d895d2f0d02925b0b7fd4cc" name="a88e19f868d895d2f0d02925b0b7fd4cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88e19f868d895d2f0d02925b0b7fd4cc">&#9670;&#160;</a></span>find() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt; eve::orders::CommandQueue::find </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an order by stable id as a read-only observation. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable pointer owned by this queue. @ownership <a class="el" href="classeve_1_1orders_1_1CommandQueue.html" title="Generic priority order queue with no gameplay or entity semantics.">CommandQueue</a> owns the order and retains it as history. @lifetime Valid until the next mutating queue operation or <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5" title="Resets the queue, retained history, ids, and event sequences.">clear()</a>. @thread Call on the queue's owning simulation thread. @reentrancy The observation is not valid across re-entrant mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>.</p>
+
+</div>
+</div>
+<a id="a5be475c98f5016c2ded5493d5f47d67c" name="a5be475c98f5016c2ded5493d5f47d67c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5be475c98f5016c2ded5493d5f47d67c">&#9670;&#160;</a></span>interrupt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::orders::CommandQueue::interrupt </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeoutSeconds</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Preempts the active command when priority permits. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aad372ce0989f69cde29976af92195bd8" name="aad372ce0989f69cde29976af92195bd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad372ce0989f69cde29976af92195bd8">&#9670;&#160;</a></span>orderAt() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt; eve::orders::CommandQueue::orderAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an order in creation order, or null for an invalid index. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable mutable pointer owned by this queue. @ownership <a class="el" href="classeve_1_1orders_1_1CommandQueue.html" title="Generic priority order queue with no gameplay or entity semantics.">CommandQueue</a> owns the order; callers must not delete it. @lifetime Valid until the next mutating queue operation or <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5" title="Resets the queue, retained history, ids, and event sequences.">clear()</a>. @thread Call on the queue's owning simulation thread. @reentrancy Do not retain across callbacks or queue mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00388">388</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QueueInspector_8cpp_source.html#l00013">eve::queue_editing::RuntimeQueueInspector::capture()</a>.</p>
+
+</div>
+</div>
+<a id="ad181421dc31e5303698585536993695f" name="ad181421dc31e5303698585536993695f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad181421dc31e5303698585536993695f">&#9670;&#160;</a></span>orderAt() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const <a class="el" href="structeve_1_1orders_1_1Order.html">Order</a> &gt; eve::orders::CommandQueue::orderAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns an order in creation order as a read-only observation. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable pointer owned by this queue. @ownership <a class="el" href="classeve_1_1orders_1_1CommandQueue.html" title="Generic priority order queue with no gameplay or entity semantics.">CommandQueue</a> retains the order; callers never release it. @lifetime Valid until the next mutating queue operation or <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a117929101a81990433d900d05dcf52b5" title="Resets the queue, retained history, ids, and event sequences.">clear()</a>. @thread Call on the queue's owning simulation thread. @reentrancy Do not retain across callbacks or queue mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00393">393</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a77f1f93341573c5fa26308aac72abc89" name="a77f1f93341573c5fa26308aac72abc89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77f1f93341573c5fa26308aac72abc89">&#9670;&#160;</a></span>orderCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::orders::CommandQueue::orderCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the total retained order count. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00386">386</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="QueueInspector_8cpp_source.html#l00013">eve::queue_editing::RuntimeQueueInspector::capture()</a>.</p>
+
+</div>
+</div>
+<a id="addfe8b0f6116ef58aa48b2ad8d62b27e" name="addfe8b0f6116ef58aa48b2ad8d62b27e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addfe8b0f6116ef58aa48b2ad8d62b27e">&#9670;&#160;</a></span>queuedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::orders::CommandQueue::queuedCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of queued orders, excluding the active order. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3466e126bc45f1165a9f5aeada71fc6" name="ab3466e126bc45f1165a9f5aeada71fc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3466e126bc45f1165a9f5aeada71fc6">&#9670;&#160;</a></span>replace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::orders::CommandQueue::replace </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeoutSeconds</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancels unfinished commands and starts a replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a150d6d0b6dd705d763443d839b5387d1" name="a150d6d0b6dd705d763443d839b5387d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a150d6d0b6dd705d763443d839b5387d1">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::orders::CommandQueue::restore </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restores a command queue transactionally from a JSON snapshot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>JSON encoded by <a class="el" href="classeve_1_1orders_1_1CommandQueue.html#a37acd92838cde289092bf49fe7da70d6" title="Serializes the complete command queue as deterministic JSON.">snapshot()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a parse/schema/invariant failure. On failure this queue remains unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00464">464</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1orders.html#a59f6bb174ca520627742f4f398258292a4d3d769b812b6faa6b76e1a8abaece2d">eve::orders::Active</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">from</a>, <a class="el" href="CommandQueue_8h_source.html#l00077">eve::orders::OrderEvent::from</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="Value_8h_source.html#l00180">eve::Value::getIf()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="CommandQueue_8h_source.html#l00076">eve::orders::OrderEvent::kind</a>, <a class="el" href="TileConfig_8cpp_source.html#l00916">object</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="CommandQueue_8h_source.html#l00075">eve::orders::OrderEvent::orderId</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="namespaceeve_1_1orders.html#a59f6bb174ca520627742f4f398258292a7b2f31b90fe1c2cc33a52233c1925df3">eve::orders::Queued</a>, <a class="el" href="Scheduling_8h_source.html#l00023">eve::scheduling::EventMetadata::reason</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="Scheduling_8h_source.html#l00022">eve::scheduling::EventMetadata::sequence</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CommandQueue_8h_source.html#l00078">eve::orders::OrderEvent::to</a> , 以及 <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00094">to</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00482">eve::rts::OrderComponent::restore()</a> , 以及 <a class="el" href="RTSTypes_8cpp_source.html#l00501">eve::rts::OrderComponent::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="a37acd92838cde289092bf49fe7da70d6" name="a37acd92838cde289092bf49fe7da70d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37acd92838cde289092bf49fe7da70d6">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::orders::CommandQueue::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializes the complete command queue as deterministic JSON. </p>
+<dl class="section return"><dt>返回</dt><dd>A canonical JSON snapshot containing schema/version, every order, queue membership, active order, event history, and both counters. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00135">events</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00025">order</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00039">root</a>, <a class="el" href="CommandQueue_8cpp_source.html#l00167">eve::orders::stateName()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Value_8cpp_source.html#l00067">eve::Value::toJson()</a>.</p>
+
+</div>
+</div>
+<a id="a8eb765f6b1ac62a3cda54c1d710984d8" name="a8eb765f6b1ac62a3cda54c1d710984d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8eb765f6b1ac62a3cda54c1d710984d8">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::orders::CommandQueue::update </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dtSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checked simulation update. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dtSeconds</td><td>Non-negative simulation delta; zero is a successful no-op. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied/NoOp or a validation failure for non-finite/negative time. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a> 第 <a class="el" href="CommandQueue_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/orders/<a class="el" href="CommandQueue_8h_source.html">CommandQueue.h</a></li>
+<li>src/modules/orders/<a class="el" href="CommandQueue_8cpp_source.html">CommandQueue.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,762 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::AttributeComponent类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1rts_1_1AttributeComponent-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::AttributeComponent类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Canonical attributes component adapter, backed by <a class="el" href="classeve_1_1attributes_1_1AttributeSet.html" title="Generic owning collection of canonical attributes and modifiers.">attributes::AttributeSet</a>.  
+ <a href="classeve_1_1rts_1_1AttributeComponent.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1AttributeComponent_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a091fc8e53334919c955313e243a6a90e" id="r_a091fc8e53334919c955313e243a6a90e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a091fc8e53334919c955313e243a6a90e">AttributeComponent</a> ()</td></tr>
+<tr class="separator:a091fc8e53334919c955313e243a6a90e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98f758349a30b3542b5ddd1a1357726c" id="r_a98f758349a30b3542b5ddd1a1357726c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a98f758349a30b3542b5ddd1a1357726c">~AttributeComponent</a> ()</td></tr>
+<tr class="separator:a98f758349a30b3542b5ddd1a1357726c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af879bef07ce7b06e54606e9fb3ad026c" id="r_af879bef07ce7b06e54606e9fb3ad026c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#af879bef07ce7b06e54606e9fb3ad026c">AttributeComponent</a> (const <a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;other)</td></tr>
+<tr class="separator:af879bef07ce7b06e54606e9fb3ad026c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18d0d39b7138eac51b7cfd3da9d9c763" id="r_a18d0d39b7138eac51b7cfd3da9d9c763"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a18d0d39b7138eac51b7cfd3da9d9c763">operator=</a> (const <a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;other)</td></tr>
+<tr class="separator:a18d0d39b7138eac51b7cfd3da9d9c763"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8052012edb80b4d44e92515afcaa7e66" id="r_a8052012edb80b4d44e92515afcaa7e66"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a8052012edb80b4d44e92515afcaa7e66">AttributeComponent</a> (<a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;&amp;other) noexcept</td></tr>
+<tr class="separator:a8052012edb80b4d44e92515afcaa7e66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29d7d961c82b8b50ff1a5f98d1e88373" id="r_a29d7d961c82b8b50ff1a5f98d1e88373"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a29d7d961c82b8b50ff1a5f98d1e88373">operator=</a> (<a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;&amp;other) noexcept</td></tr>
+<tr class="separator:a29d7d961c82b8b50ff1a5f98d1e88373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a691e4295cb85b0adf3554abd0a7bfc13" id="r_a691e4295cb85b0adf3554abd0a7bfc13"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a691e4295cb85b0adf3554abd0a7bfc13">setBase</a> (std::string_view attribute, double <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a691e4295cb85b0adf3554abd0a7bfc13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one authoritative base value.  <br /></td></tr>
+<tr class="separator:a691e4295cb85b0adf3554abd0a7bfc13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a176d952ca782b7e09c93dc4ca6e66c8c" id="r_a176d952ca782b7e09c93dc4ca6e66c8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a176d952ca782b7e09c93dc4ca6e66c8c">modifyBase</a> (std::string_view attribute, double delta)</td></tr>
+<tr class="memdesc:a176d952ca782b7e09c93dc4ca6e66c8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add to one authoritative base value.  <br /></td></tr>
+<tr class="separator:a176d952ca782b7e09c93dc4ca6e66c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d0ae0c183ae9ac82568b70c409ce52a" id="r_a4d0ae0c183ae9ac82568b70c409ce52a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a4d0ae0c183ae9ac82568b70c409ce52a">has</a> (std::string_view attribute) const</td></tr>
+<tr class="memdesc:a4d0ae0c183ae9ac82568b70c409ce52a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether an attribute exists.  <br /></td></tr>
+<tr class="separator:a4d0ae0c183ae9ac82568b70c409ce52a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4ae9bf6bc4d99e6eee0b73bee8e98f6" id="r_ab4ae9bf6bc4d99e6eee0b73bee8e98f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#ab4ae9bf6bc4d99e6eee0b73bee8e98f6">getFinal</a> (std::string_view attribute, double fallback=0.0) const</td></tr>
+<tr class="memdesc:ab4ae9bf6bc4d99e6eee0b73bee8e98f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the deterministic final value or a caller-supplied default.  <br /></td></tr>
+<tr class="separator:ab4ae9bf6bc4d99e6eee0b73bee8e98f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d7a74c202bf1ff859e763f0d275e566" id="r_a0d7a74c202bf1ff859e763f0d275e566"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a0d7a74c202bf1ff859e763f0d275e566">modifierCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a0d7a74c202bf1ff859e763f0d275e566"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of canonical modifiers.  <br /></td></tr>
+<tr class="separator:a0d7a74c202bf1ff859e763f0d275e566"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c078b2b214c8354d48fe5bb70ff9c3d" id="r_a9c078b2b214c8354d48fe5bb70ff9c3d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html">eve::attributes::AttributeModifier</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a9c078b2b214c8354d48fe5bb70ff9c3d">modifierAt</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a9c078b2b214c8354d48fe5bb70ff9c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a canonical modifier in deterministic sequence order.  <br /></td></tr>
+<tr class="separator:a9c078b2b214c8354d48fe5bb70ff9c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ad3818f9b5bc1e346cd6fbcce83eb13" id="r_a2ad3818f9b5bc1e346cd6fbcce83eb13"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a2ad3818f9b5bc1e346cd6fbcce83eb13">bindOwner</a> (ecs::EntityHandle owner)</td></tr>
+<tr class="memdesc:a2ad3818f9b5bc1e346cd6fbcce83eb13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the canonical attribute state to an ECS owner generation.  <br /></td></tr>
+<tr class="separator:a2ad3818f9b5bc1e346cd6fbcce83eb13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b82b724f982d89e6d923d5d131f360d" id="r_a8b82b724f982d89e6d923d5d131f360d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a8b82b724f982d89e6d923d5d131f360d">initialized</a> () const noexcept</td></tr>
+<tr class="memdesc:a8b82b724f982d89e6d923d5d131f360d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether initial unit stat bases have been installed.  <br /></td></tr>
+<tr class="separator:a8b82b724f982d89e6d923d5d131f360d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89526119b6981877f6155bb19dd12c48" id="r_a89526119b6981877f6155bb19dd12c48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a89526119b6981877f6155bb19dd12c48">initialize</a> (std::span&lt; const <a class="el" href="structeve_1_1attributes_1_1AttributeSnapshotBase.html">eve::attributes::AttributeSnapshotBase</a> &gt; <a class="el" href="EditorHost_8cpp.html#a127467c202a16db28ed73fe86239cfd3">values</a>)</td></tr>
+<tr class="memdesc:a89526119b6981877f6155bb19dd12c48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seed unit stat bases once without replacing existing values.  <br /></td></tr>
+<tr class="separator:a89526119b6981877f6155bb19dd12c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a867336cdf7fcce64ee52708fd9164514" id="r_a867336cdf7fcce64ee52708fd9164514"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a867336cdf7fcce64ee52708fd9164514">isStale</a> () const noexcept</td></tr>
+<tr class="memdesc:a867336cdf7fcce64ee52708fd9164514"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether the canonical attribute owner is stale.  <br /></td></tr>
+<tr class="separator:a867336cdf7fcce64ee52708fd9164514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fa7f3cfbb9bad7739717773363f8136" id="r_a3fa7f3cfbb9bad7739717773363f8136"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">eve::attributes::ModifierId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a3fa7f3cfbb9bad7739717773363f8136">addModifier</a> (<a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html">eve::attributes::AttributeModifier</a> modifier)</td></tr>
+<tr class="memdesc:a3fa7f3cfbb9bad7739717773363f8136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a modifier with the common source/priority/sequence contract.  <br /></td></tr>
+<tr class="separator:a3fa7f3cfbb9bad7739717773363f8136"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c456745e9904229662e119ea49d0153" id="r_a5c456745e9904229662e119ea49d0153"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a5c456745e9904229662e119ea49d0153">snapshot</a> (std::span&lt; const std::string_view &gt; attributes) const</td></tr>
+<tr class="memdesc:a5c456745e9904229662e119ea49d0153"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture selected values with owner and revision metadata.  <br /></td></tr>
+<tr class="separator:a5c456745e9904229662e119ea49d0153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac06120f6883e54a309d541d3ac0d0d9a" id="r_ac06120f6883e54a309d541d3ac0d0d9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#ac06120f6883e54a309d541d3ac0d0d9a">restore</a> (const <a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a> &amp;<a class="el" href="classeve_1_1rts_1_1AttributeComponent.html#a5c456745e9904229662e119ea49d0153">snapshot</a>, <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> expectedRevision)</td></tr>
+<tr class="memdesc:ac06120f6883e54a309d541d3ac0d0d9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore selected values after generation and revision checks.  <br /></td></tr>
+<tr class="separator:ac06120f6883e54a309d541d3ac0d0d9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Canonical attributes component adapter, backed by <a class="el" href="classeve_1_1attributes_1_1AttributeSet.html" title="Generic owning collection of canonical attributes and modifiers.">attributes::AttributeSet</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a> 第 <a class="el" href="RTSTypes_8h_source.html#l00299">299</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a091fc8e53334919c955313e243a6a90e" name="a091fc8e53334919c955313e243a6a90e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a091fc8e53334919c955313e243a6a90e">&#9670;&#160;</a></span>AttributeComponent() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rts::AttributeComponent::AttributeComponent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a98f758349a30b3542b5ddd1a1357726c" name="a98f758349a30b3542b5ddd1a1357726c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98f758349a30b3542b5ddd1a1357726c">&#9670;&#160;</a></span>~AttributeComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rts::AttributeComponent::~AttributeComponent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af879bef07ce7b06e54606e9fb3ad026c" name="af879bef07ce7b06e54606e9fb3ad026c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af879bef07ce7b06e54606e9fb3ad026c">&#9670;&#160;</a></span>AttributeComponent() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rts::AttributeComponent::AttributeComponent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8052012edb80b4d44e92515afcaa7e66" name="a8052012edb80b4d44e92515afcaa7e66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8052012edb80b4d44e92515afcaa7e66">&#9670;&#160;</a></span>AttributeComponent() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rts::AttributeComponent::AttributeComponent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3fa7f3cfbb9bad7739717773363f8136" name="a3fa7f3cfbb9bad7739717773363f8136"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fa7f3cfbb9bad7739717773363f8136">&#9670;&#160;</a></span>addModifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1attributes.html#afe2518c85498659f0ae676249d7b94f8">eve::attributes::ModifierId</a> &gt; eve::rts::AttributeComponent::addModifier </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html">eve::attributes::AttributeModifier</a>&#160;</td>
+          <td class="paramname"><em>modifier</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a modifier with the common source/priority/sequence contract. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2ad3818f9b5bc1e346cd6fbcce83eb13" name="a2ad3818f9b5bc1e346cd6fbcce83eb13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ad3818f9b5bc1e346cd6fbcce83eb13">&#9670;&#160;</a></span>bindOwner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::AttributeComponent::bindOwner </td>
+          <td>(</td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind the canonical attribute state to an ECS owner generation. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab4ae9bf6bc4d99e6eee0b73bee8e98f6" name="ab4ae9bf6bc4d99e6eee0b73bee8e98f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4ae9bf6bc4d99e6eee0b73bee8e98f6">&#9670;&#160;</a></span>getFinal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt; eve::rts::AttributeComponent::getFinal </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the deterministic final value or a caller-supplied default. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a4d0ae0c183ae9ac82568b70c409ce52a" name="a4d0ae0c183ae9ac82568b70c409ce52a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d0ae0c183ae9ac82568b70c409ce52a">&#9670;&#160;</a></span>has()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::AttributeComponent::has </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>attribute</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether an attribute exists. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a89526119b6981877f6155bb19dd12c48" name="a89526119b6981877f6155bb19dd12c48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89526119b6981877f6155bb19dd12c48">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::AttributeComponent::initialize </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1attributes_1_1AttributeSnapshotBase.html">eve::attributes::AttributeSnapshotBase</a> &gt;&#160;</td>
+          <td class="paramname"><em>values</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Seed unit stat bases once without replacing existing values. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00335">335</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorHost_8cpp_source.html#l00459">values</a>.</p>
+
+</div>
+</div>
+<a id="a8b82b724f982d89e6d923d5d131f360d" name="a8b82b724f982d89e6d923d5d131f360d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b82b724f982d89e6d923d5d131f360d">&#9670;&#160;</a></span>initialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::AttributeComponent::initialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether initial unit stat bases have been installed. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00333">333</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a867336cdf7fcce64ee52708fd9164514" name="a867336cdf7fcce64ee52708fd9164514"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a867336cdf7fcce64ee52708fd9164514">&#9670;&#160;</a></span>isStale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::AttributeComponent::isStale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether the canonical attribute owner is stale. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00340">340</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c078b2b214c8354d48fe5bb70ff9c3d" name="a9c078b2b214c8354d48fe5bb70ff9c3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c078b2b214c8354d48fe5bb70ff9c3d">&#9670;&#160;</a></span>modifierAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1attributes_1_1AttributeModifier.html">eve::attributes::AttributeModifier</a> * eve::rts::AttributeComponent::modifierAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a canonical modifier in deterministic sequence order. </p>
+<dl class="section return"><dt>返回</dt><dd>A nullable borrowed pointer into the canonical AttributeSet, or <code>nullptr</code> when <code>index</code> is outside the current range. @ownership Borrowed; <a class="el" href="classeve_1_1rts_1_1AttributeComponent.html" title="Canonical attributes component adapter, backed by attributes::AttributeSet.">AttributeComponent</a> owns the underlying modifier and the caller must not delete or transfer the pointer. @nullable Yes, for an invalid index. @lifetime Valid until the next component mutation, restore or destruction; copy the value or query again after that boundary. @thread Owner-thread-affine; no synchronization is provided. @reentrancy Side-effect free and invokes no external callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a0d7a74c202bf1ff859e763f0d275e566" name="a0d7a74c202bf1ff859e763f0d275e566"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d7a74c202bf1ff859e763f0d275e566">&#9670;&#160;</a></span>modifierCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::rts::AttributeComponent::modifierCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of canonical modifiers. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00236">u</a>.</p>
+
+</div>
+</div>
+<a id="a176d952ca782b7e09c93dc4ca6e66c8c" name="a176d952ca782b7e09c93dc4ca6e66c8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a176d952ca782b7e09c93dc4ca6e66c8c">&#9670;&#160;</a></span>modifyBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::AttributeComponent::modifyBase </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add to one authoritative base value. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00298">298</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>.</p>
+
+</div>
+</div>
+<a id="a29d7d961c82b8b50ff1a5f98d1e88373" name="a29d7d961c82b8b50ff1a5f98d1e88373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29d7d961c82b8b50ff1a5f98d1e88373">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp; eve::rts::AttributeComponent::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a18d0d39b7138eac51b7cfd3da9d9c763" name="a18d0d39b7138eac51b7cfd3da9d9c763"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18d0d39b7138eac51b7cfd3da9d9c763">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp; eve::rts::AttributeComponent::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rts_1_1AttributeComponent.html">AttributeComponent</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac06120f6883e54a309d541d3ac0d0d9a" name="ac06120f6883e54a309d541d3ac0d0d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac06120f6883e54a309d541d3ac0d0d9a">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::AttributeComponent::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a>&#160;</td>
+          <td class="paramname"><em>expectedRevision</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore selected values after generation and revision checks. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RTSTypes_8cpp_source.html#l00347">snapshot()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSnapshot_8cpp_source.html#l00670">eve::rts::RTS::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="a691e4295cb85b0adf3554abd0a7bfc13" name="a691e4295cb85b0adf3554abd0a7bfc13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a691e4295cb85b0adf3554abd0a7bfc13">&#9670;&#160;</a></span>setBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::AttributeComponent::setBase </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set one authoritative base value. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00289">289</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a5c456745e9904229662e119ea49d0153" name="a5c456745e9904229662e119ea49d0153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c456745e9904229662e119ea49d0153">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1attributes_1_1AttributeProjectionSnapshot.html">eve::attributes::AttributeProjectionSnapshot</a> &gt; eve::rts::AttributeComponent::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::string_view &gt;&#160;</td>
+          <td class="paramname"><em>attributes</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture selected values with owner and revision metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a> 第 <a class="el" href="RTSTypes_8cpp_source.html#l00347">347</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSTypes_8cpp_source.html#l00355">restore()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8h_source.html">RTSTypes.h</a></li>
+<li>src/modules/rts/<a class="el" href="RTSTypes_8cpp_source.html">RTSTypes.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

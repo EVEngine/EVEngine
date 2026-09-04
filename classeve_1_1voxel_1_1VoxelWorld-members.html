@@ -1,0 +1,226 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1voxel.html">voxel</a></li><li class="navelem"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">VoxelWorld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::voxel::VoxelWorld 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#af81bbb01fbd6123bc43b6c1f3e9e74bd">clear</a>()</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#afb440856b3e8d431b5248d2c048b7def">cubeTypes</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a756358459772894265cf8c10ba30e16f">deserializeWorld</a>(const uint8_t *data, size_t size)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#aaa6f60d93e235382c30097e658d9159d">disableTerrain</a>()</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a346a110de00f6bdcf7af32fd24d15ca9">drawVisible</a>(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow=16)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#abd8f2d0cb643890e7502837a70591be2">getChunk</a>(int cx, int cy, int cz)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a26886f9bbe11ae14609c4b61a04a98ab">getChunk</a>(int cx, int cy, int cz) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a825b7f27b465410fac61e675a97095b7">getChunkCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a9b55d1fdea1514b748fa1b8ce74a9eb1">getCubeTypeName</a>(int wx, int wy, int wz) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a257c615f5a61cb7ea9e1b0a7e4e4902a">getCubeTypeTex</a>(int wx, int wy, int wz, const std::string &amp;faceDir) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a4504d0cf863ba7d76e4b2ad55b96d297">getOrCreateChunk</a>(int cx, int cy, int cz)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a961b585b9707a36c313a5c49bb1f527f">getRevision</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a25767bc34bb9ccca4a73b0516e78ac6a">getTerrainAssetResidentCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ad4bb5d968e694201be3d34c4d9bd17e9">getVisibleBatch</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a7dec5eda542ab3ea8b5e56d1f5996711">getVisibleBatchCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ac040fc403acb113c73725dbd2b743b97">getVisibleChunkCoord</a>(int index, int &amp;cx, int &amp;cy, int &amp;cz) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a571be123358c15c17ce4b97cf86d09b3">getVisibleChunkCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ad30442d5043bc3fd9079c330aed2545b">getVisibleRectCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a2fb346bb73fd9750d9c79a96d5856250">getVoxel</a>(int wx, int wy, int wz) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ac0759862af32015880433bd7683e0bb5">hasChunk</a>(int cx, int cy, int cz) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a8fe6de5a0ceed98ce984f0857beff934">lastRaycastFaceX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ac7ff4d47035cd8e97a78a23301eead85">lastRaycastFaceY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a95669323bf049523989f5e7f2a23859a">lastRaycastFaceZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a3749f51831186b5da0ba6caf252896ed">lastRaycastHit</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a6fd0c89a4bbb15425ba81dab963ec855">lastRaycastHitX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a037ebffd5a49f2394d2c959e6b66548c">lastRaycastHitY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a2c771236afbb38ccab4b6722f63f1de1">lastRaycastHitZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ab200ad4957fc704f0f6600aa9acc9e15">lastRaycastPrevX</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a9136538f95c50a5c8ecd1f5db04d062d">lastRaycastPrevY</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ae12a3f9d8c55f7752d1d126e6e95c4e3">lastRaycastPrevZ</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a0dd0ea2e459a9718da19f5e731e9cb80">loadTerrainAsset</a>(data::ByteData *bytes, float heightOffset=0.f, float heightScale=1.f)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#aa6c4e648ee402c3ad08fa4f6335bf08d">loadWorld</a>(data::ByteData *bytes)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a6df7659ee62c5baccaf94707f84f7ddc">raycast</a>(float ox, float oy, float oz, float dx, float dy, float dz, float maxDist, int &amp;hitX, int &amp;hitY, int &amp;hitZ, int &amp;prevX, int &amp;prevY, int &amp;prevZ, int &amp;faceX, int &amp;faceY, int &amp;faceZ) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a79a62848a45e43c515fd2f0c1239c666">raycastScript</a>(float ox, float oy, float oz, float dx, float dy, float dz, float maxDist)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#af8718b00b3b9130b91d490cc6b539ab2">remeshDirty</a>(int maxThreads=0)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ab6676ac6a61fdfa6cc35491fed213255">removeChunk</a>(int cx, int cy, int cz)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a11f8769ce11ce31b375daac8fad29ca7">saveWorld</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ab44721e5ac826f8e2625c2eb450a46a8">selectVisible</a>(const float *viewProj16, float eyeX, float eyeY, float eyeZ, float viewRange, bool faceCull=true)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#af9e8749766e5e4949fee1b70ff452d43">serializeWorld</a>(std::vector&lt; uint8_t &gt; &amp;out) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ade551512ddee9c2509c67c626e3408d8">setTerrainAssetMaterials</a>(uint8_t vegetation, uint8_t sand, uint8_t snow, uint8_t alpine, uint8_t riverbed)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#aeb1b18687b59c436dcbc9b8db2cb97c5">setTerrainParam</a>(const std::string &amp;key, float value)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a24f28ab50dd31716c8a08d6bfd1268aa">setTerrainParams</a>(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight, float amplitude, float scale)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a775041b7658fbf350885aebb6a1a31e2">setVoxel</a>(int wx, int wy, int wz, uint8_t texId)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a22f71e96a1aee7f00653be3fe9d5aa06">setVoxelByName</a>(int wx, int wy, int wz, const std::string &amp;name, int orientation=0)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a1fb6fd02a1b10aeee452b9aa4a9ae7ed">streamAround</a>(int centerX, int centerY, int centerZ, int radiusChunks, const std::function&lt; void(Chunk &amp;, int, int, int)&gt; &amp;generator={})</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a63baedb0831e6a440f411a2f1860c4c4">streamTerrainAssetAround</a>(int worldX, int worldZ, int radiusChunks, int maxLoads=0)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a1d7b76e02e9349c99903071b36c41c26">terrainEnabled</a>() const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a174d480945288faa19b21460fd10aacf">terrainHeightAt</a>(int wx, int wz) const</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#ae550c82894b168308b1232bac84f1b06">unloadChunksOutside</a>(int centerX, int centerY, int centerZ, int radiusChunks)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#aac2f2e2d25312cd547a0f133e715d76d">VoxelWorld</a>()</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a4057381767827fe8ecc7f3f360baa676">VoxelWorld</a>(const CubeTypeRegistry &amp;types)</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html#a3d884cee3628bde869f5c1ec6e04c402">~VoxelWorld</a>()</td><td class="entry"><a class="el" href="classeve_1_1voxel_1_1VoxelWorld.html">eve::voxel::VoxelWorld</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

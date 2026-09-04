@@ -1,0 +1,297 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/Building.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Building.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Building_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Module_8h.html">common/Module.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Ghost_8h.html">building/Ghost.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementWorld_8h.html">building/PlacementWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementSession_8h.html">building/PlacementSession.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1building.html">eve::building</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Building.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1building_1_1Building.html">Building</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1Module.html">Module</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Building.html#a8666bbb41f7acc9c84e4de0bd6bf1c4a">   20</a></span>    <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a8666bbb41f7acc9c84e4de0bd6bf1c4a">Module_REG</a>(<a class="code hl_class" href="classeve_1_1building_1_1Building.html">Building</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Building.html#ac5115b5989d8f0b76b07214fb8361431">   21</a></span>    <a class="code hl_function" href="classeve_1_1building_1_1Building.html#ac5115b5989d8f0b76b07214fb8361431">Building</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1Building.html#a28bb20ef875e1d91f2cbe1fb388487a4">   22</a></span>    <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a28bb20ef875e1d91f2cbe1fb388487a4">~Building</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a0160aa11be14dfb5f31a329245e0a97c">registerBuildingsFromJson</a>(<span class="keyword">const</span> std::string &amp;json);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a70bcb79e725821e56a94ff2ff5839c65">clearBuildingDefinitions</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#adef4c6a7204dc842bf0cdf256e5b5fa8">getBuildingDefinitionCount</a>();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#ad9e2e94960ad5009cc037e0f210987a2">hasBuildingDefinition</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a0da683e6303b84840643ec5fec97e750">getBuildingDisplayName</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a8443cd762d61efe9a47cccfc3dcfc364">getBuildingCategory</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a4ce7c4c6ad864502f2ca9ee650a77eca">getBuildingFootprintW</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a98ba04c2232c3f676f2b522ccc00dee3">getBuildingFootprintH</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a7399ae0f7c17affc9e6648031defba58">getBuildingSnapMode</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a00a940b11e8f28ac932b95df9db2cd52">getBuildingRotationMode</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#accc841e15b452407afc2a98e9fc5855d">getBuildingValidateRule</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a8be1335858661df1812dd70539ddf2fe">getBuildingChannel</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#aaff7abf75bcc51f452d30caaa3422c8c">getBuildingRenderMode</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#adf2b9e0962312c7fe829a49b5b93c118">getBuildingPlacementKind</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a133913d6bb22b5945fc6e370311bfb8b">getBuildingConnectionGroup</a>(<span class="keyword">const</span> std::string &amp;buildingId);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a99a6e751b724bdaf713953687ac544ba">getBuildingVisual2d</a>(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                    <span class="keyword">const</span> std::string &amp;fallback = {});</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a1f50558beaf659626f9fb60a93c0d1bc">getBuildingVisual3d</a>(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                    <span class="keyword">const</span> std::string &amp;fallback = {});</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a76d11f97f4118498cef7c7aa4ac92b21">buildingHasTag</a>(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keyword">const</span> std::string &amp;tag);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a761ea1e96eb9ad6b5f40970bd47289d0">getBuildingExtra</a>(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                                 <span class="keyword">const</span> std::string &amp;fallback = {});</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a7a8d396e842ba21058b9c87c4bd5030b">getBuildingCost</a>(<span class="keyword">const</span> std::string &amp;buildingId, <span class="keyword">const</span> std::string &amp;resource);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    PlacementWorld *<a class="code hl_function" href="classeve_1_1building_1_1Building.html#af8564385fec1f8c5359d4e81afe693c8">newWorld</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">float</span> cellSize = 32.f);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    Ghost *<a class="code hl_function" href="classeve_1_1building_1_1Building.html#af077a2937d519372a3216d0063c34e4a">newGhost</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    PlacementSession *<a class="code hl_function" href="classeve_1_1building_1_1Building.html#a8e3dba2c447b7c3840c9fa35a0ed5c05">newSession</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a31a29aaa7a203826cb4afbbc0d128b88">hasValidateRule</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a018338514b353623a21e360e7a661d2c">hasSnapRule</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#ac89c53c385d045c1ff7fdba97eb5381b">hasSurface</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a6cc7c8daa9f21bff2c903c5d2a531737">getSurfaceCount</a>();</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#abb00dc158e08e945a27860519ee3f626">getSurfaceName</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a12c8bf9d3b7debc8530c26450bcb57ef">setPlaneSurfaceHeight</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a77469918770817f8551c0392b185110c">getPlaneSurfaceHeight</a>();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a9e4808a2b0d928a133f2761d3f290746">clearChangeEvents</a>();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#abe1f0814cc5422cf1ec221534c7b0c5b">getChangeEventCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a9643e85d482fa04df3ba350afae0de3c">getChangeEventAction</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a9811bdccffef3090fab6dac053f03b2b">getChangeEventWorldId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    std::string <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a1e72ef7e12e3d67de26e2b2dda459df7">getChangeEventBuildingId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a0720d1a6864b6b43b748cae1a4321013">getChangeEventInstanceId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a97774dee5f9a29cd4d2674a964030d65">getChangeEventCellX</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a7836e85a9b734a9479bbc5de20bd3deb">getChangeEventCellY</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#aeb4ba20fde4ed3bdc37ff5e600e2b88c">getChangeEventOtherCellX</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#ab91234a3b4f62969731dada15eac5b42">getChangeEventOtherCellY</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1building_1_1Building.html#a3c514f8021d80182a3a1dbe1d08a58bc">getChangeEventRotation</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>};</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}  <span class="comment">// namespace eve::building</span></div>
+<div class="ttc" id="aGhost_8h_html"><div class="ttname"><a href="Ghost_8h.html">Ghost.h</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aModule_8h_html"><div class="ttname"><a href="Module_8h.html">Module.h</a></div></div>
+<div class="ttc" id="aPlacementSession_8h_html"><div class="ttname"><a href="PlacementSession_8h.html">PlacementSession.h</a></div></div>
+<div class="ttc" id="aPlacementWorld_8h_html"><div class="ttname"><a href="PlacementWorld_8h.html">PlacementWorld.h</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html"><div class="ttname"><a href="classeve_1_1Module.html">eve::Module</a></div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00045">Module.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html"><div class="ttname"><a href="classeve_1_1building_1_1Building.html">eve::building::Building</a></div><div class="ttdoc">建筑放置模块（eve.Building）。</div><div class="ttdef"><b>Definition</b> <a href="Building_8h_source.html#l00018">Building.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a00a940b11e8f28ac932b95df9db2cd52"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a00a940b11e8f28ac932b95df9db2cd52">eve::building::Building::getBuildingRotationMode</a></div><div class="ttdeci">std::string getBuildingRotationMode(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00049">Building.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a0160aa11be14dfb5f31a329245e0a97c"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a0160aa11be14dfb5f31a329245e0a97c">eve::building::Building::registerBuildingsFromJson</a></div><div class="ttdeci">int registerBuildingsFromJson(const std::string &amp;json)</div><div class="ttdoc">从 JSON 注册建筑模板；返回成功注册数量。</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00011">Building.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a018338514b353623a21e360e7a661d2c"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a018338514b353623a21e360e7a661d2c">eve::building::Building::hasSnapRule</a></div><div class="ttdeci">bool hasSnapRule(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00126">Building.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a0720d1a6864b6b43b748cae1a4321013"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a0720d1a6864b6b43b748cae1a4321013">eve::building::Building::getChangeEventInstanceId</a></div><div class="ttdeci">int getChangeEventInstanceId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00170">Building.cpp:170</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a0da683e6303b84840643ec5fec97e750"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a0da683e6303b84840643ec5fec97e750">eve::building::Building::getBuildingDisplayName</a></div><div class="ttdeci">std::string getBuildingDisplayName(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00024">Building.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a12c8bf9d3b7debc8530c26450bcb57ef"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a12c8bf9d3b7debc8530c26450bcb57ef">eve::building::Building::setPlaneSurfaceHeight</a></div><div class="ttdeci">void setPlaneSurfaceHeight(float h)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00144">Building.cpp:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a133913d6bb22b5945fc6e370311bfb8b"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a133913d6bb22b5945fc6e370311bfb8b">eve::building::Building::getBuildingConnectionGroup</a></div><div class="ttdeci">std::string getBuildingConnectionGroup(const std::string &amp;buildingId)</div><div class="ttdoc">Definition edge connection group, or empty when it falls back to id.</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00074">Building.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a1e72ef7e12e3d67de26e2b2dda459df7"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a1e72ef7e12e3d67de26e2b2dda459df7">eve::building::Building::getChangeEventBuildingId</a></div><div class="ttdeci">std::string getChangeEventBuildingId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00164">Building.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a1f50558beaf659626f9fb60a93c0d1bc"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a1f50558beaf659626f9fb60a93c0d1bc">eve::building::Building::getBuildingVisual3d</a></div><div class="ttdeci">std::string getBuildingVisual3d(const std::string &amp;buildingId, const std::string &amp;key, const std::string &amp;fallback={})</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00085">Building.cpp:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a28bb20ef875e1d91f2cbe1fb388487a4"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a28bb20ef875e1d91f2cbe1fb388487a4">eve::building::Building::~Building</a></div><div class="ttdeci">~Building() override=default</div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a31a29aaa7a203826cb4afbbc0d128b88"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a31a29aaa7a203826cb4afbbc0d128b88">eve::building::Building::hasValidateRule</a></div><div class="ttdeci">bool hasValidateRule(const std::string &amp;name)</div><div class="ttdoc">扩展规则是否存在（校验/吸附）。</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00122">Building.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a3c514f8021d80182a3a1dbe1d08a58bc"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a3c514f8021d80182a3a1dbe1d08a58bc">eve::building::Building::getChangeEventRotation</a></div><div class="ttdeci">float getChangeEventRotation(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00200">Building.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a4ce7c4c6ad864502f2ca9ee650a77eca"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a4ce7c4c6ad864502f2ca9ee650a77eca">eve::building::Building::getBuildingFootprintW</a></div><div class="ttdeci">int getBuildingFootprintW(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00034">Building.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a6cc7c8daa9f21bff2c903c5d2a531737"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a6cc7c8daa9f21bff2c903c5d2a531737">eve::building::Building::getSurfaceCount</a></div><div class="ttdeci">int getSurfaceCount()</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00134">Building.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a70bcb79e725821e56a94ff2ff5839c65"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a70bcb79e725821e56a94ff2ff5839c65">eve::building::Building::clearBuildingDefinitions</a></div><div class="ttdeci">void clearBuildingDefinitions()</div><div class="ttdoc">清空全部建筑模板。</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00016">Building.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a7399ae0f7c17affc9e6648031defba58"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a7399ae0f7c17affc9e6648031defba58">eve::building::Building::getBuildingSnapMode</a></div><div class="ttdeci">std::string getBuildingSnapMode(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00044">Building.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a761ea1e96eb9ad6b5f40970bd47289d0"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a761ea1e96eb9ad6b5f40970bd47289d0">eve::building::Building::getBuildingExtra</a></div><div class="ttdeci">std::string getBuildingExtra(const std::string &amp;buildingId, const std::string &amp;key, const std::string &amp;fallback={})</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00096">Building.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a76d11f97f4118498cef7c7aa4ac92b21"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a76d11f97f4118498cef7c7aa4ac92b21">eve::building::Building::buildingHasTag</a></div><div class="ttdeci">bool buildingHasTag(const std::string &amp;buildingId, const std::string &amp;tag)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00091">Building.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a77469918770817f8551c0392b185110c"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a77469918770817f8551c0392b185110c">eve::building::Building::getPlaneSurfaceHeight</a></div><div class="ttdeci">float getPlaneSurfaceHeight()</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00146">Building.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a7836e85a9b734a9479bbc5de20bd3deb"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a7836e85a9b734a9479bbc5de20bd3deb">eve::building::Building::getChangeEventCellY</a></div><div class="ttdeci">int getChangeEventCellY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00182">Building.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a7a8d396e842ba21058b9c87c4bd5030b"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a7a8d396e842ba21058b9c87c4bd5030b">eve::building::Building::getBuildingCost</a></div><div class="ttdeci">int getBuildingCost(const std::string &amp;buildingId, const std::string &amp;resource)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00102">Building.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a8443cd762d61efe9a47cccfc3dcfc364"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a8443cd762d61efe9a47cccfc3dcfc364">eve::building::Building::getBuildingCategory</a></div><div class="ttdeci">std::string getBuildingCategory(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00029">Building.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a8666bbb41f7acc9c84e4de0bd6bf1c4a"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a8666bbb41f7acc9c84e4de0bd6bf1c4a">eve::building::Building::Module_REG</a></div><div class="ttdeci">Module_REG(Building)</div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a8be1335858661df1812dd70539ddf2fe"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a8be1335858661df1812dd70539ddf2fe">eve::building::Building::getBuildingChannel</a></div><div class="ttdeci">std::string getBuildingChannel(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00059">Building.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a8e3dba2c447b7c3840c9fa35a0ed5c05"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a8e3dba2c447b7c3840c9fa35a0ed5c05">eve::building::Building::newSession</a></div><div class="ttdeci">PlacementSession * newSession()</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00117">Building.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a9643e85d482fa04df3ba350afae0de3c"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a9643e85d482fa04df3ba350afae0de3c">eve::building::Building::getChangeEventAction</a></div><div class="ttdeci">std::string getChangeEventAction(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00152">Building.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a97774dee5f9a29cd4d2674a964030d65"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a97774dee5f9a29cd4d2674a964030d65">eve::building::Building::getChangeEventCellX</a></div><div class="ttdeci">int getChangeEventCellX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00176">Building.cpp:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a9811bdccffef3090fab6dac053f03b2b"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a9811bdccffef3090fab6dac053f03b2b">eve::building::Building::getChangeEventWorldId</a></div><div class="ttdeci">std::string getChangeEventWorldId(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00158">Building.cpp:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a98ba04c2232c3f676f2b522ccc00dee3"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a98ba04c2232c3f676f2b522ccc00dee3">eve::building::Building::getBuildingFootprintH</a></div><div class="ttdeci">int getBuildingFootprintH(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00039">Building.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a99a6e751b724bdaf713953687ac544ba"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a99a6e751b724bdaf713953687ac544ba">eve::building::Building::getBuildingVisual2d</a></div><div class="ttdeci">std::string getBuildingVisual2d(const std::string &amp;buildingId, const std::string &amp;key, const std::string &amp;fallback={})</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00079">Building.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_a9e4808a2b0d928a133f2761d3f290746"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#a9e4808a2b0d928a133f2761d3f290746">eve::building::Building::clearChangeEvents</a></div><div class="ttdeci">void clearChangeEvents()</div><div class="ttdoc">变更事件队列（放置/移除/移动）。</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00148">Building.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_aaff7abf75bcc51f452d30caaa3422c8c"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#aaff7abf75bcc51f452d30caaa3422c8c">eve::building::Building::getBuildingRenderMode</a></div><div class="ttdeci">std::string getBuildingRenderMode(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00064">Building.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_ab91234a3b4f62969731dada15eac5b42"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#ab91234a3b4f62969731dada15eac5b42">eve::building::Building::getChangeEventOtherCellY</a></div><div class="ttdeci">int getChangeEventOtherCellY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00194">Building.cpp:194</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_abb00dc158e08e945a27860519ee3f626"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#abb00dc158e08e945a27860519ee3f626">eve::building::Building::getSurfaceName</a></div><div class="ttdeci">std::string getSurfaceName(int index)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00138">Building.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_abe1f0814cc5422cf1ec221534c7b0c5b"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#abe1f0814cc5422cf1ec221534c7b0c5b">eve::building::Building::getChangeEventCount</a></div><div class="ttdeci">int getChangeEventCount() const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00150">Building.cpp:150</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_ac5115b5989d8f0b76b07214fb8361431"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#ac5115b5989d8f0b76b07214fb8361431">eve::building::Building::Building</a></div><div class="ttdeci">Building()=default</div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_ac89c53c385d045c1ff7fdba97eb5381b"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#ac89c53c385d045c1ff7fdba97eb5381b">eve::building::Building::hasSurface</a></div><div class="ttdeci">bool hasSurface(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00130">Building.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_accc841e15b452407afc2a98e9fc5855d"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#accc841e15b452407afc2a98e9fc5855d">eve::building::Building::getBuildingValidateRule</a></div><div class="ttdeci">std::string getBuildingValidateRule(const std::string &amp;buildingId)</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00054">Building.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_ad9e2e94960ad5009cc037e0f210987a2"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#ad9e2e94960ad5009cc037e0f210987a2">eve::building::Building::hasBuildingDefinition</a></div><div class="ttdeci">bool hasBuildingDefinition(const std::string &amp;buildingId)</div><div class="ttdoc">建筑模板查询（显示名/类别/占地/规则/标签/额外属性/成本）。</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00020">Building.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_adef4c6a7204dc842bf0cdf256e5b5fa8"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#adef4c6a7204dc842bf0cdf256e5b5fa8">eve::building::Building::getBuildingDefinitionCount</a></div><div class="ttdeci">int getBuildingDefinitionCount()</div><div class="ttdoc">已注册建筑模板数量。</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00018">Building.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_adf2b9e0962312c7fe829a49b5b93c118"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#adf2b9e0962312c7fe829a49b5b93c118">eve::building::Building::getBuildingPlacementKind</a></div><div class="ttdeci">std::string getBuildingPlacementKind(const std::string &amp;buildingId)</div><div class="ttdoc">Definition placement domain (cell or edge).</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00069">Building.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_aeb4ba20fde4ed3bdc37ff5e600e2b88c"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#aeb4ba20fde4ed3bdc37ff5e600e2b88c">eve::building::Building::getChangeEventOtherCellX</a></div><div class="ttdeci">int getChangeEventOtherCellX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00188">Building.cpp:188</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_af077a2937d519372a3216d0063c34e4a"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#af077a2937d519372a3216d0063c34e4a">eve::building::Building::newGhost</a></div><div class="ttdeci">Ghost * newGhost()</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00112">Building.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1Building_html_af8564385fec1f8c5359d4e81afe693c8"><div class="ttname"><a href="classeve_1_1building_1_1Building.html#af8564385fec1f8c5359d4e81afe693c8">eve::building::Building::newWorld</a></div><div class="ttdeci">PlacementWorld * newWorld(int width, int height, float cellSize=32.f)</div><div class="ttdoc">工厂：创建放置世界 / 鬼影。</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00107">Building.cpp:107</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html"><div class="ttname"><a href="namespaceeve_1_1building.html">eve::building</a></div><div class="ttdoc">建筑放置模块入口：定义 / 放置世界 / 鬼影 / 变更事件的脚本绑定点。 设计文档：docs/dev/建筑放置系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00007">Building.cpp:7</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

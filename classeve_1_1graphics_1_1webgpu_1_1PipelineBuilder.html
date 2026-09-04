@@ -1,0 +1,601 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::webgpu::PipelineBuilder类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1webgpu.html">webgpu</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::webgpu::PipelineBuilder类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Fluent builder for wgpu::RenderPipeline.  
+ <a href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a28cfb5e0b7d2ca66f29ab8765ce3ea2e" id="r_a28cfb5e0b7d2ca66f29ab8765ce3ea2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a28cfb5e0b7d2ca66f29ab8765ce3ea2e">PipelineBuilder</a> ()=default</td></tr>
+<tr class="separator:a28cfb5e0b7d2ca66f29ab8765ce3ea2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac51b60b9ec78d4073b419a70a056be99" id="r_ac51b60b9ec78d4073b419a70a056be99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ac51b60b9ec78d4073b419a70a056be99">label</a> (const char *l)</td></tr>
+<tr class="separator:ac51b60b9ec78d4073b419a70a056be99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2789d3ff0d7f0a052338759b1cd97713" id="r_a2789d3ff0d7f0a052338759b1cd97713"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a2789d3ff0d7f0a052338759b1cd97713">layout</a> (wgpu::PipelineLayout l)</td></tr>
+<tr class="separator:a2789d3ff0d7f0a052338759b1cd97713"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8963768c47b2ad59dc4ae81ac41259cb" id="r_a8963768c47b2ad59dc4ae81ac41259cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a8963768c47b2ad59dc4ae81ac41259cb">vertexLayout</a> (uint64_t <a class="el" href="GltfImporter_8cpp.html#aae4b42a5bc0f8441bf3cb20ba767e99c">stride</a>, wgpu::VertexStepMode stepMode, const wgpu::VertexAttribute *attrs, size_t attrCount)</td></tr>
+<tr class="separator:a8963768c47b2ad59dc4ae81ac41259cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1af7c414043817951ed53ea86c1a5db1" id="r_a1af7c414043817951ed53ea86c1a5db1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a1af7c414043817951ed53ea86c1a5db1">shader</a> (wgpu::ShaderModule <a class="el" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>, const char *vertEntry, wgpu::ShaderModule <a class="el" href="GraphicsInternal_8h.html#ae743cf0e5d1516ca41060ab8de001134">frag</a>, const char *fragEntry)</td></tr>
+<tr class="separator:a1af7c414043817951ed53ea86c1a5db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed230304c16e5ea852d9fa7df630bdad" id="r_aed230304c16e5ea852d9fa7df630bdad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#aed230304c16e5ea852d9fa7df630bdad">topology</a> (wgpu::PrimitiveTopology <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>)</td></tr>
+<tr class="separator:aed230304c16e5ea852d9fa7df630bdad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9550b0934e09c35efafd1fdf2d41d6f" id="r_ae9550b0934e09c35efafd1fdf2d41d6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ae9550b0934e09c35efafd1fdf2d41d6f">cull</a> (wgpu::CullMode <a class="el" href="MarchingCubes_8cpp.html#aaf5d342e977c5857e99310eea0e72e4b">c</a>)</td></tr>
+<tr class="separator:ae9550b0934e09c35efafd1fdf2d41d6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab973972c188e46ec8d3373375feee5cf" id="r_ab973972c188e46ec8d3373375feee5cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ab973972c188e46ec8d3373375feee5cf">frontFace</a> (wgpu::FrontFace <a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:ab973972c188e46ec8d3373375feee5cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40411e4572c351eb277b5c4514e5c20d" id="r_a40411e4572c351eb277b5c4514e5c20d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a40411e4572c351eb277b5c4514e5c20d">colorTarget</a> (WGPUTextureFormat format, <a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::graphics::BlendMode</a> mode)</td></tr>
+<tr class="memdesc:a40411e4572c351eb277b5c4514e5c20d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set color target format + blend mode (Alpha default = no blend state override risk).  <br /></td></tr>
+<tr class="separator:a40411e4572c351eb277b5c4514e5c20d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98304b35539cd69de7f1cf6f26c16f4c" id="r_a98304b35539cd69de7f1cf6f26c16f4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a98304b35539cd69de7f1cf6f26c16f4c">depth</a> (WGPUTextureFormat format, wgpu::CompareFunction compare, bool writeEnabled)</td></tr>
+<tr class="separator:a98304b35539cd69de7f1cf6f26c16f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a734971f9ae0b759d7011664d848752f5" id="r_a734971f9ae0b759d7011664d848752f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#a734971f9ae0b759d7011664d848752f5">sampleCount</a> (uint32_t <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="separator:a734971f9ae0b759d7011664d848752f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5f5d7626a99f6f6aca7e87f713ca412" id="r_ab5f5d7626a99f6f6aca7e87f713ca412"><td class="memItemLeft" align="right" valign="top">wgpu::RenderPipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html#ab5f5d7626a99f6f6aca7e87f713ca412">build</a> (const wgpu::Device &amp;<a class="el" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>) const</td></tr>
+<tr class="memdesc:ab5f5d7626a99f6f6aca7e87f713ca412"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the pipeline. Throws on null device.  <br /></td></tr>
+<tr class="separator:ab5f5d7626a99f6f6aca7e87f713ca412"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Fluent builder for wgpu::RenderPipeline. </p>
+<p>Builds the C++ wrapper RenderPipelineDescriptor directly, whose zero-init already matches the WebGPU defaults (writeMask=All, sampleMask=0xFFFFFFFF), so the "default discards every fragment" traps in Graphics.cpp cannot occur. Mirrors vk-bootstrap's <a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html" title="Fluent builder for wgpu::RenderPipeline.">PipelineBuilder</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a> 第 <a class="el" href="PipelineBuilder_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a28cfb5e0b7d2ca66f29ab8765ce3ea2e" name="a28cfb5e0b7d2ca66f29ab8765ce3ea2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28cfb5e0b7d2ca66f29ab8765ce3ea2e">&#9670;&#160;</a></span>PipelineBuilder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::webgpu::PipelineBuilder::PipelineBuilder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab5f5d7626a99f6f6aca7e87f713ca412" name="ab5f5d7626a99f6f6aca7e87f713ca412"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5f5d7626a99f6f6aca7e87f713ca412">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::RenderPipeline eve::graphics::webgpu::PipelineBuilder::build </td>
+          <td>(</td>
+          <td class="paramtype">const wgpu::Device &amp;&#160;</td>
+          <td class="paramname"><em>device</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create the pipeline. Throws on null device. </p>
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8cpp_source.html">PipelineBuilder.cpp</a> 第 <a class="el" href="PipelineBuilder_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexTerrain_8cpp_source.html#l00036">blend</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00288">device</a> , 以及 <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>.</p>
+
+</div>
+</div>
+<a id="a40411e4572c351eb277b5c4514e5c20d" name="a40411e4572c351eb277b5c4514e5c20d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40411e4572c351eb277b5c4514e5c20d">&#9670;&#160;</a></span>colorTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::colorTarget </td>
+          <td>(</td>
+          <td class="paramtype">WGPUTextureFormat&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a94b084122b6234e8c62af43363840980">eve::graphics::BlendMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set color target format + blend mode (Alpha default = no blend state override risk). </p>
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8cpp_source.html">PipelineBuilder.cpp</a> 第 <a class="el" href="PipelineBuilder_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9550b0934e09c35efafd1fdf2d41d6f" name="ae9550b0934e09c35efafd1fdf2d41d6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9550b0934e09c35efafd1fdf2d41d6f">&#9670;&#160;</a></span>cull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::cull </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::CullMode&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a> 第 <a class="el" href="PipelineBuilder_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>.</p>
+
+</div>
+</div>
+<a id="a98304b35539cd69de7f1cf6f26c16f4c" name="a98304b35539cd69de7f1cf6f26c16f4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98304b35539cd69de7f1cf6f26c16f4c">&#9670;&#160;</a></span>depth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::depth </td>
+          <td>(</td>
+          <td class="paramtype">WGPUTextureFormat&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::CompareFunction&#160;</td>
+          <td class="paramname"><em>compare</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>writeEnabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8cpp_source.html">PipelineBuilder.cpp</a> 第 <a class="el" href="PipelineBuilder_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab973972c188e46ec8d3373375feee5cf" name="ab973972c188e46ec8d3373375feee5cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab973972c188e46ec8d3373375feee5cf">&#9670;&#160;</a></span>frontFace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::frontFace </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::FrontFace&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a> 第 <a class="el" href="PipelineBuilder_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>.</p>
+
+</div>
+</div>
+<a id="ac51b60b9ec78d4073b419a70a056be99" name="ac51b60b9ec78d4073b419a70a056be99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac51b60b9ec78d4073b419a70a056be99">&#9670;&#160;</a></span>label()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::label </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>l</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a> 第 <a class="el" href="PipelineBuilder_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2789d3ff0d7f0a052338759b1cd97713" name="a2789d3ff0d7f0a052338759b1cd97713"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2789d3ff0d7f0a052338759b1cd97713">&#9670;&#160;</a></span>layout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::layout </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::PipelineLayout&#160;</td>
+          <td class="paramname"><em>l</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a> 第 <a class="el" href="PipelineBuilder_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a734971f9ae0b759d7011664d848752f5" name="a734971f9ae0b759d7011664d848752f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a734971f9ae0b759d7011664d848752f5">&#9670;&#160;</a></span>sampleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::sampleCount </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a> 第 <a class="el" href="PipelineBuilder_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>.</p>
+
+</div>
+</div>
+<a id="a1af7c414043817951ed53ea86c1a5db1" name="a1af7c414043817951ed53ea86c1a5db1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1af7c414043817951ed53ea86c1a5db1">&#9670;&#160;</a></span>shader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::shader </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::ShaderModule&#160;</td>
+          <td class="paramname"><em>vert</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>vertEntry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::ShaderModule&#160;</td>
+          <td class="paramname"><em>frag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fragEntry</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8cpp_source.html">PipelineBuilder.cpp</a> 第 <a class="el" href="PipelineBuilder_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsInternal_8h_source.html#l00290">frag</a> , 以及 <a class="el" href="GraphicsInternal_8h_source.html#l00289">vert</a>.</p>
+
+</div>
+</div>
+<a id="aed230304c16e5ea852d9fa7df630bdad" name="aed230304c16e5ea852d9fa7df630bdad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed230304c16e5ea852d9fa7df630bdad">&#9670;&#160;</a></span>topology()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::topology </td>
+          <td>(</td>
+          <td class="paramtype">wgpu::PrimitiveTopology&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a> 第 <a class="el" href="PipelineBuilder_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="a8963768c47b2ad59dc4ae81ac41259cb" name="a8963768c47b2ad59dc4ae81ac41259cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8963768c47b2ad59dc4ae81ac41259cb">&#9670;&#160;</a></span>vertexLayout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1webgpu_1_1PipelineBuilder.html">PipelineBuilder</a> &amp; eve::graphics::webgpu::PipelineBuilder::vertexLayout </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>stride</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">wgpu::VertexStepMode&#160;</td>
+          <td class="paramname"><em>stepMode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const wgpu::VertexAttribute *&#160;</td>
+          <td class="paramname"><em>attrs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>attrCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PipelineBuilder_8cpp_source.html">PipelineBuilder.cpp</a> 第 <a class="el" href="PipelineBuilder_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00145">stride</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/webgpu/<a class="el" href="PipelineBuilder_8h_source.html">PipelineBuilder.h</a></li>
+<li>src/modules/graphics/webgpu/<a class="el" href="PipelineBuilder_8cpp_source.html">PipelineBuilder.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

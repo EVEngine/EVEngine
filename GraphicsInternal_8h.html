@@ -1,0 +1,257 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/vulkan/GraphicsInternal.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_093844fdbeabcf6df70ce24c00b21dbf.html">vulkan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a>  </div>
+  <div class="headertitle"><div class="title">GraphicsInternal.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="vulkan_2Graphics_8h_source.html">graphics/vulkan/Graphics.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Exception_8h_source.html">common/Exception.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CubemapPrefilter_8h_source.html">graphics/CubemapPrefilter.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;cstdio&gt;</code><br />
+<code>#include &lt;cstdlib&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;unistd.h&gt;</code><br />
+</div>
+<p><a href="GraphicsInternal_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics" id="r_namespaceeve_1_1graphics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics.html">eve::graphics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1graphics"><td class="mdescLeft">&#160;</td><td class="mdescRight">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局参数。 数据模型与渲染/交互逻辑见 CardTypes.h。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1graphics_1_1vulkan" id="r_namespaceeve_1_1graphics_1_1vulkan"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a06dd41ecb2d0928d25f7c8180156197f" name="a06dd41ecb2d0928d25f7c8180156197f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06dd41ecb2d0928d25f7c8180156197f">&#9670;&#160;</a></span>device</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::Device&amp; device</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsInternal_8h_source.html">GraphicsInternal.h</a> 第 <a class="el" href="GraphicsInternal_8h_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="InputMapTarget_8h_source.html#l00048">eve::input_editing::InputBindingCapture::active()</a>, <a class="el" href="InputMapTarget_8cpp_source.html#l00340">eve::input_editing::InputBindingCapture::begin()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l00312">eve::graphics::vulkan::Graphics::begin3DFrameToCanvas()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03620">eve::graphics::webgpu::Graphics::begin3DFrameToCanvas()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03981">eve::graphics::webgpu::Graphics::beginDecalPass()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05753">eve::graphics::webgpu::Graphics::beginFrameReadback()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03924">eve::graphics::webgpu::Graphics::beginGBufferPass()</a>, <a class="el" href="PipelineBuilder_8cpp_source.html#l00045">eve::graphics::webgpu::PipelineBuilder::build()</a>, <a class="el" href="SamplerBuilder_8cpp_source.html#l00033">eve::graphics::webgpu::SamplerBuilder::build()</a>, <a class="el" href="BindGroupLayoutBuilder_8cpp_source.html#l00007">eve::graphics::webgpu::BindGroupLayoutBuilder::build()</a>, <a class="el" href="Capabilities_8cpp_source.html#l00026">eve::graphics::webgpu::Capabilities::capture()</a>, <a class="el" href="VulkanUtil_8cpp_source.html#l00060">eve::gpgpu::computeQueue()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00350">eve::graphics::vulkan::Graphics::copyHDRCanvasesToCubemap()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00283">eve::graphics::vulkan::Graphics::copyHDRCanvasToCubemapFace()</a>, <a class="el" href="ComputePass_8cpp_source.html#l00020">eve::graphics::vulkan::ComputePass::create()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00837">eve::graphics::webgpu::Graphics::debugGpuDrivenGpuVisibleCount()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00517">eve::graphics::webgpu::Graphics::debugGpuDrivenVgGpuVisibleCount()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l00936">eve::graphics::vulkan::Graphics::drawUiTextureRects()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l00570">eve::graphics::vulkan::Graphics::drawVoxelFaceInstances()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l04029">eve::graphics::webgpu::Graphics::drawVoxelFaceInstances()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l00376">eve::graphics::vulkan::Graphics::end3DFrameToCanvas()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03629">eve::graphics::webgpu::Graphics::end3DFrameToCanvas()</a>, <a class="el" href="FrameArena_8cpp_source.html#l00028">eve::graphics::vulkan::FrameArena::ensure()</a>, <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00084">eve::graphics::vulkan::OffscreenCanvas::ensure3D()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00042">eve::gpgpu::VulkanSequence::ensureCommandBuffer()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00438">eve::graphics::vulkan::Graphics::filterHDRReflectionCubemap()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05427">eve::graphics::webgpu::Graphics::flush2DToCanvas()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00083">eve::gpgpu::VulkanComputeShader::flushDescriptors()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05629">eve::graphics::webgpu::Graphics::getPixelImpl()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00330">eve::graphics::webgpu::Graphics::gpuDrivenSubmitResident()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00251">eve::graphics::webgpu::Graphics::gpuDrivenVgUpload()</a>, <a class="el" href="ImGuiBackend_8cpp_source.html#l00173">eve::ui::ImGuiBackend::init()</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l01016">eve::graphics::vulkan::Graphics::initGpuTiming()</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00536">eve::graphics::vulkan::Graphics::initHeadless()</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00607">eve::graphics::vulkan::Graphics::initWithWindow()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l06130">eve::graphics::webgpu::Graphics::newHairShaderFromWgsl()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05673">eve::graphics::webgpu::Graphics::newHDRImageDataImpl()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05646">eve::graphics::webgpu::Graphics::newImageDataImpl()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l06021">eve::graphics::webgpu::Graphics::newMeshShaderFromWgsl()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05966">eve::graphics::webgpu::Graphics::newShaderFromSpv()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l06062">eve::graphics::webgpu::Graphics::newShaderFromWgsl()</a>, <a class="el" href="webgpu_2Canvas_8cpp_source.html#l00012">eve::graphics::webgpu::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00689">eve::graphics::vulkan::Graphics::onNativeWindowDestroyed()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l04972">eve::graphics::webgpu::Graphics::popValidationScope()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05002">eve::graphics::webgpu::Graphics::present()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l04966">eve::graphics::webgpu::Graphics::pushValidationScope()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l00528">eve::graphics::vulkan::Graphics::readDecalLayerToImageData()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05706">eve::graphics::webgpu::Graphics::readDecalLayerToImageData()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l05684">eve::graphics::webgpu::Graphics::readGBufferToImageData()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l00476">eve::graphics::vulkan::Graphics::readGBufferToImageData()</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l01044">eve::graphics::vulkan::Graphics::readGpuFrameTiming()</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00156">eve::graphics::vulkan::Graphics::releaseGpuParticleEmitter()</a>, <a class="el" href="VulkanComputeShader_8cpp_source.html#l00159">eve::gpgpu::VulkanComputeShader::releasePendingDescriptors()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01254">eve::graphics::vulkan::Graphics::releaseShader()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00616">eve::graphics::vulkan::Graphics::releaseTexture()</a>, <a class="el" href="vulkan_2GraphicsShaderReload_8cpp_source.html#l00032">eve::graphics::vulkan::Graphics::replaceShaderFromSpv()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00791">eve::graphics::vulkan::Graphics::replaceTexturePixelsRGBA()</a>, <a class="el" href="InitFlow_8cpp_source.html#l00076">eve::graphics::webgpu::InitFlow::requestDevice()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00599">eve::graphics::vulkan::Graphics::setTextureSampler()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00694">eve::graphics::vulkan::Graphics::updateTextureRegions()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00052">eve::graphics::vulkan::uploadTextureForAllShaderStages()</a>, <a class="el" href="VulkanGpgpu_8cpp_source.html#l00101">eve::gpgpu::vulkanDispatch()</a>, <a class="el" href="VulkanGpgpu_8cpp_source.html#l00066">eve::gpgpu::vulkanNewBuffer()</a>, <a class="el" href="VulkanGpgpu_8cpp_source.html#l00013">eve::gpgpu::vulkanNewShaderFromSpirv()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00159">eve::gpgpu::vulkanSequenceRecordDispatch()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00105">eve::gpgpu::vulkanSequenceRecordUpload()</a>, <a class="el" href="VulkanSequence_8cpp_source.html#l00195">eve::gpgpu::vulkanSequenceSubmitAsync()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00227">eve::gpgpu::webgpuDispatch()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00146">eve::gpgpu::webgpuNewBuffer()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00080">eve::gpgpu::webgpuNewShaderFromWgsl()</a>, <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00435">eve::gpgpu::webgpuSequenceSubmitAsync()</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00294">eve::graphics::vulkan::Graphics::~Graphics()</a> , 以及 <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00059">eve::graphics::vulkan::OffscreenCanvas::~OffscreenCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="ae743cf0e5d1516ca41060ab8de001134" name="ae743cf0e5d1516ca41060ab8de001134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae743cf0e5d1516ca41060ab8de001134">&#9670;&#160;</a></span>frag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::ShaderModule frag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsInternal_8h_source.html">GraphicsInternal.h</a> 第 <a class="el" href="GraphicsInternal_8h_source.html#l00290">290</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectShaders_8cpp_source.html#l00252">eve::stylize::createEffectMeshShader()</a>, <a class="el" href="EffectShaders_8cpp_source.html#l00234">eve::stylize::createEffectPostShader()</a>, <a class="el" href="StyleShaders_8cpp_source.html#l00474">eve::stylize::createMeshShader()</a>, <a class="el" href="StyleShaders_8cpp_source.html#l00437">eve::stylize::createPostShader()</a>, <a class="el" href="Grass_8cpp_source.html#l00348">eve::graphics::grass::createShader()</a>, <a class="el" href="HairShader_8cpp_source.html#l00051">eve::graphics::hair::createShader()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01294">eve::graphics::vulkan::Graphics::newMeshShader()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01157">eve::graphics::vulkan::Graphics::newShader()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01149">eve::graphics::vulkan::Graphics::newShaderFromSpvFile()</a>, <a class="el" href="Waterfall_8cpp_source.html#l00033">eve::graphics::newWaterfallShader()</a>, <a class="el" href="Water_8cpp_source.html#l00035">eve::graphics::newWaterShader()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00333">eve::network::UdpLink::onDatagram()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00164">eve::network::UdpLink::send()</a>, <a class="el" href="Shader_8h_source.html#l00092">eve::graphics::Shader::setSpirv()</a> , 以及 <a class="el" href="PipelineBuilder_8cpp_source.html#l00019">eve::graphics::webgpu::PipelineBuilder::shader()</a>.</p>
+
+</div>
+</div>
+<a id="a99414c99dbdc7df738b99938089a3298" name="a99414c99dbdc7df738b99938089a3298"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99414c99dbdc7df738b99938089a3298">&#9670;&#160;</a></span>vert</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::ShaderModule vert</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsInternal_8h_source.html">GraphicsInternal.h</a> 第 <a class="el" href="GraphicsInternal_8h_source.html#l00289">289</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EffectShaders_8cpp_source.html#l00252">eve::stylize::createEffectMeshShader()</a>, <a class="el" href="StyleShaders_8cpp_source.html#l00474">eve::stylize::createMeshShader()</a>, <a class="el" href="Grass_8cpp_source.html#l00348">eve::graphics::grass::createShader()</a>, <a class="el" href="HairShader_8cpp_source.html#l00051">eve::graphics::hair::createShader()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01209">eve::graphics::vulkan::Graphics::newHairShaderFromSpv()</a>, <a class="el" href="GraphicsMesh_8cpp_source.html#l00461">eve::graphics::vulkan::Graphics::newMeshCylinder()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01294">eve::graphics::vulkan::Graphics::newMeshShader()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01165">eve::graphics::vulkan::Graphics::newMeshShaderFromSpv()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l06021">eve::graphics::webgpu::Graphics::newMeshShaderFromWgsl()</a>, <a class="el" href="GraphicsMesh_8cpp_source.html#l00382">eve::graphics::vulkan::Graphics::newMeshSphere()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01157">eve::graphics::vulkan::Graphics::newShader()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01114">eve::graphics::vulkan::Graphics::newShaderFromSpv()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l01149">eve::graphics::vulkan::Graphics::newShaderFromSpvFile()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l06062">eve::graphics::webgpu::Graphics::newShaderFromWgsl()</a>, <a class="el" href="vulkan_2GraphicsShaderReload_8cpp_source.html#l00032">eve::graphics::vulkan::Graphics::replaceShaderFromSpv()</a>, <a class="el" href="Shader_8h_source.html#l00092">eve::graphics::Shader::setSpirv()</a> , 以及 <a class="el" href="PipelineBuilder_8cpp_source.html#l00019">eve::graphics::webgpu::PipelineBuilder::shader()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

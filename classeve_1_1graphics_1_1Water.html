@@ -1,0 +1,1516 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::Water类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Water.html">Water</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1Water-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::Water类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Dynamic water surface with sky reflection and animated ripples.  
+ <a href="classeve_1_1graphics_1_1Water.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Water_8h_source.html">Water.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4a4c303d4fd42fb9d460217806a2bb95" id="r_a4a4c303d4fd42fb9d460217806a2bb95"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a4a4c303d4fd42fb9d460217806a2bb95">Water</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:a4a4c303d4fd42fb9d460217806a2bb95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0a19867a620bc2f03000af54acf7889" id="r_ad0a19867a620bc2f03000af54acf7889"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ad0a19867a620bc2f03000af54acf7889">~Water</a> ()</td></tr>
+<tr class="separator:ad0a19867a620bc2f03000af54acf7889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2eaa677cf3d3f74e9ce3ad57882cb161" id="r_a2eaa677cf3d3f74e9ce3ad57882cb161"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a2eaa677cf3d3f74e9ce3ad57882cb161">Water</a> (const <a class="el" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp;)=delete</td></tr>
+<tr class="separator:a2eaa677cf3d3f74e9ce3ad57882cb161"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab39da1d0e788f7d7bbdbb0c847754ed4" id="r_ab39da1d0e788f7d7bbdbb0c847754ed4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ab39da1d0e788f7d7bbdbb0c847754ed4">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp;)=delete</td></tr>
+<tr class="separator:ab39da1d0e788f7d7bbdbb0c847754ed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7242a1034016a78735d9d41ba1c62d85" id="r_a7242a1034016a78735d9d41ba1c62d85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a7242a1034016a78735d9d41ba1c62d85">createPlane</a> (float sizeX, float sizeZ, int segX, int segZ)</td></tr>
+<tr class="memdesc:a7242a1034016a78735d9d41ba1c62d85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a flat XZ plane (Y-up) sized sizeX × sizeZ with UVs in [0,1]².  <br /></td></tr>
+<tr class="separator:a7242a1034016a78735d9d41ba1c62d85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e96ae119fcffed5fdd2e157c39869ad" id="r_a4e96ae119fcffed5fdd2e157c39869ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a4e96ae119fcffed5fdd2e157c39869ad">update</a> (float dt)</td></tr>
+<tr class="memdesc:a4e96ae119fcffed5fdd2e157c39869ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the animation clock by dt seconds.  <br /></td></tr>
+<tr class="separator:a4e96ae119fcffed5fdd2e157c39869ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83d2a5bdfd5795a6fb7dc05cd24659cb" id="r_a83d2a5bdfd5795a6fb7dc05cd24659cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a83d2a5bdfd5795a6fb7dc05cd24659cb">setTime</a> (float seconds)</td></tr>
+<tr class="separator:a83d2a5bdfd5795a6fb7dc05cd24659cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25e878005059ae9607b20280af967576" id="r_a25e878005059ae9607b20280af967576"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a25e878005059ae9607b20280af967576">getTime</a> () const</td></tr>
+<tr class="separator:a25e878005059ae9607b20280af967576"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4340e27d8f85bb7a7da3dac7356c0944" id="r_a4340e27d8f85bb7a7da3dac7356c0944"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a4340e27d8f85bb7a7da3dac7356c0944">setWaveSpeed</a> (float speed)</td></tr>
+<tr class="separator:a4340e27d8f85bb7a7da3dac7356c0944"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78d83a0fbf9d6f5c46a8de391e7b2596" id="r_a78d83a0fbf9d6f5c46a8de391e7b2596"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a78d83a0fbf9d6f5c46a8de391e7b2596">getWaveSpeed</a> () const</td></tr>
+<tr class="separator:a78d83a0fbf9d6f5c46a8de391e7b2596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2eea47872de479394e0a2ae7a5d39dc4" id="r_a2eea47872de479394e0a2ae7a5d39dc4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a2eea47872de479394e0a2ae7a5d39dc4">setWaveAmplitude</a> (float amp)</td></tr>
+<tr class="memdesc:a2eea47872de479394e0a2ae7a5d39dc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Amplitude of the shore-edge waves.  <br /></td></tr>
+<tr class="separator:a2eea47872de479394e0a2ae7a5d39dc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ba26d34ee22337884e58a0a6d8ea9dc" id="r_a4ba26d34ee22337884e58a0a6d8ea9dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a4ba26d34ee22337884e58a0a6d8ea9dc">getWaveAmplitude</a> () const</td></tr>
+<tr class="separator:a4ba26d34ee22337884e58a0a6d8ea9dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4113893f526adb74c87a376c33d01905" id="r_a4113893f526adb74c87a376c33d01905"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a4113893f526adb74c87a376c33d01905">setRippleAmplitude</a> (float amp)</td></tr>
+<tr class="memdesc:a4113893f526adb74c87a376c33d01905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Amplitude of the occasional middle drop ripples.  <br /></td></tr>
+<tr class="separator:a4113893f526adb74c87a376c33d01905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5602c8a491a552cf2a638376b88818e2" id="r_a5602c8a491a552cf2a638376b88818e2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a5602c8a491a552cf2a638376b88818e2">getRippleAmplitude</a> () const</td></tr>
+<tr class="separator:a5602c8a491a552cf2a638376b88818e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e7fef7a90ed23882fd7268f41d21b5c" id="r_a6e7fef7a90ed23882fd7268f41d21b5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a6e7fef7a90ed23882fd7268f41d21b5c">setEdgeFalloff</a> (float edge)</td></tr>
+<tr class="memdesc:a6e7fef7a90ed23882fd7268f41d21b5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width (in UV, 0..1) of the edge wave band.  <br /></td></tr>
+<tr class="separator:a6e7fef7a90ed23882fd7268f41d21b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a848dabbf26575fe22383cb4abc67a90d" id="r_a848dabbf26575fe22383cb4abc67a90d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a848dabbf26575fe22383cb4abc67a90d">getEdgeFalloff</a> () const</td></tr>
+<tr class="separator:a848dabbf26575fe22383cb4abc67a90d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad54a6dca6c9c0a239e421e3c2f85f539" id="r_ad54a6dca6c9c0a239e421e3c2f85f539"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ad54a6dca6c9c0a239e421e3c2f85f539">setRippleCount</a> (int <a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>)</td></tr>
+<tr class="memdesc:ad54a6dca6c9c0a239e421e3c2f85f539"><td class="mdescLeft">&#160;</td><td class="mdescRight">How many expanding drop ripples exist.  <br /></td></tr>
+<tr class="separator:ad54a6dca6c9c0a239e421e3c2f85f539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71afbc5cc5097295d590e337a48dd7e8" id="r_a71afbc5cc5097295d590e337a48dd7e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a71afbc5cc5097295d590e337a48dd7e8">getRippleCount</a> () const</td></tr>
+<tr class="separator:a71afbc5cc5097295d590e337a48dd7e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac296474d9b6ae0257d5f5eca0af0ff83" id="r_ac296474d9b6ae0257d5f5eca0af0ff83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ac296474d9b6ae0257d5f5eca0af0ff83">setRippleInterval</a> (float seconds)</td></tr>
+<tr class="memdesc:ac296474d9b6ae0257d5f5eca0af0ff83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seconds between drop ripples.  <br /></td></tr>
+<tr class="separator:ac296474d9b6ae0257d5f5eca0af0ff83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a228be46ba1ecad32d03b92d03f2507" id="r_a8a228be46ba1ecad32d03b92d03f2507"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a8a228be46ba1ecad32d03b92d03f2507">getRippleInterval</a> () const</td></tr>
+<tr class="separator:a8a228be46ba1ecad32d03b92d03f2507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3e508ac2107f40b30392a1c66307a6e" id="r_aa3e508ac2107f40b30392a1c66307a6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#aa3e508ac2107f40b30392a1c66307a6e">setWaveScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="separator:aa3e508ac2107f40b30392a1c66307a6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7c273e403354a4687cfa02286e084cb" id="r_ad7c273e403354a4687cfa02286e084cb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ad7c273e403354a4687cfa02286e084cb">getWaveScale</a> () const</td></tr>
+<tr class="separator:ad7c273e403354a4687cfa02286e084cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada4025ca0b0426a8e72c033fce1942ba" id="r_ada4025ca0b0426a8e72c033fce1942ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ada4025ca0b0426a8e72c033fce1942ba">setWaterColor</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:ada4025ca0b0426a8e72c033fce1942ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a811d5df79c5b80a0903c1e19effb1f3b" id="r_a811d5df79c5b80a0903c1e19effb1f3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a811d5df79c5b80a0903c1e19effb1f3b">setReflectionTint</a> (float <a class="el" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, float <a class="el" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>)</td></tr>
+<tr class="separator:a811d5df79c5b80a0903c1e19effb1f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84c815dd3bc8d497169b3ade6f9044f4" id="r_a84c815dd3bc8d497169b3ade6f9044f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a84c815dd3bc8d497169b3ade6f9044f4">setReflectionIntensity</a> (float intensity)</td></tr>
+<tr class="separator:a84c815dd3bc8d497169b3ade6f9044f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a698169fbea132fb88d93bf6f5ed3c2db" id="r_a698169fbea132fb88d93bf6f5ed3c2db"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a698169fbea132fb88d93bf6f5ed3c2db">getReflectionIntensity</a> () const</td></tr>
+<tr class="separator:a698169fbea132fb88d93bf6f5ed3c2db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78c4daba0fcfec3281500cd08909a44a" id="r_a78c4daba0fcfec3281500cd08909a44a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a78c4daba0fcfec3281500cd08909a44a">setSunIntensity</a> (float intensity)</td></tr>
+<tr class="separator:a78c4daba0fcfec3281500cd08909a44a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c0d394e666733ee48f5499f45d555e9" id="r_a0c0d394e666733ee48f5499f45d555e9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a0c0d394e666733ee48f5499f45d555e9">getSunIntensity</a> () const</td></tr>
+<tr class="separator:a0c0d394e666733ee48f5499f45d555e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a079706455ba3a62e5a63c06a3271cf16" id="r_a079706455ba3a62e5a63c06a3271cf16"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a079706455ba3a62e5a63c06a3271cf16">setScreenSpaceReflection</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>, float strength=0.85<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a079706455ba3a62e5a63c06a3271cf16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional screen-space reflection overlay. When enabled, the shader samples the temporally resolved SSR-chain result (bound through mesh binding 6) at the fragment's screen UV and blends it over the environment cubemap backup. The drawable viewport is inferred when setViewport was not called. SSR must also be enabled on <a class="el" href="classeve_1_1graphics_1_1RenderControl.html" title="Declarative, compilable 3D render control.">RenderControl</a>.  <br /></td></tr>
+<tr class="separator:a079706455ba3a62e5a63c06a3271cf16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abacdee3f5ea46f59a9143b062d39d58a" id="r_abacdee3f5ea46f59a9143b062d39d58a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#abacdee3f5ea46f59a9143b062d39d58a">getScreenSpaceReflection</a> () const</td></tr>
+<tr class="separator:abacdee3f5ea46f59a9143b062d39d58a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1c74cdf3f6aac2bcbb99aa6b1b3fa78" id="r_ab1c74cdf3f6aac2bcbb99aa6b1b3fa78"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ab1c74cdf3f6aac2bcbb99aa6b1b3fa78">getScreenSpaceReflectionStrength</a> () const</td></tr>
+<tr class="separator:ab1c74cdf3f6aac2bcbb99aa6b1b3fa78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2802c8c04cc998e59c7a7ca3f6109df" id="r_ad2802c8c04cc998e59c7a7ca3f6109df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ad2802c8c04cc998e59c7a7ca3f6109df">setViewport</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:ad2802c8c04cc998e59c7a7ca3f6109df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Window / target size in pixels, used to compute screen-space UVs.  <br /></td></tr>
+<tr class="separator:ad2802c8c04cc998e59c7a7ca3f6109df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ea0b89c6abe3da1fa4975400f7b5739" id="r_a8ea0b89c6abe3da1fa4975400f7b5739"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a8ea0b89c6abe3da1fa4975400f7b5739">getViewportWidth</a> () const</td></tr>
+<tr class="separator:a8ea0b89c6abe3da1fa4975400f7b5739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b239accd7430dd074ab89ce7746ba53" id="r_a0b239accd7430dd074ab89ce7746ba53"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a0b239accd7430dd074ab89ce7746ba53">getViewportHeight</a> () const</td></tr>
+<tr class="separator:a0b239accd7430dd074ab89ce7746ba53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6c78aab732d2b6f5464788fe252ccf0" id="r_ac6c78aab732d2b6f5464788fe252ccf0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ac6c78aab732d2b6f5464788fe252ccf0">bindParams</a> ()</td></tr>
+<tr class="memdesc:ac6c78aab732d2b6f5464788fe252ccf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload current params to the shader push constants.  <br /></td></tr>
+<tr class="separator:ac6c78aab732d2b6f5464788fe252ccf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f84521cdf872175dd143892bf77375e" id="r_a5f84521cdf872175dd143892bf77375e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a5f84521cdf872175dd143892bf77375e">draw</a> ()</td></tr>
+<tr class="memdesc:a5f84521cdf872175dd143892bf77375e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the water plane (uses default mesh3d camera / lighting state).  <br /></td></tr>
+<tr class="separator:a5f84521cdf872175dd143892bf77375e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac7acd015816ba9959618bc7c97318b4" id="r_aac7acd015816ba9959618bc7c97318b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#aac7acd015816ba9959618bc7c97318b4">setReflectionCaptureEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:aac7acd015816ba9959618bc7c97318b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable inclusion in reflection-probe captures.  <br /></td></tr>
+<tr class="separator:aac7acd015816ba9959618bc7c97318b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed9ba89b63a126a7a225342c6b31ebd7" id="r_aed9ba89b63a126a7a225342c6b31ebd7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#aed9ba89b63a126a7a225342c6b31ebd7">getReflectionCaptureEnabled</a> () const</td></tr>
+<tr class="memdesc:aed9ba89b63a126a7a225342c6b31ebd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether this water surface is included in reflection-probe captures.  <br /></td></tr>
+<tr class="separator:aed9ba89b63a126a7a225342c6b31ebd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b0534e30832046375b7b3929bf2dc0c" id="r_a7b0534e30832046375b7b3929bf2dc0c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a7b0534e30832046375b7b3929bf2dc0c">setReflectionCaptureMask</a> (uint32_t <a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>)</td></tr>
+<tr class="memdesc:a7b0534e30832046375b7b3929bf2dc0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the reflection-capture visibility layer mask.  <br /></td></tr>
+<tr class="separator:a7b0534e30832046375b7b3929bf2dc0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a480037abf780c24ffbb8080e5cf77f04" id="r_a480037abf780c24ffbb8080e5cf77f04"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a480037abf780c24ffbb8080e5cf77f04">getReflectionCaptureMask</a> () const</td></tr>
+<tr class="memdesc:a480037abf780c24ffbb8080e5cf77f04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the reflection-capture visibility layer mask.  <br /></td></tr>
+<tr class="separator:a480037abf780c24ffbb8080e5cf77f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac556086a2d173794a49cd102d32f2d0f" id="r_ac556086a2d173794a49cd102d32f2d0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#ac556086a2d173794a49cd102d32f2d0f">getShader</a> () const</td></tr>
+<tr class="separator:ac556086a2d173794a49cd102d32f2d0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0776d1b95d7aaba5b16f826d1e7ba996" id="r_a0776d1b95d7aaba5b16f826d1e7ba996"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a0776d1b95d7aaba5b16f826d1e7ba996">getMesh</a> () const</td></tr>
+<tr class="separator:a0776d1b95d7aaba5b16f826d1e7ba996"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a977cb7152449b1b013c4cb1cd8948074" id="r_a977cb7152449b1b013c4cb1cd8948074"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a977cb7152449b1b013c4cb1cd8948074">paramCount</a> ()</td></tr>
+<tr class="memdesc:a977cb7152449b1b013c4cb1cd8948074"><td class="mdescLeft">&#160;</td><td class="mdescRight">Names of the push-constant parameters (for UI / inspection).  <br /></td></tr>
+<tr class="separator:a977cb7152449b1b013c4cb1cd8948074"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f7c37e74f19cae66c16c234afeeadcd" id="r_a3f7c37e74f19cae66c16c234afeeadcd"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1Water.html#a3f7c37e74f19cae66c16c234afeeadcd">paramName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)</td></tr>
+<tr class="separator:a3f7c37e74f19cae66c16c234afeeadcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Dynamic water surface with sky reflection and animated ripples. </p>
+<p>A custom Mesh3D fragment shader renders a flat plane as water:</p><ul>
+<li>Reflects the sky via the environment cubemap (binding 3), Fresnel-weighted so grazing angles reflect the sky more strongly.</li>
+<li>Ripples near the water's edge (waves lapping the shore), strongest at the boundary and fading inward.</li>
+<li>Occasional expanding ripple rings in the middle (rain drops / fish / boat), appearing at staggered intervals.</li>
+<li>A sun glint highlight from the primary directional light.</li>
+</ul>
+<p>Parameters are packed into the shader push-constant block (data[0..31]); see Water::bindDefaults for the layout. Caller owns Water*; its <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a> / <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> are owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00033">33</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4a4c303d4fd42fb9d460217806a2bb95" name="a4a4c303d4fd42fb9d460217806a2bb95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a4c303d4fd42fb9d460217806a2bb95">&#9670;&#160;</a></span>Water() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Water::Water </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00583">eve::graphics::RenderSystem3D::addCaptureExtraDrawer()</a>, <a class="el" href="Water_8cpp_source.html#l00149">bindParams()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="Water_8cpp_source.html#l00035">eve::graphics::newWaterShader()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00236">u</a>.</p>
+
+</div>
+</div>
+<a id="ad0a19867a620bc2f03000af54acf7889" name="ad0a19867a620bc2f03000af54acf7889"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0a19867a620bc2f03000af54acf7889">&#9670;&#160;</a></span>~Water()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Water::~Water </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00592">eve::graphics::RenderSystem3D::removeCaptureExtraDrawer()</a>.</p>
+
+</div>
+</div>
+<a id="a2eaa677cf3d3f74e9ce3ad57882cb161" name="a2eaa677cf3d3f74e9ce3ad57882cb161"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2eaa677cf3d3f74e9ce3ad57882cb161">&#9670;&#160;</a></span>Water() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::Water::Water </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac6c78aab732d2b6f5464788fe252ccf0" name="ac6c78aab732d2b6f5464788fe252ccf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6c78aab732d2b6f5464788fe252ccf0">&#9670;&#160;</a></span>bindParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::bindParams </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload current params to the shader push constants. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="Shader_8cpp_source.html#l00089">eve::graphics::Shader::sendVec3()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Water_8cpp_source.html#l00169">draw()</a>, <a class="el" href="Water_8cpp_source.html#l00116">setTime()</a>, <a class="el" href="Water_8cpp_source.html#l00111">update()</a> , 以及 <a class="el" href="Water_8cpp_source.html#l00063">Water()</a>.</p>
+
+</div>
+</div>
+<a id="a7242a1034016a78735d9d41ba1c62d85" name="a7242a1034016a78735d9d41ba1c62d85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7242a1034016a78735d9d41ba1c62d85">&#9670;&#160;</a></span>createPlane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::createPlane </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>segX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>segZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a flat XZ plane (Y-up) sized sizeX × sizeZ with UVs in [0,1]². </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00016">uv</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">z</a>.</p>
+
+</div>
+</div>
+<a id="a5f84521cdf872175dd143892bf77375e" name="a5f84521cdf872175dd143892bf77375e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f84521cdf872175dd143892bf77375e">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::draw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw the water plane (uses default mesh3d camera / lighting state). </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00169">169</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Water_8cpp_source.html#l00149">bindParams()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#acbd057ac365c66502742391d4aa42807">eve::graphics::Graphics::drawMeshShader()</a>, <a class="el" href="Graphics_8h_source.html#l00412">eve::graphics::Graphics::getHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00414">eve::graphics::Graphics::getPixelHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00413">eve::graphics::Graphics::getPixelWidth()</a>, <a class="el" href="ScreenSpaceReflection_8cpp_source.html#l00321">eve::graphics::ScreenSpaceReflection::getReflectionTexture()</a>, <a class="el" href="Graphics_8cpp_source.html#l00311">eve::graphics::Graphics::getRenderControl()</a>, <a class="el" href="Graphics_8h_source.html#l00411">eve::graphics::Graphics::getWidth()</a>, <a class="el" href="ScreenSpaceReflection_8h_source.html#l00094">eve::graphics::ScreenSpaceReflection::hasValidHistory()</a>, <a class="el" href="RenderControl_8cpp_source.html#l00131">eve::graphics::RenderControl::isEnabled()</a>, <a class="el" href="Graphics_8cpp_source.html#l01491">eve::graphics::Graphics::pipelineScreenSpaceReflection()</a>, <a class="el" href="Shader_8cpp_source.html#l00082">eve::graphics::Shader::sendFloat()</a> , 以及 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#af9c1ca97bea9213efbc805d80eb246bc">eve::graphics::Graphics::setMesh3DHeightTexture()</a>.</p>
+
+</div>
+</div>
+<a id="a848dabbf26575fe22383cb4abc67a90d" name="a848dabbf26575fe22383cb4abc67a90d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a848dabbf26575fe22383cb4abc67a90d">&#9670;&#160;</a></span>getEdgeFalloff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getEdgeFalloff </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0776d1b95d7aaba5b16f826d1e7ba996" name="a0776d1b95d7aaba5b16f826d1e7ba996"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0776d1b95d7aaba5b16f826d1e7ba996">&#9670;&#160;</a></span>getMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::Water::getMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed9ba89b63a126a7a225342c6b31ebd7" name="aed9ba89b63a126a7a225342c6b31ebd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed9ba89b63a126a7a225342c6b31ebd7">&#9670;&#160;</a></span>getReflectionCaptureEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Water::getReflectionCaptureEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether this water surface is included in reflection-probe captures. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a480037abf780c24ffbb8080e5cf77f04" name="a480037abf780c24ffbb8080e5cf77f04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a480037abf780c24ffbb8080e5cf77f04">&#9670;&#160;</a></span>getReflectionCaptureMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::Water::getReflectionCaptureMask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the reflection-capture visibility layer mask. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a698169fbea132fb88d93bf6f5ed3c2db" name="a698169fbea132fb88d93bf6f5ed3c2db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a698169fbea132fb88d93bf6f5ed3c2db">&#9670;&#160;</a></span>getReflectionIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getReflectionIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5602c8a491a552cf2a638376b88818e2" name="a5602c8a491a552cf2a638376b88818e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5602c8a491a552cf2a638376b88818e2">&#9670;&#160;</a></span>getRippleAmplitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getRippleAmplitude </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a71afbc5cc5097295d590e337a48dd7e8" name="a71afbc5cc5097295d590e337a48dd7e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71afbc5cc5097295d590e337a48dd7e8">&#9670;&#160;</a></span>getRippleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Water::getRippleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8a228be46ba1ecad32d03b92d03f2507" name="a8a228be46ba1ecad32d03b92d03f2507"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a228be46ba1ecad32d03b92d03f2507">&#9670;&#160;</a></span>getRippleInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getRippleInterval </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abacdee3f5ea46f59a9143b062d39d58a" name="abacdee3f5ea46f59a9143b062d39d58a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abacdee3f5ea46f59a9143b062d39d58a">&#9670;&#160;</a></span>getScreenSpaceReflection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::Water::getScreenSpaceReflection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1c74cdf3f6aac2bcbb99aa6b1b3fa78" name="ab1c74cdf3f6aac2bcbb99aa6b1b3fa78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1c74cdf3f6aac2bcbb99aa6b1b3fa78">&#9670;&#160;</a></span>getScreenSpaceReflectionStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getScreenSpaceReflectionStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac556086a2d173794a49cd102d32f2d0f" name="ac556086a2d173794a49cd102d32f2d0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac556086a2d173794a49cd102d32f2d0f">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::Water::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0c0d394e666733ee48f5499f45d555e9" name="a0c0d394e666733ee48f5499f45d555e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c0d394e666733ee48f5499f45d555e9">&#9670;&#160;</a></span>getSunIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getSunIntensity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a25e878005059ae9607b20280af967576" name="a25e878005059ae9607b20280af967576"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25e878005059ae9607b20280af967576">&#9670;&#160;</a></span>getTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b239accd7430dd074ab89ce7746ba53" name="a0b239accd7430dd074ab89ce7746ba53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b239accd7430dd074ab89ce7746ba53">&#9670;&#160;</a></span>getViewportHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getViewportHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ea0b89c6abe3da1fa4975400f7b5739" name="a8ea0b89c6abe3da1fa4975400f7b5739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ea0b89c6abe3da1fa4975400f7b5739">&#9670;&#160;</a></span>getViewportWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getViewportWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4ba26d34ee22337884e58a0a6d8ea9dc" name="a4ba26d34ee22337884e58a0a6d8ea9dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ba26d34ee22337884e58a0a6d8ea9dc">&#9670;&#160;</a></span>getWaveAmplitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getWaveAmplitude </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad7c273e403354a4687cfa02286e084cb" name="ad7c273e403354a4687cfa02286e084cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7c273e403354a4687cfa02286e084cb">&#9670;&#160;</a></span>getWaveScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getWaveScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78d83a0fbf9d6f5c46a8de391e7b2596" name="a78d83a0fbf9d6f5c46a8de391e7b2596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78d83a0fbf9d6f5c46a8de391e7b2596">&#9670;&#160;</a></span>getWaveSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::Water::getWaveSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab39da1d0e788f7d7bbdbb0c847754ed4" name="ab39da1d0e788f7d7bbdbb0c847754ed4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab39da1d0e788f7d7bbdbb0c847754ed4">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp; eve::graphics::Water::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1Water.html">Water</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a977cb7152449b1b013c4cb1cd8948074" name="a977cb7152449b1b013c4cb1cd8948074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a977cb7152449b1b013c4cb1cd8948074">&#9670;&#160;</a></span>paramCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::Water::paramCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Names of the push-constant parameters (for UI / inspection). </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f7c37e74f19cae66c16c234afeeadcd" name="a3f7c37e74f19cae66c16c234afeeadcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f7c37e74f19cae66c16c234afeeadcd">&#9670;&#160;</a></span>paramName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::Water::paramName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a6e7fef7a90ed23882fd7268f41d21b5c" name="a6e7fef7a90ed23882fd7268f41d21b5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e7fef7a90ed23882fd7268f41d21b5c">&#9670;&#160;</a></span>setEdgeFalloff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setEdgeFalloff </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>edge</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Width (in UV, 0..1) of the edge wave band. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aac7acd015816ba9959618bc7c97318b4" name="aac7acd015816ba9959618bc7c97318b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac7acd015816ba9959618bc7c97318b4">&#9670;&#160;</a></span>setReflectionCaptureEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setReflectionCaptureEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enable or disable inclusion in reflection-probe captures. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a7b0534e30832046375b7b3929bf2dc0c" name="a7b0534e30832046375b7b3929bf2dc0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b0534e30832046375b7b3929bf2dc0c">&#9670;&#160;</a></span>setReflectionCaptureMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setReflectionCaptureMask </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mask</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the reflection-capture visibility layer mask. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8h_source.html">Water.h</a> 第 <a class="el" href="Water_8h_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>.</p>
+
+</div>
+</div>
+<a id="a84c815dd3bc8d497169b3ade6f9044f4" name="a84c815dd3bc8d497169b3ade6f9044f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84c815dd3bc8d497169b3ade6f9044f4">&#9670;&#160;</a></span>setReflectionIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setReflectionIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a811d5df79c5b80a0903c1e19effb1f3b" name="a811d5df79c5b80a0903c1e19effb1f3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a811d5df79c5b80a0903c1e19effb1f3b">&#9670;&#160;</a></span>setReflectionTint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setReflectionTint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a4113893f526adb74c87a376c33d01905" name="a4113893f526adb74c87a376c33d01905"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4113893f526adb74c87a376c33d01905">&#9670;&#160;</a></span>setRippleAmplitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setRippleAmplitude </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Amplitude of the occasional middle drop ripples. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="ad54a6dca6c9c0a239e421e3c2f85f539" name="ad54a6dca6c9c0a239e421e3c2f85f539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad54a6dca6c9c0a239e421e3c2f85f539">&#9670;&#160;</a></span>setRippleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setRippleCount </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>How many expanding drop ripples exist. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="ac296474d9b6ae0257d5f5eca0af0ff83" name="ac296474d9b6ae0257d5f5eca0af0ff83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac296474d9b6ae0257d5f5eca0af0ff83">&#9670;&#160;</a></span>setRippleInterval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setRippleInterval </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Seconds between drop ripples. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a079706455ba3a62e5a63c06a3271cf16" name="a079706455ba3a62e5a63c06a3271cf16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a079706455ba3a62e5a63c06a3271cf16">&#9670;&#160;</a></span>setScreenSpaceReflection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setScreenSpaceReflection </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em> = <code>0.85<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional screen-space reflection overlay. When enabled, the shader samples the temporally resolved SSR-chain result (bound through mesh binding 6) at the fragment's screen UV and blends it over the environment cubemap backup. The drawable viewport is inferred when setViewport was not called. SSR must also be enabled on <a class="el" href="classeve_1_1graphics_1_1RenderControl.html" title="Declarative, compilable 3D render control.">RenderControl</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a78c4daba0fcfec3281500cd08909a44a" name="a78c4daba0fcfec3281500cd08909a44a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78c4daba0fcfec3281500cd08909a44a">&#9670;&#160;</a></span>setSunIntensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setSunIntensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>intensity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a83d2a5bdfd5795a6fb7dc05cd24659cb" name="a83d2a5bdfd5795a6fb7dc05cd24659cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83d2a5bdfd5795a6fb7dc05cd24659cb">&#9670;&#160;</a></span>setTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setTime </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Water_8cpp_source.html#l00149">bindParams()</a>.</p>
+
+</div>
+</div>
+<a id="ad2802c8c04cc998e59c7a7ca3f6109df" name="ad2802c8c04cc998e59c7a7ca3f6109df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2802c8c04cc998e59c7a7ca3f6109df">&#9670;&#160;</a></span>setViewport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setViewport </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Window / target size in pixels, used to compute screen-space UVs. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00685">h</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">w</a>.</p>
+
+</div>
+</div>
+<a id="ada4025ca0b0426a8e72c033fce1942ba" name="ada4025ca0b0426a8e72c033fce1942ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada4025ca0b0426a8e72c033fce1942ba">&#9670;&#160;</a></span>setWaterColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setWaterColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00035">g</a> , 以及 <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a>.</p>
+
+</div>
+</div>
+<a id="a2eea47872de479394e0a2ae7a5d39dc4" name="a2eea47872de479394e0a2ae7a5d39dc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2eea47872de479394e0a2ae7a5d39dc4">&#9670;&#160;</a></span>setWaveAmplitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setWaveAmplitude </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Amplitude of the shore-edge waves. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aa3e508ac2107f40b30392a1c66307a6e" name="aa3e508ac2107f40b30392a1c66307a6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3e508ac2107f40b30392a1c66307a6e">&#9670;&#160;</a></span>setWaveScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setWaveScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a4340e27d8f85bb7a7da3dac7356c0944" name="a4340e27d8f85bb7a7da3dac7356c0944"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4340e27d8f85bb7a7da3dac7356c0944">&#9670;&#160;</a></span>setWaveSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::setWaveSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="a4e96ae119fcffed5fdd2e157c39869ad" name="a4e96ae119fcffed5fdd2e157c39869ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e96ae119fcffed5fdd2e157c39869ad">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::Water::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance the animation clock by dt seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="Water_8cpp_source.html">Water.cpp</a> 第 <a class="el" href="Water_8cpp_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Water_8cpp_source.html#l00149">bindParams()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="Water_8h_source.html">Water.h</a></li>
+<li>src/modules/graphics/<a class="el" href="Water_8cpp_source.html">Water.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

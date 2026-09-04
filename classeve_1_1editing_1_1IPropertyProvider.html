@@ -1,0 +1,492 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editing::IPropertyProvider类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editing.html">editing</a></li><li class="navelem"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">IPropertyProvider</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1editing_1_1IPropertyProvider-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editing::IPropertyProvider类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-independent property access for an immutable selection snapshot.  
+ <a href="classeve_1_1editing_1_1IPropertyProvider.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::editing::IPropertyProvider 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1editing_1_1IPropertyProvider.png" usemap="#eve::editing::IPropertyProvider_map" alt=""/>
+  <map id="eve::editing::IPropertyProvider_map" name="eve::editing::IPropertyProvider_map">
+<area href="classeve_1_1audio__editing_1_1AudioSourceTarget.html" title="Serializable audio-source authoring target independent of OpenAL handles." alt="eve::audio_editing::AudioSourceTarget" shape="rect" coords="369,56,728,80"/>
+<area href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html" title="Revisioned image/Live2D/VRoid Avatar authoring asset." alt="eve::avatar_editing::AvatarDocumentTarget" shape="rect" coords="369,112,728,136"/>
+<area href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html" title="Revisioned BiomeRules asset." alt="eve::biome_editing::BiomeDocumentTarget" shape="rect" coords="369,168,728,192"/>
+<area href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html" title="Revisioned camera-rig and director-timeline editing document." alt="eve::camera_editing::CameraDocumentTarget" shape="rect" coords="369,224,728,248"/>
+<area href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html" title="Stable, serializable authoring document for one projected decal." alt="eve::decal_editing::DecalDocumentTarget" shape="rect" coords="369,280,728,304"/>
+<area href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html" title="Schema-driven property adapter for one definition document." alt="eve::definitions_editing::DefinitionSchemaFormTarget" shape="rect" coords="369,336,728,360"/>
+<area href="classeve_1_1editor_1_1ActionTimelineTarget.html" title="Authoritative editor target for one action timeline asset." alt="eve::editor::ActionTimelineTarget" shape="rect" coords="369,392,728,416"/>
+<area href="classeve_1_1editor_1_1ProjectSettingsTarget.html" title="Schema-driven, reversible settings target with secret-reference enforcement." alt="eve::editor::ProjectSettingsTarget" shape="rect" coords="369,448,728,472"/>
+<area href="classeve_1_1fluids__editing_1_1FluidSimulationTarget.html" title="Reversible property document for fluid simulation authoring." alt="eve::fluids_editing::FluidSimulationTarget" shape="rect" coords="369,504,728,528"/>
+<area href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html" title="Reversible document for surface droplets, wet traces and material response." alt="eve::fluids_editing::SurfaceFluidTarget" shape="rect" coords="369,560,728,584"/>
+<area href="classeve_1_1hd2d__editing_1_1Hd2dDocumentTarget.html" title="Revisioned HD-2D sprite/tilemap presentation asset." alt="eve::hd2d_editing::Hd2dDocumentTarget" shape="rect" coords="369,616,728,640"/>
+<area href="classeve_1_1housegen__editing_1_1HouseGenDocumentTarget.html" title="Revisioned component-kit and deterministic generation-request asset." alt="eve::housegen_editing::HouseGenDocumentTarget" shape="rect" coords="369,672,728,696"/>
+<area href="classeve_1_1input__editing_1_1InputMapTarget.html" alt="eve::input_editing::InputMapTarget" shape="rect" coords="369,728,728,752"/>
+<area href="classeve_1_1lighting__editing_1_1LightingPropertyTargetBase.html" title="Shared property-document implementation for light and environment targets." alt="eve::lighting_editing::LightingPropertyTargetBase" shape="rect" coords="369,784,728,808"/>
+<area href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html" title="UI-neutral, serializable material authoring target." alt="eve::material_editing::MaterialDocumentTarget" shape="rect" coords="369,840,728,864"/>
+<area href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html" title="Serializable, backend-neutral 2D/3D collider authoring target." alt="eve::physics_editing::PhysicsColliderTarget" shape="rect" coords="369,896,728,920"/>
+<area href="classeve_1_1physics__editing_1_1PhysicsJointTarget.html" title="Serializable joint authoring target using stable body references." alt="eve::physics_editing::PhysicsJointTarget" shape="rect" coords="369,952,728,976"/>
+<area href="classeve_1_1procgen__editing_1_1TextureRecipeTarget.html" title="Revisioned, schema-driven procedural texture recipe asset." alt="eve::procgen_editing::TextureRecipeTarget" shape="rect" coords="369,1008,728,1032"/>
+<area href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html" title="Module-owned adapter for one scene component payload type." alt="eve::scene_editing::ISceneComponentPayloadProvider" shape="rect" coords="369,1064,728,1088"/>
+<area href="classeve_1_1scene__editing_1_1ScenePropertyProvider.html" title="Property adapter exposing scene TRS to generic inspector presenters." alt="eve::scene_editing::ScenePropertyProvider" shape="rect" coords="369,1120,728,1144"/>
+<area href="classeve_1_1sceneloader__editing_1_1SceneImportTarget.html" alt="eve::sceneloader_editing::SceneImportTarget" shape="rect" coords="369,1176,728,1200"/>
+<area href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html" title="Revisioned SpriteStack bake preset with reusable Inspector metadata." alt="eve::spritestack_editing::SpriteStackDocumentTarget" shape="rect" coords="369,1232,728,1256"/>
+<area href="classeve_1_1stylize__editing_1_1MeshVfxAssetTarget.html" title="Transactional editor target for one canonical MeshVfxAsset document. @ownership Owns the authoritativ..." alt="eve::stylize_editing::MeshVfxAssetTarget" shape="rect" coords="369,1288,728,1312"/>
+<area href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html" title="Serializable ordered style recipe with dynamic parameter Inspector." alt="eve::stylize_editing::StylizeRecipeTarget" shape="rect" coords="369,1344,728,1368"/>
+<area href="classeve_1_1ui__editing_1_1UiDocumentTarget.html" title="Serializable UI authoring document with hierarchy and inspector capabilities." alt="eve::ui_editing::UiDocumentTarget" shape="rect" coords="369,1400,728,1424"/>
+<area href="classeve_1_1virtualgeometry__editing_1_1VirtualGeometryDocumentTarget.html" title="Revisioned VirtualGeometry importer preset." alt="eve::virtualgeometry_editing::VirtualGeometryDocumentTarget" shape="rect" coords="369,1456,728,1480"/>
+<area href="classeve_1_1voxel__editing_1_1VoxelPaletteTarget.html" title="Revisioned Voxel CubeType palette with face-material Inspector." alt="eve::voxel_editing::VoxelPaletteTarget" shape="rect" coords="369,1512,728,1536"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1a2687f093acd0ca7f4f93af7ff93090" id="r_a1a2687f093acd0ca7f4f93af7ff93090"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a1a2687f093acd0ca7f4f93af7ff93090">~IPropertyProvider</a> ()=default</td></tr>
+<tr class="separator:a1a2687f093acd0ca7f4f93af7ff93090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aa963e389bf3586ffa808670142c379" id="r_a5aa963e389bf3586ffa808670142c379"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a5aa963e389bf3586ffa808670142c379">currentRevision</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection) const</td></tr>
+<tr class="separator:a5aa963e389bf3586ffa808670142c379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad2055c613e332305f14ecfd7c3ece44" id="r_aad2055c613e332305f14ecfd7c3ece44"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aad2055c613e332305f14ecfd7c3ece44">schema</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection) const =0</td></tr>
+<tr class="separator:aad2055c613e332305f14ecfd7c3ece44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a416f8e8d2ee0880822430acea12f55d8" id="r_a416f8e8d2ee0880822430acea12f55d8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a416f8e8d2ee0880822430acea12f55d8">read</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const =0</td></tr>
+<tr class="separator:a416f8e8d2ee0880822430acea12f55d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37fd27faadd63ce4dd990ff525b10cc5" id="r_a37fd27faadd63ce4dd990ff525b10cc5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a37fd27faadd63ce4dd990ff525b10cc5">makeSet</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> mode) const =0</td></tr>
+<tr class="separator:a37fd27faadd63ce4dd990ff525b10cc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6175bdd491af083643d6cac008e99851" id="r_a6175bdd491af083643d6cac008e99851"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a6175bdd491af083643d6cac008e99851">makeReset</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const =0</td></tr>
+<tr class="separator:a6175bdd491af083643d6cac008e99851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aa07e163a9dafdd187f5e74a2208192e5" id="r_aa07e163a9dafdd187f5e74a2208192e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:aa07e163a9dafdd187f5e74a2208192e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity for generic property editing.  <br /></td></tr>
+<tr class="separator:aa07e163a9dafdd187f5e74a2208192e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-independent property access for an immutable selection snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00117">117</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1a2687f093acd0ca7f4f93af7ff93090" name="a1a2687f093acd0ca7f4f93af7ff93090"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a2687f093acd0ca7f4f93af7ff93090">&#9670;&#160;</a></span>~IPropertyProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::editing::IPropertyProvider::~IPropertyProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a5aa963e389bf3586ffa808670142c379" name="a5aa963e389bf3586ffa808670142c379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aa963e389bf3586ffa808670142c379">&#9670;&#160;</a></span>currentRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt; eve::editing::IPropertyProvider::currentRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>被 <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a435e60ba531bacc07689d81ea412db19">eve::avatar_editing::AvatarDocumentTarget</a>, <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#afb3b972cb4a22b2cde69687c1f65731f">eve::biome_editing::BiomeDocumentTarget</a>, <a class="el" href="classeve_1_1hd2d__editing_1_1Hd2dDocumentTarget.html#a52c3e11c783510c8baebad9eb28c7f45">eve::hd2d_editing::Hd2dDocumentTarget</a>, <a class="el" href="classeve_1_1input__editing_1_1InputMapTarget.html#aea4eea8ff94cab501d6e78aae87aa268">eve::input_editing::InputMapTarget</a>, <a class="el" href="classeve_1_1procgen__editing_1_1TextureRecipeTarget.html#ae7cbe478da392d0c6fbdc1c6f7361c16">eve::procgen_editing::TextureRecipeTarget</a>, <a class="el" href="classeve_1_1sceneloader__editing_1_1SceneImportTarget.html#a34df73bc5af6d0c8b078a9532bfe2b28">eve::sceneloader_editing::SceneImportTarget</a>, <a class="el" href="classeve_1_1voxel__editing_1_1VoxelPaletteTarget.html#a19aec67f926be71ae2a7b92db54bb9d2">eve::voxel_editing::VoxelPaletteTarget</a>, <a class="el" href="classeve_1_1editor_1_1ActionTimelineTarget.html#ac3822f9b8de5df3d576d413a870a42bf">eve::editor::ActionTimelineTarget</a>, <a class="el" href="classeve_1_1audio__editing_1_1AudioSourceTarget.html#a75e115d4610d00234ad97826f47e69c6">eve::audio_editing::AudioSourceTarget</a>, <a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a8e8f552f5bf5191fc6289efa0f4f94e3">eve::camera_editing::CameraDocumentTarget</a>, <a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a19779a1356b42d8d86ebf6daed08c47f">eve::decal_editing::DecalDocumentTarget</a>, <a class="el" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#aebf9ff6aecbe19ffaf54691df5b0ec0d">eve::definitions_editing::DefinitionSchemaFormTarget</a>, <a class="el" href="classeve_1_1editor_1_1ProjectSettingsTarget.html#a677d268b07c6b48a609db7824a4c9f2e">eve::editor::ProjectSettingsTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1FluidSimulationTarget.html#a6d3339f219c6d72e31edf0c3bca74d51">eve::fluids_editing::FluidSimulationTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html#a728d0ffbfeff784d5ec9c9f1fca9d31f">eve::fluids_editing::SurfaceFluidTarget</a>, <a class="el" href="classeve_1_1housegen__editing_1_1HouseGenDocumentTarget.html#a96f1381099b6722442a4ebbfabda2dd3">eve::housegen_editing::HouseGenDocumentTarget</a>, <a class="el" href="classeve_1_1lighting__editing_1_1LightingPropertyTargetBase.html#aff1916575cfa68dd40053269da08e1b3">eve::lighting_editing::LightingPropertyTargetBase</a>, <a class="el" href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html#aaec4984aff3b518544defb3e641d93c3">eve::material_editing::MaterialDocumentTarget</a>, <a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a85b55a1d42d1199a9681d7f033a5496a">eve::physics_editing::PhysicsColliderTarget</a>, <a class="el" href="classeve_1_1physics__editing_1_1PhysicsJointTarget.html#a67337c175d571bdd756b3f65648fda5f">eve::physics_editing::PhysicsJointTarget</a>, <a class="el" href="classeve_1_1scene__editing_1_1SceneComponentPropertyBindings.html#ae4d52667b54e94d041e24b0d2581b889">eve::scene_editing::SceneComponentPropertyBindings</a>, <a class="el" href="classeve_1_1scene__editing_1_1ScenePropertyProvider.html#a01fbc99d891a8e9927f7e6789be6ac23">eve::scene_editing::ScenePropertyProvider</a>, <a class="el" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#a402ad92cc0b8f718dab7c11395d0029e">eve::spritestack_editing::SpriteStackDocumentTarget</a>, <a class="el" href="classeve_1_1stylize__editing_1_1MeshVfxAssetTarget.html#ac5f0c59cd78e2241c44c28ca7ab8d7d6">eve::stylize_editing::MeshVfxAssetTarget</a>, <a class="el" href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#ac97246ab14beedb5646bfe518442517e">eve::stylize_editing::StylizeRecipeTarget</a>, <a class="el" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#aa92b2c16f254d80af58ca04bc40bb428">eve::ui_editing::UiDocumentTarget</a> , 以及 <a class="el" href="classeve_1_1virtualgeometry__editing_1_1VirtualGeometryDocumentTarget.html#a9b8477c62a991b78637a11e172bc5ff2">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget</a> 重载.</p>
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00122">122</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="aa07e163a9dafdd187f5e74a2208192e5" name="aa07e163a9dafdd187f5e74a2208192e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa07e163a9dafdd187f5e74a2208192e5">&#9670;&#160;</a></span>editingCapabilityId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> eve::editing::IPropertyProvider::editingCapabilityId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable capability identity for generic property editing. </p>
+
+<p class="definition">在文件 <a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a> 第 <a class="el" href="EditingProperty_8h_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarTarget_8cpp_source.html#l00139">eve::avatar_editing::AvatarDocumentTarget::describe()</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00039">eve::material_editing::MaterialDocumentTarget::describe()</a>, <a class="el" href="AvatarTarget_8cpp_source.html#l00146">eve::avatar_editing::AvatarDocumentTarget::queryCapability()</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00049">eve::material_editing::MaterialDocumentTarget::queryCapability()</a> , 以及 <a class="el" href="MaterialEditingCommands_8cpp_source.html#l00035">eve::material_editing::registerEditingCommands()</a>.</p>
+
+</div>
+</div>
+<a id="a6175bdd491af083643d6cac008e99851" name="a6175bdd491af083643d6cac008e99851"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6175bdd491af083643d6cac008e99851">&#9670;&#160;</a></span>makeReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::editing::IPropertyProvider::makeReset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#abed6856e3dd5914407bf3e517e8d637a">eve::avatar_editing::AvatarDocumentTarget</a>, <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#afc1058f4bfd17cdd9dcfce8276f68d5f">eve::biome_editing::BiomeDocumentTarget</a>, <a class="el" href="classeve_1_1hd2d__editing_1_1Hd2dDocumentTarget.html#a7ddd440cf300633511e2421b811627d8">eve::hd2d_editing::Hd2dDocumentTarget</a>, <a class="el" href="classeve_1_1input__editing_1_1InputMapTarget.html#a22a25de1a055d9f47270812f914363f1">eve::input_editing::InputMapTarget</a>, <a class="el" href="classeve_1_1procgen__editing_1_1TextureRecipeTarget.html#ac59e45148398cef5a282efec3d6a8e36">eve::procgen_editing::TextureRecipeTarget</a>, <a class="el" href="classeve_1_1sceneloader__editing_1_1SceneImportTarget.html#a4e1d18fd6b392b0ef9681b13a4de66f4">eve::sceneloader_editing::SceneImportTarget</a>, <a class="el" href="classeve_1_1voxel__editing_1_1VoxelPaletteTarget.html#ab7bbb29bb373aa3f105520ca11384022">eve::voxel_editing::VoxelPaletteTarget</a>, <a class="el" href="classeve_1_1editor_1_1ActionTimelineTarget.html#adb3a96d8e6b690795b68e503542dab13">eve::editor::ActionTimelineTarget</a>, <a class="el" href="classeve_1_1audio__editing_1_1AudioSourceTarget.html#a0e8f12b44733e996937dd78a093e2f02">eve::audio_editing::AudioSourceTarget</a>, <a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#a85cf8eeb4fe884ad8dc2e6608cfef682">eve::camera_editing::CameraDocumentTarget</a>, <a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a7449feae1b03dc8401edca9f40903d64">eve::decal_editing::DecalDocumentTarget</a>, <a class="el" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#affa1c1ace2a95b3b611284373b49c2a4">eve::definitions_editing::DefinitionSchemaFormTarget</a>, <a class="el" href="classeve_1_1editor_1_1ProjectSettingsTarget.html#a48e599bb7d7ab9f0ee82be1a298f9d9d">eve::editor::ProjectSettingsTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1FluidSimulationTarget.html#a0c05a93ec3629dbefbf3458767b4ae36">eve::fluids_editing::FluidSimulationTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html#a5e44c6030318fae1d12e8ec616092fde">eve::fluids_editing::SurfaceFluidTarget</a>, <a class="el" href="classeve_1_1housegen__editing_1_1HouseGenDocumentTarget.html#af1728b8f179d5622fd95a4a1f3c53963">eve::housegen_editing::HouseGenDocumentTarget</a>, <a class="el" href="classeve_1_1lighting__editing_1_1LightingPropertyTargetBase.html#af9c9646aa334177b757d9a4f9c916b68">eve::lighting_editing::LightingPropertyTargetBase</a>, <a class="el" href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html#afd2b147e3d969a7617f1a3bd937e45e2">eve::material_editing::MaterialDocumentTarget</a>, <a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a751558444b876ab1c15476db7d799cd3">eve::physics_editing::PhysicsColliderTarget</a>, <a class="el" href="classeve_1_1physics__editing_1_1PhysicsJointTarget.html#aefb37731b6214677ae98830be0479f24">eve::physics_editing::PhysicsJointTarget</a>, <a class="el" href="classeve_1_1scene__editing_1_1SceneComponentPropertyBindings.html#acbb4b3e9ccef2e4777c1800d6427653b">eve::scene_editing::SceneComponentPropertyBindings</a>, <a class="el" href="classeve_1_1scene__editing_1_1ScenePropertyProvider.html#a0c2ff41d8f73033dc3c2b2db320057f4">eve::scene_editing::ScenePropertyProvider</a>, <a class="el" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#af9ba1c595756b116abdca56f65b3b843">eve::spritestack_editing::SpriteStackDocumentTarget</a>, <a class="el" href="classeve_1_1stylize__editing_1_1MeshVfxAssetTarget.html#acbf34f017418392d65494bd1fb9ed499">eve::stylize_editing::MeshVfxAssetTarget</a>, <a class="el" href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#aab7f1b082c9d91cbe0b72d56dfc0fe0b">eve::stylize_editing::StylizeRecipeTarget</a>, <a class="el" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a847c027e43f6cb16effb556c4d470586">eve::ui_editing::UiDocumentTarget</a> , 以及 <a class="el" href="classeve_1_1virtualgeometry__editing_1_1VirtualGeometryDocumentTarget.html#abb0e345163b5e1b5fa29119ec2ffaaa5">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a37fd27faadd63ce4dd990ff525b10cc5" name="a37fd27faadd63ce4dd990ff525b10cc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37fd27faadd63ce4dd990ff525b10cc5">&#9670;&#160;</a></span>makeSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::editing::IPropertyProvider::makeSet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a6b891fd614cbbf659a6e507e9e94797b">eve::avatar_editing::AvatarDocumentTarget</a>, <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a01b27ff0a36f284e14cd26cc3e0f2069">eve::biome_editing::BiomeDocumentTarget</a>, <a class="el" href="classeve_1_1hd2d__editing_1_1Hd2dDocumentTarget.html#a9a68095d65a3553ef2d2a7b21112e21b">eve::hd2d_editing::Hd2dDocumentTarget</a>, <a class="el" href="classeve_1_1input__editing_1_1InputMapTarget.html#aeed85a0d6efae3d9f0cc007bc8053bf4">eve::input_editing::InputMapTarget</a>, <a class="el" href="classeve_1_1procgen__editing_1_1TextureRecipeTarget.html#a257baea2392a034785bb017d80559f1c">eve::procgen_editing::TextureRecipeTarget</a>, <a class="el" href="classeve_1_1sceneloader__editing_1_1SceneImportTarget.html#af51b5ddca8643bc38dba71be0e181a3c">eve::sceneloader_editing::SceneImportTarget</a>, <a class="el" href="classeve_1_1voxel__editing_1_1VoxelPaletteTarget.html#a302b9f7e6d0ac69813d79ea7fb35292c">eve::voxel_editing::VoxelPaletteTarget</a>, <a class="el" href="classeve_1_1editor_1_1ActionTimelineTarget.html#aa03e8b27566c09d429ebf545aaef8f10">eve::editor::ActionTimelineTarget</a>, <a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#ad59cdb3b83fceaff76b1392ffb465323">eve::camera_editing::CameraDocumentTarget</a>, <a class="el" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae685ff09412a413f625d051bac75011c">eve::definitions_editing::DefinitionSchemaFormTarget</a>, <a class="el" href="classeve_1_1editor_1_1ProjectSettingsTarget.html#a1f3e7a155a101bb8d9b5f6ea28c63abd">eve::editor::ProjectSettingsTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1FluidSimulationTarget.html#a40e094603dc1d979cdc053c74f0f3788">eve::fluids_editing::FluidSimulationTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html#a26f7637a96e19b093c6394ac3a230d8c">eve::fluids_editing::SurfaceFluidTarget</a>, <a class="el" href="classeve_1_1housegen__editing_1_1HouseGenDocumentTarget.html#ac58d1fe380f49e9bcf0e1a7e1c3d5a78">eve::housegen_editing::HouseGenDocumentTarget</a>, <a class="el" href="classeve_1_1lighting__editing_1_1LightingPropertyTargetBase.html#a267bc6dbb9a9921c81277ff540c40f6f">eve::lighting_editing::LightingPropertyTargetBase</a> , 以及 <a class="el" href="classeve_1_1virtualgeometry__editing_1_1VirtualGeometryDocumentTarget.html#a3edcd55df4206e33c2c2cbd538632f32">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorPropertyModel_8cpp_source.html#l00143">eve::editor::EditorPropertyModel::write()</a>.</p>
+
+</div>
+</div>
+<a id="a416f8e8d2ee0880822430acea12f55d8" name="a416f8e8d2ee0880822430acea12f55d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a416f8e8d2ee0880822430acea12f55d8">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">PropertyReadResult</a> eve::editing::IPropertyProvider::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a8909fb6832abf4aef7f0c605535669d4">eve::avatar_editing::AvatarDocumentTarget</a>, <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#a7e6029c9956113ed7b7a6b165aada59a">eve::biome_editing::BiomeDocumentTarget</a>, <a class="el" href="classeve_1_1hd2d__editing_1_1Hd2dDocumentTarget.html#abbc0d742670e07d34790c6fc2032b96c">eve::hd2d_editing::Hd2dDocumentTarget</a>, <a class="el" href="classeve_1_1input__editing_1_1InputMapTarget.html#a90f858accfb46a0618797953186bce4f">eve::input_editing::InputMapTarget</a>, <a class="el" href="classeve_1_1procgen__editing_1_1TextureRecipeTarget.html#a4c7ccfde33e971a963e3e800d06b7d1f">eve::procgen_editing::TextureRecipeTarget</a>, <a class="el" href="classeve_1_1sceneloader__editing_1_1SceneImportTarget.html#adfb1b98ebad5135ecbf2398d926ebffe">eve::sceneloader_editing::SceneImportTarget</a>, <a class="el" href="classeve_1_1voxel__editing_1_1VoxelPaletteTarget.html#a2c9ed14eff0a1d423a9724875b8e8fc3">eve::voxel_editing::VoxelPaletteTarget</a>, <a class="el" href="classeve_1_1editor_1_1ActionTimelineTarget.html#a57417b615b2dab4132c36527b846ec52">eve::editor::ActionTimelineTarget</a>, <a class="el" href="classeve_1_1audio__editing_1_1AudioSourceTarget.html#a12095f08c365062a9df45ce55b7300cf">eve::audio_editing::AudioSourceTarget</a>, <a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#ad965b6fde6a3b5e97700073b20e6d478">eve::camera_editing::CameraDocumentTarget</a>, <a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a50cf7560a83bcb19ac350fc723cfd7fe">eve::decal_editing::DecalDocumentTarget</a>, <a class="el" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#abcc9be9ea192395354cf34435758024f">eve::definitions_editing::DefinitionSchemaFormTarget</a>, <a class="el" href="classeve_1_1editor_1_1ProjectSettingsTarget.html#ae27c3e529185520fc92d703ca371ab07">eve::editor::ProjectSettingsTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1FluidSimulationTarget.html#ab30b633fa5a15440ee2f4c35abb12f78">eve::fluids_editing::FluidSimulationTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html#a011d79306a8e3f294e6b8dd92dc1ae40">eve::fluids_editing::SurfaceFluidTarget</a>, <a class="el" href="classeve_1_1housegen__editing_1_1HouseGenDocumentTarget.html#ab1e7baa12e26d0fea5f106f7d94385d5">eve::housegen_editing::HouseGenDocumentTarget</a>, <a class="el" href="classeve_1_1lighting__editing_1_1LightingPropertyTargetBase.html#a6742dd87c377581e0eae086c0b41d28a">eve::lighting_editing::LightingPropertyTargetBase</a>, <a class="el" href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html#a901b90fcac7fb6448781b899023deac5">eve::material_editing::MaterialDocumentTarget</a>, <a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a1757942efacd13aa79ff590eaab4f398">eve::physics_editing::PhysicsColliderTarget</a>, <a class="el" href="classeve_1_1physics__editing_1_1PhysicsJointTarget.html#a1bfe88a6e97cee18f15dddc50985e0b1">eve::physics_editing::PhysicsJointTarget</a>, <a class="el" href="classeve_1_1scene__editing_1_1SceneComponentPropertyBindings.html#ac9a8fc6a663709a72c003eaf748eb708">eve::scene_editing::SceneComponentPropertyBindings</a>, <a class="el" href="classeve_1_1scene__editing_1_1ScenePropertyProvider.html#ae4b51aec88b4c49ee97b07d2e78bc005">eve::scene_editing::ScenePropertyProvider</a>, <a class="el" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#a4dff9af22b077d6b3ab8182f8d0aac63">eve::spritestack_editing::SpriteStackDocumentTarget</a>, <a class="el" href="classeve_1_1stylize__editing_1_1MeshVfxAssetTarget.html#a10db2caf812c28d6b090e7cfadc9f98a">eve::stylize_editing::MeshVfxAssetTarget</a>, <a class="el" href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#a7c0876682cbbc1c470b898d269e62403">eve::stylize_editing::StylizeRecipeTarget</a>, <a class="el" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a02d0e6fdfaf533349d94cde91c3c11a0">eve::ui_editing::UiDocumentTarget</a> , 以及 <a class="el" href="classeve_1_1virtualgeometry__editing_1_1VirtualGeometryDocumentTarget.html#a04863f8a644d19ea98bd3c88ddb2ac11">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget</a> 内被实现.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorPropertyPresenter_8cpp_source.html#l00042">eve::editor::DeveloperPropertyPresenter::present()</a>, <a class="el" href="EditorPropertyPresenter_8cpp_source.html#l00062">eve::editor::RuntimePropertyPresenter::present()</a> , 以及 <a class="el" href="EditorPropertyModel_8cpp_source.html#l00406">eve::editor::EditorPropertyModel::refresh()</a>.</p>
+
+</div>
+</div>
+<a id="aad2055c613e332305f14ecfd7c3ece44" name="aad2055c613e332305f14ecfd7c3ece44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad2055c613e332305f14ecfd7c3ece44">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">PropertySchema</a> eve::editing::IPropertyProvider::schema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>在 <a class="el" href="classeve_1_1avatar__editing_1_1AvatarDocumentTarget.html#a6accfe49a9587efc986bfc3c9ca511e6">eve::avatar_editing::AvatarDocumentTarget</a>, <a class="el" href="classeve_1_1biome__editing_1_1BiomeDocumentTarget.html#aa029dcf4434c2779bbd4418b17ff5aa9">eve::biome_editing::BiomeDocumentTarget</a>, <a class="el" href="classeve_1_1hd2d__editing_1_1Hd2dDocumentTarget.html#a8210efa7239971d3c26bd88dc547d284">eve::hd2d_editing::Hd2dDocumentTarget</a>, <a class="el" href="classeve_1_1input__editing_1_1InputMapTarget.html#a9c1c98997c4b4b8bbcb36e10eb22ed0d">eve::input_editing::InputMapTarget</a>, <a class="el" href="classeve_1_1procgen__editing_1_1TextureRecipeTarget.html#a0c0b4cacc713cdeafbf7c49641669ce5">eve::procgen_editing::TextureRecipeTarget</a>, <a class="el" href="classeve_1_1sceneloader__editing_1_1SceneImportTarget.html#a1facbe4bcd1b35b0d5cd7bdc5a271fbb">eve::sceneloader_editing::SceneImportTarget</a>, <a class="el" href="classeve_1_1voxel__editing_1_1VoxelPaletteTarget.html#ad4b577554066031a906bb78bf805d911">eve::voxel_editing::VoxelPaletteTarget</a>, <a class="el" href="classeve_1_1editor_1_1ActionTimelineTarget.html#af7a28afc6fac4e24f90a15671add1ec3">eve::editor::ActionTimelineTarget</a>, <a class="el" href="classeve_1_1audio__editing_1_1AudioSourceTarget.html#a798fc5ca446191d812f581ff814c1b14">eve::audio_editing::AudioSourceTarget</a>, <a class="el" href="classeve_1_1camera__editing_1_1CameraDocumentTarget.html#ae103dc1492d0f387766078c52de226d4">eve::camera_editing::CameraDocumentTarget</a>, <a class="el" href="classeve_1_1decal__editing_1_1DecalDocumentTarget.html#a3b036de777967d63e62dd83f1b78412f">eve::decal_editing::DecalDocumentTarget</a>, <a class="el" href="classeve_1_1definitions__editing_1_1DefinitionSchemaFormTarget.html#ae5253927005da04bb10b17b188b3c947">eve::definitions_editing::DefinitionSchemaFormTarget</a>, <a class="el" href="classeve_1_1editor_1_1ProjectSettingsTarget.html#a7a0742d8e9bb170f4f94173b8a023138">eve::editor::ProjectSettingsTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1FluidSimulationTarget.html#aa58cc056fab02eb4a2883589b943514d">eve::fluids_editing::FluidSimulationTarget</a>, <a class="el" href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html#a325e8d6c45dfabfcd457e7c48bb3cb5c">eve::fluids_editing::SurfaceFluidTarget</a>, <a class="el" href="classeve_1_1housegen__editing_1_1HouseGenDocumentTarget.html#a98293c55f8676f09d538451803b70483">eve::housegen_editing::HouseGenDocumentTarget</a>, <a class="el" href="classeve_1_1lighting__editing_1_1LightingPropertyTargetBase.html#a004a08621db1fd7a8fd4b45312f47100">eve::lighting_editing::LightingPropertyTargetBase</a>, <a class="el" href="classeve_1_1material__editing_1_1MaterialDocumentTarget.html#a532a157df7f3ca3d1201ac4a3c315b47">eve::material_editing::MaterialDocumentTarget</a>, <a class="el" href="classeve_1_1physics__editing_1_1PhysicsColliderTarget.html#a043e4bd921d185d1135600d6c7029163">eve::physics_editing::PhysicsColliderTarget</a>, <a class="el" href="classeve_1_1physics__editing_1_1PhysicsJointTarget.html#a758b7f7bb5153723d71a20510259f1be">eve::physics_editing::PhysicsJointTarget</a>, <a class="el" href="classeve_1_1scene__editing_1_1SceneComponentPropertyBindings.html#a63863cbc15b689da39b7b73df52df9c7">eve::scene_editing::SceneComponentPropertyBindings</a>, <a class="el" href="classeve_1_1scene__editing_1_1ScenePropertyProvider.html#a564cff2b33d463629947079f10a6f44d">eve::scene_editing::ScenePropertyProvider</a>, <a class="el" href="classeve_1_1spritestack__editing_1_1SpriteStackDocumentTarget.html#ae1f096df3c8e403a2863a63474730c43">eve::spritestack_editing::SpriteStackDocumentTarget</a>, <a class="el" href="classeve_1_1stylize__editing_1_1MeshVfxAssetTarget.html#a02b3b7d9d3b57442e122497f97e6b2a0">eve::stylize_editing::MeshVfxAssetTarget</a>, <a class="el" href="classeve_1_1stylize__editing_1_1StylizeRecipeTarget.html#aac2f43fd06dc33ad8c75254d0b412e57">eve::stylize_editing::StylizeRecipeTarget</a>, <a class="el" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a250af6402f4a4d82d8f513dc9068ecb6">eve::ui_editing::UiDocumentTarget</a> , 以及 <a class="el" href="classeve_1_1virtualgeometry__editing_1_1VirtualGeometryDocumentTarget.html#ad361121592f2fec5ad8050566a20bfd6">eve::virtualgeometry_editing::VirtualGeometryDocumentTarget</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editing/<a class="el" href="EditingProperty_8h_source.html">EditingProperty.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

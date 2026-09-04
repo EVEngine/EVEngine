@@ -1,0 +1,1090 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::map_editing::MapDocumentTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map__editing.html">map_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html">MapDocumentTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1map__editing_1_1MapDocumentTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::map_editing::MapDocumentTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-neutral map structure document with reversible domain operations.  
+ <a href="classeve_1_1map__editing_1_1MapDocumentTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MapDocument_8h_source.html">MapDocument.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::map_editing::MapDocumentTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1map__editing_1_1MapDocumentTarget.png" usemap="#eve::map_5Fediting::MapDocumentTarget_map" alt=""/>
+  <map id="eve::map_5Fediting::MapDocumentTarget_map" name="eve::map_5Fediting::MapDocumentTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,261,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="271,56,532,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="542,56,803,80"/>
+<area href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html" title="Layer, spline and placement editing capability for map presenters." alt="eve::map_editing::IMapStructureEditTarget" shape="rect" coords="813,56,1074,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="271,0,532,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af010fd51f9ebbc4b2f21270acbc6de57" id="r_af010fd51f9ebbc4b2f21270acbc6de57"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#af010fd51f9ebbc4b2f21270acbc6de57">MapDocumentTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="separator:af010fd51f9ebbc4b2f21270acbc6de57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2828346b0f6ca9ebee7a6dbc3db76c9" id="r_af2828346b0f6ca9ebee7a6dbc3db76c9"><td class="memItemLeft" align="right" valign="top">TargetId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#af2828346b0f6ca9ebee7a6dbc3db76c9">targetId</a> () const override</td></tr>
+<tr class="separator:af2828346b0f6ca9ebee7a6dbc3db76c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbac998fdbef4e360bc6f2191ebdccce" id="r_afbac998fdbef4e360bc6f2191ebdccce"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#afbac998fdbef4e360bc6f2191ebdccce">revision</a> () const override</td></tr>
+<tr class="separator:afbac998fdbef4e360bc6f2191ebdccce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47a38d0c17f6ef5474030a2d5ef229ee" id="r_a47a38d0c17f6ef5474030a2d5ef229ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a47a38d0c17f6ef5474030a2d5ef229ee">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:a47a38d0c17f6ef5474030a2d5ef229ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfe7e797b17b1af286f5a357fe659bba" id="r_adfe7e797b17b1af286f5a357fe659bba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#adfe7e797b17b1af286f5a357fe659bba">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:adfe7e797b17b1af286f5a357fe659bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78fc595d090e00b3c49e44df0ab48c37" id="r_a78fc595d090e00b3c49e44df0ab48c37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a78fc595d090e00b3c49e44df0ab48c37">describe</a> () const override</td></tr>
+<tr class="memdesc:a78fc595d090e00b3c49e44df0ab48c37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:a78fc595d090e00b3c49e44df0ab48c37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2497d76924427836e1fedeb10f44ed7" id="r_ab2497d76924427836e1fedeb10f44ed7"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#ab2497d76924427836e1fedeb10f44ed7">queryCapability</a> (const CapabilityId &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="memdesc:ab2497d76924427836e1fedeb10f44ed7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional target capability.  <br /></td></tr>
+<tr class="separator:ab2497d76924427836e1fedeb10f44ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f1fedb7ce0e2ad24575d609aa348ba9" id="r_a2f1fedb7ce0e2ad24575d609aa348ba9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a2f1fedb7ce0e2ad24575d609aa348ba9">applyDomainOperation</a> (const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;operation) override</td></tr>
+<tr class="memdesc:a2f1fedb7ce0e2ad24575d609aa348ba9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a2f1fedb7ce0e2ad24575d609aa348ba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a403675f0e8df8d15e2e38cc1625f48bd" id="r_a403675f0e8df8d15e2e38cc1625f48bd"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a403675f0e8df8d15e2e38cc1625f48bd">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:a403675f0e8df8d15e2e38cc1625f48bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:a403675f0e8df8d15e2e38cc1625f48bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b4c90f4c7bc0eb77bf91408ac977028" id="r_a4b4c90f4c7bc0eb77bf91408ac977028"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a4b4c90f4c7bc0eb77bf91408ac977028">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:a4b4c90f4c7bc0eb77bf91408ac977028"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:a4b4c90f4c7bc0eb77bf91408ac977028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b733e654434d4f4b43f678e7ad97ef7" id="r_a8b733e654434d4f4b43f678e7ad97ef7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1map__editing_1_1MapLayerRecord.html">MapLayerRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a8b733e654434d4f4b43f678e7ad97ef7">mapLayers</a> () const override</td></tr>
+<tr class="memdesc:a8b733e654434d4f4b43f678e7ad97ef7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate layers in visual order.  <br /></td></tr>
+<tr class="separator:a8b733e654434d4f4b43f678e7ad97ef7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3504b5cfbf07923a60cb71550be1a40" id="r_ae3504b5cfbf07923a60cb71550be1a40"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1map__editing_1_1MapRoadRecord.html">MapRoadRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#ae3504b5cfbf07923a60cb71550be1a40">mapRoads</a> () const override</td></tr>
+<tr class="memdesc:ae3504b5cfbf07923a60cb71550be1a40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate roads in stable id order.  <br /></td></tr>
+<tr class="separator:ae3504b5cfbf07923a60cb71550be1a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a4a0eb083d2606d3876d76052124a0e" id="r_a7a4a0eb083d2606d3876d76052124a0e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1map__editing_1_1MapPlacementRecord.html">MapPlacementRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a7a4a0eb083d2606d3876d76052124a0e">mapPlacements</a> () const override</td></tr>
+<tr class="memdesc:a7a4a0eb083d2606d3876d76052124a0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerate placements in stable id order.  <br /></td></tr>
+<tr class="separator:a7a4a0eb083d2606d3876d76052124a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c5d0558eb932fe8c8dea8c6311b0dba" id="r_a9c5d0558eb932fe8c8dea8c6311b0dba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a9c5d0558eb932fe8c8dea8c6311b0dba">makeCreateLayer</a> (const <a class="el" href="structeve_1_1map__editing_1_1MapLayerRecord.html">MapLayerRecord</a> &amp;<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) const override</td></tr>
+<tr class="memdesc:a9c5d0558eb932fe8c8dea8c6311b0dba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible layer creation.  <br /></td></tr>
+<tr class="separator:a9c5d0558eb932fe8c8dea8c6311b0dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44f8b679f69387438b731eb3d61ecf07" id="r_a44f8b679f69387438b731eb3d61ecf07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a44f8b679f69387438b731eb3d61ecf07">makeDeleteLayer</a> (const StableId &amp;<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) const override</td></tr>
+<tr class="memdesc:a44f8b679f69387438b731eb3d61ecf07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan deletion of an empty layer.  <br /></td></tr>
+<tr class="separator:a44f8b679f69387438b731eb3d61ecf07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace85cbc7842a9351dfc4eb0ac73a95a2" id="r_ace85cbc7842a9351dfc4eb0ac73a95a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#ace85cbc7842a9351dfc4eb0ac73a95a2">makeSetLayer</a> (const <a class="el" href="structeve_1_1map__editing_1_1MapLayerRecord.html">MapLayerRecord</a> &amp;<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) const override</td></tr>
+<tr class="memdesc:ace85cbc7842a9351dfc4eb0ac73a95a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible layer metadata replacement.  <br /></td></tr>
+<tr class="separator:ace85cbc7842a9351dfc4eb0ac73a95a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac68a89a9c5faf2a82e2c91e97f8ee5d6" id="r_ac68a89a9c5faf2a82e2c91e97f8ee5d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#ac68a89a9c5faf2a82e2c91e97f8ee5d6">makeSetRoad</a> (const <a class="el" href="structeve_1_1map__editing_1_1MapRoadRecord.html">MapRoadRecord</a> &amp;road) const override</td></tr>
+<tr class="memdesc:ac68a89a9c5faf2a82e2c91e97f8ee5d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible road creation or replacement.  <br /></td></tr>
+<tr class="separator:ac68a89a9c5faf2a82e2c91e97f8ee5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43af120fc527da3f39c8f6d027bee0f1" id="r_a43af120fc527da3f39c8f6d027bee0f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a43af120fc527da3f39c8f6d027bee0f1">makeDeleteRoad</a> (const StableId &amp;road) const override</td></tr>
+<tr class="memdesc:a43af120fc527da3f39c8f6d027bee0f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible road deletion.  <br /></td></tr>
+<tr class="separator:a43af120fc527da3f39c8f6d027bee0f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedcdd102d350084d8584b51655c21248" id="r_aedcdd102d350084d8584b51655c21248"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#aedcdd102d350084d8584b51655c21248">makeSetPlacement</a> (const <a class="el" href="structeve_1_1map__editing_1_1MapPlacementRecord.html">MapPlacementRecord</a> &amp;placement) const override</td></tr>
+<tr class="memdesc:aedcdd102d350084d8584b51655c21248"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible placement creation or replacement.  <br /></td></tr>
+<tr class="separator:aedcdd102d350084d8584b51655c21248"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1468869d32fcf701156120096cac1acd" id="r_a1468869d32fcf701156120096cac1acd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a1468869d32fcf701156120096cac1acd">makeDeletePlacement</a> (const StableId &amp;placement) const override</td></tr>
+<tr class="memdesc:a1468869d32fcf701156120096cac1acd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan reversible placement deletion.  <br /></td></tr>
+<tr class="separator:a1468869d32fcf701156120096cac1acd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98c18fb91582044523b10fa7be3bed6e" id="r_a98c18fb91582044523b10fa7be3bed6e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1map__editing.html#aa23099a7ed0280de4188f957063d8823">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a98c18fb91582044523b10fa7be3bed6e">validate</a> () const</td></tr>
+<tr class="memdesc:a98c18fb91582044523b10fa7be3bed6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate layers, spline geometry and placement references.  <br /></td></tr>
+<tr class="separator:a98c18fb91582044523b10fa7be3bed6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab48155d386af4551b2b637a1615349f8" id="r_ab48155d386af4551b2b637a1615349f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1map__editing_1_1MapRoadPreviewResult.html">MapRoadPreviewResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#ab48155d386af4551b2b637a1615349f8">previewRoad</a> (const StableId &amp;road, int triangleBudget=10000) const</td></tr>
+<tr class="memdesc:ab48155d386af4551b2b637a1615349f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a deterministic XZ road strip for viewport preview and budget diagnostics.  <br /></td></tr>
+<tr class="separator:ab48155d386af4551b2b637a1615349f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04ab6daa3ecca4fd110d17eb07acf549" id="r_a04ab6daa3ecca4fd110d17eb07acf549"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#a74da519cc6871a0156a9cef1bec12cff">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a04ab6daa3ecca4fd110d17eb07acf549">snapshotValue</a> () const</td></tr>
+<tr class="memdesc:a04ab6daa3ecca4fd110d17eb07acf549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture deterministic map structure data.  <br /></td></tr>
+<tr class="separator:a04ab6daa3ecca4fd110d17eb07acf549"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a344339c9afc2e3477df241fe95d952c1" id="r_a344339c9afc2e3477df241fe95d952c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1MapDocumentTarget.html#a344339c9afc2e3477df241fe95d952c1">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1map__editing.html#a74da519cc6871a0156a9cef1bec12cff">EditorValue</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a344339c9afc2e3477df241fe95d952c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically load schema-version-one map structure data.  <br /></td></tr>
+<tr class="separator:a344339c9afc2e3477df241fe95d952c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a3e202dd6b1ca3b75e726a90a82081653"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">queryCapability</a> (const <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>)</td></tr>
+<tr class="memdesc:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional stable capability.  <br /></td></tr>
+<tr class="separator:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html">eve::map_editing::IMapStructureEditTarget</a></td></tr>
+<tr class="memitem:a86ec1f92dedcbb23140c6d6a56326a0b inherit pub_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget" id="r_a86ec1f92dedcbb23140c6d6a56326a0b"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#a86ec1f92dedcbb23140c6d6a56326a0b">~IMapStructureEditTarget</a> ()=default</td></tr>
+<tr class="separator:a86ec1f92dedcbb23140c6d6a56326a0b inherit pub_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html">eve::map_editing::IMapStructureEditTarget</a></td></tr>
+<tr class="memitem:a9853576f0e5da44814d8ef67f50f7e55 inherit pub_static_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget" id="r_a9853576f0e5da44814d8ef67f50f7e55"><td class="memItemLeft" align="right" valign="top">static CapabilityId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#a9853576f0e5da44814d8ef67f50f7e55">editorCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a9853576f0e5da44814d8ef67f50f7e55 inherit pub_static_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability id for map structure operations.  <br /></td></tr>
+<tr class="separator:a9853576f0e5da44814d8ef67f50f7e55 inherit pub_static_methods_classeve_1_1map__editing_1_1IMapStructureEditTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-neutral map structure document with reversible domain operations. </p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8h_source.html">MapDocument.h</a> 第 <a class="el" href="MapDocument_8h_source.html#l00125">125</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="af010fd51f9ebbc4b2f21270acbc6de57" name="af010fd51f9ebbc4b2f21270acbc6de57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af010fd51f9ebbc4b2f21270acbc6de57">&#9670;&#160;</a></span>MapDocumentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map_editing::MapDocumentTarget::MapDocumentTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2f1fedb7ce0e2ad24575d609aa348ba9" name="a2f1fedb7ce0e2ad24575d609aa348ba9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f1fedb7ce0e2ad24575d609aa348ba9">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; void &gt; eve::map_editing::MapDocumentTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapDocument_8cpp_source.html#l00629">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="adfe7e797b17b1af286f5a357fe659bba" name="adfe7e797b17b1af286f5a357fe659bba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfe7e797b17b1af286f5a357fe659bba">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map_editing::MapDocumentTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8h_source.html">MapDocument.h</a> 第 <a class="el" href="MapDocument_8h_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a403675f0e8df8d15e2e38cc1625f48bd" name="a403675f0e8df8d15e2e38cc1625f48bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a403675f0e8df8d15e2e38cc1625f48bd">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; eve::map_editing::MapDocumentTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b4c90f4c7bc0eb77bf91408ac977028" name="a4b4c90f4c7bc0eb77bf91408ac977028"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b4c90f4c7bc0eb77bf91408ac977028">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; void &gt; eve::map_editing::MapDocumentTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a78fc595d090e00b3c49e44df0ab48c37" name="a78fc595d090e00b3c49e44df0ab48c37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78fc595d090e00b3c49e44df0ab48c37">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> eve::map_editing::MapDocumentTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00037">eve::editing::TargetDescriptor::capabilities</a>, <a class="el" href="MapDocument_8h_source.html#l00101">eve::map_editing::IMapStructureEditTarget::editorCapabilityId()</a>, <a class="el" href="EditableTarget_8h_source.html#l00033">eve::editing::TargetDescriptor::id</a>, <a class="el" href="EditableTarget_8h_source.html#l00035">eve::editing::TargetDescriptor::revision</a> , 以及 <a class="el" href="EditableTarget_8h_source.html#l00034">eve::editing::TargetDescriptor::type</a>.</p>
+
+</div>
+</div>
+<a id="a47a38d0c17f6ef5474030a2d5ef229ee" name="a47a38d0c17f6ef5474030a2d5ef229ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47a38d0c17f6ef5474030a2d5ef229ee">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> eve::map_editing::MapDocumentTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8h_source.html">MapDocument.h</a> 第 <a class="el" href="MapDocument_8h_source.html#l00133">133</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a344339c9afc2e3477df241fe95d952c1" name="a344339c9afc2e3477df241fe95d952c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a344339c9afc2e3477df241fe95d952c1">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; void &gt; eve::map_editing::MapDocumentTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1map__editing.html#a74da519cc6871a0156a9cef1bec12cff">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically load schema-version-one map structure data. </p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00629">629</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MapDocument_8cpp_source.html#l00200">applyDomainOperation()</a>, <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="MapDocument_8cpp_source.html#l00361">makeCreateLayer()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00458">makeSetPlacement()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00429">makeSetRoad()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<a id="a9c5d0558eb932fe8c8dea8c6311b0dba" name="a9c5d0558eb932fe8c8dea8c6311b0dba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c5d0558eb932fe8c8dea8c6311b0dba">&#9670;&#160;</a></span>makeCreateLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::map_editing::MapDocumentTarget::makeCreateLayer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map__editing_1_1MapLayerRecord.html">MapLayerRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan reversible layer creation. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#a60ed16fbda1caa8b724da1147be90b7b">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00361">361</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapDocument_8cpp_source.html#l00629">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a44f8b679f69387438b731eb3d61ecf07" name="a44f8b679f69387438b731eb3d61ecf07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44f8b679f69387438b731eb3d61ecf07">&#9670;&#160;</a></span>makeDeleteLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::map_editing::MapDocumentTarget::makeDeleteLayer </td>
+          <td>(</td>
+          <td class="paramtype">const StableId &amp;&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan deletion of an empty layer. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#acfe43dd46ca68188ad155244094f32b9">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a1468869d32fcf701156120096cac1acd" name="a1468869d32fcf701156120096cac1acd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1468869d32fcf701156120096cac1acd">&#9670;&#160;</a></span>makeDeletePlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::map_editing::MapDocumentTarget::makeDeletePlacement </td>
+          <td>(</td>
+          <td class="paramtype">const StableId &amp;&#160;</td>
+          <td class="paramname"><em>placement</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan reversible placement deletion. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#aec3724f4ab103a6e1196ed9a7c981b30">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00478">478</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43af120fc527da3f39c8f6d027bee0f1" name="a43af120fc527da3f39c8f6d027bee0f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43af120fc527da3f39c8f6d027bee0f1">&#9670;&#160;</a></span>makeDeleteRoad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::map_editing::MapDocumentTarget::makeDeleteRoad </td>
+          <td>(</td>
+          <td class="paramtype">const StableId &amp;&#160;</td>
+          <td class="paramname"><em>road</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan reversible road deletion. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#ab1dfc9c4e069ebd7cd56d768af4bcc64">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00448">448</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ace85cbc7842a9351dfc4eb0ac73a95a2" name="ace85cbc7842a9351dfc4eb0ac73a95a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace85cbc7842a9351dfc4eb0ac73a95a2">&#9670;&#160;</a></span>makeSetLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::map_editing::MapDocumentTarget::makeSetLayer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map__editing_1_1MapLayerRecord.html">MapLayerRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan reversible layer metadata replacement. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#a9452a17dbb0ab2afc129e090ed861819">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00400">400</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="aedcdd102d350084d8584b51655c21248" name="aedcdd102d350084d8584b51655c21248"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedcdd102d350084d8584b51655c21248">&#9670;&#160;</a></span>makeSetPlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::map_editing::MapDocumentTarget::makeSetPlacement </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map__editing_1_1MapPlacementRecord.html">MapPlacementRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>placement</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan reversible placement creation or replacement. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#a64e82c49d7aa4daf0af88e610c30190d">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00458">458</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MapDocument_8h_source.html#l00044">eve::map_editing::MapPlacementRecord::id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="MapDocument_8h_source.html#l00045">eve::map_editing::MapPlacementRecord::layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapDocument_8cpp_source.html#l00629">loadSnapshot()</a> , 以及 <a class="el" href="MapIntegration_8cpp_source.html#l00029">eve::map_editing::MapObjectImporter::plan()</a>.</p>
+
+</div>
+</div>
+<a id="ac68a89a9c5faf2a82e2c91e97f8ee5d6" name="ac68a89a9c5faf2a82e2c91e97f8ee5d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac68a89a9c5faf2a82e2c91e97f8ee5d6">&#9670;&#160;</a></span>makeSetRoad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#ac690e58553eb8861ffd84c580a59cead">EditorResult</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> &gt; eve::map_editing::MapDocumentTarget::makeSetRoad </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1map__editing_1_1MapRoadRecord.html">MapRoadRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>road</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Plan reversible road creation or replacement. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#ab62d98cfd824ccc3f591ca77d1f2fff8">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00429">429</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MapDocument_8h_source.html#l00034">eve::map_editing::MapRoadRecord::id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="MapDocument_8h_source.html#l00035">eve::map_editing::MapRoadRecord::layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapDocument_8cpp_source.html#l00629">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a8b733e654434d4f4b43f678e7ad97ef7" name="a8b733e654434d4f4b43f678e7ad97ef7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b733e654434d4f4b43f678e7ad97ef7">&#9670;&#160;</a></span>mapLayers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1map__editing_1_1MapLayerRecord.html">MapLayerRecord</a> &gt; eve::map_editing::MapDocumentTarget::mapLayers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enumerate layers in visual order. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#a783be267ee16dd7407f9f1a62c28d870">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00014">left</a> , 以及 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00016">right</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapDocument_8cpp_source.html#l00616">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="a7a4a0eb083d2606d3876d76052124a0e" name="a7a4a0eb083d2606d3876d76052124a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a4a0eb083d2606d3876d76052124a0e">&#9670;&#160;</a></span>mapPlacements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1map__editing_1_1MapPlacementRecord.html">MapPlacementRecord</a> &gt; eve::map_editing::MapDocumentTarget::mapPlacements </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enumerate placements in stable id order. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#af1708c6c4a5b0e0cc106363827400b23">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapIntegration_8cpp_source.html#l00029">eve::map_editing::MapObjectImporter::plan()</a> , 以及 <a class="el" href="MapDocument_8cpp_source.html#l00616">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="ae3504b5cfbf07923a60cb71550be1a40" name="ae3504b5cfbf07923a60cb71550be1a40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3504b5cfbf07923a60cb71550be1a40">&#9670;&#160;</a></span>mapRoads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1map__editing_1_1MapRoadRecord.html">MapRoadRecord</a> &gt; eve::map_editing::MapDocumentTarget::mapRoads </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enumerate roads in stable id order. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1map__editing_1_1IMapStructureEditTarget.html#a8287e4015623592a20cabe0b4be3e20e">eve::map_editing::IMapStructureEditTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00343">343</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapDocument_8cpp_source.html#l00616">snapshotValue()</a>.</p>
+
+</div>
+</div>
+<a id="ab48155d386af4551b2b637a1615349f8" name="ab48155d386af4551b2b637a1615349f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab48155d386af4551b2b637a1615349f8">&#9670;&#160;</a></span>previewRoad()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1map__editing_1_1MapRoadPreviewResult.html">MapRoadPreviewResult</a> eve::map_editing::MapDocumentTarget::previewRoad </td>
+          <td>(</td>
+          <td class="paramtype">const StableId &amp;&#160;</td>
+          <td class="paramname"><em>road</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>triangleBudget</em> = <code>10000</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a deterministic XZ road strip for viewport preview and budget diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00532">532</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MapDocument_8h_source.html#l00063">eve::map_editing::MapRoadPreviewResult::centerlineLength</a>, <a class="el" href="MapDocument_8h_source.html#l00038">eve::map_editing::MapRoadRecord::closed</a>, <a class="el" href="MapDocument_8h_source.html#l00065">eve::map_editing::MapRoadPreviewResult::diagnostics</a>, <a class="el" href="MapDocument_8h_source.html#l00061">eve::map_editing::MapRoadPreviewResult::documentRevision</a>, <a class="el" href="NinePatch_8cpp_source.html#l00021">first</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00043">halfWidth</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="EvpackGraphicsLoader_8cpp_source.html#l00031">indices</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="NinePatch_8cpp_source.html#l00022">last</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00094">length</a>, <a class="el" href="MapDocument_8h_source.html#l00037">eve::map_editing::MapRoadRecord::materialAsset</a>, <a class="el" href="MapDocument_8h_source.html#l00064">eve::map_editing::MapRoadPreviewResult::mesh</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="MapDocument_8h_source.html#l00039">eve::map_editing::MapRoadRecord::points</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="MapDocument_8h_source.html#l00062">eve::map_editing::MapRoadPreviewResult::road</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a>, <a class="el" href="MapDocument_8h_source.html#l00060">eve::map_editing::MapRoadPreviewResult::status</a>, <a class="el" href="Identity_8h_source.html#l00326">eve::UuidIdAdapter&lt; Tag &gt;::value()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00046">vertices</a>, <a class="el" href="MapDocument_8h_source.html#l00026">eve::map_editing::MapSplinePointRecord::x</a>, <a class="el" href="MapDocument_8h_source.html#l00027">eve::map_editing::MapSplinePointRecord::y</a> , 以及 <a class="el" href="MapDocument_8h_source.html#l00028">eve::map_editing::MapSplinePointRecord::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapIntegration_8cpp_source.html#l00008">eve::map_editing::MapRoadMeshPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="ab2497d76924427836e1fedeb10f44ed7" name="ab2497d76924427836e1fedeb10f44ed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2497d76924427836e1fedeb10f44ed7">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::map_editing::MapDocumentTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const CapabilityId &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query an optional target capability. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00068">eve::editing::IEditableTarget::capability()</a> , 以及 <a class="el" href="MapDocument_8h_source.html#l00101">eve::map_editing::IMapStructureEditTarget::editorCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="afbac998fdbef4e360bc6f2191ebdccce" name="afbac998fdbef4e360bc6f2191ebdccce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbac998fdbef4e360bc6f2191ebdccce">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::map_editing::MapDocumentTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8h_source.html">MapDocument.h</a> 第 <a class="el" href="MapDocument_8h_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapIntegration_8cpp_source.html#l00029">eve::map_editing::MapObjectImporter::plan()</a> , 以及 <a class="el" href="MapIntegration_8cpp_source.html#l00008">eve::map_editing::MapRoadMeshPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a04ab6daa3ecca4fd110d17eb07acf549" name="a04ab6daa3ecca4fd110d17eb07acf549"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04ab6daa3ecca4fd110d17eb07acf549">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1map__editing.html#a74da519cc6871a0156a9cef1bec12cff">EditorValue</a> eve::map_editing::MapDocumentTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture deterministic map structure data. </p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00616">616</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="MapDocument_8cpp_source.html#l00331">mapLayers()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00352">mapPlacements()</a> , 以及 <a class="el" href="MapDocument_8cpp_source.html#l00343">mapRoads()</a>.</p>
+
+</div>
+</div>
+<a id="af2828346b0f6ca9ebee7a6dbc3db76c9" name="af2828346b0f6ca9ebee7a6dbc3db76c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2828346b0f6ca9ebee7a6dbc3db76c9">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TargetId eve::map_editing::MapDocumentTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8h_source.html">MapDocument.h</a> 第 <a class="el" href="MapDocument_8h_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MapIntegration_8cpp_source.html#l00008">eve::map_editing::MapRoadMeshPublisher::publish()</a>.</p>
+
+</div>
+</div>
+<a id="a98c18fb91582044523b10fa7be3bed6e" name="a98c18fb91582044523b10fa7be3bed6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98c18fb91582044523b10fa7be3bed6e">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1map__editing.html#aa23099a7ed0280de4188f957063d8823">EditorDiagnostic</a> &gt; eve::map_editing::MapDocumentTarget::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate layers, spline geometry and placement references. </p>
+
+<p class="definition">在文件 <a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a> 第 <a class="el" href="MapDocument_8cpp_source.html#l00490">490</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/map_editing/<a class="el" href="MapDocument_8h_source.html">MapDocument.h</a></li>
+<li>src/modules/map_editing/<a class="el" href="MapDocument_8cpp_source.html">MapDocument.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

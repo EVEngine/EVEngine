@@ -1,0 +1,686 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::ProcgenPoint结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html">ProcgenPoint</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1ProcgenPoint-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::ProcgenPoint结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One deterministic sample used by script-first procedural pipelines.  
+ <a href="structeve_1_1procgen_1_1ProcgenPoint.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PointSet_8h_source.html">PointSet.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a058c909376311a0ee9f906ac25ebd01b" id="r_a058c909376311a0ee9f906ac25ebd01b"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a058c909376311a0ee9f906ac25ebd01b">id</a> = 0</td></tr>
+<tr class="memdesc:a058c909376311a0ee9f906ac25ebd01b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable non-zero identity; zero marks legacy or not-yet-assigned data.  <br /></td></tr>
+<tr class="separator:a058c909376311a0ee9f906ac25ebd01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4db52ec57f689c58aeddac38544a1119" id="r_a4db52ec57f689c58aeddac38544a1119"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a4db52ec57f689c58aeddac38544a1119">x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4db52ec57f689c58aeddac38544a1119"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d697fb9f8a390e05fc130f6c8e93bf7" id="r_a3d697fb9f8a390e05fc130f6c8e93bf7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a3d697fb9f8a390e05fc130f6c8e93bf7">y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3d697fb9f8a390e05fc130f6c8e93bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd13fdc8de9492d53cb35261972ade30" id="r_abd13fdc8de9492d53cb35261972ade30"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#abd13fdc8de9492d53cb35261972ade30">z</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abd13fdc8de9492d53cb35261972ade30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aa459f11b1138fd1a81a4cc077642da" id="r_a4aa459f11b1138fd1a81a4cc077642da"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a4aa459f11b1138fd1a81a4cc077642da">normalX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4aa459f11b1138fd1a81a4cc077642da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b58bfcbb1955174151faa31a6245db7" id="r_a4b58bfcbb1955174151faa31a6245db7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a4b58bfcbb1955174151faa31a6245db7">normalY</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4b58bfcbb1955174151faa31a6245db7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56148f53a3bd02e1002c85f05dbb4fec" id="r_a56148f53a3bd02e1002c85f05dbb4fec"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a56148f53a3bd02e1002c85f05dbb4fec">normalZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a56148f53a3bd02e1002c85f05dbb4fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa17b98fadbaa59690c9a23a7fb0d037a" id="r_aa17b98fadbaa59690c9a23a7fb0d037a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#aa17b98fadbaa59690c9a23a7fb0d037a">pitch</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa17b98fadbaa59690c9a23a7fb0d037a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb6cdc252155c3dbde5fbff67e992bdf" id="r_aeb6cdc252155c3dbde5fbff67e992bdf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#aeb6cdc252155c3dbde5fbff67e992bdf">yaw</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aeb6cdc252155c3dbde5fbff67e992bdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e0e8aae79bc7b082bad9332938f739" id="r_a80e0e8aae79bc7b082bad9332938f739"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a80e0e8aae79bc7b082bad9332938f739">roll</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a80e0e8aae79bc7b082bad9332938f739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af555fd6cb811d68c1c1a629b7c2a126f" id="r_af555fd6cb811d68c1c1a629b7c2a126f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#af555fd6cb811d68c1c1a629b7c2a126f">scaleX</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af555fd6cb811d68c1c1a629b7c2a126f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a222b1b450ef0630bf2ee5ab405f352f2" id="r_a222b1b450ef0630bf2ee5ab405f352f2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a222b1b450ef0630bf2ee5ab405f352f2">scaleY</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a222b1b450ef0630bf2ee5ab405f352f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66223ecf1ae7103931cd4ea2d611b918" id="r_a66223ecf1ae7103931cd4ea2d611b918"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a66223ecf1ae7103931cd4ea2d611b918">scaleZ</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a66223ecf1ae7103931cd4ea2d611b918"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d571a442fd49378c1731f422563c770" id="r_a1d571a442fd49378c1731f422563c770"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a1d571a442fd49378c1731f422563c770">density</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a1d571a442fd49378c1731f422563c770"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1297e2e82f67ea3806ace3a04a0ce16" id="r_aa1297e2e82f67ea3806ace3a04a0ce16"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#aa1297e2e82f67ea3806ace3a04a0ce16">seed</a> = 1</td></tr>
+<tr class="separator:aa1297e2e82f67ea3806ace3a04a0ce16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d4460c123e7ad682d874866b8bb379e" id="r_a3d4460c123e7ad682d874866b8bb379e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a3d4460c123e7ad682d874866b8bb379e">boundsMinX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3d4460c123e7ad682d874866b8bb379e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a894ed24f320b6b5c9ec610042da0a7d4" id="r_a894ed24f320b6b5c9ec610042da0a7d4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a894ed24f320b6b5c9ec610042da0a7d4">boundsMinY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a894ed24f320b6b5c9ec610042da0a7d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb1067e5384a6a5458a6634d42dc376a" id="r_acb1067e5384a6a5458a6634d42dc376a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#acb1067e5384a6a5458a6634d42dc376a">boundsMinZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acb1067e5384a6a5458a6634d42dc376a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40bf39fb2ce51c7667f4a88e81176365" id="r_a40bf39fb2ce51c7667f4a88e81176365"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a40bf39fb2ce51c7667f4a88e81176365">boundsMaxX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a40bf39fb2ce51c7667f4a88e81176365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f74531b6957c9f45883bc82b46cbecc" id="r_a0f74531b6957c9f45883bc82b46cbecc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a0f74531b6957c9f45883bc82b46cbecc">boundsMaxY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a0f74531b6957c9f45883bc82b46cbecc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af558af2e8742f3bd89350195af84dd61" id="r_af558af2e8742f3bd89350195af84dd61"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#af558af2e8742f3bd89350195af84dd61">boundsMaxZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af558af2e8742f3bd89350195af84dd61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaaaa0a18f7b756fed9ceb2af455dce8" id="r_acaaaa0a18f7b756fed9ceb2af455dce8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#acaaaa0a18f7b756fed9ceb2af455dce8">colorR</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acaaaa0a18f7b756fed9ceb2af455dce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f833971357b796a61a2ed8f62135802" id="r_a6f833971357b796a61a2ed8f62135802"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a6f833971357b796a61a2ed8f62135802">colorG</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6f833971357b796a61a2ed8f62135802"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49c486ba1e815da89560b397197083f0" id="r_a49c486ba1e815da89560b397197083f0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a49c486ba1e815da89560b397197083f0">colorB</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a49c486ba1e815da89560b397197083f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27b4e436917ee2e15f0156e3c3bdcc8a" id="r_a27b4e436917ee2e15f0156e3c3bdcc8a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#a27b4e436917ee2e15f0156e3c3bdcc8a">colorA</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a27b4e436917ee2e15f0156e3c3bdcc8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac949f90a99092c6429ae953ded7461a1" id="r_ac949f90a99092c6429ae953ded7461a1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1ProcgenPoint.html#ac949f90a99092c6429ae953ded7461a1">steepness</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac949f90a99092c6429ae953ded7461a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One deterministic sample used by script-first procedural pipelines. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00014">14</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a40bf39fb2ce51c7667f4a88e81176365" name="a40bf39fb2ce51c7667f4a88e81176365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40bf39fb2ce51c7667f4a88e81176365">&#9670;&#160;</a></span>boundsMaxX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::boundsMaxX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f74531b6957c9f45883bc82b46cbecc" name="a0f74531b6957c9f45883bc82b46cbecc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f74531b6957c9f45883bc82b46cbecc">&#9670;&#160;</a></span>boundsMaxY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::boundsMaxY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af558af2e8742f3bd89350195af84dd61" name="af558af2e8742f3bd89350195af84dd61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af558af2e8742f3bd89350195af84dd61">&#9670;&#160;</a></span>boundsMaxZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::boundsMaxZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d4460c123e7ad682d874866b8bb379e" name="a3d4460c123e7ad682d874866b8bb379e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d4460c123e7ad682d874866b8bb379e">&#9670;&#160;</a></span>boundsMinX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::boundsMinX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a894ed24f320b6b5c9ec610042da0a7d4" name="a894ed24f320b6b5c9ec610042da0a7d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a894ed24f320b6b5c9ec610042da0a7d4">&#9670;&#160;</a></span>boundsMinY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::boundsMinY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb1067e5384a6a5458a6634d42dc376a" name="acb1067e5384a6a5458a6634d42dc376a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb1067e5384a6a5458a6634d42dc376a">&#9670;&#160;</a></span>boundsMinZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::boundsMinZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a27b4e436917ee2e15f0156e3c3bdcc8a" name="a27b4e436917ee2e15f0156e3c3bdcc8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27b4e436917ee2e15f0156e3c3bdcc8a">&#9670;&#160;</a></span>colorA</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::colorA = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a49c486ba1e815da89560b397197083f0" name="a49c486ba1e815da89560b397197083f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49c486ba1e815da89560b397197083f0">&#9670;&#160;</a></span>colorB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::colorB = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f833971357b796a61a2ed8f62135802" name="a6f833971357b796a61a2ed8f62135802"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f833971357b796a61a2ed8f62135802">&#9670;&#160;</a></span>colorG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::colorG = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acaaaa0a18f7b756fed9ceb2af455dce8" name="acaaaa0a18f7b756fed9ceb2af455dce8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acaaaa0a18f7b756fed9ceb2af455dce8">&#9670;&#160;</a></span>colorR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::colorR = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1d571a442fd49378c1731f422563c770" name="a1d571a442fd49378c1731f422563c770"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d571a442fd49378c1731f422563c770">&#9670;&#160;</a></span>density</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::density = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a> , 以及 <a class="el" href="Biome_8cpp_source.html#l00087">eve::procgen::BiomeRules::generate()</a>.</p>
+
+</div>
+</div>
+<a id="a058c909376311a0ee9f906ac25ebd01b" name="a058c909376311a0ee9f906ac25ebd01b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a058c909376311a0ee9f906ac25ebd01b">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen::ProcgenPoint::id = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable non-zero identity; zero marks legacy or not-yet-assigned data. </p>
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>.</p>
+
+</div>
+</div>
+<a id="a4aa459f11b1138fd1a81a4cc077642da" name="a4aa459f11b1138fd1a81a4cc077642da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aa459f11b1138fd1a81a4cc077642da">&#9670;&#160;</a></span>normalX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::normalX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>.</p>
+
+</div>
+</div>
+<a id="a4b58bfcbb1955174151faa31a6245db7" name="a4b58bfcbb1955174151faa31a6245db7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b58bfcbb1955174151faa31a6245db7">&#9670;&#160;</a></span>normalY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::normalY = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a56148f53a3bd02e1002c85f05dbb4fec" name="a56148f53a3bd02e1002c85f05dbb4fec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56148f53a3bd02e1002c85f05dbb4fec">&#9670;&#160;</a></span>normalZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::normalZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>.</p>
+
+</div>
+</div>
+<a id="aa17b98fadbaa59690c9a23a7fb0d037a" name="aa17b98fadbaa59690c9a23a7fb0d037a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa17b98fadbaa59690c9a23a7fb0d037a">&#9670;&#160;</a></span>pitch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::pitch = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a80e0e8aae79bc7b082bad9332938f739" name="a80e0e8aae79bc7b082bad9332938f739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80e0e8aae79bc7b082bad9332938f739">&#9670;&#160;</a></span>roll</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::roll = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af555fd6cb811d68c1c1a629b7c2a126f" name="af555fd6cb811d68c1c1a629b7c2a126f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af555fd6cb811d68c1c1a629b7c2a126f">&#9670;&#160;</a></span>scaleX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::scaleX = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>.</p>
+
+</div>
+</div>
+<a id="a222b1b450ef0630bf2ee5ab405f352f2" name="a222b1b450ef0630bf2ee5ab405f352f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a222b1b450ef0630bf2ee5ab405f352f2">&#9670;&#160;</a></span>scaleY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::scaleY = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>.</p>
+
+</div>
+</div>
+<a id="a66223ecf1ae7103931cd4ea2d611b918" name="a66223ecf1ae7103931cd4ea2d611b918"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66223ecf1ae7103931cd4ea2d611b918">&#9670;&#160;</a></span>scaleZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::scaleZ = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>.</p>
+
+</div>
+</div>
+<a id="aa1297e2e82f67ea3806ace3a04a0ce16" name="aa1297e2e82f67ea3806ace3a04a0ce16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1297e2e82f67ea3806ace3a04a0ce16">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::procgen::ProcgenPoint::seed = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a> , 以及 <a class="el" href="ShapeGrammar_8cpp_source.html#l00131">eve::procgen::ShapeGrammar::generate()</a>.</p>
+
+</div>
+</div>
+<a id="ac949f90a99092c6429ae953ded7461a1" name="ac949f90a99092c6429ae953ded7461a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac949f90a99092c6429ae953ded7461a1">&#9670;&#160;</a></span>steepness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::steepness = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4db52ec57f689c58aeddac38544a1119" name="a4db52ec57f689c58aeddac38544a1119"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4db52ec57f689c58aeddac38544a1119">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00093">eve::procgen::PointSet::add()</a>, <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="PointSet_8cpp_source.html#l00486">eve::procgen::poissonDiskPoints()</a>, <a class="el" href="Procgen_8cpp_source.html#l00725">eve::procgen::Procgen::projectToWorldHandle()</a>, <a class="el" href="PointSet_8cpp_source.html#l00464">eve::procgen::sampleGridPoints()</a>, <a class="el" href="PointSet_8cpp_source.html#l00699">eve::procgen::samplePolylinePoints()</a>, <a class="el" href="PointCompute_8cpp_source.html#l00151">eve::procgen::PointCompute::transformChain()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00833">eve::procgen::transformPointSet3D()</a>.</p>
+
+</div>
+</div>
+<a id="a3d697fb9f8a390e05fc130f6c8e93bf7" name="a3d697fb9f8a390e05fc130f6c8e93bf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d697fb9f8a390e05fc130f6c8e93bf7">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00416">eve::procgen::SpatialData::project()</a> , 以及 <a class="el" href="PointSetHeightmapAdapter_8cpp_source.html#l00008">eve::procgen::projectPointsToHeightmap()</a>.</p>
+
+</div>
+</div>
+<a id="aeb6cdc252155c3dbde5fbff67e992bdf" name="aeb6cdc252155c3dbde5fbff67e992bdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb6cdc252155c3dbde5fbff67e992bdf">&#9670;&#160;</a></span>yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::yaw = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>.</p>
+
+</div>
+</div>
+<a id="abd13fdc8de9492d53cb35261972ade30" name="abd13fdc8de9492d53cb35261972ade30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd13fdc8de9492d53cb35261972ade30">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::ProcgenPoint::z = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PointSet_8h_source.html">PointSet.h</a> 第 <a class="el" href="PointSet_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PointSet_8cpp_source.html#l00868">eve::procgen::copyPointsToTargets()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="PointSet_8h_source.html">PointSet.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

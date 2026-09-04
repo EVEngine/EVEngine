@@ -1,0 +1,696 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::BiomeRules类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html">BiomeRules</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1BiomeRules-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::BiomeRules类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Data-driven biome distribution rules compatible with <a class="el" href="classeve_1_1procgen_1_1PointGraph.html" title="A data-flow graph for attributed procedural points.">PointGraph</a> and scene batches.  
+ <a href="classeve_1_1procgen_1_1BiomeRules.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Biome_8h_source.html">Biome.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab9072aa43fb342161f11f044b23d10a1" id="r_ab9072aa43fb342161f11f044b23d10a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#ab9072aa43fb342161f11f044b23d10a1">clear</a> ()</td></tr>
+<tr class="memdesc:ab9072aa43fb342161f11f044b23d10a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove layers and exclusions.  <br /></td></tr>
+<tr class="separator:ab9072aa43fb342161f11f044b23d10a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2dd6b97a948c17590e2074d16b80eb1" id="r_aa2dd6b97a948c17590e2074d16b80eb1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#aa2dd6b97a948c17590e2074d16b80eb1">addLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> *spatial, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>, float density)</td></tr>
+<tr class="memdesc:aa2dd6b97a948c17590e2074d16b80eb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a named spatial layer. Names are unique.  <br /></td></tr>
+<tr class="separator:aa2dd6b97a948c17590e2074d16b80eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4bed15e7c36978b99897badbece9008" id="r_ab4bed15e7c36978b99897badbece9008"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#ab4bed15e7c36978b99897badbece9008">removeLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:ab4bed15e7c36978b99897badbece9008"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81166d3598dbe3ffc4960e82627a0cf5" id="r_a81166d3598dbe3ffc4960e82627a0cf5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a81166d3598dbe3ffc4960e82627a0cf5">hasLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a81166d3598dbe3ffc4960e82627a0cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a958fd636eefe5d8bcd74b67aa945c3f1" id="r_a958fd636eefe5d8bcd74b67aa945c3f1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a958fd636eefe5d8bcd74b67aa945c3f1">getLayerCount</a> () const</td></tr>
+<tr class="separator:a958fd636eefe5d8bcd74b67aa945c3f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a271dfa1d9cd1eea490b67cbabab04658" id="r_a271dfa1d9cd1eea490b67cbabab04658"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a271dfa1d9cd1eea490b67cbabab04658">getLayerName</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a271dfa1d9cd1eea490b67cbabab04658"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f527ef0dcb3beba7ebc49da351090f9" id="r_a5f527ef0dcb3beba7ebc49da351090f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a5f527ef0dcb3beba7ebc49da351090f9">getLayerPriority</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a5f527ef0dcb3beba7ebc49da351090f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d1735f01b1b5dc7a4f987a83a694ec5" id="r_a6d1735f01b1b5dc7a4f987a83a694ec5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a6d1735f01b1b5dc7a4f987a83a694ec5">getLayerDensity</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="separator:a6d1735f01b1b5dc7a4f987a83a694ec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bbc82ff4a1a693a012c560b04d3e421" id="r_a4bbc82ff4a1a693a012c560b04d3e421"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a4bbc82ff4a1a693a012c560b04d3e421">addAsset</a> (const std::string &amp;layerName, const std::string &amp;asset, float weight, float minScale, float maxScale, bool randomYaw)</td></tr>
+<tr class="memdesc:a4bbc82ff4a1a693a012c560b04d3e421"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a weighted asset rule to a layer.  <br /></td></tr>
+<tr class="separator:a4bbc82ff4a1a693a012c560b04d3e421"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82b562ef96be5a202e7f43281d890fee" id="r_a82b562ef96be5a202e7f43281d890fee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a82b562ef96be5a202e7f43281d890fee">getAssetCount</a> (const std::string &amp;layerName) const</td></tr>
+<tr class="separator:a82b562ef96be5a202e7f43281d890fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f65e278ec6c621ca967a5eaf06036c4" id="r_a7f65e278ec6c621ca967a5eaf06036c4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a7f65e278ec6c621ca967a5eaf06036c4">getAssetName</a> (const std::string &amp;layerName, int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:a7f65e278ec6c621ca967a5eaf06036c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3b21036b90def83aa96a2bb667e409d" id="r_ac3b21036b90def83aa96a2bb667e409d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#ac3b21036b90def83aa96a2bb667e409d">addExclusion</a> (<a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> *spatial)</td></tr>
+<tr class="memdesc:ac3b21036b90def83aa96a2bb667e409d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a copied spatial exclusion shared by every layer.  <br /></td></tr>
+<tr class="separator:ac3b21036b90def83aa96a2bb667e409d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a380026091847dc5fdc9df3b56b8312db" id="r_a380026091847dc5fdc9df3b56b8312db"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a380026091847dc5fdc9df3b56b8312db">getExclusionCount</a> () const</td></tr>
+<tr class="separator:a380026091847dc5fdc9df3b56b8312db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa411ca1621752df6c44dc1ec75b119c" id="r_afa411ca1621752df6c44dc1ec75b119c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#afa411ca1621752df6c44dc1ec75b119c">generate</a> (<a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> *domain, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, float jitter)</td></tr>
+<tr class="memdesc:afa411ca1621752df6c44dc1ec75b119c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate attributed biome points.  <br /></td></tr>
+<tr class="separator:afa411ca1621752df6c44dc1ec75b119c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51a4ac20aa82b4007f1c3bae31269d5d" id="r_a51a4ac20aa82b4007f1c3bae31269d5d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#a51a4ac20aa82b4007f1c3bae31269d5d">getError</a> () const</td></tr>
+<tr class="separator:a51a4ac20aa82b4007f1c3bae31269d5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8a3a40d1381ef65be97f1f814744bb2" id="r_ac8a3a40d1381ef65be97f1f814744bb2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1BiomeRules.html#ac8a3a40d1381ef65be97f1f814744bb2">debugReport</a> () const</td></tr>
+<tr class="separator:ac8a3a40d1381ef65be97f1f814744bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Data-driven biome distribution rules compatible with <a class="el" href="classeve_1_1procgen_1_1PointGraph.html" title="A data-flow graph for attributed procedural points.">PointGraph</a> and scene batches. </p>
+<p>Candidates are sampled from a caller-provided domain, rejected by exclusion domains, assigned to the highest-priority matching layer, then deterministically select a weighted asset and transform from their independent point seed. </p>
+
+<p class="definition">在文件 <a class="el" href="Biome_8h_source.html">Biome.h</a> 第 <a class="el" href="Biome_8h_source.html#l00038">38</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a4bbc82ff4a1a693a012c560b04d3e421" name="a4bbc82ff4a1a693a012c560b04d3e421"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bbc82ff4a1a693a012c560b04d3e421">&#9670;&#160;</a></span>addAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::BiomeRules::addAsset </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>layerName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>minScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>maxScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>randomYaw</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a weighted asset rule to a layer. </p>
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="ac3b21036b90def83aa96a2bb667e409d" name="ac3b21036b90def83aa96a2bb667e409d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3b21036b90def83aa96a2bb667e409d">&#9670;&#160;</a></span>addExclusion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::BiomeRules::addExclusion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> *&#160;</td>
+          <td class="paramname"><em>spatial</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a copied spatial exclusion shared by every layer. </p>
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="aa2dd6b97a948c17590e2074d16b80eb1" name="aa2dd6b97a948c17590e2074d16b80eb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2dd6b97a948c17590e2074d16b80eb1">&#9670;&#160;</a></span>addLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::BiomeRules::addLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> *&#160;</td>
+          <td class="paramname"><em>spatial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a named spatial layer. Names are unique. </p>
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Biome_8cpp_source.html#l00047">hasLayer()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Biome_8h_source.html#l00024">eve::procgen::BiomeLayerRule::name</a> , 以及 <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="ab9072aa43fb342161f11f044b23d10a1" name="ab9072aa43fb342161f11f044b23d10a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9072aa43fb342161f11f044b23d10a1">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::BiomeRules::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove layers and exclusions. </p>
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="ac8a3a40d1381ef65be97f1f814744bb2" name="ac8a3a40d1381ef65be97f1f814744bb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8a3a40d1381ef65be97f1f814744bb2">&#9670;&#160;</a></span>debugReport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::BiomeRules::debugReport </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="afa411ca1621752df6c44dc1ec75b119c" name="afa411ca1621752df6c44dc1ec75b119c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa411ca1621752df6c44dc1ec75b119c">&#9670;&#160;</a></span>generate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a> * eve::procgen::BiomeRules::generate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a> *&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate attributed biome points. </p>
+<dl class="section return"><dt>返回</dt><dd>Caller-owned <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> with <code>biome</code> and <code>asset</code> string attributes. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Biome_8h_source.html#l00015">eve::procgen::BiomeAssetRule::asset</a>, <a class="el" href="Biome_8h_source.html#l00028">eve::procgen::BiomeLayerRule::assets</a>, <a class="el" href="Biome_8h_source.html#l00026">eve::procgen::BiomeLayerRule::density</a>, <a class="el" href="PointSet_8h_source.html#l00032">eve::procgen::ProcgenPoint::density</a>, <a class="el" href="PointSet_8cpp_source.html#l00045">eve::procgen::PointSet::getCount()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="Biome_8h_source.html#l00018">eve::procgen::BiomeAssetRule::maxScale</a>, <a class="el" href="Biome_8h_source.html#l00017">eve::procgen::BiomeAssetRule::minScale</a>, <a class="el" href="Biome_8h_source.html#l00024">eve::procgen::BiomeLayerRule::name</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00112">output</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00080">point</a>, <a class="el" href="PointSet_8h_source.html#l00184">eve::procgen::PointSet::points()</a>, <a class="el" href="Biome_8h_source.html#l00025">eve::procgen::BiomeLayerRule::priority</a>, <a class="el" href="Biome_8h_source.html#l00019">eve::procgen::BiomeAssetRule::randomYaw</a>, <a class="el" href="SpatialData_8cpp_source.html#l00368">eve::procgen::SpatialData::sample()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="PointSet_8cpp_source.html#l00749">seed</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00136">spacing</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a82b562ef96be5a202e7f43281d890fee" name="a82b562ef96be5a202e7f43281d890fee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82b562ef96be5a202e7f43281d890fee">&#9670;&#160;</a></span>getAssetCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::BiomeRules::getAssetCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>layerName</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a7f65e278ec6c621ca967a5eaf06036c4" name="a7f65e278ec6c621ca967a5eaf06036c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f65e278ec6c621ca967a5eaf06036c4">&#9670;&#160;</a></span>getAssetName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::BiomeRules::getAssetName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>layerName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a51a4ac20aa82b4007f1c3bae31269d5d" name="a51a4ac20aa82b4007f1c3bae31269d5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51a4ac20aa82b4007f1c3bae31269d5d">&#9670;&#160;</a></span>getError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::BiomeRules::getError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a380026091847dc5fdc9df3b56b8312db" name="a380026091847dc5fdc9df3b56b8312db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a380026091847dc5fdc9df3b56b8312db">&#9670;&#160;</a></span>getExclusionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::BiomeRules::getExclusionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a958fd636eefe5d8bcd74b67aa945c3f1" name="a958fd636eefe5d8bcd74b67aa945c3f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a958fd636eefe5d8bcd74b67aa945c3f1">&#9670;&#160;</a></span>getLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::BiomeRules::getLayerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a6d1735f01b1b5dc7a4f987a83a694ec5" name="a6d1735f01b1b5dc7a4f987a83a694ec5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d1735f01b1b5dc7a4f987a83a694ec5">&#9670;&#160;</a></span>getLayerDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::BiomeRules::getLayerDensity </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a271dfa1d9cd1eea490b67cbabab04658" name="a271dfa1d9cd1eea490b67cbabab04658"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a271dfa1d9cd1eea490b67cbabab04658">&#9670;&#160;</a></span>getLayerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::BiomeRules::getLayerName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a5f527ef0dcb3beba7ebc49da351090f9" name="a5f527ef0dcb3beba7ebc49da351090f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f527ef0dcb3beba7ebc49da351090f9">&#9670;&#160;</a></span>getLayerPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::BiomeRules::getLayerPriority </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="a81166d3598dbe3ffc4960e82627a0cf5" name="a81166d3598dbe3ffc4960e82627a0cf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81166d3598dbe3ffc4960e82627a0cf5">&#9670;&#160;</a></span>hasLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::BiomeRules::hasLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Biome_8cpp_source.html#l00028">addLayer()</a> , 以及 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<a id="ab4bed15e7c36978b99897badbece9008" name="ab4bed15e7c36978b99897badbece9008"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4bed15e7c36978b99897badbece9008">&#9670;&#160;</a></span>removeLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::BiomeRules::removeLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Biome_8cpp_source.html">Biome.cpp</a> 第 <a class="el" href="Biome_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BiomeScript_8cpp_source.html#l00011">eve::procgen::exposeBiomeRules()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="Biome_8h_source.html">Biome.h</a></li>
+<li>src/modules/procgen/<a class="el" href="Biome_8cpp_source.html">Biome.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,565 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::gpgpu::WebGpuComputeShader类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1gpgpu.html">gpgpu</a></li><li class="navelem"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html">WebGpuComputeShader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="classeve_1_1gpgpu_1_1WebGpuComputeShader-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::gpgpu::WebGpuComputeShader类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V input is rejected (browsers only accept WGSL at runtime).  
+ <a href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="WebGpuGpgpu_8h_source.html">WebGpuGpgpu.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::gpgpu::WebGpuComputeShader 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1gpgpu_1_1WebGpuComputeShader.png" usemap="#eve::gpgpu::WebGpuComputeShader_map" alt=""/>
+  <map id="eve::gpgpu::WebGpuComputeShader_map" name="eve::gpgpu::WebGpuComputeShader_map">
+<area href="classeve_1_1gpgpu_1_1ComputeShader.html" title="Backend-agnostic compute program. Bind storage buffers then dispatch via Gpgpu::dispatch...." alt="eve::gpgpu::ComputeShader" shape="rect" coords="0,0,218,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acd3f66f643044e1876c8eeec010e40aa" id="r_acd3f66f643044e1876c8eeec010e40aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#acd3f66f643044e1876c8eeec010e40aa">WebGpuComputeShader</a> ()=default</td></tr>
+<tr class="separator:acd3f66f643044e1876c8eeec010e40aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af52ba832ceb61f30296cd6e7d51a8d0c" id="r_af52ba832ceb61f30296cd6e7d51a8d0c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#af52ba832ceb61f30296cd6e7d51a8d0c">~WebGpuComputeShader</a> () override</td></tr>
+<tr class="separator:af52ba832ceb61f30296cd6e7d51a8d0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d97409fec97b270cffdea30797f69d2" id="r_a4d97409fec97b270cffdea30797f69d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a4d97409fec97b270cffdea30797f69d2">bindBuffer</a> (int binding, <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *<a class="el" href="GltfImporter_8cpp.html#a2730c22d1d3b5f378b4e2d47248ad195">buffer</a>) override</td></tr>
+<tr class="memdesc:a4d97409fec97b270cffdea30797f69d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a storage buffer to set=0 binding. binding in [0, kMaxBindings).  <br /></td></tr>
+<tr class="separator:a4d97409fec97b270cffdea30797f69d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d4d7ba2eadaae4a504ca51898758ea6" id="r_a8d4d7ba2eadaae4a504ca51898758ea6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a8d4d7ba2eadaae4a504ca51898758ea6">getBoundBuffer</a> (int binding) const override</td></tr>
+<tr class="separator:a8d4d7ba2eadaae4a504ca51898758ea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65b7383a88c421b197f8a273619a48cb" id="r_a65b7383a88c421b197f8a273619a48cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a65b7383a88c421b197f8a273619a48cb">setFloat</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) override</td></tr>
+<tr class="separator:a65b7383a88c421b197f8a273619a48cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45c48349f8904716ef4c49d4548a94fc" id="r_a45c48349f8904716ef4c49d4548a94fc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a45c48349f8904716ef4c49d4548a94fc">getFloat</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const override</td></tr>
+<tr class="separator:a45c48349f8904716ef4c49d4548a94fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f367374e3a8ecb60bba804f87f32d46" id="r_a7f367374e3a8ecb60bba804f87f32d46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a7f367374e3a8ecb60bba804f87f32d46">clearBindings</a> () override</td></tr>
+<tr class="separator:a7f367374e3a8ecb60bba804f87f32d46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1gpgpu_1_1ComputeShader')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></td></tr>
+<tr class="memitem:a5f100dc6ffca119d9a13d215adfab386 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_a5f100dc6ffca119d9a13d215adfab386"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a5f100dc6ffca119d9a13d215adfab386">ComputeShader</a> ()=default</td></tr>
+<tr class="separator:a5f100dc6ffca119d9a13d215adfab386 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99fb64bf089bdac3d3780cb0cf3dbe82 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_a99fb64bf089bdac3d3780cb0cf3dbe82"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a99fb64bf089bdac3d3780cb0cf3dbe82">~ComputeShader</a> ()=default</td></tr>
+<tr class="separator:a99fb64bf089bdac3d3780cb0cf3dbe82 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3437ba4402ec365dc78ca5120168c4d6 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_a3437ba4402ec365dc78ca5120168c4d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a3437ba4402ec365dc78ca5120168c4d6">ComputeShader</a> (const <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;)=delete</td></tr>
+<tr class="separator:a3437ba4402ec365dc78ca5120168c4d6 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc12527bbeac87c0cbba33f5fb47b659 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_abc12527bbeac87c0cbba33f5fb47b659"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#abc12527bbeac87c0cbba33f5fb47b659">operator=</a> (const <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">ComputeShader</a> &amp;)=delete</td></tr>
+<tr class="separator:abc12527bbeac87c0cbba33f5fb47b659 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad66bc18ed29643e9780e5147bdb66976 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader" id="r_ad66bc18ed29643e9780e5147bdb66976"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#ad66bc18ed29643e9780e5147bdb66976">pushConstantData</a> () const</td></tr>
+<tr class="separator:ad66bc18ed29643e9780e5147bdb66976 inherit pub_methods_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad9d46b9d022363aeccec68f246d61175" id="r_ad9d46b9d022363aeccec68f246d61175"><td class="memItemLeft" align="right" valign="top">wgpu::ComputePipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#ad9d46b9d022363aeccec68f246d61175">pipeline</a></td></tr>
+<tr class="separator:ad9d46b9d022363aeccec68f246d61175"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b6bd12fc7086ec4aaa7eda397e3cbc6" id="r_a6b6bd12fc7086ec4aaa7eda397e3cbc6"><td class="memItemLeft" align="right" valign="top">wgpu::PipelineLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a6b6bd12fc7086ec4aaa7eda397e3cbc6">pipelineLayout</a></td></tr>
+<tr class="separator:a6b6bd12fc7086ec4aaa7eda397e3cbc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48dc7531d9fd2e683fb6187abb90fd66" id="r_a48dc7531d9fd2e683fb6187abb90fd66"><td class="memItemLeft" align="right" valign="top">wgpu::BindGroupLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#a48dc7531d9fd2e683fb6187abb90fd66">setLayout</a></td></tr>
+<tr class="separator:a48dc7531d9fd2e683fb6187abb90fd66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae17ad1ca80068a31369076dfc861a271" id="r_ae17ad1ca80068a31369076dfc861a271"><td class="memItemLeft" align="right" valign="top">wgpu::Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#ae17ad1ca80068a31369076dfc861a271">pushUbo</a></td></tr>
+<tr class="separator:ae17ad1ca80068a31369076dfc861a271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc624010c9a6b5cc6a88f2fad2c8f712" id="r_afc624010c9a6b5cc6a88f2fad2c8f712"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1WebGpuComputeShader.html#afc624010c9a6b5cc6a88f2fad2c8f712">ready</a> = false</td></tr>
+<tr class="separator:afc624010c9a6b5cc6a88f2fad2c8f712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></td></tr>
+<tr class="memitem:a04a7141434a2ed6e3c62a4816e3686e2 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader" id="r_a04a7141434a2ed6e3c62a4816e3686e2"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a04a7141434a2ed6e3c62a4816e3686e2">kMaxBindings</a> = 8</td></tr>
+<tr class="separator:a04a7141434a2ed6e3c62a4816e3686e2 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b1a2502dfd9daec795b6d942976c3c4 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader" id="r_a2b1a2502dfd9daec795b6d942976c3c4"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> = 32</td></tr>
+<tr class="separator:a2b1a2502dfd9daec795b6d942976c3c4 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83368c146e8652192f87b4c6623aa7b5 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader" id="r_a83368c146e8652192f87b4c6623aa7b5"><td class="memItemLeft" align="right" valign="top">static constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a83368c146e8652192f87b4c6623aa7b5">kPushConstantBytes</a> = uint32_t(<a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> * sizeof(float))</td></tr>
+<tr class="separator:a83368c146e8652192f87b4c6623aa7b5 inherit pub_static_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classeve_1_1gpgpu_1_1ComputeShader')"><img src="closed.png" alt="-"/>&#160;Protected 属性 继承自 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></td></tr>
+<tr class="memitem:a31895118df3a71bf1aa310884546516e inherit pro_attribs_classeve_1_1gpgpu_1_1ComputeShader" id="r_a31895118df3a71bf1aa310884546516e"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a2b1a2502dfd9daec795b6d942976c3c4">kMaxFloats</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a31895118df3a71bf1aa310884546516e">push_</a> {}</td></tr>
+<tr class="separator:a31895118df3a71bf1aa310884546516e inherit pro_attribs_classeve_1_1gpgpu_1_1ComputeShader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Compute program for the WebGPU backend. Accepts WGSL source; GLSL/SPIR-V input is rejected (browsers only accept WGSL at runtime). </p>
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8h_source.html">WebGpuGpgpu.h</a> 第 <a class="el" href="WebGpuGpgpu_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="acd3f66f643044e1876c8eeec010e40aa" name="acd3f66f643044e1876c8eeec010e40aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd3f66f643044e1876c8eeec010e40aa">&#9670;&#160;</a></span>WebGpuComputeShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::WebGpuComputeShader::WebGpuComputeShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af52ba832ceb61f30296cd6e7d51a8d0c" name="af52ba832ceb61f30296cd6e7d51a8d0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af52ba832ceb61f30296cd6e7d51a8d0c">&#9670;&#160;</a></span>~WebGpuComputeShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::gpgpu::WebGpuComputeShader::~WebGpuComputeShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4d97409fec97b270cffdea30797f69d2" name="a4d97409fec97b270cffdea30797f69d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d97409fec97b270cffdea30797f69d2">&#9670;&#160;</a></span>bindBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::WebGpuComputeShader::bindBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind a storage buffer to set=0 binding. binding in [0, kMaxBindings). </p>
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#afaf8369ad9145505f5dd5e966b737cf5">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a> , 以及 <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>.</p>
+
+</div>
+</div>
+<a id="a7f367374e3a8ecb60bba804f87f32d46" name="a7f367374e3a8ecb60bba804f87f32d46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f367374e3a8ecb60bba804f87f32d46">&#9670;&#160;</a></span>clearBindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::WebGpuComputeShader::clearBindings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#abadcbdd3b758467ef913085189bac449">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8d4d7ba2eadaae4a504ca51898758ea6" name="a8d4d7ba2eadaae4a504ca51898758ea6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d4d7ba2eadaae4a504ca51898758ea6">&#9670;&#160;</a></span>getBoundBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html">GpuBuffer</a> * eve::gpgpu::WebGpuComputeShader::getBoundBuffer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>binding</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a66995b46d5c2bb55964d4afdd28ef7df">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ComputeShader_8h_source.html#l00017">eve::gpgpu::ComputeShader::kMaxBindings</a>.</p>
+
+</div>
+</div>
+<a id="a45c48349f8904716ef4c49d4548a94fc" name="a45c48349f8904716ef4c49d4548a94fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45c48349f8904716ef4c49d4548a94fc">&#9670;&#160;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::gpgpu::WebGpuComputeShader::getFloat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#af4b5b0454125c65d53f1edc3773d922e">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="ComputeShader_8h_source.html#l00018">eve::gpgpu::ComputeShader::kMaxFloats</a> , 以及 <a class="el" href="ComputeShader_8h_source.html#l00039">eve::gpgpu::ComputeShader::push_</a>.</p>
+
+</div>
+</div>
+<a id="a65b7383a88c421b197f8a273619a48cb" name="a65b7383a88c421b197f8a273619a48cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65b7383a88c421b197f8a273619a48cb">&#9670;&#160;</a></span>setFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::gpgpu::WebGpuComputeShader::setFloat </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1gpgpu_1_1ComputeShader.html#a44b71449ed92daf0e6c9dad0a052e135">eve::gpgpu::ComputeShader</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a> 第 <a class="el" href="WebGpuGpgpu_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="ComputeShader_8h_source.html#l00018">eve::gpgpu::ComputeShader::kMaxFloats</a>, <a class="el" href="ComputeShader_8h_source.html#l00039">eve::gpgpu::ComputeShader::push_</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ad9d46b9d022363aeccec68f246d61175" name="ad9d46b9d022363aeccec68f246d61175"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9d46b9d022363aeccec68f246d61175">&#9670;&#160;</a></span>pipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::ComputePipeline eve::gpgpu::WebGpuComputeShader::pipeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8h_source.html">WebGpuGpgpu.h</a> 第 <a class="el" href="WebGpuGpgpu_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b6bd12fc7086ec4aaa7eda397e3cbc6" name="a6b6bd12fc7086ec4aaa7eda397e3cbc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b6bd12fc7086ec4aaa7eda397e3cbc6">&#9670;&#160;</a></span>pipelineLayout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::PipelineLayout eve::gpgpu::WebGpuComputeShader::pipelineLayout</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8h_source.html">WebGpuGpgpu.h</a> 第 <a class="el" href="WebGpuGpgpu_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae17ad1ca80068a31369076dfc861a271" name="ae17ad1ca80068a31369076dfc861a271"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae17ad1ca80068a31369076dfc861a271">&#9670;&#160;</a></span>pushUbo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::Buffer eve::gpgpu::WebGpuComputeShader::pushUbo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8h_source.html">WebGpuGpgpu.h</a> 第 <a class="el" href="WebGpuGpgpu_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afc624010c9a6b5cc6a88f2fad2c8f712" name="afc624010c9a6b5cc6a88f2fad2c8f712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc624010c9a6b5cc6a88f2fad2c8f712">&#9670;&#160;</a></span>ready</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::gpgpu::WebGpuComputeShader::ready = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8h_source.html">WebGpuGpgpu.h</a> 第 <a class="el" href="WebGpuGpgpu_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a48dc7531d9fd2e683fb6187abb90fd66" name="a48dc7531d9fd2e683fb6187abb90fd66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48dc7531d9fd2e683fb6187abb90fd66">&#9670;&#160;</a></span>setLayout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">wgpu::BindGroupLayout eve::gpgpu::WebGpuComputeShader::setLayout</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WebGpuGpgpu_8h_source.html">WebGpuGpgpu.h</a> 第 <a class="el" href="WebGpuGpgpu_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/gpgpu/webgpu/<a class="el" href="WebGpuGpgpu_8h_source.html">WebGpuGpgpu.h</a></li>
+<li>src/modules/gpgpu/webgpu/<a class="el" href="WebGpuGpgpu_8cpp_source.html">WebGpuGpgpu.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

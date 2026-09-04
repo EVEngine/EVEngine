@@ -1,0 +1,352 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::combat::DamageRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1combat.html">combat</a></li><li class="navelem"><a class="el" href="classeve_1_1combat_1_1DamageRuntime.html">DamageRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1combat_1_1DamageRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::combat::DamageRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread deterministic damage coordinator.  
+ <a href="classeve_1_1combat_1_1DamageRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Damage_8h_source.html">Damage.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4fc2712d52306c278f8cdf6f341be358" id="r_a4fc2712d52306c278f8cdf6f341be358"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1DamageRuntime.html#a4fc2712d52306c278f8cdf6f341be358">DamageRuntime</a> (const <a class="el" href="classeve_1_1combat_1_1IDamageRule.html">IDamageRule</a> *rule=nullptr, <a class="el" href="structeve_1_1combat_1_1HitReactionPolicy.html">HitReactionPolicy</a> <a class="el" href="TacticsPersistence_8cpp.html#a8c7b8e11631dda51846983f7b37eb2fe">policy</a>={})</td></tr>
+<tr class="memdesc:a4fc2712d52306c278f8cdf6f341be358"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct with an optional borrowed rule provider and owning policy copy.  <br /></td></tr>
+<tr class="separator:a4fc2712d52306c278f8cdf6f341be358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7db417768431e2fc415ba31d15bbbe79" id="r_a7db417768431e2fc415ba31d15bbbe79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1DamageAmounts.html">DamageAmounts</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1DamageRuntime.html#a7db417768431e2fc415ba31d15bbbe79">preview</a> (const <a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const <a class="el" href="structeve_1_1combat_1_1DamageRequest.html">DamageRequest</a> &amp;request) const</td></tr>
+<tr class="memdesc:a7db417768431e2fc415ba31d15bbbe79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve final damage amounts without mutating the target, for authoritative tactical prediction.  <br /></td></tr>
+<tr class="separator:a7db417768431e2fc415ba31d15bbbe79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af56ca91afd9dd20d495e0e4d3024aed9" id="r_af56ca91afd9dd20d495e0e4d3024aed9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1DamageOutcome.html">DamageOutcome</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1DamageRuntime.html#af56ca91afd9dd20d495e0e4d3024aed9">apply</a> (<a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, const <a class="el" href="structeve_1_1combat_1_1DamageRequest.html">DamageRequest</a> &amp;request) const</td></tr>
+<tr class="memdesc:af56ca91afd9dd20d495e0e4d3024aed9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve and atomically commit one damage request.  <br /></td></tr>
+<tr class="separator:af56ca91afd9dd20d495e0e4d3024aed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8444f490717668fec3361779deb7018e" id="r_a8444f490717668fec3361779deb7018e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1combat_1_1DamageRuntime.html#a8444f490717668fec3361779deb7018e">recoverPoise</a> (<a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, double amount) const</td></tr>
+<tr class="memdesc:a8444f490717668fec3361779deb7018e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore an explicit poise amount, clamped to maxPoise.  <br /></td></tr>
+<tr class="separator:a8444f490717668fec3361779deb7018e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread deterministic damage coordinator. </p>
+<p><code>apply</code> prepares and validates the complete outcome before one assignment to target state. It uses no clock or RNG. IEEE-754 results are deterministic for identical inputs on supported backends; replay comparison uses exact stored doubles produced by this single resolution path. </p>
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00111">111</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4fc2712d52306c278f8cdf6f341be358" name="a4fc2712d52306c278f8cdf6f341be358"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fc2712d52306c278f8cdf6f341be358">&#9670;&#160;</a></span>DamageRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::combat::DamageRuntime::DamageRuntime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1combat_1_1IDamageRule.html">IDamageRule</a> *&#160;</td>
+          <td class="paramname"><em>rule</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1HitReactionPolicy.html">HitReactionPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct with an optional borrowed rule provider and owning policy copy. </p>
+
+<p class="definition">在文件 <a class="el" href="Damage_8h_source.html">Damage.h</a> 第 <a class="el" href="Damage_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af56ca91afd9dd20d495e0e4d3024aed9" name="af56ca91afd9dd20d495e0e4d3024aed9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af56ca91afd9dd20d495e0e4d3024aed9">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1DamageOutcome.html">DamageOutcome</a> &gt; eve::combat::DamageRuntime::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1combat_1_1DamageRequest.html">DamageRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve and atomically commit one damage request. </p>
+
+<p class="definition">在文件 <a class="el" href="Damage_8cpp_source.html">Damage.cpp</a> 第 <a class="el" href="Damage_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6097f89e3092d4ccd249c9d479785c1f">eve::combat::Death</a>, <a class="el" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea7a1920d61156abc05a60135aefe8bc67">eve::combat::Default</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea16d1bfa931066fc5c7876947e11295af">eve::combat::Flinch</a>, <a class="el" href="Damage_8h_source.html#l00081">eve::combat::HitReactionPolicy::flinchDamageThreshold</a>, <a class="el" href="Damage_8h_source.html#l00035">eve::combat::CombatState::health</a>, <a class="el" href="Damage_8h_source.html#l00060">eve::combat::DamageAmounts::healthDamage</a>, <a class="el" href="Damage_8h_source.html#l00052">eve::combat::DamageRequest::knockback</a>, <a class="el" href="Damage_8h_source.html#l00062">eve::combat::DamageAmounts::knockbackScale</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12eae085600d13d0c185ec1e3c4efd913601">eve::combat::Knockdown</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea6adf97f83acf6453d4a6a4b1070f3754">eve::combat::None</a>, <a class="el" href="Damage_8h_source.html#l00037">eve::combat::CombatState::poise</a>, <a class="el" href="Damage_8h_source.html#l00061">eve::combat::DamageAmounts::poiseDamage</a>, <a class="el" href="Damage_8cpp_source.html#l00061">preview()</a>, <a class="el" href="namespaceeve_1_1combat.html#ae48a90769b26c01a49b5d2fb2f21e86ea27703c8f150ac4bb0a3a83a7857353af">eve::combat::Provider</a>, <a class="el" href="Damage_8h_source.html#l00046">eve::combat::DamageRequest::source</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="namespaceeve_1_1combat.html#abb10ce294002e7d1edd776e32499e12ea9c953a2c37f8c641deeb996cf8924232">eve::combat::Stagger</a>, <a class="el" href="Damage_8h_source.html#l00082">eve::combat::HitReactionPolicy::staggerPoiseFraction</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="Damage_8h_source.html#l00047">eve::combat::DamageRequest::target</a>, <a class="el" href="Damage_8cpp_source.html#l00053">eve::combat::HitReactionPolicy::validate()</a>, <a class="el" href="Damage_8h_source.html#l00016">eve::combat::Impulse3::x</a>, <a class="el" href="Damage_8h_source.html#l00017">eve::combat::Impulse3::y</a> , 以及 <a class="el" href="Damage_8h_source.html#l00018">eve::combat::Impulse3::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l04260">eve::rts::RTSProjectileSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="a7db417768431e2fc415ba31d15bbbe79" name="a7db417768431e2fc415ba31d15bbbe79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7db417768431e2fc415ba31d15bbbe79">&#9670;&#160;</a></span>preview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1combat_1_1DamageAmounts.html">DamageAmounts</a> &gt; eve::combat::DamageRuntime::preview </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1combat_1_1DamageRequest.html">DamageRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve final damage amounts without mutating the target, for authoritative tactical prediction. </p>
+
+<p class="definition">在文件 <a class="el" href="Damage_8cpp_source.html">Damage.cpp</a> 第 <a class="el" href="Damage_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1combat_1_1IDamageRule.html#a1ec221590127466647a018a2046ce9e7">eve::combat::IDamageRule::evaluate()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Damage_8h_source.html#l00050">eve::combat::DamageRequest::healthDamage</a>, <a class="el" href="Damage_8h_source.html#l00051">eve::combat::DamageRequest::poiseDamage</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a>, <a class="el" href="Damage_8h_source.html#l00047">eve::combat::DamageRequest::target</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="Damage_8cpp_source.html#l00043">eve::combat::DamageRequest::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Damage_8cpp_source.html#l00079">apply()</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l00607">eve::rts::TacticsSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="a8444f490717668fec3361779deb7018e" name="a8444f490717668fec3361779deb7018e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8444f490717668fec3361779deb7018e">&#9670;&#160;</a></span>recoverPoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt; eve::combat::DamageRuntime::recoverPoise </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1combat_1_1CombatState.html">CombatState</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore an explicit poise amount, clamped to maxPoise. </p>
+
+<p class="definition">在文件 <a class="el" href="Damage_8cpp_source.html">Damage.cpp</a> 第 <a class="el" href="Damage_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">target</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/combat/<a class="el" href="Damage_8h_source.html">Damage.h</a></li>
+<li>src/modules/combat/<a class="el" href="Damage_8cpp_source.html">Damage.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

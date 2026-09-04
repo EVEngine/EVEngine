@@ -1,0 +1,969 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::particles::Particles类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1particles.html">particles</a></li><li class="navelem"><a class="el" href="classeve_1_1particles_1_1Particles.html">Particles</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1particles_1_1Particles-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::particles::Particles类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1particles_1_1Particles.html" title="Particles module — factory + script binding. Per-frame: scheduler step → config reload → ParticleSimS...">Particles</a> module — factory + script binding. Per-frame: scheduler step → config reload → <a class="el" href="classeve_1_1particles_1_1ParticleSimSystem.html" title="Advances all ParticleEmitter Sim components.">ParticleSimSystem</a> → <a class="el" href="classeve_1_1particles_1_1ParticleRenderSystem.html" title="Draws all visible ParticleEmitter entities via Graphics batch path.">ParticleRenderSystem</a>. <code>advance(SimulationStep)</code> is the deterministic entry; <code><a class="el" href="classeve_1_1particles_1_1Particles.html#ac70ca878fca521dc6564ca3eed096d03" title="Legacy seconds facade; invalid conversion/step is explicitly consumed.">update(float)</a></code> remains a compatibility facade that explicitly consumes its <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. CPU particle integration is deterministic for fixed seed/tick within float integration tolerance; resident GPU integration is tolerance-bounded and may expose a backend-specific observable particle count.  
+ <a href="classeve_1_1particles_1_1Particles.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Particles_8h_source.html">Particles.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::particles::Particles 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1particles_1_1Particles.png" usemap="#eve::particles::Particles_map" alt=""/>
+  <map id="eve::particles::Particles_map" name="eve::particles::Particles_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,142,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad29738c6a4f628961720b6acc2a9482a" id="r_ad29738c6a4f628961720b6acc2a9482a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#ad29738c6a4f628961720b6acc2a9482a">Module_REG</a> (<a class="el" href="classeve_1_1particles_1_1Particles.html">Particles</a>)</td></tr>
+<tr class="separator:ad29738c6a4f628961720b6acc2a9482a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95fb859d47aeec58d59ef0e8ce2cdb89" id="r_a95fb859d47aeec58d59ef0e8ce2cdb89"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a95fb859d47aeec58d59ef0e8ce2cdb89">Particles</a> ()</td></tr>
+<tr class="separator:a95fb859d47aeec58d59ef0e8ce2cdb89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3edca347017ed6e9c0262107cfa8e3e4" id="r_a3edca347017ed6e9c0262107cfa8e3e4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a3edca347017ed6e9c0262107cfa8e3e4">~Particles</a> () override=default</td></tr>
+<tr class="separator:a3edca347017ed6e9c0262107cfa8e3e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a116eebb71d74e6f9ebf217de5d3ade95" id="r_a116eebb71d74e6f9ebf217de5d3ade95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a116eebb71d74e6f9ebf217de5d3ade95">newEmitter</a> (int bufferSize=1000)</td></tr>
+<tr class="separator:a116eebb71d74e6f9ebf217de5d3ade95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7910db048f2f7b614ae47f9122b93803" id="r_a7910db048f2f7b614ae47f9122b93803"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a7910db048f2f7b614ae47f9122b93803">newEmitterFromFile</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a7910db048f2f7b614ae47f9122b93803"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create emitter from JSON config file (reads optional "buffer").  <br /></td></tr>
+<tr class="separator:a7910db048f2f7b614ae47f9122b93803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5fe7c20f25008b75e675c812fe772d2" id="r_af5fe7c20f25008b75e675c812fe772d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#af5fe7c20f25008b75e675c812fe772d2">newEffectFromText</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:af5fe7c20f25008b75e675c812fe772d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a versioned multi-emitter effect from JSON text.  <br /></td></tr>
+<tr class="separator:af5fe7c20f25008b75e675c812fe772d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5133387bf91d459f47ffa36f9e199ce8" id="r_a5133387bf91d459f47ffa36f9e199ce8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a5133387bf91d459f47ffa36f9e199ce8">newEffectFromFile</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a5133387bf91d459f47ffa36f9e199ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a versioned multi-emitter effect asset from a JSON file.  <br /></td></tr>
+<tr class="separator:a5133387bf91d459f47ffa36f9e199ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99c8deb8b629165ffda24be7fc8f26e0" id="r_a99c8deb8b629165ffda24be7fc8f26e0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a99c8deb8b629165ffda24be7fc8f26e0">getLastEffectError</a> () const</td></tr>
+<tr class="memdesc:a99c8deb8b629165ffda24be7fc8f26e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the latest effect asset parse or load error.  <br /></td></tr>
+<tr class="separator:a99c8deb8b629165ffda24be7fc8f26e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e0f1463f681671924b7744695eec6f8" id="r_a0e0f1463f681671924b7744695eec6f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a0e0f1463f681671924b7744695eec6f8">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a0e0f1463f681671924b7744695eec6f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance simulation from an injected scheduler step.  <br /></td></tr>
+<tr class="separator:a0e0f1463f681671924b7744695eec6f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac70ca878fca521dc6564ca3eed096d03" id="r_ac70ca878fca521dc6564ca3eed096d03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#ac70ca878fca521dc6564ca3eed096d03">update</a> (float dt)</td></tr>
+<tr class="memdesc:ac70ca878fca521dc6564ca3eed096d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy seconds facade; invalid conversion/step is explicitly consumed.  <br /></td></tr>
+<tr class="separator:ac70ca878fca521dc6564ca3eed096d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acea442d88b0987db6add0a4970b573ef" id="r_acea442d88b0987db6add0a4970b573ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#acea442d88b0987db6add0a4970b573ef">render</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="separator:acea442d88b0987db6add0a4970b573ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55b24f1be0bba2c9d10239acebcd5095" id="r_a55b24f1be0bba2c9d10239acebcd5095"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a55b24f1be0bba2c9d10239acebcd5095">pollConfigs</a> ()</td></tr>
+<tr class="memdesc:a55b24f1be0bba2c9d10239acebcd5095"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit hot-reload poll; also invoked from <a class="el" href="classeve_1_1particles_1_1Particles.html#ac70ca878fca521dc6564ca3eed096d03" title="Legacy seconds facade; invalid conversion/step is explicitly consumed.">update()</a>.  <br /></td></tr>
+<tr class="separator:a55b24f1be0bba2c9d10239acebcd5095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9397a6d6c4aec37bff58b35b3649ac55" id="r_a9397a6d6c4aec37bff58b35b3649ac55"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a9397a6d6c4aec37bff58b35b3649ac55">getEmitterCount</a> () const</td></tr>
+<tr class="separator:a9397a6d6c4aec37bff58b35b3649ac55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52091f9a52b013805eb423359eb4c65f" id="r_a52091f9a52b013805eb423359eb4c65f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a52091f9a52b013805eb423359eb4c65f">setBudget</a> (int maxParticles, int maxSimulatedEmitters)</td></tr>
+<tr class="memdesc:a52091f9a52b013805eb423359eb4c65f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set global soft particle and simulated-emitter budgets; zero is unlimited.  <br /></td></tr>
+<tr class="separator:a52091f9a52b013805eb423359eb4c65f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adec2e75d063e6cdc7775fc6c02ad14aa" id="r_adec2e75d063e6cdc7775fc6c02ad14aa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#adec2e75d063e6cdc7775fc6c02ad14aa">getMaxParticles</a> () const</td></tr>
+<tr class="memdesc:adec2e75d063e6cdc7775fc6c02ad14aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the global live-particle soft cap, or zero when unlimited.  <br /></td></tr>
+<tr class="separator:adec2e75d063e6cdc7775fc6c02ad14aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad14a4072589fc59a6c925c692f37351b" id="r_ad14a4072589fc59a6c925c692f37351b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#ad14a4072589fc59a6c925c692f37351b">getMaxSimulatedEmitters</a> () const</td></tr>
+<tr class="memdesc:ad14a4072589fc59a6c925c692f37351b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the per-frame simulated-emitter cap, or zero when unlimited.  <br /></td></tr>
+<tr class="separator:ad14a4072589fc59a6c925c692f37351b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06cb19cd6155ede7242326c89c28e829" id="r_a06cb19cd6155ede7242326c89c28e829"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a06cb19cd6155ede7242326c89c28e829">setQualityLevel</a> (int quality)</td></tr>
+<tr class="memdesc:a06cb19cd6155ede7242326c89c28e829"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select the runtime VFX quality tier in [0,3].  <br /></td></tr>
+<tr class="separator:a06cb19cd6155ede7242326c89c28e829"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d6ed9b78a9e90ed017c0f63fadcb5e7" id="r_a1d6ed9b78a9e90ed017c0f63fadcb5e7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a1d6ed9b78a9e90ed017c0f63fadcb5e7">getQualityLevel</a> () const</td></tr>
+<tr class="memdesc:a1d6ed9b78a9e90ed017c0f63fadcb5e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current runtime VFX quality tier.  <br /></td></tr>
+<tr class="separator:a1d6ed9b78a9e90ed017c0f63fadcb5e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe1a12b468718ab77c5d3df9871d91cf" id="r_afe1a12b468718ab77c5d3df9871d91cf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#afe1a12b468718ab77c5d3df9871d91cf">getLastSimulatedEmitters</a> () const</td></tr>
+<tr class="memdesc:afe1a12b468718ab77c5d3df9871d91cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return emitters simulated during the last update.  <br /></td></tr>
+<tr class="separator:afe1a12b468718ab77c5d3df9871d91cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac966178e7b5ceabbc46d8a168cff3b88" id="r_ac966178e7b5ceabbc46d8a168cff3b88"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#ac966178e7b5ceabbc46d8a168cff3b88">getLastCulledEmitters</a> () const</td></tr>
+<tr class="memdesc:ac966178e7b5ceabbc46d8a168cff3b88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return emitters skipped by culling during the last update.  <br /></td></tr>
+<tr class="separator:ac966178e7b5ceabbc46d8a168cff3b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabc69242e0a4cb1599ce74f529beab32" id="r_aabc69242e0a4cb1599ce74f529beab32"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#aabc69242e0a4cb1599ce74f529beab32">getLastBudgetSkippedEmitters</a> () const</td></tr>
+<tr class="memdesc:aabc69242e0a4cb1599ce74f529beab32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return emitters skipped by quality or capacity budgets.  <br /></td></tr>
+<tr class="separator:aabc69242e0a4cb1599ce74f529beab32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a543229caaf9c16c6fb6e453a2f2ebad1" id="r_a543229caaf9c16c6fb6e453a2f2ebad1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a543229caaf9c16c6fb6e453a2f2ebad1">getLastParticleCount</a> () const</td></tr>
+<tr class="memdesc:a543229caaf9c16c6fb6e453a2f2ebad1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return live particles after the last update.  <br /></td></tr>
+<tr class="separator:a543229caaf9c16c6fb6e453a2f2ebad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4abe34bad1cc481cf69983f687eb1fd" id="r_ac4abe34bad1cc481cf69983f687eb1fd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#ac4abe34bad1cc481cf69983f687eb1fd">getLastSpawnedParticles</a> () const</td></tr>
+<tr class="memdesc:ac4abe34bad1cc481cf69983f687eb1fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return particles spawned during the last update.  <br /></td></tr>
+<tr class="separator:ac4abe34bad1cc481cf69983f687eb1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dcb6e4c0d02ea72aa3d17fa3652d24a" id="r_a7dcb6e4c0d02ea72aa3d17fa3652d24a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a7dcb6e4c0d02ea72aa3d17fa3652d24a">getLastDroppedSpawns</a> () const</td></tr>
+<tr class="memdesc:a7dcb6e4c0d02ea72aa3d17fa3652d24a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return automatic spawns dropped by budget during the last update.  <br /></td></tr>
+<tr class="separator:a7dcb6e4c0d02ea72aa3d17fa3652d24a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e78e4fcaf4112367eefe22a22ad9af2" id="r_a0e78e4fcaf4112367eefe22a22ad9af2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a0e78e4fcaf4112367eefe22a22ad9af2">getLastGpuResidentEmitters</a> () const</td></tr>
+<tr class="memdesc:a0e78e4fcaf4112367eefe22a22ad9af2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return emitters using the resident GPU backend after the last update.  <br /></td></tr>
+<tr class="separator:a0e78e4fcaf4112367eefe22a22ad9af2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1ae6bf3a4c2f826e585d488986197bc" id="r_af1ae6bf3a4c2f826e585d488986197bc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#af1ae6bf3a4c2f826e585d488986197bc">getLastGpuResidentParticles</a> () const</td></tr>
+<tr class="memdesc:af1ae6bf3a4c2f826e585d488986197bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the CPU lifetime estimate for resident GPU particles.  <br /></td></tr>
+<tr class="separator:af1ae6bf3a4c2f826e585d488986197bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97aab3e8b216e3d9cb845889efec5cf8" id="r_a97aab3e8b216e3d9cb845889efec5cf8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a97aab3e8b216e3d9cb845889efec5cf8">getLastRenderedParticles</a> () const</td></tr>
+<tr class="memdesc:a97aab3e8b216e3d9cb845889efec5cf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return particles submitted during the last render.  <br /></td></tr>
+<tr class="separator:a97aab3e8b216e3d9cb845889efec5cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5627fcd5961fe13bdadf1a3c38116d5" id="r_ab5627fcd5961fe13bdadf1a3c38116d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#ab5627fcd5961fe13bdadf1a3c38116d5">getLastSimulationMs</a> () const</td></tr>
+<tr class="memdesc:ab5627fcd5961fe13bdadf1a3c38116d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return CPU simulation wall time in milliseconds.  <br /></td></tr>
+<tr class="separator:ab5627fcd5961fe13bdadf1a3c38116d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2caf1145c09b1317189ee476a49ddb09" id="r_a2caf1145c09b1317189ee476a49ddb09"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1particles_1_1Particles.html#a2caf1145c09b1317189ee476a49ddb09">getLastRenderMs</a> () const</td></tr>
+<tr class="memdesc:a2caf1145c09b1317189ee476a49ddb09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return particle render-build and submission wall time in milliseconds.  <br /></td></tr>
+<tr class="separator:a2caf1145c09b1317189ee476a49ddb09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1particles_1_1Particles.html" title="Particles module — factory + script binding. Per-frame: scheduler step → config reload → ParticleSimS...">Particles</a> module — factory + script binding. Per-frame: scheduler step → config reload → <a class="el" href="classeve_1_1particles_1_1ParticleSimSystem.html" title="Advances all ParticleEmitter Sim components.">ParticleSimSystem</a> → <a class="el" href="classeve_1_1particles_1_1ParticleRenderSystem.html" title="Draws all visible ParticleEmitter entities via Graphics batch path.">ParticleRenderSystem</a>. <code>advance(SimulationStep)</code> is the deterministic entry; <code><a class="el" href="classeve_1_1particles_1_1Particles.html#ac70ca878fca521dc6564ca3eed096d03" title="Legacy seconds facade; invalid conversion/step is explicitly consumed.">update(float)</a></code> remains a compatibility facade that explicitly consumes its <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a>. CPU particle integration is deterministic for fixed seed/tick within float integration tolerance; resident GPU integration is tolerance-bounded and may expose a backend-specific observable particle count. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8h_source.html">Particles.h</a> 第 <a class="el" href="Particles_8h_source.html#l00026">26</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a95fb859d47aeec58d59ef0e8ce2cdb89" name="a95fb859d47aeec58d59ef0e8ce2cdb89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95fb859d47aeec58d59ef0e8ce2cdb89">&#9670;&#160;</a></span>Particles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::particles::Particles::Particles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00037">eve::particles::registerParticlesCapabilities()</a>.</p>
+
+</div>
+</div>
+<a id="a3edca347017ed6e9c0262107cfa8e3e4" name="a3edca347017ed6e9c0262107cfa8e3e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3edca347017ed6e9c0262107cfa8e3e4">&#9670;&#160;</a></span>~Particles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::particles::Particles::~Particles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0e0f1463f681671924b7744695eec6f8" name="a0e0f1463f681671924b7744695eec6f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e0f1463f681671924b7744695eec6f8">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::particles::Particles::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance simulation from an injected scheduler step. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleSystem_8cpp_source.html#l00488">eve::particles::ParticleSimSystem::advance()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ParticleSystem_8cpp_source.html#l00631">eve::particles::ParticleConfigSystem::poll()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00196">step</a> , 以及 <a class="el" href="ParticleSystem_8cpp_source.html#l00586">eve::particles::ParticleLightSystem::update()</a>.</p>
+
+</div>
+</div>
+<a id="a9397a6d6c4aec37bff58b35b3649ac55" name="a9397a6d6c4aec37bff58b35b3649ac55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9397a6d6c4aec37bff58b35b3649ac55">&#9670;&#160;</a></span>getEmitterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getEmitterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00682">view</a>.</p>
+
+</div>
+</div>
+<a id="aabc69242e0a4cb1599ce74f529beab32" name="aabc69242e0a4cb1599ce74f529beab32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabc69242e0a4cb1599ce74f529beab32">&#9670;&#160;</a></span>getLastBudgetSkippedEmitters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastBudgetSkippedEmitters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return emitters skipped by quality or capacity budgets. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a>.</p>
+
+</div>
+</div>
+<a id="ac966178e7b5ceabbc46d8a168cff3b88" name="ac966178e7b5ceabbc46d8a168cff3b88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac966178e7b5ceabbc46d8a168cff3b88">&#9670;&#160;</a></span>getLastCulledEmitters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastCulledEmitters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return emitters skipped by culling during the last update. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8h_source.html#l00026">eve::particles::ParticleFrameStats::emittersCulled</a> , 以及 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a>.</p>
+
+</div>
+</div>
+<a id="a7dcb6e4c0d02ea72aa3d17fa3652d24a" name="a7dcb6e4c0d02ea72aa3d17fa3652d24a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dcb6e4c0d02ea72aa3d17fa3652d24a">&#9670;&#160;</a></span>getLastDroppedSpawns()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastDroppedSpawns </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return automatic spawns dropped by budget during the last update. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8h_source.html#l00033">eve::particles::ParticleFrameStats::droppedSpawns</a> , 以及 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a>.</p>
+
+</div>
+</div>
+<a id="a99c8deb8b629165ffda24be7fc8f26e0" name="a99c8deb8b629165ffda24be7fc8f26e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99c8deb8b629165ffda24be7fc8f26e0">&#9670;&#160;</a></span>getLastEffectError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::particles::Particles::getLastEffectError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the latest effect asset parse or load error. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8h_source.html">Particles.h</a> 第 <a class="el" href="Particles_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e78e4fcaf4112367eefe22a22ad9af2" name="a0e78e4fcaf4112367eefe22a22ad9af2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e78e4fcaf4112367eefe22a22ad9af2">&#9670;&#160;</a></span>getLastGpuResidentEmitters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastGpuResidentEmitters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return emitters using the resident GPU backend after the last update. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8h_source.html#l00034">eve::particles::ParticleFrameStats::gpuResidentEmitters</a> , 以及 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a>.</p>
+
+</div>
+</div>
+<a id="af1ae6bf3a4c2f826e585d488986197bc" name="af1ae6bf3a4c2f826e585d488986197bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1ae6bf3a4c2f826e585d488986197bc">&#9670;&#160;</a></span>getLastGpuResidentParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastGpuResidentParticles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the CPU lifetime estimate for resident GPU particles. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00142">142</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8h_source.html#l00035">eve::particles::ParticleFrameStats::gpuResidentParticles</a> , 以及 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a>.</p>
+
+</div>
+</div>
+<a id="a543229caaf9c16c6fb6e453a2f2ebad1" name="a543229caaf9c16c6fb6e453a2f2ebad1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a543229caaf9c16c6fb6e453a2f2ebad1">&#9670;&#160;</a></span>getLastParticleCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastParticleCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return live particles after the last update. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a> , 以及 <a class="el" href="ParticleRuntime_8h_source.html#l00030">eve::particles::ParticleFrameStats::particlesAfter</a>.</p>
+
+</div>
+</div>
+<a id="a97aab3e8b216e3d9cb845889efec5cf8" name="a97aab3e8b216e3d9cb845889efec5cf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97aab3e8b216e3d9cb845889efec5cf8">&#9670;&#160;</a></span>getLastRenderedParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastRenderedParticles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return particles submitted during the last render. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a> , 以及 <a class="el" href="ParticleRuntime_8h_source.html#l00036">eve::particles::ParticleFrameStats::renderedParticles</a>.</p>
+
+</div>
+</div>
+<a id="a2caf1145c09b1317189ee476a49ddb09" name="a2caf1145c09b1317189ee476a49ddb09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2caf1145c09b1317189ee476a49ddb09">&#9670;&#160;</a></span>getLastRenderMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::Particles::getLastRenderMs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return particle render-build and submission wall time in milliseconds. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a> , 以及 <a class="el" href="ParticleRuntime_8h_source.html#l00039">eve::particles::ParticleFrameStats::renderMs</a>.</p>
+
+</div>
+</div>
+<a id="afe1a12b468718ab77c5d3df9871d91cf" name="afe1a12b468718ab77c5d3df9871d91cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe1a12b468718ab77c5d3df9871d91cf">&#9670;&#160;</a></span>getLastSimulatedEmitters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastSimulatedEmitters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return emitters simulated during the last update. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8h_source.html#l00025">eve::particles::ParticleFrameStats::emittersSimulated</a> , 以及 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a>.</p>
+
+</div>
+</div>
+<a id="ab5627fcd5961fe13bdadf1a3c38116d5" name="ab5627fcd5961fe13bdadf1a3c38116d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5627fcd5961fe13bdadf1a3c38116d5">&#9670;&#160;</a></span>getLastSimulationMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::particles::Particles::getLastSimulationMs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return CPU simulation wall time in milliseconds. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a> , 以及 <a class="el" href="ParticleRuntime_8h_source.html#l00038">eve::particles::ParticleFrameStats::simulationMs</a>.</p>
+
+</div>
+</div>
+<a id="ac4abe34bad1cc481cf69983f687eb1fd" name="ac4abe34bad1cc481cf69983f687eb1fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4abe34bad1cc481cf69983f687eb1fd">&#9670;&#160;</a></span>getLastSpawnedParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getLastSpawnedParticles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return particles spawned during the last update. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00011">eve::particles::particleFrameStats()</a> , 以及 <a class="el" href="ParticleRuntime_8h_source.html#l00031">eve::particles::ParticleFrameStats::particlesSpawned</a>.</p>
+
+</div>
+</div>
+<a id="adec2e75d063e6cdc7775fc6c02ad14aa" name="adec2e75d063e6cdc7775fc6c02ad14aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adec2e75d063e6cdc7775fc6c02ad14aa">&#9670;&#160;</a></span>getMaxParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getMaxParticles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the global live-particle soft cap, or zero when unlimited. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8h_source.html#l00012">eve::particles::ParticleBudgetConfig::maxParticles</a> , 以及 <a class="el" href="ParticleRuntime_8cpp_source.html#l00010">eve::particles::particleBudgetConfig()</a>.</p>
+
+</div>
+</div>
+<a id="ad14a4072589fc59a6c925c692f37351b" name="ad14a4072589fc59a6c925c692f37351b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad14a4072589fc59a6c925c692f37351b">&#9670;&#160;</a></span>getMaxSimulatedEmitters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getMaxSimulatedEmitters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the per-frame simulated-emitter cap, or zero when unlimited. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8h_source.html#l00014">eve::particles::ParticleBudgetConfig::maxSimulatedEmitters</a> , 以及 <a class="el" href="ParticleRuntime_8cpp_source.html#l00010">eve::particles::particleBudgetConfig()</a>.</p>
+
+</div>
+</div>
+<a id="a1d6ed9b78a9e90ed017c0f63fadcb5e7" name="a1d6ed9b78a9e90ed017c0f63fadcb5e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d6ed9b78a9e90ed017c0f63fadcb5e7">&#9670;&#160;</a></span>getQualityLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::getQualityLevel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the current runtime VFX quality tier. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00128">128</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00010">eve::particles::particleBudgetConfig()</a> , 以及 <a class="el" href="ParticleRuntime_8h_source.html#l00016">eve::particles::ParticleBudgetConfig::qualityLevel</a>.</p>
+
+</div>
+</div>
+<a id="ad29738c6a4f628961720b6acc2a9482a" name="ad29738c6a4f628961720b6acc2a9482a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad29738c6a4f628961720b6acc2a9482a">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::particles::Particles::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1particles_1_1Particles.html">Particles</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5133387bf91d459f47ffa36f9e199ce8" name="a5133387bf91d459f47ffa36f9e199ce8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5133387bf91d459f47ffa36f9e199ce8">&#9670;&#160;</a></span>newEffectFromFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> * eve::particles::Particles::newEffectFromFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a versioned multi-emitter effect asset from a JSON file. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEffect_8cpp_source.html#l00226">eve::particles::ParticleEffect::fromFile()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="af5fe7c20f25008b75e675c812fe772d2" name="af5fe7c20f25008b75e675c812fe772d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5fe7c20f25008b75e675c812fe772d2">&#9670;&#160;</a></span>newEffectFromText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEffect.html">ParticleEffect</a> * eve::particles::Particles::newEffectFromText </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a versioned multi-emitter effect from JSON text. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEffect_8cpp_source.html#l00110">eve::particles::ParticleEffect::fromText()</a>.</p>
+
+</div>
+</div>
+<a id="a116eebb71d74e6f9ebf217de5d3ade95" name="a116eebb71d74e6f9ebf217de5d3ade95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a116eebb71d74e6f9ebf217de5d3ade95">&#9670;&#160;</a></span>newEmitter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> * eve::particles::Particles::newEmitter </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bufferSize</em> = <code>1000</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleEmitter_8cpp_source.html#l00693">eve::particles::ParticleEmitter::createEmitter()</a>.</p>
+
+</div>
+</div>
+<a id="a7910db048f2f7b614ae47f9122b93803" name="a7910db048f2f7b614ae47f9122b93803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7910db048f2f7b614ae47f9122b93803">&#9670;&#160;</a></span>newEmitterFromFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1particles_1_1ParticleEmitter.html">ParticleEmitter</a> * eve::particles::Particles::newEmitterFromFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create emitter from JSON config file (reads optional "buffer"). </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00143">buffer</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00693">eve::particles::ParticleEmitter::createEmitter()</a>, <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>, <a class="el" href="ParticleConfig_8cpp_source.html#l00646">eve::particles::loadConfigFile()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="a55b24f1be0bba2c9d10239acebcd5095" name="a55b24f1be0bba2c9d10239acebcd5095"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55b24f1be0bba2c9d10239acebcd5095">&#9670;&#160;</a></span>pollConfigs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::particles::Particles::pollConfigs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit hot-reload poll; also invoked from <a class="el" href="classeve_1_1particles_1_1Particles.html#ac70ca878fca521dc6564ca3eed096d03" title="Legacy seconds facade; invalid conversion/step is explicitly consumed.">update()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleSystem_8cpp_source.html#l00631">eve::particles::ParticleConfigSystem::poll()</a>.</p>
+
+</div>
+</div>
+<a id="acea442d88b0987db6add0a4970b573ef" name="acea442d88b0987db6add0a4970b573ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acea442d88b0987db6add0a4970b573ef">&#9670;&#160;</a></span>render()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::Particles::render </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleSystem_8cpp_source.html#l00554">eve::particles::ParticleRenderSystem::render()</a>.</p>
+
+</div>
+</div>
+<a id="a52091f9a52b013805eb423359eb4c65f" name="a52091f9a52b013805eb423359eb4c65f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52091f9a52b013805eb423359eb4c65f">&#9670;&#160;</a></span>setBudget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::Particles::setBudget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxParticles</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxSimulatedEmitters</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set global soft particle and simulated-emitter budgets; zero is unlimited. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00010">eve::particles::particleBudgetConfig()</a>.</p>
+
+</div>
+</div>
+<a id="a06cb19cd6155ede7242326c89c28e829" name="a06cb19cd6155ede7242326c89c28e829"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06cb19cd6155ede7242326c89c28e829">&#9670;&#160;</a></span>setQualityLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::Particles::setQualityLevel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>quality</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select the runtime VFX quality tier in [0,3]. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticleRuntime_8cpp_source.html#l00010">eve::particles::particleBudgetConfig()</a> , 以及 <a class="el" href="ParticleRuntime_8h_source.html#l00016">eve::particles::ParticleBudgetConfig::qualityLevel</a>.</p>
+
+</div>
+</div>
+<a id="ac70ca878fca521dc6564ca3eed096d03" name="ac70ca878fca521dc6564ca3eed096d03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac70ca878fca521dc6564ca3eed096d03">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::particles::Particles::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy seconds facade; invalid conversion/step is explicitly consumed. </p>
+
+<p class="definition">在文件 <a class="el" href="Particles_8cpp_source.html">Particles.cpp</a> 第 <a class="el" href="Particles_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profile_8h_source.html#l00137">EV_PROFILE_MODULE</a>, <a class="el" href="ParticleSystem_8cpp_source.html#l00631">eve::particles::ParticleConfigSystem::poll()</a>, <a class="el" href="ParticleSystem_8cpp_source.html#l00586">eve::particles::ParticleLightSystem::update()</a> , 以及 <a class="el" href="ParticleSystem_8cpp_source.html#l00492">eve::particles::ParticleSimSystem::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/particles/<a class="el" href="Particles_8h_source.html">Particles.h</a></li>
+<li>src/modules/particles/<a class="el" href="Particles_8cpp_source.html">Particles.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

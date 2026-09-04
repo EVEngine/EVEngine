@@ -1,0 +1,307 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/definitions_editing/DefinitionTarget.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_703c47f957445a6408f187c8855211f2.html">definitions_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DefinitionTarget.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DefinitionTarget_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditingAuthority_8h.html">editing/EditingAuthority.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditableTarget_8h.html">editing/EditableTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1definitions.html">eve::definitions</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span>DefinitionRegistry;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1definitions__editing.html">eve::definitions_editing</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editing.html">eve::editing</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> = <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a> = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1definitions__editing.html#a49c975de1a9ce89e39b42efcb30212be">EditorDiagnostic</a> = <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult</a> = <a class="code hl_class" href="classeve_1_1Result.html">eve::editing::Result&lt;T&gt;</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html">DefinitionReferenceField</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#add3e8de516376e077f1e25bcb777c40b">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#add3e8de516376e077f1e25bcb777c40b">path</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#a1555b99b7ab6961d4af92b982b6f5ed5">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#a1555b99b7ab6961d4af92b982b6f5ed5">type</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#a8549df1567d5cb0ed2e79876a2ca0a68">   27</a></span>    std::string <a class="code hl_variable" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#a8549df1567d5cb0ed2e79876a2ca0a68">id</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#abf8ea6e233945c006d6f343c31d16e98">   28</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#abf8ea6e233945c006d6f343c31d16e98">required</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html">   32</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html">DefinitionDocument</a> : <span class="keyword">public</span> <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1editing_1_1IEditableTarget.html">IEditableTarget</a>, <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aedd27b112061c1b3ed9b2bcd0151783e">   34</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aedd27b112061c1b3ed9b2bcd0151783e">ReferenceResolver</a> = std::function&lt;bool(<span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2dd4ddc9654d71a73116c3ad86653c7b">type</a>, <span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>)&gt;;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aaebeec61fb96070b622dc4e1753508ae">   35</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aaebeec61fb96070b622dc4e1753508ae">SchemaValidator</a> = std::function&lt;std::vector&lt;EditorDiagnostic&gt;(<span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2dd4ddc9654d71a73116c3ad86653c7b">type</a>,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                                                        <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1837b114075166cde823bbec5f54b199">version</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                                                        <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a0d50403231013e74d3636fdbf1d3bc32">json</a>)&gt;;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_class" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html">DefinitionDocument</a>(std::string <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2dd4ddc9654d71a73116c3ad86653c7b">type</a>, std::string <span class="keywordtype">id</span>, <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1837b114075166cde823bbec5f54b199">version</a> = 1);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab72e38e2c3b2639365e08033a11b4f33">   41</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">TargetId</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab72e38e2c3b2639365e08033a11b4f33">targetId</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">TargetId</a>(targetId_); }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ae631d1f9a264b15e6b5382ebdfeec36c">   42</a></span>    std::uint64_t <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ae631d1f9a264b15e6b5382ebdfeec36c">revision</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a9f32ac07d474ec08d4435c0a1e9fe776">   43</a></span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a9f32ac07d474ec08d4435c0a1e9fe776">dirtyRegion</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> dirty_; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab31facde0f67e33875aa635ce3b81232">   44</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab31facde0f67e33875aa635ce3b81232">clearDirtyRegion</a>()<span class="keyword"> override </span>{ dirty_.<a class="code hl_function" href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">clear</a>(); }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ace10d6859bdd9f7545d899c4d3fc3e35">describe</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1eb3a5eb2a4c8c3ef27ae747868a5e0f">   47</a></span>    <span class="keywordtype">void</span>* <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1eb3a5eb2a4c8c3ef27ae747868a5e0f">queryCapability</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">CapabilityId</a>&amp;)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a5abf99674a5c63ebe4eebd1932c068a7">applyDomainOperation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a>&amp; operation) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab732acc727a1950bbc78bce43617b47d">setJson</a>(std::string <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a0d50403231013e74d3636fdbf1d3bc32">json</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aaecb7c6c8187bf20eb7c5fb3a90a12a2">setVersion</a>(<span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1837b114075166cde823bbec5f54b199">version</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a69691d4a1d242ead5aabf87f7f98b886">setReferences</a>(std::vector&lt;DefinitionReferenceField&gt; references);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;DomainOperation&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a8cd5daa7639fb042c8e345a607b46e5f">makeSetField</a>(<span class="keyword">const</span> std::string&amp; field,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                                               <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::vector&lt;EditorDiagnostic&gt; <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1fd24059a1b3371bd4331ecb44cb30b6">validate</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aaebeec61fb96070b622dc4e1753508ae">SchemaValidator</a>&amp; schema,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                                           <span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aedd27b112061c1b3ed9b2bcd0151783e">ReferenceResolver</a>&amp; references) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a22f049c5c35342a719267e82864e5f6c">snapshotValue</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aa91dc4c07f15f0f715b9a071472ec7a6">loadSnapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; snapshot);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2dd4ddc9654d71a73116c3ad86653c7b">   67</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2dd4ddc9654d71a73116c3ad86653c7b">type</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> type_; }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2ed53aa3482ffa4ebae8f35b6a49317b">   69</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2ed53aa3482ffa4ebae8f35b6a49317b">id</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1837b114075166cde823bbec5f54b199">   71</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1837b114075166cde823bbec5f54b199">version</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> version_; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a0d50403231013e74d3636fdbf1d3bc32">   73</a></span>    <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a0d50403231013e74d3636fdbf1d3bc32">json</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> json_; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a5232779d614c46fccc159be8601337e2">   75</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a5232779d614c46fccc159be8601337e2">documentRevision</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::string type_;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    std::string id_;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    std::string targetId_;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">int</span> version_ = 1;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::string json_ = <span class="stringliteral">&quot;{}&quot;</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::vector&lt;DefinitionReferenceField&gt; references_;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_typedef" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a> revision_ = 0;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_struct" href="structeve_1_1editing_1_1EditRegion.html">EditRegion</a> dirty_;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="};">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classeve_1_1definitions__editing_1_1DefinitionRuntimePublisher.html">   89</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1definitions__editing_1_1DefinitionRuntimePublisher.html">DefinitionRuntimePublisher</a> {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1definitions__editing_1_1DefinitionRuntimePublisher.html#ab9c6d97ce1274e8d1933104590b6cae3">publish</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1definitions__editing_1_1DefinitionDocument.html">DefinitionDocument</a>&amp; document,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                               <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">definitions::DefinitionRegistry</a>* registry,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                               <span class="keywordtype">bool</span> replaceExisting = <span class="keyword">false</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>};</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}  <span class="comment">// namespace eve::definitions_editing</span></div>
+<div class="ttc" id="aEditableTarget_8h_html"><div class="ttname"><a href="EditableTarget_8h.html">EditableTarget.h</a></div></div>
+<div class="ttc" id="aEditingAuthority_8h_html"><div class="ttname"><a href="EditingAuthority_8h.html">EditingAuthority.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions_1_1DefinitionRegistry_html"><div class="ttname"><a href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a></div><div class="ttdoc">Deterministic registry of topic-neutral, versioned JSON definitions.</div><div class="ttdef"><b>Definition</b> <a href="Definitions_8h_source.html#l00056">Definitions.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html">eve::definitions_editing::DefinitionDocument</a></div><div class="ttdoc">UI-neutral versioned definition asset and cross-reference model.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00032">DefinitionTarget.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a0d50403231013e74d3636fdbf1d3bc32"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a0d50403231013e74d3636fdbf1d3bc32">eve::definitions_editing::DefinitionDocument::json</a></div><div class="ttdeci">const std::string &amp; json() const</div><div class="ttdoc">Return JSON payload text.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00073">DefinitionTarget.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a1837b114075166cde823bbec5f54b199"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1837b114075166cde823bbec5f54b199">eve::definitions_editing::DefinitionDocument::version</a></div><div class="ttdeci">int version() const</div><div class="ttdoc">Return schema version.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00071">DefinitionTarget.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a1eb3a5eb2a4c8c3ef27ae747868a5e0f"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1eb3a5eb2a4c8c3ef27ae747868a5e0f">eve::definitions_editing::DefinitionDocument::queryCapability</a></div><div class="ttdeci">void * queryCapability(const CapabilityId &amp;) override</div><div class="ttdoc">Query an optional target capability.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00047">DefinitionTarget.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a1fd24059a1b3371bd4331ecb44cb30b6"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a1fd24059a1b3371bd4331ecb44cb30b6">eve::definitions_editing::DefinitionDocument::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate(const SchemaValidator &amp;schema, const ReferenceResolver &amp;references) const</div><div class="ttdoc">Run schema and cross-reference diagnostics without mutating content.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00124">DefinitionTarget.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a22f049c5c35342a719267e82864e5f6c"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a22f049c5c35342a719267e82864e5f6c">eve::definitions_editing::DefinitionDocument::snapshotValue</a></div><div class="ttdeci">EditorValue snapshotValue() const</div><div class="ttdoc">Capture deterministic content for DocumentService persistence.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00160">DefinitionTarget.cpp:160</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a2dd4ddc9654d71a73116c3ad86653c7b"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2dd4ddc9654d71a73116c3ad86653c7b">eve::definitions_editing::DefinitionDocument::type</a></div><div class="ttdeci">const std::string &amp; type() const</div><div class="ttdoc">Return definition type/schema id.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00067">DefinitionTarget.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a2ed53aa3482ffa4ebae8f35b6a49317b"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a2ed53aa3482ffa4ebae8f35b6a49317b">eve::definitions_editing::DefinitionDocument::id</a></div><div class="ttdeci">const std::string &amp; id() const</div><div class="ttdoc">Return stable definition id.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00069">DefinitionTarget.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a5232779d614c46fccc159be8601337e2"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a5232779d614c46fccc159be8601337e2">eve::definitions_editing::DefinitionDocument::documentRevision</a></div><div class="ttdeci">editing::Revision documentRevision() const</div><div class="ttdoc">Return current editor revision.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00075">DefinitionTarget.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a5abf99674a5c63ebe4eebd1932c068a7"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a5abf99674a5c63ebe4eebd1932c068a7">eve::definitions_editing::DefinitionDocument::applyDomainOperation</a></div><div class="ttdeci">EditorResult&lt; void &gt; applyDomainOperation(const DomainOperation &amp;operation) override</div><div class="ttdoc">Apply one validated domain operation.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00044">DefinitionTarget.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a69691d4a1d242ead5aabf87f7f98b886"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a69691d4a1d242ead5aabf87f7f98b886">eve::definitions_editing::DefinitionDocument::setReferences</a></div><div class="ttdeci">EditorResult&lt; void &gt; setReferences(std::vector&lt; DefinitionReferenceField &gt; references)</div><div class="ttdoc">Replace editor-extracted cross-reference fields.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00086">DefinitionTarget.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a8cd5daa7639fb042c8e345a607b46e5f"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a8cd5daa7639fb042c8e345a607b46e5f">eve::definitions_editing::DefinitionDocument::makeSetField</a></div><div class="ttdeci">EditorResult&lt; DomainOperation &gt; makeSetField(const std::string &amp;field, const EditorValue &amp;value) const</div><div class="ttdoc">Plan a reversible top-level field assignment from a schema form.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00098">DefinitionTarget.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_a9f32ac07d474ec08d4435c0a1e9fe776"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#a9f32ac07d474ec08d4435c0a1e9fe776">eve::definitions_editing::DefinitionDocument::dirtyRegion</a></div><div class="ttdeci">EditRegion dirtyRegion() const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00043">DefinitionTarget.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_aa91dc4c07f15f0f715b9a071472ec7a6"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aa91dc4c07f15f0f715b9a071472ec7a6">eve::definitions_editing::DefinitionDocument::loadSnapshot</a></div><div class="ttdeci">EditorResult&lt; void &gt; loadSnapshot(const EditorValue &amp;snapshot)</div><div class="ttdoc">Atomically load a version-one editor snapshot.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00170">DefinitionTarget.cpp:170</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_aaebeec61fb96070b622dc4e1753508ae"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aaebeec61fb96070b622dc4e1753508ae">eve::definitions_editing::DefinitionDocument::SchemaValidator</a></div><div class="ttdeci">std::function&lt; std::vector&lt; EditorDiagnostic &gt;(const std::string &amp;type, int version, const std::string &amp;json)&gt; SchemaValidator</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00035">DefinitionTarget.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_aaecb7c6c8187bf20eb7c5fb3a90a12a2"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aaecb7c6c8187bf20eb7c5fb3a90a12a2">eve::definitions_editing::DefinitionDocument::setVersion</a></div><div class="ttdeci">EditorResult&lt; void &gt; setVersion(int version)</div><div class="ttdoc">Replace the schema version with a positive value.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00076">DefinitionTarget.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_ab31facde0f67e33875aa635ce3b81232"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab31facde0f67e33875aa635ce3b81232">eve::definitions_editing::DefinitionDocument::clearDirtyRegion</a></div><div class="ttdeci">void clearDirtyRegion() override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00044">DefinitionTarget.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_ab72e38e2c3b2639365e08033a11b4f33"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab72e38e2c3b2639365e08033a11b4f33">eve::definitions_editing::DefinitionDocument::targetId</a></div><div class="ttdeci">TargetId targetId() const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00041">DefinitionTarget.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_ab732acc727a1950bbc78bce43617b47d"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ab732acc727a1950bbc78bce43617b47d">eve::definitions_editing::DefinitionDocument::setJson</a></div><div class="ttdeci">EditorResult&lt; void &gt; setJson(std::string json)</div><div class="ttdoc">Atomically replace canonical payload text after basic JSON-shape validation.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00066">DefinitionTarget.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_ace10d6859bdd9f7545d899c4d3fc3e35"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ace10d6859bdd9f7545d899c4d3fc3e35">eve::definitions_editing::DefinitionDocument::describe</a></div><div class="ttdeci">TargetDescriptor describe() const override</div><div class="ttdoc">Describe the target for tools and automation.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8cpp_source.html#l00040">DefinitionTarget.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_ae631d1f9a264b15e6b5382ebdfeec36c"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#ae631d1f9a264b15e6b5382ebdfeec36c">eve::definitions_editing::DefinitionDocument::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00042">DefinitionTarget.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionDocument_html_aedd27b112061c1b3ed9b2bcd0151783e"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionDocument.html#aedd27b112061c1b3ed9b2bcd0151783e">eve::definitions_editing::DefinitionDocument::ReferenceResolver</a></div><div class="ttdeci">std::function&lt; bool(const std::string &amp;type, const std::string &amp;id)&gt; ReferenceResolver</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00034">DefinitionTarget.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionRuntimePublisher_html"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionRuntimePublisher.html">eve::definitions_editing::DefinitionRuntimePublisher</a></div><div class="ttdoc">Optional bridge publishing a validated definition to DefinitionRegistry.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00089">DefinitionTarget.h:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions__editing_1_1DefinitionRuntimePublisher_html_ab9c6d97ce1274e8d1933104590b6cae3"><div class="ttname"><a href="classeve_1_1definitions__editing_1_1DefinitionRuntimePublisher.html#ab9c6d97ce1274e8d1933104590b6cae3">eve::definitions_editing::DefinitionRuntimePublisher::publish</a></div><div class="ttdeci">EditorResult&lt; void &gt; publish(const DefinitionDocument &amp;document, definitions::DefinitionRegistry *registry, bool replaceExisting=false) const</div><div class="ttdoc">Insert or replace one definition after editor-side validation.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionRuntime_8cpp_source.html#l00009">DefinitionRuntime.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IDomainOperationTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></div><div class="ttdoc">Editable-target capability that applies owning domain operations.</div><div class="ttdef"><b>Definition</b> <a href="EditingTargetOperations_8h_source.html#l00011">EditingTargetOperations.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditableTarget_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00040">EditableTarget.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00017">EditingValue.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definitions__editing_html"><div class="ttname"><a href="namespaceeve_1_1definitions__editing.html">eve::definitions_editing</a></div><div class="ttdef"><b>Definition</b> <a href="DefinitionForm_8h_source.html#l00010">DefinitionForm.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definitions__editing_html_a49c975de1a9ce89e39b42efcb30212be"><div class="ttname"><a href="namespaceeve_1_1definitions__editing.html#a49c975de1a9ce89e39b42efcb30212be">eve::definitions_editing::EditorDiagnostic</a></div><div class="ttdeci">eve::editing::Diagnostic EditorDiagnostic</div><div class="ttdef"><b>Definition</b> <a href="DefinitionForm_8h_source.html#l00015">DefinitionForm.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1definitions_html"><div class="ttname"><a href="namespaceeve_1_1definitions.html">eve::definitions</a></div><div class="ttdef"><b>Definition</b> <a href="Definitions_8cpp_source.html#l00014">Definitions.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html"><div class="ttname"><a href="namespaceeve_1_1editing.html">eve::editing</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00007">EditableTarget.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a016bb7e827fad22a647b2c269348f3e8"><div class="ttname"><a href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">eve::editing::Revision</a></div><div class="ttdeci">std::uint64_t Revision</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00011">EditingProtocol.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2b0f525a0b733bb08ccf8109b114213b"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">eve::editing::TargetId</a></div><div class="ttdeci">StrongId&lt; TargetIdTag &gt; TargetId</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00054">EditingIds.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00016">EditingResult.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a7de9e50064aac177e1028e74d948cfc2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a7de9e50064aac177e1028e74d948cfc2">eve::editing::Status</a></div><div class="ttdeci">eve::StatusCode Status</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00014">EditingResult.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1definitions__editing_1_1DefinitionReferenceField_html"><div class="ttname"><a href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html">eve::definitions_editing::DefinitionReferenceField</a></div><div class="ttdoc">Stable cross-definition reference exposed to picker and validation hosts.</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00024">DefinitionTarget.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1definitions__editing_1_1DefinitionReferenceField_html_a1555b99b7ab6961d4af92b982b6f5ed5"><div class="ttname"><a href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#a1555b99b7ab6961d4af92b982b6f5ed5">eve::definitions_editing::DefinitionReferenceField::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00026">DefinitionTarget.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1definitions__editing_1_1DefinitionReferenceField_html_a8549df1567d5cb0ed2e79876a2ca0a68"><div class="ttname"><a href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#a8549df1567d5cb0ed2e79876a2ca0a68">eve::definitions_editing::DefinitionReferenceField::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00027">DefinitionTarget.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1definitions__editing_1_1DefinitionReferenceField_html_abf8ea6e233945c006d6f343c31d16e98"><div class="ttname"><a href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#abf8ea6e233945c006d6f343c31d16e98">eve::definitions_editing::DefinitionReferenceField::required</a></div><div class="ttdeci">bool required</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00028">DefinitionTarget.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1definitions__editing_1_1DefinitionReferenceField_html_add3e8de516376e077f1e25bcb777c40b"><div class="ttname"><a href="structeve_1_1definitions__editing_1_1DefinitionReferenceField.html#add3e8de516376e077f1e25bcb777c40b">eve::definitions_editing::DefinitionReferenceField::path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="DefinitionTarget_8h_source.html#l00025">DefinitionTarget.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00034">EditingProtocol.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html">eve::editing::EditRegion</a></div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00008">EditableTarget.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditRegion_html_acc33c22f9fc876d717944a1fe94a932c"><div class="ttname"><a href="structeve_1_1editing_1_1EditRegion.html#acc33c22f9fc876d717944a1fe94a932c">eve::editing::EditRegion::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00011">EditableTarget.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1TargetDescriptor_html"><div class="ttname"><a href="structeve_1_1editing_1_1TargetDescriptor.html">eve::editing::TargetDescriptor</a></div><div class="ttdoc">Stable discovery metadata exposed by every editable target.</div><div class="ttdef"><b>Definition</b> <a href="EditableTarget_8h_source.html#l00032">EditableTarget.h:32</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

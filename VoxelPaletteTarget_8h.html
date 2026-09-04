@@ -1,0 +1,267 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/voxel_editing/VoxelPaletteTarget.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_70a433a229846127f78564eb69e7d077.html">voxel_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a>  </div>
+  <div class="headertitle"><div class="title">VoxelPaletteTarget.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="EditableTarget_8h_source.html">editing/EditableTarget.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="EditingAuthority_8h_source.html">editing/EditingAuthority.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="EditingProperty_8h_source.html">editing/EditingProperty.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CubeType_8h_source.html">voxel/CubeType.h</a>&quot;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="VoxelPaletteTarget_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1voxel__editing_1_1VoxelPaletteEntryValue.html">eve::voxel_editing::VoxelPaletteEntryValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable authored entry in a Voxel cube palette.  <a href="structeve_1_1voxel__editing_1_1VoxelPaletteEntryValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editing_1_1VoxelPaletteTarget.html">eve::voxel_editing::VoxelPaletteTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revisioned Voxel CubeType palette with face-material Inspector.  <a href="classeve_1_1voxel__editing_1_1VoxelPaletteTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1voxel__editing_1_1VoxelPalettePublishedEntry.html">eve::voxel_editing::VoxelPalettePublishedEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable base/variant ID mapping produced by palette publication.  <a href="structeve_1_1voxel__editing_1_1VoxelPalettePublishedEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1voxel__editing_1_1VoxelPaletteRuntime.html">eve::voxel_editing::VoxelPaletteRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Candidate-first CubeTypeRegistry publication.  <a href="classeve_1_1voxel__editing_1_1VoxelPaletteRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1voxel" id="r_namespaceeve_1_1voxel"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel.html">eve::voxel</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1voxel"><td class="mdescLeft">&#160;</td><td class="mdescRight">方块类型定义：名字、各面图集纹理、方向性、组合声明。 方向性方块在注册时按 orientation 绕 Y 轴展开成多个"具体类型"变体， 每个变体持有旋转后的各面纹理；渲染端只消费纹理 id，不接触 orientation。 <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1voxel__editing" id="r_namespaceeve_1_1voxel__editing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html">eve::voxel_editing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a16b9611aad67a4364666df1b4b02e12d" id="r_a16b9611aad67a4364666df1b4b02e12d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a16b9611aad67a4364666df1b4b02e12d">eve::voxel_editing::CapabilityId</a> = <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">editing::CapabilityId</a></td></tr>
+<tr class="separator:a16b9611aad67a4364666df1b4b02e12d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4401b5b982d874c78d13585cc339e85b" id="r_a4401b5b982d874c78d13585cc339e85b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a4401b5b982d874c78d13585cc339e85b">eve::voxel_editing::DiagnosticSeverity</a> = <a class="el" href="namespaceeve.html#a835e96ad5cbfc3e4c4c391a6d039e0c7">editing::DiagnosticSeverity</a></td></tr>
+<tr class="separator:a4401b5b982d874c78d13585cc339e85b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9aca459704dd8bd10b6cb9d0064da92c" id="r_a9aca459704dd8bd10b6cb9d0064da92c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a9aca459704dd8bd10b6cb9d0064da92c">eve::voxel_editing::DomainOperation</a> = <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">editing::DomainOperation</a></td></tr>
+<tr class="separator:a9aca459704dd8bd10b6cb9d0064da92c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ef8656ab66f7c6b3e94a7048a7a3ae5" id="r_a7ef8656ab66f7c6b3e94a7048a7a3ae5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a7ef8656ab66f7c6b3e94a7048a7a3ae5">eve::voxel_editing::EditRegion</a> = <a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a></td></tr>
+<tr class="separator:a7ef8656ab66f7c6b3e94a7048a7a3ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a866e31eb3b02040f2ad5424a56316b5f" id="r_a866e31eb3b02040f2ad5424a56316b5f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a866e31eb3b02040f2ad5424a56316b5f">eve::voxel_editing::EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:a866e31eb3b02040f2ad5424a56316b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfac7bfc69679ed70231999529bc50da" id="r_abfac7bfc69679ed70231999529bc50da"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:abfac7bfc69679ed70231999529bc50da"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#abfac7bfc69679ed70231999529bc50da">eve::voxel_editing::EditorResult</a> = <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; T &gt;</td></tr>
+<tr class="separator:abfac7bfc69679ed70231999529bc50da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accef48678f22d8c0f8e4bb9b5bd144d3" id="r_accef48678f22d8c0f8e4bb9b5bd144d3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#accef48678f22d8c0f8e4bb9b5bd144d3">eve::voxel_editing::EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:accef48678f22d8c0f8e4bb9b5bd144d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0925c6e464a7c8c8404a2014cee7fda2" id="r_a0925c6e464a7c8c8404a2014cee7fda2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a0925c6e464a7c8c8404a2014cee7fda2">eve::voxel_editing::EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:a0925c6e464a7c8c8404a2014cee7fda2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc3e6cd78a4b435bdfe63145bcd0569c" id="r_acc3e6cd78a4b435bdfe63145bcd0569c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#acc3e6cd78a4b435bdfe63145bcd0569c">eve::voxel_editing::IDomainOperationTarget</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">editing::IDomainOperationTarget</a></td></tr>
+<tr class="separator:acc3e6cd78a4b435bdfe63145bcd0569c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b41416c64ead5718877bf84db1e7368" id="r_a3b41416c64ead5718877bf84db1e7368"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a3b41416c64ead5718877bf84db1e7368">eve::voxel_editing::IDomainOperationTargetStaging</a> = <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="separator:a3b41416c64ead5718877bf84db1e7368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cacabafc6dda206841a885943872702" id="r_a3cacabafc6dda206841a885943872702"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a3cacabafc6dda206841a885943872702">eve::voxel_editing::IEditableTarget</a> = <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">editing::IEditableTarget</a></td></tr>
+<tr class="separator:a3cacabafc6dda206841a885943872702"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa840c112c81297e8857f1712296ffb1" id="r_aaa840c112c81297e8857f1712296ffb1"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#aaa840c112c81297e8857f1712296ffb1">eve::voxel_editing::IPropertyProvider</a> = <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">editing::IPropertyProvider</a></td></tr>
+<tr class="separator:aaa840c112c81297e8857f1712296ffb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a8c2da41fc8cace08ee94f3d3a2e55f" id="r_a6a8c2da41fc8cace08ee94f3d3a2e55f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a6a8c2da41fc8cace08ee94f3d3a2e55f">eve::voxel_editing::ObjectId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a></td></tr>
+<tr class="separator:a6a8c2da41fc8cace08ee94f3d3a2e55f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17bf57f3660b9fce21c449f22340bcaa" id="r_a17bf57f3660b9fce21c449f22340bcaa"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a17bf57f3660b9fce21c449f22340bcaa">eve::voxel_editing::PropertyDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1PropertyDescriptor.html">editing::PropertyDescriptor</a></td></tr>
+<tr class="separator:a17bf57f3660b9fce21c449f22340bcaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b3ca7a05a83f0b6b09cfe6a52728736" id="r_a8b3ca7a05a83f0b6b09cfe6a52728736"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a8b3ca7a05a83f0b6b09cfe6a52728736">eve::voxel_editing::PropertyFlag</a> = <a class="el" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818">editing::PropertyFlag</a></td></tr>
+<tr class="separator:a8b3ca7a05a83f0b6b09cfe6a52728736"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadacd30c6bbaea0bf41dc03f6505a049" id="r_aadacd30c6bbaea0bf41dc03f6505a049"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#aadacd30c6bbaea0bf41dc03f6505a049">eve::voxel_editing::PropertyPath</a> = <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">editing::PropertyPath</a></td></tr>
+<tr class="separator:aadacd30c6bbaea0bf41dc03f6505a049"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5e750bb0a57b9ac7d1551a05d690e98" id="r_aa5e750bb0a57b9ac7d1551a05d690e98"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#aa5e750bb0a57b9ac7d1551a05d690e98">eve::voxel_editing::PropertyReadResult</a> = <a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">editing::PropertyReadResult</a></td></tr>
+<tr class="separator:aa5e750bb0a57b9ac7d1551a05d690e98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6402646130ad76a9280dd3eecb8555d" id="r_ad6402646130ad76a9280dd3eecb8555d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#ad6402646130ad76a9280dd3eecb8555d">eve::voxel_editing::PropertyReadState</a> = <a class="el" href="namespaceeve_1_1editing.html#adf7f3c9a6b52b9fef00e69977bcc967c">editing::PropertyReadState</a></td></tr>
+<tr class="separator:ad6402646130ad76a9280dd3eecb8555d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa31755e573980ad7fba9de11cb1d60b2" id="r_aa31755e573980ad7fba9de11cb1d60b2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#aa31755e573980ad7fba9de11cb1d60b2">eve::voxel_editing::PropertySchema</a> = <a class="el" href="structeve_1_1editing_1_1PropertySchema.html">editing::PropertySchema</a></td></tr>
+<tr class="separator:aa31755e573980ad7fba9de11cb1d60b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab840095fd4e8a0dacee8c0099914c9a" id="r_aab840095fd4e8a0dacee8c0099914c9a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#aab840095fd4e8a0dacee8c0099914c9a">eve::voxel_editing::PropertySetMode</a> = <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">editing::PropertySetMode</a></td></tr>
+<tr class="separator:aab840095fd4e8a0dacee8c0099914c9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acff3cc3a7086179db70758f70a8118a7" id="r_acff3cc3a7086179db70758f70a8118a7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#acff3cc3a7086179db70758f70a8118a7">eve::voxel_editing::PropertyType</a> = <a class="el" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311">editing::PropertyType</a></td></tr>
+<tr class="separator:acff3cc3a7086179db70758f70a8118a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7501f60989193b2f7a6fc0cd87a2a48c" id="r_a7501f60989193b2f7a6fc0cd87a2a48c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a7501f60989193b2f7a6fc0cd87a2a48c">eve::voxel_editing::Revision</a> = <a class="el" href="namespaceeve_1_1editing.html#a016bb7e827fad22a647b2c269348f3e8">editing::Revision</a></td></tr>
+<tr class="separator:a7501f60989193b2f7a6fc0cd87a2a48c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a904594b459572fbfe5624a7dd1724082" id="r_a904594b459572fbfe5624a7dd1724082"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a904594b459572fbfe5624a7dd1724082">eve::voxel_editing::RuleId</a> = <a class="el" href="namespaceeve_1_1editing.html#a637962b2b7ca12ca9c3416d6fd5f2b1b">editing::RuleId</a></td></tr>
+<tr class="separator:a904594b459572fbfe5624a7dd1724082"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60e953d9a4cfcecd402d544c98da1ad0" id="r_a60e953d9a4cfcecd402d544c98da1ad0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a60e953d9a4cfcecd402d544c98da1ad0">eve::voxel_editing::SelectionSnapshot</a> = <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">editing::SelectionSnapshot</a></td></tr>
+<tr class="separator:a60e953d9a4cfcecd402d544c98da1ad0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d6aea5ac7a5d1033e48b0896cc67dcb" id="r_a3d6aea5ac7a5d1033e48b0896cc67dcb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a3d6aea5ac7a5d1033e48b0896cc67dcb">eve::voxel_editing::TargetDescriptor</a> = <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">editing::TargetDescriptor</a></td></tr>
+<tr class="separator:a3d6aea5ac7a5d1033e48b0896cc67dcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a270b1546995b624a01c5588b7fae8a0a" id="r_a270b1546995b624a01c5588b7fae8a0a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1voxel__editing.html#a270b1546995b624a01c5588b7fae8a0a">eve::voxel_editing::TargetId</a> = <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a></td></tr>
+<tr class="separator:a270b1546995b624a01c5588b7fae8a0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: RPG 系统模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">RPG 系统模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>RPG 系统模块</h1>
+<p><b>脚本入口：</b> <code>eve.RPG()</code></p>
+<p>组合属性、效果、状态（Buff）、技能、施法与伤害结算，并提供**目标追踪器（任务/成就/教程）**、 **等级/经验成长**、**当前生命等资源（受伤/治疗/死亡）**、**装备加成与掉落**、**特征（Traits）**、 **回合制战斗**、**职业与升级学技能**、以及**全局开关/变量（GameState）**。</p>
+<p>ECS 组件 <code>RPGActor::Statuses</code> 保存运行时 buff/debuff 实例；可用 <code>applyBuff</code> / <code>hasBuff</code> / <code>removeBuff*</code> 等别名，与 <code>applyEffect</code> / <code>hasEffect</code> / <code>removeStatus*</code> 等价。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local rpg = eve.RPG();</div>
+<div class="line">local actor = rpg.newActor();</div>
+<div class="line">actor.setBaseAttribute(&quot;hp&quot;, 100);</div>
+<div class="line">actor.setBaseAttribute(&quot;attack&quot;, 12);</div>
+<div class="line">print(actor.getFinalAttribute(&quot;hp&quot;) + &quot;\n&quot;);</div>
+<div class="line"> </div>
+<div class="line">// 注册效果后施加 buff（JSON 可带 extra 自定义字段）</div>
+<div class="line">rpg.registerEffectsFromJson(@&quot;[</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;buff.power&quot;&quot;,&quot;&quot;durationPolicy&quot;&quot;:&quot;&quot;duration&quot;&quot;,&quot;&quot;duration&quot;&quot;:5.0,</div>
+<div class="line">   &quot;&quot;stackPolicy&quot;&quot;:&quot;&quot;refresh&quot;&quot;,</div>
+<div class="line">   &quot;&quot;modifiers&quot;&quot;:[{&quot;&quot;attribute&quot;&quot;:&quot;&quot;attack&quot;&quot;,&quot;&quot;op&quot;&quot;:&quot;&quot;add&quot;&quot;,&quot;&quot;value&quot;&quot;:5.0}],</div>
+<div class="line">   &quot;&quot;tags&quot;&quot;:[&quot;&quot;buff&quot;&quot;],&quot;&quot;extra&quot;&quot;:{&quot;&quot;icon&quot;&quot;:&quot;&quot;ui/power.png&quot;&quot;}}</div>
+<div class="line">]&quot;);</div>
+<div class="line">local id = actor.applyBuff(&quot;buff.power&quot;, &quot;potion&quot;);</div>
+<div class="line">actor.setBuffProp(id, &quot;uiTint&quot;, &quot;#ffaa00&quot;);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>RPG</code> 保存 effect/skill 定义和结算 pipeline；<code>RPGActor</code> 保存属性、状态、已学技能、冷却、施法状态、 **等级/经验**与**当前资源**。JSON 是定义，Actor 是运行时实例，事件队列负责把结算连接到表现。</p>
+<p>每帧 <code>rpg.update(dt)</code> 后可轮询：</p>
+<ul>
+<li>tick 事件（DOT/HOT）：<code>getTickEvent*</code></li>
+<li>状态变更（apply/refresh/stack/remove/expire/reject）：<code>getStatusChangeEvent*</code></li>
+<li>施法结算：<code>getCastEvent*</code></li>
+<li>升级：<code>getLevelUpEvent*</code></li>
+<li>当前资源（受伤/治疗/死亡）：<code>getVitalsEvent*</code></li>
+</ul>
+<p>C++ 扩展点：<code>StatusSystem::registerApplyCondition</code> / <code>registerStackPolicy</code> / <code>registerLifecycleHook</code>（免疫、自定义叠层、UI 钩子）。</p>
+<h2>目标导向指南</h2>
+<h3>建立角色属性</h3>
+<p><code>newActor()</code> 后用 <code>setBaseAttribute</code> 建立 hp、attack、defense 等基础值；永久或临时加成通过 modifier 添加，最终战斗数值读取 <code>getFinalAttribute()</code>。</p>
+<h3>注册并释放技能</h3>
+<p>从 JSON 注册 effect 和 skill 定义，让 Actor 学习技能；释放前用 <code>canCastSkill()</code> 和原因接口检查资源、冷却与条件。每帧 <code>rpg.update(dt)</code>，随后消费 cast/tick 事件并执行表现或伤害。</p>
+<h3>追踪任务与成就</h3>
+<div class="fragment"><div class="line">local rpg = eve.RPG();</div>
+<div class="line">local loaded = rpg.replaceQuestsFromJson(questJson);</div>
+<div class="line">if (!loaded.ok) throw loaded.status.summary;</div>
+<div class="line">local log = rpg.newTracker();     // 玩家任务</div>
+<div class="line">local ach = rpg.newTracker();     // 成就（定义里 startPolicy=auto）</div>
+<div class="line">log.activate(&quot;quest.hunt&quot;);</div>
+<div class="line">log.notify(&quot;kill&quot;, &quot;slime&quot;, 1);</div>
+<div class="line">ach.notify(&quot;kill&quot;, &quot;slime&quot;, 1);   // 两份 Tracker 互不影响</div>
+<div class="line">log.pollEvents();                 // 处理完 notify 后必须 poll 才能读 getEvent*</div>
+</div><!-- fragment --><h3>成长与战斗落账</h3>
+<div class="fragment"><div class="line">actor.gainXp(120.0);                       // 升到下一级时产生 getLevelUpEvent*</div>
+<div class="line">actor.setBaseAttribute(&quot;hp&quot;, 100);</div>
+<div class="line">actor.setCurrent(&quot;hp&quot;, 100);</div>
+<div class="line">actor.takeDamage(&quot;hp&quot;, 25, &quot;slime&quot;);       // current 夹到 [0, max=hp 最终属性]，归零发 death</div>
+<div class="line">if (actor.isDead(&quot;hp&quot;)) actor.revive(&quot;hp&quot;);// 复活回满</div>
+<div class="line">// 伤害数值可先走结算流水线：SettlementContext.set(&quot;amount&quot;, dmg) 后调用 takeDamage 落账</div>
+</div><!-- fragment --><h3>装备加成与掉落</h3>
+<div class="fragment"><div class="line">rpg.registerItemStatsFromJson(&quot;sword&quot;, @&quot;[</div>
+<div class="line">  {&quot;&quot;attribute&quot;&quot;:&quot;&quot;attack&quot;&quot;,&quot;&quot;op&quot;&quot;:&quot;&quot;add&quot;&quot;,&quot;&quot;value&quot;&quot;:15}</div>
+<div class="line">]&quot;);</div>
+<div class="line">rpg.syncEquipModifiers(actor, equipmentSet); // 按槽位 source=&quot;equip:&lt;slot&gt;&quot; 施加/撤销属性加成</div>
+<div class="line">rpg.registerLootTablesFromJson(@&quot;[</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;goblin&quot;&quot;,&quot;&quot;entries&quot;&quot;:[{&quot;&quot;itemId&quot;&quot;:&quot;&quot;gold&quot;&quot;,&quot;&quot;chance&quot;&quot;:1.0,&quot;&quot;minQty&quot;&quot;:5,&quot;&quot;maxQty&quot;&quot;:5}]}</div>
+<div class="line">]&quot;);</div>
+<div class="line">local bag = inv.newBag(20);                 // 或任何 inventory::Bag</div>
+<div class="line">local drops = rpg.rollLoot(&quot;goblin&quot;, bag, 42);</div>
+</div><!-- fragment --><h3>特征 / 职业 / 回合制战斗 / 全局状态</h3>
+<div class="fragment"><div class="line">// 特征：参数倍率落到属性，元素/状态耐性、暴击等供战斗查询</div>
+<div class="line">rpg.registerTraitsFromJson(@&quot;[</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;mighty&quot;&quot;,&quot;&quot;traits&quot;&quot;:[{&quot;&quot;kind&quot;&quot;:&quot;&quot;paramRate&quot;&quot;,&quot;&quot;target&quot;&quot;:&quot;&quot;attack&quot;&quot;,&quot;&quot;value&quot;&quot;:1.5}]},</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;fire_resist&quot;&quot;,&quot;&quot;traits&quot;&quot;:[{&quot;&quot;kind&quot;&quot;:&quot;&quot;elementRate&quot;&quot;,&quot;&quot;target&quot;&quot;:&quot;&quot;fire&quot;&quot;,&quot;&quot;value&quot;&quot;:0.5}]}</div>
+<div class="line">]&quot;);</div>
+<div class="line">actor.applyTrait(&quot;mighty&quot;, &quot;class&quot;);</div>
+<div class="line">actor.getElementRate(&quot;fire&quot;);             // 1 无修正</div>
+<div class="line">actor.getExParam(&quot;critRate&quot;);</div>
+<div class="line"> </div>
+<div class="line">// 职业 + 升级学技能</div>
+<div class="line">rpg.registerClassesFromJson(@&quot;[</div>
+<div class="line">  {&quot;&quot;id&quot;&quot;:&quot;&quot;warrior&quot;&quot;,&quot;&quot;traits&quot;&quot;:[&quot;&quot;mighty&quot;&quot;],</div>
+<div class="line">   &quot;&quot;learnSkills&quot;&quot;:[{&quot;&quot;skillId&quot;&quot;:&quot;&quot;power_strike&quot;&quot;,&quot;&quot;level&quot;&quot;:2}]}</div>
+<div class="line">]&quot;);</div>
+<div class="line">actor.setClass(&quot;warrior&quot;);</div>
+<div class="line">actor.gainXp(100); actor.checkLevelSkills();   // 升级后补学已解锁技能</div>
+<div class="line"> </div>
+<div class="line">// 回合制战斗：伤害公式 DSL &quot;a.atk * 4 - b.def * 2&quot;；阵营任意、伤害资源任意</div>
+<div class="line">rpg.registerSkillDamage(&quot;fireball&quot;, &quot;hp&quot;, &quot;a.attack * 2&quot;, &quot;fire&quot;, 0.0, 100);</div>
+<div class="line">rpg.registerSkillDamage(&quot;mana_drain&quot;, &quot;mana&quot;, &quot;a.attack&quot;, &quot;&quot;, 0.0, 100); // 打到 mana</div>
+<div class="line">local battle = rpg.newBattle();</div>
+<div class="line">battle.addActor(hero, 0); battle.addActor(slime, 1);   // 阵营是任意整数 id</div>
+<div class="line">battle.setPlayerSide(0);                                // 玩家侧（默认 0）</div>
+<div class="line">battle.setAction(hero, &quot;fireball&quot;, slime);</div>
+<div class="line">battle.autoEnemyActions();</div>
+<div class="line">battle.startRound();</div>
+<div class="line">while (battle.executeNextAction() &amp;&amp; !battle.isFinished()) {}</div>
+<div class="line">if (battle.isVictory()) { /* 胜利 */ }</div>
+<div class="line">battle.getWinnerSide();   // 多派系时判定获胜阵营</div>
+<div class="line"> </div>
+<div class="line">// 公式注册时严格校验；成功返回 1，失败返回 0 且保留同 id 的旧定义</div>
+<div class="line"> </div>
+<div class="line">// 全局开关/变量（RPG Maker 的 $gameSwitches / $gameVariables）</div>
+<div class="line">local gs = rpg.newGameState();</div>
+<div class="line">gs.switchOn(&quot;door&quot;);</div>
+<div class="line">gs.setVariable(&quot;gold&quot;, 100);</div>
+<div class="line"> </div>
+<div class="line">// 稳定的跨地图对象生命周期；权威数据仍写入 gs，因此自动进入 RPGSaveSession</div>
+<div class="line">local world = rpg.newWorldState(gs);</div>
+<div class="line">local consumed = world.consumeObject(&quot;village&quot;, &quot;old_chest&quot;);</div>
+<div class="line">if (!consumed.ok) print(consumed.status.summary + &quot;\n&quot;);</div>
+<div class="line">if (world.isObjectConsumed(&quot;village&quot;, &quot;old_chest&quot;)) { /* 不再生成宝箱 */ }</div>
+</div><!-- fragment --><p>伤害公式支持数字、<code>a.&lt;属性&gt;</code>、<code>b.&lt;属性&gt;</code>、括号、<code>+ - * /</code> 和一元正负号。 缺失括号、尾随文本、非法 token 与非有限数值会拒绝注册；C++ <code>evaluateFormulaChecked()</code> 在运行时除零返回结构化失败，兼容求值入口投影为 <code>0</code>。</p>
+<h2>常见问题</h2>
+<ul>
+<li>只注册 Skill 未注册其引用的 Effect。</li>
+<li>忘记每帧 <code>rpg.update(dt)</code>，导致冷却、DOT 和施法不推进。</li>
+<li>直接修改最终属性：基础值和 modifier 应分层管理。</li>
+<li>追踪器读完事件前先 <code>pollEvents()</code>；两个 Tracker 要各自 <code>notify</code>；<code>completePolicy=claim</code> 时满进度是 <code>ready</code>，要 <code>claim</code>。</li>
+<li>掉落物品需先在 <code>inventory</code> 模块注册物品定义，否则 <code>bag.addItem</code> 拒绝加入。</li>
+</ul>
+<h2>API 快查</h2>
+<p>下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 <code>World</code>、<code>Body</code>、<code>Source</code>）的方法也列在这里。</p>
+<ul>
+<li><code>addAttributeModifier()</code>、<code>addTag()</code>、<code>applyEffect()</code>、<code>beginCastSkill()</code>、<code>canCastSkill()</code>、<code>canCastSkillReason()</code>、<code>cancelCastSkill()</code>、<code>clearEffectDefinitions()</code></li>
+<li><code>clearAllItemStats()</code>、<code>clearClassDefinitions()</code>、<code>clearItemStats()</code>、<code>clearLootTables()</code>、<code>clearQuestDefinitions()</code>、<code>clearSettlementPipeline()</code>、<code>clearSkillDamage()</code>、<code>clearSkillDefinitions()</code>、<code>forgetSkill()</code>、<code>gainXp()</code></li>
+<li><code>get()</code>、<code>getBaseAttribute()</code>、<code>getCastEventCaster()</code>、<code>getCastEventCount()</code>、<code>getCastEventSkillId()</code>、<code>getCastEventTarget()</code>、<code>getCastProgress()</code>、<code>getCastingSkillId()</code></li>
+<li><code>getCurrent()</code>、<code>getEffectDefinitionCount()</code>、<code>getFinalAttribute()</code>、<code>getItemStatCount()</code>、<code>getLevel()</code>、<code>getLevelUpEventActor()</code>、<code>getLevelUpEventCount()</code>、<code>getLevelUpEventNewLevel()</code></li>
+<li><code>getLevelUpEventPreviousLevel()</code>、<code>getLootTableCount()</code>、<code>getMax()</code>、<code>getName()</code>、<code>getQuestDefinitionCount()</code>、<code>hasQuestDefinition()</code>、<code>getSettlementStageCount()</code>、<code>getSkillCooldown()</code>、<code>getSkillDefinitionCount()</code></li>
+<li><code>getStatusCount()</code>、<code>getStatusEffectId()</code>、<code>getStatusInstanceId()</code>、<code>getStatusRemaining()</code>、<code>getStatusStacks()</code>、<code>getTickEventActor()</code>、<code>getTickEventCount()</code>、<code>getTickEventEffectId()</code></li>
+<li><code>getTickEventInstanceId()</code>、<code>getTickEventSource()</code>、<code>getTickEventStacks()</code>、<code>getVitalsEventAction()</code>、<code>getVitalsEventActor()</code>、<code>getVitalsEventAmount()</code>、<code>getVitalsEventCount()</code>、<code>getVitalsEventCurrent()</code></li>
+<li><code>getVitalsEventMax()</code>、<code>getVitalsEventResource()</code>、<code>getVitalsEventSource()</code>、<code>getXp()</code>、<code>getXpToNext()</code>、<code>has()</code>、<code>hasAttribute()</code>、<code>hasEffect()</code></li>
+<li><code>hasSettlementStage()</code>、<code>hasTag()</code>、<code>heal()</code>、<code>isCastingSkill()</code>、<code>isDead()</code>、<code>knowsSkill()</code>、<code>learnSkill()</code>、<code>modifyBaseAttribute()</code></li>
+<li><code>newActor()</code>、<code>newBattle()</code>、<code>newGameState()</code>、<code>newWorldState()</code>、<code>newSettlementContext()</code>、<code>newTracker()</code>、<code>registerClassesFromJson()</code>、<code>registerEffectsFromJson()</code>、<code>globalGameState()</code></li>
+<li><code>removeAllAttributeModifiersBySource()</code>、<code>removeAttributeModifier()</code>、<code>removeAttributeModifiersBySource()</code>、<code>removeSettlementStage()</code>、<code>removeStatus()</code>、<code>removeStatusByEffect()</code>、<code>removeStatusBySource()</code>、<code>removeStatusByTag()</code></li>
+<li><code><a class="el" href="Procgen_8cpp.html#a9ec61e0d400a00436d584301088ae052">release()</a></code>（销毁 ECS actor）、<code>revive()</code>、<code>rollLoot()</code>、<code>runSettlement()</code>、<code>set()</code>、<code>setBaseAttribute()</code>、<code>setCurrent()</code>、<code>setSettlementStageEnabled()</code>、<code>setSettlementStagePriority()</code></li>
+<li><code>setSkillCooldown()</code>、<code>setXpToNext()</code>、<code>syncEquipModifiers()</code>、<code>takeDamage()</code>、<code>registerItemStatsFromJson()</code>、<code>registerLootTablesFromJson()</code>、<code>registerQuestsFromJson()</code>、<code>replaceQuestsFromJson()</code>、<code>registerSkillDamage()</code>、<code>registerSkillsFromJson()</code>、<code>registerTraitsFromJson()</code>、<code>clearTraitDefinitions()</code>、<code>getTraitDefinitionCount()</code>、<code>getClassDefinitionCount()</code>、<code>update()</code></li>
+<li><code>claimQuestRewards(tracker, gameState, bag, questId)</code> 原子领取任务声明的全部 <code>item</code> / <code>attribute</code> 奖励；返回结构化 Result。</li>
+<li><code>collectWorldLoot(...)</code> 原子提交一次持久化 loot 交互的世界消费、任务通知、属性与物品效果。</li>
+<li><code>settleBattleVictory(...)</code> 原子结算战斗胜利带来的经验、升级技能、任务进度、世界遭遇消费和 GameState 奖励。</li>
+<li><code>replaceShopOffersFromJson(json)</code> 严格验证并原子替换商品目录；<code>buyShopOffer(...)</code> / <code>sellShopOffer(...)</code> 按权威 offer ID 原子交易。</li>
+<li>商品目录查询：<code>getShopOfferCount()</code>、<code>hasShopOffer()</code>、<code>getShopOfferId()</code>、<code>getShopOfferItemId()</code>、<code>getShopOfferName()</code>、<code>getShopOfferDescription()</code>、<code>getShopOfferBuyPrice()</code>、<code>getShopOfferSellPrice()</code>；<code>clearShopOffers()</code> 仅用于卸载或初次发布失败回滚。</li>
+<li><code>replaceEncountersFromJson(json)</code> 严格验证并原子替换遭遇目录；<code>newEncounterMemberActor(id, index)</code> 按有序编队创建敌人，<code>settleEncounterVictory(...)</code> 按整场定义原子结算。<code>newEncounterActor(id)</code> 是创建首成员的单敌人兼容入口。</li>
+<li>遭遇目录查询：<code>hasEncounter()</code>、<code>getEncounterDisplayName()</code>、<code>getEncounterMemberCount()</code>、<code>getEncounterMemberDisplayName()</code>、<code>getEncounterMemberMaxHp()</code>；<code>getEncounterMaxHp()</code> 是首成员兼容查询，<code>clearEncounters()</code> 仅用于卸载或初次发布失败回滚。</li>
+</ul>
+<p>新内容管线应使用 <code>replaceQuestsFromJson(json)</code>。它严格验证策略、稳定 ID、目标、奖励、依赖存在性和依赖环， 成功时一次替换完整任务目录；失败返回通用结构化 Result，且旧目录保持不变。旧的 <code>registerQuestsFromJson</code> 仅作为宽松兼容入口保留，不适合产品热重载。</p>
+<p>产品任务交付应调用 <code>claimQuestRewards()</code>，而不是先 <code>bag.addItem()</code> 再 <code>tracker.claim()</code>。该入口先验证 任务状态、全部奖励类型、数值和背包完整批次，再提交 GameState、Tracker 与 Bag；失败不改变任一权威 所有者，也不发布库存事件。成功时库存 hook 在完整提交后执行，因此回调读取到的任务、属性和背包状态一致。 旧 <code>Tracker.claim()</code> 仍是无奖励状态机兼容入口，适用于成就、教程或由调用方明确自行结算的追踪器。</p>
+<p>持久化宝箱、采集点和任务物资应调用 <code>collectWorldLoot()</code>。它拒绝重复消费、未激活的任务门控、 不完整通知和无法容纳的完整物品批次；成功时按同一事务更新 <code>GameState</code> 世界事实与属性、<code>Tracker</code> 目标进度和 <code>Bag</code>。失败时四类状态均保持原样，库存监听器只在完整提交后收到事件。</p>
+<p>战斗结束应调用 <code>settleBattleVictory()</code>，不要在脚本中依次增加经验、同步职业技能、推进任务、发放 金币并消费遭遇对象。该入口先准备并验证完整成长结果，再提交 <code>GameState</code>、<code>Tracker</code>、世界事实与 <code>RPGActor</code>；冲突或重复遭遇不会留下部分奖励。升级事件采用提交后轮询，观察者只能看到完整终态。</p>
+<p>产品商店应先用 <code>replaceShopOffersFromJson()</code> 发布完整商品目录，再调用 <code>buyShopOffer()</code> / <code>sellShopOffer()</code>；客户端只提交 offer ID 和数量，物品与买卖价格从已验证目录读取。目录拒绝未知字段、 未知物品、重复 ID、负价格和高于买价的卖价，失败时旧目录保持不变。交易会检查完整余额、背包容量 或持有数量，并检测准备后的背包陈旧冲突；失败时恢复 GameState，库存监听器只在货币与物品都到达 最终状态后收到事件。货币变量仍由 GameState 单独权威持有。</p>
+<p>产品遭遇应先用 <code>replaceEncountersFromJson()</code> 发布完整目录。每个定义必须引用已注册技能和任务，并完整声明 有序 <code>members</code> 编队、各成员属性/技能/显示名，以及整场成长与金币奖励、任务通知、击杀计数和升级点数。 成员 ID 在一场遭遇内必须唯一，单场最多 32 名敌人。未知字段、重复 ID、悬空引用或非法数值 会拒绝整个新目录，旧目录继续服务。地图只保存稳定 <code>encounterId</code>；创建敌人与胜利结算都从同一个已验证定义 投影，脚本不能另传奖励金额；多成员全部被击败后仍只结算一次，从而避免地图、战斗表现和结算三份事实漂移。<code>RPGActor</code> 仍由 RPG ECS 世界拥有， <code>GameState</code>、<code>Tracker</code> 和角色成长各自保持唯一权威所有者。</p>
+<p><b>Tracker 方法：</b> <code>activate()</code>、<code>abandon()</code>、<code>canActivate()</code>、<code>canActivateReason()</code>、<code>claim()</code>、<code>fail()</code>、<code>getCount()</code>、<code>getEventAction()</code>、<code>getEventAmount()</code>、<code>getEventCount()</code>、<code>getEventEntryId()</code>、<code>getEventObjectiveId()</code>、<code>getEventReason()</code>、<code>getEventTarget()</code>、<code>getEventTopic()</code>、<code>getExtra()</code>、<code>getId()</code>、<code>getObjectiveCount()</code>、<code>getObjectiveCountRequired()</code>、<code>getObjectiveCurrent()</code>、<code>getObjectiveId()</code>、<code>getRewardAmount()</code>、<code>getRewardCount()</code>、<code>getRewardId()</code>、<code>getRewardType()</code>、<code>getState()</code>、<code>hasTag()</code>、<code>isObjectiveDone()</code>、<code>notify()</code>、<code>pollEvents()</code>、<code>reset()</code>、<code>syncAuto()</code></p>
+<p><b>特征（RPGActor）：</b> <code>applyTrait()</code>、<code>removeTrait()</code>、<code>removeTraitsBySource()</code>、<code>removeTraitsByTrait()</code>、<code>hasTrait()</code>、<code>getTraitCount()</code>、<code>getTraitIdAt()</code>、<code>getTraitInstanceIdAt()</code>、<code>getTraitSourceAt()</code>、<code>getParamRate()</code>、<code>getElementRate()</code>、<code>getStateRate()</code>、<code>isStateResist()</code>、<code>getExParam()</code>、<code>getAttackSpeed()</code>、<code>getAttackTimesAdd()</code></p>
+<p><b>职业（RPGActor）：</b> <code>setClass()</code>、<code>getClassId()</code>、<code>hasClass()</code>、<code>checkLevelSkills()</code>、<code>getClassLearnCount()</code>、<code>getClassLearnSkillIdAt()</code>、<code>getClassLearnLevelAt()</code></p>
+<p><b>Battle：</b> <code>addActor()</code>、<code>autoEnemyActions()</code>、<code>executeNextAction()</code>、<code>getActor()</code>、<code>getActorCount()</code>、<code>getEventAction()</code>、<code>getEventAmount()</code>、<code>getEventCaster()</code>、<code>getEventCount()</code>、<code>getEventCrit()</code>、<code>getEventSkillId()</code>、<code>getEventTarget()</code>、<code>getPlayerSide()</code>、<code>getSide()</code>、<code>getTurn()</code>、<code>getWinnerSide()</code>、<code>isActorAlive()</code>、<code>isDefeat()</code>、<code>isFinished()</code>、<code>isVictory()</code>、<code>pollEvents()</code>、<code>setAction()</code>、<code>setPlayerSide()</code>、<code>startRound()</code></p>
+<p>产品战斗输入应使用 <code>setActionChecked()</code>：它只在回合开始前接受存活参战者的一次行动，并校验技能已学、 显式目标属于本场战斗且阵营符合 <code>self</code> / <code>enemySingle</code> 规则。失败返回结构化 Result 且不会污染待行动队列。 <code>setAction()</code> 是保留旧调用形状的兼容门面。</p>
+<p><b>GameState：</b> <code>addVariable()</code>、<code>clear()</code>、<code>getSelfVariable()</code>、<code>getVariable()</code>、<code>hasSelfVariable()</code>、<code>isSwitchOn()</code>、<code>restoreSnapshotJson()</code>、<code>setSelfVariable()</code>、<code>setSwitch()</code>、<code>setVariable()</code>、<code>snapshotJson()</code>、<code>switchOff()</code>、<code>switchOn()</code></p>
+<p><b>RPGWorldState：</b> <code>consumeObject()</code>、<code>isObjectConsumed()</code>、<code>resetObject()</code>。这是借用 <code>GameState</code> 的 类型化适配器，不是第二份状态；map/object ID 必须非空、至多 256 字节且不含控制字符。consume/reset 返回结构化 Result，并以 <code>Applied</code>/<code>NoOp</code> 区分首次变化和幂等重复。<code>GameState</code> 必须比适配器活得更久。</p>
+<p><b>成长读档：</b> <code>RPGActor.restoreProgression()</code> 会校验等级、当前经验与升级阈值，并在失败时保持原成长状态不变；它不会伪造升级事件。</p>
+<p><code>GameState.snapshotJson()</code> 生成 schema 为 <code>eve.rpg.game-state</code>、版本为 1 的确定性 JSON； <code>restoreSnapshotJson()</code> 会先校验完整候选再原子替换，未知版本或字段类型错误不会清空当前状态。 版本 1 忽略未知字段，为后续兼容扩展保留空间。</p>
+<p><code>Tracker.snapshotJson()</code> / <code>restoreSnapshotJson()</code> 保存任务与目标进度，不保存瞬时事件队列。 恢复时会与当前任务注册表逐项核对任务 id、目标 id、顺序和进度边界；内容版本不匹配会明确失败， 不会悄悄丢弃旧任务进度。</p>
+<p><code>RPGActor.checkpointJson()</code> / <code>restoreCheckpointJson()</code> 提供安全检查点语义：持久化基础属性、 等级经验、当前资源、已学技能、职业和特征身份；活动效果、施法、冷却与运行时事件属于战斗瞬态。 捕获时存在活动效果或施法会明确失败，恢复目标必须是相同职业、特征和属性布局的干净角色原型。</p>
+<p><code>rpg.newParty()</code> 创建 non-owning 的有序 <code>RPGParty</code>。<code>addMember(memberId, actor)</code> / <code>removeMember(memberId)</code> 以稳定成员 ID 管理关系，<code>clear()</code> 只清关系、不销毁 ECS 拥有的 Actor；重复 ID、重复 Actor 和非法 ID 都会返回结构化失败。<code><a class="el" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count()</a></code>、<code>contains(memberId)</code>、<code>getMemberId(index)</code> 提供有序 roster 查询， <code>getMemberActor(index)</code> / <code>findMemberActor(memberId)</code> 返回即时借用引用，结构变化后不得继续保留。 <code>hasStaleMembers()</code> 使用 generation-qualified handle 检测已销毁 Actor；<code>addToBattle(battle, side)</code> 会先解析 完整 roster，只有全队有效时才一次性加入 Battle，避免半支队伍进入战斗。 <code>recoverAtCheckpoint(healthResource, healthRatio, secondaryResource, secondaryRatio)</code> 用于安全点恢复：它先验证 全队引用、比例和每名成员的资源上限，再统一复活并恢复可选的次要资源；任一成员无效时全队保持原状。</p>
+<p><code>Battle.setActionByPolicyChecked(actor, skillId, policy)</code> 在 canonical 行动校验前确定性选择目标。policy 支持 <code>auto</code>、<code>self</code>、<code>lowestHealthAlly</code>、<code>lowestHealthEnemy</code>；最低生命比例相同时保持参战者加入顺序。 技能的 <code>targetType</code> 支持 <code>self</code>、<code>allySingle</code> 和敌方目标，策略与技能目标域不一致会返回结构化失败。</p>
+<p>队友和敌方策略可由 <code>replaceBattleTacticsFromJson(json)</code> 严格整批发布。每个策略是有序 rules：规则引用 <code>skillId</code>、<code>targetPolicy</code>，并可用 <code>conditionResource</code>＋<code>belowRatio</code> 判断目标资源比例；最后一条必须是无条件兜底。 未知字段、未知技能、非法比例、目标域冲突或无兜底会保留上一份目录。运行时调用 <code>queueBattleTactic(battle, actor, tacticsId)</code> 选择首个匹配规则并通过 Battle 的 checked API 排队； <code>clearBattleTactics()</code> 用于显式卸载目录。</p>
+<p>剧情事件使用 <code>replaceStoryEventsFromJson(json)</code> 严格发布 schema 为 <code>eve.rpg.story-events</code>、版本为 1 的内容文档。每个事件包含稳定 ID、<code>repeatable</code> 策略和 1–128 个有序展示步骤；步骤类型为 <code>dialogue</code>、<code>message</code>、<code>wait</code>、<code>move</code>、<code>camera</code>，统一携带 <code>reference</code>、<code>actorId</code>、<code>x/y</code> 和 <code>duration</code> 字段，并按类型严格校验字段组合。未知 schema/version、未知字段、重复 ID、非有限坐标或 非法时长会拒绝整批替换并保留旧目录。<code>getStoryEventCount()</code> / <code>hasStoryEvent(id)</code> 查询已提交内容， <code>clearStoryEvents()</code> 用于内容包补偿或卸载。</p>
+<p><code>rpg.newStoryEventSession()</code> 创建 caller-owned <code>RPGStoryEventSession</code>。<code><a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin(eventId, gameState)</a></code> 从 <code>GameState</code> 的 <code>story.event:&lt;id&gt;</code> 独立变量恢复游标；非重复事件完成后再次开始会返回结构化冲突。 当前步骤通过 <code>getStepKind()</code>、<code>getReference()</code>、<code>getActorId()</code>、<code>getX/Y/Duration()</code> 作为 owning 投影交给 UI、Dialogue、Map 或 Camera adapter 执行，展示成功后才调用 <code>advance(gameState)</code> 确认。 <code>advance()</code> 还会对持久游标执行 compare-and-set 校验，两个旧 session 或错误存档 owner 不能重复确认同一步。 最后一步确认会先把完成事实写入 <code>GameState</code>，再令 session 结束。活动 session 拷贝不可变定义，目录热替换 不会造成悬垂引用；GameState 是游标和完成状态的唯一权威，session 不保留其指针，也不调用脚本回调。 因此游戏可在步骤确认边界保存，并在读档后用新 session 精确重放尚未确认的展示步骤。</p>
+<p><b>RPGStoryEventSession 方法：</b> <code>advance()</code>、<code><a class="el" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin()</a></code>、<code>getActorId()</code>、<code>getDuration()</code>、 <code>getEventId()</code>、<code>getReference()</code>、<code>getStepCount()</code>、<code>getStepIndex()</code>、<code>getStepKind()</code>、<code>getX()</code>、 <code>getY()</code>、<code>isActive()</code>、<code>isFinished()</code>。</p>
+<p><code>eve.RPGSaveSession()</code> 是 non-owning 的存档协调器。调用 <code>bind(gameState, tracker, actor, bag, equipment)</code> 后， 会生成兼容的单角色 schema v1；新游戏应创建 <code>RPGParty</code> 并调用 <code>bindParty(gameState, tracker, party, bag, equipment)</code>，生成按稳定成员 ID 和顺序保存全队 Actor 的 schema v2。 还必须用 <code>setContentVersion(id)</code> 配置当前游戏数据契约，<code>getContentVersion()</code> 可读取已配置值。对于只增加内容、 且当前 codec 能完整读取的旧数据版本，可逐个调用 <code>allowCompatibleContentVersion(oldId)</code>；它不是任意数据转换器， 旧存档仍需通过当前任务、角色、物品和装备定义的全部验证。ID 确实发生变化时，使用 <code>addIdRenameMigration(fromVersion, domain, oldId, newId)</code> 注册直接到当前版本的纯转换；脚本 domain 支持 <code>item</code>、<code>quest</code>、<code>questObjective</code>、<code>skill</code>、<code>class</code>、<code>trait</code>、<code>traitSource</code> 和 <code>equipmentSlot</code>。 当新版本只是在 Tracker 注册表中追加任务时，使用 <code>addQuestAdditionMigration(fromVersion, questId)</code> 显式声明新增任务。迁移会按当前注册表顺序重建 owning Tracker payload，只为声明的任务写入 canonical 初始状态；旧任务进度保持原值，未声明的缺失任务和已删除任务仍被拒绝。 任务定义必须在注册迁移前已加载；该规则可与同一来源版本的 ID rename 组合。 从旧单角色存档升级到队伍存档时，必须为每个来源内容版本显式调用 <code>allowSingleActorPartyMigration(fromVersion)</code>：旧 Actor 只恢复到队伍第 0 位，其余成员保留当前内容预配置的基线， 没有登记的 schema v1 不会被队伍会话猜测性读取。 同一来源版本不能同时声明为“直接兼容”和“需要转换”，重复或冲突规则会明确失败。转换只修改通过完整性校验后的 owning payload 副本，随后仍执行全部 participant codec；磁盘原文和实时状态在 commit 前保持不变。 <code>snapshotJson()</code> 会生成公共严格 envelope 中的 <code>rpg:save-session</code> 单角色版本 1 或队伍版本 2 文档，并以 schema 固定的 128 位非密码摘要检测意外损坏；该摘要不承担防作弊或来源认证。 <code>validateSnapshotJson(json)</code> 会执行与恢复完全相同的 envelope、内容版本和 participant 准备流程，但不发布任何状态， 适合选择主存档或备份存档。<code>restoreSnapshotJson()</code> 会先验证 envelope 字段、内容摘要、精确或显式兼容的内容版本和 全部 participant，再同时发布 GameState、Tracker、玩家 Actor/全队 Actor、Bag 与 EquipmentSet，任一 participant 失败则所有权威状态都保持不变。装备属性修饰是可重建投影，不重复写入库存格式；恢复后调用 <code>syncEquipModifiers(actor, equipment)</code> 从权威装备状态重建。 内容版本是游戏维护的 opaque 标识，与存档 schema 版本分离；定义、任务或物品发生不兼容变更时必须 更新它并提供逐版本显式转换迁移，不能用兼容注册绕过验证。当前契约支持直接 N-1→N，不猜测缺失步骤、 不接受未知新版本且不支持降级；恢复旧版本后，下一次保存会自然写成当前版本。</p>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+<li>参数约束、默认值和返回类型以对应模块头文件及 <code>addFunc</code> 绑定为准；本文 API 快查与当前源码同步生成。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/rpg/"><code>src/modules/rpg/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>rpg</code>。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

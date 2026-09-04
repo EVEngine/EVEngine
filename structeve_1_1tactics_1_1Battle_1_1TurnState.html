@@ -1,0 +1,389 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::tactics::Battle::TurnState结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1tactics.html">tactics</a></li><li class="navelem"><a class="el" href="classeve_1_1tactics_1_1Battle.html">Battle</a></li><li class="navelem"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html">TurnState</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1tactics_1_1Battle_1_1TurnState-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::tactics::Battle::TurnState结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authoritative deterministic lifecycle and scheduling state.  
+ <a href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a6b9b1c83fa892bd7f3e4c6e012c07bf7" id="r_a6b9b1c83fa892bd7f3e4c6e012c07bf7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#a6b9b1c83fa892bd7f3e4c6e012c07bf7">revision</a></td></tr>
+<tr class="separator:a6b9b1c83fa892bd7f3e4c6e012c07bf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72055b88c2e52a04312788b2816c701a" id="r_a72055b88c2e52a04312788b2816c701a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">BattleStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#a72055b88c2e52a04312788b2816c701a">status</a> = <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">BattleStatus::Setup</a></td></tr>
+<tr class="separator:a72055b88c2e52a04312788b2816c701a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3db9578165c7cb8b3ea20d881cb4cf2" id="r_ac3db9578165c7cb8b3ea20d881cb4cf2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#ac3db9578165c7cb8b3ea20d881cb4cf2">phase</a> = <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b">BattlePhase::Setup</a></td></tr>
+<tr class="separator:ac3db9578165c7cb8b3ea20d881cb4cf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb440aae7ef5a29956b42a9522499ca0" id="r_adb440aae7ef5a29956b42a9522499ca0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372be">TurnPolicyKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#adb440aae7ef5a29956b42a9522499ca0">policy</a> = <a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372beacee327da59d9f97c6e84dd206c8a2fa5">TurnPolicyKind::SideAlternating</a></td></tr>
+<tr class="separator:adb440aae7ef5a29956b42a9522499ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d13d33388749daaf05a2421edc93b19" id="r_a5d13d33388749daaf05a2421edc93b19"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#a5d13d33388749daaf05a2421edc93b19">tick</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>()</td></tr>
+<tr class="separator:a5d13d33388749daaf05a2421edc93b19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa60b20e3be1459bb542a9ffdf29636e8" id="r_aa60b20e3be1459bb542a9ffdf29636e8"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#aa60b20e3be1459bb542a9ffdf29636e8">round</a> = 0</td></tr>
+<tr class="separator:aa60b20e3be1459bb542a9ffdf29636e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87284a96a3f74bfabd65d9c56571d3d7" id="r_a87284a96a3f74bfabd65d9c56571d3d7"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#a87284a96a3f74bfabd65d9c56571d3d7">cursor</a> = 0</td></tr>
+<tr class="separator:a87284a96a3f74bfabd65d9c56571d3d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed1eb403a97544dd7147b0ed9c7a3255" id="r_aed1eb403a97544dd7147b0ed9c7a3255"><td class="memItemLeft" align="right" valign="top">std::optional&lt; ecs::EntityHandle &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#aed1eb403a97544dd7147b0ed9c7a3255">activeSide</a></td></tr>
+<tr class="separator:aed1eb403a97544dd7147b0ed9c7a3255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd3227f1ff057e4e786158c1686801b0" id="r_acd3227f1ff057e4e786158c1686801b0"><td class="memItemLeft" align="right" valign="top">std::optional&lt; ecs::EntityHandle &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#acd3227f1ff057e4e786158c1686801b0">activeUnit</a></td></tr>
+<tr class="separator:acd3227f1ff057e4e786158c1686801b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9189cb59a99e3eeb8dfdaad702bd88d" id="r_ab9189cb59a99e3eeb8dfdaad702bd88d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ecs::EntityHandle &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#ab9189cb59a99e3eeb8dfdaad702bd88d">sides</a></td></tr>
+<tr class="separator:ab9189cb59a99e3eeb8dfdaad702bd88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02830663ed2e92c559d132cac0dfb873" id="r_a02830663ed2e92c559d132cac0dfb873"><td class="memItemLeft" align="right" valign="top">std::vector&lt; ecs::EntityHandle &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1tactics_1_1Battle_1_1TurnState.html#a02830663ed2e92c559d132cac0dfb873">units</a></td></tr>
+<tr class="separator:a02830663ed2e92c559d132cac0dfb873"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authoritative deterministic lifecycle and scheduling state. </p>
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00327">327</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aed1eb403a97544dd7147b0ed9c7a3255" name="aed1eb403a97544dd7147b0ed9c7a3255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed1eb403a97544dd7147b0ed9c7a3255">&#9670;&#160;</a></span>activeSide</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;ecs::EntityHandle&gt; eve::tactics::Battle::TurnState::activeSide</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00335">335</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd3227f1ff057e4e786158c1686801b0" name="acd3227f1ff057e4e786158c1686801b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd3227f1ff057e4e786158c1686801b0">&#9670;&#160;</a></span>activeUnit</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;ecs::EntityHandle&gt; eve::tactics::Battle::TurnState::activeUnit</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00336">336</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a87284a96a3f74bfabd65d9c56571d3d7" name="a87284a96a3f74bfabd65d9c56571d3d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87284a96a3f74bfabd65d9c56571d3d7">&#9670;&#160;</a></span>cursor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::tactics::Battle::TurnState::cursor = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00334">334</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac3db9578165c7cb8b3ea20d881cb4cf2" name="ac3db9578165c7cb8b3ea20d881cb4cf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3db9578165c7cb8b3ea20d881cb4cf2">&#9670;&#160;</a></span>phase</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bde">BattlePhase</a> eve::tactics::Battle::TurnState::phase = <a class="el" href="namespaceeve_1_1tactics.html#ad179be517f946678fdf8b276786a2bdeaad2376beebecdcf7846ba973fa1a005b">BattlePhase::Setup</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00330">330</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adb440aae7ef5a29956b42a9522499ca0" name="adb440aae7ef5a29956b42a9522499ca0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb440aae7ef5a29956b42a9522499ca0">&#9670;&#160;</a></span>policy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372be">TurnPolicyKind</a> eve::tactics::Battle::TurnState::policy = <a class="el" href="namespaceeve_1_1tactics.html#a2768be910195d0312da73547f9d372beacee327da59d9f97c6e84dd206c8a2fa5">TurnPolicyKind::SideAlternating</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00331">331</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b9b1c83fa892bd7f3e4c6e012c07bf7" name="a6b9b1c83fa892bd7f3e4c6e012c07bf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b9b1c83fa892bd7f3e4c6e012c07bf7">&#9670;&#160;</a></span>revision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">Revision</a> eve::tactics::Battle::TurnState::revision</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00328">328</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa60b20e3be1459bb542a9ffdf29636e8" name="aa60b20e3be1459bb542a9ffdf29636e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa60b20e3be1459bb542a9ffdf29636e8">&#9670;&#160;</a></span>round</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::tactics::Battle::TurnState::round = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00333">333</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9189cb59a99e3eeb8dfdaad702bd88d" name="ab9189cb59a99e3eeb8dfdaad702bd88d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9189cb59a99e3eeb8dfdaad702bd88d">&#9670;&#160;</a></span>sides</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;ecs::EntityHandle&gt; eve::tactics::Battle::TurnState::sides</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00337">337</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72055b88c2e52a04312788b2816c701a" name="a72055b88c2e52a04312788b2816c701a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72055b88c2e52a04312788b2816c701a">&#9670;&#160;</a></span>status</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5ba">BattleStatus</a> eve::tactics::Battle::TurnState::status = <a class="el" href="namespaceeve_1_1tactics.html#a2c8fc99e5215995b92d41e72a10dd5baaad2376beebecdcf7846ba973fa1a005b">BattleStatus::Setup</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5d13d33388749daaf05a2421edc93b19" name="a5d13d33388749daaf05a2421edc93b19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d13d33388749daaf05a2421edc93b19">&#9670;&#160;</a></span>tick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> eve::tactics::Battle::TurnState::tick = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00332">332</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a02830663ed2e92c559d132cac0dfb873" name="a02830663ed2e92c559d132cac0dfb873"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02830663ed2e92c559d132cac0dfb873">&#9670;&#160;</a></span>units</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;ecs::EntityHandle&gt; eve::tactics::Battle::TurnState::units</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a> 第 <a class="el" href="TacticsTypes_8h_source.html#l00338">338</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/tactics/<a class="el" href="TacticsTypes_8h_source.html">TacticsTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

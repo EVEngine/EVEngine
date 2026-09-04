@@ -1,0 +1,852 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::Snapshot类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1dev_1_1Snapshot-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::Snapshot类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Script + native state snapshot for state hot reload.  
+ <a href="classeve_1_1dev_1_1Snapshot.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Snapshot_8hpp_source.html">Snapshot.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a60d59c4f97a604896dd3f4f7637c1b0d" id="r_a60d59c4f97a604896dd3f4f7637c1b0d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a60d59c4f97a604896dd3f4f7637c1b0d">Snapshot</a> (const <a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp;)=delete</td></tr>
+<tr class="separator:a60d59c4f97a604896dd3f4f7637c1b0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c8c71a456e04216fc11a37c8d290340" id="r_a7c8c71a456e04216fc11a37c8d290340"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a7c8c71a456e04216fc11a37c8d290340">operator=</a> (const <a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp;)=delete</td></tr>
+<tr class="separator:a7c8c71a456e04216fc11a37c8d290340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e9abb0f02d500b75e05984182332671" id="r_a8e9abb0f02d500b75e05984182332671"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a8e9abb0f02d500b75e05984182332671">markRoot</a> (std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a8e9abb0f02d500b75e05984182332671"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a root as persistent, replacing a transient declaration.  <br /></td></tr>
+<tr class="separator:a8e9abb0f02d500b75e05984182332671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac656e95e6bff03e33f7fa8423327e95e" id="r_ac656e95e6bff03e33f7fa8423327e95e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#ac656e95e6bff03e33f7fa8423327e95e">unmarkRoot</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:ac656e95e6bff03e33f7fa8423327e95e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an explicit persistent-root declaration.  <br /></td></tr>
+<tr class="separator:ac656e95e6bff03e33f7fa8423327e95e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d0cde03ba561a590861954b4b4d75ec" id="r_a8d0cde03ba561a590861954b4b4d75ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a8d0cde03ba561a590861954b4b4d75ec">markTransientRoot</a> (std::string <a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a8d0cde03ba561a590861954b4b4d75ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark a root for reconstruction from new script definitions.  <br /></td></tr>
+<tr class="separator:a8d0cde03ba561a590861954b4b4d75ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c24cdb8b141e817f1c2b8d7d274501a" id="r_a2c24cdb8b141e817f1c2b8d7d274501a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a2c24cdb8b141e817f1c2b8d7d274501a">unmarkTransientRoot</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a2c24cdb8b141e817f1c2b8d7d274501a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an explicit transient-root declaration.  <br /></td></tr>
+<tr class="separator:a2c24cdb8b141e817f1c2b8d7d274501a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3295a2a803ed949e7538177d4567c8d" id="r_af3295a2a803ed949e7538177d4567c8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#af3295a2a803ed949e7538177d4567c8d">clearRoots</a> ()</td></tr>
+<tr class="memdesc:af3295a2a803ed949e7538177d4567c8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear every explicit persistent and transient declaration.  <br /></td></tr>
+<tr class="separator:af3295a2a803ed949e7538177d4567c8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e88b504ef21881191e101b91297b52b" id="r_a5e88b504ef21881191e101b91297b52b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a5e88b504ef21881191e101b91297b52b">roots</a> () const</td></tr>
+<tr class="memdesc:a5e88b504ef21881191e101b91297b52b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the explicit persistent roots.  <br /></td></tr>
+<tr class="separator:a5e88b504ef21881191e101b91297b52b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60a519472730ab04fbeaf8991d5609ee" id="r_a60a519472730ab04fbeaf8991d5609ee"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a60a519472730ab04fbeaf8991d5609ee">transientRoots</a> () const</td></tr>
+<tr class="memdesc:a60a519472730ab04fbeaf8991d5609ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the explicit transient roots.  <br /></td></tr>
+<tr class="separator:a60a519472730ab04fbeaf8991d5609ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c17685a88c1b7e00f726dc7fb516433" id="r_a6c17685a88c1b7e00f726dc7fb516433"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a6c17685a88c1b7e00f726dc7fb516433">setRootPolicies</a> (std::vector&lt; std::string &gt; persistent, std::vector&lt; std::string &gt; transient)</td></tr>
+<tr class="memdesc:a6c17685a88c1b7e00f726dc7fb516433"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace explicit persistent/transient root policy.  <br /></td></tr>
+<tr class="separator:a6c17685a88c1b7e00f726dc7fb516433"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a404d98646d533b1591f6da5f9b4c5881" id="r_a404d98646d533b1591f6da5f9b4c5881"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a404d98646d533b1591f6da5f9b4c5881">capture</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr) const</td></tr>
+<tr class="memdesc:a404d98646d533b1591f6da5f9b4c5881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture marked roots, or heuristic roots when none marked.  <br /></td></tr>
+<tr class="separator:a404d98646d533b1591f6da5f9b4c5881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a152eca5cae72fa70fcf4abfa3edaa2ee" id="r_a152eca5cae72fa70fcf4abfa3edaa2ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a152eca5cae72fa70fcf4abfa3edaa2ee">restore</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const std::string &amp;json, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr) const</td></tr>
+<tr class="separator:a152eca5cae72fa70fcf4abfa3edaa2ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b8448b6b0456258faa3ccce9c90b5a5" id="r_a9b8448b6b0456258faa3ccce9c90b5a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a9b8448b6b0456258faa3ccce9c90b5a5">saveFile</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr) const</td></tr>
+<tr class="separator:a9b8448b6b0456258faa3ccce9c90b5a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48ddaa37f8dbd27d698eca0f33744a98" id="r_a48ddaa37f8dbd27d698eca0f33744a98"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a48ddaa37f8dbd27d698eca0f33744a98">loadFile</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr) const</td></tr>
+<tr class="separator:a48ddaa37f8dbd27d698eca0f33744a98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1442831b171c0a6ac69ba771ee573153" id="r_a1442831b171c0a6ac69ba771ee573153"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a1442831b171c0a6ac69ba771ee573153">rootsFor</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>) const</td></tr>
+<tr class="memdesc:a1442831b171c0a6ac69ba771ee573153"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marked roots, or heuristic roots when none marked (script-facing).  <br /></td></tr>
+<tr class="separator:a1442831b171c0a6ac69ba771ee573153"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08fd20802ab66d1acc8cc1c28d52b5de" id="r_a08fd20802ab66d1acc8cc1c28d52b5de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a08fd20802ab66d1acc8cc1c28d52b5de">captureState</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;out, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr) const</td></tr>
+<tr class="memdesc:a08fd20802ab66d1acc8cc1c28d52b5de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture script roots plus every Preserve IStateProvider.  <br /></td></tr>
+<tr class="separator:a08fd20802ab66d1acc8cc1c28d52b5de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dd77c8469f64999e63bd315cbbeab8b" id="r_a1dd77c8469f64999e63bd315cbbeab8b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a1dd77c8469f64999e63bd315cbbeab8b">restoreState</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;state, std::string *<a class="el" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>=nullptr) const</td></tr>
+<tr class="memdesc:a1dd77c8469f64999e63bd315cbbeab8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore a captured state; v1-shaped values restore roots only.  <br /></td></tr>
+<tr class="separator:a1dd77c8469f64999e63bd315cbbeab8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ac4702086e72f5a0390b86bf284a83b79" id="r_ac4702086e72f5a0390b86bf284a83b79"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#ac4702086e72f5a0390b86bf284a83b79">instance</a> ()</td></tr>
+<tr class="separator:ac4702086e72f5a0390b86bf284a83b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b22c15ff2d2de2ca61a9f91cb255cb0" id="r_a7b22c15ff2d2de2ca61a9f91cb255cb0"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1Snapshot.html#a7b22c15ff2d2de2ca61a9f91cb255cb0">isEngineBinding</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a7b22c15ff2d2de2ca61a9f91cb255cb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in names never auto-captured (modules / boot bindings).  <br /></td></tr>
+<tr class="separator:a7b22c15ff2d2de2ca61a9f91cb255cb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Script + native state snapshot for state hot reload. </p>
+<p>Captures serializable Squirrel values from the root table — either explicitly persistent roots (<code>markRoot</code>) or a compatibility heuristic that skips engine module bindings. Roots marked transient are excluded. Native providers choose Preserve or Reset through IStateProvider::reloadPolicy(). Closures / native userdata are skipped.</p>
+<p>Format (v2): JSON object <code>{ "version":2, "roots": { name: value, ... }, "native": { "&lt;stateKind&gt;": &lt;captured&gt;, ... } }</code> v1 files (roots only) are still readable. </p>
+
+<p class="definition">在文件 <a class="el" href="Snapshot_8hpp_source.html">Snapshot.hpp</a> 第 <a class="el" href="Snapshot_8hpp_source.html#l00029">29</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a60d59c4f97a604896dd3f4f7637c1b0d" name="a60d59c4f97a604896dd3f4f7637c1b0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60d59c4f97a604896dd3f4f7637c1b0d">&#9670;&#160;</a></span>Snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::Snapshot::Snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a404d98646d533b1591f6da5f9b4c5881" name="a404d98646d533b1591f6da5f9b4c5881"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a404d98646d533b1591f6da5f9b4c5881">&#9670;&#160;</a></span>capture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::Snapshot::capture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture marked roots, or heuristic roots when none marked. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00434">434</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00379">captureState()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScenarioRecorder_8cpp_source.html#l00036">eve::dev::ScenarioRecorder::begin()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a08fd20802ab66d1acc8cc1c28d52b5de" name="a08fd20802ab66d1acc8cc1c28d52b5de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08fd20802ab66d1acc8cc1c28d52b5de">&#9670;&#160;</a></span>captureState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::Snapshot::captureState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture script roots plus every Preserve IStateProvider. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>Receives <code>{ "version":2, "roots": {...}, "native": {...} }</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>false when the VM is null; provider failures are skipped. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00379">379</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="StateValue_8cpp_source.html#l00038">eve::StateValue::integer()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="StateValue_8h_source.html#l00039">eve::StateValue::object()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="namespaceeve_1_1caps.html#adcddbc7db37b715b1c0cdb8abc78569ea526d688f37a86d3c3f27d0c5016eb71d">eve::caps::Reset</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00324">roots()</a>, <a class="el" href="StateValue_8cpp_source.html#l00064">eve::StateValue::set()</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00434">capture()</a>.</p>
+
+</div>
+</div>
+<a id="af3295a2a803ed949e7538177d4567c8d" name="af3295a2a803ed949e7538177d4567c8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3295a2a803ed949e7538177d4567c8d">&#9670;&#160;</a></span>clearRoots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::Snapshot::clearRoots </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear every explicit persistent and transient declaration. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="ac4702086e72f5a0390b86bf284a83b79" name="ac4702086e72f5a0390b86bf284a83b79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4702086e72f5a0390b86bf284a83b79">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp; eve::dev::Snapshot::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00070">eve::dev::ReloadSession::abort()</a>, <a class="el" href="ReloadSession_8cpp_source.html#l00012">eve::dev::ReloadSession::begin()</a>, <a class="el" href="ScenarioRecorder_8cpp_source.html#l00036">eve::dev::ScenarioRecorder::begin()</a>, <a class="el" href="ReloadSession_8cpp_source.html#l00032">eve::dev::ReloadSession::commit()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a7b22c15ff2d2de2ca61a9f91cb255cb0" name="a7b22c15ff2d2de2ca61a9f91cb255cb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b22c15ff2d2de2ca61a9f91cb255cb0">&#9670;&#160;</a></span>isEngineBinding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::Snapshot::isEngineBinding </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Built-in names never auto-captured (modules / boot bindings). </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a48ddaa37f8dbd27d698eca0f33744a98" name="a48ddaa37f8dbd27d698eca0f33744a98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48ddaa37f8dbd27d698eca0f33744a98">&#9670;&#160;</a></span>loadFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::Snapshot::loadFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00534">534</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a8e9abb0f02d500b75e05984182332671" name="a8e9abb0f02d500b75e05984182332671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e9abb0f02d500b75e05984182332671">&#9670;&#160;</a></span>markRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::Snapshot::markRoot </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark a root as persistent, replacing a transient declaration. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00315">unmarkTransientRoot()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00328">setRootPolicies()</a>.</p>
+
+</div>
+</div>
+<a id="a8d0cde03ba561a590861954b4b4d75ec" name="a8d0cde03ba561a590861954b4b4d75ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d0cde03ba561a590861954b4b4d75ec">&#9670;&#160;</a></span>markTransientRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::Snapshot::markTransientRoot </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark a root for reconstruction from new script definitions. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00306">306</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00034">r</a> , 以及 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00302">unmarkRoot()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00328">setRootPolicies()</a>.</p>
+
+</div>
+</div>
+<a id="a7c8c71a456e04216fc11a37c8d290340" name="a7c8c71a456e04216fc11a37c8d290340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c8c71a456e04216fc11a37c8d290340">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp; eve::dev::Snapshot::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a152eca5cae72fa70fcf4abfa3edaa2ee" name="a152eca5cae72fa70fcf4abfa3edaa2ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a152eca5cae72fa70fcf4abfa3edaa2ee">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::Snapshot::restore </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00508">508</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a1dd77c8469f64999e63bd315cbbeab8b" name="a1dd77c8469f64999e63bd315cbbeab8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dd77c8469f64999e63bd315cbbeab8b">&#9670;&#160;</a></span>restoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::Snapshot::restoreState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1StateValue.html">StateValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore a captured state; v1-shaped values restore roots only. </p>
+<dl class="section return"><dt>返回</dt><dd>false on invalid input or when a provider's restore fails (its resetToDefaults() is attempted as a fallback). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="StateValue_8cpp_source.html#l00074">eve::StateValue::find()</a>, <a class="el" href="StateValue_8h_source.html#l00049">eve::StateValue::isObject()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="namespaceeve_1_1caps.html#adcddbc7db37b715b1c0cdb8abc78569ea526d688f37a86d3c3f27d0c5016eb71d">eve::caps::Reset</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00324">roots()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00025">state</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00015">top</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+</div>
+</div>
+<a id="a5e88b504ef21881191e101b91297b52b" name="a5e88b504ef21881191e101b91297b52b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e88b504ef21881191e101b91297b52b">&#9670;&#160;</a></span>roots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::dev::Snapshot::roots </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the explicit persistent roots. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00324">324</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00012">eve::dev::ReloadSession::begin()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00379">captureState()</a> , 以及 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00451">restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="a1442831b171c0a6ac69ba771ee573153" name="a1442831b171c0a6ac69ba771ee573153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1442831b171c0a6ac69ba771ee573153">&#9670;&#160;</a></span>rootsFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::dev::Snapshot::rootsFor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Marked roots, or heuristic roots when none marked (script-facing). </p>
+
+<p class="definition">在文件 <a class="el" href="Snapshot_8hpp_source.html">Snapshot.hpp</a> 第 <a class="el" href="Snapshot_8hpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a9b8448b6b0456258faa3ccce9c90b5a5" name="a9b8448b6b0456258faa3ccce9c90b5a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b8448b6b0456258faa3ccce9c90b5a5">&#9670;&#160;</a></span>saveFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::Snapshot::saveFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string *&#160;</td>
+          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00522">522</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00020">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00012">eve::dev::ReloadSession::begin()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="a6c17685a88c1b7e00f726dc7fb516433" name="a6c17685a88c1b7e00f726dc7fb516433"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c17685a88c1b7e00f726dc7fb516433">&#9670;&#160;</a></span>setRootPolicies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::Snapshot::setRootPolicies </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::string &gt;&#160;</td>
+          <td class="paramname"><em>persistent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt;&#160;</td>
+          <td class="paramname"><em>transient</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace explicit persistent/transient root policy. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00293">markRoot()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00306">markTransientRoot()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00070">eve::dev::ReloadSession::abort()</a>.</p>
+
+</div>
+</div>
+<a id="a60a519472730ab04fbeaf8991d5609ee" name="a60a519472730ab04fbeaf8991d5609ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60a519472730ab04fbeaf8991d5609ee">&#9670;&#160;</a></span>transientRoots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::dev::Snapshot::transientRoots </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the explicit transient roots. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ReloadSession_8cpp_source.html#l00012">eve::dev::ReloadSession::begin()</a> , 以及 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a>.</p>
+
+</div>
+</div>
+<a id="ac656e95e6bff03e33f7fa8423327e95e" name="ac656e95e6bff03e33f7fa8423327e95e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac656e95e6bff03e33f7fa8423327e95e">&#9670;&#160;</a></span>unmarkRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::Snapshot::unmarkRoot </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove an explicit persistent-root declaration. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00302">302</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00306">markTransientRoot()</a>.</p>
+
+</div>
+</div>
+<a id="a2c24cdb8b141e817f1c2b8d7d274501a" name="a2c24cdb8b141e817f1c2b8d7d274501a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c24cdb8b141e817f1c2b8d7d274501a">&#9670;&#160;</a></span>unmarkTransientRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::Snapshot::unmarkTransientRoot </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove an explicit transient-root declaration. </p>
+
+<p class="definition">在文件 <a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a> 第 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00236">eve::dev::DevTool::exposeScriptApi()</a> , 以及 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00293">markRoot()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="Snapshot_8hpp_source.html">Snapshot.hpp</a></li>
+<li>src/engine/devtools/<a class="el" href="devtools_2Snapshot_8cpp_source.html">Snapshot.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

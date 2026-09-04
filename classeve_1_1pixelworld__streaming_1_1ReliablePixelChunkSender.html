@@ -1,0 +1,398 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::pixelworld_streaming::ReliablePixelChunkSender类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1pixelworld__streaming.html">pixelworld_streaming</a></li><li class="navelem"><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html">ReliablePixelChunkSender</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::pixelworld_streaming::ReliablePixelChunkSender类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Reliable sender retaining owning transfer parts and tombstones until application ACK.  
+ <a href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PixelWorldTransport_8h_source.html">PixelWorldTransport.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9f413275c0c218197e60fa74a9952565" id="r_a9f413275c0c218197e60fa74a9952565"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">PixelChunkTransferPart</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a9f413275c0c218197e60fa74a9952565">capture</a> (const <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <a class="el" href="structeve_1_1pixelworld_1_1PixelChunkRegion.html">eve::pixelworld::PixelChunkRegion</a> interest)</td></tr>
+<tr class="memdesc:a9f413275c0c218197e60fa74a9952565"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture and enqueue one atomic revision transfer, split into bounded owning parts.  <br /></td></tr>
+<tr class="separator:a9f413275c0c218197e60fa74a9952565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18fe9bfcb005242daf0d6b831cf53249" id="r_a18fe9bfcb005242daf0d6b831cf53249"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">PixelChunkTransferPart</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a18fe9bfcb005242daf0d6b831cf53249">pendingParts</a> () const</td></tr>
+<tr class="memdesc:a18fe9bfcb005242daf0d6b831cf53249"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return every unacknowledged part in canonical transfer/part order for transmission.  <br /></td></tr>
+<tr class="separator:a18fe9bfcb005242daf0d6b831cf53249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac68dacfb0f82b13040c0be6288896d4b" id="r_ac68dacfb0f82b13040c0be6288896d4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html">PixelChunkAckReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#ac68dacfb0f82b13040c0be6288896d4b">acknowledge</a> (<a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html">PixelChunkTransferAck</a> ack)</td></tr>
+<tr class="memdesc:ac68dacfb0f82b13040c0be6288896d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release cumulatively acknowledged transfers and their retained tombstones.  <br /></td></tr>
+<tr class="separator:ac68dacfb0f82b13040c0be6288896d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd1e2b52212b0048453223d1d088d383" id="r_afd1e2b52212b0048453223d1d088d383"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#afd1e2b52212b0048453223d1d088d383">inFlightTransferCount</a> () const noexcept</td></tr>
+<tr class="memdesc:afd1e2b52212b0048453223d1d088d383"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of unacknowledged atomic transfers.  <br /></td></tr>
+<tr class="separator:afd1e2b52212b0048453223d1d088d383"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96a3a9960f4476ecb8c4840c8a3acf83" id="r_a96a3a9960f4476ecb8c4840c8a3acf83"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a96a3a9960f4476ecb8c4840c8a3acf83">retainedTombstoneCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a96a3a9960f4476ecb8c4840c8a3acf83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of tombstones retained specifically for possible retransmission.  <br /></td></tr>
+<tr class="separator:a96a3a9960f4476ecb8c4840c8a3acf83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a80bbe746b926bc7147641b91419db7bb" id="r_a80bbe746b926bc7147641b91419db7bb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html">ReliablePixelChunkSender</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a80bbe746b926bc7147641b91419db7bb">create</a> (std::uint64_t streamId, <a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">PixelChunkTransportConfig</a> config={})</td></tr>
+<tr class="memdesc:a80bbe746b926bc7147641b91419db7bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate policy and create a fresh nonzero stream session.  <br /></td></tr>
+<tr class="separator:a80bbe746b926bc7147641b91419db7bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Reliable sender retaining owning transfer parts and tombstones until application ACK. </p>
+<p>The sender is transport-neutral: callers may send <code><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a18fe9bfcb005242daf0d6b831cf53249" title="Return every unacknowledged part in canonical transfer/part order for transmission.">pendingParts()</a></code> through EVNetwork reliable messages, another socket, or deterministic tests. Cursor state advances only after a transfer fits the bounded in-flight window. Repeated <code><a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html#a18fe9bfcb005242daf0d6b831cf53249" title="Return every unacknowledged part in canonical transfer/part order for transmission.">pendingParts()</a></code> calls are intentional retransmits. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldTransport_8h_source.html">PixelWorldTransport.h</a> 第 <a class="el" href="PixelWorldTransport_8h_source.html#l00063">63</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ac68dacfb0f82b13040c0be6288896d4b" name="ac68dacfb0f82b13040c0be6288896d4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac68dacfb0f82b13040c0be6288896d4b">&#9670;&#160;</a></span>acknowledge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkAckReceipt.html">PixelChunkAckReceipt</a> &gt; eve::pixelworld_streaming::ReliablePixelChunkSender::acknowledge </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferAck.html">PixelChunkTransferAck</a>&#160;</td>
+          <td class="paramname"><em>ack</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Release cumulatively acknowledged transfers and their retained tombstones. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldTransport_8cpp_source.html">PixelWorldTransport.cpp</a> 第 <a class="el" href="PixelWorldTransport_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldTransport_8h_source.html#l00037">eve::pixelworld_streaming::PixelChunkTransferAck::acknowledgedThrough</a>, <a class="el" href="PixelWorldTransport_8h_source.html#l00045">eve::pixelworld_streaming::PixelChunkAckReceipt::acknowledgedThrough</a>, <a class="el" href="PixelWorldTransport_8h_source.html#l00038">eve::pixelworld_streaming::PixelChunkTransferAck::appliedRevision</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="PixelWorldTransport_8h_source.html#l00036">eve::pixelworld_streaming::PixelChunkTransferAck::streamId</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PixelWorldTransport_8h_source.html#l00044">eve::pixelworld_streaming::PixelChunkAckReceipt::tombstonesReleased</a> , 以及 <a class="el" href="PixelWorldTransport_8h_source.html#l00043">eve::pixelworld_streaming::PixelChunkAckReceipt::transfersReleased</a>.</p>
+
+</div>
+</div>
+<a id="a9f413275c0c218197e60fa74a9952565" name="a9f413275c0c218197e60fa74a9952565"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f413275c0c218197e60fa74a9952565">&#9670;&#160;</a></span>capture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">PixelChunkTransferPart</a> &gt; &gt; eve::pixelworld_streaming::ReliablePixelChunkSender::capture </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1pixelworld_1_1PixelWorld.html">eve::pixelworld::PixelWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld_1_1PixelChunkRegion.html">eve::pixelworld::PixelChunkRegion</a>&#160;</td>
+          <td class="paramname"><em>interest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture and enqueue one atomic revision transfer, split into bounded owning parts. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldTransport_8cpp_source.html">PixelWorldTransport.cpp</a> 第 <a class="el" href="PixelWorldTransport_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorldTransport_8h_source.html#l00029">eve::pixelworld_streaming::PixelChunkTransferPart::batch</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="PixelWorld_8h_source.html#l00084">eve::pixelworld::PixelChunkBatch::catalogFingerprint</a>, <a class="el" href="PixelWorld_8h_source.html#l00091">eve::pixelworld::PixelChunkBatch::chunks</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="PixelWorld_8h_source.html#l00090">eve::pixelworld::PixelChunkBatch::fullResync</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PixelWorldTransport_8h_source.html#l00028">eve::pixelworld_streaming::PixelChunkTransferPart::interest</a>, <a class="el" href="PixelWorldTransport_8h_source.html#l00027">eve::pixelworld_streaming::PixelChunkTransferPart::partCount</a>, <a class="el" href="PixelWorldTransport_8h_source.html#l00026">eve::pixelworld_streaming::PixelChunkTransferPart::partIndex</a>, <a class="el" href="ArtifactPublish_8cpp_source.html#l00016">parts</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="PixelWorld_8h_source.html#l00088">eve::pixelworld::PixelChunkBatch::sourceLastEditSequence</a>, <a class="el" href="PixelWorld_8h_source.html#l00086">eve::pixelworld::PixelChunkBatch::sourceRevision</a>, <a class="el" href="PixelWorld_8h_source.html#l00085">eve::pixelworld::PixelChunkBatch::sourceSeed</a>, <a class="el" href="PixelWorld_8h_source.html#l00087">eve::pixelworld::PixelChunkBatch::sourceTick</a>, <a class="el" href="PixelWorldTransport_8h_source.html#l00024">eve::pixelworld_streaming::PixelChunkTransferPart::streamId</a>, <a class="el" href="Result_8h_source.html#l00299">eve::Result&lt; T &gt;::takeValue()</a> , 以及 <a class="el" href="PixelWorldTransport_8h_source.html#l00025">eve::pixelworld_streaming::PixelChunkTransferPart::transferId</a>.</p>
+
+</div>
+</div>
+<a id="a80bbe746b926bc7147641b91419db7bb" name="a80bbe746b926bc7147641b91419db7bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80bbe746b926bc7147641b91419db7bb">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1pixelworld__streaming_1_1ReliablePixelChunkSender.html">ReliablePixelChunkSender</a> &gt; eve::pixelworld_streaming::ReliablePixelChunkSender::create </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>streamId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransportConfig.html">PixelChunkTransportConfig</a>&#160;</td>
+          <td class="paramname"><em>config</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate policy and create a fresh nonzero stream session. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldTransport_8cpp_source.html">PixelWorldTransport.cpp</a> 第 <a class="el" href="PixelWorldTransport_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>.</p>
+
+</div>
+</div>
+<a id="afd1e2b52212b0048453223d1d088d383" name="afd1e2b52212b0048453223d1d088d383"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd1e2b52212b0048453223d1d088d383">&#9670;&#160;</a></span>inFlightTransferCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::pixelworld_streaming::ReliablePixelChunkSender::inFlightTransferCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of unacknowledged atomic transfers. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldTransport_8cpp_source.html">PixelWorldTransport.cpp</a> 第 <a class="el" href="PixelWorldTransport_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a18fe9bfcb005242daf0d6b831cf53249" name="a18fe9bfcb005242daf0d6b831cf53249"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18fe9bfcb005242daf0d6b831cf53249">&#9670;&#160;</a></span>pendingParts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1pixelworld__streaming_1_1PixelChunkTransferPart.html">PixelChunkTransferPart</a> &gt; eve::pixelworld_streaming::ReliablePixelChunkSender::pendingParts </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return every unacknowledged part in canonical transfer/part order for transmission. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldTransport_8cpp_source.html">PixelWorldTransport.cpp</a> 第 <a class="el" href="PixelWorldTransport_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArtifactPublish_8cpp_source.html#l00016">parts</a>.</p>
+
+</div>
+</div>
+<a id="a96a3a9960f4476ecb8c4840c8a3acf83" name="a96a3a9960f4476ecb8c4840c8a3acf83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96a3a9960f4476ecb8c4840c8a3acf83">&#9670;&#160;</a></span>retainedTombstoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::pixelworld_streaming::ReliablePixelChunkSender::retainedTombstoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of tombstones retained specifically for possible retransmission. </p>
+
+<p class="definition">在文件 <a class="el" href="PixelWorldTransport_8cpp_source.html">PixelWorldTransport.cpp</a> 第 <a class="el" href="PixelWorldTransport_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a> , 以及 <a class="el" href="ArtifactPublish_8cpp_source.html#l00016">parts</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/pixelworld_streaming/<a class="el" href="PixelWorldTransport_8h_source.html">PixelWorldTransport.h</a></li>
+<li>src/modules/pixelworld_streaming/<a class="el" href="PixelWorldTransport_8cpp_source.html">PixelWorldTransport.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

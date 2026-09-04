@@ -1,0 +1,444 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/Cloth.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Cloth.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Cloth_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="SimulationBackend_8h.html">physics/SimulationBackend.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>Graphics;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>World;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html">   27</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1Cloth.html">Cloth</a> : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1physics_1_1ISimulationBackend.html">ISimulationBackend</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Cloth.html">Cloth</a>(<span class="keywordtype">int</span> cols, <span class="keywordtype">int</span> rows, <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, <span class="keywordtype">float</span> originX, <span class="keywordtype">float</span> originY);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a3c0d04a8289d5f0c789517e9a687aa50">~Cloth</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a89d5802cc9d221211e877d479714e9ce">   39</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a89d5802cc9d221211e877d479714e9ce">Cloth</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Cloth.html">Cloth</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ada762418bf1ccc5337b8d43a03d9a65c">   40</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1Cloth.html">Cloth</a> &amp;<a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ada762418bf1ccc5337b8d43a03d9a65c">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Cloth.html">Cloth</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a851241c9f23cc2f0539b4ac90701b089">update</a>(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard(<span class="stringliteral">&quot;check the cloth step outcome&quot;</span>)]]</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationSettings.html">SimulationSettings</a> &amp;settings) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#abc1cfd1988276ee8404303f186c21fe7">   48</a></span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#abc1cfd1988276ee8404303f186c21fe7">observation</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> observation_; }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a5c03f4ab2e7f4ac560c5b0dd9bec1479">   50</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">SimulationBackendKind</a> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a5c03f4ab2e7f4ac560c5b0dd9bec1479">kind</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">SimulationBackendKind::Cpu</a>; }</div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a48d5cb3c63209a32b2ad4e32521673dc">   52</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">SimulationDeterminism</a> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a48d5cb3c63209a32b2ad4e32521673dc">determinism</a>() const noexcept<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">SimulationDeterminism::ToleranceBounded</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    [[nodiscard(<span class="stringliteral">&quot;check cloth observation restore&quot;</span>)]]</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a0b9bbeea00eb9f412ff57d83544bb325">restoreObservation</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;<a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#abc1cfd1988276ee8404303f186c21fe7">observation</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a74104e788eb8dd83633b78b0b6a27ea1">setGravity</a>(<span class="keywordtype">float</span> gx, <span class="keywordtype">float</span> gy);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a89c7e44c9aae11196582a54e713afa6a">   60</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a89c7e44c9aae11196582a54e713afa6a">getGravityX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> gravityX_; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#aae497d20d5da1c4a54ee00288f24d6e7">   61</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#aae497d20d5da1c4a54ee00288f24d6e7">getGravityY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> gravityY_; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a16c3d97ec93e9d6666c7a7e19c1c47fe">setStiffness</a>(<span class="keywordtype">float</span> stiffness);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a8e154ee9eb1dfc9511ce709f5828acd6">   65</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a8e154ee9eb1dfc9511ce709f5828acd6">getStiffness</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> stiffness_; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#abde34ad705f5963f1cdf050d4ffbb82e">setIterations</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ac01a7819ada3228f52595e515b90266a">   69</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ac01a7819ada3228f52595e515b90266a">getIterations</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> iterations_; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a39d45a64dd32b7d16e9387ae52463a15">setDamping</a>(<span class="keywordtype">float</span> damping);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a372eefd95b0f22ce2bee27f35e946b8e">   73</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a372eefd95b0f22ce2bee27f35e946b8e">getDamping</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> damping_; }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a14c9e7f91b231dce59a7f72a443382c3">setParticleSize</a>(<span class="keywordtype">float</span> size);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a55b00e70e0985f13fdc1c128dda714ae">   81</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a55b00e70e0985f13fdc1c128dda714ae">getParticleSize</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> particleSize_; }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a57d1c2bf4ef562ed2a7989b9bb7abc7b">setParticleMass</a>(<span class="keywordtype">float</span> mass);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ac9702a3406028cc3beaa411e91c51aec">   88</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ac9702a3406028cc3beaa411e91c51aec">getParticleMass</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> particleMass_; }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ab813512a62347d03789fb8ce6e38881c">setSelfCollision</a>(<span class="keywordtype">bool</span> on);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#adca9264f26ec21031496f1cd30d31882">   95</a></span>    <span class="keywordtype">bool</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#adca9264f26ec21031496f1cd30d31882">getSelfCollision</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> selfCollision_; }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#adf03c32e5d8ef389d634a8ead3bce1f4">setFoldStiffness</a>(<span class="keywordtype">float</span> k);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#aa1edd5774a132ac7ee07a132de5d997b">   99</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#aa1edd5774a132ac7ee07a132de5d997b">getFoldStiffness</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> foldStiffness_; }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a05f42fa3fc5e19df5bc3f5218865cccd">setMaxFoldAngle</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#aa5fdab17ad8f960bf646d57f84123acb">  107</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#aa5fdab17ad8f960bf646d57f84123acb">getMaxFoldAngle</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> maxFoldAngle_ * 180.f / 3.14159265f; }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a100bce50a61503a5c1619603a5f3952d">setBounds</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a34ab11215f5d602656fb38a6b46d1626">clearBounds</a>();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#aa9630cb34755e73d1eeec21cdcca4ef5">pin</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#af22c557b36f17e9b102cb878a101a24a">unpin</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#afa3f7c8d5d83155e3ae5bb9188722db4">pinTopRow</a>();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a601c095ec9fecf5d5f647eb98f018fc8">isPinned</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ad3676dba789066d0bae2400a68d9b94a">grabAt</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> = 24.f);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a83cc823609186bd99a045877e03937fc">moveGrab</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ad6b25e9dbde4df0d7fdd2a59beb51d64">releaseGrab</a>();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a9d9e5716471842b910793544070bd161">  125</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a9d9e5716471842b910793544070bd161">isGrabbing</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> grabIndex_ &gt;= 0; }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a1358fcc2d583dbc59ca8047c9be10ad7">  126</a></span>    <span class="keywordtype">int</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a1358fcc2d583dbc59ca8047c9be10ad7">getGrabIndex</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> grabIndex_; }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ab8330f245b9f5c3240b47a497f701bea">applyForce</a>(<span class="keywordtype">float</span> fx, <span class="keywordtype">float</span> fy);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a50b601681797a064dc7d51581154d642">interactAt</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <span class="keywordtype">float</span> strength);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#aa94ae0330aecb4a47d9f32a63519bc04">setCollideWorld</a>(<a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a> *<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#aecfc05febb6f521b2ad4d205d1f1a50d">  159</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1World.html">World</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#aecfc05febb6f521b2ad4d205d1f1a50d">getCollideWorld</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> world_; }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a4b23bec7c9ec235589ee80144ff91d23">reset</a>();</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a9109f65a461ea08d2a02fc98939e8414">setColor</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = 1.f);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ad297b268cd1c06c76d635e5656a15255">  165</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ad297b268cd1c06c76d635e5656a15255">getColorR</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> colorR_; }</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a802b2ff1a5fa75342debae5545b0d73c">  166</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a802b2ff1a5fa75342debae5545b0d73c">getColorG</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> colorG_; }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#ac7fb05c20e1e4ac86eafd2619d47eef2">  167</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ac7fb05c20e1e4ac86eafd2619d47eef2">getColorB</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> colorB_; }</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a36f2d84b168d2b601c398cc39dcf7053">  168</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a36f2d84b168d2b601c398cc39dcf7053">getColorA</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> colorA_; }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordtype">void</span> <a class="code hl_variable" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a276255638fec362332b70e1b7d84bee6">  172</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a276255638fec362332b70e1b7d84bee6">getCols</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> cols_; }</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a57d831630d97f5cafb944135e6f2386a">  173</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a57d831630d97f5cafb944135e6f2386a">getRows</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> rows_; }</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a80953d8e8c2903b8a60bceb04e11ddb7">  174</a></span>    <span class="keywordtype">int</span>   <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a80953d8e8c2903b8a60bceb04e11ddb7">getParticleCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(particles_.size()); }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a44eddb3509afea9cd3af9e82c15127f5">getParticleX</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a6e305629127c9fb51e064c9811174554">getParticleY</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keywordtype">void</span>  <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a01490e86e3a6ab78bc0180a68f0ccc85">setParticlePosition</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#afb58821b541e3fb32e2808ef8ad5a352">  179</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#afb58821b541e3fb32e2808ef8ad5a352">getSpacing</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> spacing_; }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a29bad4b782aacb32678d34c444133fdd">  180</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a29bad4b782aacb32678d34c444133fdd">getOriginX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originX_; }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Cloth.html#a4feaadeb1977d504b7bf5d48a1b5eace">  181</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#a4feaadeb1977d504b7bf5d48a1b5eace">getOriginY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> originY_; }</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1Cloth.html#ab4ecb85c828f465a4a250fd14f246963">destroy</a>();</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">struct </span>Particle {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0.f, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0.f;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> = 0.f, <a class="code hl_variable" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a> = 0.f;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordtype">bool</span>  pinned = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    };</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keyword">struct </span>Link {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordtype">int</span>   <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = 0, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = 0;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="keywordtype">float</span> rest = 0.f;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    };</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordtype">void</span> rebuildLinks();</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordtype">void</span>    updateSubsteps(<span class="keywordtype">float</span> dt, <span class="keywordtype">int</span> substeps);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordtype">void</span> integrate(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">void</span> solveConstraints();</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordtype">void</span> solveFoldConstraint();</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordtype">void</span> solveSelfCollision();</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordtype">void</span> collideWorld(<span class="keywordtype">float</span> dt);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordtype">void</span> collideBounds();</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordtype">void</span> rebuildHash();</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordtype">void</span> buildLinkKeys();</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordtype">bool</span> areLinked(<span class="keywordtype">int</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordtype">bool</span> validIndex(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    int64_t cellKey(<span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordtype">int</span>   cols_ = 0;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">int</span>   rows_ = 0;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordtype">float</span> spacing_ = 10.f;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordtype">float</span> originX_ = 0.f;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordtype">float</span> originY_ = 0.f;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordtype">float</span> gravityX_ = 0.f;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordtype">float</span> gravityY_ = 980.f;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordtype">float</span> stiffness_ = 0.85f;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordtype">float</span> damping_   = 0.01f;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keywordtype">int</span>   iterations_ = 4;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordtype">float</span> particleSize_ = 3.f;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordtype">float</span> particleMass_ = 0.1f;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordtype">bool</span>  selfCollision_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordtype">float</span> foldStiffness_ = 0.5f;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordtype">float</span> maxFoldAngle_ = 90.f * 3.14159265f / 180.f;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordtype">bool</span>  hasBounds_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordtype">float</span> boundX_ = 0.f, boundY_ = 0.f, boundW_ = 0.f, boundH_ = 0.f;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <span class="keywordtype">int</span>   grabIndex_ = -1;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keywordtype">float</span> grabX_ = 0.f, grabY_ = 0.f;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordtype">float</span> forceX_ = 0.f, forceY_ = 0.f;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keywordtype">float</span> interactX_ = 0.f, interactY_ = 0.f;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordtype">float</span> interactRadius_ = 0.f;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordtype">float</span> interactStrength_ = 0.f;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    World *world_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordtype">float</span> colorR_ = 0.75f, colorG_ = 0.82f, colorB_ = 0.95f, colorA_ = 1.f;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordtype">bool</span> destroyed_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    SimulationObservation observation_;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    std::vector&lt;Particle&gt; particles_;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    std::vector&lt;Link&gt;     links_;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    std::unordered_set&lt;int64_t&gt; linkKeys_;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    std::unordered_map&lt;int64_t, std::vector&lt;int&gt;&gt; hash_;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>};</div>
+</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00034">CardTypes.cpp:34</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_aa6a11f8f07bde2d8bb6416cf51199a20"><div class="ttname"><a href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a></div><div class="ttdeci">float degrees</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00035">CardTypes.cpp:35</a></div></div>
+<div class="ttc" id="aCaveWetness_8cpp_html_a709aad4619f93afb87fab238013812b2"><div class="ttname"><a href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a></div><div class="ttdeci">float py</div><div class="ttdef"><b>Definition</b> <a href="CaveWetness_8cpp_source.html#l00015">CaveWetness.cpp:15</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aecb57814a4eed9c5ec6047d3af2a9488"><div class="ttname"><a href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a></div><div class="ttdeci">std::vector&lt; Colorf &gt; px</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00686">ImageData.cpp:686</a></div></div>
+<div class="ttc" id="aMeshVfxRenderBatch_8cpp_html_a90ba9e50cca44205ade0c723c61f20ad"><div class="ttname"><a href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a></div><div class="ttdeci">MeshVfxBatchedDraw draw</div><div class="ttdef"><b>Definition</b> <a href="MeshVfxRenderBatch_8cpp_source.html#l00013">MeshVfxRenderBatch.cpp:13</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a1673907d4d89d763bb7b94ec1eeb7b60"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a1673907d4d89d763bb7b94ec1eeb7b60">g</a></div><div class="ttdeci">uint8_t g</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00035">PrototypeTextures.cpp:35</a></div></div>
+<div class="ttc" id="aPrototypeTextures_8cpp_html_a4c5c6ceb8ed33456261fa907136e0c3a"><div class="ttname"><a href="PrototypeTextures_8cpp.html#a4c5c6ceb8ed33456261fa907136e0c3a">r</a></div><div class="ttdeci">uint8_t r</div><div class="ttdef"><b>Definition</b> <a href="PrototypeTextures_8cpp_source.html#l00034">PrototypeTextures.cpp:34</a></div></div>
+<div class="ttc" id="aSimulationBackend_8h_html"><div class="ttname"><a href="SimulationBackend_8h.html">SimulationBackend.h</a></div><div class="ttdoc">Backend-neutral, observable fixed-step contract for physics domains.</div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a12acf4cc0533ead229b8b9f6c86b7fe6"><div class="ttname"><a href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a></div><div class="ttdeci">int spacing</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00136">TileConfig.cpp:136</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a1d10e252e778731e59f0f71afd7e727e"><div class="ttname"><a href="TreeMesh_8cpp.html#a1d10e252e778731e59f0f71afd7e727e">iterations</a></div><div class="ttdeci">int iterations</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00193">TreeMesh.cpp:193</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00097">Graphics.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html">eve::physics::Cloth</a></div><div class="ttdoc">Interactive 2D cloth — Verlet particles + distance constraints. Pixel space (same convention as Box2D...</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00027">Cloth.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a01490e86e3a6ab78bc0180a68f0ccc85"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a01490e86e3a6ab78bc0180a68f0ccc85">eve::physics::Cloth::setParticlePosition</a></div><div class="ttdeci">void setParticlePosition(int index, float x, float y)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00421">Cloth.cpp:421</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a05f42fa3fc5e19df5bc3f5218865cccd"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a05f42fa3fc5e19df5bc3f5218865cccd">eve::physics::Cloth::setMaxFoldAngle</a></div><div class="ttdeci">void setMaxFoldAngle(float degrees)</div><div class="ttdoc">Maximum bend deviation from a straight row/column segment in degrees Range is 0..180 degrees; default...</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00152">Cloth.cpp:152</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a0b9bbeea00eb9f412ff57d83544bb325"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a0b9bbeea00eb9f412ff57d83544bb325">eve::physics::Cloth::restoreObservation</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreObservation(const SimulationObservation &amp;observation) override</div><div class="ttdoc">Restores tick/progress metadata after an owner-level restore.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00594">Cloth.cpp:594</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a100bce50a61503a5c1619603a5f3952d"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a100bce50a61503a5c1619603a5f3952d">eve::physics::Cloth::setBounds</a></div><div class="ttdeci">void setBounds(float x, float y, float w, float h)</div><div class="ttdoc">Axis-aligned walls; particles bounce inside. Disabled if w/h &lt;= 0.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00156">Cloth.cpp:156</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a1358fcc2d583dbc59ca8047c9be10ad7"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a1358fcc2d583dbc59ca8047c9be10ad7">eve::physics::Cloth::getGrabIndex</a></div><div class="ttdeci">int getGrabIndex() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00126">Cloth.h:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a14c9e7f91b231dce59a7f72a443382c3"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a14c9e7f91b231dce59a7f72a443382c3">eve::physics::Cloth::setParticleSize</a></div><div class="ttdeci">void setParticleSize(float size)</div><div class="ttdoc">Particle radius used for self-collision, draw size and body collision Default is 3....</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00138">Cloth.cpp:138</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a16c3d97ec93e9d6666c7a7e19c1c47fe"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a16c3d97ec93e9d6666c7a7e19c1c47fe">eve::physics::Cloth::setStiffness</a></div><div class="ttdeci">void setStiffness(float stiffness)</div><div class="ttdoc">Constraint relaxation strength in [0,1] (default 0.85).</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00126">Cloth.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a276255638fec362332b70e1b7d84bee6"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a276255638fec362332b70e1b7d84bee6">eve::physics::Cloth::getCols</a></div><div class="ttdeci">int getCols() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00172">Cloth.h:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a29bad4b782aacb32678d34c444133fdd"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a29bad4b782aacb32678d34c444133fdd">eve::physics::Cloth::getOriginX</a></div><div class="ttdeci">float getOriginX() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00180">Cloth.h:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a34ab11215f5d602656fb38a6b46d1626"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a34ab11215f5d602656fb38a6b46d1626">eve::physics::Cloth::clearBounds</a></div><div class="ttdeci">void clearBounds()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00168">Cloth.cpp:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a36f2d84b168d2b601c398cc39dcf7053"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a36f2d84b168d2b601c398cc39dcf7053">eve::physics::Cloth::getColorA</a></div><div class="ttdeci">float getColorA() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00168">Cloth.h:168</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a372eefd95b0f22ce2bee27f35e946b8e"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a372eefd95b0f22ce2bee27f35e946b8e">eve::physics::Cloth::getDamping</a></div><div class="ttdeci">float getDamping() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00073">Cloth.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a39d45a64dd32b7d16e9387ae52463a15"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a39d45a64dd32b7d16e9387ae52463a15">eve::physics::Cloth::setDamping</a></div><div class="ttdeci">void setDamping(float damping)</div><div class="ttdoc">Damping applied to Verlet velocity [0,1] (default 0.01).</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00134">Cloth.cpp:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a3c0d04a8289d5f0c789517e9a687aa50"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a3c0d04a8289d5f0c789517e9a687aa50">eve::physics::Cloth::~Cloth</a></div><div class="ttdeci">~Cloth()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00043">Cloth.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a44eddb3509afea9cd3af9e82c15127f5"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a44eddb3509afea9cd3af9e82c15127f5">eve::physics::Cloth::getParticleX</a></div><div class="ttdeci">float getParticleX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00411">Cloth.cpp:411</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a48d5cb3c63209a32b2ad4e32521673dc"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a48d5cb3c63209a32b2ad4e32521673dc">eve::physics::Cloth::determinism</a></div><div class="ttdeci">SimulationDeterminism determinism() const noexcept override</div><div class="ttdoc">CPU cloth uses bounded floating-point determinism.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00052">Cloth.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a4b23bec7c9ec235589ee80144ff91d23"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a4b23bec7c9ec235589ee80144ff91d23">eve::physics::Cloth::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">Restore the flat grid pose (top row pinned) and clear transient state.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00047">Cloth.cpp:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a4feaadeb1977d504b7bf5d48a1b5eace"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a4feaadeb1977d504b7bf5d48a1b5eace">eve::physics::Cloth::getOriginY</a></div><div class="ttdeci">float getOriginY() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00181">Cloth.h:181</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a50b601681797a064dc7d51581154d642"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a50b601681797a064dc7d51581154d642">eve::physics::Cloth::interactAt</a></div><div class="ttdeci">void interactAt(float x, float y, float radius, float strength)</div><div class="ttdoc">Pointer-field interaction like Fluid2D::interactAt: positive strength attracts, negative repels....</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00226">Cloth.cpp:226</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a55b00e70e0985f13fdc1c128dda714ae"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a55b00e70e0985f13fdc1c128dda714ae">eve::physics::Cloth::getParticleSize</a></div><div class="ttdeci">float getParticleSize() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00081">Cloth.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a57d1c2bf4ef562ed2a7989b9bb7abc7b"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a57d1c2bf4ef562ed2a7989b9bb7abc7b">eve::physics::Cloth::setParticleMass</a></div><div class="ttdeci">void setParticleMass(float mass)</div><div class="ttdoc">Implicit particle mass in kg (default 0.1). Used for mass-proportional momentum exchange when collidi...</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00142">Cloth.cpp:142</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a57d831630d97f5cafb944135e6f2386a"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a57d831630d97f5cafb944135e6f2386a">eve::physics::Cloth::getRows</a></div><div class="ttdeci">int getRows() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00173">Cloth.h:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a5c03f4ab2e7f4ac560c5b0dd9bec1479"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a5c03f4ab2e7f4ac560c5b0dd9bec1479">eve::physics::Cloth::kind</a></div><div class="ttdeci">SimulationBackendKind kind() const noexcept override</div><div class="ttdoc">Identifies this production CPU cloth backend.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00050">Cloth.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a601c095ec9fecf5d5f647eb98f018fc8"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a601c095ec9fecf5d5f647eb98f018fc8">eve::physics::Cloth::isPinned</a></div><div class="ttdeci">bool isPinned(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00185">Cloth.cpp:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a6e305629127c9fb51e064c9811174554"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a6e305629127c9fb51e064c9811174554">eve::physics::Cloth::getParticleY</a></div><div class="ttdeci">float getParticleY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00416">Cloth.cpp:416</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a74104e788eb8dd83633b78b0b6a27ea1"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a74104e788eb8dd83633b78b0b6a27ea1">eve::physics::Cloth::setGravity</a></div><div class="ttdeci">void setGravity(float gx, float gy)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00121">Cloth.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a802b2ff1a5fa75342debae5545b0d73c"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a802b2ff1a5fa75342debae5545b0d73c">eve::physics::Cloth::getColorG</a></div><div class="ttdeci">float getColorG() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00166">Cloth.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a80953d8e8c2903b8a60bceb04e11ddb7"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a80953d8e8c2903b8a60bceb04e11ddb7">eve::physics::Cloth::getParticleCount</a></div><div class="ttdeci">int getParticleCount() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00174">Cloth.h:174</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a83cc823609186bd99a045877e03937fc"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a83cc823609186bd99a045877e03937fc">eve::physics::Cloth::moveGrab</a></div><div class="ttdeci">void moveGrab(float x, float y)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00208">Cloth.cpp:208</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a851241c9f23cc2f0539b4ac90701b089"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a851241c9f23cc2f0539b4ac90701b089">eve::physics::Cloth::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00541">Cloth.cpp:541</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a89c7e44c9aae11196582a54e713afa6a"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a89c7e44c9aae11196582a54e713afa6a">eve::physics::Cloth::getGravityX</a></div><div class="ttdeci">float getGravityX() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00060">Cloth.h:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a89d5802cc9d221211e877d479714e9ce"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a89d5802cc9d221211e877d479714e9ce">eve::physics::Cloth::Cloth</a></div><div class="ttdeci">Cloth(const Cloth &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a8e154ee9eb1dfc9511ce709f5828acd6"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a8e154ee9eb1dfc9511ce709f5828acd6">eve::physics::Cloth::getStiffness</a></div><div class="ttdeci">float getStiffness() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00065">Cloth.h:65</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a9109f65a461ea08d2a02fc98939e8414"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a9109f65a461ea08d2a02fc98939e8414">eve::physics::Cloth::setColor</a></div><div class="ttdeci">void setColor(float r, float g, float b, float a=1.f)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00404">Cloth.cpp:404</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_a9d9e5716471842b910793544070bd161"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#a9d9e5716471842b910793544070bd161">eve::physics::Cloth::isGrabbing</a></div><div class="ttdeci">bool isGrabbing() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00125">Cloth.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_aa1edd5774a132ac7ee07a132de5d997b"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#aa1edd5774a132ac7ee07a132de5d997b">eve::physics::Cloth::getFoldStiffness</a></div><div class="ttdeci">float getFoldStiffness() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00099">Cloth.h:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_aa5fdab17ad8f960bf646d57f84123acb"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#aa5fdab17ad8f960bf646d57f84123acb">eve::physics::Cloth::getMaxFoldAngle</a></div><div class="ttdeci">float getMaxFoldAngle() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00107">Cloth.h:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_aa94ae0330aecb4a47d9f32a63519bc04"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#aa94ae0330aecb4a47d9f32a63519bc04">eve::physics::Cloth::setCollideWorld</a></div><div class="ttdeci">void setCollideWorld(World *world)</div><div class="ttdoc">Attach a 2D World so free particles collide with its non-sensor fixtures in pixel space....</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00233">Cloth.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_aa9630cb34755e73d1eeec21cdcca4ef5"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#aa9630cb34755e73d1eeec21cdcca4ef5">eve::physics::Cloth::pin</a></div><div class="ttdeci">void pin(int index)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00170">Cloth.cpp:170</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_aae497d20d5da1c4a54ee00288f24d6e7"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#aae497d20d5da1c4a54ee00288f24d6e7">eve::physics::Cloth::getGravityY</a></div><div class="ttdeci">float getGravityY() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00061">Cloth.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ab4ecb85c828f465a4a250fd14f246963"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ab4ecb85c828f465a4a250fd14f246963">eve::physics::Cloth::destroy</a></div><div class="ttdeci">void destroy()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00045">Cloth.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ab813512a62347d03789fb8ce6e38881c"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ab813512a62347d03789fb8ce6e38881c">eve::physics::Cloth::setSelfCollision</a></div><div class="ttdeci">void setSelfCollision(bool on)</div><div class="ttdoc">Enable proximity-based self-collision between non-adjacent particles Default is true.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00146">Cloth.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ab8330f245b9f5c3240b47a497f701bea"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ab8330f245b9f5c3240b47a497f701bea">eve::physics::Cloth::applyForce</a></div><div class="ttdeci">void applyForce(float fx, float fy)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00221">Cloth.cpp:221</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_abc1cfd1988276ee8404303f186c21fe7"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#abc1cfd1988276ee8404303f186c21fe7">eve::physics::Cloth::observation</a></div><div class="ttdeci">SimulationObservation observation() const noexcept override</div><div class="ttdoc">Returns completed tick/time observables.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00048">Cloth.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_abde34ad705f5963f1cdf050d4ffbb82e"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#abde34ad705f5963f1cdf050d4ffbb82e">eve::physics::Cloth::setIterations</a></div><div class="ttdeci">void setIterations(int iterations)</div><div class="ttdoc">Constraint solver iterations per substep (default 4).</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00130">Cloth.cpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ac01a7819ada3228f52595e515b90266a"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ac01a7819ada3228f52595e515b90266a">eve::physics::Cloth::getIterations</a></div><div class="ttdeci">int getIterations() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00069">Cloth.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ac7fb05c20e1e4ac86eafd2619d47eef2"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ac7fb05c20e1e4ac86eafd2619d47eef2">eve::physics::Cloth::getColorB</a></div><div class="ttdeci">float getColorB() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00167">Cloth.h:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ac9702a3406028cc3beaa411e91c51aec"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ac9702a3406028cc3beaa411e91c51aec">eve::physics::Cloth::getParticleMass</a></div><div class="ttdeci">float getParticleMass() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00088">Cloth.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ad297b268cd1c06c76d635e5656a15255"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ad297b268cd1c06c76d635e5656a15255">eve::physics::Cloth::getColorR</a></div><div class="ttdeci">float getColorR() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00165">Cloth.h:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ad3676dba789066d0bae2400a68d9b94a"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ad3676dba789066d0bae2400a68d9b94a">eve::physics::Cloth::grabAt</a></div><div class="ttdeci">int grabAt(float x, float y, float radius=24.f)</div><div class="ttdoc">Grab nearest free particle within radius (pixels). Returns particle index, or -1 if none.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00190">Cloth.cpp:190</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ad6b25e9dbde4df0d7fdd2a59beb51d64"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ad6b25e9dbde4df0d7fdd2a59beb51d64">eve::physics::Cloth::releaseGrab</a></div><div class="ttdeci">void releaseGrab()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00219">Cloth.cpp:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_ada762418bf1ccc5337b8d43a03d9a65c"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#ada762418bf1ccc5337b8d43a03d9a65c">eve::physics::Cloth::operator=</a></div><div class="ttdeci">Cloth &amp; operator=(const Cloth &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_adca9264f26ec21031496f1cd30d31882"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#adca9264f26ec21031496f1cd30d31882">eve::physics::Cloth::getSelfCollision</a></div><div class="ttdeci">bool getSelfCollision() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00095">Cloth.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_adf03c32e5d8ef389d634a8ead3bce1f4"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#adf03c32e5d8ef389d634a8ead3bce1f4">eve::physics::Cloth::setFoldStiffness</a></div><div class="ttdeci">void setFoldStiffness(float k)</div><div class="ttdoc">Strength of the fold-angle clamp [0,1] (default 0.5).</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00148">Cloth.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_aecfc05febb6f521b2ad4d205d1f1a50d"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#aecfc05febb6f521b2ad4d205d1f1a50d">eve::physics::Cloth::getCollideWorld</a></div><div class="ttdeci">World * getCollideWorld() const</div><div class="ttdoc">Returns the attached collision world, or null when detached.</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00159">Cloth.h:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_af22c557b36f17e9b102cb878a101a24a"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#af22c557b36f17e9b102cb878a101a24a">eve::physics::Cloth::unpin</a></div><div class="ttdeci">void unpin(int index)</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00175">Cloth.cpp:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_afa3f7c8d5d83155e3ae5bb9188722db4"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#afa3f7c8d5d83155e3ae5bb9188722db4">eve::physics::Cloth::pinTopRow</a></div><div class="ttdeci">void pinTopRow()</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8cpp_source.html#l00180">Cloth.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Cloth_html_afb58821b541e3fb32e2808ef8ad5a352"><div class="ttname"><a href="classeve_1_1physics_1_1Cloth.html#afb58821b541e3fb32e2808ef8ad5a352">eve::physics::Cloth::getSpacing</a></div><div class="ttdeci">float getSpacing() const</div><div class="ttdef"><b>Definition</b> <a href="Cloth_8h_source.html#l00179">Cloth.h:179</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1ISimulationBackend_html"><div class="ttname"><a href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></div><div class="ttdoc">Minimal observable contract for physics simulation providers.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00139">SimulationBackend.h:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World_html"><div class="ttname"><a href="classeve_1_1physics_1_1World.html">eve::physics::World</a></div><div class="ttdoc">Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...</div><div class="ttdef"><b>Definition</b> <a href="World_8h_source.html#l00035">World.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00016">Animation.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00035">Climbing.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fb"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fb">eve::physics::SimulationBackendKind</a></div><div class="ttdeci">SimulationBackendKind</div><div class="ttdoc">Kind of implementation that owns a simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00031">SimulationBackend.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e"><div class="ttname"><a href="namespaceeve_1_1physics.html#a335229e81e1591383f68f144d175c0fba54c82ef76ecbbd4c2293e09bae01b54e">eve::physics::SimulationBackendKind::Cpu</a></div><div class="ttdeci">@ Cpu</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_aa67e2557397fd06af07a4a5fd74f8d14"><div class="ttname"><a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14">eve::physics::SimulationDeterminism</a></div><div class="ttdeci">SimulationDeterminism</div><div class="ttdoc">Determinism guarantee made by a simulation backend.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00047">SimulationBackend.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059"><div class="ttname"><a href="namespaceeve_1_1physics.html#aa67e2557397fd06af07a4a5fd74f8d14a0fc76e5da94b52c4543f2a441ef78059">eve::physics::SimulationDeterminism::ToleranceBounded</a></div><div class="ttdeci">@ ToleranceBounded</div><div class="ttdoc">Results are equivalent within a documented numeric tolerance.</div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00153">Time.h:153</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationObservation_html"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationObservation.html">eve::physics::SimulationObservation</a></div><div class="ttdoc">Observable backend progress shared by CPU and accelerator providers.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00117">SimulationBackend.h:117</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1SimulationSettings_html"><div class="ttname"><a href="structeve_1_1physics_1_1SimulationSettings.html">eve::physics::SimulationSettings</a></div><div class="ttdoc">Validated solver policy for one simulation step.</div><div class="ttdef"><b>Definition</b> <a href="SimulationBackend_8h_source.html#l00101">SimulationBackend.h:101</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

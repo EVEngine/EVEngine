@@ -1,0 +1,595 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::virtualgeometry 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1virtualgeometry.html">virtualgeometry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::virtualgeometry 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve_1_1virtualgeometry_1_1vulkan" id="r_namespaceeve_1_1virtualgeometry_1_1vulkan"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry_1_1vulkan.html">vulkan</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1virtualgeometry_1_1webgpu" id="r_namespaceeve_1_1virtualgeometry_1_1webgpu"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry_1_1webgpu.html">webgpu</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque backend state for one virtual-geometry renderer. Owned by <a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html" title="A virtual-geometry renderer: preprocesses a mesh into a cluster DAG, uploads it to the GPU,...">VirtualGeometryRenderer</a>; allocated/freed by the active backend.  <a href="structeve_1_1virtualgeometry_1_1VgBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1virtualgeometry_1_1VgCluster.html">VgCluster</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-side processed cluster (before packing into <a class="el" href="structeve_1_1virtualgeometry_1_1VgGpuCluster.html" title="GPU-mirrored cluster node layout (std430, matches shaders/vg_*.comp). Exactly 4 x uvec4 per cluster:">VgGpuCluster</a>).  <a href="structeve_1_1virtualgeometry_1_1VgCluster.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1virtualgeometry_1_1VgGpuCluster.html">VgGpuCluster</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GPU-mirrored cluster node layout (std430, matches shaders/vg_*.comp). Exactly 4 x uvec4 per cluster:  <a href="structeve_1_1virtualgeometry_1_1VgGpuCluster.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1virtualgeometry_1_1VgUniforms.html">VgUniforms</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometry.html">VirtualGeometry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual-geometry module — Nanite-style virtualized geometry rendering on top of the active Graphics backend (Vulkan). See docs/dev/VIRTUAL_GEOMETRY.md.  <a href="classeve_1_1virtualgeometry_1_1VirtualGeometry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryAsset.html">VirtualGeometryAsset</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fully processed virtual-geometry asset (CPU representation). Produced by Builder from a Mesh; uploaded to GPU SSBOs by the backend.  <a href="structeve_1_1virtualgeometry_1_1VirtualGeometryAsset.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryBuilder.html">VirtualGeometryBuilder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU preprocessor that builds a Nanite-style hierarchical cluster DAG from a triangle mesh:  <a href="classeve_1_1virtualgeometry_1_1VirtualGeometryBuilder.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html">VirtualGeometryRenderer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A virtual-geometry renderer: preprocesses a mesh into a cluster DAG, uploads it to the GPU, then each frame runs GPU-driven culling + a software rasterizer into a visibility buffer.  <a href="classeve_1_1virtualgeometry_1_1VirtualGeometryRenderer.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a629af0fbcb66082ed234dbbcb964aeee" id="r_a629af0fbcb66082ed234dbbcb964aeee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#a629af0fbcb66082ed234dbbcb964aeee">selectClusters</a> (const <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryAsset.html">VirtualGeometryAsset</a> &amp;asset, float dist, float projScale, float errorPx, std::vector&lt; std::uint32_t &gt; &amp;outSelected)</td></tr>
+<tr class="memdesc:a629af0fbcb66082ed234dbbcb964aeee"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU reference implementation of the GPU cluster-DAG LOD selection (mirrors shaders/vg_cull.comp).  <br /></td></tr>
+<tr class="separator:a629af0fbcb66082ed234dbbcb964aeee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa470000412e9398e309337e9d52b131b" id="r_aa470000412e9398e309337e9d52b131b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#aa470000412e9398e309337e9d52b131b">lodHistogram</a> (const <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryAsset.html">VirtualGeometryAsset</a> &amp;asset, const std::vector&lt; std::uint32_t &gt; &amp;selected, std::vector&lt; int &gt; &amp;perLevelCount)</td></tr>
+<tr class="memdesc:aa470000412e9398e309337e9d52b131b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-LOD-level counts of the selected clusters (size = maxLod+1).  <br /></td></tr>
+<tr class="separator:aa470000412e9398e309337e9d52b131b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeabd29af3ec54ac417839556c49c3362" id="r_aeabd29af3ec54ac417839556c49c3362"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#aeabd29af3ec54ac417839556c49c3362">Module_IMPL</a> (<a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometry.html">VirtualGeometry</a>, new <a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometry.html">VirtualGeometry</a>())</td></tr>
+<tr class="separator:aeabd29af3ec54ac417839556c49c3362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae870360c60ccf7012d281329c0c7459e" id="r_ae870360c60ccf7012d281329c0c7459e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#ae870360c60ccf7012d281329c0c7459e">vgCreate</a> (<a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;be)</td></tr>
+<tr class="separator:ae870360c60ccf7012d281329c0c7459e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5920f43ba25306ab29eaea3981285f4" id="r_af5920f43ba25306ab29eaea3981285f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#af5920f43ba25306ab29eaea3981285f4">vgDestroy</a> (<a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;be)</td></tr>
+<tr class="separator:af5920f43ba25306ab29eaea3981285f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af824ccfc3569bd388ecedb3de46ca47a" id="r_af824ccfc3569bd388ecedb3de46ca47a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#af824ccfc3569bd388ecedb3de46ca47a">vgUpload</a> (<a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;be, const <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryAsset.html">VirtualGeometryAsset</a> &amp;asset)</td></tr>
+<tr class="separator:af824ccfc3569bd388ecedb3de46ca47a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaefb141f7a8443894b983272d30ad637" id="r_aaefb141f7a8443894b983272d30ad637"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#aaefb141f7a8443894b983272d30ad637">vgUploadUniforms</a> (<a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;be, const <a class="el" href="structeve_1_1virtualgeometry_1_1VgUniforms.html">VgUniforms</a> &amp;<a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>)</td></tr>
+<tr class="separator:aaefb141f7a8443894b983272d30ad637"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a808149aadb169f40a3b76e6c038a7b56" id="r_a808149aadb169f40a3b76e6c038a7b56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#a808149aadb169f40a3b76e6c038a7b56">vgReset</a> (<a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;be, int visibleCapacity)</td></tr>
+<tr class="separator:a808149aadb169f40a3b76e6c038a7b56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c22f43901cc6176e6d5999e36a4dc5" id="r_a92c22f43901cc6176e6d5999e36a4dc5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#a92c22f43901cc6176e6d5999e36a4dc5">vgUpdate</a> (<a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;be, int clusterCount, int visibleCapacity, int viewW, int viewH)</td></tr>
+<tr class="separator:a92c22f43901cc6176e6d5999e36a4dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1449c49f5dff54a1e132dcee9277411" id="r_ad1449c49f5dff54a1e132dcee9277411"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1virtualgeometry.html#ad1449c49f5dff54a1e132dcee9277411">vgReadPixels</a> (<a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;be, std::vector&lt; uint32_t &gt; &amp;out)</td></tr>
+<tr class="separator:ad1449c49f5dff54a1e132dcee9277411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="aa470000412e9398e309337e9d52b131b" name="aa470000412e9398e309337e9d52b131b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa470000412e9398e309337e9d52b131b">&#9670;&#160;</a></span>lodHistogram()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::lodHistogram </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryAsset.html">VirtualGeometryAsset</a> &amp;&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>selected</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>perLevelCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-LOD-level counts of the selected clusters (size = maxLod+1). </p>
+
+<p class="definition">在文件 <a class="el" href="LodSelection_8cpp_source.html">LodSelection.cpp</a> 第 <a class="el" href="LodSelection_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="VirtualGeometryAsset_8h_source.html#l00049">eve::virtualgeometry::VirtualGeometryAsset::clusters</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRuntime_8cpp_source.html#l00034">eve::virtualgeometry_editing::VirtualGeometryBuildRuntime::build()</a>.</p>
+
+</div>
+</div>
+<a id="aeabd29af3ec54ac417839556c49c3362" name="aeabd29af3ec54ac417839556c49c3362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeabd29af3ec54ac417839556c49c3362">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::virtualgeometry::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1virtualgeometry_1_1VirtualGeometry.html">VirtualGeometry</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>VirtualGeometry</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a629af0fbcb66082ed234dbbcb964aeee" name="a629af0fbcb66082ed234dbbcb964aeee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a629af0fbcb66082ed234dbbcb964aeee">&#9670;&#160;</a></span>selectClusters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::selectClusters </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryAsset.html">VirtualGeometryAsset</a> &amp;&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dist</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>projScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>errorPx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>outSelected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>CPU reference implementation of the GPU cluster-DAG LOD selection (mirrors shaders/vg_cull.comp). </p>
+<p>A cluster is selected iff it is the <em>coarsest</em> ancestor whose screen-space geometric error is within <code>errorPx</code> (or a leaf when no ancestor is fine enough). Combined with <code>screenP &gt; errorPx</code>, this emits exactly one cluster per DAG branch (no overlaps, no gaps), so as the camera moves the visible LOD transitions continuously from fine (near) to coarse (far).</p>
+<p>screenError(cluster) = errorR * projScale / dist </p>
+
+<p class="definition">在文件 <a class="el" href="LodSelection_8cpp_source.html">LodSelection.cpp</a> 第 <a class="el" href="LodSelection_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="VirtualGeometryAsset_8h_source.html#l00049">eve::virtualgeometry::VirtualGeometryAsset::clusters</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a> , 以及 <a class="el" href="VirtualGeometryAsset_8h_source.html#l00030">eve::virtualgeometry::VgCluster::errorR</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRuntime_8cpp_source.html#l00034">eve::virtualgeometry_editing::VirtualGeometryBuildRuntime::build()</a>.</p>
+
+</div>
+</div>
+<a id="ae870360c60ccf7012d281329c0c7459e" name="ae870360c60ccf7012d281329c0c7459e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae870360c60ccf7012d281329c0c7459e">&#9670;&#160;</a></span>vgCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::vgCreate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>be</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html">VulkanVirtualGeometry.cpp</a> 第 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00038">eve::virtualgeometry::VirtualGeometryRenderer::VirtualGeometryRenderer()</a>.</p>
+
+</div>
+</div>
+<a id="af5920f43ba25306ab29eaea3981285f4" name="af5920f43ba25306ab29eaea3981285f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5920f43ba25306ab29eaea3981285f4">&#9670;&#160;</a></span>vgDestroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::vgDestroy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>be</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html">VulkanVirtualGeometry.cpp</a> 第 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00019">eve::virtualgeometry::vulkan::VgState::cull</a> , 以及 <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00040">eve::virtualgeometry::VirtualGeometryRenderer::~VirtualGeometryRenderer()</a>.</p>
+
+</div>
+</div>
+<a id="ad1449c49f5dff54a1e132dcee9277411" name="ad1449c49f5dff54a1e132dcee9277411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1449c49f5dff54a1e132dcee9277411">&#9670;&#160;</a></span>vgReadPixels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::virtualgeometry::vgReadPixels </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>be</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html">VulkanVirtualGeometry.cpp</a> 第 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>, <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a> , 以及 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00029">eve::virtualgeometry::vulkan::VgState::viewW</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00191">eve::virtualgeometry::VirtualGeometryRenderer::resolve()</a>.</p>
+
+</div>
+</div>
+<a id="a808149aadb169f40a3b76e6c038a7b56" name="a808149aadb169f40a3b76e6c038a7b56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a808149aadb169f40a3b76e6c038a7b56">&#9670;&#160;</a></span>vgReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::vgReset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>be</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>visibleCapacity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html">VulkanVirtualGeometry.cpp</a> 第 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a>, <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00031">eve::virtualgeometry::vulkan::VgState::visibleCapacity</a> , 以及 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00066">eve::gpgpu::vulkanNewBuffer()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00042">eve::virtualgeometry::VirtualGeometryRenderer::build()</a>.</p>
+
+</div>
+</div>
+<a id="a92c22f43901cc6176e6d5999e36a4dc5" name="a92c22f43901cc6176e6d5999e36a4dc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92c22f43901cc6176e6d5999e36a4dc5">&#9670;&#160;</a></span>vgUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::virtualgeometry::vgUpdate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>be</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>clusterCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>visibleCapacity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>viewW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>viewH</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html">VulkanVirtualGeometry.cpp</a> 第 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a85478c262c5f8e151b2bd28044f1c371">eve::gpgpu::GpuBuffer::fillFloat32()</a>, <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a>, <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00024">eve::virtualgeometry::vulkan::VgState::visible</a> , 以及 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00101">eve::gpgpu::vulkanDispatch()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00184">eve::virtualgeometry::VirtualGeometryRenderer::update()</a>.</p>
+
+</div>
+</div>
+<a id="af824ccfc3569bd388ecedb3de46ca47a" name="af824ccfc3569bd388ecedb3de46ca47a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af824ccfc3569bd388ecedb3de46ca47a">&#9670;&#160;</a></span>vgUpload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::vgUpload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>be</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1virtualgeometry_1_1VirtualGeometryAsset.html">VirtualGeometryAsset</a> &amp;&#160;</td>
+          <td class="paramname"><em>asset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html">VulkanVirtualGeometry.cpp</a> 第 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="VirtualGeometryAsset_8h_source.html#l00049">eve::virtualgeometry::VirtualGeometryAsset::clusters</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00335">f</a>, <a class="el" href="VirtualGeometryAsset_8h_source.html#l00043">eve::virtualgeometry::VirtualGeometryAsset::positions</a>, <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00021">eve::virtualgeometry::vulkan::VgState::positions</a>, <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a>, <a class="el" href="VirtualGeometryAsset_8h_source.html#l00047">eve::virtualgeometry::VirtualGeometryAsset::triangles</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="VulkanGpgpu_8cpp_source.html#l00066">eve::gpgpu::vulkanNewBuffer()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00042">eve::virtualgeometry::VirtualGeometryRenderer::build()</a>.</p>
+
+</div>
+</div>
+<a id="aaefb141f7a8443894b983272d30ad637" name="aaefb141f7a8443894b983272d30ad637"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaefb141f7a8443894b983272d30ad637">&#9670;&#160;</a></span>vgUploadUniforms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::virtualgeometry::vgUploadUniforms </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1virtualgeometry_1_1VgBackend.html">VgBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>be</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1virtualgeometry_1_1VgUniforms.html">VgUniforms</a> &amp;&#160;</td>
+          <td class="paramname"><em>u</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html">VulkanVirtualGeometry.cpp</a> 第 <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualGeometryBackend_8h_source.html#l00024">eve::virtualgeometry::VgBackend::state</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a>, <a class="el" href="VulkanVirtualGeometry_8cpp_source.html#l00026">eve::virtualgeometry::vulkan::VgState::uniforms</a> , 以及 <a class="el" href="VulkanGpgpu_8cpp_source.html#l00066">eve::gpgpu::vulkanNewBuffer()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

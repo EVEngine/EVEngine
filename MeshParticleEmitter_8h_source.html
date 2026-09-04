@@ -1,0 +1,383 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/stylize/MeshParticleEmitter.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9bcee3776fbf8406cf85d9d8d8229389.html">stylize</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MeshParticleEmitter.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MeshParticleEmitter_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Color_8h.html">graphics/Color.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1stylize.html">eve::stylize</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946">   15</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946">MeshParticleShape</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946a2a3cd5946cfd317eb99c3d32e35e2d4c">Point</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946ab7095f057db3fefa7325ad93a04e14fd">Sphere</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946a3cfce651e667ab85486dd42a8185f98a">Box</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946acd2c8bc6e5f1ea17c918ccaf89660104">Cone</a> };</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleBurst.html">   18</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleBurst.html">MeshParticleBurst</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleBurst.html#abccb0fdd6b9bc71e1839e55f21da0fe0">   19</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleBurst.html#abccb0fdd6b9bc71e1839e55f21da0fe0">timeSeconds</a> = 0.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleBurst.html#ac570033891ab8c7deee84ee63d0f8c0a">   20</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleBurst.html#ac570033891ab8c7deee84ee63d0f8c0a">count</a> = 0;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>};</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleScalarKey.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleScalarKey.html">MeshParticleScalarKey</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleScalarKey.html#ab85de6e07c2903b67e29d49879d57a6d">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleScalarKey.html#ab85de6e07c2903b67e29d49879d57a6d">time</a> = 0.f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleScalarKey.html#afe8d0a5f02b4054ad3ec941269c065fc">   26</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleScalarKey.html#afe8d0a5f02b4054ad3ec941269c065fc">value</a> = 1.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleColorKey.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleColorKey.html">MeshParticleColorKey</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleColorKey.html#ad0870d8dea1479cfb887831f55264db7">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleColorKey.html#ad0870d8dea1479cfb887831f55264db7">time</a> = 0.f;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleColorKey.html#a3d81dcbc83069c64ce2932aab5d80c0f">   32</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleColorKey.html#a3d81dcbc83069c64ce2932aab5d80c0f">value</a>{1.f};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html">MeshParticleEmitterConfig</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a190a0d28d79446793f3c6c81d9724e56">   37</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a190a0d28d79446793f3c6c81d9724e56">capacity</a> = 1024;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0f061268a9e5d106cf08acdf0ee31d3c">   38</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0f061268a9e5d106cf08acdf0ee31d3c">emissionRate</a> = 0.f;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#aa64d7596ad6d3afc0cf86e44d9ca5de9">   39</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#aa64d7596ad6d3afc0cf86e44d9ca5de9">lifetimeMin</a> = 1.f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a5fc9c1d9718db76cdce04001ae30a5bb">   40</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a5fc9c1d9718db76cdce04001ae30a5bb">lifetimeMax</a> = 1.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a58a9edb621725d86977dcd6d954b4a45">   41</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a58a9edb621725d86977dcd6d954b4a45">speedMin</a> = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ab076e5fba709b50e3e0d5de933438180">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ab076e5fba709b50e3e0d5de933438180">speedMax</a> = 0.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a2a85fc5eda1394e66a4b914aebd76e29">   43</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a2a85fc5eda1394e66a4b914aebd76e29">direction</a>{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a9a43cafe035bf3adfc77d634142166c0">   44</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946">MeshParticleShape</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a9a43cafe035bf3adfc77d634142166c0">shape</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946a2a3cd5946cfd317eb99c3d32e35e2d4c">MeshParticleShape::Point</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a47377f0ec5d3d36947fb2c42e9ea7535">   45</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a47377f0ec5d3d36947fb2c42e9ea7535">boxExtents</a>{0.5f};</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#afd81de48ad560d3175c47b41a7d1f940">   46</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#afd81de48ad560d3175c47b41a7d1f940">sphereRadius</a> = 0.5f;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0d40e06693fa60c15cd768815bcd4f13">   47</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0d40e06693fa60c15cd768815bcd4f13">coneAngleRadians</a> = 0.5f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#abac9782dbcbd728735d67d7386d6ce69">   48</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#abac9782dbcbd728735d67d7386d6ce69">gravity</a>{0.f};</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a52890692a4bbc1e9fd111712767dc28b">   49</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a52890692a4bbc1e9fd111712767dc28b">damping</a> = 0.f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ad21b8f409bcb4b62d16480aaed361731">   50</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ad21b8f409bcb4b62d16480aaed361731">rotationMinRadians</a> = 0.f;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#aff87b1d3cab975106150268e3b64864c">   51</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#aff87b1d3cab975106150268e3b64864c">rotationMaxRadians</a> = 0.f;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#af43432643179bc0a4842fcfd200d82a9">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#af43432643179bc0a4842fcfd200d82a9">angularVelocityMin</a> = 0.f;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a6ce7b2a4a69c311fe48db90be329485b">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a6ce7b2a4a69c311fe48db90be329485b">angularVelocityMax</a> = 0.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a572825ad7282f2ffeff5f61e384ebc23">   54</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a572825ad7282f2ffeff5f61e384ebc23">scaleStart</a> = 1.f;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#afad41e9b9e0c57faef6d7268a98a8278">   55</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#afad41e9b9e0c57faef6d7268a98a8278">scaleEnd</a> = 0.f;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ad44db9c6f3f23e0cb50f8cd1d3fb23fc">   56</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ad44db9c6f3f23e0cb50f8cd1d3fb23fc">colorStart</a>{1.f};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a5501f13079bd0b1754efc52d48ba6277">   57</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a5501f13079bd0b1754efc52d48ba6277">colorEnd</a>{1.f, 1.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a775b0129d99ba1b75ae1b0f04b3ab104">   59</a></span>    std::vector&lt;MeshParticleScalarKey&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a775b0129d99ba1b75ae1b0f04b3ab104">scaleCurve</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a1718dabb939151321877420443ada4a1">   61</a></span>    std::vector&lt;MeshParticleScalarKey&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a1718dabb939151321877420443ada4a1">velocityCurve</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a973db20abc8316f564ff3bc926ed3457">   63</a></span>    std::vector&lt;MeshParticleColorKey&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a973db20abc8316f564ff3bc926ed3457">colorGradient</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#acf3a2bac20fd775601ced69b5a19b0d2">   64</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#acf3a2bac20fd775601ced69b5a19b0d2">fixedStepSeconds</a> = 1.f / 60.f;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a20ed0cd6a089bac7b5d89b96010f7134">   65</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a20ed0cd6a089bac7b5d89b96010f7134">maximumSubsteps</a> = 8;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0206bcf2fdf349d3c3cf1500034a20d5">   66</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0206bcf2fdf349d3c3cf1500034a20d5">randomSeed</a> = 1;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#af95ceb845bf57f0aa62ac77d980b68eb">   67</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#af95ceb845bf57f0aa62ac77d980b68eb">loopDurationSeconds</a> = 0.f;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a112e315e0a04e53426c2af61bec735ad">   68</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a112e315e0a04e53426c2af61bec735ad">looping</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0064e96eca04f8831a9a69167534812c">   69</a></span>    std::vector&lt;MeshParticleBurst&gt; <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0064e96eca04f8831a9a69167534812c">bursts</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>};</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="};">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleInstance.html">   73</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleInstance.html">MeshParticleInstance</a> {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleInstance.html#ab65d518d880e9a8131498285ce53c24f">   74</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleInstance.html#ab65d518d880e9a8131498285ce53c24f">stableId</a> = 0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleInstance.html#a1e828d15334a24fcb96c02efb3855ced">   75</a></span>    glm::mat4 <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleInstance.html#a1e828d15334a24fcb96c02efb3855ced">model</a>{1.f};</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleInstance.html#a8188b21d2b47e9da45cdfc96976f67f3">   76</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">graphics::Color</a> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleInstance.html#a8188b21d2b47e9da45cdfc96976f67f3">color</a>{1.f};</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleInstance.html#a7007918bbe1a320824644902990b8094">   77</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleInstance.html#a7007918bbe1a320824644902990b8094">normalizedAge</a> = 0.f;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="};">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html">   81</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html">MeshParticleAdvanceReport</a> {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a8003cfcfcb2fa1e51a671842d1d4a0cf">   82</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a8003cfcfcb2fa1e51a671842d1d4a0cf">simulatedSteps</a> = 0;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#aa45ff167ac210a9d0b6bfea65d4c51ae">   83</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#aa45ff167ac210a9d0b6bfea65d4c51ae">spawned</a> = 0;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a6c6fdc749b180ce3e189369d267b019f">   84</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a6c6fdc749b180ce3e189369d267b019f">expired</a> = 0;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a7c11c4469ea6e076af695ad08a215919">   85</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a7c11c4469ea6e076af695ad08a215919">dropped</a> = 0;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#aaddecdb33fac2223796a826e22793518">   86</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#aaddecdb33fac2223796a826e22793518">alive</a> = 0;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a2ed05e82f86b8bb3881daac473298ce7">   87</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a2ed05e82f86b8bb3881daac473298ce7">discardedTimeSeconds</a> = 0.f;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>};</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="};">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshParticleEmitter.html">   98</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1stylize_1_1MeshParticleEmitter.html">MeshParticleEmitter</a> {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1stylize_1_1MeshParticleEmitter.html">MeshParticleEmitter</a>(<a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html">MeshParticleEmitterConfig</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a5c8ce42970509a27277a60cf39a0b153">config</a> = {});</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#acccc8156c97c19e2ed40844109154c85">  104</a></span>    <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#acccc8156c97c19e2ed40844109154c85">~MeshParticleEmitter</a>();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#aa3004cf92c7c2df1194bf8bfcb7c7662">start</a>();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#acc22608a0265569689b6aa40393fd544">  110</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#acc22608a0265569689b6aa40393fd544">stop</a>() noexcept { emitting_ = <span class="keyword">false</span>; }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a776611bb98c70e2545fef3f51e0e3303">reset</a>();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a08e98b96075c18ef350028f8011d0d5e">  116</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a08e98b96075c18ef350028f8011d0d5e">setOrigin</a>(<span class="keyword">const</span> glm::vec3&amp; origin) <span class="keyword">noexcept</span> { origin_ = origin; }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    [[nodiscard]] std::uint32_t <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a31d75630b25fd9af225d7e952990db16">emit</a>(std::uint32_t <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html">MeshParticleAdvanceReport</a> <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#aa25e522b12ca55be5dcd752ea37cd9da">advance</a>(<span class="keywordtype">float</span> deltaSeconds);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    [[nodiscard]] std::vector&lt;MeshParticleInstance&gt; <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a6eeef0cf1d043c98ecb0b8da08044cfb">snapshot</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a5c8ce42970509a27277a60cf39a0b153">  136</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html">MeshParticleEmitterConfig</a>&amp; <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a5c8ce42970509a27277a60cf39a0b153">config</a>() const noexcept { <span class="keywordflow">return</span> config_; }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a4aba0edc1a2b9d5dfe93d77714a9f761">size</a>() const noexcept;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>private:</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    struct Particle;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">void</span> simulateStep(<span class="keywordtype">float</span> dt, <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html">MeshParticleAdvanceReport</a>&amp; report);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::uint32_t spawn(<a class="code hl_namespace" href="namespacestd.html">std</a>::uint32_t <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html">MeshParticleAdvanceReport</a>* report);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    [[nodiscard]] <span class="keywordtype">float</span> randomUnit();</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    [[nodiscard]] glm::vec3 randomDirection();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    [[nodiscard]] glm::vec3 spawnOffset();</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_struct" href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html">MeshParticleEmitterConfig</a> config_;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;Particle&gt; particles_;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    glm::vec3 origin_{0.f};</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    std::uint32_t randomState_ = 1;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    std::uint64_t nextStableId_ = 1;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordtype">float</span> accumulator_ = 0.f;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">float</span> timeline_ = 0.f;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordtype">float</span> emissionAccumulator_ = 0.f;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    std::size_t nextBurst_ = 0;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordtype">bool</span> emitting_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>};</div>
+</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>}  <span class="comment">// namespace eve::stylize</span></div>
+<div class="ttc" id="aColor_8h_html"><div class="ttname"><a href="Color_8h.html">Color.h</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html">eve::stylize::MeshParticleEmitter</a></div><div class="ttdoc">CPU-authoritative deterministic 3D mesh-particle emitter.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00098">MeshParticleEmitter.h:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_a08e98b96075c18ef350028f8011d0d5e"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a08e98b96075c18ef350028f8011d0d5e">eve::stylize::MeshParticleEmitter::setOrigin</a></div><div class="ttdeci">void setOrigin(const glm::vec3 &amp;origin) noexcept</div><div class="ttdoc">Set the world-space origin copied by subsequent simulation steps.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00116">MeshParticleEmitter.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_a31d75630b25fd9af225d7e952990db16"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a31d75630b25fd9af225d7e952990db16">eve::stylize::MeshParticleEmitter::emit</a></div><div class="ttdeci">std::uint32_t emit(std::uint32_t count)</div><div class="ttdoc">Emit an immediate burst at the current origin.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8cpp_source.html#l00128">MeshParticleEmitter.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_a4aba0edc1a2b9d5dfe93d77714a9f761"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a4aba0edc1a2b9d5dfe93d77714a9f761">eve::stylize::MeshParticleEmitter::size</a></div><div class="ttdeci">std::size_t size() const noexcept</div><div class="ttdoc">Return the number of live particles.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8cpp_source.html#l00077">MeshParticleEmitter.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_a5c8ce42970509a27277a60cf39a0b153"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a5c8ce42970509a27277a60cf39a0b153">eve::stylize::MeshParticleEmitter::config</a></div><div class="ttdeci">const MeshParticleEmitterConfig &amp; config() const noexcept</div><div class="ttdoc">Return immutable sanitized configuration.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00136">MeshParticleEmitter.h:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_a6eeef0cf1d043c98ecb0b8da08044cfb"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a6eeef0cf1d043c98ecb0b8da08044cfb">eve::stylize::MeshParticleEmitter::snapshot</a></div><div class="ttdeci">std::vector&lt; MeshParticleInstance &gt; snapshot() const</div><div class="ttdoc">Build render transforms and colors in stable particle-ID order.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8cpp_source.html#l00258">MeshParticleEmitter.cpp:258</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_a776611bb98c70e2545fef3f51e0e3303"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#a776611bb98c70e2545fef3f51e0e3303">eve::stylize::MeshParticleEmitter::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">Remove every particle and reset timeline/random state.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8cpp_source.html#l00121">MeshParticleEmitter.cpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_aa25e522b12ca55be5dcd752ea37cd9da"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#aa25e522b12ca55be5dcd752ea37cd9da">eve::stylize::MeshParticleEmitter::advance</a></div><div class="ttdeci">MeshParticleAdvanceReport advance(float deltaSeconds)</div><div class="ttdoc">Advance deterministic fixed-step simulation.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8cpp_source.html#l00236">MeshParticleEmitter.cpp:236</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_aa3004cf92c7c2df1194bf8bfcb7c7662"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#aa3004cf92c7c2df1194bf8bfcb7c7662">eve::stylize::MeshParticleEmitter::start</a></div><div class="ttdeci">void start()</div><div class="ttdoc">Start from timeline zero and arm every configured burst.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8cpp_source.html#l00112">MeshParticleEmitter.cpp:112</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_acc22608a0265569689b6aa40393fd544"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#acc22608a0265569689b6aa40393fd544">eve::stylize::MeshParticleEmitter::stop</a></div><div class="ttdeci">void stop() noexcept</div><div class="ttdoc">Stop automatic emission while allowing existing particles to expire.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00110">MeshParticleEmitter.h:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1stylize_1_1MeshParticleEmitter_html_acccc8156c97c19e2ed40844109154c85"><div class="ttname"><a href="classeve_1_1stylize_1_1MeshParticleEmitter.html#acccc8156c97c19e2ed40844109154c85">eve::stylize::MeshParticleEmitter::~MeshParticleEmitter</a></div><div class="ttdeci">~MeshParticleEmitter()</div><div class="ttdoc">Destroy owned particle state after its private type is complete.</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html"><div class="ttname"><a href="namespaceeve_1_1stylize.html">eve::stylize</a></div><div class="ttdef"><b>Definition</b> <a href="AreaIndicatorEffect_8cpp_source.html#l00008">AreaIndicatorEffect.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ada7c8bb61e2e4937f31abdd3eaa0d946"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946">eve::stylize::MeshParticleShape</a></div><div class="ttdeci">MeshParticleShape</div><div class="ttdoc">Built-in volume used to place and orient newly spawned mesh particles.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00015">MeshParticleEmitter.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ada7c8bb61e2e4937f31abdd3eaa0d946a2a3cd5946cfd317eb99c3d32e35e2d4c"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946a2a3cd5946cfd317eb99c3d32e35e2d4c">eve::stylize::MeshParticleShape::Point</a></div><div class="ttdeci">@ Point</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ada7c8bb61e2e4937f31abdd3eaa0d946a3cfce651e667ab85486dd42a8185f98a"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946a3cfce651e667ab85486dd42a8185f98a">eve::stylize::MeshParticleShape::Box</a></div><div class="ttdeci">@ Box</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ada7c8bb61e2e4937f31abdd3eaa0d946ab7095f057db3fefa7325ad93a04e14fd"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946ab7095f057db3fefa7325ad93a04e14fd">eve::stylize::MeshParticleShape::Sphere</a></div><div class="ttdeci">@ Sphere</div></div>
+<div class="ttc" id="anamespaceeve_1_1stylize_html_ada7c8bb61e2e4937f31abdd3eaa0d946acd2c8bc6e5f1ea17c918ccaf89660104"><div class="ttname"><a href="namespaceeve_1_1stylize.html#ada7c8bb61e2e4937f31abdd3eaa0d946acd2c8bc6e5f1ea17c918ccaf89660104">eve::stylize::MeshParticleShape::Cone</a></div><div class="ttdeci">@ Cone</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleAdvanceReport_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html">eve::stylize::MeshParticleAdvanceReport</a></div><div class="ttdoc">Observable result of advancing one mesh-particle emitter.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00081">MeshParticleEmitter.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleAdvanceReport_html_a2ed05e82f86b8bb3881daac473298ce7"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a2ed05e82f86b8bb3881daac473298ce7">eve::stylize::MeshParticleAdvanceReport::discardedTimeSeconds</a></div><div class="ttdeci">float discardedTimeSeconds</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00087">MeshParticleEmitter.h:87</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleAdvanceReport_html_a6c6fdc749b180ce3e189369d267b019f"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a6c6fdc749b180ce3e189369d267b019f">eve::stylize::MeshParticleAdvanceReport::expired</a></div><div class="ttdeci">std::uint32_t expired</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00084">MeshParticleEmitter.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleAdvanceReport_html_a7c11c4469ea6e076af695ad08a215919"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a7c11c4469ea6e076af695ad08a215919">eve::stylize::MeshParticleAdvanceReport::dropped</a></div><div class="ttdeci">std::uint32_t dropped</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00085">MeshParticleEmitter.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleAdvanceReport_html_a8003cfcfcb2fa1e51a671842d1d4a0cf"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#a8003cfcfcb2fa1e51a671842d1d4a0cf">eve::stylize::MeshParticleAdvanceReport::simulatedSteps</a></div><div class="ttdeci">std::uint32_t simulatedSteps</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00082">MeshParticleEmitter.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleAdvanceReport_html_aa45ff167ac210a9d0b6bfea65d4c51ae"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#aa45ff167ac210a9d0b6bfea65d4c51ae">eve::stylize::MeshParticleAdvanceReport::spawned</a></div><div class="ttdeci">std::uint32_t spawned</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00083">MeshParticleEmitter.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleAdvanceReport_html_aaddecdb33fac2223796a826e22793518"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleAdvanceReport.html#aaddecdb33fac2223796a826e22793518">eve::stylize::MeshParticleAdvanceReport::alive</a></div><div class="ttdeci">std::uint32_t alive</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00086">MeshParticleEmitter.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleBurst_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleBurst.html">eve::stylize::MeshParticleBurst</a></div><div class="ttdoc">One repeatable emission event on an emitter timeline.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00018">MeshParticleEmitter.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleBurst_html_abccb0fdd6b9bc71e1839e55f21da0fe0"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleBurst.html#abccb0fdd6b9bc71e1839e55f21da0fe0">eve::stylize::MeshParticleBurst::timeSeconds</a></div><div class="ttdeci">float timeSeconds</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00019">MeshParticleEmitter.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleBurst_html_ac570033891ab8c7deee84ee63d0f8c0a"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleBurst.html#ac570033891ab8c7deee84ee63d0f8c0a">eve::stylize::MeshParticleBurst::count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00020">MeshParticleEmitter.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleColorKey_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleColorKey.html">eve::stylize::MeshParticleColorKey</a></div><div class="ttdoc">One normalized-time color key used by mesh-particle gradients.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00030">MeshParticleEmitter.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleColorKey_html_a3d81dcbc83069c64ce2932aab5d80c0f"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleColorKey.html#a3d81dcbc83069c64ce2932aab5d80c0f">eve::stylize::MeshParticleColorKey::value</a></div><div class="ttdeci">graphics::Color value</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00032">MeshParticleEmitter.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleColorKey_html_ad0870d8dea1479cfb887831f55264db7"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleColorKey.html#ad0870d8dea1479cfb887831f55264db7">eve::stylize::MeshParticleColorKey::time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00031">MeshParticleEmitter.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html">eve::stylize::MeshParticleEmitterConfig</a></div><div class="ttdoc">Deterministic simulation and emission settings for a 3D mesh emitter.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00036">MeshParticleEmitter.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a0064e96eca04f8831a9a69167534812c"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0064e96eca04f8831a9a69167534812c">eve::stylize::MeshParticleEmitterConfig::bursts</a></div><div class="ttdeci">std::vector&lt; MeshParticleBurst &gt; bursts</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00069">MeshParticleEmitter.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a0206bcf2fdf349d3c3cf1500034a20d5"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0206bcf2fdf349d3c3cf1500034a20d5">eve::stylize::MeshParticleEmitterConfig::randomSeed</a></div><div class="ttdeci">std::uint32_t randomSeed</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00066">MeshParticleEmitter.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a0d40e06693fa60c15cd768815bcd4f13"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0d40e06693fa60c15cd768815bcd4f13">eve::stylize::MeshParticleEmitterConfig::coneAngleRadians</a></div><div class="ttdeci">float coneAngleRadians</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00047">MeshParticleEmitter.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a0f061268a9e5d106cf08acdf0ee31d3c"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a0f061268a9e5d106cf08acdf0ee31d3c">eve::stylize::MeshParticleEmitterConfig::emissionRate</a></div><div class="ttdeci">float emissionRate</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00038">MeshParticleEmitter.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a112e315e0a04e53426c2af61bec735ad"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a112e315e0a04e53426c2af61bec735ad">eve::stylize::MeshParticleEmitterConfig::looping</a></div><div class="ttdeci">bool looping</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00068">MeshParticleEmitter.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a1718dabb939151321877420443ada4a1"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a1718dabb939151321877420443ada4a1">eve::stylize::MeshParticleEmitterConfig::velocityCurve</a></div><div class="ttdeci">std::vector&lt; MeshParticleScalarKey &gt; velocityCurve</div><div class="ttdoc">Optional normalized-age velocity multiplier; empty evaluates to one.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00061">MeshParticleEmitter.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a190a0d28d79446793f3c6c81d9724e56"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a190a0d28d79446793f3c6c81d9724e56">eve::stylize::MeshParticleEmitterConfig::capacity</a></div><div class="ttdeci">std::uint32_t capacity</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00037">MeshParticleEmitter.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a20ed0cd6a089bac7b5d89b96010f7134"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a20ed0cd6a089bac7b5d89b96010f7134">eve::stylize::MeshParticleEmitterConfig::maximumSubsteps</a></div><div class="ttdeci">std::uint32_t maximumSubsteps</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00065">MeshParticleEmitter.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a2a85fc5eda1394e66a4b914aebd76e29"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a2a85fc5eda1394e66a4b914aebd76e29">eve::stylize::MeshParticleEmitterConfig::direction</a></div><div class="ttdeci">glm::vec3 direction</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00043">MeshParticleEmitter.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a47377f0ec5d3d36947fb2c42e9ea7535"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a47377f0ec5d3d36947fb2c42e9ea7535">eve::stylize::MeshParticleEmitterConfig::boxExtents</a></div><div class="ttdeci">glm::vec3 boxExtents</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00045">MeshParticleEmitter.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a52890692a4bbc1e9fd111712767dc28b"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a52890692a4bbc1e9fd111712767dc28b">eve::stylize::MeshParticleEmitterConfig::damping</a></div><div class="ttdeci">float damping</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00049">MeshParticleEmitter.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a5501f13079bd0b1754efc52d48ba6277"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a5501f13079bd0b1754efc52d48ba6277">eve::stylize::MeshParticleEmitterConfig::colorEnd</a></div><div class="ttdeci">graphics::Color colorEnd</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00057">MeshParticleEmitter.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a572825ad7282f2ffeff5f61e384ebc23"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a572825ad7282f2ffeff5f61e384ebc23">eve::stylize::MeshParticleEmitterConfig::scaleStart</a></div><div class="ttdeci">float scaleStart</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00054">MeshParticleEmitter.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a58a9edb621725d86977dcd6d954b4a45"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a58a9edb621725d86977dcd6d954b4a45">eve::stylize::MeshParticleEmitterConfig::speedMin</a></div><div class="ttdeci">float speedMin</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00041">MeshParticleEmitter.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a5fc9c1d9718db76cdce04001ae30a5bb"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a5fc9c1d9718db76cdce04001ae30a5bb">eve::stylize::MeshParticleEmitterConfig::lifetimeMax</a></div><div class="ttdeci">float lifetimeMax</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00040">MeshParticleEmitter.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a6ce7b2a4a69c311fe48db90be329485b"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a6ce7b2a4a69c311fe48db90be329485b">eve::stylize::MeshParticleEmitterConfig::angularVelocityMax</a></div><div class="ttdeci">float angularVelocityMax</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00053">MeshParticleEmitter.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a775b0129d99ba1b75ae1b0f04b3ab104"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a775b0129d99ba1b75ae1b0f04b3ab104">eve::stylize::MeshParticleEmitterConfig::scaleCurve</a></div><div class="ttdeci">std::vector&lt; MeshParticleScalarKey &gt; scaleCurve</div><div class="ttdoc">Optional normalized-age scale multiplier; empty uses scaleStart/scaleEnd.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00059">MeshParticleEmitter.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a973db20abc8316f564ff3bc926ed3457"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a973db20abc8316f564ff3bc926ed3457">eve::stylize::MeshParticleEmitterConfig::colorGradient</a></div><div class="ttdeci">std::vector&lt; MeshParticleColorKey &gt; colorGradient</div><div class="ttdoc">Optional normalized-age color gradient; empty uses colorStart/colorEnd.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00063">MeshParticleEmitter.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_a9a43cafe035bf3adfc77d634142166c0"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#a9a43cafe035bf3adfc77d634142166c0">eve::stylize::MeshParticleEmitterConfig::shape</a></div><div class="ttdeci">MeshParticleShape shape</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00044">MeshParticleEmitter.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_aa64d7596ad6d3afc0cf86e44d9ca5de9"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#aa64d7596ad6d3afc0cf86e44d9ca5de9">eve::stylize::MeshParticleEmitterConfig::lifetimeMin</a></div><div class="ttdeci">float lifetimeMin</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00039">MeshParticleEmitter.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_ab076e5fba709b50e3e0d5de933438180"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ab076e5fba709b50e3e0d5de933438180">eve::stylize::MeshParticleEmitterConfig::speedMax</a></div><div class="ttdeci">float speedMax</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00042">MeshParticleEmitter.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_abac9782dbcbd728735d67d7386d6ce69"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#abac9782dbcbd728735d67d7386d6ce69">eve::stylize::MeshParticleEmitterConfig::gravity</a></div><div class="ttdeci">glm::vec3 gravity</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00048">MeshParticleEmitter.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_acf3a2bac20fd775601ced69b5a19b0d2"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#acf3a2bac20fd775601ced69b5a19b0d2">eve::stylize::MeshParticleEmitterConfig::fixedStepSeconds</a></div><div class="ttdeci">float fixedStepSeconds</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00064">MeshParticleEmitter.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_ad21b8f409bcb4b62d16480aaed361731"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ad21b8f409bcb4b62d16480aaed361731">eve::stylize::MeshParticleEmitterConfig::rotationMinRadians</a></div><div class="ttdeci">float rotationMinRadians</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00050">MeshParticleEmitter.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_ad44db9c6f3f23e0cb50f8cd1d3fb23fc"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#ad44db9c6f3f23e0cb50f8cd1d3fb23fc">eve::stylize::MeshParticleEmitterConfig::colorStart</a></div><div class="ttdeci">graphics::Color colorStart</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00056">MeshParticleEmitter.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_af43432643179bc0a4842fcfd200d82a9"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#af43432643179bc0a4842fcfd200d82a9">eve::stylize::MeshParticleEmitterConfig::angularVelocityMin</a></div><div class="ttdeci">float angularVelocityMin</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00052">MeshParticleEmitter.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_af95ceb845bf57f0aa62ac77d980b68eb"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#af95ceb845bf57f0aa62ac77d980b68eb">eve::stylize::MeshParticleEmitterConfig::loopDurationSeconds</a></div><div class="ttdeci">float loopDurationSeconds</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00067">MeshParticleEmitter.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_afad41e9b9e0c57faef6d7268a98a8278"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#afad41e9b9e0c57faef6d7268a98a8278">eve::stylize::MeshParticleEmitterConfig::scaleEnd</a></div><div class="ttdeci">float scaleEnd</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00055">MeshParticleEmitter.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_afd81de48ad560d3175c47b41a7d1f940"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#afd81de48ad560d3175c47b41a7d1f940">eve::stylize::MeshParticleEmitterConfig::sphereRadius</a></div><div class="ttdeci">float sphereRadius</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00046">MeshParticleEmitter.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleEmitterConfig_html_aff87b1d3cab975106150268e3b64864c"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleEmitterConfig.html#aff87b1d3cab975106150268e3b64864c">eve::stylize::MeshParticleEmitterConfig::rotationMaxRadians</a></div><div class="ttdeci">float rotationMaxRadians</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00051">MeshParticleEmitter.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleInstance_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleInstance.html">eve::stylize::MeshParticleInstance</a></div><div class="ttdoc">Render-facing immutable state of one live mesh particle.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00073">MeshParticleEmitter.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleInstance_html_a1e828d15334a24fcb96c02efb3855ced"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleInstance.html#a1e828d15334a24fcb96c02efb3855ced">eve::stylize::MeshParticleInstance::model</a></div><div class="ttdeci">glm::mat4 model</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00075">MeshParticleEmitter.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleInstance_html_a7007918bbe1a320824644902990b8094"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleInstance.html#a7007918bbe1a320824644902990b8094">eve::stylize::MeshParticleInstance::normalizedAge</a></div><div class="ttdeci">float normalizedAge</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00077">MeshParticleEmitter.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleInstance_html_a8188b21d2b47e9da45cdfc96976f67f3"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleInstance.html#a8188b21d2b47e9da45cdfc96976f67f3">eve::stylize::MeshParticleInstance::color</a></div><div class="ttdeci">graphics::Color color</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00076">MeshParticleEmitter.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleInstance_html_ab65d518d880e9a8131498285ce53c24f"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleInstance.html#ab65d518d880e9a8131498285ce53c24f">eve::stylize::MeshParticleInstance::stableId</a></div><div class="ttdeci">std::uint64_t stableId</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00074">MeshParticleEmitter.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleScalarKey_html"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleScalarKey.html">eve::stylize::MeshParticleScalarKey</a></div><div class="ttdoc">One normalized-time scalar key used by mesh-particle lifetime curves.</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00024">MeshParticleEmitter.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleScalarKey_html_ab85de6e07c2903b67e29d49879d57a6d"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleScalarKey.html#ab85de6e07c2903b67e29d49879d57a6d">eve::stylize::MeshParticleScalarKey::time</a></div><div class="ttdeci">float time</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00025">MeshParticleEmitter.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1stylize_1_1MeshParticleScalarKey_html_afe8d0a5f02b4054ad3ec941269c065fc"><div class="ttname"><a href="structeve_1_1stylize_1_1MeshParticleScalarKey.html#afe8d0a5f02b4054ad3ec941269c065fc">eve::stylize::MeshParticleScalarKey::value</a></div><div class="ttdeci">float value</div><div class="ttdef"><b>Definition</b> <a href="MeshParticleEmitter_8h_source.html#l00026">MeshParticleEmitter.h:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

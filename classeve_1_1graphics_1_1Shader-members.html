@@ -1,0 +1,214 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::Shader 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ab15e58eeeaa70277a2d0b90a9a01c3e6">declareFloat</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a41748c44315b28eed51955d3449ea6a8">declareMatrix</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a11627c3b7728e34918bd7ed62a4f6272">declareVec2</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a640f9925252f962ba3b8a5a6b15d6645">declareVec3</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a8e29641db30d6d162e5c415a1691aa51">declareVec4</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ac06e7c86b393f0723b5b92e8fb61abcaa2b8889ef1472f901012f968e8ed00fe7">eCompute</a> 枚举值</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ac06e7c86b393f0723b5b92e8fb61abcaab43d31144ecefe29734b523c79cc3310">eFragment</a> 枚举值</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ac06e7c86b393f0723b5b92e8fb61abcaa7a544ddff06eb4cd0c378171db43adda">eGeometry</a> 枚举值</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ac06e7c86b393f0723b5b92e8fb61abcaa218bae525fc4842771dff8a958d6f21b">eTessCtrl</a> 枚举值</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ac06e7c86b393f0723b5b92e8fb61abcaab21d76d88fb9b1be27bf793827f0c3eb">eTessEval</a> 枚举值</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ac06e7c86b393f0723b5b92e8fb61abcaa3aa3f720a92ff6fed4e67c8780c54002">eVertex</a> 枚举值</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a10ac4d65b5d37cf448db37b98bd75228">fragmentSpirv</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a1bdd166f7236571fb1e7c3296f32c327">getFromVar</a>(const std::string &amp;name, void *data, size_t size) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a0e548dee74553585589dc5d7b3c78c05">getKind</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a57bf430a197a8acea7b5e6f8721bbbe5">getUniformFloatCount</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a420b7e5b4366179b369f2b20821fd574">getUniformIndex</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a8bdb21d0b57398ec65c6d329e55b1ced">gpuHandle</a></td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a06c0f6f87c1d8b3a845c92ffd70f2b98">hasUniform</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a5842e6510ba06b56ee607c37028fbda5">isXray</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a325f44434c2b5e57b6a86354433df519">Kind</a> 枚举名称</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a8ed56a224168d927c70843d9ce2a72bf">kMaxFloats</a></td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a99fa40aa6bb9b40db6ccc9de4ee6c2bd">kPushConstantBytes</a></td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a0b1f34205d06c923e980c3f43348bce2">operator=</a>(const Shader &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#af7cf485360ad8f65d67acbc38c10373f">pushConstantData</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ae4ae578bcb4d74fb0cb2b69513371412">pushConstantSize</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a12384bb0fb5dffc0b0b12732b732b607">sendFloat</a>(const std::string &amp;name, float x)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a1653b18d63e8c880d9407eda62649c9c">sendMatrix</a>(const std::string &amp;name, const glm::mat4 &amp;m)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ad177ef1656eee526db25909a37b8d949">sendToVar</a>(const std::string &amp;name, const void *data, size_t size)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a0f1fcfa06328949bc775678be40e703f">sendVec2</a>(const std::string &amp;name, float x, float y)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a30d1a03224c00f2ffd5f7ee5f5e477aa">sendVec3</a>(const std::string &amp;name, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ab444e2accb68c9e08305b6dc68732928">sendVec4</a>(const std::string &amp;name, float x, float y, float z, float w)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#aab2c3584ee033437bbee370e5934c685">setKind</a>(Kind k)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a056a34502f93efb99ebe42b179564449">setSpirv</a>(std::vector&lt; uint32_t &gt; vert, std::vector&lt; uint32_t &gt; frag)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a383386d57186b367b9372c18a9d650b1">setXray</a>(bool x)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a077777ed321488fc88da7f4db2b46266">Shader</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a77696d412a52a439e2c7d0adfaff70d5">Shader</a>(const Shader &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#ac06e7c86b393f0723b5b92e8fb61abca">ShaderType</a> 枚举名称</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a0e5fba7ea2ebb512970e154582259367">usedFloats</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#a87276f80bb90c0ed78a9dc4e10997bed">vertexSpirv</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html#aecba5985eaffa1ccff4b5bfca532cfb4">~Shader</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

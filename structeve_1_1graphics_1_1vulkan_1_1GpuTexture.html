@@ -1,0 +1,536 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::vulkan::GpuTexture结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html">vulkan</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html">GpuTexture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::vulkan::GpuTexture结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a626d7e11d5915cf67b1a067b762ae08d" id="r_a626d7e11d5915cf67b1a067b762ae08d"><td class="memItemLeft" align="right" valign="top">vk::ImageView&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a626d7e11d5915cf67b1a067b762ae08d">imageView</a> () const</td></tr>
+<tr class="separator:a626d7e11d5915cf67b1a067b762ae08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a3a67dd208a7bd8ab617c0d9889c34c08" id="r_a3a67dd208a7bd8ab617c0d9889c34c08"><td class="memItemLeft" align="right" valign="top">vkb::TextureImage2D&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a3a67dd208a7bd8ab617c0d9889c34c08">image</a></td></tr>
+<tr class="separator:a3a67dd208a7bd8ab617c0d9889c34c08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9998c7219d393e050cee5593fca0a756" id="r_a9998c7219d393e050cee5593fca0a756"><td class="memItemLeft" align="right" valign="top">vkb::TextureImageCube&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a9998c7219d393e050cee5593fca0a756">cubeImage</a></td></tr>
+<tr class="separator:a9998c7219d393e050cee5593fca0a756"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fd90d87d7712659f52625878984ef2a" id="r_a9fd90d87d7712659f52625878984ef2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a9fd90d87d7712659f52625878984ef2a">isCube</a> = false</td></tr>
+<tr class="separator:a9fd90d87d7712659f52625878984ef2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9a298429e5c1804c30a8862dee5a77a" id="r_aa9a298429e5c1804c30a8862dee5a77a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#aa9a298429e5c1804c30a8862dee5a77a">isHDR</a> = false</td></tr>
+<tr class="separator:aa9a298429e5c1804c30a8862dee5a77a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab378d10862cfe263c82f463e7c602746" id="r_ab378d10862cfe263c82f463e7c602746"><td class="memItemLeft" align="right" valign="top">vk::UniqueDeviceMemory&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#ab378d10862cfe263c82f463e7c602746">rawCubeMemory</a></td></tr>
+<tr class="separator:ab378d10862cfe263c82f463e7c602746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3efe2d5ce15b1de43026618beca0453c" id="r_a3efe2d5ce15b1de43026618beca0453c"><td class="memItemLeft" align="right" valign="top">vk::UniqueImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a3efe2d5ce15b1de43026618beca0453c">rawCubeImage</a></td></tr>
+<tr class="separator:a3efe2d5ce15b1de43026618beca0453c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54bce2a991ecbf6419a566b5bae1d691" id="r_a54bce2a991ecbf6419a566b5bae1d691"><td class="memItemLeft" align="right" valign="top">vk::UniqueImageView&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a54bce2a991ecbf6419a566b5bae1d691">rawCubeView</a></td></tr>
+<tr class="separator:a54bce2a991ecbf6419a566b5bae1d691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad710f59edd6106c53ba89e9847f0b037" id="r_ad710f59edd6106c53ba89e9847f0b037"><td class="memItemLeft" align="right" valign="top">vk::Sampler&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#ad710f59edd6106c53ba89e9847f0b037">sampler</a></td></tr>
+<tr class="separator:ad710f59edd6106c53ba89e9847f0b037"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad31973859ed02ec72f29885e9fc5d124" id="r_ad31973859ed02ec72f29885e9fc5d124"><td class="memItemLeft" align="right" valign="top">vkb::BoundSet&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#ad31973859ed02ec72f29885e9fc5d124">descriptorSet</a></td></tr>
+<tr class="separator:ad31973859ed02ec72f29885e9fc5d124"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac60c9cd306f89a836c82209bc7fc5125" id="r_ac60c9cd306f89a836c82209bc7fc5125"><td class="memItemLeft" align="right" valign="top">vk::ImageView&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#ac60c9cd306f89a836c82209bc7fc5125">viewOverride</a> {}</td></tr>
+<tr class="separator:ac60c9cd306f89a836c82209bc7fc5125"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a663975bd3bb51a06e36e16c80e790677" id="r_a663975bd3bb51a06e36e16c80e790677"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a663975bd3bb51a06e36e16c80e790677">width</a> = 0</td></tr>
+<tr class="separator:a663975bd3bb51a06e36e16c80e790677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0830b65e14a1d84da2b92006a14568c2" id="r_a0830b65e14a1d84da2b92006a14568c2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a0830b65e14a1d84da2b92006a14568c2">height</a> = 0</td></tr>
+<tr class="separator:a0830b65e14a1d84da2b92006a14568c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81efa1d6faba87b648192d8b6e26a2ac" id="r_a81efa1d6faba87b648192d8b6e26a2ac"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a81efa1d6faba87b648192d8b6e26a2ac">mipLevels</a> = 1</td></tr>
+<tr class="separator:a81efa1d6faba87b648192d8b6e26a2ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafde7732edb4bf8fec9bd57bb23d33ed" id="r_aafde7732edb4bf8fec9bd57bb23d33ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#aafde7732edb4bf8fec9bd57bb23d33ed">samplerState</a> {}</td></tr>
+<tr class="separator:aafde7732edb4bf8fec9bd57bb23d33ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4496f9f5ab9298c222e4530d9d8cf251" id="r_a4496f9f5ab9298c222e4530d9d8cf251"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a4496f9f5ab9298c222e4530d9d8cf251">bindlessIndex2D</a> = <a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#aa5bc3718bb6ab9c6d84c84d38f6dbb90">kInvalidBindlessSlot</a></td></tr>
+<tr class="memdesc:a4496f9f5ab9298c222e4530d9d8cf251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bindless texture-array slot (stage 0 GPU-driven path).  <br /></td></tr>
+<tr class="separator:a4496f9f5ab9298c222e4530d9d8cf251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93c48edf3df25baff0206855550b2bbb" id="r_a93c48edf3df25baff0206855550b2bbb"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1GpuTexture.html#a93c48edf3df25baff0206855550b2bbb">bindlessIndexCube</a> = <a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#aa5bc3718bb6ab9c6d84c84d38f6dbb90">kInvalidBindlessSlot</a></td></tr>
+<tr class="separator:a93c48edf3df25baff0206855550b2bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00213">213</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a626d7e11d5915cf67b1a067b762ae08d" name="a626d7e11d5915cf67b1a067b762ae08d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626d7e11d5915cf67b1a067b762ae08d">&#9670;&#160;</a></span>imageView()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::ImageView eve::graphics::vulkan::GpuTexture::imageView </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00232">232</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="vulkan_2Graphics_8h_source.html#l00215">cubeImage</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00214">image</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00216">isCube</a>, <a class="el" href="vulkan_2Graphics_8h_source.html#l00220">rawCubeView</a> , 以及 <a class="el" href="vulkan_2Graphics_8h_source.html#l00223">viewOverride</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a4496f9f5ab9298c222e4530d9d8cf251" name="a4496f9f5ab9298c222e4530d9d8cf251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4496f9f5ab9298c222e4530d9d8cf251">&#9670;&#160;</a></span>bindlessIndex2D</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::vulkan::GpuTexture::bindlessIndex2D = <a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#aa5bc3718bb6ab9c6d84c84d38f6dbb90">kInvalidBindlessSlot</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bindless texture-array slot (stage 0 GPU-driven path). </p>
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Graphics_8h_source.html#l00343">eve::graphics::vulkan::Graphics::bindlessSlot2D()</a>.</p>
+
+</div>
+</div>
+<a id="a93c48edf3df25baff0206855550b2bbb" name="a93c48edf3df25baff0206855550b2bbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93c48edf3df25baff0206855550b2bbb">&#9670;&#160;</a></span>bindlessIndexCube</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::vulkan::GpuTexture::bindlessIndexCube = <a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html#aa5bc3718bb6ab9c6d84c84d38f6dbb90">kInvalidBindlessSlot</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00230">230</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Graphics_8h_source.html#l00346">eve::graphics::vulkan::Graphics::bindlessSlotCube()</a>.</p>
+
+</div>
+</div>
+<a id="a9998c7219d393e050cee5593fca0a756" name="a9998c7219d393e050cee5593fca0a756"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9998c7219d393e050cee5593fca0a756">&#9670;&#160;</a></span>cubeImage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::TextureImageCube eve::graphics::vulkan::GpuTexture::cubeImage</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Graphics_8h_source.html#l00232">imageView()</a>.</p>
+
+</div>
+</div>
+<a id="ad31973859ed02ec72f29885e9fc5d124" name="ad31973859ed02ec72f29885e9fc5d124"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad31973859ed02ec72f29885e9fc5d124">&#9670;&#160;</a></span>descriptorSet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::BoundSet eve::graphics::vulkan::GpuTexture::descriptorSet</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Graphics2D_8cpp_source.html#l00936">eve::graphics::vulkan::Graphics::drawUiTextureRects()</a> , 以及 <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a0830b65e14a1d84da2b92006a14568c2" name="a0830b65e14a1d84da2b92006a14568c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0830b65e14a1d84da2b92006a14568c2">&#9670;&#160;</a></span>height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::vulkan::GpuTexture::height = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a3a67dd208a7bd8ab617c0d9889c34c08" name="a3a67dd208a7bd8ab617c0d9889c34c08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a67dd208a7bd8ab617c0d9889c34c08">&#9670;&#160;</a></span>image</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::TextureImage2D eve::graphics::vulkan::GpuTexture::image</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Graphics_8h_source.html#l00232">imageView()</a>.</p>
+
+</div>
+</div>
+<a id="a9fd90d87d7712659f52625878984ef2a" name="a9fd90d87d7712659f52625878984ef2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fd90d87d7712659f52625878984ef2a">&#9670;&#160;</a></span>isCube</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::vulkan::GpuTexture::isCube = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsMesh_8cpp_source.html#l00574">eve::graphics::vulkan::Graphics::drawMeshShader()</a> , 以及 <a class="el" href="vulkan_2Graphics_8h_source.html#l00232">imageView()</a>.</p>
+
+</div>
+</div>
+<a id="aa9a298429e5c1804c30a8862dee5a77a" name="aa9a298429e5c1804c30a8862dee5a77a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9a298429e5c1804c30a8862dee5a77a">&#9670;&#160;</a></span>isHDR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::vulkan::GpuTexture::isHDR = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00217">217</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a81efa1d6faba87b648192d8b6e26a2ac" name="a81efa1d6faba87b648192d8b6e26a2ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81efa1d6faba87b648192d8b6e26a2ac">&#9670;&#160;</a></span>mipLevels</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::graphics::vulkan::GpuTexture::mipLevels = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00226">226</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3efe2d5ce15b1de43026618beca0453c" name="a3efe2d5ce15b1de43026618beca0453c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3efe2d5ce15b1de43026618beca0453c">&#9670;&#160;</a></span>rawCubeImage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::UniqueImage eve::graphics::vulkan::GpuTexture::rawCubeImage</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00219">219</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab378d10862cfe263c82f463e7c602746" name="ab378d10862cfe263c82f463e7c602746"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab378d10862cfe263c82f463e7c602746">&#9670;&#160;</a></span>rawCubeMemory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::UniqueDeviceMemory eve::graphics::vulkan::GpuTexture::rawCubeMemory</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00218">218</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54bce2a991ecbf6419a566b5bae1d691" name="a54bce2a991ecbf6419a566b5bae1d691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54bce2a991ecbf6419a566b5bae1d691">&#9670;&#160;</a></span>rawCubeView</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::UniqueImageView eve::graphics::vulkan::GpuTexture::rawCubeView</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Graphics_8h_source.html#l00232">imageView()</a>.</p>
+
+</div>
+</div>
+<a id="ad710f59edd6106c53ba89e9847f0b037" name="ad710f59edd6106c53ba89e9847f0b037"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad710f59edd6106c53ba89e9847f0b037">&#9670;&#160;</a></span>sampler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Sampler eve::graphics::vulkan::GpuTexture::sampler</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a> , 以及 <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00059">eve::graphics::vulkan::OffscreenCanvas::~OffscreenCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="aafde7732edb4bf8fec9bd57bb23d33ed" name="aafde7732edb4bf8fec9bd57bb23d33ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafde7732edb4bf8fec9bd57bb23d33ed">&#9670;&#160;</a></span>samplerState</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1TextureSampler.html">TextureSampler</a> eve::graphics::vulkan::GpuTexture::samplerState {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00227">227</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac60c9cd306f89a836c82209bc7fc5125" name="ac60c9cd306f89a836c82209bc7fc5125"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac60c9cd306f89a836c82209bc7fc5125">&#9670;&#160;</a></span>viewOverride</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::ImageView eve::graphics::vulkan::GpuTexture::viewOverride {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Graphics_8h_source.html#l00232">imageView()</a> , 以及 <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>.</p>
+
+</div>
+</div>
+<a id="a663975bd3bb51a06e36e16c80e790677" name="a663975bd3bb51a06e36e16c80e790677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a663975bd3bb51a06e36e16c80e790677">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::vulkan::GpuTexture::width = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a> 第 <a class="el" href="vulkan_2Graphics_8h_source.html#l00224">224</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="vulkan_2Canvas_8cpp_source.html#l00012">eve::graphics::vulkan::OffscreenCanvas::OffscreenCanvas()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/vulkan/<a class="el" href="vulkan_2Graphics_8h_source.html">Graphics.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

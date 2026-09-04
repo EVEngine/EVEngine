@@ -1,0 +1,220 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1inventory.html">inventory</a></li><li class="navelem"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">InventorySystem</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::inventory::InventorySystem 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8d7eadcfc5492411ced8dd78c55581b6">AcceptFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a08a0c84c03938cb44a547ca7e15137dd">addItem</a>(Bag *bag, const std::string &amp;itemId, int quantity)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a37f939627eec09067c1fb7401dc8daa0">canAdd</a>(Bag *bag, const std::string &amp;itemId, int quantity, std::string *reason=nullptr)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a73f55fc4ff05f6c0b02912886b5d2abe">CapacityFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a4d80e1fcfe55095047d243314b69a7ee">ChangeHook</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab3007e15e970aacb3f06038b78e39d50">clearBag</a>(Bag *bag)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#adacd80289f9a7e37012ca69bee5ab994">clearEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a75dcda89fed0bd952285b88c66f8e776">commitAddBatch</a>(PreparedInventoryAdd prepared)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a41e4f206106a6c537c5c78c5b2bd6aaa">commitRemove</a>(PreparedInventoryRemove prepared)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a9e1ef39619ea7178739d638df8def8fb">countItem</a>(const Bag *bag, const std::string &amp;itemId)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a25ac9a746a8b064df1cfdc8df5711f23">ensureBuiltins</a>()</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a1ce24df603cdbf3f972fa906033c656b">equipFromBag</a>(EquipmentSet *eq, const std::string &amp;equipSlot, Bag *bag, int bagSlot)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a339b6b86915cec457816eb283e0cea52">events</a>()</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#af8874497459214cb26cea921614744de">findItem</a>(const Bag *bag, const std::string &amp;itemId)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ada5a833b8d9685be2f754a41e8431b5a">findItemByTag</a>(const Bag *bag, const std::string &amp;tag)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab45feab6470197bff0d11aa9a9456997">hasAcceptRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ad21b72f0583a8dee89b79707545e82e8">hasCapacityPolicy</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a407a54dff07a260582a0566a554ca117">hasChangeHook</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab233bccda408421bef3a6e668d7f42f3">hasStackRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a453abe91d1912146dd6198663d6e0aeb">InventoryResourceAccount</a></td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8d48776c5fde609b79c171d7be5f93df">InventorySaveSession</a></td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#acbf8247863f8c3243a442fbd4981218f">moveSlot</a>(Bag *bag, int fromSlot, int toSlot)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a7f3e5eeb6128d34ea451f0d7678f7785">nextInstanceId</a>()</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ae08871c391cdba3e87697ef8b6651d84">pollEvents</a>(std::vector&lt; InventoryChangeEvent &gt; &amp;out)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8463ec80a7aeaf32d6fa270082b74c3f">prepareAddBatch</a>(Bag *bag, const std::vector&lt; InventoryItemGrant &gt; &amp;grants)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#aed377ce51ef3a3dc3d1c948560877ebf">prepareRemove</a>(Bag *bag, const std::string &amp;itemId, int quantity)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a82e9b2c8e3705d17f6697468681141f6">pushEvent</a>(InventoryChangeEvent ev)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8f497c7bc6a095bf798ad7242b7b6bfd">registerAcceptRule</a>(const std::string &amp;name, AcceptFn fn)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a5fd35b9ef8ae097c2965889631c4b5aa">registerCapacityPolicy</a>(const std::string &amp;name, CapacityFn fn)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#aa2795195d01f8e47d3cd9febfb7c39cc">registerChangeHook</a>(const std::string &amp;name, ChangeHook fn)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a19b374f8f8b5ea696a4c65f16f802ebb">registerStackRule</a>(const std::string &amp;name, StackFn fn)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ac64613ff5617f8d6eadd9a817270212e">removeAt</a>(Bag *bag, int slot, int quantity)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ac81d7731393193e2a4905d240da6befb">removeItem</a>(Bag *bag, const std::string &amp;itemId, int quantity)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a8a73172da09df6aac839afe7c86df768">splitStack</a>(Bag *bag, int slot, int quantity, int toSlot)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab96855112d060449449bf064c439e73e">StackFn</a> typedef</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a3902b808ec2508f04300dd910d487a27">swapSlots</a>(Bag *bag, int slotA, int slotB)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab31aba04c73d2938346e6d5cdac6cce5">transfer</a>(Bag *from, Bag *to, const std::string &amp;itemId, int quantity)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ad87fac42c2013c42530f919fc7ed65e2">transferSlot</a>(Bag *from, int fromSlot, Bag *to, int quantity)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a367c87a09740c8942f6d2096348d5971">unequipToBag</a>(EquipmentSet *eq, const std::string &amp;equipSlot, Bag *bag)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ab4d20948756bfac1ac59b96953d5d51a">unregisterAcceptRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a7e7e59d27fc3e6d1381efa51039b6710">unregisterCapacityPolicy</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#ac0f4ccbaeb4a6396a3ac8490e6f73731">unregisterChangeHook</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a0135c62835d01ef8d5768c283836f27d">unregisterStackRule</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#aa675f464b280690e89214c2fc5734153">usedSlotCount</a>(const Bag *bag)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a6177bfb465091a11c2f576d0c25f683b">usedVolume</a>(const Bag *bag)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html#a3e6a9a0f06b0bd0fea450f27ace2f603">usedWeight</a>(const Bag *bag)</td><td class="entry"><a class="el" href="classeve_1_1inventory_1_1InventorySystem.html">eve::inventory::InventorySystem</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

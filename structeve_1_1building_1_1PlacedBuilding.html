@@ -1,0 +1,1010 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::PlacedBuilding结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1building_1_1PlacedBuilding-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::PlacedBuilding结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>已放置的建筑实例。  
+ <a href="structeve_1_1building_1_1PlacedBuilding.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aaeff05f938f80e6b744f9bb991a30fea" id="r_aaeff05f938f80e6b744f9bb991a30fea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#aaeff05f938f80e6b744f9bb991a30fea">hasTag</a> (const std::string &amp;tag) const</td></tr>
+<tr class="separator:aaeff05f938f80e6b744f9bb991a30fea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c1f1b70fc1d64623a0a92a580168893" id="r_a6c1f1b70fc1d64623a0a92a580168893"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a6c1f1b70fc1d64623a0a92a580168893">getProp</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;fallback={}) const</td></tr>
+<tr class="separator:a6c1f1b70fc1d64623a0a92a580168893"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57a62452c48a4d4f5dd43a407e4ea1a2" id="r_a57a62452c48a4d4f5dd43a407e4ea1a2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a57a62452c48a4d4f5dd43a407e4ea1a2">setProp</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a57a62452c48a4d4f5dd43a407e4ea1a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a0047fc55d94529be9f799dbe570e002d" id="r_a0047fc55d94529be9f799dbe570e002d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a0047fc55d94529be9f799dbe570e002d">instanceId</a> = 0</td></tr>
+<tr class="separator:a0047fc55d94529be9f799dbe570e002d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3293c94fbec193512c1710ef9b033c4" id="r_ac3293c94fbec193512c1710ef9b033c4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#ac3293c94fbec193512c1710ef9b033c4">buildingId</a></td></tr>
+<tr class="separator:ac3293c94fbec193512c1710ef9b033c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabee14c27e9ba953809dc1348dd08426" id="r_aabee14c27e9ba953809dc1348dd08426"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#aabee14c27e9ba953809dc1348dd08426">placementKind</a> = &quot;cell&quot;</td></tr>
+<tr class="memdesc:aabee14c27e9ba953809dc1348dd08426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Placement domain snapshot: <code>cell</code>, <code>edge</code>, <code>corner</code>, or <code>free</code>.  <br /></td></tr>
+<tr class="separator:aabee14c27e9ba953809dc1348dd08426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a595bb2c8fd6c350ba7599c5e5d82f059" id="r_a595bb2c8fd6c350ba7599c5e5d82f059"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1building_1_1EdgeAddress.html">EdgeAddress</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a595bb2c8fd6c350ba7599c5e5d82f059">edge</a></td></tr>
+<tr class="memdesc:a595bb2c8fd6c350ba7599c5e5d82f059"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical edge address when placementKind is <code>edge</code>.  <br /></td></tr>
+<tr class="separator:a595bb2c8fd6c350ba7599c5e5d82f059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91a1b546ab6689ff02347ecfebbc4057" id="r_a91a1b546ab6689ff02347ecfebbc4057"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1building_1_1EdgeCurveGroupId.html">EdgeCurveGroupId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a91a1b546ab6689ff02347ecfebbc4057">edgeCurveGroupId</a></td></tr>
+<tr class="memdesc:a91a1b546ab6689ff02347ecfebbc4057"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional link to a world-owned curve group; zero means an ordinary edge.  <br /></td></tr>
+<tr class="separator:a91a1b546ab6689ff02347ecfebbc4057"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6978ff0e3b065746b1b91d5448998de" id="r_ac6978ff0e3b065746b1b91d5448998de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1building_1_1CornerAddress.html">CornerAddress</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#ac6978ff0e3b065746b1b91d5448998de">corner</a></td></tr>
+<tr class="memdesc:ac6978ff0e3b065746b1b91d5448998de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical grid vertex when placementKind is <code>corner</code>.  <br /></td></tr>
+<tr class="separator:ac6978ff0e3b065746b1b91d5448998de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a916887df52201c9f20fa09cb149bcabf" id="r_a916887df52201c9f20fa09cb149bcabf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a916887df52201c9f20fa09cb149bcabf">freeRadius</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a916887df52201c9f20fa09cb149bcabf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed free-domain collision radius in world-plane units.  <br /></td></tr>
+<tr class="separator:a916887df52201c9f20fa09cb149bcabf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16dbdf4ab7041c44d2a04a4f8b33f18c" id="r_a16dbdf4ab7041c44d2a04a4f8b33f18c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a16dbdf4ab7041c44d2a04a4f8b33f18c">freeHalfWidth</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a16dbdf4ab7041c44d2a04a4f8b33f18c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed OBB half width in world-plane units; zero denotes circular collision.  <br /></td></tr>
+<tr class="separator:a16dbdf4ab7041c44d2a04a4f8b33f18c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8db95f5ac9be7e70398c9afaee5cf747" id="r_a8db95f5ac9be7e70398c9afaee5cf747"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a8db95f5ac9be7e70398c9afaee5cf747">freeHalfHeight</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a8db95f5ac9be7e70398c9afaee5cf747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed OBB half height in world-plane units; zero denotes circular collision.  <br /></td></tr>
+<tr class="separator:a8db95f5ac9be7e70398c9afaee5cf747"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f8e137d8af9affc980674be46964dad" id="r_a2f8e137d8af9affc980674be46964dad"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a2f8e137d8af9affc980674be46964dad">freeFootprintVertices</a></td></tr>
+<tr class="memdesc:a2f8e137d8af9affc980674be46964dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed convex local polygon as world-plane x/y pairs; empty selects OBB or circle.  <br /></td></tr>
+<tr class="separator:a2f8e137d8af9affc980674be46964dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c85b12476f21af7de9dc350e3101b1d" id="r_a9c85b12476f21af7de9dc350e3101b1d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a9c85b12476f21af7de9dc350e3101b1d">originCellX</a> = 0</td></tr>
+<tr class="separator:a9c85b12476f21af7de9dc350e3101b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4800acda73bdffd407361e148c08ac7" id="r_ac4800acda73bdffd407361e148c08ac7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#ac4800acda73bdffd407361e148c08ac7">originCellY</a> = 0</td></tr>
+<tr class="separator:ac4800acda73bdffd407361e148c08ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7af6959be3e9610ac144ffd76b8231a" id="r_aa7af6959be3e9610ac144ffd76b8231a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#aa7af6959be3e9610ac144ffd76b8231a">level</a> = 0</td></tr>
+<tr class="memdesc:aa7af6959be3e9610ac144ffd76b8231a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative discrete floor coordinate used by occupancy and topology.  <br /></td></tr>
+<tr class="separator:aa7af6959be3e9610ac144ffd76b8231a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad38f99a59ee700b286b56adab2a066d3" id="r_ad38f99a59ee700b286b56adab2a066d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#ad38f99a59ee700b286b56adab2a066d3">worldX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad38f99a59ee700b286b56adab2a066d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7fd9f32d9d992707eaa346719973c7e" id="r_ab7fd9f32d9d992707eaa346719973c7e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#ab7fd9f32d9d992707eaa346719973c7e">worldY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab7fd9f32d9d992707eaa346719973c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af726e6aa05fbd5e627356a82881fe5cc" id="r_af726e6aa05fbd5e627356a82881fe5cc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#af726e6aa05fbd5e627356a82881fe5cc">elevation</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:af726e6aa05fbd5e627356a82881fe5cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae687f4e9250b5047b2f7ae12063e5d69" id="r_ae687f4e9250b5047b2f7ae12063e5d69"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#ae687f4e9250b5047b2f7ae12063e5d69">surfaceId</a></td></tr>
+<tr class="memdesc:ae687f4e9250b5047b2f7ae12063e5d69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable provider-local surface name used to create this placement; empty for unsurfaced placement.  <br /></td></tr>
+<tr class="separator:ae687f4e9250b5047b2f7ae12063e5d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79a96191848929b1135c0696709b7d2a" id="r_a79a96191848929b1135c0696709b7d2a"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a79a96191848929b1135c0696709b7d2a">surfaceRevision</a> = 0</td></tr>
+<tr class="memdesc:a79a96191848929b1135c0696709b7d2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provider revision observed when the surface attachment was sampled.  <br /></td></tr>
+<tr class="separator:a79a96191848929b1135c0696709b7d2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcfc1e32b23358b51cf86106cd38e104" id="r_afcfc1e32b23358b51cf86106cd38e104"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#afcfc1e32b23358b51cf86106cd38e104">surfaceNormalX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:afcfc1e32b23358b51cf86106cd38e104"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit surface normal captured at placement time.  <br /></td></tr>
+<tr class="separator:afcfc1e32b23358b51cf86106cd38e104"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8356a6871c2bd11f64478642522e3f0f" id="r_a8356a6871c2bd11f64478642522e3f0f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a8356a6871c2bd11f64478642522e3f0f">surfaceNormalY</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8356a6871c2bd11f64478642522e3f0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72bbeadc546dcab8e826500da839d1dc" id="r_a72bbeadc546dcab8e826500da839d1dc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a72bbeadc546dcab8e826500da839d1dc">surfaceNormalZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a72bbeadc546dcab8e826500da839d1dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef7258246d2556f196e4674f98f522a6" id="r_aef7258246d2556f196e4674f98f522a6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#aef7258246d2556f196e4674f98f522a6">surfaceTangentX</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:aef7258246d2556f196e4674f98f522a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit tangent captured with the normal to define the local placement frame.  <br /></td></tr>
+<tr class="separator:aef7258246d2556f196e4674f98f522a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad280bc47cc9c90e9d4db9fedd25d420e" id="r_ad280bc47cc9c90e9d4db9fedd25d420e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#ad280bc47cc9c90e9d4db9fedd25d420e">surfaceTangentY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad280bc47cc9c90e9d4db9fedd25d420e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b6725abe2c4c35af934c78435472b8a" id="r_a2b6725abe2c4c35af934c78435472b8a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a2b6725abe2c4c35af934c78435472b8a">surfaceTangentZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2b6725abe2c4c35af934c78435472b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dc15c5abca15e98abe2bbf4c3934569" id="r_a4dc15c5abca15e98abe2bbf4c3934569"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a4dc15c5abca15e98abe2bbf4c3934569">surfaceSampleCount</a> = 0</td></tr>
+<tr class="separator:a4dc15c5abca15e98abe2bbf4c3934569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f4423c20deaf8d1ab8c415f1cbea707" id="r_a5f4423c20deaf8d1ab8c415f1cbea707"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a5f4423c20deaf8d1ab8c415f1cbea707">surfaceMaxSlopeDegrees</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5f4423c20deaf8d1ab8c415f1cbea707"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a016754d0000bf6fe1b3a168a50dc9806" id="r_a016754d0000bf6fe1b3a168a50dc9806"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a016754d0000bf6fe1b3a168a50dc9806">surfaceHeightDelta</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a016754d0000bf6fe1b3a168a50dc9806"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a639b6b606da9479e744c960e76cab349" id="r_a639b6b606da9479e744c960e76cab349"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a639b6b606da9479e744c960e76cab349">rotationDeg</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a639b6b606da9479e744c960e76cab349"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fc22a22ac5bf18e15f4b56e2fbf9234" id="r_a5fc22a22ac5bf18e15f4b56e2fbf9234"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a5fc22a22ac5bf18e15f4b56e2fbf9234">channel</a></td></tr>
+<tr class="separator:a5fc22a22ac5bf18e15f4b56e2fbf9234"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95087e4dc355f1248bf91fbba3a1272a" id="r_a95087e4dc355f1248bf91fbba3a1272a"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a95087e4dc355f1248bf91fbba3a1272a">props</a></td></tr>
+<tr class="separator:a95087e4dc355f1248bf91fbba3a1272a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55f92bea232fc4a57f1e9239e2505407" id="r_a55f92bea232fc4a57f1e9239e2505407"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a55f92bea232fc4a57f1e9239e2505407">tags</a></td></tr>
+<tr class="separator:a55f92bea232fc4a57f1e9239e2505407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5c830ee6f8f33990ef494e92207054d" id="r_ac5c830ee6f8f33990ef494e92207054d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#ac5c830ee6f8f33990ef494e92207054d">supportInstanceIds</a></td></tr>
+<tr class="memdesc:ac5c830ee6f8f33990ef494e92207054d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derived support links rebuilt from authoritative level/address data.  <br /></td></tr>
+<tr class="separator:ac5c830ee6f8f33990ef494e92207054d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68fff5890b4034015d53b18aed3f5b3a" id="r_a68fff5890b4034015d53b18aed3f5b3a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1building_1_1GarrisonMember.html">GarrisonMember</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a68fff5890b4034015d53b18aed3f5b3a">garrison</a></td></tr>
+<tr class="memdesc:a68fff5890b4034015d53b18aed3f5b3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative logical garrison membership, not a render list.  <br /></td></tr>
+<tr class="separator:a68fff5890b4034015d53b18aed3f5b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d1275f4c612321c01f679d16bf839c3" id="r_a1d1275f4c612321c01f679d16bf839c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html#a1d1275f4c612321c01f679d16bf839c3">garrisonRevision</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::Revision::zero</a>()</td></tr>
+<tr class="memdesc:a1d1275f4c612321c01f679d16bf839c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revision used by the garrison container adapter for stale checks.  <br /></td></tr>
+<tr class="separator:a1d1275f4c612321c01f679d16bf839c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>已放置的建筑实例。 </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00171">171</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a6c1f1b70fc1d64623a0a92a580168893" name="a6c1f1b70fc1d64623a0a92a580168893"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c1f1b70fc1d64623a0a92a580168893">&#9670;&#160;</a></span>getProp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::PlacedBuilding::getProp </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fallback</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingDef_8cpp_source.html">BuildingDef.cpp</a> 第 <a class="el" href="BuildingDef_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="BuildingTypes_8h_source.html#l00215">props</a>.</p>
+
+</div>
+</div>
+<a id="aaeff05f938f80e6b744f9bb991a30fea" name="aaeff05f938f80e6b744f9bb991a30fea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeff05f938f80e6b744f9bb991a30fea">&#9670;&#160;</a></span>hasTag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::PlacedBuilding::hasTag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tag</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingDef_8cpp_source.html">BuildingDef.cpp</a> 第 <a class="el" href="BuildingDef_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00216">tags</a>.</p>
+
+</div>
+</div>
+<a id="a57a62452c48a4d4f5dd43a407e4ea1a2" name="a57a62452c48a4d4f5dd43a407e4ea1a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57a62452c48a4d4f5dd43a407e4ea1a2">&#9670;&#160;</a></span>setProp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::PlacedBuilding::setProp </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingDef_8cpp_source.html">BuildingDef.cpp</a> 第 <a class="el" href="BuildingDef_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="BuildingTypes_8h_source.html#l00215">props</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ac3293c94fbec193512c1710ef9b033c4" name="ac3293c94fbec193512c1710ef9b033c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3293c94fbec193512c1710ef9b033c4">&#9670;&#160;</a></span>buildingId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::PlacedBuilding::buildingId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a5fc22a22ac5bf18e15f4b56e2fbf9234" name="a5fc22a22ac5bf18e15f4b56e2fbf9234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fc22a22ac5bf18e15f4b56e2fbf9234">&#9670;&#160;</a></span>channel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::PlacedBuilding::channel</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="ac6978ff0e3b065746b1b91d5448998de" name="ac6978ff0e3b065746b1b91d5448998de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6978ff0e3b065746b1b91d5448998de">&#9670;&#160;</a></span>corner</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1building_1_1CornerAddress.html">CornerAddress</a> eve::building::PlacedBuilding::corner</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical grid vertex when placementKind is <code>corner</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03013">eve::building::PlacementSystem::moveCornerResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a595bb2c8fd6c350ba7599c5e5d82f059" name="a595bb2c8fd6c350ba7599c5e5d82f059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a595bb2c8fd6c350ba7599c5e5d82f059">&#9670;&#160;</a></span>edge</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1building_1_1EdgeAddress.html">EdgeAddress</a> eve::building::PlacedBuilding::edge</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical edge address when placementKind is <code>edge</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00177">177</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="a91a1b546ab6689ff02347ecfebbc4057" name="a91a1b546ab6689ff02347ecfebbc4057"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91a1b546ab6689ff02347ecfebbc4057">&#9670;&#160;</a></span>edgeCurveGroupId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1building_1_1EdgeCurveGroupId.html">EdgeCurveGroupId</a> eve::building::PlacedBuilding::edgeCurveGroupId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional link to a world-owned curve group; zero means an ordinary edge. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="af726e6aa05fbd5e627356a82881fe5cc" name="af726e6aa05fbd5e627356a82881fe5cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af726e6aa05fbd5e627356a82881fe5cc">&#9670;&#160;</a></span>elevation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::elevation = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>垂直高度（平面法向）：XY 平面 = 世界 Z；XZ 平面 = 世界 Y。 </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00411">eve::building::PlacementWorld::getBuildingWorldY()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00421">eve::building::PlacementWorld::getBuildingWorldZ()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a2f8e137d8af9affc980674be46964dad" name="a2f8e137d8af9affc980674be46964dad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f8e137d8af9affc980674be46964dad">&#9670;&#160;</a></span>freeFootprintVertices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;float&gt; eve::building::PlacedBuilding::freeFootprintVertices</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Committed convex local polygon as world-plane x/y pairs; empty selects OBB or circle. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00189">189</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8db95f5ac9be7e70398c9afaee5cf747" name="a8db95f5ac9be7e70398c9afaee5cf747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8db95f5ac9be7e70398c9afaee5cf747">&#9670;&#160;</a></span>freeHalfHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::freeHalfHeight = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Committed OBB half height in world-plane units; zero denotes circular collision. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00187">187</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a16dbdf4ab7041c44d2a04a4f8b33f18c" name="a16dbdf4ab7041c44d2a04a4f8b33f18c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16dbdf4ab7041c44d2a04a4f8b33f18c">&#9670;&#160;</a></span>freeHalfWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::freeHalfWidth = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Committed OBB half width in world-plane units; zero denotes circular collision. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a916887df52201c9f20fa09cb149bcabf" name="a916887df52201c9f20fa09cb149bcabf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a916887df52201c9f20fa09cb149bcabf">&#9670;&#160;</a></span>freeRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::freeRadius = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Committed free-domain collision radius in world-plane units. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00183">183</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a68fff5890b4034015d53b18aed3f5b3a" name="a68fff5890b4034015d53b18aed3f5b3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68fff5890b4034015d53b18aed3f5b3a">&#9670;&#160;</a></span>garrison</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1building_1_1GarrisonMember.html">GarrisonMember</a>&gt; eve::building::PlacedBuilding::garrison</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Authoritative logical garrison membership, not a render list. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00220">220</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>.</p>
+
+</div>
+</div>
+<a id="a1d1275f4c612321c01f679d16bf839c3" name="a1d1275f4c612321c01f679d16bf839c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d1275f4c612321c01f679d16bf839c3">&#9670;&#160;</a></span>garrisonRevision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> eve::building::PlacedBuilding::garrisonRevision = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::Revision::zero</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Revision used by the garrison container adapter for stale checks. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>.</p>
+
+</div>
+</div>
+<a id="a0047fc55d94529be9f799dbe570e002d" name="a0047fc55d94529be9f799dbe570e002d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0047fc55d94529be9f799dbe570e002d">&#9670;&#160;</a></span>instanceId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacedBuilding::instanceId = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01225">eve::building::PlacementSystem::placeCornerResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01133">eve::building::PlacementSystem::placeEdge()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01346">eve::building::PlacementSystem::placeFreeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01392">eve::building::PlacementSystem::placeFreeSurfaceResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02328">eve::building::PlacementSystem::placeGhost()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="aa7af6959be3e9610ac144ffd76b8231a" name="aa7af6959be3e9610ac144ffd76b8231a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7af6959be3e9610ac144ffd76b8231a">&#9670;&#160;</a></span>level</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacedBuilding::level = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Authoritative discrete floor coordinate used by occupancy and topology. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00411">eve::building::PlacementWorld::getBuildingWorldY()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00421">eve::building::PlacementWorld::getBuildingWorldZ()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="a9c85b12476f21af7de9dc350e3101b1d" name="a9c85b12476f21af7de9dc350e3101b1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c85b12476f21af7de9dc350e3101b1d">&#9670;&#160;</a></span>originCellX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacedBuilding::originCellX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="ac4800acda73bdffd407361e148c08ac7" name="ac4800acda73bdffd407361e148c08ac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4800acda73bdffd407361e148c08ac7">&#9670;&#160;</a></span>originCellY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacedBuilding::originCellY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="aabee14c27e9ba953809dc1348dd08426" name="aabee14c27e9ba953809dc1348dd08426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabee14c27e9ba953809dc1348dd08426">&#9670;&#160;</a></span>placementKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::PlacedBuilding::placementKind = &quot;cell&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Placement domain snapshot: <code>cell</code>, <code>edge</code>, <code>corner</code>, or <code>free</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a95087e4dc355f1248bf91fbba3a1272a" name="a95087e4dc355f1248bf91fbba3a1272a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95087e4dc355f1248bf91fbba3a1272a">&#9670;&#160;</a></span>props</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, std::string&gt; eve::building::PlacedBuilding::props</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00054">getProp()</a> , 以及 <a class="el" href="BuildingDef_8cpp_source.html#l00059">setProp()</a>.</p>
+
+</div>
+</div>
+<a id="a639b6b606da9479e744c960e76cab349" name="a639b6b606da9479e744c960e76cab349"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a639b6b606da9479e744c960e76cab349">&#9670;&#160;</a></span>rotationDeg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::rotationDeg = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="ac5c830ee6f8f33990ef494e92207054d" name="ac5c830ee6f8f33990ef494e92207054d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5c830ee6f8f33990ef494e92207054d">&#9670;&#160;</a></span>supportInstanceIds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; eve::building::PlacedBuilding::supportInstanceIds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Derived support links rebuilt from authoritative level/address data. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="a016754d0000bf6fe1b3a168a50dc9806" name="a016754d0000bf6fe1b3a168a50dc9806"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a016754d0000bf6fe1b3a168a50dc9806">&#9670;&#160;</a></span>surfaceHeightDelta</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::surfaceHeightDelta = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>.</p>
+
+</div>
+</div>
+<a id="ae687f4e9250b5047b2f7ae12063e5d69" name="ae687f4e9250b5047b2f7ae12063e5d69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae687f4e9250b5047b2f7ae12063e5d69">&#9670;&#160;</a></span>surfaceId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::PlacedBuilding::surfaceId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable provider-local surface name used to create this placement; empty for unsurfaced placement. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a5f4423c20deaf8d1ab8c415f1cbea707" name="a5f4423c20deaf8d1ab8c415f1cbea707"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f4423c20deaf8d1ab8c415f1cbea707">&#9670;&#160;</a></span>surfaceMaxSlopeDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::surfaceMaxSlopeDegrees = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00211">211</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>.</p>
+
+</div>
+</div>
+<a id="afcfc1e32b23358b51cf86106cd38e104" name="afcfc1e32b23358b51cf86106cd38e104"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcfc1e32b23358b51cf86106cd38e104">&#9670;&#160;</a></span>surfaceNormalX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::surfaceNormalX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unit surface normal captured at placement time. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a8356a6871c2bd11f64478642522e3f0f" name="a8356a6871c2bd11f64478642522e3f0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8356a6871c2bd11f64478642522e3f0f">&#9670;&#160;</a></span>surfaceNormalY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::surfaceNormalY = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a72bbeadc546dcab8e826500da839d1dc" name="a72bbeadc546dcab8e826500da839d1dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72bbeadc546dcab8e826500da839d1dc">&#9670;&#160;</a></span>surfaceNormalZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::surfaceNormalZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a79a96191848929b1135c0696709b7d2a" name="a79a96191848929b1135c0696709b7d2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79a96191848929b1135c0696709b7d2a">&#9670;&#160;</a></span>surfaceRevision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::building::PlacedBuilding::surfaceRevision = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Provider revision observed when the surface attachment was sampled. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>.</p>
+
+</div>
+</div>
+<a id="a4dc15c5abca15e98abe2bbf4c3934569" name="a4dc15c5abca15e98abe2bbf4c3934569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dc15c5abca15e98abe2bbf4c3934569">&#9670;&#160;</a></span>surfaceSampleCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::PlacedBuilding::surfaceSampleCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>.</p>
+
+</div>
+</div>
+<a id="aef7258246d2556f196e4674f98f522a6" name="aef7258246d2556f196e4674f98f522a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef7258246d2556f196e4674f98f522a6">&#9670;&#160;</a></span>surfaceTangentX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::surfaceTangentX = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unit tangent captured with the normal to define the local placement frame. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="ad280bc47cc9c90e9d4db9fedd25d420e" name="ad280bc47cc9c90e9d4db9fedd25d420e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad280bc47cc9c90e9d4db9fedd25d420e">&#9670;&#160;</a></span>surfaceTangentY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::surfaceTangentY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a2b6725abe2c4c35af934c78435472b8a" name="a2b6725abe2c4c35af934c78435472b8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b6725abe2c4c35af934c78435472b8a">&#9670;&#160;</a></span>surfaceTangentZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::surfaceTangentZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="a55f92bea232fc4a57f1e9239e2505407" name="a55f92bea232fc4a57f1e9239e2505407"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55f92bea232fc4a57f1e9239e2505407">&#9670;&#160;</a></span>tags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::building::PlacedBuilding::tags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="BuildingDef_8cpp_source.html#l00050">hasTag()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="ad38f99a59ee700b286b56adab2a066d3" name="ad38f99a59ee700b286b56adab2a066d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad38f99a59ee700b286b56adab2a066d3">&#9670;&#160;</a></span>worldX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::worldX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03089">eve::building::PlacementSystem::moveFreeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03138">eve::building::PlacementSystem::moveFreeSurfaceResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<a id="ab7fd9f32d9d992707eaa346719973c7e" name="ab7fd9f32d9d992707eaa346719973c7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7fd9f32d9d992707eaa346719973c7e">&#9670;&#160;</a></span>worldY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::PlacedBuilding::worldY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a> 第 <a class="el" href="BuildingTypes_8h_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l01214">eve::building_editing::BuildingPlacementTarget::applyDomainOperation()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00411">eve::building::PlacementWorld::getBuildingWorldY()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00421">eve::building::PlacementWorld::getBuildingWorldZ()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02845">eve::building::PlacementSystem::moveBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02925">eve::building::PlacementSystem::moveEdgeResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02247">eve::building::PlacementSystem::placeAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l03221">eve::building::PlacementSystem::replaceBuildingResult()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l02423">eve::building::PlacementSystem::restoreExact()</a> , 以及 <a class="el" href="BuildingFx_8cpp_source.html#l01149">eve::buildingfx::BuildingFx::updateGhost()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/building/<a class="el" href="BuildingTypes_8h_source.html">BuildingTypes.h</a></li>
+<li>src/modules/building/<a class="el" href="BuildingDef_8cpp_source.html">BuildingDef.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

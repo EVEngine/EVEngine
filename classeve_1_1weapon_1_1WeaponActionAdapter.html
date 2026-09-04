@@ -1,0 +1,502 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::weapon::WeaponActionAdapter类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1weapon.html">weapon</a></li><li class="navelem"><a class="el" href="classeve_1_1weapon_1_1WeaponActionAdapter.html">WeaponActionAdapter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1weapon_1_1WeaponActionAdapter-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::weapon::WeaponActionAdapter类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Translates a WeaponDefinition/AttackRequest pair to Action values.  
+ <a href="classeve_1_1weapon_1_1WeaponActionAdapter.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="WeaponAction_8h_source.html">WeaponAction.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a267e44bc3f53fef89ffc126f1a466bfb" id="r_a267e44bc3f53fef89ffc126f1a466bfb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::optional&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a267e44bc3f53fef89ffc126f1a466bfb">resourceCost</a> (const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;weapon)</td></tr>
+<tr class="memdesc:a267e44bc3f53fef89ffc126f1a466bfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert the weapon trigger resource into a canonical cost.  <br /></td></tr>
+<tr class="separator:a267e44bc3f53fef89ffc126f1a466bfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f5ef45dedefdb605c51335e460e0e28" id="r_a3f5ef45dedefdb605c51335e460e0e28"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">eve::transaction::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a3f5ef45dedefdb605c51335e460e0e28">fire</a> (const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;weapon, <a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a> &amp;<a class="el" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>, <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a> &amp;effect, std::string transactionId={})</td></tr>
+<tr class="memdesc:a3f5ef45dedefdb605c51335e460e0e28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute one already-built weapon effect and charge its resource atomically.  <br /></td></tr>
+<tr class="separator:a3f5ef45dedefdb605c51335e460e0e28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaee83b8b1b9c0003123da9b2aa77a6a4" id="r_aaee83b8b1b9c0003123da9b2aa77a6a4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">eve::transaction::TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#aaee83b8b1b9c0003123da9b2aa77a6a4">fire</a> (const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;weapon, const <a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a> &amp;attack, <a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a> &amp;<a class="el" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>, <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a> &amp;effect, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>=<a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>(1))</td></tr>
+<tr class="memdesc:aaee83b8b1b9c0003123da9b2aa77a6a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute one weapon attack through the common Action lifecycle.  <br /></td></tr>
+<tr class="separator:aaee83b8b1b9c0003123da9b2aa77a6a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35d9a2529caab591ddd95e9eed2320d2" id="r_a35d9a2529caab591ddd95e9eed2320d2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#a35d9a2529caab591ddd95e9eed2320d2">makeDefinition</a> (const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;weapon, const <a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a> &amp;request)</td></tr>
+<tr class="memdesc:a35d9a2529caab591ddd95e9eed2320d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build an action definition for one attack request.  <br /></td></tr>
+<tr class="separator:a35d9a2529caab591ddd95e9eed2320d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed2b8f13f512fddb17bdf366513315a9" id="r_aed2b8f13f512fddb17bdf366513315a9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1weapon_1_1WeaponActionAdapter.html#aed2b8f13f512fddb17bdf366513315a9">makeRequest</a> (const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;weapon, const <a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a> &amp;attack, std::optional&lt; ecs::EntityHandle &gt; <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>=std::nullopt, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> requestedTick=<a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>())</td></tr>
+<tr class="memdesc:aed2b8f13f512fddb17bdf366513315a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a request carrying the original weapon attack parameters.  <br /></td></tr>
+<tr class="separator:aed2b8f13f512fddb17bdf366513315a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Translates a WeaponDefinition/AttackRequest pair to Action values. </p>
+<p>The adapter never moves or mirrors magazine, spread, recoil, muzzle or projectile fields into the common action definition. Those remain owned by WeaponEntity/WeaponDefinition and are interpreted by an injected Active executor. ActionRuntime remains the only phase/timer owner. </p>
+
+<p class="definition">在文件 <a class="el" href="WeaponAction_8h_source.html">WeaponAction.h</a> 第 <a class="el" href="WeaponAction_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aaee83b8b1b9c0003123da9b2aa77a6a4" name="aaee83b8b1b9c0003123da9b2aa77a6a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaee83b8b1b9c0003123da9b2aa77a6a4">&#9670;&#160;</a></span>fire() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">eve::transaction::TransactionReceipt</a> &gt; eve::weapon::WeaponActionAdapter::fire </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>attack</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a> &amp;&#160;</td>
+          <td class="paramname"><em>account</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a> &amp;&#160;</td>
+          <td class="paramname"><em>effect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em> = <code><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>(1)</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Execute one weapon attack through the common Action lifecycle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">weapon</td><td>Borrowed weapon definition. </td></tr>
+    <tr><td class="paramname">attack</td><td>Borrowed attack parameters copied into the ActionRequest. </td></tr>
+    <tr><td class="paramname">account</td><td>Authoritative ammo/mana/charge account. </td></tr>
+    <tr><td class="paramname">effect</td><td>Domain participant for the actual projectile/hit operation. </td></tr>
+    <tr><td class="paramname">tick</td><td>Deterministic simulation tick at which the attack is applied. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The Action-backed transaction receipt. Condition, action, payment and effect failures leave the account and effect unchanged. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This is the preferred fire entry point. Callers do not need to call submit and then assemble a separate payment transaction. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponAction_8cpp_source.html">WeaponAction.cpp</a> 第 <a class="el" href="WeaponAction_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00036">account</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="a3f5ef45dedefdb605c51335e460e0e28" name="a3f5ef45dedefdb605c51335e460e0e28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f5ef45dedefdb605c51335e460e0e28">&#9670;&#160;</a></span>fire() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">eve::transaction::TransactionReceipt</a> &gt; eve::weapon::WeaponActionAdapter::fire </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">eve::resource::IResourceAccount</a> &amp;&#160;</td>
+          <td class="paramname"><em>account</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a> &amp;&#160;</td>
+          <td class="paramname"><em>effect</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>transactionId</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Execute one already-built weapon effect and charge its resource atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">weapon</td><td>Borrowed definition supplying the trigger cost. </td></tr>
+    <tr><td class="paramname">account</td><td>Borrowed authoritative account for ammo/mana/charges/stamina. </td></tr>
+    <tr><td class="paramname">effect</td><td>Borrowed transaction participant for the weapon effect. </td></tr>
+    <tr><td class="paramname">transactionId</td><td>Non-empty correlation id; empty derives from weapon id. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A committed transaction receipt or structured lifecycle failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>ActionRuntime remains the lifecycle owner for the regular action pipeline; this entry point is the synchronous effect boundary. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponAction_8cpp_source.html">WeaponAction.cpp</a> 第 <a class="el" href="WeaponAction_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00036">account</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponControl_8cpp_source.html#l00122">eve::weapon::WeaponControl::submitGameplay()</a>.</p>
+
+</div>
+</div>
+<a id="a35d9a2529caab591ddd95e9eed2320d2" name="a35d9a2529caab591ddd95e9eed2320d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35d9a2529caab591ddd95e9eed2320d2">&#9670;&#160;</a></span>makeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionDefinition.html">action::ActionDefinition</a> &gt; eve::weapon::WeaponActionAdapter::makeDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build an action definition for one attack request. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">weapon</td><td>Borrowed weapon definition observed during this call only. </td></tr>
+    <tr><td class="paramname">request</td><td>Borrowed attack request; target selection affects the mode. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Common definition or a structured mapping failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponAction_8cpp_source.html">WeaponAction.cpp</a> 第 <a class="el" href="WeaponAction_8cpp_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">active</a>, <a class="el" href="WeaponTypes_8h_source.html#l00075">eve::weapon::AttackStageSpec::activeTime</a>, <a class="el" href="DialoguePayment_8cpp_source.html#l00037">cost</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a9d71760e2dd451db2df354d0fd29cd7f">eve::action::Explicit</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WeaponTypes_8h_source.html#l00206">eve::weapon::AttackRequest::hasTarget</a>, <a class="el" href="WeaponTypes_8h_source.html#l00131">eve::weapon::WeaponDefinition::id</a>, <a class="el" href="WeaponTypes_8h_source.html#l00133">eve::weapon::WeaponDefinition::kind</a>, <a class="el" href="WeaponTypes_8h_source.html#l00135">eve::weapon::WeaponDefinition::logic</a>, <a class="el" href="namespaceeve_1_1action.html#abb4f4a0ed7d1642bbcba0cd0f4464577a6adf97f83acf6453d4a6a4b1070f3754">eve::action::None</a>, <a class="el" href="WeaponTypes_8h_source.html#l00076">eve::weapon::AttackStageSpec::recoverTime</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00074">resourceCost()</a>, <a class="el" href="WeaponTypes_8h_source.html#l00185">eve::weapon::WeaponDefinition::stages</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00125">status</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a> , 以及 <a class="el" href="WeaponTypes_8h_source.html#l00074">eve::weapon::AttackStageSpec::windupTime</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00170">makeRequest()</a>.</p>
+
+</div>
+</div>
+<a id="aed2b8f13f512fddb17bdf366513315a9" name="aed2b8f13f512fddb17bdf366513315a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed2b8f13f512fddb17bdf366513315a9">&#9670;&#160;</a></span>makeRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1action_1_1ActionRequest.html">action::ActionRequest</a> &gt; eve::weapon::WeaponActionAdapter::makeRequest </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1AttackRequest.html">AttackRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>attack</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; ecs::EntityHandle &gt;&#160;</td>
+          <td class="paramname"><em>source</em> = <code>std::nullopt</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>requestedTick</em> = <code><a class="el" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a request carrying the original weapon attack parameters. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">weapon</td><td>Borrowed definition used only to select target mode. </td></tr>
+    <tr><td class="paramname">attack</td><td>Borrowed request copied into owned ActionRequest parameters. </td></tr>
+    <tr><td class="paramname">source</td><td>Optional source ECS handle; no raw pointer is retained. </td></tr>
+    <tr><td class="paramname">requestedTick</td><td>Deterministic simulation tick of the request. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>An owning action request or a structured mapping failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponAction_8cpp_source.html">WeaponAction.cpp</a> 第 <a class="el" href="WeaponAction_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Action_8h_source.html#l00127">eve::action::ActionRequest::actionId</a>, <a class="el" href="WeaponTypes_8h_source.html#l00221">eve::weapon::AttackRequest::aoeRadius</a>, <a class="el" href="WeaponTypes_8h_source.html#l00219">eve::weapon::AttackRequest::arcAngle</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WeaponTypes_8h_source.html#l00206">eve::weapon::AttackRequest::hasTarget</a>, <a class="el" href="WeaponAction_8cpp_source.html#l00138">makeDefinition()</a>, <a class="el" href="WeaponTypes_8h_source.html#l00210">eve::weapon::AttackRequest::muzzleX</a>, <a class="el" href="WeaponTypes_8h_source.html#l00211">eve::weapon::AttackRequest::muzzleY</a>, <a class="el" href="WeaponTypes_8h_source.html#l00212">eve::weapon::AttackRequest::muzzleZ</a>, <a class="el" href="Action_8h_source.html#l00135">eve::action::ActionRequest::parameters</a>, <a class="el" href="WeaponTypes_8h_source.html#l00226">eve::weapon::AttackRequest::pelletCount</a>, <a class="el" href="WeaponTypes_8h_source.html#l00225">eve::weapon::AttackRequest::pelletIndex</a>, <a class="el" href="WeaponTypes_8h_source.html#l00215">eve::weapon::AttackRequest::pitch</a>, <a class="el" href="Action_8h_source.html#l00143">eve::action::ActionRequest::requestedTick</a>, <a class="el" href="WeaponTypes_8h_source.html#l00217">eve::weapon::AttackRequest::shooterId</a>, <a class="el" href="Action_8h_source.html#l00129">eve::action::ActionRequest::source</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>, <a class="el" href="WeaponTypes_8h_source.html#l00223">eve::weapon::AttackRequest::spread</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Action_8h_source.html#l00131">eve::action::ActionRequest::targetEntities</a>, <a class="el" href="WeaponTypes_8h_source.html#l00208">eve::weapon::AttackRequest::targetHandle</a>, <a class="el" href="WeaponTypes_8h_source.html#l00203">eve::weapon::AttackRequest::targetX</a>, <a class="el" href="WeaponTypes_8h_source.html#l00204">eve::weapon::AttackRequest::targetY</a>, <a class="el" href="WeaponTypes_8h_source.html#l00205">eve::weapon::AttackRequest::targetZ</a>, <a class="el" href="McpServer_8cpp_source.html#l00549">valid</a>, <a class="el" href="Action_8cpp_source.html#l00118">eve::action::ActionRequest::validate()</a> , 以及 <a class="el" href="WeaponTypes_8h_source.html#l00214">eve::weapon::AttackRequest::yaw</a>.</p>
+
+</div>
+</div>
+<a id="a267e44bc3f53fef89ffc126f1a466bfb" name="a267e44bc3f53fef89ffc126f1a466bfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a267e44bc3f53fef89ffc126f1a466bfb">&#9670;&#160;</a></span>resourceCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::optional&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a> &gt; &gt; eve::weapon::WeaponActionAdapter::resourceCost </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1weapon_1_1WeaponDefinition.html">WeaponDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>weapon</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert the weapon trigger resource into a canonical cost. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">weapon</td><td>Borrowed weapon definition observed during this call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Empty for an infinite or resource-free weapon, otherwise a validated cost using the canonical resource id (<code>ammo</code>, <code>mana</code>, <code>charges</code> or <code>stamina</code>). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WeaponAction_8cpp_source.html">WeaponAction.cpp</a> 第 <a class="el" href="WeaponAction_8cpp_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WeaponAction_8cpp_source.html#l00138">makeDefinition()</a> , 以及 <a class="el" href="WeaponControl_8cpp_source.html#l00073">eve::weapon::WeaponControl::observeGameplay()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/weapon/<a class="el" href="WeaponAction_8h_source.html">WeaponAction.h</a></li>
+<li>src/modules/weapon/<a class="el" href="WeaponAction_8cpp_source.html">WeaponAction.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::climbing::ClimbingTelemetryBuffer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1climbing.html">climbing</a></li><li class="navelem"><a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html">ClimbingTelemetryBuffer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::climbing::ClimbingTelemetryBuffer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Runtime-owned fixed ring of performance samples.  
+ <a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ClimbingTelemetry_8h_source.html">ClimbingTelemetry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac9db159c7d608b76af804b71b7e76868" id="r_ac9db159c7d608b76af804b71b7e76868"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#ac9db159c7d608b76af804b71b7e76868">record</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">ClimbingTelemetrySample</a> sample) noexcept</td></tr>
+<tr class="memdesc:ac9db159c7d608b76af804b71b7e76868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append one sample, overwriting the oldest sample when full.  <br /></td></tr>
+<tr class="separator:ac9db159c7d608b76af804b71b7e76868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2087c8be59a2b909f3e54b6f457bf9eb" id="r_a2087c8be59a2b909f3e54b6f457bf9eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a2087c8be59a2b909f3e54b6f457bf9eb">updateLatestCounters</a> (<a class="el" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">ClimbingRuntimeCounters</a> counters) noexcept</td></tr>
+<tr class="memdesc:a2087c8be59a2b909f3e54b6f457bf9eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace counters on the most recent sample after a caller completes deferred hard validation.  <br /></td></tr>
+<tr class="separator:a2087c8be59a2b909f3e54b6f457bf9eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69e09f70a4c3f0262bc219f55e06fcb4" id="r_a69e09f70a4c3f0262bc219f55e06fcb4"><td class="memItemLeft" align="right" valign="top">std::span&lt; const <a class="el" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">ClimbingTelemetrySample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a69e09f70a4c3f0262bc219f55e06fcb4">samples</a> () const noexcept</td></tr>
+<tr class="memdesc:a69e09f70a4c3f0262bc219f55e06fcb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current samples in physical storage order; order is irrelevant to percentile summaries.  <br /></td></tr>
+<tr class="separator:a69e09f70a4c3f0262bc219f55e06fcb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf8b14949ffb76433efa523530c7ac7f" id="r_adf8b14949ffb76433efa523530c7ac7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">ClimbingTelemetrySummary</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#adf8b14949ffb76433efa523530c7ac7f">summarize</a> (<a class="el" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">ClimbingWorkload</a> workload) const noexcept</td></tr>
+<tr class="memdesc:adf8b14949ffb76433efa523530c7ac7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute exact nearest-rank p50/p95 values for one workload.  <br /></td></tr>
+<tr class="separator:adf8b14949ffb76433efa523530c7ac7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86990e86be28b34ab700b5faf0b827be" id="r_a86990e86be28b34ab700b5faf0b827be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a86990e86be28b34ab700b5faf0b827be">clear</a> () noexcept</td></tr>
+<tr class="memdesc:a86990e86be28b34ab700b5faf0b827be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear samples without releasing storage.  <br /></td></tr>
+<tr class="separator:a86990e86be28b34ab700b5faf0b827be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:af375d8384bb19b35ac2c77b2f1f78037" id="r_af375d8384bb19b35ac2c77b2f1f78037"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#af375d8384bb19b35ac2c77b2f1f78037">Capacity</a> = 256</td></tr>
+<tr class="separator:af375d8384bb19b35ac2c77b2f1f78037"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Runtime-owned fixed ring of performance samples. </p>
+<p>Recording overwrites the oldest sample at capacity and performs no allocation. Percentile summaries use fixed stack arrays and therefore remain safe to request while diagnostic string capture is disabled. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingTelemetry_8h_source.html">ClimbingTelemetry.h</a> 第 <a class="el" href="ClimbingTelemetry_8h_source.html#l00080">80</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a86990e86be28b34ab700b5faf0b827be" name="a86990e86be28b34ab700b5faf0b827be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86990e86be28b34ab700b5faf0b827be">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::climbing::ClimbingTelemetryBuffer::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear samples without releasing storage. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingTelemetry_8h_source.html">ClimbingTelemetry.h</a> 第 <a class="el" href="ClimbingTelemetry_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Climbing_8h_source.html#l00751">eve::climbing::ClimbingRuntime::clearTelemetry()</a>.</p>
+
+</div>
+</div>
+<a id="ac9db159c7d608b76af804b71b7e76868" name="ac9db159c7d608b76af804b71b7e76868"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9db159c7d608b76af804b71b7e76868">&#9670;&#160;</a></span>record()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::climbing::ClimbingTelemetryBuffer::record </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">ClimbingTelemetrySample</a>&#160;</td>
+          <td class="paramname"><em>sample</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append one sample, overwriting the oldest sample when full. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingTelemetry_8cpp_source.html">ClimbingTelemetry.cpp</a> 第 <a class="el" href="ClimbingTelemetry_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69e09f70a4c3f0262bc219f55e06fcb4" name="a69e09f70a4c3f0262bc219f55e06fcb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69e09f70a4c3f0262bc219f55e06fcb4">&#9670;&#160;</a></span>samples()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; const <a class="el" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">ClimbingTelemetrySample</a> &gt; eve::climbing::ClimbingTelemetryBuffer::samples </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return current samples in physical storage order; order is irrelevant to percentile summaries. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingTelemetry_8h_source.html">ClimbingTelemetry.h</a> 第 <a class="el" href="ClimbingTelemetry_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf8b14949ffb76433efa523530c7ac7f" name="adf8b14949ffb76433efa523530c7ac7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf8b14949ffb76433efa523530c7ac7f">&#9670;&#160;</a></span>summarize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">ClimbingTelemetrySummary</a> eve::climbing::ClimbingTelemetryBuffer::summarize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">ClimbingWorkload</a>&#160;</td>
+          <td class="paramname"><em>workload</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute exact nearest-rank p50/p95 values for one workload. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingTelemetry_8cpp_source.html">ClimbingTelemetry.cpp</a> 第 <a class="el" href="ClimbingTelemetry_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ClimbingTelemetry_8h_source.html#l00071">eve::climbing::ClimbingTelemetrySummary::budgetExceededCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00052">eve::climbing::ClimbingRuntimeCounters::budgetState</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00059">eve::climbing::ClimbingTelemetrySample::counters</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00058">eve::climbing::ClimbingTelemetrySample::elapsedNanoseconds</a>, <a class="el" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799">eve::climbing::Exceeded</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00240">maximum</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00070">eve::climbing::ClimbingTelemetrySummary::maxQueryCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00066">eve::climbing::ClimbingTelemetrySummary::p50Nanoseconds</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00068">eve::climbing::ClimbingTelemetrySummary::p50QueryCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00067">eve::climbing::ClimbingTelemetrySummary::p95Nanoseconds</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00069">eve::climbing::ClimbingTelemetrySummary::p95QueryCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00046">eve::climbing::ClimbingRuntimeCounters::queryCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00065">eve::climbing::ClimbingTelemetrySummary::sampleCount</a>, <a class="el" href="ClimbingTelemetry_8h_source.html#l00043">eve::climbing::ClimbingRuntimeCounters::workload</a> , 以及 <a class="el" href="ClimbingTelemetry_8h_source.html#l00064">eve::climbing::ClimbingTelemetrySummary::workload</a>.</p>
+
+</div>
+</div>
+<a id="a2087c8be59a2b909f3e54b6f457bf9eb" name="a2087c8be59a2b909f3e54b6f457bf9eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2087c8be59a2b909f3e54b6f457bf9eb">&#9670;&#160;</a></span>updateLatestCounters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::climbing::ClimbingTelemetryBuffer::updateLatestCounters </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">ClimbingRuntimeCounters</a>&#160;</td>
+          <td class="paramname"><em>counters</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace counters on the most recent sample after a caller completes deferred hard validation. </p>
+
+<p class="definition">在文件 <a class="el" href="ClimbingTelemetry_8cpp_source.html">ClimbingTelemetry.cpp</a> 第 <a class="el" href="ClimbingTelemetry_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="af375d8384bb19b35ac2c77b2f1f78037" name="af375d8384bb19b35ac2c77b2f1f78037"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af375d8384bb19b35ac2c77b2f1f78037">&#9670;&#160;</a></span>Capacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::size_t eve::climbing::ClimbingTelemetryBuffer::Capacity = 256</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ClimbingTelemetry_8h_source.html">ClimbingTelemetry.h</a> 第 <a class="el" href="ClimbingTelemetry_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/climbing/<a class="el" href="ClimbingTelemetry_8h_source.html">ClimbingTelemetry.h</a></li>
+<li>src/modules/climbing/<a class="el" href="ClimbingTelemetry_8cpp_source.html">ClimbingTelemetry.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

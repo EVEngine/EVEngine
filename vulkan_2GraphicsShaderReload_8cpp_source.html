@@ -1,0 +1,397 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/vulkan/GraphicsShaderReload.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_093844fdbeabcf6df70ce24c00b21dbf.html">vulkan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GraphicsShaderReload.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="vulkan_2GraphicsShaderReload_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="vulkan_2Graphics_8h.html">graphics/vulkan/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Shader_8h.html">graphics/Shader.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;graphics/shaders/mesh3d_hair_vert_spv.inc&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;graphics/shaders/mesh3d_vert_spv.inc&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;graphics/shaders/textured_vert_spv.inc&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="GraphicsInternal_8h.html">graphics/vulkan/GraphicsInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>Result&lt;void&gt; reloadFailure(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> code, std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(code, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), {},</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                                                   <span class="stringliteral">&quot;graphics.vulkan.shader_reload&quot;</span>));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">void</span> destroyCandidate(vkb::Device &amp;<a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>, GpuShader &amp;candidate) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (candidate.swapchainPipeline) <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>-&gt;destroyPipeline(candidate.swapchainPipeline);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (candidate.offscreenPipeline) <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>-&gt;destroyPipeline(candidate.offscreenPipeline);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (candidate.mesh3dPipeline) <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>-&gt;destroyPipeline(candidate.mesh3dPipeline);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (candidate.mesh3dXrayPipeline) <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>-&gt;destroyPipeline(candidate.mesh3dXrayPipeline);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aaa0b8526351ac52b9a8c07769ac54ea1">   32</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aaa0b8526351ac52b9a8c07769ac54ea1">Graphics::replaceShaderFromSpv</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                            <span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;vertSpv,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                                            <span class="keyword">const</span> std::vector&lt;uint32_t&gt; &amp;fragSpv) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">auto</span> shaderIt = std::find_if(ownedShaders.begin(), ownedShaders.end(),</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                 [&amp;](<span class="keyword">const</span> std::unique_ptr&lt;Shader&gt; &amp;owned) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                     return owned.get() == &amp;shader;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                 });</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (shaderIt == ownedShaders.end() || !<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.gpuHandle)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                             <span class="stringliteral">&quot;shader is not a live resource owned by this Graphics instance&quot;</span>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                             <span class="stringliteral">&quot;shader&quot;</span>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">if</span> (fragSpv.empty())</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                             <span class="stringliteral">&quot;fragment SPIR-V must not be empty&quot;</span>, <span class="stringliteral">&quot;fragSpv&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (fragSpv.front() != 0x07230203 ||</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        (!vertSpv.empty() &amp;&amp; vertSpv.front() != 0x07230203))</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">DiagnosticCode::ParseError</a>, <span class="stringliteral">&quot;SPIR-V magic mismatch&quot;</span>, <span class="stringliteral">&quot;source&quot;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">auto</span> *current = <span class="keyword">static_cast&lt;</span><a class="code hl_struct" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html">GpuShader</a> *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.gpuHandle);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">auto</span> gpuIt = std::find_if(ownedGpuShaders.begin(), ownedGpuShaders.end(),</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                              [&amp;](<span class="keyword">const</span> std::unique_ptr&lt;GpuShader&gt; &amp;owned) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                  return owned.get() == current;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                              });</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (gpuIt == ownedGpuShaders.end())</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                             <span class="stringliteral">&quot;shader GPU resource is no longer owned by this Graphics instance&quot;</span>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                             <span class="stringliteral">&quot;shader.gpuHandle&quot;</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a> = vertSpv;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>.empty()) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">if</span> (!current-&gt;isMesh3D)</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>.assign(textured_vert_spv, textured_vert_spv + textured_vert_spv_count);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (current-&gt;isHair3D)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>.assign(mesh3d_hair_vert_spv,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                        mesh3d_hair_vert_spv + mesh3d_hair_vert_spv_count);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>.assign(mesh3d_vert_spv, mesh3d_vert_spv + mesh3d_vert_spv_count);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html">GpuShader</a> candidate;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a2df35b6fbcdd2e48c4312c293af26c1e">isMesh3D</a> = current-&gt;isMesh3D;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a0c511a36fe391fcf6db6588865e7c497">isHair3D</a> = current-&gt;isHair3D;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a8f9ef09af1ab7c64acb84a2216f4152d">pipelineLayout</a> = current-&gt;pipelineLayout;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a11ebb62ed3e56ecddccd14a9eceb5f7c">owner</a> = &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">if</span> (!candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a2df35b6fbcdd2e48c4312c293af26c1e">isMesh3D</a>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#add379499d5591eecef3d10d13e12a217">swapchainPipeline</a> =</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                createTexturedStylePipeline(<a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>, fragSpv, renderpass, candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a8f9ef09af1ab7c64acb84a2216f4152d">pipelineLayout</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">if</span> (offscreenRenderPass)</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#ab6e45416d766fa5b1e6104309eb1fe7e">offscreenPipeline</a> = createTexturedStylePipeline(</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                    <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>, fragSpv, offscreenRenderPass, candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a8f9ef09af1ab7c64acb84a2216f4152d">pipelineLayout</a>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a0c511a36fe391fcf6db6588865e7c497">isHair3D</a>) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a2d5ad9c6ba3e861782f27ea70905ea80">mesh3dPipeline</a> = createMesh3DHairPipeline(</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>, fragSpv, candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a8f9ef09af1ab7c64acb84a2216f4152d">pipelineLayout</a>, activeScenePass(), activeSceneSamples());</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a2d5ad9c6ba3e861782f27ea70905ea80">mesh3dPipeline</a> = createMesh3DStylePipeline(</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>, fragSpv, candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a8f9ef09af1ab7c64acb84a2216f4152d">pipelineLayout</a>, activeScenePass(), activeSceneSamples());</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a3e8a248be00957743be83e1941a5b44b">mesh3dXrayPipeline</a> = createMesh3DXrayPipeline(</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>, fragSpv, candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a8f9ef09af1ab7c64acb84a2216f4152d">pipelineLayout</a>, activeScenePass(), activeSceneSamples());</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        destroyCandidate(<a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>, candidate);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                             std::string(<span class="stringliteral">&quot;failed to prepare replacement pipeline: &quot;</span>) + <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what(),</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                             <span class="stringliteral">&quot;pipeline&quot;</span>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        destroyCandidate(<a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>, candidate);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                             <span class="stringliteral">&quot;failed to prepare replacement pipeline&quot;</span>, <span class="stringliteral">&quot;pipeline&quot;</span>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a550f581f81038f420c7895742faae96e">waitForSharedGpuResources</a>();</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (current-&gt;swapchainPipeline) <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>-&gt;destroyPipeline(current-&gt;swapchainPipeline);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (current-&gt;offscreenPipeline) <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>-&gt;destroyPipeline(current-&gt;offscreenPipeline);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">if</span> (current-&gt;mesh3dPipeline) <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>-&gt;destroyPipeline(current-&gt;mesh3dPipeline);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">if</span> (current-&gt;mesh3dXrayPipeline) <a class="code hl_variable" href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a>-&gt;destroyPipeline(current-&gt;mesh3dXrayPipeline);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    current-&gt;swapchainPipeline = candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#add379499d5591eecef3d10d13e12a217">swapchainPipeline</a>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    current-&gt;offscreenPipeline = candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#ab6e45416d766fa5b1e6104309eb1fe7e">offscreenPipeline</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    current-&gt;mesh3dPipeline = candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a2d5ad9c6ba3e861782f27ea70905ea80">mesh3dPipeline</a>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    current-&gt;mesh3dXrayPipeline = candidate.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a3e8a248be00957743be83e1941a5b44b">mesh3dXrayPipeline</a>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.setSpirv(std::move(<a class="code hl_variable" href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a>), fragSpv);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>}</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="foldopen" id="foldopen00116" data-start="{" data-end="}">
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a8aa109cb8e0ea162e32233546eaef334">  116</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a8aa109cb8e0ea162e32233546eaef334">Graphics::replaceShaderFromWgsl</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> &amp;, <span class="keyword">const</span> std::string &amp;,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                                             <span class="keyword">const</span> std::string &amp;) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                         <span class="stringliteral">&quot;WGSL shader replacement is unavailable on the Vulkan backend&quot;</span>,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                         <span class="stringliteral">&quot;source&quot;</span>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="foldopen" id="foldopen00123" data-start="{" data-end="}">
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ac6d618d3689b851814f1a531af55899c">  123</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ac6d618d3689b851814f1a531af55899c">Graphics::replaceShaderFromGlsl</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> &amp;<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keyword">const</span> std::string &amp;vertGlsl,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                             <span class="keyword">const</span> std::string &amp;fragGlsl) {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="preprocessor">#if defined(_WIN32)</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    (void)<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    (void)vertGlsl;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    (void)fragGlsl;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                         <span class="stringliteral">&quot;runtime GLSL replacement is unavailable on Windows Vulkan; compile &quot;</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                         <span class="stringliteral">&quot;SPIR-V before publication&quot;</span>,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                         <span class="stringliteral">&quot;source&quot;</span>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">if</span> (fragGlsl.empty())</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                             <span class="stringliteral">&quot;fragment GLSL must not be empty&quot;</span>, <span class="stringliteral">&quot;fragGlsl&quot;</span>);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keyword">auto</span> shaderIt = std::find_if(ownedShaders.begin(), ownedShaders.end(),</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                                 [&amp;](<span class="keyword">const</span> std::unique_ptr&lt;Shader&gt; &amp;owned) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                                     return owned.get() == &amp;shader;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                                 });</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">if</span> (shaderIt == ownedShaders.end() || !<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.gpuHandle)</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>,</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                             <span class="stringliteral">&quot;shader is not a live resource owned by this Graphics instance&quot;</span>,</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                             <span class="stringliteral">&quot;shader&quot;</span>);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keyword">auto</span> *current = <span class="keyword">static_cast&lt;</span><a class="code hl_struct" href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html">GpuShader</a> *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.gpuHandle);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">if</span> (current-&gt;isHair3D)</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>,</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                             <span class="stringliteral">&quot;runtime GLSL replacement does not yet provide the hair vertex &quot;</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                             <span class="stringliteral">&quot;contract; publish SPIR-V stages instead&quot;</span>,</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                             <span class="stringliteral">&quot;shader.kind&quot;</span>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *candidate = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        candidate = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>.<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a0e548dee74553585589dc5d7b3c78c05">getKind</a>() == <a class="code hl_enumvalue" href="classeve_1_1graphics_1_1Shader.html#a325f44434c2b5e57b6a86354433df519a106d01e1fa7f0585e524e6a0e3baf866">Shader::Kind::eMesh3D</a></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                        ? <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a8f4c00fbaf57404a16742f3f3ba2132a">newMeshShader</a>(vertGlsl, fragGlsl)</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                        : <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a4eae781e2c6cfc65594c30e0e3d1c4ef">newShader</a>(vertGlsl, fragGlsl);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Exception.html">Exception</a> &amp;<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">DiagnosticCode::ParseError</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what(), <span class="stringliteral">&quot;source&quot;</span>);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what(), <span class="stringliteral">&quot;compiler&quot;</span>);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;GLSL compilation failed&quot;</span>, <span class="stringliteral">&quot;compiler&quot;</span>);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">auto</span> replaced = <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aaa0b8526351ac52b9a8c07769ac54ea1">replaceShaderFromSpv</a>(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, candidate-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a87276f80bb90c0ed78a9dc4e10997bed">vertexSpirv</a>(),</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                                         candidate-&gt;<a class="code hl_function" href="classeve_1_1graphics_1_1Shader.html#a10ac4d65b5d37cf448db37b98bd75228">fragmentSpirv</a>());</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> released = <a class="code hl_function" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#af1f48194661b4a84ba7869ca51ddcf25">releaseShader</a>(candidate);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">if</span> (released) <span class="keyword">delete</span> candidate;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">if</span> (!released &amp;&amp; replaced.ok())</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordflow">return</span> reloadFailure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">DiagnosticCode::InvariantViolation</a>,</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                             <span class="stringliteral">&quot;temporary compiled shader could not be released&quot;</span>, <span class="stringliteral">&quot;candidate&quot;</span>);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordflow">return</span> replaced;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>}</div>
+</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>}  <span class="comment">// namespace eve::graphics::vulkan</span></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html"><div class="ttname"><a href="GraphicsInternal_8h.html">GraphicsInternal.h</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_a06dd41ecb2d0928d25f7c8180156197f"><div class="ttname"><a href="GraphicsInternal_8h.html#a06dd41ecb2d0928d25f7c8180156197f">device</a></div><div class="ttdeci">vkb::Device &amp; device</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00288">GraphicsInternal.h:288</a></div></div>
+<div class="ttc" id="aGraphicsInternal_8h_html_a99414c99dbdc7df738b99938089a3298"><div class="ttname"><a href="GraphicsInternal_8h.html#a99414c99dbdc7df738b99938089a3298">vert</a></div><div class="ttdeci">vk::ShaderModule vert</div><div class="ttdef"><b>Definition</b> <a href="GraphicsInternal_8h_source.html#l00289">GraphicsInternal.h:289</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00733">RenderSystem3D.cpp:733</a></div></div>
+<div class="ttc" id="aShader_8h_html"><div class="ttname"><a href="Shader_8h.html">Shader.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00030">Shader.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a0e548dee74553585589dc5d7b3c78c05"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a0e548dee74553585589dc5d7b3c78c05">eve::graphics::Shader::getKind</a></div><div class="ttdeci">Kind getKind() const</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00052">Shader.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a10ac4d65b5d37cf448db37b98bd75228"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a10ac4d65b5d37cf448db37b98bd75228">eve::graphics::Shader::fragmentSpirv</a></div><div class="ttdeci">const std::vector&lt; uint32_t &gt; &amp; fragmentSpirv() const</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00090">Shader.h:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a325f44434c2b5e57b6a86354433df519a106d01e1fa7f0585e524e6a0e3baf866"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a325f44434c2b5e57b6a86354433df519a106d01e1fa7f0585e524e6a0e3baf866">eve::graphics::Shader::Kind::eMesh3D</a></div><div class="ttdeci">@ eMesh3D</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html_a87276f80bb90c0ed78a9dc4e10997bed"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html#a87276f80bb90c0ed78a9dc4e10997bed">eve::graphics::Shader::vertexSpirv</a></div><div class="ttdeci">const std::vector&lt; uint32_t &gt; &amp; vertexSpirv() const</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00089">Shader.h:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a4eae781e2c6cfc65594c30e0e3d1c4ef"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a4eae781e2c6cfc65594c30e0e3d1c4ef">eve::graphics::vulkan::Graphics::newShader</a></div><div class="ttdeci">Shader * newShader(const std::string &amp;vertGlsl, const std::string &amp;fragGlsl) override</div><div class="ttdoc">Compile GLSL source with glslc (must be on PATH). Empty vertGlsl → default textured vert....</div><div class="ttdef"><b>Definition</b> <a href="Graphics2D_8cpp_source.html#l01157">Graphics2D.cpp:1157</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a550f581f81038f420c7895742faae96e"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a550f581f81038f420c7895742faae96e">eve::graphics::vulkan::Graphics::waitForSharedGpuResources</a></div><div class="ttdeci">void waitForSharedGpuResources()</div><div class="ttdoc">Block until all in-flight GPU work (all frames) has completed.</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8cpp_source.html#l00758">Graphics.cpp:758</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a8aa109cb8e0ea162e32233546eaef334"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a8aa109cb8e0ea162e32233546eaef334">eve::graphics::vulkan::Graphics::replaceShaderFromWgsl</a></div><div class="ttdeci">Result&lt; void &gt; replaceShaderFromWgsl(Shader &amp;shader, const std::string &amp;vertWgsl, const std::string &amp;fragWgsl) override</div><div class="ttdoc">Transactionally replace an existing shader with WGSL stages.</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2GraphicsShaderReload_8cpp_source.html#l00116">GraphicsShaderReload.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_a8f4c00fbaf57404a16742f3f3ba2132a"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a8f4c00fbaf57404a16742f3f3ba2132a">eve::graphics::vulkan::Graphics::newMeshShader</a></div><div class="ttdeci">Shader * newMeshShader(const std::string &amp;vertGlsl, const std::string &amp;fragGlsl) override</div><div class="ttdef"><b>Definition</b> <a href="Graphics2D_8cpp_source.html#l01294">Graphics2D.cpp:1294</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_aaa0b8526351ac52b9a8c07769ac54ea1"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#aaa0b8526351ac52b9a8c07769ac54ea1">eve::graphics::vulkan::Graphics::replaceShaderFromSpv</a></div><div class="ttdeci">Result&lt; void &gt; replaceShaderFromSpv(Shader &amp;shader, const std::vector&lt; uint32_t &gt; &amp;vertSpv, const std::vector&lt; uint32_t &gt; &amp;fragSpv) override</div><div class="ttdoc">Transactionally replace an existing shader with SPIR-V stages.</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2GraphicsShaderReload_8cpp_source.html#l00032">GraphicsShaderReload.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_ac6d618d3689b851814f1a531af55899c"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ac6d618d3689b851814f1a531af55899c">eve::graphics::vulkan::Graphics::replaceShaderFromGlsl</a></div><div class="ttdeci">Result&lt; void &gt; replaceShaderFromGlsl(Shader &amp;shader, const std::string &amp;vertGlsl, const std::string &amp;fragGlsl) override</div><div class="ttdoc">Compile GLSL and transactionally replace an existing shader.</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2GraphicsShaderReload_8cpp_source.html#l00123">GraphicsShaderReload.cpp:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1vulkan_1_1Graphics_html_af1f48194661b4a84ba7869ca51ddcf25"><div class="ttname"><a href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#af1f48194661b4a84ba7869ca51ddcf25">eve::graphics::vulkan::Graphics::releaseShader</a></div><div class="ttdeci">bool releaseShader(Shader *shader) override</div><div class="ttdoc">Eagerly releases a shader created by this Graphics.</div><div class="ttdef"><b>Definition</b> <a href="Graphics2D_8cpp_source.html#l01254">Graphics2D.cpp:1254</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1vulkan_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a></div><div class="ttdef"><b>Definition</b> <a href="VulkanSequence_8h_source.html#l00009">VulkanSequence.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a></div><div class="ttdeci">@ InvariantViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::DiagnosticCode::ParseError</a></div><div class="ttdeci">@ ParseError</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html">eve::graphics::vulkan::GpuShader</a></div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00264">Graphics.h:264</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html_a0c511a36fe391fcf6db6588865e7c497"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a0c511a36fe391fcf6db6588865e7c497">eve::graphics::vulkan::GpuShader::isHair3D</a></div><div class="ttdeci">bool isHair3D</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00277">Graphics.h:277</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html_a11ebb62ed3e56ecddccd14a9eceb5f7c"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a11ebb62ed3e56ecddccd14a9eceb5f7c">eve::graphics::vulkan::GpuShader::owner</a></div><div class="ttdeci">Shader * owner</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00278">Graphics.h:278</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html_a2d5ad9c6ba3e861782f27ea70905ea80"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a2d5ad9c6ba3e861782f27ea70905ea80">eve::graphics::vulkan::GpuShader::mesh3dPipeline</a></div><div class="ttdeci">vk::Pipeline mesh3dPipeline</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00271">Graphics.h:271</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html_a2df35b6fbcdd2e48c4312c293af26c1e"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a2df35b6fbcdd2e48c4312c293af26c1e">eve::graphics::vulkan::GpuShader::isMesh3D</a></div><div class="ttdeci">bool isMesh3D</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00276">Graphics.h:276</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html_a3e8a248be00957743be83e1941a5b44b"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a3e8a248be00957743be83e1941a5b44b">eve::graphics::vulkan::GpuShader::mesh3dXrayPipeline</a></div><div class="ttdeci">vk::Pipeline mesh3dXrayPipeline</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00272">Graphics.h:272</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html_a8f9ef09af1ab7c64acb84a2216f4152d"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#a8f9ef09af1ab7c64acb84a2216f4152d">eve::graphics::vulkan::GpuShader::pipelineLayout</a></div><div class="ttdeci">vk::PipelineLayout pipelineLayout</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00275">Graphics.h:275</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html_ab6e45416d766fa5b1e6104309eb1fe7e"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#ab6e45416d766fa5b1e6104309eb1fe7e">eve::graphics::vulkan::GpuShader::offscreenPipeline</a></div><div class="ttdeci">vk::Pipeline offscreenPipeline</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00266">Graphics.h:266</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1GpuShader_html_add379499d5591eecef3d10d13e12a217"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1GpuShader.html#add379499d5591eecef3d10d13e12a217">eve::graphics::vulkan::GpuShader::swapchainPipeline</a></div><div class="ttdeci">vk::Pipeline swapchainPipeline</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00265">Graphics.h:265</a></div></div>
+<div class="ttc" id="avulkan_2Graphics_8h_html"><div class="ttname"><a href="vulkan_2Graphics_8h.html">Graphics.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

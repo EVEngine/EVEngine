@@ -1,0 +1,448 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/Debugger.hpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Debugger.hpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Debugger_8hpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="CallGraph_8hpp.html">devtools/CallGraph.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">struct </span>SQVM;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="Debugger_8hpp.html#a9118df9c000fff034a7b410b6de3443c">   15</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>SQVM* <a class="code hl_typedef" href="Debugger_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77">PauseReason</a> : uint8_t {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab02f1401a8be1cb555969e9d1d3b316a">PauseKey</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1Breakpoint.html">Breakpoint</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77a48c7c41b72e1d678923ce3571aa65b2d">Step</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">Exception</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_class" href="classeve_1_1dev_1_1Snapshot.html">Snapshot</a>,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508">   29</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508">RunMode</a> : uint8_t {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a5bda814c4aedb126839228f1a3d92f09">Running</a> = 0,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508ae99180abf47a8b3a856e0bcb2656990a">Paused</a>,      <span class="comment">// frame-level or script-level pause</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a3d983441d0d5f7856ac8522e0a438494">StepFrame</a>,   <span class="comment">// run one game frame then pause</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508acfe04d96f4c74452c2bde9d822e77924">StepInto</a>,    <span class="comment">// next script line (any call depth) — DAP stepIn</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a8a776f4c940fa981b505f107519139d6">StepOver</a>,    <span class="comment">// next script line at ≤ start depth — DAP next</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a52f49ad0f8470462570353c2794be061">StepOut</a>,     <span class="comment">// next script line at &lt; start depth — DAP stepOut</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1Breakpoint.html">   38</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1Breakpoint.html">Breakpoint</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1Breakpoint.html#a8d0b1625c701b93ba8d5a9bd4248d89f">   39</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1Breakpoint.html#a8d0b1625c701b93ba8d5a9bd4248d89f">source</a>;  <span class="comment">// normalized path or basename</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1Breakpoint.html#aa8a83146fa3458cfbf38b85830888e25">   40</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>    = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1Breakpoint.html#aea6b72944b977a91ef48d85c18dd15dd">   41</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1Breakpoint.html#a5643a996bae8afeabb74976f99cc91a2">   42</a></span>    <span class="keywordtype">bool</span>        verified = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1Breakpoint.html#a066535209b115ccf6b4c1362854706df">   43</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1Breakpoint.html#a066535209b115ccf6b4c1362854706df">condition</a>;  <span class="comment">// optional GDScript-style condition; empty = always</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1Breakpoint.html#a799788caa142798cbe9b4902d22bc7c6">   44</a></span>    <span class="keywordtype">int</span>         <span class="keywordtype">id</span>      = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1WatchEntry.html">   47</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1WatchEntry.html">WatchEntry</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1WatchEntry.html#ad5c3cb9f1774855df791966cc85285d6">   48</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1WatchEntry.html#ad5c3cb9f1774855df791966cc85285d6">expression</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1WatchEntry.html#aacd4551630a580187201f91b8ee11aa8">   49</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1WatchEntry.html#aacd4551630a580187201f91b8ee11aa8">value</a>;  <span class="comment">// last evaluated (display)</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1WatchEntry.html#acf6cb60d36b4650b94ae974efb4ab779">   50</a></span>    <span class="keywordtype">bool</span>        <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1StackFrameInfo.html">   53</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1StackFrameInfo.html">StackFrameInfo</a> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1StackFrameInfo.html#a3e4bbe8cba522cb4ad018986333628cf">   54</a></span>    <span class="keywordtype">int</span>         <span class="keywordtype">id</span> = 0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1StackFrameInfo.html#a0f940f8ddd60dea2f38d3ca21c1c88ef">   55</a></span>    <a class="code hl_struct" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a>   <a class="code hl_variable" href="structeve_1_1dev_1_1StackFrameInfo.html#a0f940f8ddd60dea2f38d3ca21c1c88ef">loc</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1StackFrameInfo.html#a9a2f8e0e81cef1e497f2cc47019905c1">   56</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1StackFrameInfo.html#a9a2f8e0e81cef1e497f2cc47019905c1">name</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>};</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1VariableInfo.html">   59</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_struct" href="structeve_1_1dev_1_1VariableInfo.html">VariableInfo</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1VariableInfo.html#ae37a0f3d516dfe2edf05bc0903039f3b">   60</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1VariableInfo.html#ae37a0f3d516dfe2edf05bc0903039f3b">name</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1VariableInfo.html#abb1a8462afb8ee7b14e35ecc589b59dd">   61</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1VariableInfo.html#abb1a8462afb8ee7b14e35ecc589b59dd">value</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1VariableInfo.html#aa108eb4dbaa3591aaeb21b659d8691f6">   62</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1VariableInfo.html#aa108eb4dbaa3591aaeb21b659d8691f6">type</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1VariableInfo.html#af1b82d507fd7ee60c1c8850e977246b9">   63</a></span>    <span class="keywordtype">bool</span>        expensive = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1VariableInfo.html#ae15a1e3e10605f778595ca8354c6aec7">   64</a></span>    <span class="keywordtype">bool</span>        expandable = <span class="keyword">false</span>;  <span class="comment">// container / instance: children available</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1VariableInfo.html#a6da1e387c670a3e9dfa9e791a3cf943e">   65</a></span>    <span class="keywordtype">int</span>         childCount = -1;     <span class="comment">// -1 = unknown</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="};">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286">   69</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286">VarKind</a> : uint8_t {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286a4779ca01c794c33a58436d7e60869829">Locals</a>   = 0,  <span class="comment">// frame locals</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286ad33fc227c2fbdf803a5361d6d78b283b">Globals</a>  = 1,  <span class="comment">// roottable</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="comment">// Closure upvalues are children of a closure value, not a third root.</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="};">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html">   86</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1dev_1_1Debugger.html">Debugger</a> {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1dev_1_1Debugger.html">Debugger</a>&amp; instance();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a0656c42e64e773664fe953ea10da54a9">   90</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a0656c42e64e773664fe953ea10da54a9">Debugger</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1Debugger.html">Debugger</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a7e0f037cce1d2ad1eafddd32d0fc6420">   91</a></span>    <a class="code hl_class" href="classeve_1_1dev_1_1Debugger.html">Debugger</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a7e0f037cce1d2ad1eafddd32d0fc6420">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1Debugger.html">Debugger</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">void</span> attach(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">void</span> detach();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a02aa54fb95e37fa3a583b9fe484b151f">   95</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a02aa54fb95e37fa3a583b9fe484b151f">isAttached</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> vm_ != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a289396deb5090bbacd28effa41f50446">   96</a></span>    <a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a289396deb5090bbacd28effa41f50446">vm</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> vm_; }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="comment">// ---- run control ----</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span>     pause(<a class="code hl_enumeration" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77">PauseReason</a> reason = PauseReason::PauseKey);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span>     pauseAt(<a class="code hl_enumeration" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77">PauseReason</a> reason, <a class="code hl_struct" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a> loc);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordtype">void</span>     resume();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">void</span>     stepFrame();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span>     stepInto();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">void</span>     stepOver();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span>     stepOut();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#aedfb35db2a8082a5f169828fef561a03">  121</a></span>    <span class="keywordtype">void</span>     <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#aedfb35db2a8082a5f169828fef561a03">stepLine</a>() { stepInto(); }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">void</span>     <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a4649a3fe820e7ee5225b41d840b204b8">  127</a></span>    <span class="keywordtype">bool</span>     <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a4649a3fe820e7ee5225b41d840b204b8">isPaused</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mode_.load() == RunMode::Paused; }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a46f0787529f7e0055c5a8e2b195ae0e2">  128</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508">RunMode</a>  <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a46f0787529f7e0055c5a8e2b195ae0e2">mode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mode_.load(); }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#ae17dd5bb706315ba502da57e6af2860e">  129</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77">PauseReason</a> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#ae17dd5bb706315ba502da57e6af2860e">lastPauseReason</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> reason_.load(); }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a99e47404d07c05e6e7c8cd5b9bb7c854">  130</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a99e47404d07c05e6e7c8cd5b9bb7c854">pauseLocation</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> pauseLoc_; }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">int</span>      scriptStackDepth() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">bool</span> shouldRunUpdate();</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordtype">void</span> notifyFrameDone();</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">void</span> setCallGraph(<a class="code hl_class" href="classeve_1_1dev_1_1CallGraph.html">CallGraph</a>* <a class="code hl_variable" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordtype">void</span> setVirtualSource(std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, std::string <a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    std::string onCall(<a class="code hl_struct" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a> loc);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">void</span> onReturn(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a>&amp; loc);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordtype">bool</span> onScriptLine(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a>&amp; loc);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordtype">void</span> waitWhilePaused(<span class="keyword">const</span> std::function&lt;<span class="keywordtype">void</span>()&gt;&amp; pump = {});</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="comment">// ---- breakpoints ----</span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordtype">int</span>  setBreakpoint(std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a> = <span class="keyword">true</span>,</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                       std::string condition = {});</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordtype">bool</span> clearBreakpoint(std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordtype">void</span> clearBreakpoints(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a> = {});</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordtype">bool</span> setBreakpointEnabled(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    std::vector&lt;Breakpoint&gt; breakpoints() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordtype">bool</span> hasBreakpoint(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="comment">// ---- watches ----</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordtype">void</span> addWatch(std::string expression);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordtype">bool</span> removeWatch(<span class="keyword">const</span> std::string&amp; expression);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">void</span> clearWatches();</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    std::vector&lt;WatchEntry&gt; watches() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordtype">void</span> refreshWatches();</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    VariableInfo evaluate(<span class="keyword">const</span> std::string&amp; expression, <span class="keywordtype">int</span> frameLevel = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    std::vector&lt;VariableInfo&gt; locals(<span class="keywordtype">int</span> stackLevel = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    std::vector&lt;VariableInfo&gt; globals() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    std::vector&lt;VariableInfo&gt; containerChildren(VarKind <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, <span class="keywordtype">int</span> frame,</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                                                <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    std::vector&lt;StackFrameInfo&gt; stackTrace(<span class="keywordtype">int</span> maxFrames = 32) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="comment">// ---- error / breakpoint policy ----</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a116e225d06b84df33d16665cddf6c1b4">  220</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a116e225d06b84df33d16665cddf6c1b4">setBreakOnError</a>(<span class="keywordtype">bool</span> on) { breakOnError_.store(on); }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#ad1f6dfdc315bfc356eb715de4846a64c">  221</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#ad1f6dfdc315bfc356eb715de4846a64c">breakOnError</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> breakOnError_.load(); }</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a9833eae6d4569ae485607a262fdf4a62">  223</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a9833eae6d4569ae485607a262fdf4a62">setBreakpointsEnabled</a>(<span class="keywordtype">bool</span> on) { bpsEnabled_.store(on); }</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#af9d714e0a4e4a1d6895b67608a06353c">  224</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#af9d714e0a4e4a1d6895b67608a06353c">breakpointsEnabled</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> bpsEnabled_.load(); }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a1c5f5155f12687d8d4698f99be64d2d1">  226</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1dev_1_1Debugger.html#a1c5f5155f12687d8d4698f99be64d2d1">BreakpointEventFn</a> = std::function&lt;void(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>,</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                                                 <span class="keywordtype">bool</span> verified)&gt;;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a3a31a723c28521a768e28f440bf332f2">  228</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#a3a31a723c28521a768e28f440bf332f2">setBreakpointEventFn</a>(<a class="code hl_typedef" href="classeve_1_1dev_1_1Debugger.html#a1c5f5155f12687d8d4698f99be64d2d1">BreakpointEventFn</a> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>) { bpEventFn_ = std::move(<a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>); }</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#a9589db29729810ef7941eddb8448f65b">  230</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1dev_1_1Debugger.html#a9589db29729810ef7941eddb8448f65b">PumpFn</a> = std::function&lt;void()&gt;;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1Debugger.html#aaa2d8128821395ea68b9628e1107cb2c">  231</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dev_1_1Debugger.html#aaa2d8128821395ea68b9628e1107cb2c">setPump</a>(<a class="code hl_typedef" href="classeve_1_1dev_1_1Debugger.html#a9589db29729810ef7941eddb8448f65b">PumpFn</a> pump) { pump_ = std::move(pump); }</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keyword">static</span> std::string normalizeSource(std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keyword">static</span> std::string sourceBasename(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> sourcesMatch(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <a class="code hl_class" href="classeve_1_1dev_1_1Debugger.html">Debugger</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keywordtype">bool</span> matchBreakpoint(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordtype">bool</span> matchBreakpointAny(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordtype">bool</span> conditionHolds(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1Breakpoint.html">Breakpoint</a>&amp; bp) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keywordtype">bool</span> pushPathValue(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_enumeration" href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286">VarKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, <span class="keywordtype">int</span> frame,</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                       <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1VariableInfo.html">VariableInfo</a> readLocal(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keywordtype">unsigned</span> level, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1VariableInfo.html">VariableInfo</a> readRoot(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1VariableInfo.html">VariableInfo</a> evaluateLegacy(<span class="keyword">const</span> std::string&amp; expression) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keywordtype">bool</span> pushLocalValue(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keywordtype">unsigned</span> level, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordtype">void</span> beginScriptStep(<a class="code hl_enumeration" href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508">RunMode</a> mode);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <a class="code hl_class" href="classeve_1_1dev_1_1CallGraph.html">CallGraph</a>&amp; activeGraph();</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1CallGraph.html">CallGraph</a>&amp; activeGraph() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    std::string resolveCallName(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a>&amp; loc) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    std::string lineAt(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    std::string nameFromPrototype(<span class="keywordtype">int</span> level, <span class="keyword">const</span> <span class="keywordtype">char</span>* rawName, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1SourceLoc.html">SourceLoc</a>&amp; loc) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keywordtype">void</span> applyCallGraphNames(std::vector&lt;StackFrameInfo&gt;&amp; frames) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>           vm_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    std::atomic&lt;RunMode&gt;  mode_{RunMode::Running};</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    std::atomic&lt;PauseReason&gt; reason_{PauseReason::None};</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    std::atomic&lt;bool&gt;     breakOnError_{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    std::atomic&lt;bool&gt;     bpsEnabled_{<span class="keyword">true</span>};</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    SourceLoc             pauseLoc_;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="keyword">mutable</span> std::mutex    mu_;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    std::vector&lt;Breakpoint&gt; bps_;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    std::vector&lt;std::string&gt; watchExprs_;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    std::vector&lt;WatchEntry&gt;  watchCache_;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <span class="keywordtype">int</span>                   nextBpId_ = 1;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    PumpFn                pump_;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keywordtype">bool</span>                  stepFrameArmed_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keywordtype">int</span>                   stepStartDepth_ = 0;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    SourceLoc             stepSkipLoc_;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    BreakpointEventFn     bpEventFn_;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    CallGraph*            callGraph_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    CallGraph             ownGraph_;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    std::unordered_map&lt;std::string, std::string&gt; virtualSources_;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>};</div>
+</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aCallGraph_8hpp_html"><div class="ttname"><a href="CallGraph_8hpp.html">CallGraph.hpp</a></div></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aConversationImporter_8cpp_html_a41ebd28ef1d7c6ade45642cb6acc1039"><div class="ttname"><a href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a></div><div class="ttdeci">int line</div><div class="ttdef"><b>Definition</b> <a href="ConversationImporter_8cpp_source.html#l00014">ConversationImporter.cpp:14</a></div></div>
+<div class="ttc" id="aDebugger_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="Debugger_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00015">Debugger.hpp:15</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8d10a8def83a0e25fb0e6300bc085eab"><div class="ttname"><a href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a></div><div class="ttdeci">std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; graph</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00059">Package.cpp:59</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00196">TreeMesh.cpp:196</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1CallGraph_html"><div class="ttname"><a href="classeve_1_1dev_1_1CallGraph.html">eve::dev::CallGraph</a></div><div class="ttdoc">Runtime call graph + dynamic data-flow tracer with backward slicing.</div><div class="ttdef"><b>Definition</b> <a href="CallGraph_8hpp_source.html#l00081">CallGraph.hpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html">eve::dev::Debugger</a></div><div class="ttdoc">Script + frame debugger: pause/step, breakpoints, watches.</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00086">Debugger.hpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a02aa54fb95e37fa3a583b9fe484b151f"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a02aa54fb95e37fa3a583b9fe484b151f">eve::dev::Debugger::isAttached</a></div><div class="ttdeci">bool isAttached() const</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00095">Debugger.hpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a0656c42e64e773664fe953ea10da54a9"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a0656c42e64e773664fe953ea10da54a9">eve::dev::Debugger::Debugger</a></div><div class="ttdeci">Debugger(const Debugger &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a116e225d06b84df33d16665cddf6c1b4"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a116e225d06b84df33d16665cddf6c1b4">eve::dev::Debugger::setBreakOnError</a></div><div class="ttdeci">void setBreakOnError(bool on)</div><div class="ttdoc">Break on script errors (Godot &quot;Break on Error&quot;). Default off.</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00220">Debugger.hpp:220</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a1c5f5155f12687d8d4698f99be64d2d1"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a1c5f5155f12687d8d4698f99be64d2d1">eve::dev::Debugger::BreakpointEventFn</a></div><div class="ttdeci">std::function&lt; void(int id, const std::string &amp;source, int line, bool verified)&gt; BreakpointEventFn</div><div class="ttdoc">Called once when a breakpoint line is first observed by the line hook.</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00226">Debugger.hpp:227</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a289396deb5090bbacd28effa41f50446"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a289396deb5090bbacd28effa41f50446">eve::dev::Debugger::vm</a></div><div class="ttdeci">HSQUIRRELVM vm() const</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00096">Debugger.hpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a3a31a723c28521a768e28f440bf332f2"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a3a31a723c28521a768e28f440bf332f2">eve::dev::Debugger::setBreakpointEventFn</a></div><div class="ttdeci">void setBreakpointEventFn(BreakpointEventFn fn)</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00228">Debugger.hpp:228</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a4649a3fe820e7ee5225b41d840b204b8"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a4649a3fe820e7ee5225b41d840b204b8">eve::dev::Debugger::isPaused</a></div><div class="ttdeci">bool isPaused() const</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00127">Debugger.hpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a46f0787529f7e0055c5a8e2b195ae0e2"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a46f0787529f7e0055c5a8e2b195ae0e2">eve::dev::Debugger::mode</a></div><div class="ttdeci">RunMode mode() const</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00128">Debugger.hpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a7e0f037cce1d2ad1eafddd32d0fc6420"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a7e0f037cce1d2ad1eafddd32d0fc6420">eve::dev::Debugger::operator=</a></div><div class="ttdeci">Debugger &amp; operator=(const Debugger &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a9589db29729810ef7941eddb8448f65b"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a9589db29729810ef7941eddb8448f65b">eve::dev::Debugger::PumpFn</a></div><div class="ttdeci">std::function&lt; void()&gt; PumpFn</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00230">Debugger.hpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a9833eae6d4569ae485607a262fdf4a62"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a9833eae6d4569ae485607a262fdf4a62">eve::dev::Debugger::setBreakpointsEnabled</a></div><div class="ttdeci">void setBreakpointsEnabled(bool on)</div><div class="ttdoc">Master switch for all breakpoints (&quot;skip all breakpoints&quot;).</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00223">Debugger.hpp:223</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_a99e47404d07c05e6e7c8cd5b9bb7c854"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#a99e47404d07c05e6e7c8cd5b9bb7c854">eve::dev::Debugger::pauseLocation</a></div><div class="ttdeci">const SourceLoc &amp; pauseLocation() const</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00130">Debugger.hpp:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_aaa2d8128821395ea68b9628e1107cb2c"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#aaa2d8128821395ea68b9628e1107cb2c">eve::dev::Debugger::setPump</a></div><div class="ttdeci">void setPump(PumpFn pump)</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00231">Debugger.hpp:231</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_ad1f6dfdc315bfc356eb715de4846a64c"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#ad1f6dfdc315bfc356eb715de4846a64c">eve::dev::Debugger::breakOnError</a></div><div class="ttdeci">bool breakOnError() const</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00221">Debugger.hpp:221</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_ae17dd5bb706315ba502da57e6af2860e"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#ae17dd5bb706315ba502da57e6af2860e">eve::dev::Debugger::lastPauseReason</a></div><div class="ttdeci">PauseReason lastPauseReason() const</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00129">Debugger.hpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_aedfb35db2a8082a5f169828fef561a03"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#aedfb35db2a8082a5f169828fef561a03">eve::dev::Debugger::stepLine</a></div><div class="ttdeci">void stepLine()</div><div class="ttdoc">Alias for stepInto (historical name).</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00121">Debugger.hpp:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Debugger_html_af9d714e0a4e4a1d6895b67608a06353c"><div class="ttname"><a href="classeve_1_1dev_1_1Debugger.html#af9d714e0a4e4a1d6895b67608a06353c">eve::dev::Debugger::breakpointsEnabled</a></div><div class="ttdeci">bool breakpointsEnabled() const</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00224">Debugger.hpp:224</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1Snapshot_html"><div class="ttname"><a href="classeve_1_1dev_1_1Snapshot.html">eve::dev::Snapshot</a></div><div class="ttdoc">Script + native state snapshot for state hot reload.</div><div class="ttdef"><b>Definition</b> <a href="Snapshot_8hpp_source.html#l00029">Snapshot.hpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AgentDevelopmentMcp_8cpp_source.html#l00012">AgentDevelopmentMcp.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a136a38fcb4c3d0e3feb6391a73def286"><div class="ttname"><a href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286">eve::dev::VarKind</a></div><div class="ttdeci">VarKind</div><div class="ttdoc">Where a variable tree node is rooted (used by containerChildren).</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00069">Debugger.hpp:69</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a136a38fcb4c3d0e3feb6391a73def286a4779ca01c794c33a58436d7e60869829"><div class="ttname"><a href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286a4779ca01c794c33a58436d7e60869829">eve::dev::VarKind::Locals</a></div><div class="ttdeci">@ Locals</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a136a38fcb4c3d0e3feb6391a73def286ad33fc227c2fbdf803a5361d6d78b283b"><div class="ttname"><a href="namespaceeve_1_1dev.html#a136a38fcb4c3d0e3feb6391a73def286ad33fc227c2fbdf803a5361d6d78b283b">eve::dev::VarKind::Globals</a></div><div class="ttdeci">@ Globals</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a40236c11a050e4b825fee548c1f8d508"><div class="ttname"><a href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508">eve::dev::RunMode</a></div><div class="ttdeci">RunMode</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00029">Debugger.hpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a40236c11a050e4b825fee548c1f8d508a3d983441d0d5f7856ac8522e0a438494"><div class="ttname"><a href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a3d983441d0d5f7856ac8522e0a438494">eve::dev::RunMode::StepFrame</a></div><div class="ttdeci">@ StepFrame</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a40236c11a050e4b825fee548c1f8d508a52f49ad0f8470462570353c2794be061"><div class="ttname"><a href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a52f49ad0f8470462570353c2794be061">eve::dev::RunMode::StepOut</a></div><div class="ttdeci">@ StepOut</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a40236c11a050e4b825fee548c1f8d508a5bda814c4aedb126839228f1a3d92f09"><div class="ttname"><a href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a5bda814c4aedb126839228f1a3d92f09">eve::dev::RunMode::Running</a></div><div class="ttdeci">@ Running</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a40236c11a050e4b825fee548c1f8d508a8a776f4c940fa981b505f107519139d6"><div class="ttname"><a href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508a8a776f4c940fa981b505f107519139d6">eve::dev::RunMode::StepOver</a></div><div class="ttdeci">@ StepOver</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a40236c11a050e4b825fee548c1f8d508acfe04d96f4c74452c2bde9d822e77924"><div class="ttname"><a href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508acfe04d96f4c74452c2bde9d822e77924">eve::dev::RunMode::StepInto</a></div><div class="ttdeci">@ StepInto</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a40236c11a050e4b825fee548c1f8d508ae99180abf47a8b3a856e0bcb2656990a"><div class="ttname"><a href="namespaceeve_1_1dev.html#a40236c11a050e4b825fee548c1f8d508ae99180abf47a8b3a856e0bcb2656990a">eve::dev::RunMode::Paused</a></div><div class="ttdeci">@ Paused</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_afc374bc56a9141195794b66f3d2a4a77"><div class="ttname"><a href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77">eve::dev::PauseReason</a></div><div class="ttdeci">PauseReason</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00019">Debugger.hpp:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_afc374bc56a9141195794b66f3d2a4a77a48c7c41b72e1d678923ce3571aa65b2d"><div class="ttname"><a href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77a48c7c41b72e1d678923ce3571aa65b2d">eve::dev::PauseReason::Step</a></div><div class="ttdeci">@ Step</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_afc374bc56a9141195794b66f3d2a4a77a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77a6adf97f83acf6453d4a6a4b1070f3754">eve::dev::PauseReason::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_afc374bc56a9141195794b66f3d2a4a77ab02f1401a8be1cb555969e9d1d3b316a"><div class="ttname"><a href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab02f1401a8be1cb555969e9d1d3b316a">eve::dev::PauseReason::PauseKey</a></div><div class="ttdeci">@ PauseKey</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32"><div class="ttname"><a href="namespaceeve_1_1dev.html#afc374bc56a9141195794b66f3d2a4a77ab0d4998a26f5b5742ad38c4af8817e32">eve::dev::PauseReason::Exception</a></div><div class="ttdeci">@ Exception</div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00030">Settlement.cpp:30</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00029">Settlement.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1Breakpoint_html"><div class="ttname"><a href="structeve_1_1dev_1_1Breakpoint.html">eve::dev::Breakpoint</a></div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00038">Debugger.hpp:38</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1Breakpoint_html_a066535209b115ccf6b4c1362854706df"><div class="ttname"><a href="structeve_1_1dev_1_1Breakpoint.html#a066535209b115ccf6b4c1362854706df">eve::dev::Breakpoint::condition</a></div><div class="ttdeci">std::string condition</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00043">Debugger.hpp:43</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1Breakpoint_html_a8d0b1625c701b93ba8d5a9bd4248d89f"><div class="ttname"><a href="structeve_1_1dev_1_1Breakpoint.html#a8d0b1625c701b93ba8d5a9bd4248d89f">eve::dev::Breakpoint::source</a></div><div class="ttdeci">std::string source</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00039">Debugger.hpp:39</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1SourceLoc_html"><div class="ttname"><a href="structeve_1_1dev_1_1SourceLoc.html">eve::dev::SourceLoc</a></div><div class="ttdoc">Source location in a Squirrel (or synthetic) script.</div><div class="ttdef"><b>Definition</b> <a href="CallGraph_8hpp_source.html#l00016">CallGraph.hpp:16</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1StackFrameInfo_html"><div class="ttname"><a href="structeve_1_1dev_1_1StackFrameInfo.html">eve::dev::StackFrameInfo</a></div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00053">Debugger.hpp:53</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1StackFrameInfo_html_a0f940f8ddd60dea2f38d3ca21c1c88ef"><div class="ttname"><a href="structeve_1_1dev_1_1StackFrameInfo.html#a0f940f8ddd60dea2f38d3ca21c1c88ef">eve::dev::StackFrameInfo::loc</a></div><div class="ttdeci">SourceLoc loc</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00055">Debugger.hpp:55</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1StackFrameInfo_html_a9a2f8e0e81cef1e497f2cc47019905c1"><div class="ttname"><a href="structeve_1_1dev_1_1StackFrameInfo.html#a9a2f8e0e81cef1e497f2cc47019905c1">eve::dev::StackFrameInfo::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00056">Debugger.hpp:56</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1VariableInfo_html"><div class="ttname"><a href="structeve_1_1dev_1_1VariableInfo.html">eve::dev::VariableInfo</a></div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00059">Debugger.hpp:59</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1VariableInfo_html_aa108eb4dbaa3591aaeb21b659d8691f6"><div class="ttname"><a href="structeve_1_1dev_1_1VariableInfo.html#aa108eb4dbaa3591aaeb21b659d8691f6">eve::dev::VariableInfo::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00062">Debugger.hpp:62</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1VariableInfo_html_abb1a8462afb8ee7b14e35ecc589b59dd"><div class="ttname"><a href="structeve_1_1dev_1_1VariableInfo.html#abb1a8462afb8ee7b14e35ecc589b59dd">eve::dev::VariableInfo::value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00061">Debugger.hpp:61</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1VariableInfo_html_ae37a0f3d516dfe2edf05bc0903039f3b"><div class="ttname"><a href="structeve_1_1dev_1_1VariableInfo.html#ae37a0f3d516dfe2edf05bc0903039f3b">eve::dev::VariableInfo::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00060">Debugger.hpp:60</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1WatchEntry_html"><div class="ttname"><a href="structeve_1_1dev_1_1WatchEntry.html">eve::dev::WatchEntry</a></div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00047">Debugger.hpp:47</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1WatchEntry_html_aacd4551630a580187201f91b8ee11aa8"><div class="ttname"><a href="structeve_1_1dev_1_1WatchEntry.html#aacd4551630a580187201f91b8ee11aa8">eve::dev::WatchEntry::value</a></div><div class="ttdeci">std::string value</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00049">Debugger.hpp:49</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1WatchEntry_html_ad5c3cb9f1774855df791966cc85285d6"><div class="ttname"><a href="structeve_1_1dev_1_1WatchEntry.html#ad5c3cb9f1774855df791966cc85285d6">eve::dev::WatchEntry::expression</a></div><div class="ttdeci">std::string expression</div><div class="ttdef"><b>Definition</b> <a href="Debugger_8hpp_source.html#l00048">Debugger.hpp:48</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

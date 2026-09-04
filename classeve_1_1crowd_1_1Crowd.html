@@ -1,0 +1,2088 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::crowd::Crowd类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1crowd.html">crowd</a></li><li class="navelem"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1crowd_1_1Crowd-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::crowd::Crowd类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。  
+ <a href="classeve_1_1crowd_1_1Crowd.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Crowd_8h_source.html">Crowd.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::crowd::Crowd 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1crowd_1_1Crowd.png" usemap="#eve::crowd::Crowd_map" alt=""/>
+  <map id="eve::crowd::Crowd_map" name="eve::crowd::Crowd_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,117,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a5b551d1a4636cdefd16ad3eead687293" id="r_a5b551d1a4636cdefd16ad3eead687293"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5b551d1a4636cdefd16ad3eead687293">Module_REG</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a>)</td></tr>
+<tr class="separator:a5b551d1a4636cdefd16ad3eead687293"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bcbe25b805401f855063fcb7f0b42f8" id="r_a8bcbe25b805401f855063fcb7f0b42f8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a8bcbe25b805401f855063fcb7f0b42f8">Crowd</a> ()</td></tr>
+<tr class="separator:a8bcbe25b805401f855063fcb7f0b42f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c5494b93703b4ad494be25905134c8f" id="r_a9c5494b93703b4ad494be25905134c8f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a9c5494b93703b4ad494be25905134c8f">~Crowd</a> () override</td></tr>
+<tr class="separator:a9c5494b93703b4ad494be25905134c8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39d512834c4db0c183f4c0ceb8c81c40" id="r_a39d512834c4db0c183f4c0ceb8c81c40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a39d512834c4db0c183f4c0ceb8c81c40">resizeField</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float cellSize, float originX, float originY)</td></tr>
+<tr class="memdesc:a39d512834c4db0c183f4c0ceb8c81c40"><td class="mdescLeft">&#160;</td><td class="mdescRight">配置流场网格（世界单位/格）。  <br /></td></tr>
+<tr class="separator:a39d512834c4db0c183f4c0ceb8c81c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a681695c736e01c1a8832bee8a3e93f31" id="r_a681695c736e01c1a8832bee8a3e93f31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a681695c736e01c1a8832bee8a3e93f31">setBlocked</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, bool blocked)</td></tr>
+<tr class="memdesc:a681695c736e01c1a8832bee8a3e93f31"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置/清除某格阻挡。  <br /></td></tr>
+<tr class="separator:a681695c736e01c1a8832bee8a3e93f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada7a6edf07e68ad5e742fa7493e2ae13" id="r_ada7a6edf07e68ad5e742fa7493e2ae13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ada7a6edf07e68ad5e742fa7493e2ae13">setCellCost</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, float <a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>)</td></tr>
+<tr class="memdesc:ada7a6edf07e68ad5e742fa7493e2ae13"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置地形代价（0=阻挡，&gt;=1 可走）。  <br /></td></tr>
+<tr class="separator:ada7a6edf07e68ad5e742fa7493e2ae13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2a48e963895c27dc0f1e4d85855b40d" id="r_ab2a48e963895c27dc0f1e4d85855b40d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ab2a48e963895c27dc0f1e4d85855b40d">getCellCost</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) const</td></tr>
+<tr class="memdesc:ab2a48e963895c27dc0f1e4d85855b40d"><td class="mdescLeft">&#160;</td><td class="mdescRight">查询地形代价。  <br /></td></tr>
+<tr class="separator:ab2a48e963895c27dc0f1e4d85855b40d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6368dcfb0711399ca06589948f73cc00" id="r_a6368dcfb0711399ca06589948f73cc00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a6368dcfb0711399ca06589948f73cc00">buildFlowField</a> (int gx, int gy)</td></tr>
+<tr class="memdesc:a6368dcfb0711399ca06589948f73cc00"><td class="mdescLeft">&#160;</td><td class="mdescRight">单目标快捷建场（clearGoals + addGoal + build）。  <br /></td></tr>
+<tr class="separator:a6368dcfb0711399ca06589948f73cc00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f706747294079fc2184485aaa676077" id="r_a2f706747294079fc2184485aaa676077"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a2f706747294079fc2184485aaa676077">addFlowGoal</a> (int gx, int gy)</td></tr>
+<tr class="memdesc:a2f706747294079fc2184485aaa676077"><td class="mdescLeft">&#160;</td><td class="mdescRight">追加目标格（多目标）。  <br /></td></tr>
+<tr class="separator:a2f706747294079fc2184485aaa676077"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d322560a19861cf62e9ed68df3d0c41" id="r_a5d322560a19861cf62e9ed68df3d0c41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5d322560a19861cf62e9ed68df3d0c41">clearFlowGoals</a> ()</td></tr>
+<tr class="memdesc:a5d322560a19861cf62e9ed68df3d0c41"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空目标列表。  <br /></td></tr>
+<tr class="separator:a5d322560a19861cf62e9ed68df3d0c41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d322b193f32d18914de2c6e659aee58" id="r_a2d322b193f32d18914de2c6e659aee58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a2d322b193f32d18914de2c6e659aee58">build</a> ()</td></tr>
+<tr class="memdesc:a2d322b193f32d18914de2c6e659aee58"><td class="mdescLeft">&#160;</td><td class="mdescRight">执行 Dijkstra 建场。  <br /></td></tr>
+<tr class="separator:a2d322b193f32d18914de2c6e659aee58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e7a0367a62450707765b263c08805a0" id="r_a3e7a0367a62450707765b263c08805a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a3e7a0367a62450707765b263c08805a0">isFieldBuilt</a> () const</td></tr>
+<tr class="memdesc:a3e7a0367a62450707765b263c08805a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否已建场。  <br /></td></tr>
+<tr class="separator:a3e7a0367a62450707765b263c08805a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ac7551348a42295a156ae88c5f88398" id="r_a7ac7551348a42295a156ae88c5f88398"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a7ac7551348a42295a156ae88c5f88398">isReachable</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) const</td></tr>
+<tr class="memdesc:a7ac7551348a42295a156ae88c5f88398"><td class="mdescLeft">&#160;</td><td class="mdescRight">某格是否可达。  <br /></td></tr>
+<tr class="separator:a7ac7551348a42295a156ae88c5f88398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ac25f22cb88eec9cb05385c4e7450a9" id="r_a7ac25f22cb88eec9cb05385c4e7450a9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a7ac25f22cb88eec9cb05385c4e7450a9">getFieldWidth</a> () const</td></tr>
+<tr class="memdesc:a7ac25f22cb88eec9cb05385c4e7450a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">网格信息访问器（调试渲染用）。  <br /></td></tr>
+<tr class="separator:a7ac25f22cb88eec9cb05385c4e7450a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5e8f11378dcfbc25f1a63518f155855" id="r_ab5e8f11378dcfbc25f1a63518f155855"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ab5e8f11378dcfbc25f1a63518f155855">getFieldHeight</a> () const</td></tr>
+<tr class="separator:ab5e8f11378dcfbc25f1a63518f155855"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cf64ca5938f2adaaceb1c6005c9dcfc" id="r_a7cf64ca5938f2adaaceb1c6005c9dcfc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a7cf64ca5938f2adaaceb1c6005c9dcfc">getCellSize</a> () const</td></tr>
+<tr class="separator:a7cf64ca5938f2adaaceb1c6005c9dcfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa97cb30239ba0436d220d282ece33c3e" id="r_aa97cb30239ba0436d220d282ece33c3e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa97cb30239ba0436d220d282ece33c3e">getFieldOriginX</a> () const</td></tr>
+<tr class="separator:aa97cb30239ba0436d220d282ece33c3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81a2a8b01d746b327d75ebff68a903ab" id="r_a81a2a8b01d746b327d75ebff68a903ab"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a81a2a8b01d746b327d75ebff68a903ab">getFieldOriginY</a> () const</td></tr>
+<tr class="separator:a81a2a8b01d746b327d75ebff68a903ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5e57bdcaa01db159d4ef32dc7db2aa1" id="r_aa5e57bdcaa01db159d4ef32dc7db2aa1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1crowd_1_1FlowVec.html">FlowVec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa5e57bdcaa01db159d4ef32dc7db2aa1">flowAtWorld</a> (float <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, float <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>) const</td></tr>
+<tr class="memdesc:aa5e57bdcaa01db159d4ef32dc7db2aa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">世界坐标流场方向（双线性插值；场外返回零向量）。  <br /></td></tr>
+<tr class="separator:aa5e57bdcaa01db159d4ef32dc7db2aa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b7cde2d3f40b405c2e6b52362b87b4c" id="r_a3b7cde2d3f40b405c2e6b52362b87b4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a3b7cde2d3f40b405c2e6b52362b87b4c">costAtWorld</a> (float <a class="el" href="WorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, float <a class="el" href="WorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>) const</td></tr>
+<tr class="memdesc:a3b7cde2d3f40b405c2e6b52362b87b4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">世界坐标积分代价（场外返回 kUnreachable）。  <br /></td></tr>
+<tr class="separator:a3b7cde2d3f40b405c2e6b52362b87b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0266fa3721cce9497cfdaa62e43d2050" id="r_a0266fa3721cce9497cfdaa62e43d2050"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1crowd_1_1FlowVec.html">FlowVec</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a0266fa3721cce9497cfdaa62e43d2050">flowAtCell</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>) const</td></tr>
+<tr class="memdesc:a0266fa3721cce9497cfdaa62e43d2050"><td class="mdescLeft">&#160;</td><td class="mdescRight">格级流场方向。  <br /></td></tr>
+<tr class="separator:a0266fa3721cce9497cfdaa62e43d2050"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a662e29464afd16f0829540311b31553f" id="r_a662e29464afd16f0829540311b31553f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a662e29464afd16f0829540311b31553f">addAgent</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a662e29464afd16f0829540311b31553f"><td class="mdescLeft">&#160;</td><td class="mdescRight">添加单位；返回 id（=槽位索引；删除后 id 不稳定）。  <br /></td></tr>
+<tr class="separator:a662e29464afd16f0829540311b31553f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63c190a0ee1ad4501fd7672e80d386e2" id="r_a63c190a0ee1ad4501fd7672e80d386e2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a63c190a0ee1ad4501fd7672e80d386e2">addNamedAgent</a> (const std::string &amp;stableId, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a63c190a0ee1ad4501fd7672e80d386e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add an agent with an editor/game-stable logical identifier.  <br /></td></tr>
+<tr class="separator:a63c190a0ee1ad4501fd7672e80d386e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbe961043154081686569d126204a15d" id="r_acbe961043154081686569d126204a15d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#acbe961043154081686569d126204a15d">hasNamedAgent</a> (const std::string &amp;stableId) const</td></tr>
+<tr class="memdesc:acbe961043154081686569d126204a15d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a stable logical agent exists.  <br /></td></tr>
+<tr class="separator:acbe961043154081686569d126204a15d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a420fa956945d877b02de684cea44cb68" id="r_a420fa956945d877b02de684cea44cb68"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a420fa956945d877b02de684cea44cb68">getNamedAgentIndex</a> (const std::string &amp;stableId) const</td></tr>
+<tr class="memdesc:a420fa956945d877b02de684cea44cb68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a stable logical identifier to the current compact slot.  <br /></td></tr>
+<tr class="separator:a420fa956945d877b02de684cea44cb68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ffc566f09bdb32f6d81f7fa8b3e96b3" id="r_a9ffc566f09bdb32f6d81f7fa8b3e96b3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a9ffc566f09bdb32f6d81f7fa8b3e96b3">getAgentStableId</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="memdesc:a9ffc566f09bdb32f6d81f7fa8b3e96b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable logical identifier for a compact slot.  <br /></td></tr>
+<tr class="separator:a9ffc566f09bdb32f6d81f7fa8b3e96b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a926272fcb46e4d71c076f46bbee1317a" id="r_a926272fcb46e4d71c076f46bbee1317a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a926272fcb46e4d71c076f46bbee1317a">removeNamedAgent</a> (const std::string &amp;stableId)</td></tr>
+<tr class="memdesc:a926272fcb46e4d71c076f46bbee1317a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove an agent by stable logical identifier.  <br /></td></tr>
+<tr class="separator:a926272fcb46e4d71c076f46bbee1317a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f065ef1dd8d37eba81a2108870e818a" id="r_a0f065ef1dd8d37eba81a2108870e818a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a0f065ef1dd8d37eba81a2108870e818a">removeAgent</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:a0f065ef1dd8d37eba81a2108870e818a"><td class="mdescLeft">&#160;</td><td class="mdescRight">删除单位（swap-pop O(1)）。  <br /></td></tr>
+<tr class="separator:a0f065ef1dd8d37eba81a2108870e818a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa23e3369bf058dd78950d1caf7d3e863" id="r_aa23e3369bf058dd78950d1caf7d3e863"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa23e3369bf058dd78950d1caf7d3e863">clearAgents</a> ()</td></tr>
+<tr class="memdesc:aa23e3369bf058dd78950d1caf7d3e863"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空全部单位。  <br /></td></tr>
+<tr class="separator:aa23e3369bf058dd78950d1caf7d3e863"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a9687082177f35ae5783cc696935cfe" id="r_a4a9687082177f35ae5783cc696935cfe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a4a9687082177f35ae5783cc696935cfe">getAgentCount</a> () const</td></tr>
+<tr class="memdesc:a4a9687082177f35ae5783cc696935cfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">当前单位数。  <br /></td></tr>
+<tr class="separator:a4a9687082177f35ae5783cc696935cfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d42e9fa7cac9e5f077070b4a0606994" id="r_a8d42e9fa7cac9e5f077070b4a0606994"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a8d42e9fa7cac9e5f077070b4a0606994">setMaxAgents</a> (int maxAgents)</td></tr>
+<tr class="memdesc:a8d42e9fa7cac9e5f077070b4a0606994"><td class="mdescLeft">&#160;</td><td class="mdescRight">单位容量上限（默认 100000）。  <br /></td></tr>
+<tr class="separator:a8d42e9fa7cac9e5f077070b4a0606994"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44735398a01e0924e20595072dac31f3" id="r_a44735398a01e0924e20595072dac31f3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a44735398a01e0924e20595072dac31f3">getMaxAgents</a> () const</td></tr>
+<tr class="separator:a44735398a01e0924e20595072dac31f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacfae439ec860c01888a8ae9bf6f952b" id="r_aacfae439ec860c01888a8ae9bf6f952b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aacfae439ec860c01888a8ae9bf6f952b">setAgentAction</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, const std::string &amp;action)</td></tr>
+<tr class="memdesc:aacfae439ec860c01888a8ae9bf6f952b"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置行动："idle" | "flow" | "seek" | "boids"。  <br /></td></tr>
+<tr class="separator:aacfae439ec860c01888a8ae9bf6f952b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2508da2ca7e057a40c46425436d418cb" id="r_a2508da2ca7e057a40c46425436d418cb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a2508da2ca7e057a40c46425436d418cb">getAgentAction</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a2508da2ca7e057a40c46425436d418cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">查询行动名。  <br /></td></tr>
+<tr class="separator:a2508da2ca7e057a40c46425436d418cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af31752403de84d89a3853dd23954e634" id="r_af31752403de84d89a3853dd23954e634"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#af31752403de84d89a3853dd23954e634">setAgentTarget</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float tx, float ty)</td></tr>
+<tr class="memdesc:af31752403de84d89a3853dd23954e634"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置世界目标点（seek 直接寻点，boids 作迁移偏置）。  <br /></td></tr>
+<tr class="separator:af31752403de84d89a3853dd23954e634"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0531d0cd1faa39f38146a419a74e6da" id="r_aa0531d0cd1faa39f38146a419a74e6da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa0531d0cd1faa39f38146a419a74e6da">clearAgentTarget</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>)</td></tr>
+<tr class="memdesc:aa0531d0cd1faa39f38146a419a74e6da"><td class="mdescLeft">&#160;</td><td class="mdescRight">清除目标点。  <br /></td></tr>
+<tr class="separator:aa0531d0cd1faa39f38146a419a74e6da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4ecddbfbe7d30fa31d7752c031b01e0" id="r_aa4ecddbfbe7d30fa31d7752c031b01e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aa4ecddbfbe7d30fa31d7752c031b01e0">setAgentSpeed</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float speed)</td></tr>
+<tr class="memdesc:aa4ecddbfbe7d30fa31d7752c031b01e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置最大速度（世界单位/秒）。  <br /></td></tr>
+<tr class="separator:aa4ecddbfbe7d30fa31d7752c031b01e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a560d8d1df3b6ca77bcd835bd01f09827" id="r_a560d8d1df3b6ca77bcd835bd01f09827"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a560d8d1df3b6ca77bcd835bd01f09827">setAgentAccel</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float accel)</td></tr>
+<tr class="memdesc:a560d8d1df3b6ca77bcd835bd01f09827"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置加速度上限（默认 maxSpeed×2）。  <br /></td></tr>
+<tr class="separator:a560d8d1df3b6ca77bcd835bd01f09827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2ba9acbe87f3f95432991752ad437aa" id="r_ae2ba9acbe87f3f95432991752ad437aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ae2ba9acbe87f3f95432991752ad437aa">setAgentTurnRate</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float radPerSec)</td></tr>
+<tr class="memdesc:ae2ba9acbe87f3f95432991752ad437aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置转向速率上限（弧度/秒）。  <br /></td></tr>
+<tr class="separator:ae2ba9acbe87f3f95432991752ad437aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca5e12ea9cab9df1658953853a85577a" id="r_aca5e12ea9cab9df1658953853a85577a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aca5e12ea9cab9df1658953853a85577a">setAgentRadius</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:aca5e12ea9cab9df1658953853a85577a"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置半径。  <br /></td></tr>
+<tr class="separator:aca5e12ea9cab9df1658953853a85577a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46e6d33cc198f612845742539c6b7e42" id="r_a46e6d33cc198f612845742539c6b7e42"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a46e6d33cc198f612845742539c6b7e42">setAgentData</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int data)</td></tr>
+<tr class="memdesc:a46e6d33cc198f612845742539c6b7e42"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置游戏自定义标记。  <br /></td></tr>
+<tr class="separator:a46e6d33cc198f612845742539c6b7e42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae970a4900f18737600fb999af317a362" id="r_ae970a4900f18737600fb999af317a362"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ae970a4900f18737600fb999af317a362">getAgentData</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="separator:ae970a4900f18737600fb999af317a362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd4830e885a5cd0276195647f4f0b3ed" id="r_acd4830e885a5cd0276195647f4f0b3ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#acd4830e885a5cd0276195647f4f0b3ed">setAgentAvoidancePriority</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, int <a class="el" href="Capability_8cpp.html#acec9ce2df15222151ad66fcb1d74eb9f">priority</a>)</td></tr>
+<tr class="memdesc:acd4830e885a5cd0276195647f4f0b3ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set overlap-resolution priority; higher values yield less.  <br /></td></tr>
+<tr class="separator:acd4830e885a5cd0276195647f4f0b3ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7229d6145bdf65a27d492e28925a0d5b" id="r_a7229d6145bdf65a27d492e28925a0d5b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a7229d6145bdf65a27d492e28925a0d5b">getAgentAvoidancePriority</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a7229d6145bdf65a27d492e28925a0d5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return overlap-resolution priority, or zero for an invalid id.  <br /></td></tr>
+<tr class="separator:a7229d6145bdf65a27d492e28925a0d5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a382117cf90a9e97a1ce50c01f144c9ef" id="r_a382117cf90a9e97a1ce50c01f144c9ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a382117cf90a9e97a1ce50c01f144c9ef">setAgentPosition</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="memdesc:a382117cf90a9e97a1ce50c01f144c9ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">直接放置单位。  <br /></td></tr>
+<tr class="separator:a382117cf90a9e97a1ce50c01f144c9ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1470cf5464ce4f6fc7efe62f79603eff" id="r_a1470cf5464ce4f6fc7efe62f79603eff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1crowd_1_1AgentState.html">AgentState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a1470cf5464ce4f6fc7efe62f79603eff">getAgentState</a> (int <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>) const</td></tr>
+<tr class="memdesc:a1470cf5464ce4f6fc7efe62f79603eff"><td class="mdescLeft">&#160;</td><td class="mdescRight">读取单位状态快照（非法 id 返回 action=-1）。  <br /></td></tr>
+<tr class="separator:a1470cf5464ce4f6fc7efe62f79603eff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d2737efaa7b09ef5f59d6e97e254118" id="r_a5d2737efaa7b09ef5f59d6e97e254118"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5d2737efaa7b09ef5f59d6e97e254118">setDefaultSpeed</a> (float speed)</td></tr>
+<tr class="memdesc:a5d2737efaa7b09ef5f59d6e97e254118"><td class="mdescLeft">&#160;</td><td class="mdescRight">新单位默认速度。  <br /></td></tr>
+<tr class="separator:a5d2737efaa7b09ef5f59d6e97e254118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5640fbf733e3f267119908ac7e61ac79" id="r_a5640fbf733e3f267119908ac7e61ac79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5640fbf733e3f267119908ac7e61ac79">setDefaultRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a5640fbf733e3f267119908ac7e61ac79"><td class="mdescLeft">&#160;</td><td class="mdescRight">新单位默认半径。  <br /></td></tr>
+<tr class="separator:a5640fbf733e3f267119908ac7e61ac79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc6372aa305feaa4f8dc3d5257f6b42b" id="r_abc6372aa305feaa4f8dc3d5257f6b42b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#abc6372aa305feaa4f8dc3d5257f6b42b">setDefaultTurnRate</a> (float radPerSec)</td></tr>
+<tr class="memdesc:abc6372aa305feaa4f8dc3d5257f6b42b"><td class="mdescLeft">&#160;</td><td class="mdescRight">新单位默认转向速率（弧度/秒）。  <br /></td></tr>
+<tr class="separator:abc6372aa305feaa4f8dc3d5257f6b42b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2010dc2cfa44da038e3586bffb642e7" id="r_ae2010dc2cfa44da038e3586bffb642e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#ae2010dc2cfa44da038e3586bffb642e7">setArriveRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:ae2010dc2cfa44da038e3586bffb642e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">seek 到达减速半径。  <br /></td></tr>
+<tr class="separator:ae2010dc2cfa44da038e3586bffb642e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5af257d6c943944680795e6f7cd731ae" id="r_a5af257d6c943944680795e6f7cd731ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a5af257d6c943944680795e6f7cd731ae">setSeparationRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a5af257d6c943944680795e6f7cd731ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">分离/邻居查询半径。  <br /></td></tr>
+<tr class="separator:a5af257d6c943944680795e6f7cd731ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecb88dc184adc32a44b5c2e0800f75e3" id="r_aecb88dc184adc32a44b5c2e0800f75e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aecb88dc184adc32a44b5c2e0800f75e3">setPerceptionRadius</a> (float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:aecb88dc184adc32a44b5c2e0800f75e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">对齐/聚合感知半径（Boids；默认 64，可大于分离半径）。  <br /></td></tr>
+<tr class="separator:aecb88dc184adc32a44b5c2e0800f75e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf06a3c07dd6f8d7f58a9e5755f97b7a" id="r_acf06a3c07dd6f8d7f58a9e5755f97b7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#acf06a3c07dd6f8d7f58a9e5755f97b7a">setSeparationWeight</a> (float weight)</td></tr>
+<tr class="memdesc:acf06a3c07dd6f8d7f58a9e5755f97b7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boids 分离力权重。  <br /></td></tr>
+<tr class="separator:acf06a3c07dd6f8d7f58a9e5755f97b7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefe48f6c34bc43645103980ac102b672" id="r_aefe48f6c34bc43645103980ac102b672"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#aefe48f6c34bc43645103980ac102b672">setAlignmentWeight</a> (float weight)</td></tr>
+<tr class="memdesc:aefe48f6c34bc43645103980ac102b672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boids 对齐力权重。  <br /></td></tr>
+<tr class="separator:aefe48f6c34bc43645103980ac102b672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a464d1216ed72dd901b487be4335f50" id="r_a0a464d1216ed72dd901b487be4335f50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a0a464d1216ed72dd901b487be4335f50">setCohesionWeight</a> (float weight)</td></tr>
+<tr class="memdesc:a0a464d1216ed72dd901b487be4335f50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boids 聚合力权重。  <br /></td></tr>
+<tr class="separator:a0a464d1216ed72dd901b487be4335f50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bcd6109a58919ffbc85a436c5374371" id="r_a2bcd6109a58919ffbc85a436c5374371"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a2bcd6109a58919ffbc85a436c5374371">setWanderWeight</a> (float weight)</td></tr>
+<tr class="memdesc:a2bcd6109a58919ffbc85a436c5374371"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boids wander 权重。  <br /></td></tr>
+<tr class="separator:a2bcd6109a58919ffbc85a436c5374371"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb1db0f0406312c6e1a07f877e9e33e0" id="r_abb1db0f0406312c6e1a07f877e9e33e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#abb1db0f0406312c6e1a07f877e9e33e0">setGoalWeight</a> (float weight)</td></tr>
+<tr class="memdesc:abb1db0f0406312c6e1a07f877e9e33e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boids 目标偏置权重。  <br /></td></tr>
+<tr class="separator:abb1db0f0406312c6e1a07f877e9e33e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82b980f9393f4471232e63a1f7f48580" id="r_a82b980f9393f4471232e63a1f7f48580"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a82b980f9393f4471232e63a1f7f48580">setResolveOverlaps</a> (bool enable)</td></tr>
+<tr class="memdesc:a82b980f9393f4471232e63a1f7f48580"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否做位置重叠消解 pass（默认开）。  <br /></td></tr>
+<tr class="separator:a82b980f9393f4471232e63a1f7f48580"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a190a2b3db377572165e6479b18737e74" id="r_a190a2b3db377572165e6479b18737e74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a190a2b3db377572165e6479b18737e74">setClampToField</a> (bool enable)</td></tr>
+<tr class="memdesc:a190a2b3db377572165e6479b18737e74"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否把单位钳制在流场边界内（默认开）。  <br /></td></tr>
+<tr class="separator:a190a2b3db377572165e6479b18737e74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a325b9da40b12da7e4bb293d89d1414" id="r_a1a325b9da40b12da7e4bb293d89d1414"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html#a1a325b9da40b12da7e4bb293d89d1414">step</a> (float dt)</td></tr>
+<tr class="memdesc:a1a325b9da40b12da7e4bb293d89d1414"><td class="mdescLeft">&#160;</td><td class="mdescRight">推进一帧仿真。  <br /></td></tr>
+<tr class="separator:a1a325b9da40b12da7e4bb293d89d1414"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。 </p>
+<p>Script: <code>crowd &lt;- eve.Crowd();</code></p>
+<p>纯 CPU 仿真，与渲染解耦：每帧调用 <a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step(dt)</a> 推进；渲染/游戏逻辑通过 getPositions / getHeadings 批量读取（脚本预分配数组），万级单位无需逐单位回调。</p>
+<p>行动模式： idle —— 不主动移动（分离力仍生效）； flow —— 沿流场方向行军（Boids 分离力防扎堆）； seek —— 向世界目标点移动，进入 arriveRadius 后线性减速； boids —— 鸟群：分离 + 对齐 + 聚合，可叠加目标偏置与 wander。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00048">48</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8bcbe25b805401f855063fcb7f0b42f8" name="a8bcbe25b805401f855063fcb7f0b42f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bcbe25b805401f855063fcb7f0b42f8">&#9670;&#160;</a></span>Crowd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::crowd::Crowd::Crowd </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00405">405</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c5494b93703b4ad494be25905134c8f" name="a9c5494b93703b4ad494be25905134c8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c5494b93703b4ad494be25905134c8f">&#9670;&#160;</a></span>~Crowd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::crowd::Crowd::~Crowd </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a662e29464afd16f0829540311b31553f" name="a662e29464afd16f0829540311b31553f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a662e29464afd16f0829540311b31553f">&#9670;&#160;</a></span>addAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::addAgent </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heading</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>添加单位；返回 id（=槽位索引；删除后 id 不稳定）。 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>世界 X </td></tr>
+    <tr><td class="paramname">y</td><td>世界 Y </td></tr>
+    <tr><td class="paramname">heading</td><td>初始朝向（弧度） </td></tr>
+    <tr><td class="paramname">radius</td><td>半径（用于分离/重叠消解） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>单位 id，达到上限返回 -1 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00461">461</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00174">heading</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00486">addNamedAgent()</a>.</p>
+
+</div>
+</div>
+<a id="a2f706747294079fc2184485aaa676077" name="a2f706747294079fc2184485aaa676077"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f706747294079fc2184485aaa676077">&#9670;&#160;</a></span>addFlowGoal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::addFlowGoal </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>追加目标格（多目标）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00429">429</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a63c190a0ee1ad4501fd7672e80d386e2" name="a63c190a0ee1ad4501fd7672e80d386e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63c190a0ee1ad4501fd7672e80d386e2">&#9670;&#160;</a></span>addNamedAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::addNamedAgent </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stableId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heading</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add an agent with an editor/game-stable logical identifier. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stableId</td><td>Non-empty logical identifier unique within this <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a>. </td></tr>
+    <tr><td class="paramname">x</td><td>Initial world X coordinate. </td></tr>
+    <tr><td class="paramname">y</td><td>Initial world Y coordinate. </td></tr>
+    <tr><td class="paramname">heading</td><td>Initial heading in radians. </td></tr>
+    <tr><td class="paramname">radius</td><td>Agent collision radius. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Current compact slot, or -1 when the identifier or capacity is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00486">486</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8cpp_source.html#l00461">addAgent()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00174">heading</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="a2d322b193f32d18914de2c6e659aee58" name="a2d322b193f32d18914de2c6e659aee58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d322b193f32d18914de2c6e659aee58">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::build </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>执行 Dijkstra 建场。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00433">433</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6368dcfb0711399ca06589948f73cc00" name="a6368dcfb0711399ca06589948f73cc00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6368dcfb0711399ca06589948f73cc00">&#9670;&#160;</a></span>buildFlowField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::buildFlowField </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>单目标快捷建场（clearGoals + addGoal + build）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00424">424</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa23e3369bf058dd78950d1caf7d3e863" name="aa23e3369bf058dd78950d1caf7d3e863"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa23e3369bf058dd78950d1caf7d3e863">&#9670;&#160;</a></span>clearAgents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::clearAgents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清空全部单位。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00562">562</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>.</p>
+
+</div>
+</div>
+<a id="aa0531d0cd1faa39f38146a419a74e6da" name="aa0531d0cd1faa39f38146a419a74e6da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0531d0cd1faa39f38146a419a74e6da">&#9670;&#160;</a></span>clearAgentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::clearAgentTarget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清除目标点。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00615">615</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="a5d322560a19861cf62e9ed68df3d0c41" name="a5d322560a19861cf62e9ed68df3d0c41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d322560a19861cf62e9ed68df3d0c41">&#9670;&#160;</a></span>clearFlowGoals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::clearFlowGoals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清空目标列表。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00431">431</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b7cde2d3f40b405c2e6b52362b87b4c" name="a3b7cde2d3f40b405c2e6b52362b87b4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b7cde2d3f40b405c2e6b52362b87b4c">&#9670;&#160;</a></span>costAtWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::costAtWorld </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>世界坐标积分代价（场外返回 kUnreachable）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00451">451</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a>.</p>
+
+</div>
+</div>
+<a id="a0266fa3721cce9497cfdaa62e43d2050" name="a0266fa3721cce9497cfdaa62e43d2050"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0266fa3721cce9497cfdaa62e43d2050">&#9670;&#160;</a></span>flowAtCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1crowd_1_1FlowVec.html">FlowVec</a> eve::crowd::Crowd::flowAtCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>格级流场方向。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00453">453</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+</div>
+</div>
+<a id="aa5e57bdcaa01db159d4ef32dc7db2aa1" name="aa5e57bdcaa01db159d4ef32dc7db2aa1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5e57bdcaa01db159d4ef32dc7db2aa1">&#9670;&#160;</a></span>flowAtWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1crowd_1_1FlowVec.html">FlowVec</a> eve::crowd::Crowd::flowAtWorld </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>世界坐标流场方向（双线性插值；场外返回零向量）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00445">445</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wx</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00175">wy</a>.</p>
+
+</div>
+</div>
+<a id="a2508da2ca7e057a40c46425436d418cb" name="a2508da2ca7e057a40c46425436d418cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2508da2ca7e057a40c46425436d418cb">&#9670;&#160;</a></span>getAgentAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::crowd::Crowd::getAgentAction </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>查询行动名。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00602">602</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7229d6145bdf65a27d492e28925a0d5b" name="a7229d6145bdf65a27d492e28925a0d5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7229d6145bdf65a27d492e28925a0d5b">&#9670;&#160;</a></span>getAgentAvoidancePriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::getAgentAvoidancePriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return overlap-resolution priority, or zero for an invalid id. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00664">664</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4a9687082177f35ae5783cc696935cfe" name="a4a9687082177f35ae5783cc696935cfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a9687082177f35ae5783cc696935cfe">&#9670;&#160;</a></span>getAgentCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::getAgentCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>当前单位数。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00586">586</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae970a4900f18737600fb999af317a362" name="ae970a4900f18737600fb999af317a362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae970a4900f18737600fb999af317a362">&#9670;&#160;</a></span>getAgentData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::getAgentData </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00651">651</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ffc566f09bdb32f6d81f7fa8b3e96b3" name="a9ffc566f09bdb32f6d81f7fa8b3e96b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ffc566f09bdb32f6d81f7fa8b3e96b3">&#9670;&#160;</a></span>getAgentStableId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::crowd::Crowd::getAgentStableId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the stable logical identifier for a compact slot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Current compact slot. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Stable identifier, or an empty string for invalid or anonymous slots. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00505">505</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a1470cf5464ce4f6fc7efe62f79603eff" name="a1470cf5464ce4f6fc7efe62f79603eff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1470cf5464ce4f6fc7efe62f79603eff">&#9670;&#160;</a></span>getAgentState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1crowd_1_1AgentState.html">AgentState</a> eve::crowd::Crowd::getAgentState </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>读取单位状态快照（非法 id 返回 action=-1）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00675">675</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8h_source.html#l00023">eve::crowd::AgentState::action</a> , 以及 <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="ab2a48e963895c27dc0f1e4d85855b40d" name="ab2a48e963895c27dc0f1e4d85855b40d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2a48e963895c27dc0f1e4d85855b40d">&#9670;&#160;</a></span>getCellCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::getCellCost </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>查询地形代价。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a> , 以及 <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>.</p>
+
+</div>
+</div>
+<a id="a7cf64ca5938f2adaaceb1c6005c9dcfc" name="a7cf64ca5938f2adaaceb1c6005c9dcfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cf64ca5938f2adaaceb1c6005c9dcfc">&#9670;&#160;</a></span>getCellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::getCellSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00441">441</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5e8f11378dcfbc25f1a63518f155855" name="ab5e8f11378dcfbc25f1a63518f155855"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5e8f11378dcfbc25f1a63518f155855">&#9670;&#160;</a></span>getFieldHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::getFieldHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00440">440</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa97cb30239ba0436d220d282ece33c3e" name="aa97cb30239ba0436d220d282ece33c3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa97cb30239ba0436d220d282ece33c3e">&#9670;&#160;</a></span>getFieldOriginX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::getFieldOriginX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00442">442</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a81a2a8b01d746b327d75ebff68a903ab" name="a81a2a8b01d746b327d75ebff68a903ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81a2a8b01d746b327d75ebff68a903ab">&#9670;&#160;</a></span>getFieldOriginY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::Crowd::getFieldOriginY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00443">443</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7ac25f22cb88eec9cb05385c4e7450a9" name="a7ac25f22cb88eec9cb05385c4e7450a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac25f22cb88eec9cb05385c4e7450a9">&#9670;&#160;</a></span>getFieldWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::getFieldWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>网格信息访问器（调试渲染用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00439">439</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a44735398a01e0924e20595072dac31f3" name="a44735398a01e0924e20595072dac31f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44735398a01e0924e20595072dac31f3">&#9670;&#160;</a></span>getMaxAgents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::getMaxAgents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00592">592</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a420fa956945d877b02de684cea44cb68" name="a420fa956945d877b02de684cea44cb68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a420fa956945d877b02de684cea44cb68">&#9670;&#160;</a></span>getNamedAgentIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::Crowd::getNamedAgentIndex </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stableId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a stable logical identifier to the current compact slot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stableId</td><td>Logical identifier to resolve. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Current compact slot, or -1 when missing. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00500">500</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00509">removeNamedAgent()</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="acbe961043154081686569d126204a15d" name="acbe961043154081686569d126204a15d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbe961043154081686569d126204a15d">&#9670;&#160;</a></span>hasNamedAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::hasNamedAgent </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stableId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether a stable logical agent exists. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stableId</td><td>Logical identifier to query. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when the identifier is currently mapped. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00496">496</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3e7a0367a62450707765b263c08805a0" name="a3e7a0367a62450707765b263c08805a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e7a0367a62450707765b263c08805a0">&#9670;&#160;</a></span>isFieldBuilt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::isFieldBuilt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>是否已建场。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00435">435</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7ac7551348a42295a156ae88c5f88398" name="a7ac7551348a42295a156ae88c5f88398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac7551348a42295a156ae88c5f88398">&#9670;&#160;</a></span>isReachable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::isReachable </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>某格是否可达。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00437">437</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a> , 以及 <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>.</p>
+
+</div>
+</div>
+<a id="a5b551d1a4636cdefd16ad3eead687293" name="a5b551d1a4636cdefd16ad3eead687293"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b551d1a4636cdefd16ad3eead687293">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::crowd::Crowd::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0f065ef1dd8d37eba81a2108870e818a" name="a0f065ef1dd8d37eba81a2108870e818a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f065ef1dd8d37eba81a2108870e818a">&#9670;&#160;</a></span>removeAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::removeAgent </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>删除单位（swap-pop O(1)）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00514">514</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00162">id</a> , 以及 <a class="el" href="NinePatch_8cpp_source.html#l00022">last</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00509">removeNamedAgent()</a>.</p>
+
+</div>
+</div>
+<a id="a926272fcb46e4d71c076f46bbee1317a" name="a926272fcb46e4d71c076f46bbee1317a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a926272fcb46e4d71c076f46bbee1317a">&#9670;&#160;</a></span>removeNamedAgent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::removeNamedAgent </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stableId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove an agent by stable logical identifier. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stableId</td><td>Logical identifier to remove. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when an existing agent was removed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00509">509</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8cpp_source.html#l00500">getNamedAgentIndex()</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="Crowd_8cpp_source.html#l00514">removeAgent()</a>.</p>
+
+</div>
+</div>
+<a id="a39d512834c4db0c183f4c0ceb8c81c40" name="a39d512834c4db0c183f4c0ceb8c81c40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39d512834c4db0c183f4c0ceb8c81c40">&#9670;&#160;</a></span>resizeField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::resizeField </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>配置流场网格（世界单位/格）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00410">410</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00012">height</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00011">width</a>.</p>
+
+</div>
+</div>
+<a id="a560d8d1df3b6ca77bcd835bd01f09827" name="a560d8d1df3b6ca77bcd835bd01f09827"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a560d8d1df3b6ca77bcd835bd01f09827">&#9670;&#160;</a></span>setAgentAccel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::setAgentAccel </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>accel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置加速度上限（默认 maxSpeed×2）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00627">627</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aacfae439ec860c01888a8ae9bf6f952b" name="aacfae439ec860c01888a8ae9bf6f952b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacfae439ec860c01888a8ae9bf6f952b">&#9670;&#160;</a></span>setAgentAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::setAgentAction </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>action</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置行动："idle" | "flow" | "seek" | "boids"。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00594">594</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="acd4830e885a5cd0276195647f4f0b3ed" name="acd4830e885a5cd0276195647f4f0b3ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd4830e885a5cd0276195647f4f0b3ed">&#9670;&#160;</a></span>setAgentAvoidancePriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::crowd::Crowd::setAgentAvoidancePriority </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>priority</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set overlap-resolution priority; higher values yield less. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied, or NotFound for an invalid slot. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00656">656</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="a46e6d33cc198f612845742539c6b7e42" name="a46e6d33cc198f612845742539c6b7e42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46e6d33cc198f612845742539c6b7e42">&#9670;&#160;</a></span>setAgentData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::setAgentData </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置游戏自定义标记。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00645">645</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem_8cpp_source.html#l00192">data</a>.</p>
+
+</div>
+</div>
+<a id="a382117cf90a9e97a1ce50c01f144c9ef" name="a382117cf90a9e97a1ce50c01f144c9ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a382117cf90a9e97a1ce50c01f144c9ef">&#9670;&#160;</a></span>setAgentPosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::setAgentPosition </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>直接放置单位。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00668">668</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="aca5e12ea9cab9df1658953853a85577a" name="aca5e12ea9cab9df1658953853a85577a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca5e12ea9cab9df1658953853a85577a">&#9670;&#160;</a></span>setAgentRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::setAgentRadius </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置半径。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00639">639</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="aa4ecddbfbe7d30fa31d7752c031b01e0" name="aa4ecddbfbe7d30fa31d7752c031b01e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4ecddbfbe7d30fa31d7752c031b01e0">&#9670;&#160;</a></span>setAgentSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::setAgentSpeed </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置最大速度（世界单位/秒）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00621">621</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="af31752403de84d89a3853dd23954e634" name="af31752403de84d89a3853dd23954e634"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af31752403de84d89a3853dd23954e634">&#9670;&#160;</a></span>setAgentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::setAgentTarget </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ty</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置世界目标点（seek 直接寻点，boids 作迁移偏置）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00607">607</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="ae2ba9acbe87f3f95432991752ad437aa" name="ae2ba9acbe87f3f95432991752ad437aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2ba9acbe87f3f95432991752ad437aa">&#9670;&#160;</a></span>setAgentTurnRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::Crowd::setAgentTurnRate </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radPerSec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置转向速率上限（弧度/秒）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00633">633</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aefe48f6c34bc43645103980ac102b672" name="aefe48f6c34bc43645103980ac102b672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefe48f6c34bc43645103980ac102b672">&#9670;&#160;</a></span>setAlignmentWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setAlignmentWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Boids 对齐力权重。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00704">704</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2010dc2cfa44da038e3586bffb642e7" name="ae2010dc2cfa44da038e3586bffb642e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2010dc2cfa44da038e3586bffb642e7">&#9670;&#160;</a></span>setArriveRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setArriveRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>seek 到达减速半径。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00700">700</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="a681695c736e01c1a8832bee8a3e93f31" name="a681695c736e01c1a8832bee8a3e93f31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a681695c736e01c1a8832bee8a3e93f31">&#9670;&#160;</a></span>setBlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setBlocked </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>blocked</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置/清除某格阻挡。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00414">414</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a> , 以及 <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>.</p>
+
+</div>
+</div>
+<a id="ada7a6edf07e68ad5e742fa7493e2ae13" name="ada7a6edf07e68ad5e742fa7493e2ae13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada7a6edf07e68ad5e742fa7493e2ae13">&#9670;&#160;</a></span>setCellCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setCellCost </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cost</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置地形代价（0=阻挡，&gt;=1 可走）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00037">cost</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a> , 以及 <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>.</p>
+
+</div>
+</div>
+<a id="a190a2b3db377572165e6479b18737e74" name="a190a2b3db377572165e6479b18737e74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a190a2b3db377572165e6479b18737e74">&#9670;&#160;</a></span>setClampToField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setClampToField </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>是否把单位钳制在流场边界内（默认开）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00709">709</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a464d1216ed72dd901b487be4335f50" name="a0a464d1216ed72dd901b487be4335f50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a464d1216ed72dd901b487be4335f50">&#9670;&#160;</a></span>setCohesionWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setCohesionWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Boids 聚合力权重。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00705">705</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5640fbf733e3f267119908ac7e61ac79" name="a5640fbf733e3f267119908ac7e61ac79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5640fbf733e3f267119908ac7e61ac79">&#9670;&#160;</a></span>setDefaultRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setDefaultRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>新单位默认半径。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00696">696</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="a5d2737efaa7b09ef5f59d6e97e254118" name="a5d2737efaa7b09ef5f59d6e97e254118"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d2737efaa7b09ef5f59d6e97e254118">&#9670;&#160;</a></span>setDefaultSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setDefaultSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>新单位默认速度。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00695">695</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc6372aa305feaa4f8dc3d5257f6b42b" name="abc6372aa305feaa4f8dc3d5257f6b42b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc6372aa305feaa4f8dc3d5257f6b42b">&#9670;&#160;</a></span>setDefaultTurnRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setDefaultTurnRate </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radPerSec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>新单位默认转向速率（弧度/秒）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00697">697</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb1db0f0406312c6e1a07f877e9e33e0" name="abb1db0f0406312c6e1a07f877e9e33e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb1db0f0406312c6e1a07f877e9e33e0">&#9670;&#160;</a></span>setGoalWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setGoalWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Boids 目标偏置权重。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00707">707</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8d42e9fa7cac9e5f077070b4a0606994" name="a8d42e9fa7cac9e5f077070b4a0606994"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d42e9fa7cac9e5f077070b4a0606994">&#9670;&#160;</a></span>setMaxAgents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setMaxAgents </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxAgents</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>单位容量上限（默认 100000）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00588">588</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aecb88dc184adc32a44b5c2e0800f75e3" name="aecb88dc184adc32a44b5c2e0800f75e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecb88dc184adc32a44b5c2e0800f75e3">&#9670;&#160;</a></span>setPerceptionRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setPerceptionRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>对齐/聚合感知半径（Boids；默认 64，可大于分离半径）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00702">702</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="a82b980f9393f4471232e63a1f7f48580" name="a82b980f9393f4471232e63a1f7f48580"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82b980f9393f4471232e63a1f7f48580">&#9670;&#160;</a></span>setResolveOverlaps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setResolveOverlaps </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>是否做位置重叠消解 pass（默认开）。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00708">708</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5af257d6c943944680795e6f7cd731ae" name="a5af257d6c943944680795e6f7cd731ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5af257d6c943944680795e6f7cd731ae">&#9670;&#160;</a></span>setSeparationRadius()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setSeparationRadius </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>分离/邻居查询半径。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00701">701</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>.</p>
+
+</div>
+</div>
+<a id="acf06a3c07dd6f8d7f58a9e5755f97b7a" name="acf06a3c07dd6f8d7f58a9e5755f97b7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf06a3c07dd6f8d7f58a9e5755f97b7a">&#9670;&#160;</a></span>setSeparationWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setSeparationWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Boids 分离力权重。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00703">703</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2bcd6109a58919ffbc85a436c5374371" name="a2bcd6109a58919ffbc85a436c5374371"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bcd6109a58919ffbc85a436c5374371">&#9670;&#160;</a></span>setWanderWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::setWanderWeight </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Boids wander 权重。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00706">706</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a325b9da40b12da7e4bb293d89d1414" name="a1a325b9da40b12da7e4bb293d89d1414"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a325b9da40b12da7e4bb293d89d1414">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::Crowd::step </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>推进一帧仿真。 </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a> 第 <a class="el" href="Crowd_8cpp_source.html#l00711">711</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Profile_8h_source.html#l00137">EV_PROFILE_MODULE</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSSystems_8cpp_source.html#l01944">eve::rts::CrowdMotionSystem::step()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/crowd/<a class="el" href="Crowd_8h_source.html">Crowd.h</a></li>
+<li>src/modules/crowd/<a class="el" href="Crowd_8cpp_source.html">Crowd.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

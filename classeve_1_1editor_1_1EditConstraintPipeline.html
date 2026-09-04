@@ -1,0 +1,417 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditConstraintPipeline类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html">EditConstraintPipeline</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1EditConstraintPipeline-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditConstraintPipeline类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Ordered, non-owning constraint chain with diagnostics.  
+ <a href="classeve_1_1editor_1_1EditConstraintPipeline.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditConstraint_8h_source.html">EditConstraint.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a49fdee8cec79ee7cbe007c44d52743f4" id="r_a49fdee8cec79ee7cbe007c44d52743f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#a49fdee8cec79ee7cbe007c44d52743f4">add</a> (<a class="el" href="classeve_1_1editor_1_1IEditConstraint.html">IEditConstraint</a> *constraint)</td></tr>
+<tr class="separator:a49fdee8cec79ee7cbe007c44d52743f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af07729c8fbebc22ffa42380ff1c8844e" id="r_af07729c8fbebc22ffa42380ff1c8844e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#af07729c8fbebc22ffa42380ff1c8844e">remove</a> (<a class="el" href="classeve_1_1editor_1_1IEditConstraint.html">IEditConstraint</a> *constraint)</td></tr>
+<tr class="separator:af07729c8fbebc22ffa42380ff1c8844e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2f8141f3ceabdcc4c51b0844c01d843" id="r_ac2f8141f3ceabdcc4c51b0844c01d843"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ac2f8141f3ceabdcc4c51b0844c01d843">clear</a> ()</td></tr>
+<tr class="separator:ac2f8141f3ceabdcc4c51b0844c01d843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f78146c1b30aeef4d090bc50b31110c" id="r_a6f78146c1b30aeef4d090bc50b31110c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#a6f78146c1b30aeef4d090bc50b31110c">evaluate</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context, <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &amp;command)</td></tr>
+<tr class="memdesc:a6f78146c1b30aeef4d090bc50b31110c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility-only boolean facade over <a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ad71f0c270fb3a2716a5c98878d3b830e" title="Evaluate the chain and return structured allow/warning/reject diagnostics.">evaluateChecked()</a>.  <br /></td></tr>
+<tr class="separator:a6f78146c1b30aeef4d090bc50b31110c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad71f0c270fb3a2716a5c98878d3b830e" id="r_ad71f0c270fb3a2716a5c98878d3b830e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ad71f0c270fb3a2716a5c98878d3b830e">evaluateChecked</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;context, <a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &amp;command)</td></tr>
+<tr class="memdesc:ad71f0c270fb3a2716a5c98878d3b830e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the chain and return structured allow/warning/reject diagnostics.  <br /></td></tr>
+<tr class="separator:ad71f0c270fb3a2716a5c98878d3b830e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34b58b617cc0982e022055bfee4f0500" id="r_a34b58b617cc0982e022055bfee4f0500"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#a34b58b617cc0982e022055bfee4f0500">diagnosticCount</a> () const</td></tr>
+<tr class="separator:a34b58b617cc0982e022055bfee4f0500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2d5bfa2eaa0dfdd230cf26436964969" id="r_ac2d5bfa2eaa0dfdd230cf26436964969"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ac2d5bfa2eaa0dfdd230cf26436964969">diagnostic</a> (int <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const</td></tr>
+<tr class="separator:ac2d5bfa2eaa0dfdd230cf26436964969"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab71a5ea4b305ff26b73fbe32bf149711" id="r_ab71a5ea4b305ff26b73fbe32bf149711"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ab71a5ea4b305ff26b73fbe32bf149711">rejected</a> () const</td></tr>
+<tr class="separator:ab71a5ea4b305ff26b73fbe32bf149711"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Ordered, non-owning constraint chain with diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8h_source.html">EditConstraint.h</a> 第 <a class="el" href="EditConstraint_8h_source.html#l00036">36</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a49fdee8cec79ee7cbe007c44d52743f4" name="a49fdee8cec79ee7cbe007c44d52743f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49fdee8cec79ee7cbe007c44d52743f4">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditConstraintPipeline::add </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditConstraint.html">IEditConstraint</a> *&#160;</td>
+          <td class="paramname"><em>constraint</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8cpp_source.html">EditConstraint.cpp</a> 第 <a class="el" href="EditConstraint_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2f8141f3ceabdcc4c51b0844c01d843" name="ac2f8141f3ceabdcc4c51b0844c01d843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2f8141f3ceabdcc4c51b0844c01d843">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditConstraintPipeline::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8cpp_source.html">EditConstraint.cpp</a> 第 <a class="el" href="EditConstraint_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac2d5bfa2eaa0dfdd230cf26436964969" name="ac2d5bfa2eaa0dfdd230cf26436964969"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2d5bfa2eaa0dfdd230cf26436964969">&#9670;&#160;</a></span>diagnostic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::editor::EditConstraintPipeline::diagnostic </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8cpp_source.html">EditConstraint.cpp</a> 第 <a class="el" href="EditConstraint_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditConstraint_8h_source.html#l00045">diagnosticCount()</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+</div>
+</div>
+<a id="a34b58b617cc0982e022055bfee4f0500" name="a34b58b617cc0982e022055bfee4f0500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34b58b617cc0982e022055bfee4f0500">&#9670;&#160;</a></span>diagnosticCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::editor::EditConstraintPipeline::diagnosticCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8h_source.html">EditConstraint.h</a> 第 <a class="el" href="EditConstraint_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditConstraint_8cpp_source.html#l00063">diagnostic()</a>.</p>
+
+</div>
+</div>
+<a id="a6f78146c1b30aeef4d090bc50b31110c" name="a6f78146c1b30aeef4d090bc50b31110c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f78146c1b30aeef4d090bc50b31110c">&#9670;&#160;</a></span>evaluate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditConstraintPipeline::evaluate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &amp;&#160;</td>
+          <td class="paramname"><em>command</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility-only boolean facade over <a class="el" href="classeve_1_1editor_1_1EditConstraintPipeline.html#ad71f0c270fb3a2716a5c98878d3b830e" title="Evaluate the chain and return structured allow/warning/reject diagnostics.">evaluateChecked()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8cpp_source.html">EditConstraint.cpp</a> 第 <a class="el" href="EditConstraint_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditConstraint_8cpp_source.html#l00036">evaluateChecked()</a>.</p>
+
+</div>
+</div>
+<a id="ad71f0c270fb3a2716a5c98878d3b830e" name="ad71f0c270fb3a2716a5c98878d3b830e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad71f0c270fb3a2716a5c98878d3b830e">&#9670;&#160;</a></span>evaluateChecked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::EditConstraintPipeline::evaluateChecked </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditCommand.html">IEditCommand</a> &amp;&#160;</td>
+          <td class="paramname"><em>command</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate the chain and return structured allow/warning/reject diagnostics. </p>
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8cpp_source.html">EditConstraint.cpp</a> 第 <a class="el" href="EditConstraint_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditConstraint_8h_source.html#l00017">eve::editor::ConstraintResult::disposition</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditConstraint_8h_source.html#l00018">eve::editor::ConstraintResult::message</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a6adf97f83acf6453d4a6a4b1070f3754">eve::None</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="namespaceeve_1_1editor.html#add05a98335fb51c3515932e4e84f7853ad98ac12774fca5c3cbaffe276840c55f">eve::editor::Reject</a>, <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a> , 以及 <a class="el" href="namespaceeve_1_1editor.html#add05a98335fb51c3515932e4e84f7853a0eaadb4fcb48a0a0ed7bc9868be9fbaa">eve::editor::Warning</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditConstraint_8cpp_source.html#l00033">evaluate()</a> , 以及 <a class="el" href="EditorSession_8cpp_source.html#l00034">eve::editor::EditorSession::executeChecked()</a>.</p>
+
+</div>
+</div>
+<a id="ab71a5ea4b305ff26b73fbe32bf149711" name="ab71a5ea4b305ff26b73fbe32bf149711"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab71a5ea4b305ff26b73fbe32bf149711">&#9670;&#160;</a></span>rejected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditConstraintPipeline::rejected </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8h_source.html">EditConstraint.h</a> 第 <a class="el" href="EditConstraint_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af07729c8fbebc22ffa42380ff1c8844e" name="af07729c8fbebc22ffa42380ff1c8844e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af07729c8fbebc22ffa42380ff1c8844e">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditConstraintPipeline::remove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditConstraint.html">IEditConstraint</a> *&#160;</td>
+          <td class="paramname"><em>constraint</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditConstraint_8cpp_source.html">EditConstraint.cpp</a> 第 <a class="el" href="EditConstraint_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditConstraint_8h_source.html">EditConstraint.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditConstraint_8cpp_source.html">EditConstraint.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

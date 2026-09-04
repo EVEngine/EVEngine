@@ -1,0 +1,267 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/WorldAnchorProjection.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WorldAnchorProjection.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WorldAnchorProjection_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="UIHost_8h.html">ui/UIHost.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorProjection.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1WorldAnchorProjection.html">WorldAnchorProjection</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorProjection.html#a78cc74f1ed0a4952af2839a5aa66d24d">   14</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1ui.html#ac960271d9f74b1533d9f10d26de2128f">WorldAnchorState</a> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorProjection.html#a78cc74f1ed0a4952af2839a5aa66d24d">state</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#ac960271d9f74b1533d9f10d26de2128fab9f5c797ebbf55adccdd8539a65a0241">WorldAnchorState::Disabled</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorProjection.html#a93d9491ab3ecab1b9dfde1481680f0d4">   15</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorProjection.html#a93d9491ab3ecab1b9dfde1481680f0d4">screenX</a> = 0.f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorProjection.html#ab4238c128e7df655a8ca7ff2e508061d">   16</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorProjection.html#ab4238c128e7df655a8ca7ff2e508061d">screenY</a> = 0.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorProjection.html#af67e6dc5c9e450c3c0f428e3d17591de">   17</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorProjection.html#af67e6dc5c9e450c3c0f428e3d17591de">depth</a> = 0.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorProjection.html#ad678fdb2e8f70a25d6f37fcec499de87">   18</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorProjection.html#ad678fdb2e8f70a25d6f37fcec499de87">scale</a> = 1.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorProjection.html#a5f943b1d70e9f2b6e64cc32dd4ac2687">   19</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorProjection.html#a5f943b1d70e9f2b6e64cc32dd4ac2687">render</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html">WorldAnchorLayoutItem</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae66681b53422c63242b1a31e4fa3bbaf">   24</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae66681b53422c63242b1a31e4fa3bbaf">stableIndex</a> = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#affb49abfbf7bec36707f1abee76c25e0">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#affb49abfbf7bec36707f1abee76c25e0">screenX</a> = 0.f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a9dc4dba667393c99fa35a270985bb2cd">   26</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a9dc4dba667393c99fa35a270985bb2cd">screenY</a> = 0.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a8455813e790a3531081f9ee236207885">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a8455813e790a3531081f9ee236207885">width</a> = 0.f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ab0637757e22cc0b20862c17b668c93bd">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ab0637757e22cc0b20862c17b668c93bd">height</a> = 0.f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a8f7ee5e6b5a820f21430b4b7222e3bd0">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a8f7ee5e6b5a820f21430b4b7222e3bd0">pivotX</a> = 0.f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#afd13e44f2f4eabee87480bee84b93a77">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#afd13e44f2f4eabee87480bee84b93a77">pivotY</a> = 0.f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a52eb96e2edd23ac81d4590d3045dbddc">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a52eb96e2edd23ac81d4590d3045dbddc">depth</a> = 0.f;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae84cf1b67ae1661e53be3c52a033d248">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae84cf1b67ae1661e53be3c52a033d248">safeMargin</a> = 0.f;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a50dd03f2eb8c9a80e829181fae11097d">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a50dd03f2eb8c9a80e829181fae11097d">padding</a> = 0.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae9557888e3edc3c6d5c198f7ff0f556b">   34</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae9557888e3edc3c6d5c198f7ff0f556b">maxDisplacement</a> = 0.f;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#acbe1024657684a6d8dd4f014808f8a6e">   35</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#acbe1024657684a6d8dd4f014808f8a6e">priority</a> = 0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a2e26e03cd96a3b10744b7ff2ad1fb04e">   36</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a2e26e03cd96a3b10744b7ff2ad1fb04e">avoidOverlap</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html">   40</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html">WorldAnchorLayoutResult</a> {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#aecb600c17c92282ee17abffbe6da0015">   41</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#aecb600c17c92282ee17abffbe6da0015">stableIndex</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a351bca58d3106e7c4001fb8245c6b785">   42</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a351bca58d3106e7c4001fb8245c6b785">screenX</a> = 0.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a4009e6d40b4ed0931de2aa90ea11b334">   43</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a4009e6d40b4ed0931de2aa90ea11b334">screenY</a> = 0.f;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a5ac9f00937b32ea8ff2b7db7d04f565c">   44</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a5ac9f00937b32ea8ff2b7db7d04f565c">displacementX</a> = 0.f;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a8145b335fb396746bc7c2412fd5dacfc">   45</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a8145b335fb396746bc7c2412fd5dacfc">displacementY</a> = 0.f;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a8aaf558ce7e7a6323ec723a063b39f48">   46</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a8aaf558ce7e7a6323ec723a063b39f48">render</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>[[nodiscard]] <a class="code hl_struct" href="structeve_1_1ui_1_1WorldAnchorProjection.html">WorldAnchorProjection</a> <a class="code hl_function" href="namespaceeve_1_1ui.html#a117bf628e11ebefbe7c285da33ced59f">projectWorldAnchor</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui_1_1UIHost_1_1WorldAnchor.html">UIHost::WorldAnchor</a> &amp;<a class="code hl_variable" href="CaveMesh_8cpp.html#a73678de7ce7832a14cff787d84f286fb">anchor</a>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                                       <span class="keyword">const</span> glm::mat4 &amp;viewProjection,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                                       <span class="keywordtype">float</span> cameraX, <span class="keywordtype">float</span> cameraY, <span class="keywordtype">float</span> cameraZ,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                                       <span class="keywordtype">float</span> viewportWidth, <span class="keywordtype">float</span> viewportHeight);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>[[nodiscard]] std::vector&lt;WorldAnchorLayoutResult&gt; <a class="code hl_function" href="namespaceeve_1_1ui.html#aa08a6c6840bba5f2b25841bb2679a7ae">resolveWorldAnchorOverlaps</a>(</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::vector&lt;WorldAnchorLayoutItem&gt; items, <span class="keywordtype">float</span> viewportWidth, <span class="keywordtype">float</span> viewportHeight);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}  <span class="comment">// namespace eve::ui</span></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a73678de7ce7832a14cff787d84f286fb"><div class="ttname"><a href="CaveMesh_8cpp.html#a73678de7ce7832a14cff787d84f286fb">anchor</a></div><div class="ttdeci">Vec3 anchor</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00090">CaveMesh.cpp:90</a></div></div>
+<div class="ttc" id="aUIHost_8h_html"><div class="ttname"><a href="UIHost_8h.html">UIHost.h</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a117bf628e11ebefbe7c285da33ced59f"><div class="ttname"><a href="namespaceeve_1_1ui.html#a117bf628e11ebefbe7c285da33ced59f">eve::ui::projectWorldAnchor</a></div><div class="ttdeci">WorldAnchorProjection projectWorldAnchor(const UIHost::WorldAnchor &amp;anchor, const glm::mat4 &amp;viewProjection, float cameraX, float cameraY, float cameraZ, float viewportWidth, float viewportHeight)</div><div class="ttdoc">Projects one world-space UI anchor using a Vulkan RH-ZO view-projection matrix.</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00043">WorldAnchorProjection.cpp:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_aa08a6c6840bba5f2b25841bb2679a7ae"><div class="ttname"><a href="namespaceeve_1_1ui.html#aa08a6c6840bba5f2b25841bb2679a7ae">eve::ui::resolveWorldAnchorOverlaps</a></div><div class="ttdeci">std::vector&lt; WorldAnchorLayoutResult &gt; resolveWorldAnchorOverlaps(std::vector&lt; WorldAnchorLayoutItem &gt; items, float viewportWidth, float viewportHeight)</div><div class="ttdoc">Resolves projected host overlap with bounded deterministic vertical displacement.</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00091">WorldAnchorProjection.cpp:91</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_ac960271d9f74b1533d9f10d26de2128f"><div class="ttname"><a href="namespaceeve_1_1ui.html#ac960271d9f74b1533d9f10d26de2128f">eve::ui::WorldAnchorState</a></div><div class="ttdeci">WorldAnchorState</div><div class="ttdoc">Visibility result of projecting a world-space UI anchor.</div><div class="ttdef"><b>Definition</b> <a href="UIHost_8h_source.html#l00080">UIHost.h:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_ac960271d9f74b1533d9f10d26de2128fab9f5c797ebbf55adccdd8539a65a0241"><div class="ttname"><a href="namespaceeve_1_1ui.html#ac960271d9f74b1533d9f10d26de2128fab9f5c797ebbf55adccdd8539a65a0241">eve::ui::WorldAnchorState::Disabled</a></div><div class="ttdeci">@ Disabled</div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1UIHost_1_1WorldAnchor_html"><div class="ttname"><a href="structeve_1_1ui_1_1UIHost_1_1WorldAnchor.html">eve::ui::UIHost::WorldAnchor</a></div><div class="ttdoc">Optional 3D-world projection for this UI host.</div><div class="ttdef"><b>Definition</b> <a href="UIHost_8h_source.html#l00267">UIHost.h:267</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html">eve::ui::WorldAnchorLayoutItem</a></div><div class="ttdoc">One projected host participating in deterministic screen-space placement.</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00023">WorldAnchorProjection.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_a2e26e03cd96a3b10744b7ff2ad1fb04e"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a2e26e03cd96a3b10744b7ff2ad1fb04e">eve::ui::WorldAnchorLayoutItem::avoidOverlap</a></div><div class="ttdeci">bool avoidOverlap</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00036">WorldAnchorProjection.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_a50dd03f2eb8c9a80e829181fae11097d"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a50dd03f2eb8c9a80e829181fae11097d">eve::ui::WorldAnchorLayoutItem::padding</a></div><div class="ttdeci">float padding</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00033">WorldAnchorProjection.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_a52eb96e2edd23ac81d4590d3045dbddc"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a52eb96e2edd23ac81d4590d3045dbddc">eve::ui::WorldAnchorLayoutItem::depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00031">WorldAnchorProjection.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_a8455813e790a3531081f9ee236207885"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a8455813e790a3531081f9ee236207885">eve::ui::WorldAnchorLayoutItem::width</a></div><div class="ttdeci">float width</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00027">WorldAnchorProjection.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_a8f7ee5e6b5a820f21430b4b7222e3bd0"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a8f7ee5e6b5a820f21430b4b7222e3bd0">eve::ui::WorldAnchorLayoutItem::pivotX</a></div><div class="ttdeci">float pivotX</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00029">WorldAnchorProjection.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_a9dc4dba667393c99fa35a270985bb2cd"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#a9dc4dba667393c99fa35a270985bb2cd">eve::ui::WorldAnchorLayoutItem::screenY</a></div><div class="ttdeci">float screenY</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00026">WorldAnchorProjection.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_ab0637757e22cc0b20862c17b668c93bd"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ab0637757e22cc0b20862c17b668c93bd">eve::ui::WorldAnchorLayoutItem::height</a></div><div class="ttdeci">float height</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00028">WorldAnchorProjection.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_acbe1024657684a6d8dd4f014808f8a6e"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#acbe1024657684a6d8dd4f014808f8a6e">eve::ui::WorldAnchorLayoutItem::priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00035">WorldAnchorProjection.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_ae66681b53422c63242b1a31e4fa3bbaf"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae66681b53422c63242b1a31e4fa3bbaf">eve::ui::WorldAnchorLayoutItem::stableIndex</a></div><div class="ttdeci">std::size_t stableIndex</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00024">WorldAnchorProjection.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_ae84cf1b67ae1661e53be3c52a033d248"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae84cf1b67ae1661e53be3c52a033d248">eve::ui::WorldAnchorLayoutItem::safeMargin</a></div><div class="ttdeci">float safeMargin</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00032">WorldAnchorProjection.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_ae9557888e3edc3c6d5c198f7ff0f556b"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#ae9557888e3edc3c6d5c198f7ff0f556b">eve::ui::WorldAnchorLayoutItem::maxDisplacement</a></div><div class="ttdeci">float maxDisplacement</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00034">WorldAnchorProjection.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_afd13e44f2f4eabee87480bee84b93a77"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#afd13e44f2f4eabee87480bee84b93a77">eve::ui::WorldAnchorLayoutItem::pivotY</a></div><div class="ttdeci">float pivotY</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00030">WorldAnchorProjection.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutItem_html_affb49abfbf7bec36707f1abee76c25e0"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutItem.html#affb49abfbf7bec36707f1abee76c25e0">eve::ui::WorldAnchorLayoutItem::screenX</a></div><div class="ttdeci">float screenX</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00025">WorldAnchorProjection.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutResult_html"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html">eve::ui::WorldAnchorLayoutResult</a></div><div class="ttdoc">Owning placement result corresponding to WorldAnchorLayoutItem::stableIndex.</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00040">WorldAnchorProjection.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutResult_html_a351bca58d3106e7c4001fb8245c6b785"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a351bca58d3106e7c4001fb8245c6b785">eve::ui::WorldAnchorLayoutResult::screenX</a></div><div class="ttdeci">float screenX</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00042">WorldAnchorProjection.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutResult_html_a4009e6d40b4ed0931de2aa90ea11b334"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a4009e6d40b4ed0931de2aa90ea11b334">eve::ui::WorldAnchorLayoutResult::screenY</a></div><div class="ttdeci">float screenY</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00043">WorldAnchorProjection.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutResult_html_a5ac9f00937b32ea8ff2b7db7d04f565c"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a5ac9f00937b32ea8ff2b7db7d04f565c">eve::ui::WorldAnchorLayoutResult::displacementX</a></div><div class="ttdeci">float displacementX</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00044">WorldAnchorProjection.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutResult_html_a8145b335fb396746bc7c2412fd5dacfc"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a8145b335fb396746bc7c2412fd5dacfc">eve::ui::WorldAnchorLayoutResult::displacementY</a></div><div class="ttdeci">float displacementY</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00045">WorldAnchorProjection.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutResult_html_a8aaf558ce7e7a6323ec723a063b39f48"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#a8aaf558ce7e7a6323ec723a063b39f48">eve::ui::WorldAnchorLayoutResult::render</a></div><div class="ttdeci">bool render</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00046">WorldAnchorProjection.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorLayoutResult_html_aecb600c17c92282ee17abffbe6da0015"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorLayoutResult.html#aecb600c17c92282ee17abffbe6da0015">eve::ui::WorldAnchorLayoutResult::stableIndex</a></div><div class="ttdeci">std::size_t stableIndex</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00041">WorldAnchorProjection.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorProjection_html"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorProjection.html">eve::ui::WorldAnchorProjection</a></div><div class="ttdoc">Immutable result of projecting a UI world anchor into a viewport.</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00013">WorldAnchorProjection.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorProjection_html_a5f943b1d70e9f2b6e64cc32dd4ac2687"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorProjection.html#a5f943b1d70e9f2b6e64cc32dd4ac2687">eve::ui::WorldAnchorProjection::render</a></div><div class="ttdeci">bool render</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00019">WorldAnchorProjection.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorProjection_html_a78cc74f1ed0a4952af2839a5aa66d24d"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorProjection.html#a78cc74f1ed0a4952af2839a5aa66d24d">eve::ui::WorldAnchorProjection::state</a></div><div class="ttdeci">WorldAnchorState state</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00014">WorldAnchorProjection.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorProjection_html_a93d9491ab3ecab1b9dfde1481680f0d4"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorProjection.html#a93d9491ab3ecab1b9dfde1481680f0d4">eve::ui::WorldAnchorProjection::screenX</a></div><div class="ttdeci">float screenX</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00015">WorldAnchorProjection.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorProjection_html_ab4238c128e7df655a8ca7ff2e508061d"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorProjection.html#ab4238c128e7df655a8ca7ff2e508061d">eve::ui::WorldAnchorProjection::screenY</a></div><div class="ttdeci">float screenY</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00016">WorldAnchorProjection.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorProjection_html_ad678fdb2e8f70a25d6f37fcec499de87"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorProjection.html#ad678fdb2e8f70a25d6f37fcec499de87">eve::ui::WorldAnchorProjection::scale</a></div><div class="ttdeci">float scale</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00018">WorldAnchorProjection.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WorldAnchorProjection_html_af67e6dc5c9e450c3c0f428e3d17591de"><div class="ttname"><a href="structeve_1_1ui_1_1WorldAnchorProjection.html#af67e6dc5c9e450c3c0f428e3d17591de">eve::ui::WorldAnchorProjection::depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8h_source.html#l00017">WorldAnchorProjection.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

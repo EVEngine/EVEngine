@@ -1,0 +1,699 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rpg::RPGSaveSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rpg.html">rpg</a></li><li class="navelem"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html">RPGSaveSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1rpg_1_1RPGSaveSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rpg::RPGSaveSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A non-owning save boundary for the persistent classic-RPG state owners.  
+ <a href="classeve_1_1rpg_1_1RPGSaveSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RPGSaveSession_8h_source.html">RPGSaveSession.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab132e1c868a87dc9cc0de36f726ea354" id="r_ab132e1c868a87dc9cc0de36f726ea354"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#ab132e1c868a87dc9cc0de36f726ea354">RPGSaveSession</a> ()=default</td></tr>
+<tr class="separator:ab132e1c868a87dc9cc0de36f726ea354"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cec46b4057c543247a4f0d9b1af6036" id="r_a1cec46b4057c543247a4f0d9b1af6036"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a1cec46b4057c543247a4f0d9b1af6036">bind</a> (<a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> &amp;gameState, <a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> &amp;tracker, <a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> &amp;actor, <a class="el" href="classeve_1_1inventory_1_1Bag.html">inventory::Bag</a> &amp;bag, <a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">inventory::EquipmentSet</a> &amp;equipment) noexcept</td></tr>
+<tr class="memdesc:a1cec46b4057c543247a4f0d9b1af6036"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the authoritative participants used by subsequent operations.  <br /></td></tr>
+<tr class="separator:a1cec46b4057c543247a4f0d9b1af6036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebdd1ea6e9cff6f62fddf6ed706c47b8" id="r_aebdd1ea6e9cff6f62fddf6ed706c47b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#aebdd1ea6e9cff6f62fddf6ed706c47b8">bindParty</a> (<a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> &amp;gameState, <a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> &amp;tracker, <a class="el" href="classeve_1_1rpg_1_1Party.html">Party</a> &amp;party, <a class="el" href="classeve_1_1inventory_1_1Bag.html">inventory::Bag</a> &amp;bag, <a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">inventory::EquipmentSet</a> &amp;equipment) noexcept</td></tr>
+<tr class="memdesc:aebdd1ea6e9cff6f62fddf6ed706c47b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a complete authoritative player party instead of a single compatibility actor.  <br /></td></tr>
+<tr class="separator:aebdd1ea6e9cff6f62fddf6ed706c47b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5b37921cfe96d81597c4f071177eebe" id="r_ab5b37921cfe96d81597c4f071177eebe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#ab5b37921cfe96d81597c4f071177eebe">setContentVersion</a> (std::string_view contentVersion)</td></tr>
+<tr class="memdesc:ab5b37921cfe96d81597c4f071177eebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the exact game-content contract required by this save session.  <br /></td></tr>
+<tr class="separator:ab5b37921cfe96d81597c4f071177eebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae399f76e34e4cc3efa5a82662cfe4766" id="r_ae399f76e34e4cc3efa5a82662cfe4766"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#ae399f76e34e4cc3efa5a82662cfe4766">getContentVersion</a> () const</td></tr>
+<tr class="memdesc:ae399f76e34e4cc3efa5a82662cfe4766"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning copy of the configured content contract identifier.  <br /></td></tr>
+<tr class="separator:ae399f76e34e4cc3efa5a82662cfe4766"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38dc218ab0d80d3f356bf88bea2cca9c" id="r_a38dc218ab0d80d3f356bf88bea2cca9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a38dc218ab0d80d3f356bf88bea2cca9c">allowCompatibleContentVersion</a> (std::string_view contentVersion)</td></tr>
+<tr class="memdesc:a38dc218ab0d80d3f356bf88bea2cca9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accept one older content contract that is data-compatible with the configured version.  <br /></td></tr>
+<tr class="separator:a38dc218ab0d80d3f356bf88bea2cca9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70f114b12878a79aaf4684f917745f5c" id="r_a70f114b12878a79aaf4684f917745f5c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a70f114b12878a79aaf4684f917745f5c">addIdRenameMigration</a> (std::string_view fromContentVersion, <a class="el" href="namespaceeve_1_1rpg.html#a8261c3c248dc4c3e1a10ace305c196bd">RPGSaveIdDomain</a> domain, std::string_view oldId, std::string_view newId)</td></tr>
+<tr class="memdesc:a70f114b12878a79aaf4684f917745f5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register one direct old-to-current definition ID rewrite.  <br /></td></tr>
+<tr class="separator:a70f114b12878a79aaf4684f917745f5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeac1a06045e9de3f817ef33edd3b1294" id="r_aeac1a06045e9de3f817ef33edd3b1294"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#aeac1a06045e9de3f817ef33edd3b1294">addQuestAdditionMigration</a> (std::string_view fromContentVersion, std::string_view questId)</td></tr>
+<tr class="memdesc:aeac1a06045e9de3f817ef33edd3b1294"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register an additive migration that initializes one newly introduced quest.  <br /></td></tr>
+<tr class="separator:aeac1a06045e9de3f817ef33edd3b1294"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9299f56162d175b26897da3fc2af4030" id="r_a9299f56162d175b26897da3fc2af4030"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a9299f56162d175b26897da3fc2af4030">allowSingleActorPartyMigration</a> (std::string_view fromContentVersion)</td></tr>
+<tr class="memdesc:a9299f56162d175b26897da3fc2af4030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register an explicit schema-v1 single-actor to schema-v2 party migration.  <br /></td></tr>
+<tr class="separator:a9299f56162d175b26897da3fc2af4030"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25348f62021cf058d5c4edc80d5cb8f2" id="r_a25348f62021cf058d5c4edc80d5cb8f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a25348f62021cf058d5c4edc80d5cb8f2">snapshotJson</a> () const</td></tr>
+<tr class="memdesc:a25348f62021cf058d5c4edc80d5cb8f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture every bound participant into one deterministic versioned JSON document.  <br /></td></tr>
+<tr class="separator:a25348f62021cf058d5c4edc80d5cb8f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c87220f9e7b49df02bd817d3ec8544f" id="r_a1c87220f9e7b49df02bd817d3ec8544f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a1c87220f9e7b49df02bd817d3ec8544f">validateSnapshotJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:a1c87220f9e7b49df02bd817d3ec8544f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse and fully prepare a save without publishing participant state.  <br /></td></tr>
+<tr class="separator:a1c87220f9e7b49df02bd817d3ec8544f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afed4177b69bcab71f41480892a4ac842" id="r_afed4177b69bcab71f41480892a4ac842"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#afed4177b69bcab71f41480892a4ac842">restoreSnapshotJson</a> (std::string_view json)</td></tr>
+<tr class="memdesc:afed4177b69bcab71f41480892a4ac842"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate all participants and atomically publish a save-session snapshot.  <br /></td></tr>
+<tr class="separator:afed4177b69bcab71f41480892a4ac842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>A non-owning save boundary for the persistent classic-RPG state owners. </p>
+<p>The session does not become a second source of truth: it only coordinates the canonical snapshot codecs owned by its participants. More participant types can be added in later schema versions without moving their mutable state here. </p>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8h_source.html">RPGSaveSession.h</a> 第 <a class="el" href="RPGSaveSession_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab132e1c868a87dc9cc0de36f726ea354" name="ab132e1c868a87dc9cc0de36f726ea354"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab132e1c868a87dc9cc0de36f726ea354">&#9670;&#160;</a></span>RPGSaveSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rpg::RPGSaveSession::RPGSaveSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a70f114b12878a79aaf4684f917745f5c" name="a70f114b12878a79aaf4684f917745f5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70f114b12878a79aaf4684f917745f5c">&#9670;&#160;</a></span>addIdRenameMigration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGSaveSession::addIdRenameMigration </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>fromContentVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1rpg.html#a8261c3c248dc4c3e1a10ace305c196bd">RPGSaveIdDomain</a>&#160;</td>
+          <td class="paramname"><em>domain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>oldId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>newId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register one direct old-to-current definition ID rewrite. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fromContentVersion</td><td>Exact source content contract accepted by this migration route. </td></tr>
+    <tr><td class="paramname">domain</td><td>Snapshot field domain to rewrite. </td></tr>
+    <tr><td class="paramname">oldId</td><td>Exact old identifier. </td></tr>
+    <tr><td class="paramname">newId</td><td>Exact identifier expected by the currently loaded definitions. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied status, or a structured failure without changing registered rules. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The current content version must already be configured. Rules are pure admission-time transforms over an owning payload copy and are mutually exclusive with compatible-version admission. Unknown new versions and source versions without a route remain rejected; no downgrade is supported. @thread Owning simulation thread only. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aeac1a06045e9de3f817ef33edd3b1294" name="aeac1a06045e9de3f817ef33edd3b1294"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeac1a06045e9de3f817ef33edd3b1294">&#9670;&#160;</a></span>addQuestAdditionMigration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGSaveSession::addQuestAdditionMigration </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>fromContentVersion</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>questId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register an additive migration that initializes one newly introduced quest. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fromContentVersion</td><td>Exact older content identifier whose tracker lacks the quest. </td></tr>
+    <tr><td class="paramname">questId</td><td>Quest definition present in the current registry and absent from the old snapshot. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied status, or a structured failure without changing registered routes. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>During admission, the old tracker payload is rebuilt in current registry order and this quest receives its canonical initial runtime state. Existing quest entries remain byte-equivalent owning values and still pass the strict <a class="el" href="classeve_1_1rpg_1_1Tracker.html" title="一份任务进度 + 本实例事件队列。">Tracker</a> codec. The source route may also contain direct ID renames, but cannot be declared directly compatible. Unknown missing or extra quests remain rejected. @thread Owning simulation thread only; the process-local <a class="el" href="classeve_1_1rpg_1_1QuestRegistry.html" title="进程级任务定义注册表。">QuestRegistry</a> must not mutate concurrently. @reentrancy No callbacks or scripts are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00289">289</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Quest_8cpp_source.html#l00160">eve::rpg::QuestRegistry::find()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a38dc218ab0d80d3f356bf88bea2cca9c" name="a38dc218ab0d80d3f356bf88bea2cca9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38dc218ab0d80d3f356bf88bea2cca9c">&#9670;&#160;</a></span>allowCompatibleContentVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGSaveSession::allowCompatibleContentVersion </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>contentVersion</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Accept one older content contract that is data-compatible with the configured version. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">contentVersion</td><td>Exact older content identifier accepted during restore. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied status, or InvalidArgument/Conflict without changing the compatibility set. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This does not rewrite identifiers or definitions. Every participant is still validated against the currently loaded registries before any live state changes. Use only for additive or otherwise codec-compatible content updates; incompatible updates require an explicit transformer. @thread Owning simulation thread only. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a9299f56162d175b26897da3fc2af4030" name="a9299f56162d175b26897da3fc2af4030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9299f56162d175b26897da3fc2af4030">&#9670;&#160;</a></span>allowSingleActorPartyMigration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGSaveSession::allowSingleActorPartyMigration </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>fromContentVersion</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register an explicit schema-v1 single-actor to schema-v2 party migration. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fromContentVersion</td><td>Exact old content contract whose save contains <code>actor</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied status, or a structured failure without changing migration policy. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd><a class="el" href="classeve_1_1rpg_1_1Party.html" title="Authoritative ordered relationship between stable party member IDs and RPG actors....">Party</a> member zero receives the old actor checkpoint. Remaining live roster members keep their preconfigured new-content baseline. The route is used only by <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#aebdd1ea6e9cff6f62fddf6ed706c47b8" title="Bind a complete authoritative player party instead of a single compatibility actor.">bindParty()</a> sessions and may coexist with ID and additive-quest migrations for the same source version. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a89b69484680b18e9179e826c6e023805">eve::AlreadyExists</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a1cec46b4057c543247a4f0d9b1af6036" name="a1cec46b4057c543247a4f0d9b1af6036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cec46b4057c543247a4f0d9b1af6036">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGSaveSession::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> &amp;&#160;</td>
+          <td class="paramname"><em>gameState</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> &amp;&#160;</td>
+          <td class="paramname"><em>tracker</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> &amp;&#160;</td>
+          <td class="paramname"><em>actor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">inventory::Bag</a> &amp;&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">inventory::EquipmentSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>equipment</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind the authoritative participants used by subsequent operations. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gameState</td><td>Borrowed game-state owner. </td></tr>
+    <tr><td class="paramname">tracker</td><td>Borrowed quest-progress owner. </td></tr>
+    <tr><td class="paramname">actor</td><td>Borrowed preconfigured player actor restored at safe checkpoints. </td></tr>
+    <tr><td class="paramname">bag</td><td>Borrowed authoritative player bag. </td></tr>
+    <tr><td class="paramname">equipment</td><td>Borrowed authoritative player equipment set. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>All objects must outlive this session. Rebinding invalidates no participant state. @thread Call and use the session on the participants' owning simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aebdd1ea6e9cff6f62fddf6ed706c47b8" name="aebdd1ea6e9cff6f62fddf6ed706c47b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebdd1ea6e9cff6f62fddf6ed706c47b8">&#9670;&#160;</a></span>bindParty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rpg::RPGSaveSession::bindParty </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1GameState.html">GameState</a> &amp;&#160;</td>
+          <td class="paramname"><em>gameState</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Tracker.html">Tracker</a> &amp;&#160;</td>
+          <td class="paramname"><em>tracker</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1rpg_1_1Party.html">Party</a> &amp;&#160;</td>
+          <td class="paramname"><em>party</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1Bag.html">inventory::Bag</a> &amp;&#160;</td>
+          <td class="paramname"><em>bag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1inventory_1_1EquipmentSet.html">inventory::EquipmentSet</a> &amp;&#160;</td>
+          <td class="paramname"><em>equipment</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind a complete authoritative player party instead of a single compatibility actor. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">party</td><td>Borrowed ordered party whose live roster must already be configured. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>Produces schema version 2 snapshots. All objects must outlive this session; the party owns only generation-safe actor links, while the <a class="el" href="classeve_1_1rpg_1_1RPG.html" title="RPG 模块（eve.RPG）：Actor 工厂 + 定义注册 + 帧调度 + 事件缓存。">RPG</a> ECS world retains actor ownership. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae399f76e34e4cc3efa5a82662cfe4766" name="ae399f76e34e4cc3efa5a82662cfe4766"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae399f76e34e4cc3efa5a82662cfe4766">&#9670;&#160;</a></span>getContentVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::rpg::RPGSaveSession::getContentVersion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return an owning copy of the configured content contract identifier. </p>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8h_source.html">RPGSaveSession.h</a> 第 <a class="el" href="RPGSaveSession_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afed4177b69bcab71f41480892a4ac842" name="afed4177b69bcab71f41480892a4ac842"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afed4177b69bcab71f41480892a4ac842">&#9670;&#160;</a></span>restoreSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGSaveSession::restoreSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate all participants and atomically publish a save-session snapshot. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>UTF-8 JSON produced by <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a25348f62021cf058d5c4edc80d5cb8f2" title="Capture every bound participant into one deterministic versioned JSON document.">snapshotJson()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied state, or a structured failure without modifying either participant. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The strict common envelope rejects unknown fields and verifies its schema-owned, non-cryptographic corruption digest before participant parsing. This detects damaged saves but is not an authentication or anti-cheat boundary. @thread Call on the owning simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00381">381</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5b37921cfe96d81597c4f071177eebe" name="ab5b37921cfe96d81597c4f071177eebe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5b37921cfe96d81597c4f071177eebe">&#9670;&#160;</a></span>setContentVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGSaveSession::setContentVersion </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>contentVersion</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure the exact game-content contract required by this save session. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">contentVersion</td><td>Non-empty opaque UTF-8 identifier, at most 256 bytes and without controls. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied status, or InvalidArgument without changing the previous identifier. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This identifies definitions/data compatibility, independently of the envelope schema version. @thread Owning simulation thread only. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a25348f62021cf058d5c4edc80d5cb8f2" name="a25348f62021cf058d5c4edc80d5cb8f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25348f62021cf058d5c4edc80d5cb8f2">&#9670;&#160;</a></span>snapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::rpg::RPGSaveSession::snapshotJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture every bound participant into one deterministic versioned JSON document. </p>
+<dl class="section return"><dt>返回</dt><dd>Integrity-sealed <code>rpg:save-session</code> JSON: schema v1 for <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a1cec46b4057c543247a4f0d9b1af6036" title="Bind the authoritative participants used by subsequent operations.">bind()</a>, v2 for <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#aebdd1ea6e9cff6f62fddf6ed706c47b8" title="Bind a complete authoritative player party instead of a single compatibility actor.">bindParty()</a>. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The returned value owns all bytes and remains valid independently of the participants. @thread Call on the owning simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00338">338</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="InventorySaveSession_8cpp_source.html#l00147">eve::inventory::InventorySaveSession::bind()</a>, <a class="el" href="Party_8cpp_source.html#l00184">eve::rpg::Party::checkpointJson()</a>, <a class="el" href="RPGActorPersistence_8cpp_source.html#l00025">eve::rpg::RPGActor::checkpointJson()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00057">eve::Value::fromJson()</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00104">eve::makeSnapshotEnvelope()</a>, <a class="el" href="Identity_8h_source.html#l00071">eve::detail::Id128&lt; Tag &gt;::nil()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00024">payload</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="common_2Snapshot_8cpp_source.html#l00183">eve::serializeSnapshotEnvelope()</a>, <a class="el" href="InventorySaveSession_8cpp_source.html#l00152">eve::inventory::InventorySaveSession::snapshotJson()</a>, <a class="el" href="GameState_8cpp_source.html#l00083">eve::rpg::GameState::snapshotJson()</a> , 以及 <a class="el" href="Tracker_8cpp_source.html#l00044">eve::rpg::Tracker::snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a1c87220f9e7b49df02bd817d3ec8544f" name="a1c87220f9e7b49df02bd817d3ec8544f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c87220f9e7b49df02bd817d3ec8544f">&#9670;&#160;</a></span>validateSnapshotJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::rpg::RPGSaveSession::validateSnapshotJson </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse and fully prepare a save without publishing participant state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>UTF-8 JSON produced by <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#a25348f62021cf058d5c4edc80d5cb8f2" title="Capture every bound participant into one deterministic versioned JSON document.">snapshotJson()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success only when <a class="el" href="classeve_1_1rpg_1_1RPGSaveSession.html#afed4177b69bcab71f41480892a4ac842" title="Validate all participants and atomically publish a save-session snapshot.">restoreSnapshotJson()</a> can reach its no-fail commit boundary. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Integrity, content compatibility and every participant codec are checked. This is intended for slot selection and backup recovery; it never mutates bound participants. @thread Call on the owning simulation thread. @reentrancy No callbacks are invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a> 第 <a class="el" href="RPGSaveSession_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rpg/<a class="el" href="RPGSaveSession_8h_source.html">RPGSaveSession.h</a></li>
+<li>src/modules/rpg/<a class="el" href="RPGSaveSession_8cpp_source.html">RPGSaveSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/climbing/ClimbingECS.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_137dcb18b75f9f57b9200faf376b7e13.html">climbing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ClimbingECS.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ClimbingECS_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ClimbingECS_8h.html">climbing/ClimbingECS.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1climbing.html">eve::climbing</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;T&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">failure</a>(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> code, std::string message, std::string <a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;T&gt;::failure</a>(</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a>(code, std::move(message), std::move(<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), {}, <span class="stringliteral">&quot;climbing.ecs&quot;</span>));</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#a8f48f4d94e3bf4a0cf1de2e388fea398">   16</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#a8f48f4d94e3bf4a0cf1de2e388fea398">ClimbingCandidateBuffer::replace</a>(std::span&lt;const ClimbingCandidate&gt; candidates,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                                    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (candidates.size() &gt; <a class="code hl_variable" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#a1931c48780eef5668a29204c92e9cddb">Capacity</a>)</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                             <span class="stringliteral">&quot;climbing candidate buffer capacity exceeded&quot;</span>, <span class="stringliteral">&quot;candidates&quot;</span>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingCandidateSet.html">ClimbingCandidateSet</a> replacement;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingCandidate.html">ClimbingCandidate</a>&amp; candidate : candidates) replacement.<a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingCandidateSet.html#a61282ca728f62542eb81ad8fe68e0abc">consider</a>(candidate);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    replacement.<a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingCandidateSet.html#a71b78def7e97d5791a44e351af1107c0">sortAndLimit</a>(<a class="code hl_variable" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#a1931c48780eef5668a29204c92e9cddb">Capacity</a>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    values_.<a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingCandidateSet.html#a6647b769443c458b5f198e0ca8717395">swap</a>(replacement);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    tick_ = <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#ad033e68f529278dcf1fb697aae6cccbf">tick</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#ab06985ccf305492b0a6f671e518824cd">   29</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#ab06985ccf305492b0a6f671e518824cd">ClimbingCandidateBuffer::probe</a>(<a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingRuntime.html">ClimbingRuntime</a>&amp; runtime, <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a>&amp; <a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingPose.html">ClimbingPose</a>&amp; pose, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">auto</span> probed = runtime.probeInto(<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, pose, values_, <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#ad033e68f529278dcf1fb697aae6cccbf">tick</a>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (!probed) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(probed.status());</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    tick_ = <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#ad033e68f529278dcf1fb697aae6cccbf">tick</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingState.html#ae61ffc165520aff1b7ee836901675ee4">   37</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;ClimbingState&gt;</a> <a class="code hl_function" href="structeve_1_1climbing_1_1ClimbingState.html#ae61ffc165520aff1b7ee836901675ee4">ClimbingState::create</a>() {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="SceneCapabilities_8cpp.html#a368c5f76ae2a22edbe18b4d087195a3e">created</a> = <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#aad9dbec0673463eecd588cdd95d981ee">Climbing::newRuntime</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="SceneCapabilities_8cpp.html#a368c5f76ae2a22edbe18b4d087195a3e">created</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;ClimbingState&gt;::failure</a>(<a class="code hl_variable" href="SceneCapabilities_8cpp.html#a368c5f76ae2a22edbe18b4d087195a3e">created</a>.status());</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingState.html">ClimbingState</a> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.runtime = std::move(<a class="code hl_variable" href="SceneCapabilities_8cpp.html#a368c5f76ae2a22edbe18b4d087195a3e">created</a>).takeValue();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;ClimbingState&gt;::success</a>(std::move(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingState.html#a7d00a7e76cfb3c4e65350453fa4e39dd">   45</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1climbing_1_1ClimbingState.html#a7d00a7e76cfb3c4e65350453fa4e39dd">ClimbingState::releaseRuntime</a>() {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingState.html#a694e9c1d88fc33de9559628ad3c95257">runtime</a>.<a class="code hl_function" href="structeve_1_1script_1_1RuntimeHandleRef.html#a50b3cf5093caf62931bd50173cb92561">isValid</a>())</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                             <span class="stringliteral">&quot;climbing state has no runtime to release&quot;</span>, <span class="stringliteral">&quot;state.runtime&quot;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">auto</span> released = <a class="code hl_function" href="classeve_1_1climbing_1_1Climbing.html#a08b4f97334883be7552c106104702226">Climbing::release</a>(<a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingState.html#a694e9c1d88fc33de9559628ad3c95257">runtime</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (!released) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;void&gt;::failure</a>(released.status());</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingState.html#a694e9c1d88fc33de9559628ad3c95257">runtime</a> = {};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingState.html#ad50da6185521894a81395634eeac673f">lastAdvance</a> = {};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingState.html#a9f3d354bcdb20e1ce5bc866b566347c0">lastAdvanceTick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingEventBatch.html#ad751b00f369e4855a83e1278c66d4045">   57</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingEventBatch.html#ad751b00f369e4855a83e1278c66d4045">ClimbingEventBatch::replace</a>(std::span&lt;const ClimbingEvent&gt; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                               <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>.size() &gt; <a class="code hl_variable" href="classeve_1_1climbing_1_1ClimbingEventBatch.html#aef2bb1ddd2316987fd4faac5244bbde3">Capacity</a>)</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                             <span class="stringliteral">&quot;climbing event batch capacity exceeded&quot;</span>, <span class="stringliteral">&quot;events&quot;</span>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::array&lt;ClimbingEvent, Capacity&gt; replacement{};</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::copy(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>.begin(), <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>.end(), replacement.begin());</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    values_ = std::move(replacement);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    size_ = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a>.size();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    tick_ = <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingEventBatch.html#a56800ed776fbfb920b4b3254fd945482">tick</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespaceeve_1_1climbing.html#a4c44211541120b883f91e4bae17bdbe0">   70</a></span>std::span&lt;const ClimbingSystemContract&gt; <a class="code hl_function" href="namespaceeve_1_1climbing.html#a4c44211541120b883f91e4bae17bdbe0">climbingSystemContracts</a>() noexcept {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingSystemContract.html">ClimbingSystemContract</a> contracts[] = {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        {<span class="stringliteral">&quot;climbing.input&quot;</span>, <span class="stringliteral">&quot;caller-selected existing domain root&quot;</span>,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>         <span class="stringliteral">&quot;View&lt;EntityRoot, ClimbingIntent&gt;&quot;</span>, <span class="stringliteral">&quot;owning command queue; SimulationTick&quot;</span>, <span class="stringliteral">&quot;ClimbingIntent&quot;</span>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>         <span class="stringliteral">&quot;none&quot;</span>, <span class="stringliteral">&quot;none&quot;</span>, <span class="stringliteral">&quot;SimulationStep&quot;</span>, <span class="stringliteral">&quot;input&quot;</span>, <span class="stringliteral">&quot;bit-exact for identical command streams&quot;</span>},</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        {<span class="stringliteral">&quot;climbing.probe&quot;</span>, <span class="stringliteral">&quot;caller-selected existing domain root&quot;</span>,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>         <span class="stringliteral">&quot;View&lt;EntityRoot, ClimbingBody, ClimbingIntent, ClimbingState, ClimbingLinks, ClimbingCandidateBuffer&gt;&quot;</span>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>         <span class="stringliteral">&quot;Body; Intent; State runtime; Links; Physics world&quot;</span>, <span class="stringliteral">&quot;ClimbingCandidateBuffer&quot;</span>, <span class="stringliteral">&quot;none&quot;</span>, <span class="stringliteral">&quot;none&quot;</span>,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>         <span class="stringliteral">&quot;Physics owning queries; SimulationTick&quot;</span>, <span class="stringliteral">&quot;pre_physics&quot;</span>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>         <span class="stringliteral">&quot;stable identity/order; geometry tolerance-bounded&quot;</span>},</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        {<span class="stringliteral">&quot;climbing.selection&quot;</span>, <span class="stringliteral">&quot;caller-selected existing domain root&quot;</span>,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>         <span class="stringliteral">&quot;View&lt;EntityRoot, ClimbingBody, ClimbingIntent, ClimbingState, ClimbingLinks&gt;&quot;</span>,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>         <span class="stringliteral">&quot;Body; Intent; definitions; Physics world&quot;</span>, <span class="stringliteral">&quot;Intent consumed edge; State runtime&quot;</span>, <span class="stringliteral">&quot;none&quot;</span>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>         <span class="stringliteral">&quot;ClimbingStarted queued only after commit&quot;</span>, <span class="stringliteral">&quot;Physics; definitions; optional resource adapters&quot;</span>,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>         <span class="stringliteral">&quot;pre_physics&quot;</span>, <span class="stringliteral">&quot;quantized cost and stable identity tie-break&quot;</span>},</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        {<span class="stringliteral">&quot;climbing.motion&quot;</span>, <span class="stringliteral">&quot;caller-selected existing domain root&quot;</span>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>         <span class="stringliteral">&quot;View&lt;EntityRoot, ClimbingBody, ClimbingIntent, ClimbingState, ClimbingLinks&gt;&quot;</span>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>         <span class="stringliteral">&quot;State execution; Body; Intent; Links; animation desired root delta&quot;</span>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>         <span class="stringliteral">&quot;Body; State runtime; linked Physics body&quot;</span>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>         <span class="stringliteral">&quot;none&quot;</span>, <span class="stringliteral">&quot;contact/land/cancel to bounded runtime queue&quot;</span>, <span class="stringliteral">&quot;Physics mover; SimulationStep&quot;</span>, <span class="stringliteral">&quot;physics&quot;</span>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>         <span class="stringliteral">&quot;fixed-tick replay stable; Physics contacts tolerance-bounded&quot;</span>},</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        {<span class="stringliteral">&quot;climbing.pose&quot;</span>, <span class="stringliteral">&quot;caller-selected existing domain root&quot;</span>,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>         <span class="stringliteral">&quot;View&lt;EntityRoot, ClimbingState, ClimbingPoseProjection, ClimbingEventBatch&gt;&quot;</span>,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>         <span class="stringliteral">&quot;State actual motion and contact anchors&quot;</span>, <span class="stringliteral">&quot;derived pose projection; owning event batch&quot;</span>, <span class="stringliteral">&quot;none&quot;</span>,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>         <span class="stringliteral">&quot;drain only; external dispatch occurs after View closes&quot;</span>, <span class="stringliteral">&quot;Animation; optional IK&quot;</span>, <span class="stringliteral">&quot;post_physics&quot;</span>,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>         <span class="stringliteral">&quot;gameplay state independent of final skin pose&quot;</span>},</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    };</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">return</span> contracts;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}  <span class="comment">// namespace eve::climbing</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00025">ActionTimelineWidget.cpp:25</a></div></div>
+<div class="ttc" id="aClimbingECS_8h_html"><div class="ttname"><a href="ClimbingECS_8h.html">ClimbingECS.h</a></div><div class="ttdoc">Composition-only ECS components and fixed-phase climbing systems.</div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aSceneCapabilities_8cpp_html_a368c5f76ae2a22edbe18b4d087195a3e"><div class="ttname"><a href="SceneCapabilities_8cpp.html#a368c5f76ae2a22edbe18b4d087195a3e">created</a></div><div class="ttdeci">int created</div><div class="ttdef"><b>Definition</b> <a href="SceneCapabilities_8cpp_source.html#l00590">SceneCapabilities.cpp:590</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a6432e7a83650f875c816d914fb84d4ad"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a6432e7a83650f875c816d914fb84d4ad">events</a></div><div class="ttdeci">Battle::Events events</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00135">TacticsPersistence.cpp:135</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingCandidateBuffer_html_a1931c48780eef5668a29204c92e9cddb"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#a1931c48780eef5668a29204c92e9cddb">eve::climbing::ClimbingCandidateBuffer::Capacity</a></div><div class="ttdeci">static constexpr std::size_t Capacity</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00066">ClimbingECS.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingCandidateBuffer_html_a8f48f4d94e3bf4a0cf1de2e388fea398"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#a8f48f4d94e3bf4a0cf1de2e388fea398">eve::climbing::ClimbingCandidateBuffer::replace</a></div><div class="ttdeci">eve::Result&lt; void &gt; replace(std::span&lt; const ClimbingCandidate &gt; candidates, eve::SimulationTick tick)</div><div class="ttdoc">Atomically replace the buffer; oversize input leaves the old contents unchanged.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8cpp_source.html#l00016">ClimbingECS.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingCandidateBuffer_html_ab06985ccf305492b0a6f671e518824cd"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#ab06985ccf305492b0a6f671e518824cd">eve::climbing::ClimbingCandidateBuffer::probe</a></div><div class="ttdeci">eve::Result&lt; void &gt; probe(ClimbingRuntime &amp;runtime, physics::World3D &amp;world, const ClimbingPose &amp;pose, eve::SimulationTick tick)</div><div class="ttdoc">Fill retained storage through the allocation-free production probe path.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8cpp_source.html#l00029">ClimbingECS.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingCandidateBuffer_html_ad033e68f529278dcf1fb697aae6cccbf"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingCandidateBuffer.html#ad033e68f529278dcf1fb697aae6cccbf">eve::climbing::ClimbingCandidateBuffer::tick</a></div><div class="ttdeci">eve::SimulationTick tick() const noexcept</div><div class="ttdoc">Tick that produced the current projection.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00081">ClimbingECS.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingCandidateSet_html"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingCandidateSet.html">eve::climbing::ClimbingCandidateSet</a></div><div class="ttdoc">Fixed-capacity owning candidate set used by the production probe hot path.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00328">Climbing.h:328</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingCandidateSet_html_a61282ca728f62542eb81ad8fe68e0abc"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingCandidateSet.html#a61282ca728f62542eb81ad8fe68e0abc">eve::climbing::ClimbingCandidateSet::consider</a></div><div class="ttdeci">void consider(ClimbingCandidate candidate)</div><div class="ttdoc">Consider one candidate and retain it only when it belongs to the best fixed-capacity set.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00293">Climbing.cpp:293</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingCandidateSet_html_a6647b769443c458b5f198e0ca8717395"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingCandidateSet.html#a6647b769443c458b5f198e0ca8717395">eve::climbing::ClimbingCandidateSet::swap</a></div><div class="ttdeci">void swap(ClimbingCandidateSet &amp;other) noexcept</div><div class="ttdoc">Exchange complete owning slot storage without allocating.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00330">Climbing.cpp:330</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingCandidateSet_html_a71b78def7e97d5791a44e351af1107c0"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingCandidateSet.html#a71b78def7e97d5791a44e351af1107c0">eve::climbing::ClimbingCandidateSet::sortAndLimit</a></div><div class="ttdeci">void sortAndLimit(std::size_t limit)</div><div class="ttdoc">Sort by canonical deterministic selection key and clamp to a validated limit.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00325">Climbing.cpp:325</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingEventBatch_html_a56800ed776fbfb920b4b3254fd945482"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingEventBatch.html#a56800ed776fbfb920b4b3254fd945482">eve::climbing::ClimbingEventBatch::tick</a></div><div class="ttdeci">eve::SimulationTick tick() const noexcept</div><div class="ttdoc">Simulation tick at which the runtime queue was drained.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00129">ClimbingECS.h:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingEventBatch_html_ad751b00f369e4855a83e1278c66d4045"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingEventBatch.html#ad751b00f369e4855a83e1278c66d4045">eve::climbing::ClimbingEventBatch::replace</a></div><div class="ttdeci">eve::Result&lt; void &gt; replace(std::span&lt; const ClimbingEvent &gt; events, eve::SimulationTick tick)</div><div class="ttdoc">Atomically replace the event batch or reject an impossible oversize input.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8cpp_source.html#l00057">ClimbingECS.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingEventBatch_html_aef2bb1ddd2316987fd4faac5244bbde3"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingEventBatch.html#aef2bb1ddd2316987fd4faac5244bbde3">eve::climbing::ClimbingEventBatch::Capacity</a></div><div class="ttdeci">static constexpr std::size_t Capacity</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00121">ClimbingECS.h:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingRuntime_html"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingRuntime.html">eve::climbing::ClimbingRuntime</a></div><div class="ttdoc">Owner-thread climbing planner and executor for one character.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00624">Climbing.h:624</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_a08b4f97334883be7552c106104702226"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#a08b4f97334883be7552c106104702226">eve::climbing::Climbing::release</a></div><div class="ttdeci">static eve::Result&lt; void &gt; release(ClimbingRuntimeHandleRef reference)</div><div class="ttdoc">Releases a module-owned runtime and invalidates its reference.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00022">ClimbingRegistry.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1Climbing_html_aad9dbec0673463eecd588cdd95d981ee"><div class="ttname"><a href="classeve_1_1climbing_1_1Climbing.html#aad9dbec0673463eecd588cdd95d981ee">eve::climbing::Climbing::newRuntime</a></div><div class="ttdeci">static eve::Result&lt; ClimbingRuntimeHandleRef &gt; newRuntime()</div><div class="ttdoc">Creates a module-owned runtime and returns its generation-qualified reference.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingRegistry_8cpp_source.html#l00013">ClimbingRegistry.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00050">World3D.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1detail_html_a4cf204329c882041f2183b19af0c0700"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1detail.html#a4cf204329c882041f2183b19af0c0700">eve::asset_import::detail::failure</a></div><div class="ttdeci">Result&lt; T &gt; failure(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdef"><b>Definition</b> <a href="ImportCommon_8h_source.html#l00013">ImportCommon.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html"><div class="ttname"><a href="namespaceeve_1_1climbing.html">eve::climbing</a></div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00018">Climbing.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a4c44211541120b883f91e4bae17bdbe0"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a4c44211541120b883f91e4bae17bdbe0">eve::climbing::climbingSystemContracts</a></div><div class="ttdeci">std::span&lt; const ClimbingSystemContract &gt; climbingSystemContracts() noexcept</div><div class="ttdoc">Return immutable process-lifetime contracts for the four climbing ECS phases.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8cpp_source.html#l00070">ClimbingECS.cpp:70</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingCandidate_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingCandidate.html">eve::climbing::ClimbingCandidate</a></div><div class="ttdoc">Owning, replayable climbing candidate; contains no borrowed query pointers.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00289">Climbing.h:289</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingPose_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingPose.html">eve::climbing::ClimbingPose</a></div><div class="ttdoc">Input pose used for one deterministic candidate probe.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00274">Climbing.h:274</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingState_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingState.html">eve::climbing::ClimbingState</a></div><div class="ttdoc">Hot authoritative execution component holding the module-owned runtime identity.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00094">ClimbingECS.h:94</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingState_html_a694e9c1d88fc33de9559628ad3c95257"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingState.html#a694e9c1d88fc33de9559628ad3c95257">eve::climbing::ClimbingState::runtime</a></div><div class="ttdeci">ClimbingRuntimeHandleRef runtime</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00095">ClimbingECS.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingState_html_a7d00a7e76cfb3c4e65350453fa4e39dd"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingState.html#a7d00a7e76cfb3c4e65350453fa4e39dd">eve::climbing::ClimbingState::releaseRuntime</a></div><div class="ttdeci">eve::Result&lt; void &gt; releaseRuntime()</div><div class="ttdoc">Release the runtime once and clear this component's handle.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8cpp_source.html#l00045">ClimbingECS.cpp:45</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingState_html_a9f3d354bcdb20e1ce5bc866b566347c0"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingState.html#a9f3d354bcdb20e1ce5bc866b566347c0">eve::climbing::ClimbingState::lastAdvanceTick</a></div><div class="ttdeci">eve::SimulationTick lastAdvanceTick</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00097">ClimbingECS.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingState_html_ad50da6185521894a81395634eeac673f"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingState.html#ad50da6185521894a81395634eeac673f">eve::climbing::ClimbingState::lastAdvance</a></div><div class="ttdeci">ClimbingAdvance lastAdvance</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00096">ClimbingECS.h:96</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingState_html_ae61ffc165520aff1b7ee836901675ee4"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingState.html#ae61ffc165520aff1b7ee836901675ee4">eve::climbing::ClimbingState::create</a></div><div class="ttdeci">static eve::Result&lt; ClimbingState &gt; create()</div><div class="ttdoc">Create the canonical module-owned runtime referenced by this component.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8cpp_source.html#l00037">ClimbingECS.cpp:37</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingSystemContract_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingSystemContract.html">eve::climbing::ClimbingSystemContract</a></div><div class="ttdoc">Static review/tooling description of one concrete climbing ECS phase.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingECS_8h_source.html#l00138">ClimbingECS.h:138</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1RuntimeHandleRef_html_a50b3cf5093caf62931bd50173cb92561"><div class="ttname"><a href="structeve_1_1script_1_1RuntimeHandleRef.html#a50b3cf5093caf62931bd50173cb92561">eve::script::RuntimeHandleRef::isValid</a></div><div class="ttdeci">constexpr bool isValid() const noexcept</div><div class="ttdoc">Returns whether both the handle and its registry epoch are set.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelOwnership_8h_source.html#l00204">SquirrelOwnership.h:204</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/StaticMeshSurface.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">StaticMeshSurface.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="StaticMeshSurface_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementSystem_8h.html">building/PlacementSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1building.html">eve::building</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1StaticMeshSurface.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1building_1_1StaticMeshSurface.html">StaticMeshSurface</a> final {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56a">   17</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56a">HitSelection</a> { <a class="code hl_enumvalue" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aa582996407922dab08d5cf2b3d2a7c1c9">Highest</a>, <a class="code hl_enumvalue" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aab5b8e20937205384be7b9e0c29a28fdb">Lowest</a>, <a class="code hl_enumvalue" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aac8a503919ac8c0729ea244f9ee1044a8">ClosestToReference</a> };</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">   20</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">Config</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#ae385cd9ab3aaebf555de92195f946b99">   21</a></span>        std::string <a class="code hl_variable" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#ae385cd9ab3aaebf555de92195f946b99">surfaceId</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#af3558cf9263492d4e02535cc85090935">   22</a></span>        uint64_t <a class="code hl_variable" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#af3558cf9263492d4e02535cc85090935">surfaceRevision</a> = 0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a8dc20f9d7186c07a78213bdb7054f311">   23</a></span>        std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a8dc20f9d7186c07a78213bdb7054f311">tags</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a42f92e1d94c6069412f17ca6b54faa0a">   24</a></span>        <a class="code hl_enumeration" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56a">HitSelection</a> <a class="code hl_variable" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a42f92e1d94c6069412f17ca6b54faa0a">hitSelection</a> = <a class="code hl_enumvalue" href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aa582996407922dab08d5cf2b3d2a7c1c9">HitSelection::Highest</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#ac5617a07035c855ef4fb0b951bf86f20">   25</a></span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#ac5617a07035c855ef4fb0b951bf86f20">referenceHeight</a> = 0.f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#abb21272e10067ebc893065f97beafb7a">   26</a></span>        <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#abb21272e10067ebc893065f97beafb7a">orientNormalsToGridUp</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a96a1cc741794e76e20f242a40d9e593e">   27</a></span>        uint32_t <a class="code hl_variable" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a96a1cc741794e76e20f242a40d9e593e">leafTriangleCount</a> = 8;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    };</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::shared_ptr&lt;const StaticMeshSurface&gt;</a>&gt;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_function" href="classeve_1_1building_1_1StaticMeshSurface.html#a7c6095d9e0a482396d36700de8911e1b">create</a>(<a class="code hl_struct" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">Config</a> <a class="code hl_function" href="classeve_1_1building_1_1StaticMeshSurface.html#af04e2f8258079a02b8e7171afb5ae765">config</a>, std::vector&lt;float&gt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>, std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>           std::vector&lt;float&gt; <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a> = {});</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PlacementSystem::PlacementHit&gt;</a></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_function" href="classeve_1_1building_1_1StaticMeshSurface.html#a588ea0ec71bbf5cc21c37fa7eb6dcc7e">sample</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;<a class="code hl_variable" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <span class="keywordtype">float</span> planeX, <span class="keywordtype">float</span> planeY) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1StaticMeshSurface.html#af04e2f8258079a02b8e7171afb5ae765">   54</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">Config</a> &amp;<a class="code hl_function" href="classeve_1_1building_1_1StaticMeshSurface.html#af04e2f8258079a02b8e7171afb5ae765">config</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> config_; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1StaticMeshSurface.html#a0b80e932d5135d64cd0b6dfc0e5c141b">   56</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1building_1_1StaticMeshSurface.html#a0b80e932d5135d64cd0b6dfc0e5c141b">triangleCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> indices_.size() / 3; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1building_1_1StaticMeshSurface.html#add852cf981bfc6ab8f305eee63d001a9">   58</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="classeve_1_1building_1_1StaticMeshSurface.html#add852cf981bfc6ab8f305eee63d001a9">nodeCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> nodes_.size(); }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">struct </span>Bounds {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">float</span> minX;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordtype">float</span> minY;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordtype">float</span> minZ;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordtype">float</span> maxX;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordtype">float</span> maxY;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordtype">float</span> maxZ;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    };</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">struct </span>Node {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        Bounds <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a940cebe82cc3421a1b665752b3131564">bounds</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        uint32_t <a class="code hl_variable" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a> = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        uint32_t <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a> = 0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        uint32_t <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a> = 0;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        uint32_t <a class="code hl_variable" href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a> = 0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordtype">bool</span> leaf = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    };</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    StaticMeshSurface(Config <a class="code hl_function" href="classeve_1_1building_1_1StaticMeshSurface.html#af04e2f8258079a02b8e7171afb5ae765">config</a>, std::vector&lt;float&gt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                      std::vector&lt;uint32_t&gt; <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, std::vector&lt;float&gt; <a class="code hl_variable" href="EvpackGraphicsLoader_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    uint32_t buildNode(uint32_t <a class="code hl_variable" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a>, uint32_t <a class="code hl_variable" href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    Config config_;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::vector&lt;float&gt; vertices_;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    std::vector&lt;uint32_t&gt; indices_;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    std::vector&lt;float&gt; normals_;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::vector&lt;uint32_t&gt; triangleOrder_;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::vector&lt;Bounds&gt; triangleBounds_;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::vector&lt;Node&gt; nodes_;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>};</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}  <span class="comment">// namespace eve::building</span></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00031">EvpackGraphicsLoader.cpp:31</a></div></div>
+<div class="ttc" id="aEvpackGraphicsLoader_8cpp_html_a6db4bdf89d5601f8d599c1cd882137ce"><div class="ttname"><a href="EvpackGraphicsLoader_8cpp.html#a6db4bdf89d5601f8d599c1cd882137ce">normals</a></div><div class="ttdeci">std::vector&lt; float &gt; normals</div><div class="ttdef"><b>Definition</b> <a href="EvpackGraphicsLoader_8cpp_source.html#l00029">EvpackGraphicsLoader.cpp:29</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_ae2481d00ca648870d2ec0ea81cf49e75"><div class="ttname"><a href="GltfImporter_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a></div><div class="ttdeci">std::uint32_t count</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00146">GltfImporter.cpp:146</a></div></div>
+<div class="ttc" id="aNinePatch_8cpp_html_a6c8ec3c3e77241328358d43697f6f840"><div class="ttname"><a href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a></div><div class="ttdeci">int first</div><div class="ttdef"><b>Definition</b> <a href="NinePatch_8cpp_source.html#l00021">NinePatch.cpp:21</a></div></div>
+<div class="ttc" id="aPhysicsCapabilities_8cpp_html_a6d644bf175c7231a1dee70e3c5796619"><div class="ttname"><a href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="PhysicsCapabilities_8cpp_source.html#l00115">PhysicsCapabilities.cpp:115</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a31e26c1cfba73f1354aeb3c17673c0a1"><div class="ttname"><a href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a></div><div class="ttdeci">std::vector&lt; Point &gt; vertices</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00046">PlacementSystem.cpp:46</a></div></div>
+<div class="ttc" id="aPlacementSystem_8h_html"><div class="ttname"><a href="PlacementSystem_8h.html">PlacementSystem.h</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a6202f38a97a1c9eb0142baeb338cf1f1"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a6202f38a97a1c9eb0142baeb338cf1f1">right</a></div><div class="ttdeci">float right</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00016">WorldAnchorProjection.cpp:16</a></div></div>
+<div class="ttc" id="aWorldAnchorProjection_8cpp_html_a7d10b0c779bad3aabf067d52035f7052"><div class="ttname"><a href="WorldAnchorProjection_8cpp.html#a7d10b0c779bad3aabf067d52035f7052">left</a></div><div class="ttdeci">float left</div><div class="ttdef"><b>Definition</b> <a href="WorldAnchorProjection_8cpp_source.html#l00014">WorldAnchorProjection.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></div><div class="ttdoc">格子型建筑放置世界（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00030">PlacementWorld.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html">eve::building::StaticMeshSurface</a></div><div class="ttdoc">Immutable world-space triangle mesh accelerated for placement-surface projection.</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00014">StaticMeshSurface.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_a0b80e932d5135d64cd0b6dfc0e5c141b"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#a0b80e932d5135d64cd0b6dfc0e5c141b">eve::building::StaticMeshSurface::triangleCount</a></div><div class="ttdeci">size_t triangleCount() const</div><div class="ttdoc">Number of source triangles indexed by the BVH.</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00056">StaticMeshSurface.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_a588ea0ec71bbf5cc21c37fa7eb6dcc7e"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#a588ea0ec71bbf5cc21c37fa7eb6dcc7e">eve::building::StaticMeshSurface::sample</a></div><div class="ttdeci">eve::Result&lt; PlacementSystem::PlacementHit &gt; sample(const PlacementWorld &amp;world, float planeX, float planeY) const</div><div class="ttdoc">Project one grid-plane coordinate through the BVH and sample the selected triangle.</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8cpp_source.html#l00192">StaticMeshSurface.cpp:192</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_a61031b8b6cf63b80e4b0f2e05a62a56a"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56a">eve::building::StaticMeshSurface::HitSelection</a></div><div class="ttdeci">HitSelection</div><div class="ttdoc">Deterministic policy for multiple triangles under one plane coordinate.</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00017">StaticMeshSurface.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_a61031b8b6cf63b80e4b0f2e05a62a56aa582996407922dab08d5cf2b3d2a7c1c9"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aa582996407922dab08d5cf2b3d2a7c1c9">eve::building::StaticMeshSurface::HitSelection::Highest</a></div><div class="ttdeci">@ Highest</div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_a61031b8b6cf63b80e4b0f2e05a62a56aab5b8e20937205384be7b9e0c29a28fdb"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aab5b8e20937205384be7b9e0c29a28fdb">eve::building::StaticMeshSurface::HitSelection::Lowest</a></div><div class="ttdeci">@ Lowest</div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_a61031b8b6cf63b80e4b0f2e05a62a56aac8a503919ac8c0729ea244f9ee1044a8"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#a61031b8b6cf63b80e4b0f2e05a62a56aac8a503919ac8c0729ea244f9ee1044a8">eve::building::StaticMeshSurface::HitSelection::ClosestToReference</a></div><div class="ttdeci">@ ClosestToReference</div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_a7c6095d9e0a482396d36700de8911e1b"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#a7c6095d9e0a482396d36700de8911e1b">eve::building::StaticMeshSurface::create</a></div><div class="ttdeci">static eve::Result&lt; std::shared_ptr&lt; const StaticMeshSurface &gt; &gt; create(Config config, std::vector&lt; float &gt; vertices, std::vector&lt; uint32_t &gt; indices, std::vector&lt; float &gt; normals={})</div><div class="ttdoc">Validate world-space triangle data and build an owning median-split BVH.</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8cpp_source.html#l00074">StaticMeshSurface.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_add852cf981bfc6ab8f305eee63d001a9"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#add852cf981bfc6ab8f305eee63d001a9">eve::building::StaticMeshSurface::nodeCount</a></div><div class="ttdeci">size_t nodeCount() const</div><div class="ttdoc">Number of BVH nodes, including leaves.</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00058">StaticMeshSurface.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1StaticMeshSurface_html_af04e2f8258079a02b8e7171afb5ae765"><div class="ttname"><a href="classeve_1_1building_1_1StaticMeshSurface.html#af04e2f8258079a02b8e7171afb5ae765">eve::building::StaticMeshSurface::config</a></div><div class="ttdeci">const Config &amp; config() const</div><div class="ttdoc">Return the immutable construction configuration.</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00054">StaticMeshSurface.h:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html"><div class="ttname"><a href="namespaceeve_1_1building.html">eve::building</a></div><div class="ttdoc">建筑放置模块入口：定义 / 放置世界 / 鬼影 / 变更事件的脚本绑定点。 设计文档：docs/dev/建筑放置系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00007">Building.cpp:7</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1StaticMeshSurface_1_1Config_html"><div class="ttname"><a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html">eve::building::StaticMeshSurface::Config</a></div><div class="ttdoc">Immutable identity, hit policy and metadata for one static mesh snapshot.</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00020">StaticMeshSurface.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1StaticMeshSurface_1_1Config_html_a42f92e1d94c6069412f17ca6b54faa0a"><div class="ttname"><a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a42f92e1d94c6069412f17ca6b54faa0a">eve::building::StaticMeshSurface::Config::hitSelection</a></div><div class="ttdeci">HitSelection hitSelection</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00024">StaticMeshSurface.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1StaticMeshSurface_1_1Config_html_a8dc20f9d7186c07a78213bdb7054f311"><div class="ttname"><a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a8dc20f9d7186c07a78213bdb7054f311">eve::building::StaticMeshSurface::Config::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00023">StaticMeshSurface.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1StaticMeshSurface_1_1Config_html_a96a1cc741794e76e20f242a40d9e593e"><div class="ttname"><a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#a96a1cc741794e76e20f242a40d9e593e">eve::building::StaticMeshSurface::Config::leafTriangleCount</a></div><div class="ttdeci">uint32_t leafTriangleCount</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00027">StaticMeshSurface.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1StaticMeshSurface_1_1Config_html_abb21272e10067ebc893065f97beafb7a"><div class="ttname"><a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#abb21272e10067ebc893065f97beafb7a">eve::building::StaticMeshSurface::Config::orientNormalsToGridUp</a></div><div class="ttdeci">bool orientNormalsToGridUp</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00026">StaticMeshSurface.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1StaticMeshSurface_1_1Config_html_ac5617a07035c855ef4fb0b951bf86f20"><div class="ttname"><a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#ac5617a07035c855ef4fb0b951bf86f20">eve::building::StaticMeshSurface::Config::referenceHeight</a></div><div class="ttdeci">float referenceHeight</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00025">StaticMeshSurface.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1StaticMeshSurface_1_1Config_html_ae385cd9ab3aaebf555de92195f946b99"><div class="ttname"><a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#ae385cd9ab3aaebf555de92195f946b99">eve::building::StaticMeshSurface::Config::surfaceId</a></div><div class="ttdeci">std::string surfaceId</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00021">StaticMeshSurface.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1StaticMeshSurface_1_1Config_html_af3558cf9263492d4e02535cc85090935"><div class="ttname"><a href="structeve_1_1building_1_1StaticMeshSurface_1_1Config.html#af3558cf9263492d4e02535cc85090935">eve::building::StaticMeshSurface::Config::surfaceRevision</a></div><div class="ttdeci">uint64_t surfaceRevision</div><div class="ttdef"><b>Definition</b> <a href="StaticMeshSurface_8h_source.html#l00022">StaticMeshSurface.h:22</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a940cebe82cc3421a1b665752b3131564"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a940cebe82cc3421a1b665752b3131564">bounds</a></div><div class="ttdeci">glm::vec4 bounds</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00048">GraphicsGpuDriven.cpp:48</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

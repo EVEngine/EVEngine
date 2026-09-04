@@ -1,0 +1,426 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditorTransactionConsumer::Impl结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorTransactionConsumer.html">EditorTransactionConsumer</a></li><li class="navelem"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditorTransactionConsumer::Impl结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl_1_1HistoryEntry.html">HistoryEntry</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl_1_1Pending.html">Pending</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aea0d2a6141766aa31aebdfef9bcb6f86" id="r_aea0d2a6141766aa31aebdfef9bcb6f86"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#aea0d2a6141766aa31aebdfef9bcb6f86">Impl</a> (<a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *authorityValue)</td></tr>
+<tr class="separator:aea0d2a6141766aa31aebdfef9bcb6f86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a182d93413e873623fd9fb4f7723e17b6" id="r_a182d93413e873623fd9fb4f7723e17b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a182d93413e873623fd9fb4f7723e17b6">authority</a> = nullptr</td></tr>
+<tr class="separator:a182d93413e873623fd9fb4f7723e17b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29bfa0c8b59bac18909a3e01a98b3adf" id="r_a29bfa0c8b59bac18909a3e01a98b3adf"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl_1_1Pending.html">Pending</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a29bfa0c8b59bac18909a3e01a98b3adf">pending</a></td></tr>
+<tr class="separator:a29bfa0c8b59bac18909a3e01a98b3adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3bbe8c145d5fa10bc2d8f83f8c8be1a" id="r_ae3bbe8c145d5fa10bc2d8f83f8c8be1a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl_1_1HistoryEntry.html">HistoryEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#ae3bbe8c145d5fa10bc2d8f83f8c8be1a">undo</a></td></tr>
+<tr class="separator:ae3bbe8c145d5fa10bc2d8f83f8c8be1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a116ffb86c39175cb554beef3bbedbc20" id="r_a116ffb86c39175cb554beef3bbedbc20"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl_1_1HistoryEntry.html">HistoryEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a116ffb86c39175cb554beef3bbedbc20">redo</a></td></tr>
+<tr class="separator:a116ffb86c39175cb554beef3bbedbc20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a640fda0c36d5cf7548b3c9467914dfca" id="r_a640fda0c36d5cf7548b3c9467914dfca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1transaction_1_1Coordinator.html">transaction::Coordinator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a640fda0c36d5cf7548b3c9467914dfca">coordinator</a></td></tr>
+<tr class="separator:a640fda0c36d5cf7548b3c9467914dfca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84f1ced29fd379113195126840f07d31" id="r_a84f1ced29fd379113195126840f07d31"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a84f1ced29fd379113195126840f07d31">nextLegacyId</a> = 1</td></tr>
+<tr class="separator:a84f1ced29fd379113195126840f07d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a802be74aa82ef79eff38dab605d92b94" id="r_a802be74aa82ef79eff38dab605d92b94"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a802be74aa82ef79eff38dab605d92b94">redoSequence</a> = 0</td></tr>
+<tr class="separator:a802be74aa82ef79eff38dab605d92b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1487ed77b098266fb6cd5d723edab498" id="r_a1487ed77b098266fb6cd5d723edab498"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4f">EditorCommitState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a1487ed77b098266fb6cd5d723edab498">state</a> = <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa5d5fbe880f62680a14a5e3979a19c861">EditorCommitState::Discarded</a></td></tr>
+<tr class="separator:a1487ed77b098266fb6cd5d723edab498"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fd83951ecad163964023361dcc11558" id="r_a8fd83951ecad163964023361dcc11558"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a8fd83951ecad163964023361dcc11558">diagnostics</a></td></tr>
+<tr class="separator:a8fd83951ecad163964023361dcc11558"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e5157bdf92c0934cbbe965d0650a7dd" id="r_a5e5157bdf92c0934cbbe965d0650a7dd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a5e5157bdf92c0934cbbe965d0650a7dd">retryAllowed</a> = false</td></tr>
+<tr class="separator:a5e5157bdf92c0934cbbe965d0650a7dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a174f73298810134bf518e1831143b01d" id="r_a174f73298810134bf518e1831143b01d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl.html#a174f73298810134bf518e1831143b01d">retryBlockedByCommittedParticipant</a> = false</td></tr>
+<tr class="separator:a174f73298810134bf518e1831143b01d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00270">270</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aea0d2a6141766aa31aebdfef9bcb6f86" name="aea0d2a6141766aa31aebdfef9bcb6f86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea0d2a6141766aa31aebdfef9bcb6f86">&#9670;&#160;</a></span>Impl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorTransactionConsumer::Impl::Impl </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a> *&#160;</td>
+          <td class="paramname"><em>authorityValue</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a182d93413e873623fd9fb4f7723e17b6" name="a182d93413e873623fd9fb4f7723e17b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a182d93413e873623fd9fb4f7723e17b6">&#9670;&#160;</a></span>authority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a637bc8625709f1dc939b70c9629433f2">IEditAuthority</a>* eve::editor::EditorTransactionConsumer::Impl::authority = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00290">290</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a640fda0c36d5cf7548b3c9467914dfca" name="a640fda0c36d5cf7548b3c9467914dfca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a640fda0c36d5cf7548b3c9467914dfca">&#9670;&#160;</a></span>coordinator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1transaction_1_1Coordinator.html">transaction::Coordinator</a> eve::editor::EditorTransactionConsumer::Impl::coordinator</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8fd83951ecad163964023361dcc11558" name="a8fd83951ecad163964023361dcc11558"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fd83951ecad163964023361dcc11558">&#9670;&#160;</a></span>diagnostics</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classeve_1_1Diagnostic.html">eve::Diagnostic</a>&gt; eve::editor::EditorTransactionConsumer::Impl::diagnostics</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00298">298</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a84f1ced29fd379113195126840f07d31" name="a84f1ced29fd379113195126840f07d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84f1ced29fd379113195126840f07d31">&#9670;&#160;</a></span>nextLegacyId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::editor::EditorTransactionConsumer::Impl::nextLegacyId = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00295">295</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29bfa0c8b59bac18909a3e01a98b3adf" name="a29bfa0c8b59bac18909a3e01a98b3adf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29bfa0c8b59bac18909a3e01a98b3adf">&#9670;&#160;</a></span>pending</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl_1_1Pending.html">Pending</a>&gt; eve::editor::EditorTransactionConsumer::Impl::pending</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00291">291</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a116ffb86c39175cb554beef3bbedbc20" name="a116ffb86c39175cb554beef3bbedbc20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a116ffb86c39175cb554beef3bbedbc20">&#9670;&#160;</a></span>redo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl_1_1HistoryEntry.html">HistoryEntry</a>&gt; eve::editor::EditorTransactionConsumer::Impl::redo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a802be74aa82ef79eff38dab605d92b94" name="a802be74aa82ef79eff38dab605d92b94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a802be74aa82ef79eff38dab605d92b94">&#9670;&#160;</a></span>redoSequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::editor::EditorTransactionConsumer::Impl::redoSequence = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e5157bdf92c0934cbbe965d0650a7dd" name="a5e5157bdf92c0934cbbe965d0650a7dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e5157bdf92c0934cbbe965d0650a7dd">&#9670;&#160;</a></span>retryAllowed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorTransactionConsumer::Impl::retryAllowed = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a174f73298810134bf518e1831143b01d" name="a174f73298810134bf518e1831143b01d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a174f73298810134bf518e1831143b01d">&#9670;&#160;</a></span>retryBlockedByCommittedParticipant</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorTransactionConsumer::Impl::retryBlockedByCommittedParticipant = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00300">300</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1487ed77b098266fb6cd5d723edab498" name="a1487ed77b098266fb6cd5d723edab498"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1487ed77b098266fb6cd5d723edab498">&#9670;&#160;</a></span>state</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4f">EditorCommitState</a> eve::editor::EditorTransactionConsumer::Impl::state = <a class="el" href="namespaceeve_1_1editor.html#ae09b74b5d2d969de08aa1a308d038a4fa5d5fbe880f62680a14a5e3979a19c861">EditorCommitState::Discarded</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae3bbe8c145d5fa10bc2d8f83f8c8be1a" name="ae3bbe8c145d5fa10bc2d8f83f8c8be1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3bbe8c145d5fa10bc2d8f83f8c8be1a">&#9670;&#160;</a></span>undo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1editor_1_1EditorTransactionConsumer_1_1Impl_1_1HistoryEntry.html">HistoryEntry</a>&gt; eve::editor::EditorTransactionConsumer::Impl::undo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a> 第 <a class="el" href="EditorTransactionConsumer_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorTransactionConsumer_8cpp_source.html">EditorTransactionConsumer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

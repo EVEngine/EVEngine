@@ -1,0 +1,233 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">Renderable3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::Renderable3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ab24abe2cdf3f8d3c13db904f55b2ea9d">clearMeshLod</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ad14393ff9352bd8b16ea6e42d33025f9">clearParts</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aadd2987faab139b4a01eac8040c612e5">clearPartSortPriority</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a07ede902ce6c1e1094ad6e93c6b4a694">getCastOcclusion</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ae833826324b6879dd24d90bf84d6786c">getEntityGeneration</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ad4aff6a54f10a456002f941c7447828a">getEntityId</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a39dc1d1d1bfcc77abeb670def52e590c">getHair</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ae3582a1ba998fd8a26f64a648cf34a82">getMaterial</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a53bbe43c59b0fb949ccd0777a7b74a93">getMesh</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a649321c3cc757e94c40bdf5cd36f860c">getMeshLodCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a0cb42c8f523b42321944a25967e5d44d">getMeshLodLevelAtDistance</a>(float distance)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a0a9f27011be6932baf8dc3a8d3c722f4">getParallaxMaxLayers</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a21f196e6666da00ed3aa15f96e32746e">getParallaxMinLayers</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ad0e33a3529fdbe1fddef192897f107cb">getParallaxScale</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ade7b8eef969502e3bafbfb4f57966043">getPartCount</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a290150db2c8781b65fb28e09b65c3cc1">getPartMaterial</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ac243367eebd4b381255ccd270a6ebc18">getPartMesh</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a1a831a070b22b4af99286bacbace0651">getPartName</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ac11a4b76c5406626202ddb17fe90d662">getPartSortPriority</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a800b7a0bf59c0ddc86845fa0877b6c9f">getReflectionCaptureMask</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a14b6dc38b3e22b81fff8c0f3224c3139">getRoughness</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a37ca421bd8892478ee095a44ba454e16">getTexCellBombRotation</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a51c860d2fa89c30510e1e376a43dc122">getTexCellBombScale</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ab8027c599d6b8da0820ccfd2654c23cd">getTexCellBombStrength</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aafbf03aa41674817c127b7a9368f732c">getTintB</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a5c85b92d064049c899fb130a8a5a6570">getTintG</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a656a08d5893814f365e6d4b2473aeff5">getTintR</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ac348ff956f591015091a3e911012b249">getXRayHighlight</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a6e0f8d89088e59e07476a016b954c526">getXRayShader</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a801def818e456cae16358ac1ea9e2507">getYaw</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#abe19cc5b7b89051aea2e9e8cd57f8e34">release</a>() override</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a02a21b3e05562e4c09b8f803b617255c">setCamera</a>(Camera3D *camera)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a171ff16fb71bee5eebbefe840d50579d">setCastOcclusion</a>(bool cast)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ac29af85aedb803a1d4846137518e459c">setCastShadow</a>(bool cast)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a6a7876adfe883c7090f05cdeb1747f44">setHair</a>(bool hair)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a42af9cab4d082e5582bdfa87bf1985b7">setHeightTexture</a>(Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a90de07aa2615339ee659e419328d20a3">setMaterial</a>(Material *material)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#abc86f6b6f8376704aa3f9c8841db7102">setMesh</a>(Mesh *mesh)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ae43577ebc106333d01f267fc9ec78f3b">setMeshLod</a>(int index, Mesh *mesh, float switchDistance=0.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a635d0d71859a921f3437761fd3ebeed8">setMetallic</a>(float metallic)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a0227aea87bdf97470286e184966fa23e">setNormalTexture</a>(Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aa559ed4d499c72a3f2cedaead4c9f90f">setParallax</a>(float scale, float minLayers=8.f, float maxLayers=32.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a4bfcfca36a487d56f8d60bb061a26ca7">setPart</a>(int index, const std::string &amp;name, Mesh *mesh, Material *material)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a12f733575ba21505f265ad63b0c10a06">setPartSortPriority</a>(int index, int priority)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aadbf8d0baf588bcbbe039409b04e71c0">setPosition</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a76e64ebd083e06c41eeef5222dd461ff">setReceiveLight</a>(bool receive)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aee58ee73e388500049ce9f021c9fc15f">setReceiveShadow</a>(bool receive)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a0401f2fbec7c8a630afd7afcf229a911">setReflectionCaptureMask</a>(int mask)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a2adef4427f9f2570307f69b707e599af">setRotation</a>(float yaw, float pitch, float roll)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aebe5c72c86d2ab36ddbd96a4a6ec15e1">setRoughness</a>(float roughness)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aed2524d98e20423f87442da12abf8fef">setScale</a>(float sx, float sy, float sz)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a7fde820a0615a68324312e1b07be398f">setShader</a>(Shader *shader)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a4f9a4f38d806b3131f06c7c59b1ff013">setTexCellBomb</a>(float cellScale, float strength, float rotAmount=1.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a6a440beae3071df7416b975048137657">setTexture</a>(Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#a598a470b765a59f8aab7849833f6257c">setTint</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#af03a073a6efe8f600cc5f5990cda7426">setVisible</a>(bool visible)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#aba195b3f7a75d8b42783eb14568f882b">setXRayHighlight</a>(bool on)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#ab048d1e2ab1cc7238d11e70a297e8d1c">setXRayShader</a>(Shader *shader)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html#acf37013771e53ae3111b152aa00792ba">setYaw</a>(float yaw)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">eve::graphics::Renderable3D</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

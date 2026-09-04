@@ -1,0 +1,241 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::graphics::Material 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#acf738993a5b5408e79a90d29769aaf12">bind</a>(Graphics &amp;gfx) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a6e9e084af152f3817aaa55b494394ab8">blendMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a6bba734bdb8fcefaf456ade042938813">clearVirtualTexture</a>()</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#ad536a53f33108c62bcb6385f9c44e7ec">effectiveShader</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a22f30d1363921ae5f5c1fb43f56203af">getAlbedoTexture</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a5a0bb921ba1d76a8d1aa644524458c46">getAlphaCutoff</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a0d8425ca0215c586a343ddcc498992a9">getAlphaTechnique</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a3e72f4d992b9100f45fd2f84385252c5">getBlendMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a7bd4fa06f84c978b0c6e20b779bb9a47">getCastOcclusion</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#aba1ee5ebf469ad821318a22118c5158c">getCastShadow</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a97fe6ef521304ab18d26481fafdb48c3">getDepthWrite</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a7c4e3d21f70a77b438c25b964b4be2f0">getDoubleSided</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a005567f75b016b34473afdb08df26715">getFloat</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1a55b4110849cb7fc2b07eb9ca675187">getHair</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#af0ef953b07d723d0cf63d0682a8c6f26">getHeightTexture</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a2109523fcfd0d1d4f2f511d2730f1131">getMetallic</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a5222ae66472e83cd67f24a11853253f0">getNormalTexture</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#acdbf7ab349752be5847955864591bdd7">getParallaxMaxLayers</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a57c6bb64428e5792e761f83c99d01c29">getParallaxMinLayers</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a0b7f67e6527f2a63bbc89b8f8fd9a6c3">getParallaxScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#acc7cde31761e3d6f684f611d0e651ff8">getReceiveLight</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a60d2da1611eb354c0ad1d92e728b0c0c">getReceiveShadow</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a571a488fc8025d9a5a47603303bda8b8">getRoughness</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a9c0c937cda58be8c22beabb13ecc947c">getShader</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa1a6b4ee5a8da3a39ae6d4cf6d67a6cb">getShadingModel</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a71cff01ca609d0921f19fc509e6473b6">getSortPriority</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa4109812921c0dac6ca9ce29df8df1db">getSurfaceMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a25ae8b08a33ddcc8e84a96bad8ff94d6">getTexCellBombRotation</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a4f79c34fda1c7ad70668315f3a3ffe5d">getTexCellBombScale</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a26cc096baa013b62f78739c771afe769">getTexCellBombStrength</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a7780bdd04988f58c676dc3fcc1d5911d">getTintA</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa59b7df65cd1ad58093fd51cfe1f4703">getTintB</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#ac205055ee6df7f239ccee8fa170ee6cb">getTintG</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a330113255c2e2068257e60976f9a8525">getTintR</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1763d9f520ec82ad10a4b9089320278f">hasParam</a>(const std::string &amp;name) const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a75235bf7d886528143954ff1560551bb">isTransparentHair</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a70a48f0e99a6acd55545fb59e7c5978a">kMaxPartsHint</a></td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a4edc08e515f76630a606c382fc4b0e6f">Material</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#ab1ebc329e1bfc62a8c189e82569fc269">Material</a>(const Material &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a4a56582419780f89ad0cef5913a3cee8">operator=</a>(const Material &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a0b041de2506392881c47ea2985d9027a">setAlbedoTexture</a>(Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a77acbf4e60f51cc5fb53e4dd4ae97572">setAlphaCutoff</a>(float cutoff)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a33ac6861101b003b0236e6da5f912b1c">setAlphaTechnique</a>(const std::string &amp;technique)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a384a4f1aa66ec55647b1d4ac5717255e">setBlendMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1e28a91491d8c32f27ea2c5bbb644642">setCastOcclusion</a>(bool cast)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1c525953edb63a272ed816539cbd7bf2">setCastShadow</a>(bool cast)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa0f8eed8e33aa0ed074d8c5a127de955">setDepthWrite</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#af8e00151d5bff8dafaf535fc3372b89a">setDoubleSided</a>(bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#ad3192266fcf559bbcd8832b3abdf33ee">setFloat</a>(const std::string &amp;name, float value)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#af0ea7a460b8033cdb9b80cc0e0c1da8f">setHair</a>(bool hair)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a1f8c6778e15337f594e4ad6f34652539">setHeightTexture</a>(Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a3ee7db87d9ccb8be4beb6d8bd29429c2">setMetallic</a>(float metallic)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a065e6dfd24f53b99bcf31fa6a573591f">setNormalTexture</a>(Texture *texture)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#aa5b920dddf4080c3b582514b957036e6">setParallax</a>(float scale, float minLayers=8.f, float maxLayers=32.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a813766224fe2230b3a4e72c5b4802eb0">setReceiveLight</a>(bool receive)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a4236b97469ba0692888b985711120a88">setReceiveShadow</a>(bool receive)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a6c0411b6e2991ada8e6c2225d6ae5bee">setRoughness</a>(float roughness)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#af76747192c813d7adc3f0e560cfe3b52">setShader</a>(Shader *shader)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a89c19c4d946adfa0b80011bef6d57e5c">setShadingModel</a>(const std::string &amp;model)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#ae0076e890296774b2e0573730dfbfd34">setSortPriority</a>(int priority)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a85640119f8756270c1dc4d56fd314870">setSurfaceMode</a>(const std::string &amp;mode)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a93de19a841d825211ff379ad04421bb7">setTexCellBomb</a>(float cellScale, float strength, float rotAmount=1.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a9905067ec869894ae2eab9e5f60fe790">setTint</a>(float r, float g, float b, float a=1.f)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a837374028cc20ca35123743ad974fa4f">setVirtualTexture</a>(Texture *albedoAtlas, Texture *normalAtlas, Texture *pageTable, int pageCountX, int pageCountY, int atlasSlotsX, int atlasSlotsY, float borderFraction)</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#ad89adeb9401ec1ea6e517ff614936866">surfaceMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a74f61368c6963a287769e618ada369e2">virtualTextureMode</a>() const</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html#a22f0bfe399288a0c71c26dc036294a72">~Material</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

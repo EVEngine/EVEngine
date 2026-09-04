@@ -1,0 +1,620 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainMeshChunk类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html">TerrainMeshChunk</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainMeshChunk-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainMeshChunk类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One renderable heightfield chunk plus four ecological material weights.  
+ <a href="classeve_1_1procgen_1_1TerrainMeshChunk.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a3032be7e598bc10c4eb7f0ba187d20e9" id="r_a3032be7e598bc10c4eb7f0ba187d20e9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a3032be7e598bc10c4eb7f0ba187d20e9">mesh</a> () const</td></tr>
+<tr class="separator:a3032be7e598bc10c4eb7f0ba187d20e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78fb2d2b7b1595e447f8e9220beb35c3" id="r_a78fb2d2b7b1595e447f8e9220beb35c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a78fb2d2b7b1595e447f8e9220beb35c3">mesh</a> ()</td></tr>
+<tr class="separator:a78fb2d2b7b1595e447f8e9220beb35c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aede12aefc6f6446c816228d3d2c2fd48" id="r_aede12aefc6f6446c816228d3d2c2fd48"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#aede12aefc6f6446c816228d3d2c2fd48">getVertexCount</a> () const</td></tr>
+<tr class="separator:aede12aefc6f6446c816228d3d2c2fd48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad357f5d8745842fbe68042ff7e94478b" id="r_ad357f5d8745842fbe68042ff7e94478b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#ad357f5d8745842fbe68042ff7e94478b">getIndexCount</a> () const</td></tr>
+<tr class="separator:ad357f5d8745842fbe68042ff7e94478b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa291a64905e5ccabcd84e8fc28a04090" id="r_aa291a64905e5ccabcd84e8fc28a04090"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#aa291a64905e5ccabcd84e8fc28a04090">getBaseVertexCount</a> () const</td></tr>
+<tr class="separator:aa291a64905e5ccabcd84e8fc28a04090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33effa56e994e7ce4aba162a01216d75" id="r_a33effa56e994e7ce4aba162a01216d75"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a33effa56e994e7ce4aba162a01216d75">getLodStep</a> () const</td></tr>
+<tr class="separator:a33effa56e994e7ce4aba162a01216d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f32cd20109e31a842fdb6fd2b5e9e36" id="r_a8f32cd20109e31a842fdb6fd2b5e9e36"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a8f32cd20109e31a842fdb6fd2b5e9e36">getOriginX</a> () const</td></tr>
+<tr class="separator:a8f32cd20109e31a842fdb6fd2b5e9e36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fac2c6a12dc20389f09e2b115463dcf" id="r_a7fac2c6a12dc20389f09e2b115463dcf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a7fac2c6a12dc20389f09e2b115463dcf">getOriginY</a> () const</td></tr>
+<tr class="separator:a7fac2c6a12dc20389f09e2b115463dcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74eeef011d2bd4b217e4205c42e16064" id="r_a74eeef011d2bd4b217e4205c42e16064"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a74eeef011d2bd4b217e4205c42e16064">getSplatWidth</a> () const</td></tr>
+<tr class="separator:a74eeef011d2bd4b217e4205c42e16064"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a034b77edcccb9e1632a8ed598970a245" id="r_a034b77edcccb9e1632a8ed598970a245"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a034b77edcccb9e1632a8ed598970a245">getSplatHeight</a> () const</td></tr>
+<tr class="separator:a034b77edcccb9e1632a8ed598970a245"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c9e9ae490f11115b9afca14504be160" id="r_a0c9e9ae490f11115b9afca14504be160"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a0c9e9ae490f11115b9afca14504be160">getGeometricError</a> () const</td></tr>
+<tr class="separator:a0c9e9ae490f11115b9afca14504be160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a288b5b16cc1bd880a7d4838b70354a85" id="r_a288b5b16cc1bd880a7d4838b70354a85"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a288b5b16cc1bd880a7d4838b70354a85">getBiome</a> (int vertex) const</td></tr>
+<tr class="memdesc:a288b5b16cc1bd880a7d4838b70354a85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the biome id stored for one mesh vertex, or -1 when out of range.  <br /></td></tr>
+<tr class="separator:a288b5b16cc1bd880a7d4838b70354a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d1fc69e45ae86d7a68100728f84bb50" id="r_a4d1fc69e45ae86d7a68100728f84bb50"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a4d1fc69e45ae86d7a68100728f84bb50">getMaterialWeight</a> (int vertex, int channel) const</td></tr>
+<tr class="separator:a4d1fc69e45ae86d7a68100728f84bb50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a4ad44a8656e27611ae7df8bc6af8d9ca" id="r_a4ad44a8656e27611ae7df8bc6af8d9ca"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainMeshChunk.html#a4ad44a8656e27611ae7df8bc6af8d9ca">TerrainMeshBuilder</a></td></tr>
+<tr class="separator:a4ad44a8656e27611ae7df8bc6af8d9ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One renderable heightfield chunk plus four ecological material weights. </p>
+<p>Weight channels are sand, vegetation, rock, and snow. The base grid comes first; optional crack-hiding skirt vertices follow it. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00026">26</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aa291a64905e5ccabcd84e8fc28a04090" name="aa291a64905e5ccabcd84e8fc28a04090"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa291a64905e5ccabcd84e8fc28a04090">&#9670;&#160;</a></span>getBaseVertexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getBaseVertexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02513">eve::procgen::Procgen::generateTerrainAlbedoMap()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l02483">eve::procgen::Procgen::generateTerrainSplatMap()</a>.</p>
+
+</div>
+</div>
+<a id="a288b5b16cc1bd880a7d4838b70354a85" name="a288b5b16cc1bd880a7d4838b70354a85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a288b5b16cc1bd880a7d4838b70354a85">&#9670;&#160;</a></span>getBiome()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getBiome </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the biome id stored for one mesh vertex, or -1 when out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8cpp_source.html">TerrainMesh.cpp</a> 第 <a class="el" href="TerrainMesh_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02513">eve::procgen::Procgen::generateTerrainAlbedoMap()</a>.</p>
+
+</div>
+</div>
+<a id="a0c9e9ae490f11115b9afca14504be160" name="a0c9e9ae490f11115b9afca14504be160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c9e9ae490f11115b9afca14504be160">&#9670;&#160;</a></span>getGeometricError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainMeshChunk::getGeometricError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad357f5d8745842fbe68042ff7e94478b" name="ad357f5d8745842fbe68042ff7e94478b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad357f5d8745842fbe68042ff7e94478b">&#9670;&#160;</a></span>getIndexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getIndexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00159">eve::procgen::MeshBuild::getIndexCount()</a>.</p>
+
+</div>
+</div>
+<a id="a33effa56e994e7ce4aba162a01216d75" name="a33effa56e994e7ce4aba162a01216d75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33effa56e994e7ce4aba162a01216d75">&#9670;&#160;</a></span>getLodStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getLodStep </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d1fc69e45ae86d7a68100728f84bb50" name="a4d1fc69e45ae86d7a68100728f84bb50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d1fc69e45ae86d7a68100728f84bb50">&#9670;&#160;</a></span>getMaterialWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainMeshChunk::getMaterialWeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>channel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8cpp_source.html">TerrainMesh.cpp</a> 第 <a class="el" href="TerrainMesh_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainMesh_8h_source.html#l00030">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02513">eve::procgen::Procgen::generateTerrainAlbedoMap()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l02483">eve::procgen::Procgen::generateTerrainSplatMap()</a>.</p>
+
+</div>
+</div>
+<a id="a8f32cd20109e31a842fdb6fd2b5e9e36" name="a8f32cd20109e31a842fdb6fd2b5e9e36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f32cd20109e31a842fdb6fd2b5e9e36">&#9670;&#160;</a></span>getOriginX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getOriginX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7fac2c6a12dc20389f09e2b115463dcf" name="a7fac2c6a12dc20389f09e2b115463dcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fac2c6a12dc20389f09e2b115463dcf">&#9670;&#160;</a></span>getOriginY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getOriginY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a034b77edcccb9e1632a8ed598970a245" name="a034b77edcccb9e1632a8ed598970a245"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a034b77edcccb9e1632a8ed598970a245">&#9670;&#160;</a></span>getSplatHeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getSplatHeight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02513">eve::procgen::Procgen::generateTerrainAlbedoMap()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l02483">eve::procgen::Procgen::generateTerrainSplatMap()</a>.</p>
+
+</div>
+</div>
+<a id="a74eeef011d2bd4b217e4205c42e16064" name="a74eeef011d2bd4b217e4205c42e16064"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74eeef011d2bd4b217e4205c42e16064">&#9670;&#160;</a></span>getSplatWidth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getSplatWidth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02513">eve::procgen::Procgen::generateTerrainAlbedoMap()</a> , 以及 <a class="el" href="Procgen_8cpp_source.html#l02483">eve::procgen::Procgen::generateTerrainSplatMap()</a>.</p>
+
+</div>
+</div>
+<a id="aede12aefc6f6446c816228d3d2c2fd48" name="aede12aefc6f6446c816228d3d2c2fd48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aede12aefc6f6446c816228d3d2c2fd48">&#9670;&#160;</a></span>getVertexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainMeshChunk::getVertexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">eve::procgen::MeshBuild::getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMesh_8cpp_source.html#l00095">getMaterialWeight()</a>.</p>
+
+</div>
+</div>
+<a id="a78fb2d2b7b1595e447f8e9220beb35c3" name="a78fb2d2b7b1595e447f8e9220beb35c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78fb2d2b7b1595e447f8e9220beb35c3">&#9670;&#160;</a></span>mesh() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp; eve::procgen::TerrainMeshChunk::mesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3032be7e598bc10c4eb7f0ba187d20e9" name="a3032be7e598bc10c4eb7f0ba187d20e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3032be7e598bc10c4eb7f0ba187d20e9">&#9670;&#160;</a></span>mesh() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp; eve::procgen::TerrainMeshChunk::mesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Procgen_8cpp_source.html#l02410">eve::procgen::Procgen::generateTerrainChunkMesh()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a4ad44a8656e27611ae7df8bc6af8d9ca" name="a4ad44a8656e27611ae7df8bc6af8d9ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ad44a8656e27611ae7df8bc6af8d9ca">&#9670;&#160;</a></span>TerrainMeshBuilder</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1procgen_1_1TerrainMeshBuilder.html">TerrainMeshBuilder</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a> 第 <a class="el" href="TerrainMesh_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainMesh_8h_source.html">TerrainMesh.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainMesh_8cpp_source.html">TerrainMesh.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,627 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dialogue/ConversationAuthoring.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9d7eb5392a4fb7dccc4284e89fdc9c92.html">dialogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ConversationAuthoring.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ConversationAuthoring_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ConversationAuthoring_8h.html">dialogue/ConversationAuthoring.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ConversationPersistence_8h.html">dialogue/ConversationPersistence.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ConversationToolchain_8h.html">dialogue/ConversationToolchain.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dialogue.html">eve::dialogue</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">using </span>Kind = <a class="code hl_enumeration" href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97">ConversationAsset::Node::Kind</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keywordtype">bool</span> parseKind(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, Kind&amp; out) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::array&lt;std::pair&lt;const char*, Kind&gt;, 7&gt; kinds{{</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        {<span class="stringliteral">&quot;line&quot;</span>, Kind::Line},</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        {<span class="stringliteral">&quot;branch&quot;</span>, Kind::Branch},</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        {<span class="stringliteral">&quot;choice&quot;</span>, Kind::Choice},</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        {<span class="stringliteral">&quot;call&quot;</span>, Kind::Call},</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        {<span class="stringliteral">&quot;command&quot;</span>, Kind::Command},</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        {<span class="stringliteral">&quot;wait&quot;</span>, Kind::Wait},</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        {<span class="stringliteral">&quot;end&quot;</span>, Kind::End},</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>] : kinds) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> == <a class="code hl_variable" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            out = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>std::string kindName(Kind <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">case</span> Kind::Line: <span class="keywordflow">return</span> <span class="stringliteral">&quot;line&quot;</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">case</span> Kind::Branch: <span class="keywordflow">return</span> <span class="stringliteral">&quot;branch&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">case</span> Kind::Choice: <span class="keywordflow">return</span> <span class="stringliteral">&quot;choice&quot;</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">case</span> Kind::Call: <span class="keywordflow">return</span> <span class="stringliteral">&quot;call&quot;</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">case</span> Kind::Command: <span class="keywordflow">return</span> <span class="stringliteral">&quot;command&quot;</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">case</span> Kind::Wait: <span class="keywordflow">return</span> <span class="stringliteral">&quot;wait&quot;</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">case</span> Kind::End: <span class="keywordflow">return</span> <span class="stringliteral">&quot;end&quot;</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">using </span>Field = std::pair&lt;const char*, const char*&gt;;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">const</span> std::vector&lt;Field&gt;&amp; fieldsFor(Kind <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;Field&gt; <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>{{<span class="stringliteral">&quot;next&quot;</span>, <span class="stringliteral">&quot;node&quot;</span>},        {<span class="stringliteral">&quot;speaker&quot;</span>, <span class="stringliteral">&quot;string&quot;</span>}, {<span class="stringliteral">&quot;text&quot;</span>, <span class="stringliteral">&quot;multiline&quot;</span>},</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                         {<span class="stringliteral">&quot;pool&quot;</span>, <span class="stringliteral">&quot;asset&quot;</span>},       {<span class="stringliteral">&quot;i18nKey&quot;</span>, <span class="stringliteral">&quot;string&quot;</span>}, {<span class="stringliteral">&quot;voice&quot;</span>, <span class="stringliteral">&quot;asset&quot;</span>},</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                                         {<span class="stringliteral">&quot;expression&quot;</span>, <span class="stringliteral">&quot;string&quot;</span>}};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;Field&gt; branch;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;Field&gt; choice;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;Field&gt; call{</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        {<span class="stringliteral">&quot;target&quot;</span>, <span class="stringliteral">&quot;asset&quot;</span>}, {<span class="stringliteral">&quot;returnNode&quot;</span>, <span class="stringliteral">&quot;node&quot;</span>}, {<span class="stringliteral">&quot;next&quot;</span>, <span class="stringliteral">&quot;node&quot;</span>}, {<span class="stringliteral">&quot;arguments&quot;</span>, <span class="stringliteral">&quot;json&quot;</span>}};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;Field&gt; command{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        {<span class="stringliteral">&quot;target&quot;</span>, <span class="stringliteral">&quot;string&quot;</span>}, {<span class="stringliteral">&quot;expression&quot;</span>, <span class="stringliteral">&quot;string&quot;</span>}, {<span class="stringliteral">&quot;next&quot;</span>, <span class="stringliteral">&quot;node&quot;</span>}, {<span class="stringliteral">&quot;arguments&quot;</span>, <span class="stringliteral">&quot;json&quot;</span>}};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;Field&gt; wait{{<span class="stringliteral">&quot;next&quot;</span>, <span class="stringliteral">&quot;node&quot;</span>}};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;Field&gt; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">case</span> Kind::Line: <span class="keywordflow">return</span> <a class="code hl_variable" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">case</span> Kind::Branch: <span class="keywordflow">return</span> branch;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">case</span> Kind::Choice: <span class="keywordflow">return</span> choice;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">case</span> Kind::Call: <span class="keywordflow">return</span> call;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">case</span> Kind::Command: <span class="keywordflow">return</span> command;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">case</span> Kind::Wait: <span class="keywordflow">return</span> wait;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">case</span> Kind::End: <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="}">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#ae7871489e6eb1c271240a506fe3c3fca">   73</a></span><a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#ae7871489e6eb1c271240a506fe3c3fca">ConversationDocument::ConversationDocument</a>(std::string <span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#aeace2b77a608e8137d3e29ee443b1da5">id</a>    = std::move(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a3b25e77903a56f4d8fad7557f70e0b48">entry</a> = <span class="stringliteral">&quot;end&quot;</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>.push_back({<span class="stringliteral">&quot;end&quot;</span>, Kind::End});</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#af70175ff6b6c74a956b3f00b0f3d5f6b">   79</a></span><a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#ae7871489e6eb1c271240a506fe3c3fca">ConversationDocument::ConversationDocument</a>(<a class="code hl_struct" href="structeve_1_1dialogue_1_1ConversationAsset.html">ConversationAsset</a> asset) : asset_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(asset)) {}</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keywordtype">bool</span> ConversationDocument::fail(<span class="keyword">const</span> std::string&amp; message) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    failureMessage_ = message;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>ConversationAsset::Node* ConversationDocument::findNode(<span class="keyword">const</span> std::string&amp; nodeId) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; node : asset_.nodes)</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        if (node.<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a> == nodeId) return &amp;node;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">const</span> ConversationAsset::Node* ConversationDocument::findNode(<span class="keyword">const</span> std::string&amp; nodeId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> asset_.<a class="code hl_function" href="structeve_1_1dialogue_1_1ConversationAsset.html#ab52bf82e1d0a9f3284cd37ec5f057b8a">findNode</a>(nodeId);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="}">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#adf543b2dd5d463799c51979bf10a8f09">   96</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#adf543b2dd5d463799c51979bf10a8f09">ConversationDocument::setId</a>(<span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (<span class="keywordtype">id</span>.empty()) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;conversation ID must not be empty&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#aeace2b77a608e8137d3e29ee443b1da5">id</a> = <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    failureMessage_.clear();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#aac2a04b25d956e22025bbcd6e1c3e49e">  103</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#aac2a04b25d956e22025bbcd6e1c3e49e">ConversationDocument::setVersion</a>(<span class="keywordtype">int</span> version) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">if</span> (version &lt;= 0) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;conversation version must be positive&quot;</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a42b150e9a4e655ebcb41bd02ea1ca470">version</a> = version;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    failureMessage_.clear();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a1a0b3e55dfabc47cc310f827efc551f3">  110</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a1a0b3e55dfabc47cc310f827efc551f3">ConversationDocument::setEntry</a>(<span class="keyword">const</span> std::string&amp; nodeId) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (!findNode(nodeId)) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;entry node not found: &quot;</span> + nodeId);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a3b25e77903a56f4d8fad7557f70e0b48">entry</a> = nodeId;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    failureMessage_.clear();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#af9d18e3d685660a884c8c94c8a5d85d1">  117</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#af9d18e3d685660a884c8c94c8a5d85d1">ConversationDocument::getParameterCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.size()); }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="foldopen" id="foldopen00119" data-start="{" data-end="}">
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a09eafe59ba98bce15ce5ae79b60beb89">  119</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a09eafe59ba98bce15ce5ae79b60beb89">ConversationDocument::getParameter</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#af9d18e3d685660a884c8c94c8a5d85d1">getParameterCount</a>() ? asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)] : std::string{};</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="foldopen" id="foldopen00123" data-start="{" data-end="}">
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a30eb9635a4421c446f2e441e93c805dd">  123</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a30eb9635a4421c446f2e441e93c805dd">ConversationDocument::addParameter</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>.empty()) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;parameter name must not be empty&quot;</span>);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">if</span> (std::find(asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.begin(), asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.end(), <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) != asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.end())</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;parameter already exists: &quot;</span> + <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.push_back(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    failureMessage_.clear();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="foldopen" id="foldopen00132" data-start="{" data-end="}">
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a3106c11ab51d35c1e67c96ce83ef34f0">  132</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a3106c11ab51d35c1e67c96ce83ef34f0">ConversationDocument::removeParameter</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">const</span> <span class="keyword">auto</span> it = std::find(asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.begin(), asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.end(), <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">if</span> (it == asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.end()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">parameters</a>.erase(it);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>}</div>
+</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a406e3c61bb2add7c3347b346f92e427d">  139</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a406e3c61bb2add7c3347b346f92e427d">ConversationDocument::getNodeCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>.size()); }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="}">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#ab39dd7db666b5b42041faad29ab6aa3f">  141</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#ab39dd7db666b5b42041faad29ab6aa3f">ConversationDocument::getNodeId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &lt; <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a406e3c61bb2add7c3347b346f92e427d">getNodeCount</a>() ? asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].<span class="keywordtype">id</span> : std::string{};</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>}</div>
+</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#ad4efdeb509d1272786934dd604f08245">  145</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#ad4efdeb509d1272786934dd604f08245">ConversationDocument::hasNode</a>(<span class="keyword">const</span> std::string&amp; nodeId)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> findNode(nodeId) != <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="foldopen" id="foldopen00147" data-start="{" data-end="}">
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a06a22f62f22d65da63210086f7e53691">  147</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a06a22f62f22d65da63210086f7e53691">ConversationDocument::addNode</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    Kind parsed;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordflow">if</span> (nodeId.empty()) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;node ID must not be empty&quot;</span>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> (findNode(nodeId)) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;node already exists: &quot;</span> + nodeId);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">if</span> (!parseKind(<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, parsed)) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;unknown node kind: &quot;</span> + <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>.push_back({nodeId, parsed});</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    failureMessage_.clear();</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>}</div>
+</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="foldopen" id="foldopen00157" data-start="{" data-end="}">
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#aa45ae0f9900e4c3ea0b71fc859ad021f">  157</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#aa45ae0f9900e4c3ea0b71fc859ad021f">ConversationDocument::removeNode</a>(<span class="keyword">const</span> std::string&amp; nodeId) {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keyword">const</span> <span class="keyword">auto</span> it =</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        std::find_if(asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>.begin(), asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>.end(), [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; node) { return node.id == nodeId; });</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">if</span> (it == asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>.end()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>.erase(it);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordflow">if</span> (asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a3b25e77903a56f4d8fad7557f70e0b48">entry</a> == nodeId) asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a3b25e77903a56f4d8fad7557f70e0b48">entry</a>.clear();</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; node : asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">nodes</a>) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">if</span> (node.next == nodeId) node.next.clear();</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keywordflow">if</span> (node.returnNode == nodeId) node.returnNode.clear();</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        node.routes.erase(std::remove_if(node.routes.begin(), node.routes.end(),</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                                         [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; route) { return route.second == nodeId; }),</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                          node.routes.end());</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>}</div>
+</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="foldopen" id="foldopen00173" data-start="{" data-end="}">
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#aca55ee859633cf2dad5654ea990f25e1">  173</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#aca55ee859633cf2dad5654ea990f25e1">ConversationDocument::renameNode</a>(<span class="keyword">const</span> std::string&amp; oldId, <span class="keyword">const</span> std::string&amp; newId) {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    std::vector&lt;ConversationAsset&gt; assets{asset_};</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve_1_1dialogue.html#af84a748a4da6f20f6e8af5009ac650d8">renameConversationNode</a>(assets, asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#aeace2b77a608e8137d3e29ee443b1da5">id</a>, oldId, newId, &amp;failureMessage_)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    asset_ = std::move(assets.front());</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>}</div>
+</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="foldopen" id="foldopen00180" data-start="{" data-end="}">
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0e42daa29453a4aec4c4e4e1e5fa682d">  180</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0e42daa29453a4aec4c4e4e1e5fa682d">ConversationDocument::getNodeKind</a>(<span class="keyword">const</span> std::string&amp; nodeId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordflow">return</span> node ? kindName(node-&gt;kind) : std::string{};</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}</div>
+</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="foldopen" id="foldopen00185" data-start="{" data-end="}">
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#aa249ba1f2256804ad04e71baccf21b3c">  185</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#aa249ba1f2256804ad04e71baccf21b3c">ConversationDocument::setNodeKind</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    Kind  parsed;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordflow">if</span> (!node) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;node not found: &quot;</span> + nodeId);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordflow">if</span> (!parseKind(<a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, parsed)) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;unknown node kind: &quot;</span> + <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    node-&gt;kind = parsed;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    failureMessage_.clear();</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>}</div>
+</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="foldopen" id="foldopen00195" data-start="{" data-end="}">
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a5706fac70d82006c4da9fd365e89b13a">  195</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a5706fac70d82006c4da9fd365e89b13a">ConversationDocument::getFieldCount</a>(<span class="keyword">const</span> std::string&amp; nodeId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordflow">return</span> node ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(fieldsFor(node-&gt;kind).size()) : 0;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>}</div>
+</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="foldopen" id="foldopen00200" data-start="{" data-end="}">
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a6468c8b5a4cb36d4c2099bc2488bb4a8">  200</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a6468c8b5a4cb36d4c2099bc2488bb4a8">ConversationDocument::getFieldName</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordflow">if</span> (!node) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; fields = fieldsFor(node-&gt;kind);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; index &lt; static_cast&lt;int&gt;(fields.size()) ? fields[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].<a class="code hl_variable" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a> : <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>}</div>
+</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="foldopen" id="foldopen00207" data-start="{" data-end="}">
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a93e35fb604eead21d917166e479854a0">  207</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a93e35fb604eead21d917166e479854a0">ConversationDocument::getFieldKind</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordflow">if</span> (!node) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; fields = fieldsFor(node-&gt;kind);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; index &lt; static_cast&lt;int&gt;(fields.size()) ? fields[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].second : <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>}</div>
+</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="foldopen" id="foldopen00214" data-start="{" data-end="}">
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a2c1e2aa32913023d94781e748c729043">  214</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a2c1e2aa32913023d94781e748c729043">ConversationDocument::getField</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keyword">const</span> std::string&amp; field)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">if</span> (!node) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;next&quot;</span>) <span class="keywordflow">return</span> node-&gt;next;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;speaker&quot;</span>) <span class="keywordflow">return</span> node-&gt;speaker;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;text&quot;</span>) <span class="keywordflow">return</span> node-&gt;text;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;pool&quot;</span>) <span class="keywordflow">return</span> node-&gt;pool;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;i18nKey&quot;</span>) <span class="keywordflow">return</span> node-&gt;i18nKey;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;voice&quot;</span>) <span class="keywordflow">return</span> node-&gt;voice;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;expression&quot;</span>) <span class="keywordflow">return</span> node-&gt;expression;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;target&quot;</span>) <span class="keywordflow">return</span> node-&gt;target;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;returnNode&quot;</span>) <span class="keywordflow">return</span> node-&gt;returnNode;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;arguments&quot;</span>) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1dialogue.html#a033cd9e94ebfdad050e1cda8b76bf8c6">conversationStateToJson</a>(node-&gt;arguments);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>}</div>
+</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="foldopen" id="foldopen00230" data-start="{" data-end="}">
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#ad7b6846c0133be5579256a1e5e68e85b">  230</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#ad7b6846c0133be5579256a1e5e68e85b">ConversationDocument::setField</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keyword">const</span> std::string&amp; field, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordflow">if</span> (!node) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;node not found: &quot;</span> + nodeId);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;next&quot;</span>)</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        node-&gt;next = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;speaker&quot;</span>)</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        node-&gt;speaker = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;text&quot;</span>)</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        node-&gt;text = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;pool&quot;</span>)</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        node-&gt;pool = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;i18nKey&quot;</span>)</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        node-&gt;i18nKey = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;voice&quot;</span>)</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        node-&gt;voice = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;expression&quot;</span>)</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        node-&gt;expression = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;target&quot;</span>)</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        node-&gt;target = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;returnNode&quot;</span>)</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        node-&gt;returnNode = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (field == <span class="stringliteral">&quot;arguments&quot;</span>) {</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <a class="code hl_class" href="classeve_1_1StateValue.html">StateValue</a> parsed;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve_1_1dialogue.html#aea77042f3c3e54e6d1ea1e1100947c56">conversationStateFromJson</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, parsed, &amp;failureMessage_)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordflow">if</span> (!parsed.<a class="code hl_function" href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">isObject</a>()) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;arguments must be a JSON object&quot;</span>);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        node-&gt;arguments = std::move(parsed);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;unknown node field: &quot;</span> + field);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    }</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    failureMessage_.clear();</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>}</div>
+</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
+<div class="foldopen" id="foldopen00263" data-start="{" data-end="}">
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a4ab1761ade14f25ff9d49bf8c21635c3">  263</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a4ab1761ade14f25ff9d49bf8c21635c3">ConversationDocument::getRouteCount</a>(<span class="keyword">const</span> std::string&amp; nodeId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keywordflow">return</span> node ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(node-&gt;routes.size()) : 0;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>}</div>
+</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
+<div class="foldopen" id="foldopen00268" data-start="{" data-end="}">
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a498f60d5594a86d7f6b0cca9cd263ec9">  268</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a498f60d5594a86d7f6b0cca9cd263ec9">ConversationDocument::getRouteLabel</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <span class="keywordflow">return</span> node &amp;&amp; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; index &lt; static_cast&lt;int&gt;(node-&gt;routes.size())</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>               ? node-&gt;routes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].<a class="code hl_variable" href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a></div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>               : std::string{};</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>}</div>
+</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
+<div class="foldopen" id="foldopen00275" data-start="{" data-end="}">
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a4e36f7bc394226ecf45042054b074c41">  275</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a4e36f7bc394226ecf45042054b074c41">ConversationDocument::getRouteTarget</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <span class="keywordflow">return</span> node &amp;&amp; <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; index &lt; static_cast&lt;int&gt;(node-&gt;routes.size())</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>               ? node-&gt;routes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].second</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>               : std::string{};</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>}</div>
+</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
+<div class="foldopen" id="foldopen00282" data-start="{" data-end="}">
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a7597ab24deb1758f794a5c84d26250e0">  282</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a7597ab24deb1758f794a5c84d26250e0">ConversationDocument::addRoute</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keyword">const</span> std::string&amp; label, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) {</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">if</span> (!node) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;node not found: &quot;</span> + nodeId);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    <span class="keywordflow">if</span> (node-&gt;kind != Kind::Branch &amp;&amp; node-&gt;kind != Kind::Choice) <span class="keywordflow">return</span> fail(<span class="stringliteral">&quot;routes require a branch or choice node&quot;</span>);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    node-&gt;routes.emplace_back(label, <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>);</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    failureMessage_.clear();</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>}</div>
+</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
+<div class="foldopen" id="foldopen00291" data-start="{" data-end="}">
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a7873e11944d1d4a079d1d69166e15437">  291</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a7873e11944d1d4a079d1d69166e15437">ConversationDocument::setRoute</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, <span class="keyword">const</span> std::string&amp; label,</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                                    <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) {</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    <span class="keywordflow">if</span> (!node || index &lt; 0 || index &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(node-&gt;routes.size())) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    node-&gt;routes[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)] = {label, <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>};</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>}</div>
+</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="foldopen" id="foldopen00299" data-start="{" data-end="}">
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f9b9e0f5f4eafa2288210a8456beff9">  299</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f9b9e0f5f4eafa2288210a8456beff9">ConversationDocument::removeRoute</a>(<span class="keyword">const</span> std::string&amp; nodeId, <span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) {</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keyword">auto</span>* node = findNode(nodeId);</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    <span class="keywordflow">if</span> (!node || index &lt; 0 || index &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(node-&gt;routes.size())) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    node-&gt;routes.erase(node-&gt;routes.begin() + <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>);</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>}</div>
+</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
+<div class="foldopen" id="foldopen00306" data-start="{" data-end="}">
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a03c102ced6dcf5322126957071d32d33">  306</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a03c102ced6dcf5322126957071d32d33">ConversationDocument::validate</a>() {</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    diagnostics_.clear();</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="namespaceeve_1_1dialogue.html#a695a8011730158c696560fb1b0386cde">lintConversations</a>({asset_}, asset_.<a class="code hl_variable" href="structeve_1_1dialogue_1_1ConversationAsset.html#aeace2b77a608e8137d3e29ee443b1da5">id</a>, diagnostics_);</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    failureMessage_  = <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>}</div>
+</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#acefd13db6f85a466138d9c209b7e2f57">  313</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#acefd13db6f85a466138d9c209b7e2f57">ConversationDocument::getDiagnosticCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(diagnostics_.size()); }</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span> </div>
+<div class="foldopen" id="foldopen00315" data-start="{" data-end="}">
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#ac0283286eeafe40d7161ba8f063b0288">  315</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#ac0283286eeafe40d7161ba8f063b0288">ConversationDocument::getDiagnosticSeverity</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#acefd13db6f85a466138d9c209b7e2f57">getDiagnosticCount</a>()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="keywordflow">return</span> diagnostics_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].severity == <a class="code hl_enumvalue" href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85a902b0d55fddef6f8d651fe1035b7d4bd">ConversationDiagnostic::Severity::Error</a> ? <span class="stringliteral">&quot;error&quot;</span></div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>                                                                                                        : <span class="stringliteral">&quot;warning&quot;</span>;</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>}</div>
+</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span> </div>
+<div class="foldopen" id="foldopen00321" data-start="{" data-end="}">
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#ac701f97638ac6d3a75eb013b3715dd38">  321</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#ac701f97638ac6d3a75eb013b3715dd38">ConversationDocument::getDiagnosticPath</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; index &lt; getDiagnosticCount() ? diagnostics_[static_cast&lt;size_t&gt;(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].path : std::string{};</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>}</div>
+</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
+<div class="foldopen" id="foldopen00325" data-start="{" data-end="}">
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f5011d6d5c80ee43c831d385206c193">  325</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f5011d6d5c80ee43c831d385206c193">ConversationDocument::getDiagnosticLine</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; index &lt; getDiagnosticCount() ? diagnostics_[static_cast&lt;size_t&gt;(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].line : 0;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>}</div>
+</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
+<div class="foldopen" id="foldopen00329" data-start="{" data-end="}">
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1ConversationDocument.html#a8045c431377a6c4713631896a8394ecb">  329</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1ConversationDocument.html#a8045c431377a6c4713631896a8394ecb">ConversationDocument::getDiagnosticMessage</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a> &gt;= 0 &amp;&amp; index &lt; getDiagnosticCount() ? diagnostics_[static_cast&lt;size_t&gt;(<a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>)].message</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>                                                      : std::string{};</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>}</div>
+</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>}  <span class="comment">// namespace eve::dialogue</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00023">ActionTimelineWidget.cpp:23</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aConversationAuthoring_8h_html"><div class="ttname"><a href="ConversationAuthoring_8h.html">ConversationAuthoring.h</a></div></div>
+<div class="ttc" id="aConversationImporter_8cpp_html_a41ebd28ef1d7c6ade45642cb6acc1039"><div class="ttname"><a href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a></div><div class="ttdeci">int line</div><div class="ttdef"><b>Definition</b> <a href="ConversationImporter_8cpp_source.html#l00014">ConversationImporter.cpp:14</a></div></div>
+<div class="ttc" id="aConversationPersistence_8h_html"><div class="ttname"><a href="ConversationPersistence_8h.html">ConversationPersistence.h</a></div></div>
+<div class="ttc" id="aConversationToolchain_8h_html"><div class="ttname"><a href="ConversationToolchain_8h.html">ConversationToolchain.h</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00549">McpServer.cpp:549</a></div></div>
+<div class="ttc" id="aNinePatch_8cpp_html_a6c8ec3c3e77241328358d43697f6f840"><div class="ttname"><a href="NinePatch_8cpp.html#a6c8ec3c3e77241328358d43697f6f840">first</a></div><div class="ttdeci">int first</div><div class="ttdef"><b>Definition</b> <a href="NinePatch_8cpp_source.html#l00021">NinePatch.cpp:21</a></div></div>
+<div class="ttc" id="aPointGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="PointGraph_8cpp_source.html#l00017">PointGraph.cpp:17</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a7441ef0865bcb3db9b8064dd7375c1ea"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a></div><div class="ttdeci">int id</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00162">WorldSnapshot.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html"><div class="ttname"><a href="classeve_1_1StateValue.html">eve::StateValue</a></div><div class="ttdoc">JSON-compatible state value tree used by state hot reload.</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00020">StateValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1StateValue_html_aaa1c0a5376ba31980868ca5230d99780"><div class="ttname"><a href="classeve_1_1StateValue.html#aaa1c0a5376ba31980868ca5230d99780">eve::StateValue::isObject</a></div><div class="ttdeci">bool isObject() const</div><div class="ttdef"><b>Definition</b> <a href="StateValue_8h_source.html#l00049">StateValue.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a03c102ced6dcf5322126957071d32d33"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a03c102ced6dcf5322126957071d32d33">eve::dialogue::ConversationDocument::validate</a></div><div class="ttdeci">bool validate()</div><div class="ttdoc">Validate the graph and refresh structured diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00306">ConversationAuthoring.cpp:306</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a06a22f62f22d65da63210086f7e53691"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a06a22f62f22d65da63210086f7e53691">eve::dialogue::ConversationDocument::addNode</a></div><div class="ttdeci">bool addNode(const std::string &amp;nodeId, const std::string &amp;kind)</div><div class="ttdoc">Add a node of kind line, branch, choice, call, command, wait, or end.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00147">ConversationAuthoring.cpp:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a09eafe59ba98bce15ce5ae79b60beb89"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a09eafe59ba98bce15ce5ae79b60beb89">eve::dialogue::ConversationDocument::getParameter</a></div><div class="ttdeci">std::string getParameter(int index) const</div><div class="ttdoc">Return a declared parameter by insertion order.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00119">ConversationAuthoring.cpp:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a0e42daa29453a4aec4c4e4e1e5fa682d"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a0e42daa29453a4aec4c4e4e1e5fa682d">eve::dialogue::ConversationDocument::getNodeKind</a></div><div class="ttdeci">std::string getNodeKind(const std::string &amp;nodeId) const</div><div class="ttdoc">Return a node kind name.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00180">ConversationAuthoring.cpp:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a0f5011d6d5c80ee43c831d385206c193"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f5011d6d5c80ee43c831d385206c193">eve::dialogue::ConversationDocument::getDiagnosticLine</a></div><div class="ttdeci">int getDiagnosticLine(int index) const</div><div class="ttdoc">Return a diagnostic line, or zero for graph diagnostics.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00325">ConversationAuthoring.cpp:325</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a0f9b9e0f5f4eafa2288210a8456beff9"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a0f9b9e0f5f4eafa2288210a8456beff9">eve::dialogue::ConversationDocument::removeRoute</a></div><div class="ttdeci">bool removeRoute(const std::string &amp;nodeId, int index)</div><div class="ttdoc">Remove an outgoing route.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00299">ConversationAuthoring.cpp:299</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a1a0b3e55dfabc47cc310f827efc551f3"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a1a0b3e55dfabc47cc310f827efc551f3">eve::dialogue::ConversationDocument::setEntry</a></div><div class="ttdeci">bool setEntry(const std::string &amp;nodeId)</div><div class="ttdoc">Set the entry node identifier.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00110">ConversationAuthoring.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a2c1e2aa32913023d94781e748c729043"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a2c1e2aa32913023d94781e748c729043">eve::dialogue::ConversationDocument::getField</a></div><div class="ttdeci">std::string getField(const std::string &amp;nodeId, const std::string &amp;field) const</div><div class="ttdoc">Return a scalar field value by key.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00214">ConversationAuthoring.cpp:214</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a30eb9635a4421c446f2e441e93c805dd"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a30eb9635a4421c446f2e441e93c805dd">eve::dialogue::ConversationDocument::addParameter</a></div><div class="ttdeci">bool addParameter(const std::string &amp;name)</div><div class="ttdoc">Add a unique parameter.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00123">ConversationAuthoring.cpp:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a3106c11ab51d35c1e67c96ce83ef34f0"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a3106c11ab51d35c1e67c96ce83ef34f0">eve::dialogue::ConversationDocument::removeParameter</a></div><div class="ttdeci">bool removeParameter(const std::string &amp;name)</div><div class="ttdoc">Remove a parameter.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00132">ConversationAuthoring.cpp:132</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a406e3c61bb2add7c3347b346f92e427d"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a406e3c61bb2add7c3347b346f92e427d">eve::dialogue::ConversationDocument::getNodeCount</a></div><div class="ttdeci">int getNodeCount() const</div><div class="ttdoc">Return the number of graph nodes.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00139">ConversationAuthoring.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a498f60d5594a86d7f6b0cca9cd263ec9"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a498f60d5594a86d7f6b0cca9cd263ec9">eve::dialogue::ConversationDocument::getRouteLabel</a></div><div class="ttdeci">std::string getRouteLabel(const std::string &amp;nodeId, int index) const</div><div class="ttdoc">Return a route label or expression.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00268">ConversationAuthoring.cpp:268</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a4ab1761ade14f25ff9d49bf8c21635c3"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a4ab1761ade14f25ff9d49bf8c21635c3">eve::dialogue::ConversationDocument::getRouteCount</a></div><div class="ttdeci">int getRouteCount(const std::string &amp;nodeId) const</div><div class="ttdoc">Return the number of outgoing conditional or choice routes.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00263">ConversationAuthoring.cpp:263</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a4e36f7bc394226ecf45042054b074c41"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a4e36f7bc394226ecf45042054b074c41">eve::dialogue::ConversationDocument::getRouteTarget</a></div><div class="ttdeci">std::string getRouteTarget(const std::string &amp;nodeId, int index) const</div><div class="ttdoc">Return a route destination.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00275">ConversationAuthoring.cpp:275</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a5706fac70d82006c4da9fd365e89b13a"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a5706fac70d82006c4da9fd365e89b13a">eve::dialogue::ConversationDocument::getFieldCount</a></div><div class="ttdeci">int getFieldCount(const std::string &amp;nodeId) const</div><div class="ttdoc">Return the reflected inspector field count for a node kind.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00195">ConversationAuthoring.cpp:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a6468c8b5a4cb36d4c2099bc2488bb4a8"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a6468c8b5a4cb36d4c2099bc2488bb4a8">eve::dialogue::ConversationDocument::getFieldName</a></div><div class="ttdeci">std::string getFieldName(const std::string &amp;nodeId, int index) const</div><div class="ttdoc">Return a reflected field key.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00200">ConversationAuthoring.cpp:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a7597ab24deb1758f794a5c84d26250e0"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a7597ab24deb1758f794a5c84d26250e0">eve::dialogue::ConversationDocument::addRoute</a></div><div class="ttdeci">bool addRoute(const std::string &amp;nodeId, const std::string &amp;label, const std::string &amp;target)</div><div class="ttdoc">Append an outgoing route.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00282">ConversationAuthoring.cpp:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a7873e11944d1d4a079d1d69166e15437"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a7873e11944d1d4a079d1d69166e15437">eve::dialogue::ConversationDocument::setRoute</a></div><div class="ttdeci">bool setRoute(const std::string &amp;nodeId, int index, const std::string &amp;label, const std::string &amp;target)</div><div class="ttdoc">Replace an outgoing route.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00291">ConversationAuthoring.cpp:291</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a8045c431377a6c4713631896a8394ecb"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a8045c431377a6c4713631896a8394ecb">eve::dialogue::ConversationDocument::getDiagnosticMessage</a></div><div class="ttdeci">std::string getDiagnosticMessage(int index) const</div><div class="ttdoc">Return a diagnostic message.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00329">ConversationAuthoring.cpp:329</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_a93e35fb604eead21d917166e479854a0"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#a93e35fb604eead21d917166e479854a0">eve::dialogue::ConversationDocument::getFieldKind</a></div><div class="ttdeci">std::string getFieldKind(const std::string &amp;nodeId, int index) const</div><div class="ttdoc">Return a field UI hint such as string, multiline, expression, asset, or json.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00207">ConversationAuthoring.cpp:207</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_aa249ba1f2256804ad04e71baccf21b3c"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#aa249ba1f2256804ad04e71baccf21b3c">eve::dialogue::ConversationDocument::setNodeKind</a></div><div class="ttdeci">bool setNodeKind(const std::string &amp;nodeId, const std::string &amp;kind)</div><div class="ttdoc">Change a node kind while preserving compatible fields.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00185">ConversationAuthoring.cpp:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_aa45ae0f9900e4c3ea0b71fc859ad021f"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#aa45ae0f9900e4c3ea0b71fc859ad021f">eve::dialogue::ConversationDocument::removeNode</a></div><div class="ttdeci">bool removeNode(const std::string &amp;nodeId)</div><div class="ttdoc">Remove a node and references to it.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00157">ConversationAuthoring.cpp:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_aac2a04b25d956e22025bbcd6e1c3e49e"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#aac2a04b25d956e22025bbcd6e1c3e49e">eve::dialogue::ConversationDocument::setVersion</a></div><div class="ttdeci">bool setVersion(int version)</div><div class="ttdoc">Set the asset schema version to a positive value.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00103">ConversationAuthoring.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_ab39dd7db666b5b42041faad29ab6aa3f"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#ab39dd7db666b5b42041faad29ab6aa3f">eve::dialogue::ConversationDocument::getNodeId</a></div><div class="ttdeci">std::string getNodeId(int index) const</div><div class="ttdoc">Return a stable node identifier by insertion order.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00141">ConversationAuthoring.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_ac0283286eeafe40d7161ba8f063b0288"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#ac0283286eeafe40d7161ba8f063b0288">eve::dialogue::ConversationDocument::getDiagnosticSeverity</a></div><div class="ttdeci">std::string getDiagnosticSeverity(int index) const</div><div class="ttdoc">Return error or warning.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00315">ConversationAuthoring.cpp:315</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_ac701f97638ac6d3a75eb013b3715dd38"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#ac701f97638ac6d3a75eb013b3715dd38">eve::dialogue::ConversationDocument::getDiagnosticPath</a></div><div class="ttdeci">std::string getDiagnosticPath(int index) const</div><div class="ttdoc">Return a diagnostic source path.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00321">ConversationAuthoring.cpp:321</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_aca55ee859633cf2dad5654ea990f25e1"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#aca55ee859633cf2dad5654ea990f25e1">eve::dialogue::ConversationDocument::renameNode</a></div><div class="ttdeci">bool renameNode(const std::string &amp;oldId, const std::string &amp;newId)</div><div class="ttdoc">Rename a node and rewrite graph references.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00173">ConversationAuthoring.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_acefd13db6f85a466138d9c209b7e2f57"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#acefd13db6f85a466138d9c209b7e2f57">eve::dialogue::ConversationDocument::getDiagnosticCount</a></div><div class="ttdeci">int getDiagnosticCount() const</div><div class="ttdoc">Return the current diagnostic count.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00313">ConversationAuthoring.cpp:313</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_ad4efdeb509d1272786934dd604f08245"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#ad4efdeb509d1272786934dd604f08245">eve::dialogue::ConversationDocument::hasNode</a></div><div class="ttdeci">bool hasNode(const std::string &amp;nodeId) const</div><div class="ttdoc">Test whether a node exists.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00145">ConversationAuthoring.cpp:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_ad7b6846c0133be5579256a1e5e68e85b"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#ad7b6846c0133be5579256a1e5e68e85b">eve::dialogue::ConversationDocument::setField</a></div><div class="ttdeci">bool setField(const std::string &amp;nodeId, const std::string &amp;field, const std::string &amp;value)</div><div class="ttdoc">Set a scalar field value by key.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00230">ConversationAuthoring.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_adf543b2dd5d463799c51979bf10a8f09"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#adf543b2dd5d463799c51979bf10a8f09">eve::dialogue::ConversationDocument::setId</a></div><div class="ttdeci">bool setId(const std::string &amp;id)</div><div class="ttdoc">Rename the document identifier.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00096">ConversationAuthoring.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_ae7871489e6eb1c271240a506fe3c3fca"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#ae7871489e6eb1c271240a506fe3c3fca">eve::dialogue::ConversationDocument::ConversationDocument</a></div><div class="ttdeci">ConversationDocument(std::string id={})</div><div class="ttdoc">Create an empty document with one end node.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00073">ConversationAuthoring.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1ConversationDocument_html_af9d18e3d685660a884c8c94c8a5d85d1"><div class="ttname"><a href="classeve_1_1dialogue_1_1ConversationDocument.html#af9d18e3d685660a884c8c94c8a5d85d1">eve::dialogue::ConversationDocument::getParameterCount</a></div><div class="ttdeci">int getParameterCount() const</div><div class="ttdoc">Return the number of declared parameters.</div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00117">ConversationAuthoring.cpp:117</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html"><div class="ttname"><a href="namespaceeve_1_1dialogue.html">eve::dialogue</a></div><div class="ttdef"><b>Definition</b> <a href="Conversation_8cpp_source.html#l00006">Conversation.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_a033cd9e94ebfdad050e1cda8b76bf8c6"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#a033cd9e94ebfdad050e1cda8b76bf8c6">eve::dialogue::conversationStateToJson</a></div><div class="ttdeci">std::string conversationStateToJson(const StateValue &amp;state, std::string *error)</div><div class="ttdoc">Serialize a dialogue state tree as JSON.</div><div class="ttdef"><b>Definition</b> <a href="ConversationPersistence_8cpp_source.html#l00076">ConversationPersistence.cpp:76</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_a695a8011730158c696560fb1b0386cde"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#a695a8011730158c696560fb1b0386cde">eve::dialogue::lintConversations</a></div><div class="ttdeci">bool lintConversations(const std::vector&lt; ConversationAsset &gt; &amp;assets, const std::string &amp;path, std::vector&lt; ConversationDiagnostic &gt; &amp;diagnostics)</div><div class="ttdoc">Validate references and report unreachable nodes.</div><div class="ttdef"><b>Definition</b> <a href="ConversationCompiler_8cpp_source.html#l00179">ConversationCompiler.cpp:179</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_aea77042f3c3e54e6d1ea1e1100947c56"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#aea77042f3c3e54e6d1ea1e1100947c56">eve::dialogue::conversationStateFromJson</a></div><div class="ttdeci">bool conversationStateFromJson(const std::string &amp;json, StateValue &amp;state, std::string *error)</div><div class="ttdoc">Parse a JSON dialogue state tree.</div><div class="ttdef"><b>Definition</b> <a href="ConversationPersistence_8cpp_source.html#l00089">ConversationPersistence.cpp:89</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html_af84a748a4da6f20f6e8af5009ac650d8"><div class="ttname"><a href="namespaceeve_1_1dialogue.html#af84a748a4da6f20f6e8af5009ac650d8">eve::dialogue::renameConversationNode</a></div><div class="ttdeci">bool renameConversationNode(std::vector&lt; ConversationAsset &gt; &amp;assets, const std::string &amp;assetId, const std::string &amp;oldId, const std::string &amp;newId, std::string *error)</div><div class="ttdoc">Rename one stable node and rewrite all references inside its asset.</div><div class="ttdef"><b>Definition</b> <a href="ConversationToolchain_8cpp_source.html#l00058">ConversationToolchain.cpp:58</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_1_1Node_html_af63c84891285988ca9e0be3626e2be97"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset_1_1Node.html#af63c84891285988ca9e0be3626e2be97">eve::dialogue::ConversationAsset::Node::Kind</a></div><div class="ttdeci">Kind</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00043">Conversation.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_html"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset.html">eve::dialogue::ConversationAsset</a></div><div class="ttdoc">Immutable, parameterized conversation definition.</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00040">Conversation.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_html_a308632a0a7b67a74dc4fb2a1360580d0"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset.html#a308632a0a7b67a74dc4fb2a1360580d0">eve::dialogue::ConversationAsset::nodes</a></div><div class="ttdeci">std::vector&lt; Node &gt; nodes</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00069">Conversation.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_html_a3b25e77903a56f4d8fad7557f70e0b48"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset.html#a3b25e77903a56f4d8fad7557f70e0b48">eve::dialogue::ConversationAsset::entry</a></div><div class="ttdeci">std::string entry</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00067">Conversation.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_html_a42b150e9a4e655ebcb41bd02ea1ca470"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset.html#a42b150e9a4e655ebcb41bd02ea1ca470">eve::dialogue::ConversationAsset::version</a></div><div class="ttdeci">int version</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00066">Conversation.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_html_ab52bf82e1d0a9f3284cd37ec5f057b8a"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset.html#ab52bf82e1d0a9f3284cd37ec5f057b8a">eve::dialogue::ConversationAsset::findNode</a></div><div class="ttdeci">const Node * findNode(const std::string &amp;nodeId) const</div><div class="ttdoc">Find a node by its stable identifier.</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8cpp_source.html#l00017">Conversation.cpp:17</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_html_acc23324fdb4ca7b78b64d6940add293a"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset.html#acc23324fdb4ca7b78b64d6940add293a">eve::dialogue::ConversationAsset::parameters</a></div><div class="ttdeci">std::vector&lt; std::string &gt; parameters</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00068">Conversation.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationAsset_html_aeace2b77a608e8137d3e29ee443b1da5"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationAsset.html#aeace2b77a608e8137d3e29ee443b1da5">eve::dialogue::ConversationAsset::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="Conversation_8h_source.html#l00065">Conversation.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1dialogue_1_1ConversationDiagnostic_html_a006b46294be39f2165e03337dd697d85a902b0d55fddef6f8d651fe1035b7d4bd"><div class="ttname"><a href="structeve_1_1dialogue_1_1ConversationDiagnostic.html#a006b46294be39f2165e03337dd697d85a902b0d55fddef6f8d651fe1035b7d4bd">eve::dialogue::ConversationDiagnostic::Severity::Error</a></div><div class="ttdeci">@ Error</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

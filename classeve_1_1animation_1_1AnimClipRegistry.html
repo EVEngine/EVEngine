@@ -1,0 +1,587 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::AnimClipRegistry类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html">AnimClipRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1AnimClipRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::AnimClipRegistry类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Weak path→clip registry for animation hot reload.  
+ <a href="classeve_1_1animation_1_1AnimClipRegistry.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimClipRegistry_8h_source.html">AnimClipRegistry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1AnimClipRegistry_1_1ReloadEvent.html">ReloadEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning event value emitted after an EVA path reload attempt.  <a href="structeve_1_1animation_1_1AnimClipRegistry_1_1ReloadEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a349cf2b8c9d2b9b4ab07c64ec8c9bfa8" id="r_a349cf2b8c9d2b9b4ab07c64ec8c9bfa8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a349cf2b8c9d2b9b4ab07c64ec8c9bfa8">ReloadCallback</a> = std::function&lt; void(const <a class="el" href="structeve_1_1animation_1_1AnimClipRegistry_1_1ReloadEvent.html">ReloadEvent</a> &amp;)&gt;</td></tr>
+<tr class="separator:a349cf2b8c9d2b9b4ab07c64ec8c9bfa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a57a7a56ef4b1ec2b56fc9ae64774636c" id="r_a57a7a56ef4b1ec2b56fc9ae64774636c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a57a7a56ef4b1ec2b56fc9ae64774636c">registerPath</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</td></tr>
+<tr class="memdesc:a57a7a56ef4b1ec2b56fc9ae64774636c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Track a clip under a source path (keys are normalized).  <br /></td></tr>
+<tr class="separator:a57a7a56ef4b1ec2b56fc9ae64774636c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47b2250318d3afe7c29554c8e39f0c1a" id="r_a47b2250318d3afe7c29554c8e39f0c1a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a47b2250318d3afe7c29554c8e39f0c1a">unregister</a> (<a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>)</td></tr>
+<tr class="memdesc:a47b2250318d3afe7c29554c8e39f0c1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forget a clip everywhere (called from ~AnimClip).  <br /></td></tr>
+<tr class="separator:a47b2250318d3afe7c29554c8e39f0c1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae638242e79f94709a2c2ba116b351fb5" id="r_ae638242e79f94709a2c2ba116b351fb5"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#ae638242e79f94709a2c2ba116b351fb5">findByPath</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:ae638242e79f94709a2c2ba116b351fb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clips registered under a path; may be empty.  <br /></td></tr>
+<tr class="separator:ae638242e79f94709a2c2ba116b351fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad324b26bf5d460519e637dbbceab0ec2" id="r_ad324b26bf5d460519e637dbbceab0ec2"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#ad324b26bf5d460519e637dbbceab0ec2">hasPath</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:ad324b26bf5d460519e637dbbceab0ec2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether any clip is registered under this path.  <br /></td></tr>
+<tr class="separator:ad324b26bf5d460519e637dbbceab0ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a753053e1147ceaa0270337f3c03c1769" id="r_a753053e1147ceaa0270337f3c03c1769"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a753053e1147ceaa0270337f3c03c1769">reloadPath</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a753053e1147ceaa0270337f3c03c1769"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reload a path and report a structured import failure.  <br /></td></tr>
+<tr class="separator:a753053e1147ceaa0270337f3c03c1769"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23c54b2c04bf0dc498235ffda96202d8" id="r_a23c54b2c04bf0dc498235ffda96202d8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Subscription.html">eve::Subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a23c54b2c04bf0dc498235ffda96202d8">subscribeReload</a> (<a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a349cf2b8c9d2b9b4ab07c64ec8c9bfa8">ReloadCallback</a> callback)</td></tr>
+<tr class="memdesc:a23c54b2c04bf0dc498235ffda96202d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscribe to reload attempts; token disposal is owner-thread-affine.  <br /></td></tr>
+<tr class="separator:a23c54b2c04bf0dc498235ffda96202d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b315e940ad69ac10a3c9ae12d2f9800" id="r_a3b315e940ad69ac10a3c9ae12d2f9800"><td class="memItemLeft" align="right" valign="top">static std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a3b315e940ad69ac10a3c9ae12d2f9800">reloadCallbackFailureCount</a> ()</td></tr>
+<tr class="memdesc:a3b315e940ad69ac10a3c9ae12d2f9800"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of reload listener exceptions contained so far.  <br /></td></tr>
+<tr class="separator:a3b315e940ad69ac10a3c9ae12d2f9800"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e7114e3e72442ee987f2476ad763b8b" id="r_a5e7114e3e72442ee987f2476ad763b8b"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a5e7114e3e72442ee987f2476ad763b8b">count</a> ()</td></tr>
+<tr class="memdesc:a5e7114e3e72442ee987f2476ad763b8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total registered clips (tests).  <br /></td></tr>
+<tr class="separator:a5e7114e3e72442ee987f2476ad763b8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada5c0f20a13b8a5be68a4731d92411f0" id="r_ada5c0f20a13b8a5be68a4731d92411f0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#ada5c0f20a13b8a5be68a4731d92411f0">clear</a> ()</td></tr>
+<tr class="memdesc:ada5c0f20a13b8a5be68a4731d92411f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop all entries (tests).  <br /></td></tr>
+<tr class="separator:ada5c0f20a13b8a5be68a4731d92411f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bbc6626ab86258812d171507dbd4f65" id="r_a2bbc6626ab86258812d171507dbd4f65"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a2bbc6626ab86258812d171507dbd4f65">normalizePath</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a2bbc6626ab86258812d171507dbd4f65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize a path to the registry key form.  <br /></td></tr>
+<tr class="separator:a2bbc6626ab86258812d171507dbd4f65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Weak path→clip registry for animation hot reload. </p>
+<p><code><a class="el" href="classeve_1_1animation_1_1Animation.html#a11dd79bcfe50b55df0fa387478766a12" title="Load an animation clip from an internal *.anim.txt test fixture.">Animation::newClipFromAnimationFixtureText</a></code> registers every clip it creates under its source path. When that <code>*.anim.txt</code> fixture changes, the "animclip" IAssetReloader re-imports the source and adopts the fresh content into the registered instances (<a class="el" href="classeve_1_1animation_1_1AnimClip.html#a597eefac16bf226d5bda02748357e5ce" title="Replace this clip&#39;s content with other&#39;s (payload moved, not copied). Used by hot reload so registere...">AnimClip::adopt</a>), so existing holders — state machines, scripts — keep valid pointers and see updated content without re-binding.</p>
+<p>Entries hold raw pointers and are removed automatically by ~AnimClip; registrations must not outlive the clip (the engine's script bindings keep clips alive for the process lifetime, and tests use owning pointers). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8h_source.html">AnimClipRegistry.h</a> 第 <a class="el" href="AnimClipRegistry_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a349cf2b8c9d2b9b4ab07c64ec8c9bfa8" name="a349cf2b8c9d2b9b4ab07c64ec8c9bfa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a349cf2b8c9d2b9b4ab07c64ec8c9bfa8">&#9670;&#160;</a></span>ReloadCallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a349cf2b8c9d2b9b4ab07c64ec8c9bfa8">eve::animation::AnimClipRegistry::ReloadCallback</a> =  std::function&lt;void(const <a class="el" href="structeve_1_1animation_1_1AnimClipRegistry_1_1ReloadEvent.html">ReloadEvent</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8h_source.html">AnimClipRegistry.h</a> 第 <a class="el" href="AnimClipRegistry_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ada5c0f20a13b8a5be68a4731d92411f0" name="ada5c0f20a13b8a5be68a4731d92411f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada5c0f20a13b8a5be68a4731d92411f0">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimClipRegistry::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Drop all entries (tests). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>.</p>
+
+</div>
+</div>
+<a id="a5e7114e3e72442ee987f2476ad763b8b" name="a5e7114e3e72442ee987f2476ad763b8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e7114e3e72442ee987f2476ad763b8b">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimClipRegistry::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total registered clips (tests). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00066">n</a>.</p>
+
+</div>
+</div>
+<a id="ae638242e79f94709a2c2ba116b351fb5" name="ae638242e79f94709a2c2ba116b351fb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae638242e79f94709a2c2ba116b351fb5">&#9670;&#160;</a></span>findByPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> * &gt; eve::animation::AnimClipRegistry::findByPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clips registered under a path; may be empty. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="AnimClipRegistry_8cpp_source.html#l00072">normalizePath()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimationRootMotionPreviewSource_8cpp_source.html#l00023">eve::editor::AnimationRootMotionPreviewSource::sampleRootMotion()</a>.</p>
+
+</div>
+</div>
+<a id="ad324b26bf5d460519e637dbbceab0ec2" name="ad324b26bf5d460519e637dbbceab0ec2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad324b26bf5d460519e637dbbceab0ec2">&#9670;&#160;</a></span>hasPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimClipRegistry::hasPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether any clip is registered under this path. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="AnimClipRegistry_8cpp_source.html#l00072">normalizePath()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="a2bbc6626ab86258812d171507dbd4f65" name="a2bbc6626ab86258812d171507dbd4f65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bbc6626ab86258812d171507dbd4f65">&#9670;&#160;</a></span>normalizePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimClipRegistry::normalizePath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Normalize a path to the registry key form. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00097">findByPath()</a>, <a class="el" href="AnimClipRegistry_8cpp_source.html#l00102">hasPath()</a>, <a class="el" href="AnimClipRegistry_8cpp_source.html#l00079">registerPath()</a> , 以及 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00104">reloadPath()</a>.</p>
+
+</div>
+</div>
+<a id="a57a7a56ef4b1ec2b56fc9ae64774636c" name="a57a7a56ef4b1ec2b56fc9ae64774636c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57a7a56ef4b1ec2b56fc9ae64774636c">&#9670;&#160;</a></span>registerPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimClipRegistry::registerPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *&#160;</td>
+          <td class="paramname"><em>clip</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Track a clip under a source path (keys are normalized). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="AnimClipRegistry_8cpp_source.html#l00072">normalizePath()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Animation_8cpp_source.html#l00372">eve::animation::Animation::newClipFromAnimationFixtureText()</a>.</p>
+
+</div>
+</div>
+<a id="a3b315e940ad69ac10a3c9ae12d2f9800" name="a3b315e940ad69ac10a3c9ae12d2f9800"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b315e940ad69ac10a3c9ae12d2f9800">&#9670;&#160;</a></span>reloadCallbackFailureCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::animation::AnimClipRegistry::reloadCallbackFailureCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of reload listener exceptions contained so far. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a753053e1147ceaa0270337f3c03c1769" name="a753053e1147ceaa0270337f3c03c1769"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a753053e1147ceaa0270337f3c03c1769">&#9670;&#160;</a></span>reloadPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::animation::AnimClipRegistry::reloadPath </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reload a path and report a structured import failure. </p>
+<dl class="section return"><dt>返回</dt><dd>Refreshed clip count; an unknown path is a successful NoOp. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>The reload mutation is completed before listeners run. Listener exceptions are contained and counted, never used to roll back adopted clips. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00023">end</a>, <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AnimImporter_8cpp_source.html#l00285">eve::animation::AnimImporter::importAnimationFixtureTextFile()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="AnimClipRegistry_8cpp_source.html#l00072">normalizePath()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a23c54b2c04bf0dc498235ffda96202d8" name="a23c54b2c04bf0dc498235ffda96202d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23c54b2c04bf0dc498235ffda96202d8">&#9670;&#160;</a></span>subscribeReload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Subscription.html">eve::Subscription</a> eve::animation::AnimClipRegistry::subscribeReload </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClipRegistry.html#a349cf2b8c9d2b9b4ab07c64ec8c9bfa8">ReloadCallback</a>&#160;</td>
+          <td class="paramname"><em>callback</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Subscribe to reload attempts; token disposal is owner-thread-affine. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47b2250318d3afe7c29554c8e39f0c1a" name="a47b2250318d3afe7c29554c8e39f0c1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47b2250318d3afe7c29554c8e39f0c1a">&#9670;&#160;</a></span>unregister()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimClipRegistry::unregister </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a> *&#160;</td>
+          <td class="paramname"><em>clip</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Forget a clip everywhere (called from ~AnimClip). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a> 第 <a class="el" href="AnimClipRegistry_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a> , 以及 <a class="el" href="BattleVictory_8cpp_source.html#l00024">entries</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimClip_8cpp_source.html#l00019">eve::animation::AnimClip::~AnimClip()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimClipRegistry_8h_source.html">AnimClipRegistry.h</a></li>
+<li>src/modules/animation/<a class="el" href="AnimClipRegistry_8cpp_source.html">AnimClipRegistry.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

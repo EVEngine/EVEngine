@@ -1,0 +1,1387 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::MeshBuild类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1MeshBuild-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::MeshBuild类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packed; uvs are st-packed; indices are triangles.  
+ <a href="classeve_1_1procgen_1_1MeshBuild.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aced7805908a334a686ad8867defe7a00" id="r_aced7805908a334a686ad8867defe7a00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#aced7805908a334a686ad8867defe7a00">clear</a> ()</td></tr>
+<tr class="separator:aced7805908a334a686ad8867defe7a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b3e5e014cf0c6652a58b3e141706943" id="r_a4b3e5e014cf0c6652a58b3e141706943"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a4b3e5e014cf0c6652a58b3e141706943">reserve</a> (int <a class="el" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, int <a class="el" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>)</td></tr>
+<tr class="separator:a4b3e5e014cf0c6652a58b3e141706943"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14687d37244814c6cab6553e0e2a381c" id="r_a14687d37244814c6cab6553e0e2a381c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a14687d37244814c6cab6553e0e2a381c">addVertex</a> (float <a class="el" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, float <a class="el" href="CaveWetness_8cpp.html#a709aad4619f93afb87fab238013812b2">py</a>, float <a class="el" href="CaveWetness_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a>, float <a class="el" href="CaveWetness_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, float <a class="el" href="CaveWetness_8cpp.html#a9c79b33ae8c9c2a5388a32077d5eed37">ny</a>, float <a class="el" href="CaveWetness_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>, float <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, float <a class="el" href="CaveWetness_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a14687d37244814c6cab6553e0e2a381c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3087df20f01036d4837c283e2b476e86" id="r_a3087df20f01036d4837c283e2b476e86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a3087df20f01036d4837c283e2b476e86">addTriangle</a> (uint32_t <a class="el" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>, uint32_t <a class="el" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>, uint32_t <a class="el" href="Grass_8cpp.html#a46199b2ccc22981c9582e98fcb9ec416">i2</a>)</td></tr>
+<tr class="separator:a3087df20f01036d4837c283e2b476e86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6e527235ec61a2e5361bbc05341a6d4" id="r_ac6e527235ec61a2e5361bbc05341a6d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#ac6e527235ec61a2e5361bbc05341a6d4">appendTransformed</a> (const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> *other, float tx, float ty, float tz, float yawDegrees, float sx, float sy, float sz)</td></tr>
+<tr class="memdesc:ac6e527235ec61a2e5361bbc05341a6d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append another procedural mesh after an affine transform.  <br /></td></tr>
+<tr class="separator:ac6e527235ec61a2e5361bbc05341a6d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51abc4debe6393b124260414f27775db" id="r_a51abc4debe6393b124260414f27775db"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a51abc4debe6393b124260414f27775db">setActiveGroup</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a51abc4debe6393b124260414f27775db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select/create the named group assigned to subsequently added triangles.  <br /></td></tr>
+<tr class="separator:a51abc4debe6393b124260414f27775db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a430040fe370b1e0a05528e5f5bf807bd" id="r_a430040fe370b1e0a05528e5f5bf807bd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a430040fe370b1e0a05528e5f5bf807bd">getGroupCount</a> () const</td></tr>
+<tr class="memdesc:a430040fe370b1e0a05528e5f5bf807bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of named triangle groups.  <br /></td></tr>
+<tr class="separator:a430040fe370b1e0a05528e5f5bf807bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af29f7db0ef078098feb67fa097c8bbe1" id="r_af29f7db0ef078098feb67fa097c8bbe1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#af29f7db0ef078098feb67fa097c8bbe1">getGroupName</a> (int groupIndex) const</td></tr>
+<tr class="memdesc:af29f7db0ef078098feb67fa097c8bbe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group name, or an empty string for an invalid index.  <br /></td></tr>
+<tr class="separator:af29f7db0ef078098feb67fa097c8bbe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a938110f38d8694407e86128dd9cc7573" id="r_a938110f38d8694407e86128dd9cc7573"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a938110f38d8694407e86128dd9cc7573">getTriangleGroup</a> (int triangleIndex) const</td></tr>
+<tr class="memdesc:a938110f38d8694407e86128dd9cc7573"><td class="mdescLeft">&#160;</td><td class="mdescRight">Group index for a triangle (not an index-buffer element), or -1.  <br /></td></tr>
+<tr class="separator:a938110f38d8694407e86128dd9cc7573"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20640a11abf0f69a09f0ccd9f18bb968" id="r_a20640a11abf0f69a09f0ccd9f18bb968"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a20640a11abf0f69a09f0ccd9f18bb968">triangleGroups</a> () const</td></tr>
+<tr class="memdesc:a20640a11abf0f69a09f0ccd9f18bb968"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the dense triangle-to-group assignments.  <br /></td></tr>
+<tr class="separator:a20640a11abf0f69a09f0ccd9f18bb968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae4a87591bbcd1156345b57e52b5b0c6" id="r_aae4a87591bbcd1156345b57e52b5b0c6"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#aae4a87591bbcd1156345b57e52b5b0c6">groupNames</a> () const</td></tr>
+<tr class="memdesc:aae4a87591bbcd1156345b57e52b5b0c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable ordered group names.  <br /></td></tr>
+<tr class="separator:aae4a87591bbcd1156345b57e52b5b0c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2c7d10811331fdf2188c2c01c6fcb4a" id="r_ad2c7d10811331fdf2188c2c01c6fcb4a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#ad2c7d10811331fdf2188c2c01c6fcb4a">activeGroup</a> () const</td></tr>
+<tr class="memdesc:ad2c7d10811331fdf2188c2c01c6fcb4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the currently selected group, or -1 when none is active.  <br /></td></tr>
+<tr class="separator:ad2c7d10811331fdf2188c2c01c6fcb4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b0dd196edcd2b2135faa78ecb85dc05" id="r_a8b0dd196edcd2b2135faa78ecb85dc05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a8b0dd196edcd2b2135faa78ecb85dc05">restoreGroupData</a> (std::vector&lt; std::string &gt; names, std::vector&lt; int &gt; assignments, int <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#ad2c7d10811331fdf2188c2c01c6fcb4a">activeGroup</a>)</td></tr>
+<tr class="memdesc:a8b0dd196edcd2b2135faa78ecb85dc05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the complete group sidecar after dense streams are loaded.  <br /></td></tr>
+<tr class="separator:a8b0dd196edcd2b2135faa78ecb85dc05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a349813280f46cd329b6772bafe8c7c63" id="r_a349813280f46cd329b6772bafe8c7c63"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a349813280f46cd329b6772bafe8c7c63">copyGroup</a> (int groupIndex) const</td></tr>
+<tr class="memdesc:a349813280f46cd329b6772bafe8c7c63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies one named group into a standalone compact mesh.  <br /></td></tr>
+<tr class="separator:a349813280f46cd329b6772bafe8c7c63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0ad02c622f5d76e9fd304107d2031b6" id="r_ab0ad02c622f5d76e9fd304107d2031b6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#ab0ad02c622f5d76e9fd304107d2031b6">getVertexCount</a> () const</td></tr>
+<tr class="separator:ab0ad02c622f5d76e9fd304107d2031b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f9256be5db1d30c5b5d3a9b8823fbe9" id="r_a6f9256be5db1d30c5b5d3a9b8823fbe9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a6f9256be5db1d30c5b5d3a9b8823fbe9">getIndexCount</a> () const</td></tr>
+<tr class="separator:a6f9256be5db1d30c5b5d3a9b8823fbe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab47713d1443d0704e59004956cb22424" id="r_ab47713d1443d0704e59004956cb22424"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#ab47713d1443d0704e59004956cb22424">empty</a> () const</td></tr>
+<tr class="separator:ab47713d1443d0704e59004956cb22424"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdb2c2cd0cff5394f9e25e61b8497565" id="r_afdb2c2cd0cff5394f9e25e61b8497565"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#afdb2c2cd0cff5394f9e25e61b8497565">getPositionX</a> (int i) const</td></tr>
+<tr class="separator:afdb2c2cd0cff5394f9e25e61b8497565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ef87e0319e488b6ada75b71cf8042fc" id="r_a0ef87e0319e488b6ada75b71cf8042fc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a0ef87e0319e488b6ada75b71cf8042fc">getPositionY</a> (int i) const</td></tr>
+<tr class="separator:a0ef87e0319e488b6ada75b71cf8042fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a031e43f0ed4c7bb01703713ca1fff3ea" id="r_a031e43f0ed4c7bb01703713ca1fff3ea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a031e43f0ed4c7bb01703713ca1fff3ea">getPositionZ</a> (int i) const</td></tr>
+<tr class="separator:a031e43f0ed4c7bb01703713ca1fff3ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae349f0f9edcb653edf0d67c75bda3a44" id="r_ae349f0f9edcb653edf0d67c75bda3a44"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#ae349f0f9edcb653edf0d67c75bda3a44">getNormalX</a> (int i) const</td></tr>
+<tr class="separator:ae349f0f9edcb653edf0d67c75bda3a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6224c244edacb722998f515b9d0a8692" id="r_a6224c244edacb722998f515b9d0a8692"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a6224c244edacb722998f515b9d0a8692">getNormalY</a> (int i) const</td></tr>
+<tr class="separator:a6224c244edacb722998f515b9d0a8692"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34d1b834ccf62f0688f8f09555f52d4e" id="r_a34d1b834ccf62f0688f8f09555f52d4e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a34d1b834ccf62f0688f8f09555f52d4e">getNormalZ</a> (int i) const</td></tr>
+<tr class="separator:a34d1b834ccf62f0688f8f09555f52d4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf8a3e5073aad89b203cde4625b6a52d" id="r_aaf8a3e5073aad89b203cde4625b6a52d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#aaf8a3e5073aad89b203cde4625b6a52d">getUvU</a> (int i) const</td></tr>
+<tr class="separator:aaf8a3e5073aad89b203cde4625b6a52d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfda116e6286fa95d5f89f639b8325e6" id="r_adfda116e6286fa95d5f89f639b8325e6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#adfda116e6286fa95d5f89f639b8325e6">getUvV</a> (int i) const</td></tr>
+<tr class="separator:adfda116e6286fa95d5f89f639b8325e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea52019975e09f80fee77a3b1e0fa50a" id="r_aea52019975e09f80fee77a3b1e0fa50a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#aea52019975e09f80fee77a3b1e0fa50a">getIndex</a> (int i) const</td></tr>
+<tr class="separator:aea52019975e09f80fee77a3b1e0fa50a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ea334aa491b117fa66801cf18e3461e" id="r_a4ea334aa491b117fa66801cf18e3461e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a4ea334aa491b117fa66801cf18e3461e">setMeta</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="separator:a4ea334aa491b117fa66801cf18e3461e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1264f4b0553b4d58f55854b2eb665236" id="r_a1264f4b0553b4d58f55854b2eb665236"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a1264f4b0553b4d58f55854b2eb665236">getMeta</a> (const std::string &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, const std::string &amp;<a class="el" href="PointGraph_8cpp.html#a7600cb1e54c2a5b89ad934e9fc6f1399">defaultValue</a>) const</td></tr>
+<tr class="separator:a1264f4b0553b4d58f55854b2eb665236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cc91787ca825bead4245acef5ef5016" id="r_a0cc91787ca825bead4245acef5ef5016"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a0cc91787ca825bead4245acef5ef5016">positions</a> () const</td></tr>
+<tr class="separator:a0cc91787ca825bead4245acef5ef5016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c567d075ec01b88057dbf93aca52f2f" id="r_a2c567d075ec01b88057dbf93aca52f2f"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a2c567d075ec01b88057dbf93aca52f2f">normals</a> () const</td></tr>
+<tr class="separator:a2c567d075ec01b88057dbf93aca52f2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe3a7daf321f859f2f4509b5a394fc68" id="r_afe3a7daf321f859f2f4509b5a394fc68"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#afe3a7daf321f859f2f4509b5a394fc68">uvs</a> () const</td></tr>
+<tr class="separator:afe3a7daf321f859f2f4509b5a394fc68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe6ea9d578f2fcc507d6491392d2a394" id="r_afe6ea9d578f2fcc507d6491392d2a394"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint32_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#afe6ea9d578f2fcc507d6491392d2a394">indices</a> () const</td></tr>
+<tr class="separator:afe6ea9d578f2fcc507d6491392d2a394"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e20ed62ed91adec07890d3fdc0365c3" id="r_a8e20ed62ed91adec07890d3fdc0365c3"><td class="memItemLeft" align="right" valign="top">const std::unordered_map&lt; std::string, std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a8e20ed62ed91adec07890d3fdc0365c3">metadata</a> () const</td></tr>
+<tr class="memdesc:a8e20ed62ed91adec07890d3fdc0365c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all metadata key/value pairs in deterministic map order.  <br /></td></tr>
+<tr class="separator:a8e20ed62ed91adec07890d3fdc0365c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3366a76a341951b64b58f4519232cbc" id="r_af3366a76a341951b64b58f4519232cbc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#af3366a76a341951b64b58f4519232cbc">positions</a> ()</td></tr>
+<tr class="separator:af3366a76a341951b64b58f4519232cbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed0adca7dd2ef90fc9c28b440a39081d" id="r_aed0adca7dd2ef90fc9c28b440a39081d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#aed0adca7dd2ef90fc9c28b440a39081d">normals</a> ()</td></tr>
+<tr class="separator:aed0adca7dd2ef90fc9c28b440a39081d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72923a9a928b0403bce5f26c8407df57" id="r_a72923a9a928b0403bce5f26c8407df57"><td class="memItemLeft" align="right" valign="top">std::vector&lt; float &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a72923a9a928b0403bce5f26c8407df57">uvs</a> ()</td></tr>
+<tr class="separator:a72923a9a928b0403bce5f26c8407df57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a560c4e1bac7be1da0ee19c0f7e5f9cd8" id="r_a560c4e1bac7be1da0ee19c0f7e5f9cd8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint32_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1MeshBuild.html#a560c4e1bac7be1da0ee19c0f7e5f9cd8">indices</a> ()</td></tr>
+<tr class="separator:a560c4e1bac7be1da0ee19c0f7e5f9cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>CPU triangle mesh from procedural mesh recipes (e.g. marching cubes). Positions/normals are xyz-packed; uvs are st-packed; indices are triangles. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ad2c7d10811331fdf2188c2c01c6fcb4a" name="ad2c7d10811331fdf2188c2c01c6fcb4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2c7d10811331fdf2188c2c01c6fcb4a">&#9670;&#160;</a></span>activeGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshBuild::activeGroup </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the currently selected group, or -1 when none is active. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00072">restoreGroupData()</a>.</p>
+
+</div>
+</div>
+<a id="a3087df20f01036d4837c283e2b476e86" name="a3087df20f01036d4837c283e2b476e86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3087df20f01036d4837c283e2b476e86">&#9670;&#160;</a></span>addTriangle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::MeshBuild::addTriangle </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>i0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>i1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>i2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00064">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00064">i1</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00064">i2</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00478">eve::procgen::TerrainLakeMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00165">eve::procgen::generateRockMesh()</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00246">eve::procgen::urban::generateUrbanMesh()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="a14687d37244814c6cab6553e0e2a381c" name="a14687d37244814c6cab6553e0e2a381c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14687d37244814c6cab6553e0e2a381c">&#9670;&#160;</a></span>addVertex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::MeshBuild::addVertex </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>px</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>py</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>pz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ny</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>nz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="ImageData_8cpp_source.html#l00686">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">pz</a>, <a class="el" href="Grass_8cpp_source.html#l00236">u</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00017">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00478">eve::procgen::TerrainLakeMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00165">eve::procgen::generateRockMesh()</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00246">eve::procgen::urban::generateUrbanMesh()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="ac6e527235ec61a2e5361bbc05341a6d4" name="ac6e527235ec61a2e5361bbc05341a6d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6e527235ec61a2e5361bbc05341a6d4">&#9670;&#160;</a></span>appendTransformed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::MeshBuild::appendTransformed </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> *&#160;</td>
+          <td class="paramname"><em>other</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yawDegrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append another procedural mesh after an affine transform. </p>
+<p>This is the composition primitive for graph-style generation: recipe outputs can be instanced, transformed and merged without a GPU round trip. Normals are transformed with inverse scale and renormalized.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>Source mesh; null and self references are rejected. </td></tr>
+    <tr><td class="paramname">tx</td><td>Translation on X. </td></tr>
+    <tr><td class="paramname">ty</td><td>Translation on Y. </td></tr>
+    <tr><td class="paramname">tz</td><td>Translation on Z. </td></tr>
+    <tr><td class="paramname">yawDegrees</td><td>Rotation about world Y, in degrees. </td></tr>
+    <tr><td class="paramname">sx</td><td>Scale on X; must be non-zero. </td></tr>
+    <tr><td class="paramname">sy</td><td>Scale on Y; must be non-zero. </td></tr>
+    <tr><td class="paramname">sz</td><td>Scale on Z; must be non-zero. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when the source mesh was appended. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00043">addTriangle()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00031">addVertex()</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00126">c</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00160">empty()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00060">getGroupCount()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00062">getGroupName()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00194">getIndex()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00159">getIndexCount()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00174">getNormalX()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00178">getNormalY()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00182">getNormalZ()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00162">getPositionX()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00166">getPositionY()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">getPositionZ()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00067">getTriangleGroup()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00186">getUvU()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00190">getUvV()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="ImageData_8cpp_source.html#l00686">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">pz</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00019">reserve()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00050">setActiveGroup()</a>.</p>
+
+</div>
+</div>
+<a id="aced7805908a334a686ad8867defe7a00" name="aced7805908a334a686ad8867defe7a00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aced7805908a334a686ad8867defe7a00">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::MeshBuild::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BushMesh_8cpp_source.html#l00145">eve::procgen::generateBushMesh()</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00095">eve::procgen::generateCastleMesh()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00375">eve::procgen::generateHexTerrainMesh()</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00223">eve::procgen::generateLinearStructure()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00165">eve::procgen::generateRockMesh()</a>, <a class="el" href="SkyscraperMesh_8cpp_source.html#l00102">eve::procgen::generateSkyscraperMesh()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00246">eve::procgen::urban::generateUrbanMesh()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="a349813280f46cd329b6772bafe8c7c63" name="a349813280f46cd329b6772bafe8c7c63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a349813280f46cd329b6772bafe8c7c63">&#9670;&#160;</a></span>copyGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt; eve::procgen::MeshBuild::copyGroup </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies one named group into a standalone compact mesh. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">groupIndex</td><td>Triangle-group index to copy. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A uniquely owned mesh, or null for an invalid or empty group. @ownership The returned mesh is owned by the caller. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00060">getGroupCount()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00174">getNormalX()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00178">getNormalY()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00182">getNormalZ()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00162">getPositionX()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00166">getPositionY()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">getPositionZ()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00186">getUvU()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00190">getUvV()</a> , 以及 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+</div>
+</div>
+<a id="ab47713d1443d0704e59004956cb22424" name="ab47713d1443d0704e59004956cb22424"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab47713d1443d0704e59004956cb22424">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::MeshBuild::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>, <a class="el" href="BushMesh_8cpp_source.html#l00145">eve::procgen::generateBushMesh()</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00095">eve::procgen::generateCastleMesh()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00375">eve::procgen::generateHexTerrainMesh()</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00223">eve::procgen::generateLinearStructure()</a>, <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00433">eve::procgen::generateMarchingCubesMesh()</a>, <a class="el" href="SkyscraperMesh_8cpp_source.html#l00102">eve::procgen::generateSkyscraperMesh()</a>, <a class="el" href="Procgen_8cpp_source.html#l02410">eve::procgen::Procgen::generateTerrainChunkMesh()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a430040fe370b1e0a05528e5f5bf807bd" name="a430040fe370b1e0a05528e5f5bf807bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a430040fe370b1e0a05528e5f5bf807bd">&#9670;&#160;</a></span>getGroupCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshBuild::getGroupCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of named triangle groups. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00062">getGroupName()</a>.</p>
+
+</div>
+</div>
+<a id="af29f7db0ef078098feb67fa097c8bbe1" name="af29f7db0ef078098feb67fa097c8bbe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af29f7db0ef078098feb67fa097c8bbe1">&#9670;&#160;</a></span>getGroupName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::MeshBuild::getGroupName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>groupIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Group name, or an empty string for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00060">getGroupCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>.</p>
+
+</div>
+</div>
+<a id="aea52019975e09f80fee77a3b1e0fa50a" name="aea52019975e09f80fee77a3b1e0fa50a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea52019975e09f80fee77a3b1e0fa50a">&#9670;&#160;</a></span>getIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshBuild::getIndex </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00159">getIndexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>.</p>
+
+</div>
+</div>
+<a id="a6f9256be5db1d30c5b5d3a9b8823fbe9" name="a6f9256be5db1d30c5b5d3a9b8823fbe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f9256be5db1d30c5b5d3a9b8823fbe9">&#9670;&#160;</a></span>getIndexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshBuild::getIndexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00194">getIndex()</a> , 以及 <a class="el" href="TerrainMesh_8h_source.html#l00031">eve::procgen::TerrainMeshChunk::getIndexCount()</a>.</p>
+
+</div>
+</div>
+<a id="a1264f4b0553b4d58f55854b2eb665236" name="a1264f4b0553b4d58f55854b2eb665236"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1264f4b0553b4d58f55854b2eb665236">&#9670;&#160;</a></span>getMeta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::MeshBuild::getMeta </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>defaultValue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00019">defaultValue</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="ae349f0f9edcb653edf0d67c75bda3a44" name="ae349f0f9edcb653edf0d67c75bda3a44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae349f0f9edcb653edf0d67c75bda3a44">&#9670;&#160;</a></span>getNormalX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshBuild::getNormalX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a>.</p>
+
+</div>
+</div>
+<a id="a6224c244edacb722998f515b9d0a8692" name="a6224c244edacb722998f515b9d0a8692"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6224c244edacb722998f515b9d0a8692">&#9670;&#160;</a></span>getNormalY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshBuild::getNormalY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a>.</p>
+
+</div>
+</div>
+<a id="a34d1b834ccf62f0688f8f09555f52d4e" name="a34d1b834ccf62f0688f8f09555f52d4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34d1b834ccf62f0688f8f09555f52d4e">&#9670;&#160;</a></span>getNormalZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshBuild::getNormalZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a>.</p>
+
+</div>
+</div>
+<a id="afdb2c2cd0cff5394f9e25e61b8497565" name="afdb2c2cd0cff5394f9e25e61b8497565"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdb2c2cd0cff5394f9e25e61b8497565">&#9670;&#160;</a></span>getPositionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshBuild::getPositionX </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a>.</p>
+
+</div>
+</div>
+<a id="a0ef87e0319e488b6ada75b71cf8042fc" name="a0ef87e0319e488b6ada75b71cf8042fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ef87e0319e488b6ada75b71cf8042fc">&#9670;&#160;</a></span>getPositionY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshBuild::getPositionY </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a>.</p>
+
+</div>
+</div>
+<a id="a031e43f0ed4c7bb01703713ca1fff3ea" name="a031e43f0ed4c7bb01703713ca1fff3ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a031e43f0ed4c7bb01703713ca1fff3ea">&#9670;&#160;</a></span>getPositionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshBuild::getPositionZ </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a>.</p>
+
+</div>
+</div>
+<a id="a938110f38d8694407e86128dd9cc7573" name="a938110f38d8694407e86128dd9cc7573"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a938110f38d8694407e86128dd9cc7573">&#9670;&#160;</a></span>getTriangleGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshBuild::getTriangleGroup </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>triangleIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Group index for a triangle (not an index-buffer element), or -1. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>.</p>
+
+</div>
+</div>
+<a id="aaf8a3e5073aad89b203cde4625b6a52d" name="aaf8a3e5073aad89b203cde4625b6a52d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf8a3e5073aad89b203cde4625b6a52d">&#9670;&#160;</a></span>getUvU()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshBuild::getUvU </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a>.</p>
+
+</div>
+</div>
+<a id="adfda116e6286fa95d5f89f639b8325e6" name="adfda116e6286fa95d5f89f639b8325e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfda116e6286fa95d5f89f639b8325e6">&#9670;&#160;</a></span>getUvV()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::MeshBuild::getUvV </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8cpp_source.html#l00158">getVertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="MeshBuild_8cpp_source.html#l00090">copyGroup()</a>.</p>
+
+</div>
+</div>
+<a id="ab0ad02c622f5d76e9fd304107d2031b6" name="ab0ad02c622f5d76e9fd304107d2031b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0ad02c622f5d76e9fd304107d2031b6">&#9670;&#160;</a></span>getVertexCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshBuild::getVertexCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00478">eve::procgen::TerrainLakeMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00246">eve::procgen::urban::generateUrbanMesh()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00174">getNormalX()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00178">getNormalY()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00182">getNormalZ()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00162">getPositionX()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00166">getPositionY()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00170">getPositionZ()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00186">getUvU()</a>, <a class="el" href="MeshBuild_8cpp_source.html#l00190">getUvV()</a>, <a class="el" href="TerrainMesh_8h_source.html#l00030">eve::procgen::TerrainMeshChunk::getVertexCount()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="aae4a87591bbcd1156345b57e52b5b0c6" name="aae4a87591bbcd1156345b57e52b5b0c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae4a87591bbcd1156345b57e52b5b0c6">&#9670;&#160;</a></span>groupNames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; std::string &gt; &amp; eve::procgen::MeshBuild::groupNames </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable ordered group names. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a560c4e1bac7be1da0ee19c0f7e5f9cd8" name="a560c4e1bac7be1da0ee19c0f7e5f9cd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a560c4e1bac7be1da0ee19c0f7e5f9cd8">&#9670;&#160;</a></span>indices() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; uint32_t &gt; &amp; eve::procgen::MeshBuild::indices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe6ea9d578f2fcc507d6491392d2a394" name="afe6ea9d578f2fcc507d6491392d2a394"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe6ea9d578f2fcc507d6491392d2a394">&#9670;&#160;</a></span>indices() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; uint32_t &gt; &amp; eve::procgen::MeshBuild::indices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e20ed62ed91adec07890d3fdc0365c3" name="a8e20ed62ed91adec07890d3fdc0365c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e20ed62ed91adec07890d3fdc0365c3">&#9670;&#160;</a></span>metadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::unordered_map&lt; std::string, std::string &gt; &amp; eve::procgen::MeshBuild::metadata </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return all metadata key/value pairs in deterministic map order. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed0adca7dd2ef90fc9c28b440a39081d" name="aed0adca7dd2ef90fc9c28b440a39081d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed0adca7dd2ef90fc9c28b440a39081d">&#9670;&#160;</a></span>normals() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; &amp; eve::procgen::MeshBuild::normals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c567d075ec01b88057dbf93aca52f2f" name="a2c567d075ec01b88057dbf93aca52f2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c567d075ec01b88057dbf93aca52f2f">&#9670;&#160;</a></span>normals() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::procgen::MeshBuild::normals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af3366a76a341951b64b58f4519232cbc" name="af3366a76a341951b64b58f4519232cbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3366a76a341951b64b58f4519232cbc">&#9670;&#160;</a></span>positions() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; &amp; eve::procgen::MeshBuild::positions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0cc91787ca825bead4245acef5ef5016" name="a0cc91787ca825bead4245acef5ef5016"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cc91787ca825bead4245acef5ef5016">&#9670;&#160;</a></span>positions() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::procgen::MeshBuild::positions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CastleMesh_8cpp_source.html#l00095">eve::procgen::generateCastleMesh()</a> , 以及 <a class="el" href="LinearStructure_8cpp_source.html#l00223">eve::procgen::generateLinearStructure()</a>.</p>
+
+</div>
+</div>
+<a id="a4b3e5e014cf0c6652a58b3e141706943" name="a4b3e5e014cf0c6652a58b3e141706943"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b3e5e014cf0c6652a58b3e141706943">&#9670;&#160;</a></span>reserve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::MeshBuild::reserve </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00236">indexCount</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00235">vertexCount</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00095">eve::procgen::generateCastleMesh()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00375">eve::procgen::generateHexTerrainMesh()</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00223">eve::procgen::generateLinearStructure()</a>, <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00165">eve::procgen::generateRockMesh()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00115">eve::procgen::refineCaveWetnessBoundary()</a>.</p>
+
+</div>
+</div>
+<a id="a8b0dd196edcd2b2135faa78ecb85dc05" name="a8b0dd196edcd2b2135faa78ecb85dc05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b0dd196edcd2b2135faa78ecb85dc05">&#9670;&#160;</a></span>restoreGroupData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::procgen::MeshBuild::restoreGroupData </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::string &gt;&#160;</td>
+          <td class="paramname"><em>names</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; int &gt;&#160;</td>
+          <td class="paramname"><em>assignments</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>activeGroup</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the complete group sidecar after dense streams are loaded. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">names</td><td>Ordered group names. </td></tr>
+    <tr><td class="paramname">assignments</td><td>One group index per triangle. </td></tr>
+    <tr><td class="paramname">activeGroup</td><td>Current group used by subsequent addTriangle calls. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when the sidecar is structurally compatible with the mesh; otherwise a stable <code>ProcgenGroupDataInvalid</code> diagnostic. Failure leaves all existing group state unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshBuild_8h_source.html#l00058">activeGroup()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00254">group</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a192ddb25abdf71c676423c55b6f94dca">eve::ProcgenGroupDataInvalid</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a51abc4debe6393b124260414f27775db" name="a51abc4debe6393b124260414f27775db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51abc4debe6393b124260414f27775db">&#9670;&#160;</a></span>setActiveGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::MeshBuild::setActiveGroup </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select/create the named group assigned to subsequently added triangles. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MeshBuild_8cpp_source.html#l00117">appendTransformed()</a> , 以及 <a class="el" href="CaveWetness_8cpp_source.html#l00115">eve::procgen::refineCaveWetnessBoundary()</a>.</p>
+
+</div>
+</div>
+<a id="a4ea334aa491b117fa66801cf18e3461e" name="a4ea334aa491b117fa66801cf18e3461e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ea334aa491b117fa66801cf18e3461e">&#9670;&#160;</a></span>setMeta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::MeshBuild::setMeta </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a> 第 <a class="el" href="MeshBuild_8cpp_source.html#l00199">199</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMesh_8cpp_source.html#l00478">eve::procgen::TerrainLakeMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00223">eve::procgen::TerrainRiverMeshBuilder::build()</a>, <a class="el" href="TerrainMesh_8cpp_source.html#l00105">eve::procgen::TerrainMeshBuilder::build()</a>, <a class="el" href="BushMesh_8cpp_source.html#l00145">eve::procgen::generateBushMesh()</a>, <a class="el" href="CastleMesh_8cpp_source.html#l00095">eve::procgen::generateCastleMesh()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00375">eve::procgen::generateHexTerrainMesh()</a>, <a class="el" href="LinearStructure_8cpp_source.html#l00223">eve::procgen::generateLinearStructure()</a>, <a class="el" href="LSystemMesh_8cpp_source.html#l00126">eve::procgen::generateLSystemMesh()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00433">eve::procgen::generateMarchingCubesMesh()</a>, <a class="el" href="RockMesh_8cpp_source.html#l00165">eve::procgen::generateRockMesh()</a>, <a class="el" href="SkyscraperMesh_8cpp_source.html#l00102">eve::procgen::generateSkyscraperMesh()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00369">eve::procgen::generateTreeMesh()</a>, <a class="el" href="UrbanOutput_8cpp_source.html#l00246">eve::procgen::urban::generateUrbanMesh()</a> , 以及 <a class="el" href="MarchingCubes_8cpp_source.html#l00245">eve::procgen::marchingCubes()</a>.</p>
+
+</div>
+</div>
+<a id="a20640a11abf0f69a09f0ccd9f18bb968" name="a20640a11abf0f69a09f0ccd9f18bb968"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20640a11abf0f69a09f0ccd9f18bb968">&#9670;&#160;</a></span>triangleGroups()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; int &gt; &amp; eve::procgen::MeshBuild::triangleGroups </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the dense triangle-to-group assignments. </p>
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72923a9a928b0403bce5f26c8407df57" name="a72923a9a928b0403bce5f26c8407df57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72923a9a928b0403bce5f26c8407df57">&#9670;&#160;</a></span>uvs() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; float &gt; &amp; eve::procgen::MeshBuild::uvs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe3a7daf321f859f2f4509b5a394fc68" name="afe3a7daf321f859f2f4509b5a394fc68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe3a7daf321f859f2f4509b5a394fc68">&#9670;&#160;</a></span>uvs() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; float &gt; &amp; eve::procgen::MeshBuild::uvs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a> 第 <a class="el" href="MeshBuild_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="MeshBuild_8h_source.html">MeshBuild.h</a></li>
+<li>src/modules/procgen/<a class="el" href="MeshBuild_8cpp_source.html">MeshBuild.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,695 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dev::RenderVision类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dev.html">dev</a></li><li class="navelem"><a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1dev_1_1RenderVision-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dev::RenderVision类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Vision-model bridge for rendered-frame review (desktop / devtools only).  
+ <a href="classeve_1_1dev_1_1RenderVision.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RenderVision_8hpp_source.html">RenderVision.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac6df5e5e9f1dcc9ca480be0b117534bd" id="r_ac6df5e5e9f1dcc9ca480be0b117534bd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#ac6df5e5e9f1dcc9ca480be0b117534bd">RenderVision</a> (const <a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a> &amp;)=delete</td></tr>
+<tr class="separator:ac6df5e5e9f1dcc9ca480be0b117534bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad23cdc8f00f612c58fa276e0efa2a20c" id="r_ad23cdc8f00f612c58fa276e0efa2a20c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#ad23cdc8f00f612c58fa276e0efa2a20c">operator=</a> (const <a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a> &amp;)=delete</td></tr>
+<tr class="separator:ad23cdc8f00f612c58fa276e0efa2a20c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2b3b160920b07ecbc9c73fec8565ad1" id="r_af2b3b160920b07ecbc9c73fec8565ad1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#af2b3b160920b07ecbc9c73fec8565ad1">setBaseUrl</a> (std::string url)</td></tr>
+<tr class="separator:af2b3b160920b07ecbc9c73fec8565ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512887e791fc2e9791caf321c99c5dd7" id="r_a512887e791fc2e9791caf321c99c5dd7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a512887e791fc2e9791caf321c99c5dd7">setApiKey</a> (std::string <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>)</td></tr>
+<tr class="separator:a512887e791fc2e9791caf321c99c5dd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72f1f70023540651d0cd8323e688e263" id="r_a72f1f70023540651d0cd8323e688e263"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a72f1f70023540651d0cd8323e688e263">setModel</a> (std::string <a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)</td></tr>
+<tr class="separator:a72f1f70023540651d0cd8323e688e263"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac29decaf470d566c431b8128c83113e9" id="r_ac29decaf470d566c431b8128c83113e9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#ac29decaf470d566c431b8128c83113e9">setPath</a> (std::string <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="separator:ac29decaf470d566c431b8128c83113e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abce02ccb1aab4bc894208781f9f68bc3" id="r_abce02ccb1aab4bc894208781f9f68bc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#abce02ccb1aab4bc894208781f9f68bc3">setTimeoutMs</a> (int ms)</td></tr>
+<tr class="separator:abce02ccb1aab4bc894208781f9f68bc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a485bc1d1da5729b5424bec5b48083273" id="r_a485bc1d1da5729b5424bec5b48083273"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a485bc1d1da5729b5424bec5b48083273">configJson</a> ()</td></tr>
+<tr class="memdesc:a485bc1d1da5729b5424bec5b48083273"><td class="mdescLeft">&#160;</td><td class="mdescRight">JSON description of current config (API key masked).  <br /></td></tr>
+<tr class="separator:a485bc1d1da5729b5424bec5b48083273"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a874a2d475095628ad0594e7763cc350c" id="r_a874a2d475095628ad0594e7763cc350c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a874a2d475095628ad0594e7763cc350c">configured</a> ()</td></tr>
+<tr class="separator:a874a2d475095628ad0594e7763cc350c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a716eeac864f7bad44d6f56daf7e804d7" id="r_a716eeac864f7bad44d6f56daf7e804d7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a716eeac864f7bad44d6f56daf7e804d7">latest</a> () const</td></tr>
+<tr class="separator:a716eeac864f7bad44d6f56daf7e804d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87025e25787a730d12e3e335b0735717" id="r_a87025e25787a730d12e3e335b0735717"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a87025e25787a730d12e3e335b0735717">lastError</a> () const</td></tr>
+<tr class="separator:a87025e25787a730d12e3e335b0735717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d98dcb02aa984eec51e6c6696767078" id="r_a2d98dcb02aa984eec51e6c6696767078"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a2d98dcb02aa984eec51e6c6696767078">notifyPending</a> (const std::string &amp;reason, const std::string &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>, int <a class="el" href="ConversationImporter_8cpp.html#a41ebd28ef1d7c6ade45642cb6acc1039">line</a>)</td></tr>
+<tr class="memdesc:a2d98dcb02aa984eec51e6c6696767078"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record that a breakpoint / critical site wants a vision dump.  <br /></td></tr>
+<tr class="separator:a2d98dcb02aa984eec51e6c6696767078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b808ad99c14e3b66035faaaab2c585e" id="r_a2b808ad99c14e3b66035faaaab2c585e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a2b808ad99c14e3b66035faaaab2c585e">pending</a> () const</td></tr>
+<tr class="separator:a2b808ad99c14e3b66035faaaab2c585e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac91e3006b0810b9ad4fb9caa83d889e4" id="r_ac91e3006b0810b9ad4fb9caa83d889e4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#ac91e3006b0810b9ad4fb9caa83d889e4">pendingReason</a> () const</td></tr>
+<tr class="separator:ac91e3006b0810b9ad4fb9caa83d889e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc0f1efdd5e67c1d36f8fe12ca9a9168" id="r_acc0f1efdd5e67c1d36f8fe12ca9a9168"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#acc0f1efdd5e67c1d36f8fe12ca9a9168">describe</a> (<a class="el" href="classeve_1_1IRenderCapture.html">eve::IRenderCapture</a> *cap, const std::string &amp;renderDataJson, bool fresh, const std::string &amp;reason={})</td></tr>
+<tr class="memdesc:acc0f1efdd5e67c1d36f8fe12ca9a9168"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main-thread capture + vision describe. Returns the description text, or a string starting with "error: " on failure. When <code>fresh</code> is false and a cached description exists, returns the cache.  <br /></td></tr>
+<tr class="separator:acc0f1efdd5e67c1d36f8fe12ca9a9168"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c36dee582b2cf7a05c67d5f12eab812" id="r_a9c36dee582b2cf7a05c67d5f12eab812"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a9c36dee582b2cf7a05c67d5f12eab812">pollPending</a> (<a class="el" href="classeve_1_1IRenderCapture.html">eve::IRenderCapture</a> *cap, const std::string &amp;renderDataJson)</td></tr>
+<tr class="memdesc:a9c36dee582b2cf7a05c67d5f12eab812"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1dev_1_1McpServer.html#a2cfd0c7e518772b8c3a9bb31cead8337" title="Accept clients + process one request batch (non-blocking).">McpServer::poll</a> hook: performs one pending dump when safe, clears flag.  <br /></td></tr>
+<tr class="separator:a9c36dee582b2cf7a05c67d5f12eab812"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a85ebbb1388d7883344ee37b32f5ad1b8" id="r_a85ebbb1388d7883344ee37b32f5ad1b8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a85ebbb1388d7883344ee37b32f5ad1b8">instance</a> ()</td></tr>
+<tr class="separator:a85ebbb1388d7883344ee37b32f5ad1b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a92fdba2769d69e2b01328eaf13fe7c1c" id="r_a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memTemplParams" colspan="2">template&lt;typename &gt; </td></tr>
+<tr class="memitem:a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memTemplItemLeft" align="right" valign="top">struct&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1dev_1_1RenderVision.html#a92fdba2769d69e2b01328eaf13fe7c1c">Immortal</a></td></tr>
+<tr class="separator:a92fdba2769d69e2b01328eaf13fe7c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Vision-model bridge for rendered-frame review (desktop / devtools only). </p>
+<p>Captures the current frame (Graphics readback), encodes it as a PNG data URL, and sends it together with engine render parameters to an OpenAI-compatible vision model over plain HTTP (JSON body, no multipart). The model returns a prose description of what is rendered and how the provided render parameters relate to the visible result — useful for other LLM agents debugging visuals.</p>
+<p>Config is set via env vars or the <code>eve_render_vision_config</code> MCP tool: EVE_VISION_BASE_URL e.g. <a href="http://127.0.0.1:11434/v1">http://127.0.0.1:11434/v1</a> (must be plain HTTP; no TLS/OpenSSL is linked into the engine) EVE_VISION_API_KEY optional bearer token EVE_VISION_MODEL e.g. llava / gpt-4o-mini / qwen2-vl EVE_VISION_PATH request path suffix, default /chat/completions EVE_VISION_TIMEOUT_MS</p>
+<p>Capture/describe must be called on the main (render/game) thread, since it touches the Graphics readback. <a class="el" href="structeve_1_1dev_1_1Breakpoint.html">Breakpoint</a> / error sites only record a pending flag here; the actual dump happens later from <a class="el" href="classeve_1_1dev_1_1McpServer.html#a2cfd0c7e518772b8c3a9bb31cead8337" title="Accept clients + process one request batch (non-blocking).">McpServer::poll</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8hpp_source.html">RenderVision.hpp</a> 第 <a class="el" href="RenderVision_8hpp_source.html#l00036">36</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac6df5e5e9f1dcc9ca480be0b117534bd" name="ac6df5e5e9f1dcc9ca480be0b117534bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6df5e5e9f1dcc9ca480be0b117534bd">&#9670;&#160;</a></span>RenderVision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::dev::RenderVision::RenderVision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a485bc1d1da5729b5424bec5b48083273" name="a485bc1d1da5729b5424bec5b48083273"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a485bc1d1da5729b5424bec5b48083273">&#9670;&#160;</a></span>configJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::RenderVision::configJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>JSON description of current config (API key masked). </p>
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00122">122</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a874a2d475095628ad0594e7763cc350c" name="a874a2d475095628ad0594e7763cc350c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a874a2d475095628ad0594e7763cc350c">&#9670;&#160;</a></span>configured()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::RenderVision::configured </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc0f1efdd5e67c1d36f8fe12ca9a9168" name="acc0f1efdd5e67c1d36f8fe12ca9a9168"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc0f1efdd5e67c1d36f8fe12ca9a9168">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::RenderVision::describe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1IRenderCapture.html">eve::IRenderCapture</a> *&#160;</td>
+          <td class="paramname"><em>cap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>renderDataJson</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fresh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Main-thread capture + vision describe. Returns the description text, or a string starting with "error: " on failure. When <code>fresh</code> is false and a cached description exists, returns the cache. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a85ebbb1388d7883344ee37b32f5ad1b8" name="a85ebbb1388d7883344ee37b32f5ad1b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85ebbb1388d7883344ee37b32f5ad1b8">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a> &amp; eve::dev::RenderVision::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Immortal_8hpp_source.html#l00021">eve::dev::Immortal&lt; T &gt;::get()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00712">eve::dev::DevTool::notifyError()</a> , 以及 <a class="el" href="Debugger_8cpp_source.html#l00683">eve::dev::Debugger::onScriptLine()</a>.</p>
+
+</div>
+</div>
+<a id="a87025e25787a730d12e3e335b0735717" name="a87025e25787a730d12e3e335b0735717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87025e25787a730d12e3e335b0735717">&#9670;&#160;</a></span>lastError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::RenderVision::lastError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a716eeac864f7bad44d6f56daf7e804d7" name="a716eeac864f7bad44d6f56daf7e804d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a716eeac864f7bad44d6f56daf7e804d7">&#9670;&#160;</a></span>latest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::RenderVision::latest </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d98dcb02aa984eec51e6c6696767078" name="a2d98dcb02aa984eec51e6c6696767078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d98dcb02aa984eec51e6c6696767078">&#9670;&#160;</a></span>notifyPending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderVision::notifyPending </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reason</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>line</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record that a breakpoint / critical site wants a vision dump. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a> , 以及 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">source</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DevTool_8cpp_source.html#l00712">eve::dev::DevTool::notifyError()</a> , 以及 <a class="el" href="Debugger_8cpp_source.html#l00683">eve::dev::Debugger::onScriptLine()</a>.</p>
+
+</div>
+</div>
+<a id="ad23cdc8f00f612c58fa276e0efa2a20c" name="ad23cdc8f00f612c58fa276e0efa2a20c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad23cdc8f00f612c58fa276e0efa2a20c">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a> &amp; eve::dev::RenderVision::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dev_1_1RenderVision.html">RenderVision</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2b808ad99c14e3b66035faaaab2c585e" name="a2b808ad99c14e3b66035faaaab2c585e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b808ad99c14e3b66035faaaab2c585e">&#9670;&#160;</a></span>pending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dev::RenderVision::pending </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac91e3006b0810b9ad4fb9caa83d889e4" name="ac91e3006b0810b9ad4fb9caa83d889e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac91e3006b0810b9ad4fb9caa83d889e4">&#9670;&#160;</a></span>pendingReason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::dev::RenderVision::pendingReason </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c36dee582b2cf7a05c67d5f12eab812" name="a9c36dee582b2cf7a05c67d5f12eab812"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c36dee582b2cf7a05c67d5f12eab812">&#9670;&#160;</a></span>pollPending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderVision::pollPending </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1IRenderCapture.html">eve::IRenderCapture</a> *&#160;</td>
+          <td class="paramname"><em>cap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>renderDataJson</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1dev_1_1McpServer.html#a2cfd0c7e518772b8c3a9bb31cead8337" title="Accept clients + process one request batch (non-blocking).">McpServer::poll</a> hook: performs one pending dump when safe, clears flag. </p>
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a512887e791fc2e9791caf321c99c5dd7" name="a512887e791fc2e9791caf321c99c5dd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a512887e791fc2e9791caf321c99c5dd7">&#9670;&#160;</a></span>setApiKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderVision::setApiKey </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="af2b3b160920b07ecbc9c73fec8565ad1" name="af2b3b160920b07ecbc9c73fec8565ad1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2b3b160920b07ecbc9c73fec8565ad1">&#9670;&#160;</a></span>setBaseUrl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderVision::setBaseUrl </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>url</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72f1f70023540651d0cd8323e688e263" name="a72f1f70023540651d0cd8323e688e263"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72f1f70023540651d0cd8323e688e263">&#9670;&#160;</a></span>setModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderVision::setModel </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00734">model</a>.</p>
+
+</div>
+</div>
+<a id="ac29decaf470d566c431b8128c83113e9" name="ac29decaf470d566c431b8128c83113e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac29decaf470d566c431b8128c83113e9">&#9670;&#160;</a></span>setPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderVision::setPath </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a>.</p>
+
+</div>
+</div>
+<a id="abce02ccb1aab4bc894208781f9f68bc3" name="abce02ccb1aab4bc894208781f9f68bc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abce02ccb1aab4bc894208781f9f68bc3">&#9670;&#160;</a></span>setTimeoutMs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dev::RenderVision::setTimeoutMs </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ms</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a> 第 <a class="el" href="RenderVision_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a92fdba2769d69e2b01328eaf13fe7c1c" name="a92fdba2769d69e2b01328eaf13fe7c1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92fdba2769d69e2b01328eaf13fe7c1c">&#9670;&#160;</a></span>Immortal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend struct <a class="el" href="structeve_1_1dev_1_1Immortal.html">Immortal</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RenderVision_8hpp_source.html">RenderVision.hpp</a> 第 <a class="el" href="RenderVision_8hpp_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/devtools/<a class="el" href="RenderVision_8hpp_source.html">RenderVision.hpp</a></li>
+<li>src/engine/devtools/<a class="el" href="RenderVision_8cpp_source.html">RenderVision.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">AnimClip</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::animation::AnimClip 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a733095d516f21de57138474321aac1ba">addEvent</a>(float time, const std::string &amp;name, const std::string &amp;payload=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a4b8372924e32dabc6d17e1fba7f8d6b7">addPositionKey</a>(int boneIndex, float time, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a9c19f6b8c06a9606137c0bb8bd0a5b50">addRotationKey</a>(int boneIndex, float time, float x, float y, float z, float w)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a2f7518b7b6f855926707543ccee7b5b1">addScaleKey</a>(int boneIndex, float time, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a0ed3aada574b5c91fd2131fc8de93d2d">addSyncMarker</a>(float time, const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a597eefac16bf226d5bda02748357e5ce">adopt</a>(AnimClip &amp;other)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ac3125c2603d046af2f3895982523d4fd">AnimClip</a>(std::string name=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#afbc6df8441f6bfd1ef418598492fbe35">AnimClip</a>(const AnimClip &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a0ca3d8b798e9482e4049dee76cc76ba9">AnimPlayer</a></td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a780a11875c0b28905b5140ea4ff25186">applyPlanarRootMotion</a>(int boneIndex, float speedX, float speedZ)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a8ab749c059b23bc4e200ff2865c360b6">clearTrack</a>(int boneIndex)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a952743753b510b0193dec64cf0107654">collectEvents</a>(float previousTime, float currentTime, bool loop, std::vector&lt; std::string &gt; &amp;out) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ac047312c267fc964f055860df1af503f">compress</a>(float positionError=0.001f, float rotationErrorDegrees=0.1f, float scaleError=0.001f)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a00f00a220520e6b150d46485affa8bbf">getDuration</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a379fe2a5e69e5cb39b787cdf672b9c7d">getEventCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a66687419c649f3ba734abced5ae5dbfb">getEventName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ae5a3ae8c9478cc04a685febc57486624">getEventPayload</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a2fbc970678cbd2a546334b6c5ebf19d0">getEventTime</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a02ac5c2dc3599bffae7205dd40410c3d">getLoop</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#aa1068fd98a715891096eb427439da123">getName</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a9b1fa3749802ada9a8d6f733c4ac67ba">getPositionKeyCount</a>(int boneIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a41f60d74c95366f5ebfb09633a5656c6">getPositionKeyTime</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a9a48fb70436ba77a9479218eec8bde7d">getPositionKeyX</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ac00ac1189f7abea1479fc02dabd67237">getPositionKeyY</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a196f1d150debd06f7f53225ba25828da">getPositionKeyZ</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a689a04aae7dcfc22f514a15cf073a945">getRotationKeyCount</a>(int boneIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a634e9dd8868297b6077ebb96f6f158b9">getRotationKeyTime</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a2925bed3ad5a548e94f27d91d1b30016">getRotationKeyW</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a9ce23bac70ded5170d7b66bb41b72c41">getRotationKeyX</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#aa78bf6af1b29faee39de281ad5ce2032">getRotationKeyY</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a8ad9d2f8bc0ec8e4302fd263cb31fb5b">getRotationKeyZ</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a42b9afecd4f60b6cf0b8468492372edb">getSampleRate</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a916020620f435f45bfb6304fcae25b89">getScaleKeyCount</a>(int boneIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a6da022564257ddd0c3ed3172c5fd76e3">getScaleKeyTime</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ad0cc5911729f486f64528393b5b72587">getScaleKeyX</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a3b6e4d475c50d31c1174b13b60a32ccf">getScaleKeyY</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ad61e3ebd9630a764e975935b48c4da8d">getScaleKeyZ</a>(int boneIndex, int keyIndex) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#aa751cebba0db0d3106fd10c0b4dc5dbe">getSyncMarkerCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ac9a25d4aafd0aae07b420e3bbf73d5ba">getSyncMarkerName</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a2ecd4110023579d7753027b7f4908878">getSyncMarkerTime</a>(int index) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ac957b426b9d8869dd762baa6df710f29">getTrackCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a2361cc048bda7ae82d22c611d42f81aa">hasCompatibleSyncMarkers</a>(const AnimClip *target) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a3f85fc18855a537e922374825cd34a85">hasEvent</a>(std::string_view name) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a7deb736163cf5867b292f343e8ffa1bb">mapSyncTimeTo</a>(float time, const AnimClip *target) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#af2c1bf4fba6cd3bb3b820c747fca6c1f">operator=</a>(const AnimClip &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#af9649630e48a40d590f0aa3dad96d5c5">removeEvent</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a57bfe1641c07ef786d6a74a017c5e7b6">removePositionKey</a>(int boneIndex, int keyIndex)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#aa908b26e8fcc1984646dd6c3db34b927">removeRotationKey</a>(int boneIndex, int keyIndex)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ab41e5109bc53cf88e2bb499a9a86272f">removeScaleKey</a>(int boneIndex, int keyIndex)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a7ff183f7d5c4e1cf96bfcb48a6765eb5">removeSyncMarker</a>(int index)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#aa153a4d325e406d159a574dceef5f767">retarget</a>(const AnimSkeleton *sourceSkeleton, const AnimSkeleton *targetSkeleton) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a0e93f0df80fa55b5b0ed0f85bc22f254">retargetWithProfile</a>(const AnimSkeleton *sourceSkeleton, const AnimSkeleton *targetSkeleton, AnimRetargetProfile *profile) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a0684cf0f0a96e033f4721c9af11de565">sample</a>(float time, AnimPose *out, const AnimSkeleton *skeleton=nullptr) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a303533cee36b6291d7f8d068ac205abe">sampleLod</a>(float time, AnimPose *out, const AnimSkeleton *skeleton, int lodLevel) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a41a504bff6b5b8912d1b9c37b760fca7">setDuration</a>(float seconds)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a554d666ec7d87e9aed56b8b28665f6dc">setEvent</a>(int index, float time, const std::string &amp;name, const std::string &amp;payload=&quot;&quot;)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ae6ec5bb5b19068ccdb9f233fb13355a5">setLoop</a>(bool loop)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ab41fbe8ea0568b94d875aec9cbf9045d">setName</a>(const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a2b8ba96dfaa8d167c7f6000f1166a023">setPositionKey</a>(int boneIndex, int keyIndex, float time, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a4651ccb95a6ed197abbcfd47ce6f936b">setRotationKey</a>(int boneIndex, int keyIndex, float time, float x, float y, float z, float w)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a9506db7bef217059b8b3ac1c84ab3b57">setSampleRate</a>(float hz)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a270bfd5030d9693cf3b70d98dc083860">setScaleKey</a>(int boneIndex, int keyIndex, float time, float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#a8dba380f0920b17f826a08b77c367d4f">setSyncMarker</a>(int index, float time, const std::string &amp;name)</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#aca42378a5b0b3b5117c5bd5e91edf81b">validateNotifyContract</a>(const std::vector&lt; std::string &gt; &amp;requiredNames) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#accd790433b839b00872d4eeb11ee9e47">wrapTime</a>(float time) const</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html#ab464b17019e5e449f28c8147ac22961c">~AnimClip</a>()</td><td class="entry"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">eve::animation::AnimClip</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

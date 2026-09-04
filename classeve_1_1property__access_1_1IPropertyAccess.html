@@ -1,0 +1,426 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::property_access::IPropertyAccess类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1property__access.html">property_access</a></li><li class="navelem"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html">IPropertyAccess</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1property__access_1_1IPropertyAccess-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::property_access::IPropertyAccess类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Renderer- and transaction-independent MVVM property surface.  
+ <a href="classeve_1_1property__access_1_1IPropertyAccess.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::property_access::IPropertyAccess 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1property__access_1_1IPropertyAccess.png" usemap="#eve::property_5Faccess::IPropertyAccess_map" alt=""/>
+  <map id="eve::property_5Faccess::IPropertyAccess_map" name="eve::property_5Faccess::IPropertyAccess_map">
+<area href="classeve_1_1editor_1_1EditorPropertyModel.html" title="Adapts command-backed editor properties to the shared MVVM contract." alt="eve::editor::EditorPropertyModel" shape="rect" coords="0,56,246,80"/>
+<area href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html" title="Adapts one live Squirrel instance to the renderer-independent property model." alt="eve::scriptmodel::ReflectedPropertyModel" shape="rect" coords="256,56,502,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a549150ac18f8075fb2de41e24ea33b33" id="r_a549150ac18f8075fb2de41e24ea33b33"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">ChangeCallback</a> = std::function&lt; void(const <a class="el" href="structeve_1_1property__access_1_1PropertyChange.html">PropertyChange</a> &amp;)&gt;</td></tr>
+<tr class="separator:a549150ac18f8075fb2de41e24ea33b33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aad7b55bc5d61f31b7d39253163a52e27" id="r_aad7b55bc5d61f31b7d39253163a52e27"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#aad7b55bc5d61f31b7d39253163a52e27">~IPropertyAccess</a> ()=default</td></tr>
+<tr class="separator:aad7b55bc5d61f31b7d39253163a52e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b6b50d3b3b0c4c8cd68ed49ff9d42a4" id="r_a0b6b50d3b3b0c4c8cd68ed49ff9d42a4"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structeve_1_1property__access_1_1PropertySchema.html">PropertySchema</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a0b6b50d3b3b0c4c8cd68ed49ff9d42a4">schema</a> () const =0</td></tr>
+<tr class="memdesc:a0b6b50d3b3b0c4c8cd68ed49ff9d42a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable schema exposed by this model.  <br /></td></tr>
+<tr class="separator:a0b6b50d3b3b0c4c8cd68ed49ff9d42a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f60bb7a6cae70f705c302e14e809d73" id="r_a0f60bb7a6cae70f705c302e14e809d73"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a0f60bb7a6cae70f705c302e14e809d73">read</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const =0</td></tr>
+<tr class="memdesc:a0f60bb7a6cae70f705c302e14e809d73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a property value, or nullopt when it is absent.  <br /></td></tr>
+<tr class="separator:a0f60bb7a6cae70f705c302e14e809d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab69c406d9e50c0ca96a4cb33f4b7d3fe" id="r_ab69c406d9e50c0ca96a4cb33f4b7d3fe"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1property__access_1_1WriteResult.html">WriteResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#ab69c406d9e50c0ca96a4cb33f4b7d3fe">write</a> (const std::string &amp;<a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)=0</td></tr>
+<tr class="memdesc:ab69c406d9e50c0ca96a4cb33f4b7d3fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request a two-way binding write.  <br /></td></tr>
+<tr class="separator:ab69c406d9e50c0ca96a4cb33f4b7d3fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad92ca2970fd011e67aaace258e150f7" id="r_aad92ca2970fd011e67aaace258e150f7"><td class="memItemLeft" align="right" valign="top">virtual std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#aad92ca2970fd011e67aaace258e150f7">revision</a> () const =0</td></tr>
+<tr class="memdesc:aad92ca2970fd011e67aaace258e150f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic revision incremented after observable changes.  <br /></td></tr>
+<tr class="separator:aad92ca2970fd011e67aaace258e150f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a840c96e28980808e372452ad987a1f4f" id="r_a840c96e28980808e372452ad987a1f4f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1property__access.html#ab940760613fb74791e7cbdc6250ccd9a">Subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a840c96e28980808e372452ad987a1f4f">subscribe</a> (<a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">ChangeCallback</a> callback)=0</td></tr>
+<tr class="memdesc:a840c96e28980808e372452ad987a1f4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observe changes until the returned token is destroyed.  <br /></td></tr>
+<tr class="separator:a840c96e28980808e372452ad987a1f4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Renderer- and transaction-independent MVVM property surface. </p>
+<p>Implementations may wrap gameplay state, reflected script objects, editor targets or remote automation. Writes express intent; the implementation decides whether to assign directly, dispatch a command, or reject it. </p>
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00143">143</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a549150ac18f8075fb2de41e24ea33b33" name="a549150ac18f8075fb2de41e24ea33b33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a549150ac18f8075fb2de41e24ea33b33">&#9670;&#160;</a></span>ChangeCallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">eve::property_access::IPropertyAccess::ChangeCallback</a> =  std::function&lt;void(const <a class="el" href="structeve_1_1property__access_1_1PropertyChange.html">PropertyChange</a> &amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a> 第 <a class="el" href="PropertyAccess_8h_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aad7b55bc5d61f31b7d39253163a52e27" name="aad7b55bc5d61f31b7d39253163a52e27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad7b55bc5d61f31b7d39253163a52e27">&#9670;&#160;</a></span>~IPropertyAccess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::property_access::IPropertyAccess::~IPropertyAccess </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0f60bb7a6cae70f705c302e14e809d73" name="a0f60bb7a6cae70f705c302e14e809d73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f60bb7a6cae70f705c302e14e809d73">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::property_access::IPropertyAccess::read </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read a property value, or nullopt when it is absent. </p>
+
+<p>在 <a class="el" href="classeve_1_1editor_1_1EditorPropertyModel.html#ae12e224ed76af6451472a2d280e5ab04">eve::editor::EditorPropertyModel</a> , 以及 <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#a8e969a95e3e2927bba48c0b577d7f156">eve::scriptmodel::ReflectedPropertyModel</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aad92ca2970fd011e67aaace258e150f7" name="aad92ca2970fd011e67aaace258e150f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad92ca2970fd011e67aaace258e150f7">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::uint64_t eve::property_access::IPropertyAccess::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic revision incremented after observable changes. </p>
+
+<p>在 <a class="el" href="classeve_1_1editor_1_1EditorPropertyModel.html#a5ad341c0b8424a5904d09115bcb362de">eve::editor::EditorPropertyModel</a> , 以及 <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#abf5e86c48deff38dfd11e784f348811d">eve::scriptmodel::ReflectedPropertyModel</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a0b6b50d3b3b0c4c8cd68ed49ff9d42a4" name="a0b6b50d3b3b0c4c8cd68ed49ff9d42a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b6b50d3b3b0c4c8cd68ed49ff9d42a4">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="structeve_1_1property__access_1_1PropertySchema.html">PropertySchema</a> &amp; eve::property_access::IPropertyAccess::schema </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable schema exposed by this model. </p>
+
+<p>在 <a class="el" href="classeve_1_1editor_1_1EditorPropertyModel.html#a97ba5f668cd071012821cb644fa14276">eve::editor::EditorPropertyModel</a> , 以及 <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#af6e39571e9f906161730f60570cebfe4">eve::scriptmodel::ReflectedPropertyModel</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a840c96e28980808e372452ad987a1f4f" name="a840c96e28980808e372452ad987a1f4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a840c96e28980808e372452ad987a1f4f">&#9670;&#160;</a></span>subscribe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1property__access.html#ab940760613fb74791e7cbdc6250ccd9a">Subscription</a> eve::property_access::IPropertyAccess::subscribe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1property__access_1_1IPropertyAccess.html#a549150ac18f8075fb2de41e24ea33b33">ChangeCallback</a>&#160;</td>
+          <td class="paramname"><em>callback</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observe changes until the returned token is destroyed. </p>
+
+<p>在 <a class="el" href="classeve_1_1editor_1_1EditorPropertyModel.html#a3045d1e3d0f24ff133420b7725f0e362">eve::editor::EditorPropertyModel</a> , 以及 <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#ad471ab0e8e0ef3d305faea0e3c59045c">eve::scriptmodel::ReflectedPropertyModel</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="ab69c406d9e50c0ca96a4cb33f4b7d3fe" name="ab69c406d9e50c0ca96a4cb33f4b7d3fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab69c406d9e50c0ca96a4cb33f4b7d3fe">&#9670;&#160;</a></span>write()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structeve_1_1property__access_1_1WriteResult.html">WriteResult</a> eve::property_access::IPropertyAccess::write </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Request a two-way binding write. </p>
+
+<p>在 <a class="el" href="classeve_1_1editor_1_1EditorPropertyModel.html#a0d58f6dd4c1954a19aedcdaed897858a">eve::editor::EditorPropertyModel</a> , 以及 <a class="el" href="classeve_1_1scriptmodel_1_1ReflectedPropertyModel.html#ab53ed7e82920778c8a579fad560d6099">eve::scriptmodel::ReflectedPropertyModel</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/property_access/<a class="el" href="PropertyAccess_8h_source.html">PropertyAccess.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

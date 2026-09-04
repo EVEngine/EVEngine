@@ -1,0 +1,639 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::map_editing::TileLayerTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1map__editing.html">map_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html">TileLayerTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1map__editing_1_1TileLayerTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::map_editing::TileLayerTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Non-owning editable adapter for a live map tile layer.  
+ <a href="classeve_1_1map__editing_1_1TileLayerTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TileLayerTarget_8h_source.html">TileLayerTarget.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::map_editing::TileLayerTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1map__editing_1_1TileLayerTarget.png" usemap="#eve::map_5Fediting::TileLayerTarget_map" alt=""/>
+  <map id="eve::map_5Fediting::TileLayerTarget_map" name="eve::map_5Fediting::TileLayerTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,201,80"/>
+<area href="classeve_1_1editing_1_1IIntFieldTarget.html" alt="eve::editing::IIntFieldTarget" shape="rect" coords="211,56,412,80"/>
+<area href="classeve_1_1editing_1_1IGridTarget.html" alt="eve::editing::IGridTarget" shape="rect" coords="211,0,412,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a96b740c8c21ab48a8e7fb7d8c512daab" id="r_a96b740c8c21ab48a8e7fb7d8c512daab"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#a96b740c8c21ab48a8e7fb7d8c512daab">TileLayerTarget</a> (std::string <a class="el" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <a class="el" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *<a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#aac2957eb8975ddefe7444b8c7f2f2aaf">layer</a>)</td></tr>
+<tr class="memdesc:a96b740c8c21ab48a8e7fb7d8c512daab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a live layer which must outlive this adapter.  <br /></td></tr>
+<tr class="separator:a96b740c8c21ab48a8e7fb7d8c512daab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a041a73edfd9222b5c98d3ead9af1dd" id="r_a4a041a73edfd9222b5c98d3ead9af1dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#a4a041a73edfd9222b5c98d3ead9af1dd">targetId</a> () const override</td></tr>
+<tr class="separator:a4a041a73edfd9222b5c98d3ead9af1dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08441199cb78457d82b605aa8ea450e9" id="r_a08441199cb78457d82b605aa8ea450e9"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#a08441199cb78457d82b605aa8ea450e9">revision</a> () const override</td></tr>
+<tr class="separator:a08441199cb78457d82b605aa8ea450e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2b023be2be2bc87361356325806d039" id="r_ae2b023be2be2bc87361356325806d039"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#ae2b023be2be2bc87361356325806d039">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:ae2b023be2be2bc87361356325806d039"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3aecbbb15617a3658f45f3c1eac9c31" id="r_ac3aecbbb15617a3658f45f3c1eac9c31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#ac3aecbbb15617a3658f45f3c1eac9c31">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:ac3aecbbb15617a3658f45f3c1eac9c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57c7f9fe0754419777ea762afe2c81c4" id="r_a57c7f9fe0754419777ea762afe2c81c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#a57c7f9fe0754419777ea762afe2c81c4">width</a> () const override</td></tr>
+<tr class="separator:a57c7f9fe0754419777ea762afe2c81c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaefb669004cb630331f0e6f8ea9187c6" id="r_aaefb669004cb630331f0e6f8ea9187c6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#aaefb669004cb630331f0e6f8ea9187c6">height</a> () const override</td></tr>
+<tr class="separator:aaefb669004cb630331f0e6f8ea9187c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafade9752e0496963a36ded754151dde" id="r_aafade9752e0496963a36ded754151dde"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#aafade9752e0496963a36ded754151dde">containsCell</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const override</td></tr>
+<tr class="separator:aafade9752e0496963a36ded754151dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7352ecc37248888c73fbbacbdc505e78" id="r_a7352ecc37248888c73fbbacbdc505e78"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#a7352ecc37248888c73fbbacbdc505e78">readInt</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) const override</td></tr>
+<tr class="separator:a7352ecc37248888c73fbbacbdc505e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8d5bb8957f4f2fd816ec05d27d84500" id="r_ad8d5bb8957f4f2fd816ec05d27d84500"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174">editing::FieldWriteStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#ad8d5bb8957f4f2fd816ec05d27d84500">writeInt</a> (int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, int <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) override</td></tr>
+<tr class="separator:ad8d5bb8957f4f2fd816ec05d27d84500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac2957eb8975ddefe7444b8c7f2f2aaf" id="r_aac2957eb8975ddefe7444b8c7f2f2aaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1map__editing_1_1TileLayerTarget.html#aac2957eb8975ddefe7444b8c7f2f2aaf">layer</a> () const</td></tr>
+<tr class="memdesc:aac2957eb8975ddefe7444b8c7f2f2aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the borrowed live layer.  <br /></td></tr>
+<tr class="separator:aac2957eb8975ddefe7444b8c7f2f2aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af13b7927d4f01f4fe487f199b42bf5ae inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_af13b7927d4f01f4fe487f199b42bf5ae"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">describe</a> () const</td></tr>
+<tr class="memdesc:af13b7927d4f01f4fe487f199b42bf5ae inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:af13b7927d4f01f4fe487f199b42bf5ae inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a3e202dd6b1ca3b75e726a90a82081653"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">queryCapability</a> (const <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>)</td></tr>
+<tr class="memdesc:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional stable capability.  <br /></td></tr>
+<tr class="separator:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IGridTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IGridTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IGridTarget.html">eve::editing::IGridTarget</a></td></tr>
+<tr class="memitem:aa5bd99af8a381d2aeeb2d187d5d83363 inherit pub_methods_classeve_1_1editing_1_1IGridTarget" id="r_aa5bd99af8a381d2aeeb2d187d5d83363"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IGridTarget.html#aa5bd99af8a381d2aeeb2d187d5d83363">~IGridTarget</a> ()=default</td></tr>
+<tr class="separator:aa5bd99af8a381d2aeeb2d187d5d83363 inherit pub_methods_classeve_1_1editing_1_1IGridTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IIntFieldTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IIntFieldTarget')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IIntFieldTarget.html">eve::editing::IIntFieldTarget</a></td></tr>
+<tr class="memitem:a526fa1362c0e2849c518d4a337050784 inherit pub_static_methods_classeve_1_1editing_1_1IIntFieldTarget" id="r_a526fa1362c0e2849c518d4a337050784"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IIntFieldTarget.html#a526fa1362c0e2849c518d4a337050784">editingCapabilityId</a> ()</td></tr>
+<tr class="separator:a526fa1362c0e2849c518d4a337050784 inherit pub_static_methods_classeve_1_1editing_1_1IIntFieldTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Non-owning editable adapter for a live map tile layer. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8h_source.html">TileLayerTarget.h</a> 第 <a class="el" href="TileLayerTarget_8h_source.html#l00015">15</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a96b740c8c21ab48a8e7fb7d8c512daab" name="a96b740c8c21ab48a8e7fb7d8c512daab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96b740c8c21ab48a8e7fb7d8c512daab">&#9670;&#160;</a></span>TileLayerTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::map_editing::TileLayerTarget::TileLayerTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *&#160;</td>
+          <td class="paramname"><em>layer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind a live layer which must outlive this adapter. </p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8cpp_source.html">TileLayerTarget.cpp</a> 第 <a class="el" href="TileLayerTarget_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac3aecbbb15617a3658f45f3c1eac9c31" name="ac3aecbbb15617a3658f45f3c1eac9c31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3aecbbb15617a3658f45f3c1eac9c31">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::map_editing::TileLayerTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8h_source.html">TileLayerTarget.h</a> 第 <a class="el" href="TileLayerTarget_8h_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="aafade9752e0496963a36ded754151dde" name="aafade9752e0496963a36ded754151dde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafade9752e0496963a36ded754151dde">&#9670;&#160;</a></span>containsCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::map_editing::TileLayerTarget::containsCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IGridTarget.html#a51f0f826c84c3c057c75ae72ed919687">eve::editing::IGridTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8cpp_source.html">TileLayerTarget.cpp</a> 第 <a class="el" href="TileLayerTarget_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayerTarget_8cpp_source.html#l00014">height()</a>, <a class="el" href="TileLayerTarget_8cpp_source.html#l00013">width()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayerTarget_8cpp_source.html#l00018">readInt()</a> , 以及 <a class="el" href="TileLayerTarget_8cpp_source.html#l00019">writeInt()</a>.</p>
+
+</div>
+</div>
+<a id="ae2b023be2be2bc87361356325806d039" name="ae2b023be2be2bc87361356325806d039"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2b023be2be2bc87361356325806d039">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">editing::EditRegion</a> eve::map_editing::TileLayerTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8h_source.html">TileLayerTarget.h</a> 第 <a class="el" href="TileLayerTarget_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaefb669004cb630331f0e6f8ea9187c6" name="aaefb669004cb630331f0e6f8ea9187c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaefb669004cb630331f0e6f8ea9187c6">&#9670;&#160;</a></span>height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map_editing::TileLayerTarget::height </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IGridTarget.html#abd898729899984a15412da0029ed77e6">eve::editing::IGridTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8cpp_source.html">TileLayerTarget.cpp</a> 第 <a class="el" href="TileLayerTarget_8cpp_source.html#l00014">14</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00036">eve::map::TileLayer::getMapHeight()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayerTarget_8cpp_source.html#l00015">containsCell()</a>.</p>
+
+</div>
+</div>
+<a id="aac2957eb8975ddefe7444b8c7f2f2aaf" name="aac2957eb8975ddefe7444b8c7f2f2aaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac2957eb8975ddefe7444b8c7f2f2aaf">&#9670;&#160;</a></span>layer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> * eve::map_editing::TileLayerTarget::layer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the borrowed live layer. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by the caller that constructed this adapter. @lifetime Valid only while the source layer outlives this adapter. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8h_source.html">TileLayerTarget.h</a> 第 <a class="el" href="TileLayerTarget_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7352ecc37248888c73fbbacbdc505e78" name="a7352ecc37248888c73fbbacbdc505e78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7352ecc37248888c73fbbacbdc505e78">&#9670;&#160;</a></span>readInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map_editing::TileLayerTarget::readInt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IIntFieldTarget.html#acaeb0c879144fa0dd269447d1c8707a4">eve::editing::IIntFieldTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8cpp_source.html">TileLayerTarget.cpp</a> 第 <a class="el" href="TileLayerTarget_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayerTarget_8cpp_source.html#l00015">containsCell()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00072">eve::map::TileLayer::getTile()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<a id="a08441199cb78457d82b605aa8ea450e9" name="a08441199cb78457d82b605aa8ea450e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08441199cb78457d82b605aa8ea450e9">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::map_editing::TileLayerTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8cpp_source.html">TileLayerTarget.cpp</a> 第 <a class="el" href="TileLayerTarget_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4a041a73edfd9222b5c98d3ead9af1dd" name="a4a041a73edfd9222b5c98d3ead9af1dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a041a73edfd9222b5c98d3ead9af1dd">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">editing::TargetId</a> eve::map_editing::TileLayerTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8h_source.html">TileLayerTarget.h</a> 第 <a class="el" href="TileLayerTarget_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a57c7f9fe0754419777ea762afe2c81c4" name="a57c7f9fe0754419777ea762afe2c81c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57c7f9fe0754419777ea762afe2c81c4">&#9670;&#160;</a></span>width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::map_editing::TileLayerTarget::width </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IGridTarget.html#a02e61f8be2cf1e9152d1fe5282e2b109">eve::editing::IGridTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8cpp_source.html">TileLayerTarget.cpp</a> 第 <a class="el" href="TileLayerTarget_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TileLayer_8cpp_source.html#l00035">eve::map::TileLayer::getMapWidth()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TileLayerTarget_8cpp_source.html#l00015">containsCell()</a>.</p>
+
+</div>
+</div>
+<a id="ad8d5bb8957f4f2fd816ec05d27d84500" name="ad8d5bb8957f4f2fd816ec05d27d84500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8d5bb8957f4f2fd816ec05d27d84500">&#9670;&#160;</a></span>writeInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174">editing::FieldWriteStatus</a> eve::map_editing::TileLayerTarget::writeInt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IIntFieldTarget.html#ae103131be6487925c7cf61cc8b236fb8">eve::editing::IIntFieldTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="TileLayerTarget_8cpp_source.html">TileLayerTarget.cpp</a> 第 <a class="el" href="TileLayerTarget_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174a733d43480c8589b1368e5def6b480415">eve::editing::Applied</a>, <a class="el" href="TileLayerTarget_8cpp_source.html#l00015">containsCell()</a>, <a class="el" href="TileLayer_8cpp_source.html#l00072">eve::map::TileLayer::getTile()</a>, <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174ad37b1f6c0512e2118cee17fea015b699">eve::editing::Rejected</a>, <a class="el" href="TileLayer_8cpp_source.html#l00056">eve::map::TileLayer::setTile()</a>, <a class="el" href="namespaceeve_1_1editing.html#a5893855493636af97030d5d777aa2174a5ff3c6978f87d96febfdc8ed3899a97e">eve::editing::Unchanged</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00690">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00690">y</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/map_editing/<a class="el" href="TileLayerTarget_8h_source.html">TileLayerTarget.h</a></li>
+<li>src/modules/map_editing/<a class="el" href="TileLayerTarget_8cpp_source.html">TileLayerTarget.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

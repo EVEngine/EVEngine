@@ -1,0 +1,281 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/SpineAtlas.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SpineAtlas.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SpineAtlas_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAtlas.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAtlas.html#aa1f100a5bbc73ed73b31cbc5de47f6f2">   16</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#aa1f100a5bbc73ed73b31cbc5de47f6f2">SpineAtlas</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAtlas.html#af7c3b16a1b20f4085b4bb477bd435b5f">   17</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#af7c3b16a1b20f4085b4bb477bd435b5f">~SpineAtlas</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAtlas.html#a348359db760d835c5e91cee031eac7f9">   19</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a348359db760d835c5e91cee031eac7f9">SpineAtlas</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAtlas.html#a6e83843216aa283d0aff82957cf7610e">   20</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> &amp;<a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a6e83843216aa283d0aff82957cf7610e">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1SpineAtlas.html">SpineAtlas</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#ad211bdad72dc9aa8cc63ea2375c30210">loadFromText</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>, std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a4a6805be7791d01c11ed3d5f28014e3c">loadFromFile</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, std::string *<a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a> = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#aabf1896cd49f2e89f067aa5b0bf1c773">clear</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAtlas.html#a73318066c0825f2f069b182944c4b957">   27</a></span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a73318066c0825f2f069b182944c4b957">getPageCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(pages_.size()); }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    std::string <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a2794bf6e7fe5f4865bae1e2a45db02aa">getPageName</a>(<span class="keywordtype">int</span> pageIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a4aa806175b778064a38c81740ff9589c">getPageWidth</a>(<span class="keywordtype">int</span> pageIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a1eab91d2be51ed4ff3f60967383771df">getPageHeight</a>(<span class="keywordtype">int</span> pageIndex) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1SpineAtlas.html#ab14310e387befdc151a9949304c94ae8">   32</a></span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#ab14310e387befdc151a9949304c94ae8">getRegionCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(regions_.size()); }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#ab64a8548db789979c1d44e57b5c59c36">findRegion</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::string <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a40d0268c0c80c9bdcbe30e92a2729615">getRegionName</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a790ff57f83b72a200832c67176430915">getRegionPage</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a984c510b78b0d0531e41d41352f1c594">getRegionX</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a065a193174b4af2dd7c4739c5e20895b">getRegionY</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a90a752c02a208e447c2a160c48f5d4a1">getRegionWidth</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#aa90c52bd99df434cb4422c19bc119d3d">getRegionHeight</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a23bc40e0930141ae56eb97fc06132e10">getRegionOriginalWidth</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a4f29b9da39f305f3cce90c264860a116">getRegionOriginalHeight</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#aee801f52cf3d6849271f24de770714cf">getRegionOffsetX</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">int</span>         <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a5d6445422d5ad4f0b0e85a54a2d1c492">getRegionOffsetY</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">bool</span>        <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a6b1f07f277540dd458ef7bf694cfece2">getRegionRotate</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1animation_1_1SpineAtlas.html#a4d7f7e79e33ef1bdf3f4dbc9c4375937">getRegionUV</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>, <span class="keywordtype">int</span> texW, <span class="keywordtype">int</span> texH, <span class="keywordtype">float</span> &amp;u0, <span class="keywordtype">float</span> &amp;v0, <span class="keywordtype">float</span> &amp;u1,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                     <span class="keywordtype">float</span> &amp;v1) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">struct </span>Page {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordtype">int</span>         <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>  = 0;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordtype">int</span>         <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> = 0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    };</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">struct </span>Region {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        std::string <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordtype">int</span>         pageIndex = 0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordtype">int</span>         <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0, <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> = 0, <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = 0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordtype">int</span>         origW = 0, origH = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">int</span>         <a class="code hl_variable" href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a> = 0, <a class="code hl_variable" href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a> = 0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordtype">bool</span>        rotate = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    };</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> checkPage(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> checkRegion(<span class="keywordtype">int</span> <a class="code hl_variable" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::vector&lt;Page&gt;                    pages_;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::vector&lt;Region&gt;                  regions_;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::unordered_map&lt;std::string, int&gt; regionByName_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00152">EvaArchive.cpp:152</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00685">ImageData.cpp:685</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00015">LegacyAnimationImporter.cpp:15</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aProduction_8cpp_html_a750b5d744c39a06bfb13e6eb010e35d0"><div class="ttname"><a href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a></div><div class="ttdeci">int index</div><div class="ttdef"><b>Definition</b> <a href="Production_8cpp_source.html#l00037">Production.cpp:37</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a40e27a95878bc0a443bac4815628f3e2"><div class="ttname"><a href="TileConfig_8cpp.html#a40e27a95878bc0a443bac4815628f3e2">offsetX</a></div><div class="ttdeci">float offsetX</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00917">TileConfig.cpp:917</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a577cbd3610eed001754028f74db1dd02"><div class="ttname"><a href="TileConfig_8cpp.html#a577cbd3610eed001754028f74db1dd02">offsetY</a></div><div class="ttdeci">float offsetY</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00918">TileConfig.cpp:918</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html">eve::animation::SpineAtlas</a></div><div class="ttdoc">Esoteric Spine .atlas text parser (region rectangles + page metadata). Does not load image pixels — b...</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8h_source.html#l00014">SpineAtlas.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a065a193174b4af2dd7c4739c5e20895b"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a065a193174b4af2dd7c4739c5e20895b">eve::animation::SpineAtlas::getRegionY</a></div><div class="ttdeci">int getRegionY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00234">SpineAtlas.cpp:234</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a1eab91d2be51ed4ff3f60967383771df"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a1eab91d2be51ed4ff3f60967383771df">eve::animation::SpineAtlas::getPageHeight</a></div><div class="ttdeci">int getPageHeight(int pageIndex) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00209">SpineAtlas.cpp:209</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a23bc40e0930141ae56eb97fc06132e10"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a23bc40e0930141ae56eb97fc06132e10">eve::animation::SpineAtlas::getRegionOriginalWidth</a></div><div class="ttdeci">int getRegionOriginalWidth(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00249">SpineAtlas.cpp:249</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a2794bf6e7fe5f4865bae1e2a45db02aa"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a2794bf6e7fe5f4865bae1e2a45db02aa">eve::animation::SpineAtlas::getPageName</a></div><div class="ttdeci">std::string getPageName(int pageIndex) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00199">SpineAtlas.cpp:199</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a348359db760d835c5e91cee031eac7f9"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a348359db760d835c5e91cee031eac7f9">eve::animation::SpineAtlas::SpineAtlas</a></div><div class="ttdeci">SpineAtlas(const SpineAtlas &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a40d0268c0c80c9bdcbe30e92a2729615"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a40d0268c0c80c9bdcbe30e92a2729615">eve::animation::SpineAtlas::getRegionName</a></div><div class="ttdeci">std::string getRegionName(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00219">SpineAtlas.cpp:219</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a4a6805be7791d01c11ed3d5f28014e3c"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a4a6805be7791d01c11ed3d5f28014e3c">eve::animation::SpineAtlas::loadFromFile</a></div><div class="ttdeci">bool loadFromFile(const std::string &amp;path, std::string *error=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00079">SpineAtlas.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a4aa806175b778064a38c81740ff9589c"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a4aa806175b778064a38c81740ff9589c">eve::animation::SpineAtlas::getPageWidth</a></div><div class="ttdeci">int getPageWidth(int pageIndex) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00204">SpineAtlas.cpp:204</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a4d7f7e79e33ef1bdf3f4dbc9c4375937"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a4d7f7e79e33ef1bdf3f4dbc9c4375937">eve::animation::SpineAtlas::getRegionUV</a></div><div class="ttdeci">void getRegionUV(int index, int texW, int texH, float &amp;u0, float &amp;v0, float &amp;u1, float &amp;v1) const</div><div class="ttdoc">Normalized UVs for a texture of texW×texH (usually page size).</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00274">SpineAtlas.cpp:274</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a4f29b9da39f305f3cce90c264860a116"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a4f29b9da39f305f3cce90c264860a116">eve::animation::SpineAtlas::getRegionOriginalHeight</a></div><div class="ttdeci">int getRegionOriginalHeight(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00254">SpineAtlas.cpp:254</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a5d6445422d5ad4f0b0e85a54a2d1c492"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a5d6445422d5ad4f0b0e85a54a2d1c492">eve::animation::SpineAtlas::getRegionOffsetY</a></div><div class="ttdeci">int getRegionOffsetY(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00264">SpineAtlas.cpp:264</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a6b1f07f277540dd458ef7bf694cfece2"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a6b1f07f277540dd458ef7bf694cfece2">eve::animation::SpineAtlas::getRegionRotate</a></div><div class="ttdeci">bool getRegionRotate(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00269">SpineAtlas.cpp:269</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a6e83843216aa283d0aff82957cf7610e"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a6e83843216aa283d0aff82957cf7610e">eve::animation::SpineAtlas::operator=</a></div><div class="ttdeci">SpineAtlas &amp; operator=(const SpineAtlas &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a73318066c0825f2f069b182944c4b957"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a73318066c0825f2f069b182944c4b957">eve::animation::SpineAtlas::getPageCount</a></div><div class="ttdeci">int getPageCount() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8h_source.html#l00027">SpineAtlas.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a790ff57f83b72a200832c67176430915"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a790ff57f83b72a200832c67176430915">eve::animation::SpineAtlas::getRegionPage</a></div><div class="ttdeci">int getRegionPage(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00224">SpineAtlas.cpp:224</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a90a752c02a208e447c2a160c48f5d4a1"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a90a752c02a208e447c2a160c48f5d4a1">eve::animation::SpineAtlas::getRegionWidth</a></div><div class="ttdeci">int getRegionWidth(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00239">SpineAtlas.cpp:239</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_a984c510b78b0d0531e41d41352f1c594"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#a984c510b78b0d0531e41d41352f1c594">eve::animation::SpineAtlas::getRegionX</a></div><div class="ttdeci">int getRegionX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00229">SpineAtlas.cpp:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_aa1f100a5bbc73ed73b31cbc5de47f6f2"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#aa1f100a5bbc73ed73b31cbc5de47f6f2">eve::animation::SpineAtlas::SpineAtlas</a></div><div class="ttdeci">SpineAtlas()=default</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_aa90c52bd99df434cb4422c19bc119d3d"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#aa90c52bd99df434cb4422c19bc119d3d">eve::animation::SpineAtlas::getRegionHeight</a></div><div class="ttdeci">int getRegionHeight(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00244">SpineAtlas.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_aabf1896cd49f2e89f067aa5b0bf1c773"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#aabf1896cd49f2e89f067aa5b0bf1c773">eve::animation::SpineAtlas::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00073">SpineAtlas.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_ab14310e387befdc151a9949304c94ae8"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#ab14310e387befdc151a9949304c94ae8">eve::animation::SpineAtlas::getRegionCount</a></div><div class="ttdeci">int getRegionCount() const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8h_source.html#l00032">SpineAtlas.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_ab64a8548db789979c1d44e57b5c59c36"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#ab64a8548db789979c1d44e57b5c59c36">eve::animation::SpineAtlas::findRegion</a></div><div class="ttdeci">int findRegion(const std::string &amp;name) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00214">SpineAtlas.cpp:214</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_ad211bdad72dc9aa8cc63ea2375c30210"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#ad211bdad72dc9aa8cc63ea2375c30210">eve::animation::SpineAtlas::loadFromText</a></div><div class="ttdeci">bool loadFromText(const std::string &amp;text, std::string *error=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00102">SpineAtlas.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_aee801f52cf3d6849271f24de770714cf"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#aee801f52cf3d6849271f24de770714cf">eve::animation::SpineAtlas::getRegionOffsetX</a></div><div class="ttdeci">int getRegionOffsetX(int index) const</div><div class="ttdef"><b>Definition</b> <a href="SpineAtlas_8cpp_source.html#l00259">SpineAtlas.cpp:259</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1SpineAtlas_html_af7c3b16a1b20f4085b4bb477bd435b5f"><div class="ttname"><a href="classeve_1_1animation_1_1SpineAtlas.html#af7c3b16a1b20f4085b4bb477bd435b5f">eve::animation::SpineAtlas::~SpineAtlas</a></div><div class="ttdeci">~SpineAtlas()=default</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00051">Animation.cpp:51</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

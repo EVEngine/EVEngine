@@ -1,0 +1,1332 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt; 模板类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1VersionedRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt; 模板类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A registry whose live values are qualified by a monotonically increasing runtime generation.  
+ <a href="classeve_1_1VersionedRegistry.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1VersionedRegistry_1_1Entry.html">Entry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One stored key slot; absent value means the slot is a tombstone.  <a href="structeve_1_1VersionedRegistry_1_1Entry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1VersionedRegistry_1_1Event.html">Event</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One canonical mutation event retained by the registry.  <a href="structeve_1_1VersionedRegistry_1_1Event.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified identity of one live incarnation or tombstone.  <a href="structeve_1_1VersionedRegistry_1_1Handle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1VersionedRegistry_1_1State.html">State</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning state image used for transactional snapshot/restore.  <a href="structeve_1_1VersionedRegistry_1_1State.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:ae8f2f063aaa73877a21282d09522ec3c" id="r_ae8f2f063aaa73877a21282d09522ec3c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#ae8f2f063aaa73877a21282d09522ec3c">GenerationProjector</a> = std::function&lt; void(<a class="el" href="classeve_1_1Value.html">Value</a> &amp;, <a class="el" href="namespaceeve.html#a20904870079a4f75791c4511a6954313">Generation</a>)&gt;</td></tr>
+<tr class="memdesc:ae8f2f063aaa73877a21282d09522ec3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback used to keep a legacy value field as a read-only projection of generation.  <br /></td></tr>
+<tr class="separator:ae8f2f063aaa73877a21282d09522ec3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab399f72e86b48f54179994e5767bf05e" id="r_ab399f72e86b48f54179994e5767bf05e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#ab399f72e86b48f54179994e5767bf05e">ChangeCallback</a> = std::function&lt; void(const <a class="el" href="structeve_1_1VersionedRegistry_1_1Event.html">Event</a> &amp;)&gt;</td></tr>
+<tr class="separator:ab399f72e86b48f54179994e5767bf05e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae0c6d1429eb0cad459ed9385822298b1" id="r_ae0c6d1429eb0cad459ed9385822298b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#ae0c6d1429eb0cad459ed9385822298b1">VersionedRegistry</a> (<a class="el" href="classeve_1_1VersionedRegistry.html#ae8f2f063aaa73877a21282d09522ec3c">GenerationProjector</a> generationProjector={})</td></tr>
+<tr class="memdesc:ae0c6d1429eb0cad459ed9385822298b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an empty registry.  <br /></td></tr>
+<tr class="separator:ae0c6d1429eb0cad459ed9385822298b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53e96b65bbec1f2ee4677baa881edb2a" id="r_a53e96b65bbec1f2ee4677baa881edb2a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a53e96b65bbec1f2ee4677baa881edb2a">VersionedRegistry</a> (const <a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> &amp;)=delete</td></tr>
+<tr class="separator:a53e96b65bbec1f2ee4677baa881edb2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95aecc0839cb6a94c6d6af72567f3183" id="r_a95aecc0839cb6a94c6d6af72567f3183"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a95aecc0839cb6a94c6d6af72567f3183">operator=</a> (const <a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> &amp;)=delete</td></tr>
+<tr class="separator:a95aecc0839cb6a94c6d6af72567f3183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa07b23fbf24c825f6825942f56076a1b" id="r_aa07b23fbf24c825f6825942f56076a1b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#aa07b23fbf24c825f6825942f56076a1b">VersionedRegistry</a> (<a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:aa07b23fbf24c825f6825942f56076a1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4376c11ecb43ae4aae22d79da7d34b2c" id="r_a4376c11ecb43ae4aae22d79da7d34b2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a4376c11ecb43ae4aae22d79da7d34b2c">operator=</a> (<a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a4376c11ecb43ae4aae22d79da7d34b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fb3e1cc8b82ed7a3dc66e143b3587d2" id="r_a9fb3e1cc8b82ed7a3dc66e143b3587d2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a9fb3e1cc8b82ed7a3dc66e143b3587d2">~VersionedRegistry</a> ()=default</td></tr>
+<tr class="separator:a9fb3e1cc8b82ed7a3dc66e143b3587d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa238ebf70c8452f2353e558f99602fb3" id="r_aa238ebf70c8452f2353e558f99602fb3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#aa238ebf70c8452f2353e558f99602fb3">insert</a> (Key <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, EventData data={}, std::string label={})</td></tr>
+<tr class="memdesc:aa238ebf70c8452f2353e558f99602fb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a new live value, or revives a tombstoned key.  <br /></td></tr>
+<tr class="separator:aa238ebf70c8452f2353e558f99602fb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf15fd8c4cd91dc5ac84fa6219d6000" id="r_a4cf15fd8c4cd91dc5ac84fa6219d6000"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a4cf15fd8c4cd91dc5ac84fa6219d6000">replace</a> (Key <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>, EventData data={}, std::string label={})</td></tr>
+<tr class="memdesc:a4cf15fd8c4cd91dc5ac84fa6219d6000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces an existing live value and invalidates its old handle.  <br /></td></tr>
+<tr class="separator:a4cf15fd8c4cd91dc5ac84fa6219d6000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3782919681eb6657c45de3f13f2f4d9" id="r_ab3782919681eb6657c45de3f13f2f4d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#ab3782919681eb6657c45de3f13f2f4d9">remove</a> (Key <a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, EventData data={}, std::string label={})</td></tr>
+<tr class="memdesc:ab3782919681eb6657c45de3f13f2f4d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a live value while retaining its generation tombstone.  <br /></td></tr>
+<tr class="separator:ab3782919681eb6657c45de3f13f2f4d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13221a3179dbb8df99c9c6b24c172b2d" id="r_a13221a3179dbb8df99c9c6b24c172b2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">ResultRef</a>&lt; const <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a13221a3179dbb8df99c9c6b24c172b2d">resolve</a> (const Key &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:a13221a3179dbb8df99c9c6b24c172b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a live key to a borrowed value.  <br /></td></tr>
+<tr class="separator:a13221a3179dbb8df99c9c6b24c172b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae36766fda685f344825a547030838476" id="r_ae36766fda685f344825a547030838476"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">ResultRef</a>&lt; const <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#ae36766fda685f344825a547030838476">resolve</a> (const <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &amp;<a class="el" href="classeve_1_1VersionedRegistry.html#a7615df36368e68a0c224fec7ae63013e">handle</a>) const</td></tr>
+<tr class="memdesc:ae36766fda685f344825a547030838476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a generation-qualified handle.  <br /></td></tr>
+<tr class="separator:ae36766fda685f344825a547030838476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7615df36368e68a0c224fec7ae63013e" id="r_a7615df36368e68a0c224fec7ae63013e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a7615df36368e68a0c224fec7ae63013e">handle</a> (const Key &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:a7615df36368e68a0c224fec7ae63013e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current live handle for a key.  <br /></td></tr>
+<tr class="separator:a7615df36368e68a0c224fec7ae63013e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86a66c6b80fbd1928655dfc11f59819c" id="r_a86a66c6b80fbd1928655dfc11f59819c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve.html#a20904870079a4f75791c4511a6954313">Generation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a86a66c6b80fbd1928655dfc11f59819c">generationOf</a> (const Key &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const</td></tr>
+<tr class="memdesc:a86a66c6b80fbd1928655dfc11f59819c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the latest generation for a live key or tombstone.  <br /></td></tr>
+<tr class="separator:a86a66c6b80fbd1928655dfc11f59819c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a898a1b4a2b71eccbdf8be4c320bf762a" id="r_a898a1b4a2b71eccbdf8be4c320bf762a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a898a1b4a2b71eccbdf8be4c320bf762a">contains</a> (const Key &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const noexcept</td></tr>
+<tr class="memdesc:a898a1b4a2b71eccbdf8be4c320bf762a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a key currently has a live value.  <br /></td></tr>
+<tr class="separator:a898a1b4a2b71eccbdf8be4c320bf762a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42b631e242469889e7f9750ecdb30712" id="r_a42b631e242469889e7f9750ecdb30712"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a42b631e242469889e7f9750ecdb30712">isTombstone</a> (const Key &amp;<a class="el" href="PointGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>) const noexcept</td></tr>
+<tr class="memdesc:a42b631e242469889e7f9750ecdb30712"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a key is retained as a removal tombstone.  <br /></td></tr>
+<tr class="separator:a42b631e242469889e7f9750ecdb30712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bd1a837b10191978fbca71bb9bfe315" id="r_a4bd1a837b10191978fbca71bb9bfe315"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a4bd1a837b10191978fbca71bb9bfe315">isStale</a> (const <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &amp;<a class="el" href="classeve_1_1VersionedRegistry.html#a7615df36368e68a0c224fec7ae63013e">handle</a>) const noexcept</td></tr>
+<tr class="memdesc:a4bd1a837b10191978fbca71bb9bfe315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true when a handle cannot resolve to its exact live incarnation.  <br /></td></tr>
+<tr class="separator:a4bd1a837b10191978fbca71bb9bfe315"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ab20ad4a4b7ee78fff5c0bd14988b0a" id="r_a3ab20ad4a4b7ee78fff5c0bd14988b0a"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a3ab20ad4a4b7ee78fff5c0bd14988b0a">size</a> () const noexcept</td></tr>
+<tr class="memdesc:a3ab20ad4a4b7ee78fff5c0bd14988b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of live values, excluding tombstones.  <br /></td></tr>
+<tr class="separator:a3ab20ad4a4b7ee78fff5c0bd14988b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc468d1cc090903bf03449a027a07abc" id="r_abc468d1cc090903bf03449a027a07abc"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#abc468d1cc090903bf03449a027a07abc">tombstoneCount</a> () const noexcept</td></tr>
+<tr class="memdesc:abc468d1cc090903bf03449a027a07abc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of retained tombstone slots.  <br /></td></tr>
+<tr class="separator:abc468d1cc090903bf03449a027a07abc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7838e3c2dc80355e59e356cb113203e1" id="r_a7838e3c2dc80355e59e356cb113203e1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a7838e3c2dc80355e59e356cb113203e1">at</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a7838e3c2dc80355e59e356cb113203e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a live value by deterministic key order.  <br /></td></tr>
+<tr class="separator:a7838e3c2dc80355e59e356cb113203e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a009e02f62275f0e27c0420d733c4e44d" id="r_a009e02f62275f0e27c0420d733c4e44d"><td class="memItemLeft" align="right" valign="top">const Key *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a009e02f62275f0e27c0420d733c4e44d">keyAt</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:a009e02f62275f0e27c0420d733c4e44d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the key for a live enumeration index, or nullptr.  <br /></td></tr>
+<tr class="separator:a009e02f62275f0e27c0420d733c4e44d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb6247b41d63b83354d2ffd120dfa60d" id="r_acb6247b41d63b83354d2ffd120dfa60d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1VersionedRegistry_1_1Event.html">Event</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#acb6247b41d63b83354d2ffd120dfa60d">eventAt</a> (std::size_t <a class="el" href="Production_8cpp.html#a750b5d744c39a06bfb13e6eb010e35d0">index</a>) const noexcept</td></tr>
+<tr class="memdesc:acb6247b41d63b83354d2ffd120dfa60d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a retained event by insertion sequence order, or nullptr.  <br /></td></tr>
+<tr class="separator:acb6247b41d63b83354d2ffd120dfa60d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae13d569f4c614425168c6a30c4f4012f" id="r_ae13d569f4c614425168c6a30c4f4012f"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#ae13d569f4c614425168c6a30c4f4012f">eventCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ae13d569f4c614425168c6a30c4f4012f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of retained mutation events.  <br /></td></tr>
+<tr class="separator:ae13d569f4c614425168c6a30c4f4012f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c395bbed8f2ffe27afab81bee4f578" id="r_a66c395bbed8f2ffe27afab81bee4f578"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a66c395bbed8f2ffe27afab81bee4f578">clearEvents</a> () noexcept</td></tr>
+<tr class="memdesc:a66c395bbed8f2ffe27afab81bee4f578"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears retained events without changing entries or sequence monotonicity.  <br /></td></tr>
+<tr class="separator:a66c395bbed8f2ffe27afab81bee4f578"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad95a95b53d7312d6d694e1b2a8bdf718" id="r_ad95a95b53d7312d6d694e1b2a8bdf718"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1VersionedRegistry_1_1State.html">State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#ad95a95b53d7312d6d694e1b2a8bdf718">snapshotState</a> () const</td></tr>
+<tr class="memdesc:ad95a95b53d7312d6d694e1b2a8bdf718"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes an owning copy of live entries, tombstones and event history.  <br /></td></tr>
+<tr class="separator:ad95a95b53d7312d6d694e1b2a8bdf718"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76da89af45a8a347ae313b4fc3345af9" id="r_a76da89af45a8a347ae313b4fc3345af9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a76da89af45a8a347ae313b4fc3345af9">restoreState</a> (<a class="el" href="structeve_1_1VersionedRegistry_1_1State.html">State</a> candidate)</td></tr>
+<tr class="memdesc:a76da89af45a8a347ae313b4fc3345af9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transactionally replaces all registry state from an owning image.  <br /></td></tr>
+<tr class="separator:a76da89af45a8a347ae313b4fc3345af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eab035fa720672424f487ac36cd47ee" id="r_a7eab035fa720672424f487ac36cd47ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Subscription.html">Subscription</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1VersionedRegistry.html#a7eab035fa720672424f487ac36cd47ee">subscribe</a> (<a class="el" href="classeve_1_1VersionedRegistry.html#ab399f72e86b48f54179994e5767bf05e">ChangeCallback</a> callback)</td></tr>
+<tr class="memdesc:a7eab035fa720672424f487ac36cd47ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscribes to successful insert, replace and remove events.  <br /></td></tr>
+<tr class="separator:a7eab035fa720672424f487ac36cd47ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;class Key, class <a class="el" href="classeve_1_1Value.html">Value</a>, class EventData = std::monostate, class Compare = std::less&lt;Key&gt;&gt;<br />
+class eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;</div><p>A registry whose live values are qualified by a monotonically increasing runtime generation. </p>
+<p><code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a></code> is the live domain value. <code>EventData</code> is an optional, domain-owned immutable projection payload for event history; it is not interpreted by this class. The registry owns all live values, tombstones and canonical mutation events. Consumers must not maintain a second mutable map.</p>
+<p>The class is owner-thread affine, matching <code><a class="el" href="classeve_1_1Observer.html" title="Thread-affine callback registry with mutation-safe dispatch.">eve::Observer</a></code>. It is not an ECS container and does not perform structural mutation deferral.</p>
+<p>Mutations have the strong state guarantee: all fallible value, event and generation-projection work is prepared in a detached <a class="el" href="structeve_1_1VersionedRegistry_1_1State.html" title="Owning state image used for transactional snapshot/restore.">State</a> and committed with a nothrow swap. <a class="el" href="classeve_1_1Observer.html" title="Thread-affine callback registry with mutation-safe dispatch.">Observer</a> dispatch happens after commit. If dispatch throws, the mutation remains applied and the <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> is successful with an Applied status and a CallbackFailure warning; the committed state is never rolled back.</p>
+<dl class="tparams"><dt>模板参数</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Key</td><td>Stable registry key. It must be copyable and orderable through <code>Compare</code>. </td></tr>
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a></td><td>Stored domain value. It must be copyable when <a class="el" href="structeve_1_1VersionedRegistry_1_1State.html" title="Owning state image used for transactional snapshot/restore.">State</a> snapshots are copied. </td></tr>
+    <tr><td class="paramname">EventData</td><td>Domain event projection data; defaults to no extra data. </td></tr>
+    <tr><td class="paramname">Compare</td><td>Strict weak ordering for keys; its <a class="el" href="structeve_1_1VersionedRegistry_1_1State.html" title="Owning state image used for transactional snapshot/restore.">State</a> must be nothrow-swappable so the commit boundary cannot throw. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00094">94</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="ab399f72e86b48f54179994e5767bf05e" name="ab399f72e86b48f54179994e5767bf05e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab399f72e86b48f54179994e5767bf05e">&#9670;&#160;</a></span>ChangeCallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::ChangeCallback =  std::function&lt;void(const <a class="el" href="structeve_1_1VersionedRegistry_1_1Event.html">Event</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00154">154</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8f2f063aaa73877a21282d09522ec3c" name="ae8f2f063aaa73877a21282d09522ec3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8f2f063aaa73877a21282d09522ec3c">&#9670;&#160;</a></span>GenerationProjector</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::GenerationProjector =  std::function&lt;void(<a class="el" href="classeve_1_1Value.html">Value</a>&amp;, <a class="el" href="namespaceeve.html#a20904870079a4f75791c4511a6954313">Generation</a>)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Callback used to keep a legacy value field as a read-only projection of generation. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00153">153</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae0c6d1429eb0cad459ed9385822298b1" name="ae0c6d1429eb0cad459ed9385822298b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0c6d1429eb0cad459ed9385822298b1">&#9670;&#160;</a></span>VersionedRegistry() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::VersionedRegistry </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1VersionedRegistry.html#ae8f2f063aaa73877a21282d09522ec3c">GenerationProjector</a>&#160;</td>
+          <td class="paramname"><em>generationProjector</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an empty registry. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">generationProjector</td><td>Optional compatibility projection invoked before a value enters storage and after restore. It must not change domain identity or schema version. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53e96b65bbec1f2ee4677baa881edb2a" name="a53e96b65bbec1f2ee4677baa881edb2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53e96b65bbec1f2ee4677baa881edb2a">&#9670;&#160;</a></span>VersionedRegistry() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::VersionedRegistry </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa07b23fbf24c825f6825942f56076a1b" name="aa07b23fbf24c825f6825942f56076a1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa07b23fbf24c825f6825942f56076a1b">&#9670;&#160;</a></span>VersionedRegistry() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::VersionedRegistry </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9fb3e1cc8b82ed7a3dc66e143b3587d2" name="a9fb3e1cc8b82ed7a3dc66e143b3587d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fb3e1cc8b82ed7a3dc66e143b3587d2">&#9670;&#160;</a></span>~VersionedRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::~<a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7838e3c2dc80355e59e356cb113203e1" name="a7838e3c2dc80355e59e356cb113203e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7838e3c2dc80355e59e356cb113203e1">&#9670;&#160;</a></span>at()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">Value</a> * <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::at </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns a live value by deterministic key order. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Zero-based index among live entries; out of range returns nullptr. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Borrowed value, valid until the next mutation/restore. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>This is a read-only compatibility enumeration primitive; use the checked resolve operation for key/handle access. @ownership Borrowed; the registry owns the returned value. @nullable Yes when <code>index</code> is out of range. @lifetime Valid until the next mutation or restore, and only while this registry lives. @thread Owner-thread affine; no concurrent mutation is supported. @reentrancy Does not invoke observers. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Definitions_8cpp_source.html#l00368">eve::definitions::DefinitionRegistry::at()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00363">eve::policyregistry::PolicyRegistry::at()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00368">eve::policyregistry::PolicyRegistry::atDomain()</a>, <a class="el" href="Definitions_8cpp_source.html#l00373">eve::definitions::DefinitionRegistry::atType()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00336">eve::policyregistry::PolicyRegistry::select()</a>.</p>
+
+</div>
+</div>
+<a id="a66c395bbed8f2ffe27afab81bee4f578" name="a66c395bbed8f2ffe27afab81bee4f578"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c395bbed8f2ffe27afab81bee4f578">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears retained events without changing entries or sequence monotonicity. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00362">362</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00137">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::events</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Definitions_8cpp_source.html#l00398">eve::definitions::DefinitionRegistry::clearEvents()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00393">eve::policyregistry::PolicyRegistry::clearEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a898a1b4a2b71eccbdf8be4c320bf762a" name="a898a1b4a2b71eccbdf8be4c320bf762a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a898a1b4a2b71eccbdf8be4c320bf762a">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether a key currently has a live value. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="acb6247b41d63b83354d2ffd120dfa60d" name="acb6247b41d63b83354d2ffd120dfa60d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb6247b41d63b83354d2ffd120dfa60d">&#9670;&#160;</a></span>eventAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1VersionedRegistry_1_1Event.html">Event</a> * <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::eventAt </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns a retained event by insertion sequence order, or nullptr. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer into registry state; nullptr when <code>index</code> is out of range. @ownership Borrowed; the registry owns the event. @nullable Yes. @lifetime Valid until the next mutation or restore, and only while this registry lives. @thread Owner-thread affine; no concurrent mutation is supported. @reentrancy Does not invoke observers. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00354">354</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00137">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::events</a> , 以及 <a class="el" href="Production_8cpp_source.html#l00037">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Definitions_8cpp_source.html#l00387">eve::definitions::DefinitionRegistry::eventAt()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00382">eve::policyregistry::PolicyRegistry::eventAt()</a>.</p>
+
+</div>
+</div>
+<a id="ae13d569f4c614425168c6a30c4f4012f" name="ae13d569f4c614425168c6a30c4f4012f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae13d569f4c614425168c6a30c4f4012f">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of retained mutation events. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00359">359</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00137">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::events</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Definitions_8cpp_source.html#l00387">eve::definitions::DefinitionRegistry::eventAt()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00382">eve::policyregistry::PolicyRegistry::eventAt()</a>, <a class="el" href="Definitions_8cpp_source.html#l00385">eve::definitions::DefinitionRegistry::eventCount()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00380">eve::policyregistry::PolicyRegistry::eventCount()</a>, <a class="el" href="Definitions_8cpp_source.html#l00404">eve::definitions::DefinitionRegistry::snapshotJson()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00399">eve::policyregistry::PolicyRegistry::snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a86a66c6b80fbd1928655dfc11f59819c" name="a86a66c6b80fbd1928655dfc11f59819c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86a66c6b80fbd1928655dfc11f59819c">&#9670;&#160;</a></span>generationOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve.html#a20904870079a4f75791c4511a6954313">Generation</a> &gt; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::generationOf </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the latest generation for a live key or tombstone. </p>
+<dl class="section remark"><dt>备注</dt><dd>This is deliberately not a SchemaVersion. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00266">266</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00324">eve::policyregistry::PolicyRegistry::generationOf()</a> , 以及 <a class="el" href="Definitions_8cpp_source.html#l00340">eve::definitions::DefinitionRegistry::generationOf()</a>.</p>
+
+</div>
+</div>
+<a id="a7615df36368e68a0c224fec7ae63013e" name="a7615df36368e68a0c224fec7ae63013e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7615df36368e68a0c224fec7ae63013e">&#9670;&#160;</a></span>handle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &gt; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::handle </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the current live handle for a key. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00103">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::Handle::generation</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00277">eve::policyregistry::PolicyRegistry::enable()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00318">eve::policyregistry::PolicyRegistry::handle()</a> , 以及 <a class="el" href="Definitions_8cpp_source.html#l00334">eve::definitions::DefinitionRegistry::handle()</a>.</p>
+
+</div>
+</div>
+<a id="aa238ebf70c8452f2353e558f99602fb3" name="aa238ebf70c8452f2353e558f99602fb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa238ebf70c8452f2353e558f99602fb3">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &gt; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::insert </td>
+          <td>(</td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EventData&#160;</td>
+          <td class="paramname"><em>data</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inserts a new live value, or revives a tombstoned key. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Stable key to insert. </td></tr>
+    <tr><td class="paramname">value</td><td>Owning value to store. </td></tr>
+    <tr><td class="paramname">data</td><td>Domain data retained with the mutation event. </td></tr>
+    <tr><td class="paramname">label</td><td>Optional domain event label; the operation remains Insert. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A handle for the new incarnation, or Conflict/Failed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00179">179</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00218">eve::policyregistry::PolicyRegistry::insert()</a> , 以及 <a class="el" href="Definitions_8cpp_source.html#l00266">eve::definitions::DefinitionRegistry::insert()</a>.</p>
+
+</div>
+</div>
+<a id="a4bd1a837b10191978fbca71bb9bfe315" name="a4bd1a837b10191978fbca71bb9bfe315"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bd1a837b10191978fbca71bb9bfe315">&#9670;&#160;</a></span>isStale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::isStale </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true when a handle cannot resolve to its exact live incarnation. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00286">286</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a> , 以及 <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>.</p>
+
+</div>
+</div>
+<a id="a42b631e242469889e7f9750ecdb30712" name="a42b631e242469889e7f9750ecdb30712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42b631e242469889e7f9750ecdb30712">&#9670;&#160;</a></span>isTombstone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::isTombstone </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether a key is retained as a removal tombstone. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<a id="a009e02f62275f0e27c0420d733c4e44d" name="a009e02f62275f0e27c0420d733c4e44d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a009e02f62275f0e27c0420d733c4e44d">&#9670;&#160;</a></span>keyAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Key * <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::keyAt </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the key for a live enumeration index, or nullptr. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer into registry state; nullptr when <code>index</code> is out of range. @ownership Borrowed; the registry owns the key. @nullable Yes. @lifetime Valid until the next mutation or restore, and only while this registry lives. @thread Owner-thread affine; no concurrent mutation is supported. @reentrancy Does not invoke observers. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00337">337</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a>, <a class="el" href="Production_8cpp_source.html#l00037">index</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00368">eve::policyregistry::PolicyRegistry::atDomain()</a>, <a class="el" href="Definitions_8cpp_source.html#l00373">eve::definitions::DefinitionRegistry::atType()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00353">eve::policyregistry::PolicyRegistry::countDomain()</a>, <a class="el" href="Definitions_8cpp_source.html#l00358">eve::definitions::DefinitionRegistry::countType()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00336">eve::policyregistry::PolicyRegistry::select()</a>.</p>
+
+</div>
+</div>
+<a id="a95aecc0839cb6a94c6d6af72567f3183" name="a95aecc0839cb6a94c6d6af72567f3183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95aecc0839cb6a94c6d6af72567f3183">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> &amp; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4376c11ecb43ae4aae22d79da7d34b2c" name="a4376c11ecb43ae4aae22d79da7d34b2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4376c11ecb43ae4aae22d79da7d34b2c">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a> &amp; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1VersionedRegistry.html">VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab3782919681eb6657c45de3f13f2f4d9" name="ab3782919681eb6657c45de3f13f2f4d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3782919681eb6657c45de3f13f2f4d9">&#9670;&#160;</a></span>remove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &gt; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::remove </td>
+          <td>(</td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EventData&#160;</td>
+          <td class="paramname"><em>data</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes a live value while retaining its generation tombstone. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Key to remove. </td></tr>
+    <tr><td class="paramname">data</td><td>Domain data describing the removed value. </td></tr>
+    <tr><td class="paramname">label</td><td>Optional domain event label; the operation remains Remove. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A tombstone handle, or NotFound/Failed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00258">eve::policyregistry::PolicyRegistry::remove()</a> , 以及 <a class="el" href="Definitions_8cpp_source.html#l00304">eve::definitions::DefinitionRegistry::remove()</a>.</p>
+
+</div>
+</div>
+<a id="a4cf15fd8c4cd91dc5ac84fa6219d6000" name="a4cf15fd8c4cd91dc5ac84fa6219d6000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf15fd8c4cd91dc5ac84fa6219d6000">&#9670;&#160;</a></span>replace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &gt; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::replace </td>
+          <td>(</td>
+          <td class="paramtype">Key&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EventData&#160;</td>
+          <td class="paramname"><em>data</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>label</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replaces an existing live value and invalidates its old handle. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Stable registry key to replace. </td></tr>
+    <tr><td class="paramname">value</td><td>Owning replacement value. </td></tr>
+    <tr><td class="paramname">data</td><td>Domain data retained with the mutation event. </td></tr>
+    <tr><td class="paramname">label</td><td>Optional domain event label; the operation remains Replace. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>A handle for the replacement incarnation, or NotFound/Failed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00277">eve::policyregistry::PolicyRegistry::enable()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00238">eve::policyregistry::PolicyRegistry::replace()</a> , 以及 <a class="el" href="Definitions_8cpp_source.html#l00285">eve::definitions::DefinitionRegistry::replace()</a>.</p>
+
+</div>
+</div>
+<a id="ae36766fda685f344825a547030838476" name="ae36766fda685f344825a547030838476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae36766fda685f344825a547030838476">&#9670;&#160;</a></span>resolve() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">ResultRef</a>&lt; const <a class="el" href="classeve_1_1Value.html">Value</a> &gt; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::resolve </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1VersionedRegistry_1_1Handle.html">Handle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves a generation-qualified handle. </p>
+<dl class="section return"><dt>返回</dt><dd>A borrowed reference for the exact live incarnation, or StaleHandle/NotFound. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a>, <a class="el" href="Graphics_8cpp_source.html#l00079">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a13221a3179dbb8df99c9c6b24c172b2d" name="a13221a3179dbb8df99c9c6b24c172b2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13221a3179dbb8df99c9c6b24c172b2d">&#9670;&#160;</a></span>resolve() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#a510aff326252c231bf92f85e6d687fc9">ResultRef</a>&lt; const <a class="el" href="classeve_1_1Value.html">Value</a> &gt; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::resolve </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves a live key to a borrowed value. </p>
+<dl class="section return"><dt>返回</dt><dd>A borrowed reference valid until the next mutation/restore, or NotFound when the key is absent or tombstoned. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00231">231</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PolicyRegistry_8cpp_source.html#l00277">eve::policyregistry::PolicyRegistry::enable()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00258">eve::policyregistry::PolicyRegistry::remove()</a>, <a class="el" href="Definitions_8cpp_source.html#l00304">eve::definitions::DefinitionRegistry::remove()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00305">eve::policyregistry::PolicyRegistry::resolve()</a>, <a class="el" href="Definitions_8cpp_source.html#l00322">eve::definitions::DefinitionRegistry::resolve()</a>, <a class="el" href="Definitions_8cpp_source.html#l00328">eve::definitions::DefinitionRegistry::resolveHandle()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00312">eve::policyregistry::PolicyRegistry::resolveHandle()</a>.</p>
+
+</div>
+</div>
+<a id="a76da89af45a8a347ae313b4fc3345af9" name="a76da89af45a8a347ae313b4fc3345af9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76da89af45a8a347ae313b4fc3345af9">&#9670;&#160;</a></span>restoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::restoreState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1VersionedRegistry_1_1State.html">State</a>&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transactionally replaces all registry state from an owning image. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td><a class="el" href="structeve_1_1VersionedRegistry_1_1State.html" title="Owning state image used for transactional snapshot/restore.">State</a> to validate and install. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or ParseError/Failed without changing current state. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Generation projection is applied only to the candidate. If it throws, the current state remains installed and the exception is returned as a Failed diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00375">375</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00137">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::events</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="StrongUint64_8h_source.html#l00027">eve::detail::StrongUint64&lt; Tag &gt;::isZero()</a>, <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00138">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::nextEventSequence</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="namespaceeve.html#a8b7e3cdfd1c8bcb45dee8b4c2cbbc7dfa1063e38cb53d94d386f21227fcd84717">eve::Remove</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="VersionedRegistry_8h_source.html#l00141">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::swap()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Definitions_8cpp_source.html#l00454">eve::definitions::DefinitionRegistry::restoreJson()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00454">eve::policyregistry::PolicyRegistry::restoreJson()</a>.</p>
+
+</div>
+</div>
+<a id="a3ab20ad4a4b7ee78fff5c0bd14988b0a" name="a3ab20ad4a4b7ee78fff5c0bd14988b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ab20ad4a4b7ee78fff5c0bd14988b0a">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of live values, excluding tombstones. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00293">293</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Definitions_8cpp_source.html#l00356">eve::definitions::DefinitionRegistry::size()</a>, <a class="el" href="PolicyRegistry_8cpp_source.html#l00351">eve::policyregistry::PolicyRegistry::size()</a>, <a class="el" href="Definitions_8cpp_source.html#l00404">eve::definitions::DefinitionRegistry::snapshotJson()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00399">eve::policyregistry::PolicyRegistry::snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="ad95a95b53d7312d6d694e1b2a8bdf718" name="ad95a95b53d7312d6d694e1b2a8bdf718"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad95a95b53d7312d6d694e1b2a8bdf718">&#9670;&#160;</a></span>snapshotState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1VersionedRegistry_1_1State.html">State</a> <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::snapshotState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Takes an owning copy of live entries, tombstones and event history. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Definitions_8cpp_source.html#l00404">eve::definitions::DefinitionRegistry::snapshotJson()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00399">eve::policyregistry::PolicyRegistry::snapshotJson()</a>.</p>
+
+</div>
+</div>
+<a id="a7eab035fa720672424f487ac36cd47ee" name="a7eab035fa720672424f487ac36cd47ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eab035fa720672424f487ac36cd47ee">&#9670;&#160;</a></span>subscribe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Subscription.html">Subscription</a> <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::subscribe </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1VersionedRegistry.html#ab399f72e86b48f54179994e5767bf05e">ChangeCallback</a>&#160;</td>
+          <td class="paramname"><em>callback</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Subscribes to successful insert, replace and remove events. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">callback</td><td>Synchronously invoked after a successful state commit. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Move-only owner-thread-affine cancellation token. </dd></dl>
+<dl class="section warning"><dt>警告</dt><dd>Callback exceptions are caught by the mutation operation and reported as an Applied <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> with a CallbackFailure warning. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00416">416</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Definitions_8cpp_source.html#l00631">eve::definitions::DefinitionRegistry::subscribe()</a> , 以及 <a class="el" href="PolicyRegistry_8cpp_source.html#l00644">eve::policyregistry::PolicyRegistry::subscribe()</a>.</p>
+
+</div>
+</div>
+<a id="abc468d1cc090903bf03449a027a07abc" name="abc468d1cc090903bf03449a027a07abc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc468d1cc090903bf03449a027a07abc">&#9670;&#160;</a></span>tombstoneCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Key , class <a class="el" href="classeve_1_1Value.html">Value</a> , class EventData  = std::monostate, class Compare  = std::less&lt;Key&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t <a class="el" href="classeve_1_1VersionedRegistry.html">eve::VersionedRegistry</a>&lt; Key, <a class="el" href="classeve_1_1Value.html">Value</a>, EventData, Compare &gt;::tombstoneCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of retained tombstone slots. </p>
+
+<p class="definition">在文件 <a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a> 第 <a class="el" href="VersionedRegistry_8h_source.html#l00301">301</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfImporter_8cpp_source.html#l00146">count</a>, <a class="el" href="VersionedRegistry_8h_source.html#l00136">eve::VersionedRegistry&lt; Key, Value, EventData, Compare &gt;::State::entries</a> , 以及 <a class="el" href="PointGraph_8cpp_source.html#l00017">key</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="VersionedRegistry_8h_source.html">VersionedRegistry.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

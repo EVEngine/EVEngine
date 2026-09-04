@@ -1,0 +1,240 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveConstrictionScour.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CaveConstrictionScour.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CaveConstrictionScour_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="CaveHydrology_8h.html">procgen/algorithms/CaveHydrology.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html">CaveConstrictionScourSite</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a0c578efdbed5ded6dd7c4fbab166b2c7">   11</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a0c578efdbed5ded6dd7c4fbab166b2c7">constriction</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ab0d835cfe48c4bd8aeb806afbd1270e3">   12</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ab0d835cfe48c4bd8aeb806afbd1270e3">poolCenter</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ac5570c20a1350ee64fdb456d9b6db160">   13</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ac5570c20a1350ee64fdb456d9b6db160">tangent</a>{1.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ab86f8e5f1746bb2d9a0a889bab0d3299">   14</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ab86f8e5f1746bb2d9a0a889bab0d3299">lateral</a>{0.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a363b48b4ef26c9d81877c2dad7adfd83">   15</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a363b48b4ef26c9d81877c2dad7adfd83">alongRadius</a>         = 0.2f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a78f342a75e8eec6bd61a87c8821a3938">   16</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a78f342a75e8eec6bd61a87c8821a3938">lateralRadius</a>       = 0.1f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a88c52d229dd3cff36644b23e22e2f567">   17</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a88c52d229dd3cff36644b23e22e2f567">depthRadius</a>         = 0.1f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a109b142381812115c531ea0f0ccebbc4">   18</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a109b142381812115c531ea0f0ccebbc4">constrictionRatio</a>   = 0.f;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a617c2eabcc2dcbc97e914bd00cd3c4cd">   19</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a617c2eabcc2dcbc97e914bd00cd3c4cd">hydraulicIntensity</a>  = 1.f;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a3c7299ead8c55098248a14db795e84f8">   20</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a3c7299ead8c55098248a14db795e84f8">optimalConstriction</a> = 0.35f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ad5ee1465b6396646b1d52a6c9437509c">   21</a></span>    <span class="keywordtype">float</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ad5ee1465b6396646b1d52a6c9437509c">plungingEfficiency</a>  = 0.f;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>};</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html">CaveConstrictionScourSample</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a1bab0acfc3dd08ca0b20107081227f08">   26</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a1bab0acfc3dd08ca0b20107081227f08">erosion</a>            = 0.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#acee5c6b71e33ead00a39d542aa950280">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#acee5c6b71e33ead00a39d542aa950280">bedScour</a>           = 0.f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#aad23e51d2d90c06959d5a9d3df099835">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#aad23e51d2d90c06959d5a9d3df099835">exitWidening</a>       = 0.f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a50943c130a9d60113d71c21e5f228cf2">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a50943c130a9d60113d71c21e5f228cf2">constrictionRatio</a>  = 0.f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a35ffbfc4c56d2ed3d7bb2036683a7b32">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a35ffbfc4c56d2ed3d7bb2036683a7b32">plungingEfficiency</a> = 0.f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#ad0d40661923cec42b38fdf80b9aef4cc">   31</a></span>    <span class="keywordtype">int</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#ad0d40661923cec42b38fdf80b9aef4cc">siteIndex</a>          = -1;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>[[nodiscard]] std::vector&lt;CaveConstrictionScourSite&gt; <a class="code hl_function" href="namespaceeve_1_1procgen.html#ae3103b25e47e9b06248e8591b1a84fef">createCaveConstrictionScourSites</a>(</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">const</span> std::vector&lt;CaveHydrologyPoint&gt;&amp; trunk, <span class="keyword">const</span> std::vector&lt;CaveHydrologyBranch&gt;&amp; branches,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyWeights.html">CaveHydrologyWeights</a>&amp; hydrology);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>[[nodiscard]] <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html">CaveConstrictionScourSample</a> <a class="code hl_function" href="namespaceeve_1_1procgen.html#acd09f7b5876da930b3d5ad1091fc4e7f">sampleCaveConstrictionScour</a>(</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">CaveHydrologyVec3</a> <a class="code hl_variable" href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a>, <span class="keyword">const</span> std::vector&lt;CaveConstrictionScourSite&gt;&amp; sites);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aCaveHydrology_8h_html"><div class="ttname"><a href="CaveHydrology_8h.html">CaveHydrology.h</a></div></div>
+<div class="ttc" id="aRTSSystems_8cpp_html_a8daa8a8d84a130186d9cca31c33e8bae"><div class="ttname"><a href="RTSSystems_8cpp.html#a8daa8a8d84a130186d9cca31c33e8bae">point</a></div><div class="ttdeci">WorldPosition point</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8cpp_source.html#l00080">RTSSystems.cpp:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_acd09f7b5876da930b3d5ad1091fc4e7f"><div class="ttname"><a href="namespaceeve_1_1procgen.html#acd09f7b5876da930b3d5ad1091fc4e7f">eve::procgen::sampleCaveConstrictionScour</a></div><div class="ttdeci">CaveConstrictionScourSample sampleCaveConstrictionScour(CaveHydrologyVec3 point, const std::vector&lt; CaveConstrictionScourSite &gt; &amp;sites)</div><div class="ttdoc">Sample bed scour downstream of a constriction and lateral erosion near the pool exit.</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8cpp_source.html#l00072">CaveConstrictionScour.cpp:72</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ae3103b25e47e9b06248e8591b1a84fef"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ae3103b25e47e9b06248e8591b1a84fef">eve::procgen::createCaveConstrictionScourSites</a></div><div class="ttdeci">std::vector&lt; CaveConstrictionScourSite &gt; createCaveConstrictionScourSites(const std::vector&lt; CaveHydrologyPoint &gt; &amp;trunk, const std::vector&lt; CaveHydrologyBranch &gt; &amp;branches, const CaveHydrologyWeights &amp;hydrology)</div><div class="ttdoc">Derive scour sites from local radius minima in the authoritative hydrology paths.</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8cpp_source.html#l00060">CaveConstrictionScour.cpp:60</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html">eve::procgen::CaveConstrictionScourSample</a></div><div class="ttdoc">Local plunging-flow scour and exit-widening response.</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00025">CaveConstrictionScour.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSample_html_a1bab0acfc3dd08ca0b20107081227f08"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a1bab0acfc3dd08ca0b20107081227f08">eve::procgen::CaveConstrictionScourSample::erosion</a></div><div class="ttdeci">float erosion</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00026">CaveConstrictionScour.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSample_html_a35ffbfc4c56d2ed3d7bb2036683a7b32"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a35ffbfc4c56d2ed3d7bb2036683a7b32">eve::procgen::CaveConstrictionScourSample::plungingEfficiency</a></div><div class="ttdeci">float plungingEfficiency</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00030">CaveConstrictionScour.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSample_html_a50943c130a9d60113d71c21e5f228cf2"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#a50943c130a9d60113d71c21e5f228cf2">eve::procgen::CaveConstrictionScourSample::constrictionRatio</a></div><div class="ttdeci">float constrictionRatio</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00029">CaveConstrictionScour.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSample_html_aad23e51d2d90c06959d5a9d3df099835"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#aad23e51d2d90c06959d5a9d3df099835">eve::procgen::CaveConstrictionScourSample::exitWidening</a></div><div class="ttdeci">float exitWidening</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00028">CaveConstrictionScour.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSample_html_acee5c6b71e33ead00a39d542aa950280"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#acee5c6b71e33ead00a39d542aa950280">eve::procgen::CaveConstrictionScourSample::bedScour</a></div><div class="ttdeci">float bedScour</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00027">CaveConstrictionScour.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSample_html_ad0d40661923cec42b38fdf80b9aef4cc"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSample.html#ad0d40661923cec42b38fdf80b9aef4cc">eve::procgen::CaveConstrictionScourSample::siteIndex</a></div><div class="ttdeci">int siteIndex</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00031">CaveConstrictionScour.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html">eve::procgen::CaveConstrictionScourSite</a></div><div class="ttdoc">One flow-driven constriction-pool-widening sequence derived from passage geometry.</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00010">CaveConstrictionScour.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_a0c578efdbed5ded6dd7c4fbab166b2c7"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a0c578efdbed5ded6dd7c4fbab166b2c7">eve::procgen::CaveConstrictionScourSite::constriction</a></div><div class="ttdeci">CaveHydrologyVec3 constriction</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00011">CaveConstrictionScour.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_a109b142381812115c531ea0f0ccebbc4"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a109b142381812115c531ea0f0ccebbc4">eve::procgen::CaveConstrictionScourSite::constrictionRatio</a></div><div class="ttdeci">float constrictionRatio</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00018">CaveConstrictionScour.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_a363b48b4ef26c9d81877c2dad7adfd83"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a363b48b4ef26c9d81877c2dad7adfd83">eve::procgen::CaveConstrictionScourSite::alongRadius</a></div><div class="ttdeci">float alongRadius</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00015">CaveConstrictionScour.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_a3c7299ead8c55098248a14db795e84f8"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a3c7299ead8c55098248a14db795e84f8">eve::procgen::CaveConstrictionScourSite::optimalConstriction</a></div><div class="ttdeci">float optimalConstriction</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00020">CaveConstrictionScour.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_a617c2eabcc2dcbc97e914bd00cd3c4cd"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a617c2eabcc2dcbc97e914bd00cd3c4cd">eve::procgen::CaveConstrictionScourSite::hydraulicIntensity</a></div><div class="ttdeci">float hydraulicIntensity</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00019">CaveConstrictionScour.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_a78f342a75e8eec6bd61a87c8821a3938"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a78f342a75e8eec6bd61a87c8821a3938">eve::procgen::CaveConstrictionScourSite::lateralRadius</a></div><div class="ttdeci">float lateralRadius</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00016">CaveConstrictionScour.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_a88c52d229dd3cff36644b23e22e2f567"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#a88c52d229dd3cff36644b23e22e2f567">eve::procgen::CaveConstrictionScourSite::depthRadius</a></div><div class="ttdeci">float depthRadius</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00017">CaveConstrictionScour.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_ab0d835cfe48c4bd8aeb806afbd1270e3"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ab0d835cfe48c4bd8aeb806afbd1270e3">eve::procgen::CaveConstrictionScourSite::poolCenter</a></div><div class="ttdeci">CaveHydrologyVec3 poolCenter</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00012">CaveConstrictionScour.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_ab86f8e5f1746bb2d9a0a889bab0d3299"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ab86f8e5f1746bb2d9a0a889bab0d3299">eve::procgen::CaveConstrictionScourSite::lateral</a></div><div class="ttdeci">CaveHydrologyVec3 lateral</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00014">CaveConstrictionScour.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_ac5570c20a1350ee64fdb456d9b6db160"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ac5570c20a1350ee64fdb456d9b6db160">eve::procgen::CaveConstrictionScourSite::tangent</a></div><div class="ttdeci">CaveHydrologyVec3 tangent</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00013">CaveConstrictionScour.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveConstrictionScourSite_html_ad5ee1465b6396646b1d52a6c9437509c"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveConstrictionScourSite.html#ad5ee1465b6396646b1d52a6c9437509c">eve::procgen::CaveConstrictionScourSite::plungingEfficiency</a></div><div class="ttdeci">float plungingEfficiency</div><div class="ttdef"><b>Definition</b> <a href="CaveConstrictionScour_8h_source.html#l00021">CaveConstrictionScour.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html">eve::procgen::CaveHydrologyVec3</a></div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00008">CaveHydrology.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyWeights_html"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyWeights.html">eve::procgen::CaveHydrologyWeights</a></div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00024">CaveHydrology.h:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

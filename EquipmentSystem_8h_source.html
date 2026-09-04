@@ -1,0 +1,227 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/EquipmentSystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EquipmentSystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EquipmentSystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1inventory.html">eve::inventory</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>EquipmentSet;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EquipmentStat.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1EquipmentStat.html">EquipmentStat</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EquipmentStat.html#a5d02069f23e28a87cd7ad5a0f891782e">   29</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EquipmentStat.html#a5d02069f23e28a87cd7ad5a0f891782e">attribute</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EquipmentStat.html#ab7bc9a765ea869f68fce926df738652d">   30</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1EquipmentStat.html#ab7bc9a765ea869f68fce926df738652d">op</a> = <span class="stringliteral">&quot;add&quot;</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EquipmentStat.html#a894641ec80d16fbae318c4e33c0461e1">   31</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1EquipmentStat.html#a894641ec80d16fbae318c4e33c0461e1">value</a> = 0.0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1EquipmentStat.html#a118b7efa6f535eb659a3201556b28f32">   32</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1EquipmentStat.html#a118b7efa6f535eb659a3201556b28f32">priority</a> = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1EquipmentSystem.html">   39</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1EquipmentSystem.html">EquipmentSystem</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EquipmentSystem.html#a71df5d3f5ceb2717afd0c69dfec10c72">registerItemStat</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1EquipmentStat.html">EquipmentStat</a> &amp;stat);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EquipmentSystem.html#a2f8b0658f7b232d2cc4104ab99df5a67">registerItemStatsFromJson</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keyword">const</span> std::string &amp;json);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EquipmentSystem.html#a67ea9e2cd03409a12eeb50ec184c739b">clearItemStats</a>(<span class="keyword">const</span> std::string &amp;<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EquipmentSystem.html#a9c5a88e547ac1f00d9deec36966ae4d8">clearAll</a>();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EquipmentSystem.html#a58f70daec181ae313307d7a7553c9c54">statItemCount</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1EquipmentSystem.html#a4237eccf436daff9756251e21492226d">syncEquipModifiers</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a> *actor, <a class="code hl_class" href="classeve_1_1inventory_1_1EquipmentSet.html">eve::inventory::EquipmentSet</a> *equip);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>};</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ac5758f9b5a368e496aaa5da3aa74dfd6"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00020">ActionTimelineWidget.cpp:20</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1EquipmentSet_html"><div class="ttname"><a href="classeve_1_1inventory_1_1EquipmentSet.html">eve::inventory::EquipmentSet</a></div><div class="ttdef"><b>Definition</b> <a href="Equipment_8h_source.html#l00016">Equipment.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EquipmentSystem_html"><div class="ttname"><a href="classeve_1_1rpg_1_1EquipmentSystem.html">eve::rpg::EquipmentSystem</a></div><div class="ttdoc">装备加成系统。 @thread 调用线程应与 RPGActor 的 ECS 线程一致。</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8h_source.html#l00039">EquipmentSystem.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EquipmentSystem_html_a2f8b0658f7b232d2cc4104ab99df5a67"><div class="ttname"><a href="classeve_1_1rpg_1_1EquipmentSystem.html#a2f8b0658f7b232d2cc4104ab99df5a67">eve::rpg::EquipmentSystem::registerItemStatsFromJson</a></div><div class="ttdeci">static int registerItemStatsFromJson(const std::string &amp;itemId, const std::string &amp;json)</div><div class="ttdoc">批量注册某物品的属性加成；返回成功条数。</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8cpp_source.html#l00028">EquipmentSystem.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EquipmentSystem_html_a4237eccf436daff9756251e21492226d"><div class="ttname"><a href="classeve_1_1rpg_1_1EquipmentSystem.html#a4237eccf436daff9756251e21492226d">eve::rpg::EquipmentSystem::syncEquipModifiers</a></div><div class="ttdeci">static int syncEquipModifiers(RPGActor *actor, eve::inventory::EquipmentSet *equip)</div><div class="ttdoc">把装备栏当前装备同步为 actor 属性修改器（先清旧再施加）。</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8cpp_source.html#l00060">EquipmentSystem.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EquipmentSystem_html_a58f70daec181ae313307d7a7553c9c54"><div class="ttname"><a href="classeve_1_1rpg_1_1EquipmentSystem.html#a58f70daec181ae313307d7a7553c9c54">eve::rpg::EquipmentSystem::statItemCount</a></div><div class="ttdeci">static int statItemCount()</div><div class="ttdoc">已注册加成的物品数量。</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8cpp_source.html#l00058">EquipmentSystem.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EquipmentSystem_html_a67ea9e2cd03409a12eeb50ec184c739b"><div class="ttname"><a href="classeve_1_1rpg_1_1EquipmentSystem.html#a67ea9e2cd03409a12eeb50ec184c739b">eve::rpg::EquipmentSystem::clearItemStats</a></div><div class="ttdeci">static void clearItemStats(const std::string &amp;itemId)</div><div class="ttdoc">清除某物品的加成。</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8cpp_source.html#l00054">EquipmentSystem.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EquipmentSystem_html_a71df5d3f5ceb2717afd0c69dfec10c72"><div class="ttname"><a href="classeve_1_1rpg_1_1EquipmentSystem.html#a71df5d3f5ceb2717afd0c69dfec10c72">eve::rpg::EquipmentSystem::registerItemStat</a></div><div class="ttdeci">static void registerItemStat(const std::string &amp;itemId, const EquipmentStat &amp;stat)</div><div class="ttdoc">为某物品 id 注册一条属性加成。</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8cpp_source.html#l00023">EquipmentSystem.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1EquipmentSystem_html_a9c5a88e547ac1f00d9deec36966ae4d8"><div class="ttname"><a href="classeve_1_1rpg_1_1EquipmentSystem.html#a9c5a88e547ac1f00d9deec36966ae4d8">eve::rpg::EquipmentSystem::clearAll</a></div><div class="ttdeci">static void clearAll()</div><div class="ttdoc">清除全部物品加成注册。</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8cpp_source.html#l00056">EquipmentSystem.cpp:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html"><div class="ttname"><a href="namespaceeve_1_1inventory.html">eve::inventory</a></div><div class="ttdoc">运行时容器：固定格数的背包 / 箱子 / 商店栏等。 行为由 InventorySystem 提供；本类暴露便于脚本绑定的薄封装方法。</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00035">AvatarInstance.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EquipmentStat_html"><div class="ttname"><a href="structeve_1_1rpg_1_1EquipmentStat.html">eve::rpg::EquipmentStat</a></div><div class="ttdoc">一件物品的一条属性加成规格。</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8h_source.html#l00028">EquipmentSystem.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EquipmentStat_html_a118b7efa6f535eb659a3201556b28f32"><div class="ttname"><a href="structeve_1_1rpg_1_1EquipmentStat.html#a118b7efa6f535eb659a3201556b28f32">eve::rpg::EquipmentStat::priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8h_source.html#l00032">EquipmentSystem.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EquipmentStat_html_a5d02069f23e28a87cd7ad5a0f891782e"><div class="ttname"><a href="structeve_1_1rpg_1_1EquipmentStat.html#a5d02069f23e28a87cd7ad5a0f891782e">eve::rpg::EquipmentStat::attribute</a></div><div class="ttdeci">std::string attribute</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8h_source.html#l00029">EquipmentSystem.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EquipmentStat_html_a894641ec80d16fbae318c4e33c0461e1"><div class="ttname"><a href="structeve_1_1rpg_1_1EquipmentStat.html#a894641ec80d16fbae318c4e33c0461e1">eve::rpg::EquipmentStat::value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8h_source.html#l00031">EquipmentSystem.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1EquipmentStat_html_ab7bc9a765ea869f68fce926df738652d"><div class="ttname"><a href="structeve_1_1rpg_1_1EquipmentStat.html#ab7bc9a765ea869f68fce926df738652d">eve::rpg::EquipmentStat::op</a></div><div class="ttdeci">std::string op</div><div class="ttdef"><b>Definition</b> <a href="EquipmentSystem_8h_source.html#l00030">EquipmentSystem.h:30</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

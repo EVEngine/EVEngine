@@ -1,0 +1,343 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui_editing/UiPreview.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_a10dea0e151a992b75bf4066bd077200.html">ui_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">UiPreview.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="UiPreview_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="UiDocument_8h.html">ui_editing/UiDocument.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui__editing.html">eve::ui_editing</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#aed0779f173bd9f98a3f9b9ed08afeb60">   10</a></span><a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html">UiPreviewSnapshot</a> <a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#aed0779f173bd9f98a3f9b9ed08afeb60">UiDocumentPreviewService::build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html">UiDocumentTarget</a>&amp; document, <span class="keywordtype">double</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html">UiPreviewSnapshot</a> result;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#ab0ddfa3efe675db6cb6ce9d1e3a211d6">documentRevision</a> = document.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a6a466b79ff26fe933a3d21a636186d5a">revision</a>();</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a988570e7d9dab5504696e349565917ff">viewportWidth</a>    = <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a6f6097c3081568c7c5116244d1125a79">viewportHeight</a>   = <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>) || !std::isfinite(<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>) || <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> &lt;= 0.0 || <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> &lt;= 0.0) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a8e8de61ff243de3971fb042e764c4e2d">diagnostics</a>.push_back(<a class="code hl_function" href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a>(</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>, RuleId(<span class="stringliteral">&quot;editor.ui.invalid-preview-viewport&quot;</span>),</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            DiagnosticSeverity::Error, <span class="stringliteral">&quot;UI preview viewport must have finite positive dimensions&quot;</span>));</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a8e8de61ff243de3971fb042e764c4e2d">diagnostics</a> = document.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a36bfd6cbfa217028a9fd7f54706d6366">validate</a>();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    std::map&lt;ObjectId, UiPreviewWidget&gt;                               computed;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    std::function&lt;void(<span class="keyword">const</span> ObjectId&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a>&amp;, <span class="keywordtype">int</span>)&gt; visit;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    visit = [&amp;](<span class="keyword">const</span> ObjectId&amp; <a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a> = document.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#ae67cb44e763bb9f41b8111d8bee4aff5">widget</a>(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.ok()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiWidgetSnapshot.html">UiWidgetSnapshot</a>&amp; <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>   = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>.value();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keyword">const</span> <span class="keywordtype">double</span>            contentX = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.x + <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiWidgetSnapshot.html#ad1c162d45957a15e48c97a6a5ab99515">style</a>.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiStyleValue.html#a6b34ffa79bd432ad4619e2b8b1f90b54">marginLeft</a> + (<a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> == 0 ? 0.0 : 0.0);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">const</span> <span class="keywordtype">double</span>            contentY = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.y + <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.marginTop;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> parentWidth  = std::max(0.0, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.width - <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.marginLeft - <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.marginRight);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> parentHeight = std::max(0.0, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.height - <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.marginTop - <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.marginBottom);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a> preview;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a4e353bbfa1bc8a7ab0a499cbb4b1a9f8">id</a>     = <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.id;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a279afdff1f3fb02f1531899e43e43d56">parent</a> = <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.parent;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a56f268690f178346ae10374739fa5bdb">depth</a>  = <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a5f617ef62a9379f0f253bb70e9fd373a">width</a>  = <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.layout.width;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a17258bf3b4dbee4cdad752d61ebe568a">height</a> = <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.layout.height;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#ae0e5da79906ce8140f2b5496bbd90242">x</a> =</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            contentX + parentWidth * <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.layout.anchorX + <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.layout.x - preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a5f617ef62a9379f0f253bb70e9fd373a">width</a> * <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.layout.pivotX;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a2c9e31d06353da9262dd7e512a0bb493">y</a> =</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            contentY + parentHeight * <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.layout.anchorY + <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.layout.y - preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a17258bf3b4dbee4cdad752d61ebe568a">height</a> * <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.layout.pivotY;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a1b83436c112774388f71385a7524324d">visible</a> = <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.visible &amp;&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>.visible;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        computed[<a class="code hl_variable" href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a>]    = preview;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">widgets</a>.push_back(preview);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a> childParent = preview;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        childParent.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#ae0e5da79906ce8140f2b5496bbd90242">x</a> += <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.paddingLeft;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        childParent.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a2c9e31d06353da9262dd7e512a0bb493">y</a> += <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.paddingTop;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        childParent.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a5f617ef62a9379f0f253bb70e9fd373a">width</a>  = std::max(0.0, childParent.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a5f617ef62a9379f0f253bb70e9fd373a">width</a> - <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.paddingLeft - <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.paddingRight);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        childParent.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a17258bf3b4dbee4cdad752d61ebe568a">height</a> = std::max(0.0, childParent.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a17258bf3b4dbee4cdad752d61ebe568a">height</a> - <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.paddingTop - <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.style.paddingBottom);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> ObjectId&amp; child : document.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a4eb02fdd5b45016dbe1fb9705f2a298c">children</a>(<span class="keywordtype">id</span>)) visit(child, childParent, <a class="code hl_variable" href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a> + 1);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    };</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a> viewport{ObjectId(), ObjectId(), 0.0, 0.0, <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, -1, <span class="keyword">true</span>};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> ObjectId&amp; <a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a> : document.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a4eb02fdd5b45016dbe1fb9705f2a298c">children</a>(ObjectId())) visit(<a class="code hl_variable" href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a>, viewport, 0);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> hasError = std::any_of(</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a8e8de61ff243de3971fb042e764c4e2d">diagnostics</a>.begin(), result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a8e8de61ff243de3971fb042e764c4e2d">diagnostics</a>.end(),</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        [](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Diagnostic.html">EditorDiagnostic</a>&amp; diagnostic) { return diagnostic.severity() == DiagnosticSeverity::Error; });</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    result.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#ad1f1228956ff953dc3a82c4d5279ca77">status</a> = hasError ? EditorStatus::Failed : EditorStatus::Applied;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#ad11eb3e0dfc1dc0aef79ceee00658773">   61</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;ObjectId&gt;</a> <a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#ad11eb3e0dfc1dc0aef79ceee00658773">UiDocumentPreviewService::pick</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html">UiPreviewSnapshot</a>&amp; preview, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) || !std::isfinite(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>))</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;ObjectId&gt;(EditorStatus::Rejected, RuleId(<span class="stringliteral">&quot;editor.ui.invalid-pick-point&quot;</span>),</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                              <span class="stringliteral">&quot;UI pick coordinates must be finite&quot;</span>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a>* best = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a>&amp; <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a> : preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">widgets</a>) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.visible || <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.x || y &lt; widget.y || x &gt; <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.x + <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.width ||</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &gt; <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.y + <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.height)</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">if</span> (!best || <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a56f268690f178346ae10374739fa5bdb">depth</a> &gt; best-&gt;<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a56f268690f178346ae10374739fa5bdb">depth</a> || (<a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.depth == best-&gt;<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a56f268690f178346ae10374739fa5bdb">depth</a> &amp;&amp; <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.id &gt; best-&gt;<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a4e353bbfa1bc8a7ab0a499cbb4b1a9f8">id</a>))</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            best = &amp;<a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (!best)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;ObjectId&gt;(EditorStatus::NotFound, RuleId(<span class="stringliteral">&quot;editor.ui.pick-miss&quot;</span>),</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                                              <span class="stringliteral">&quot;No visible widget contains the preview point&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;ObjectId&gt;(best-&gt;<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a4e353bbfa1bc8a7ab0a499cbb4b1a9f8">id</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#adff43b43bb4da24665bb41dfc609b02a">   79</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;EditorValue&gt;</a> <a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#adff43b43bb4da24665bb41dfc609b02a">UiDocumentPreviewService::anchorGizmo</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html">UiDocumentTarget</a>&amp;  document,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                                                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html">UiPreviewSnapshot</a>&amp; preview,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                                                <span class="keyword">const</span> ObjectId&amp;          <span class="keywordtype">id</span>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#ab0ddfa3efe675db6cb6ce9d1e3a211d6">documentRevision</a> != document.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a6a466b79ff26fe933a3d21a636186d5a">revision</a>())</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;EditorValue&gt;(EditorStatus::Conflict, RuleId(<span class="stringliteral">&quot;editor.ui.stale-preview&quot;</span>),</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                                 <span class="stringliteral">&quot;UI preview revision no longer matches the document&quot;</span>);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a> = document.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#ae67cb44e763bb9f41b8111d8bee4aff5">widget</a>(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.ok())</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;EditorValue&gt;(EditorStatus::NotFound, RuleId(<span class="stringliteral">&quot;editor.ui.widget-not-found&quot;</span>),</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                                 <span class="stringliteral">&quot;UI widget does not exist&quot;</span>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">double</span> parentX = 0.0, parentY = 0.0, parentW = preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a988570e7d9dab5504696e349565917ff">viewportWidth</a>, parentH = preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a6f6097c3081568c7c5116244d1125a79">viewportHeight</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.value().parent.empty()) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a> =</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::find_if(preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">widgets</a>.begin(), preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">widgets</a>.end(),</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                         [&amp;](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { return value.id == widget.value().parent; });</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a> == preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">widgets</a>.end())</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            <span class="keywordflow">return</span> eve::editing::failed&lt;EditorValue&gt;(EditorStatus::NotFound,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                                                     RuleId(<span class="stringliteral">&quot;editor.ui.preview-parent-not-found&quot;</span>),</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                                                     <span class="stringliteral">&quot;Parent is absent from UI preview&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">auto</span> parentWidget = document.<a class="code hl_function" href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#ae67cb44e763bb9f41b8111d8bee4aff5">widget</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>-&gt;id);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        parentX           = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>-&gt;x + parentWidget.value().style.paddingLeft;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        parentY           = <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>-&gt;y + parentWidget.value().style.paddingTop;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        parentW           = std::max(</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            0.0, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>-&gt;width - parentWidget.value().style.paddingLeft - parentWidget.value().style.paddingRight);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        parentH = std::max(</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            0.0, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>-&gt;height - parentWidget.value().style.paddingTop - parentWidget.value().style.paddingBottom);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> <span class="keyword">auto</span> previewWidget = std::find_if(preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">widgets</a>.begin(), preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">widgets</a>.end(),</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                                            [&amp;](<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">UiPreviewWidget</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>) { return value.id == id; });</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">if</span> (previewWidget == preview.<a class="code hl_variable" href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">widgets</a>.end())</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;EditorValue&gt;(EditorStatus::NotFound, RuleId(<span class="stringliteral">&quot;editor.ui.preview-widget-not-found&quot;</span>),</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                                                 <span class="stringliteral">&quot;Widget is absent from UI preview&quot;</span>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> anchorX = parentX + parentW * <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.value().layout.anchorX;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> anchorY = parentY + parentH * <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.value().layout.anchorY;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> pivotX  = previewWidget-&gt;x + previewWidget-&gt;width * <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.value().layout.pivotX;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> pivotY  = previewWidget-&gt;y + previewWidget-&gt;height * <a class="code hl_variable" href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a>.value().layout.pivotY;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;EditorValue&gt;(</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>{{<span class="stringliteral">&quot;anchor&quot;</span>, <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a>{anchorX, anchorY}},</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                            {<span class="stringliteral">&quot;pivot&quot;</span>, <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a>{pivotX, pivotY}},</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                            {<span class="stringliteral">&quot;line&quot;</span>, <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a>{anchorX, anchorY, pivotX, pivotY}}});</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
+</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}  <span class="comment">// namespace eve::ui_editing</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00690">AnimClip.cpp:690</a></div></div>
+<div class="ttc" id="aEditorHost_8cpp_html_a4b9905e37d3ddd8f7162d819b21f8555"><div class="ttname"><a href="EditorHost_8cpp.html#a4b9905e37d3ddd8f7162d819b21f8555">widget</a></div><div class="ttdeci">std::string widget</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00445">EditorHost.cpp:445</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_aee43da4e9117b04a03d47cfb325445d4"><div class="ttname"><a href="GltfImporter_8cpp.html#aee43da4e9117b04a03d47cfb325445d4">root</a></div><div class="ttdeci">Value root</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00039">GltfImporter.cpp:39</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00012">ImageImporter.cpp:12</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00011">ImageImporter.cpp:11</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a20802748604cbe45e7931e1d4a560454"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; value</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00021">LegacyAnimationImporter.cpp:21</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_ae5a367e308f2a54eea84358fbc9bee47"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a></div><div class="ttdeci">std::int32_t parent</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00014">LegacyAnimationImporter.cpp:14</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a845896541a0621f5fbd11f0d115ce463"><div class="ttname"><a href="LinearStructure_8cpp.html#a845896541a0621f5fbd11f0d115ce463">depth</a></div><div class="ttdeci">float depth</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00031">LinearStructure.cpp:31</a></div></div>
+<div class="ttc" id="aUiDocument_8h_html"><div class="ttname"><a href="UiDocument_8h.html">UiDocument.h</a></div></div>
+<div class="ttc" id="aWorldSnapshot_8cpp_html_a7441ef0865bcb3db9b8064dd7375c1ea"><div class="ttname"><a href="WorldSnapshot_8cpp.html#a7441ef0865bcb3db9b8064dd7375c1ea">id</a></div><div class="ttdeci">int id</div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshot_8cpp_source.html#l00162">WorldSnapshot.cpp:162</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html"><div class="ttname"><a href="classeve_1_1Diagnostic.html">eve::Diagnostic</a></div><div class="ttdoc">A structured explanation of a failed, degraded, or noteworthy result.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00094">Diagnostic.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a3c88bc09ffc0ed051db4007328a54971"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">eve::editing::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00019">EditingValue.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00020">EditingValue.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentPreviewService_html_ad11eb3e0dfc1dc0aef79ceee00658773"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#ad11eb3e0dfc1dc0aef79ceee00658773">eve::ui_editing::UiDocumentPreviewService::pick</a></div><div class="ttdeci">EditorResult&lt; ObjectId &gt; pick(const UiPreviewSnapshot &amp;preview, double x, double y) const</div><div class="ttdoc">Pick the deepest visible widget under a preview-space point.</div><div class="ttdef"><b>Definition</b> <a href="UiPreview_8cpp_source.html#l00061">UiPreview.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentPreviewService_html_adff43b43bb4da24665bb41dfc609b02a"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#adff43b43bb4da24665bb41dfc609b02a">eve::ui_editing::UiDocumentPreviewService::anchorGizmo</a></div><div class="ttdeci">EditorResult&lt; EditorValue &gt; anchorGizmo(const UiDocumentTarget &amp;document, const UiPreviewSnapshot &amp;preview, const ObjectId &amp;widget) const</div><div class="ttdoc">Return anchor point, pivot point and connecting line as numeric pairs.</div><div class="ttdef"><b>Definition</b> <a href="UiPreview_8cpp_source.html#l00079">UiPreview.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentPreviewService_html_aed0779f173bd9f98a3f9b9ed08afeb60"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentPreviewService.html#aed0779f173bd9f98a3f9b9ed08afeb60">eve::ui_editing::UiDocumentPreviewService::build</a></div><div class="ttdeci">UiPreviewSnapshot build(const UiDocumentTarget &amp;document, double width, double height) const</div><div class="ttdoc">Compute absolute rectangles for a viewport without mutating runtime UI.</div><div class="ttdef"><b>Definition</b> <a href="UiPreview_8cpp_source.html#l00010">UiPreview.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentTarget_html"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentTarget.html">eve::ui_editing::UiDocumentTarget</a></div><div class="ttdoc">Serializable UI authoring document with hierarchy and inspector capabilities.</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00131">UiDocument.h:135</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentTarget_html_a36bfd6cbfa217028a9fd7f54706d6366"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a36bfd6cbfa217028a9fd7f54706d6366">eve::ui_editing::UiDocumentTarget::validate</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; validate() const</div><div class="ttdoc">Validate style, hierarchy and viewport layout constraints.</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8cpp_source.html#l00272">UiDocument.cpp:272</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentTarget_html_a4eb02fdd5b45016dbe1fb9705f2a298c"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a4eb02fdd5b45016dbe1fb9705f2a298c">eve::ui_editing::UiDocumentTarget::children</a></div><div class="ttdeci">std::vector&lt; ObjectId &gt; children(const ObjectId &amp;parent) const override</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8cpp_source.html#l00129">UiDocument.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentTarget_html_a6a466b79ff26fe933a3d21a636186d5a"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#a6a466b79ff26fe933a3d21a636186d5a">eve::ui_editing::UiDocumentTarget::revision</a></div><div class="ttdeci">std::uint64_t revision() const override</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00140">UiDocument.h:140</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editing_1_1UiDocumentTarget_html_ae67cb44e763bb9f41b8111d8bee4aff5"><div class="ttname"><a href="classeve_1_1ui__editing_1_1UiDocumentTarget.html#ae67cb44e763bb9f41b8111d8bee4aff5">eve::ui_editing::UiDocumentTarget::widget</a></div><div class="ttdeci">EditorResult&lt; UiWidgetSnapshot &gt; widget(const ObjectId &amp;id) const override</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8cpp_source.html#l00121">UiDocument.cpp:121</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_afd028c467432d4237ac086c710da0ac6"><div class="ttname"><a href="namespaceeve_1_1editing.html#afd028c467432d4237ac086c710da0ac6">eve::editing::ruleDiagnostic</a></div><div class="ttdeci">Diagnostic ruleDiagnostic(eve::DiagnosticCode code, RuleId rule, DiagnosticSeverity severity, std::string message)</div><div class="ttdoc">Build a common diagnostic carrying an open editing rule identity.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00025">EditingResult.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui__editing_html"><div class="ttname"><a href="namespaceeve_1_1ui__editing.html">eve::ui_editing</a></div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8cpp_source.html#l00009">UiDocument.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewSnapshot_html"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html">eve::ui_editing::UiPreviewSnapshot</a></div><div class="ttdoc">Deterministic UI layout preview used by canvas rendering and picking.</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00209">UiDocument.h:209</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewSnapshot_html_a19751f613bbc3f9adc94d37fcd80c307"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a19751f613bbc3f9adc94d37fcd80c307">eve::ui_editing::UiPreviewSnapshot::widgets</a></div><div class="ttdeci">std::vector&lt; UiPreviewWidget &gt; widgets</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00213">UiDocument.h:213</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewSnapshot_html_a6f6097c3081568c7c5116244d1125a79"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a6f6097c3081568c7c5116244d1125a79">eve::ui_editing::UiPreviewSnapshot::viewportHeight</a></div><div class="ttdeci">double viewportHeight</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00212">UiDocument.h:212</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewSnapshot_html_a8e8de61ff243de3971fb042e764c4e2d"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a8e8de61ff243de3971fb042e764c4e2d">eve::ui_editing::UiPreviewSnapshot::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00214">UiDocument.h:214</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewSnapshot_html_a988570e7d9dab5504696e349565917ff"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#a988570e7d9dab5504696e349565917ff">eve::ui_editing::UiPreviewSnapshot::viewportWidth</a></div><div class="ttdeci">double viewportWidth</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00212">UiDocument.h:212</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewSnapshot_html_ab0ddfa3efe675db6cb6ce9d1e3a211d6"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#ab0ddfa3efe675db6cb6ce9d1e3a211d6">eve::ui_editing::UiPreviewSnapshot::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00211">UiDocument.h:211</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewSnapshot_html_ad1f1228956ff953dc3a82c4d5279ca77"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewSnapshot.html#ad1f1228956ff953dc3a82c4d5279ca77">eve::ui_editing::UiPreviewSnapshot::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00210">UiDocument.h:210</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html">eve::ui_editing::UiPreviewWidget</a></div><div class="ttdoc">Computed widget rectangle in a revision-bound UI preview.</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00200">UiDocument.h:200</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html_a17258bf3b4dbee4cdad752d61ebe568a"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a17258bf3b4dbee4cdad752d61ebe568a">eve::ui_editing::UiPreviewWidget::height</a></div><div class="ttdeci">double height</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00203">UiDocument.h:203</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html_a1b83436c112774388f71385a7524324d"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a1b83436c112774388f71385a7524324d">eve::ui_editing::UiPreviewWidget::visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00205">UiDocument.h:205</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html_a279afdff1f3fb02f1531899e43e43d56"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a279afdff1f3fb02f1531899e43e43d56">eve::ui_editing::UiPreviewWidget::parent</a></div><div class="ttdeci">ObjectId parent</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00202">UiDocument.h:202</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html_a2c9e31d06353da9262dd7e512a0bb493"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a2c9e31d06353da9262dd7e512a0bb493">eve::ui_editing::UiPreviewWidget::y</a></div><div class="ttdeci">double y</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00203">UiDocument.h:203</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html_a4e353bbfa1bc8a7ab0a499cbb4b1a9f8"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a4e353bbfa1bc8a7ab0a499cbb4b1a9f8">eve::ui_editing::UiPreviewWidget::id</a></div><div class="ttdeci">ObjectId id</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00201">UiDocument.h:201</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html_a56f268690f178346ae10374739fa5bdb"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a56f268690f178346ae10374739fa5bdb">eve::ui_editing::UiPreviewWidget::depth</a></div><div class="ttdeci">int depth</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00204">UiDocument.h:204</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html_a5f617ef62a9379f0f253bb70e9fd373a"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#a5f617ef62a9379f0f253bb70e9fd373a">eve::ui_editing::UiPreviewWidget::width</a></div><div class="ttdeci">double width</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00203">UiDocument.h:203</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiPreviewWidget_html_ae0e5da79906ce8140f2b5496bbd90242"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiPreviewWidget.html#ae0e5da79906ce8140f2b5496bbd90242">eve::ui_editing::UiPreviewWidget::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00203">UiDocument.h:203</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiStyleValue_html_a6b34ffa79bd432ad4619e2b8b1f90b54"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiStyleValue.html#a6b34ffa79bd432ad4619e2b8b1f90b54">eve::ui_editing::UiStyleValue::marginLeft</a></div><div class="ttdeci">double marginLeft</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00062">UiDocument.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiWidgetSnapshot_html"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiWidgetSnapshot.html">eve::ui_editing::UiWidgetSnapshot</a></div><div class="ttdoc">Immutable widget snapshot used across editor/runtime boundaries.</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00090">UiDocument.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editing_1_1UiWidgetSnapshot_html_ad1c162d45957a15e48c97a6a5ab99515"><div class="ttname"><a href="structeve_1_1ui__editing_1_1UiWidgetSnapshot.html#ad1c162d45957a15e48c97a6a5ab99515">eve::ui_editing::UiWidgetSnapshot::style</a></div><div class="ttdeci">UiStyleValue style</div><div class="ttdef"><b>Definition</b> <a href="UiDocument_8h_source.html#l00099">UiDocument.h:99</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids_editor/EditorSurfaceFluidPreview.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_42fcb1d2d2b457ce775c23d55545ea0e.html">fluids_editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorSurfaceFluidPreview.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorSurfaceFluidPreview_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="EditorSurfaceFluidTarget_8h.html">fluids_editor/EditorSurfaceFluidTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorOffscreenPreview_8h.html">graphics_editor/EditorOffscreenPreview.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html">SurfaceFluidPreviewSeed</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a6b6061d05b23b860ec32cb18acdff4a4">   14</a></span>    std::uint32_t         <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a6b6061d05b23b860ec32cb18acdff4a4">triangle</a> = 0;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a51464aca36c2408b553dfbb954e773ba">   15</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a51464aca36c2408b553dfbb954e773ba">barycentric</a>{1.0, 0.0, 0.0};</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#aad027ee0a56120c495236cb0357cfab5">   16</a></span>    <span class="keywordtype">double</span>                <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#aad027ee0a56120c495236cb0357cfab5">volume</a> = 1.0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a95291bc72cba777199c74052812b32eb">   17</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a95291bc72cba777199c74052812b32eb">velocity</a>{0.0, 0.0, 0.0};</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a6e143166f735df53c3ba86c03b78d213">   18</a></span>    <span class="keyword">auto</span>                  <a class="code hl_function" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a6e143166f735df53c3ba86c03b78d213">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html">SurfaceFluidPreviewSeed</a>&amp;) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html">SurfaceFluidPreviewRequest</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a4b0762d7b8c5f67e5a799e6b951da005">   23</a></span>    <a class="code hl_class" href="classeve_1_1UuidIdAdapter.html">StableId</a>                             <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a4b0762d7b8c5f67e5a799e6b951da005">previewId</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#adf908f0deaa0a1d659b06274000a68a4">   24</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a>                             <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#adf908f0deaa0a1d659b06274000a68a4">documentRevision</a> = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#ab822fd266f83178868fb9ce7c9c813b9">   25</a></span>    <span class="keywordtype">int</span>                                  <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#ab822fd266f83178868fb9ce7c9c813b9">width</a>            = 512;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a30c4456749069008490f6a4e12ca02f4">   26</a></span>    <span class="keywordtype">int</span>                                  <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a30c4456749069008490f6a4e12ca02f4">height</a>           = 512;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a2534fd42d6c559f52a4b8a30a7bb6c70">   27</a></span>    <span class="keywordtype">double</span>                               <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a2534fd42d6c559f52a4b8a30a7bb6c70">seconds</a>          = 0.0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a330e90c8c62ff776390ae000440762a4">   28</a></span>    <span class="keywordtype">double</span>                               <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a330e90c8c62ff776390ae000440762a4">fixedStep</a>        = 1.0 / 60.0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a24391efa991d60c74a3bcc5aa8ded41b">   29</a></span>    std::vector&lt;std::array&lt;double, 3&gt;&gt;   <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a24391efa991d60c74a3bcc5aa8ded41b">positions</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#ae6aadcc55fa48c5a2146528f7276a0c4">   30</a></span>    std::vector&lt;std::uint32_t&gt;           <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#ae6aadcc55fa48c5a2146528f7276a0c4">indices</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a18dedcd4b7ffe2f2c1b586a40011dce0">   31</a></span>    std::vector&lt;std::array&lt;double, 2&gt;&gt;   <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a18dedcd4b7ffe2f2c1b586a40011dce0">uvs</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#afbde48f7035b46e8fcf13b4aa1570f98">   32</a></span>    std::vector&lt;SurfaceFluidPreviewSeed&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#afbde48f7035b46e8fcf13b4aa1570f98">seeds</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a251d08dd81a7d3eabdfc39f068315e6b">   33</a></span>    std::size_t                          <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a251d08dd81a7d3eabdfc39f068315e6b">maximumVertices</a> = 1000000;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a98f2b4a1ec31c736cb3a86c5eeb0c9c0">   34</a></span>    std::size_t                          <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a98f2b4a1ec31c736cb3a86c5eeb0c9c0">maximumDroplets</a> = 100000;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a37bb1428ac924c023f8d4a2bec7ac5fa">   35</a></span>    std::size_t                          <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a37bb1428ac924c023f8d4a2bec7ac5fa">maximumSteps</a>    = 1000000;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html">   39</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html">SurfaceFluidPreviewDroplet</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a7daaca93722720baab88a4d80a9f717d">   40</a></span>    std::uint64_t         <span class="keywordtype">id</span> = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a81267b71e1c6a0b285d10418f2d31a41">   41</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a81267b71e1c6a0b285d10418f2d31a41">position</a>{};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#abf175e51f50331f78585e927a700a561">   42</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#abf175e51f50331f78585e927a700a561">normal</a>{};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a21d5886eea6f18be82c58a0be4440495">   43</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a21d5886eea6f18be82c58a0be4440495">majorAxis</a>{};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a319de2b8611c3cdedf9f5bb86c22bd16">   44</a></span>    std::array&lt;double, 3&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a319de2b8611c3cdedf9f5bb86c22bd16">minorAxis</a>{};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a468ba690e9540203724fad9dc4fc38b4">   45</a></span>    <span class="keywordtype">double</span>                <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a468ba690e9540203724fad9dc4fc38b4">capHeight</a>                                            = 0.0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#aab553702d876b9560fcb7c1d4271be07">   46</a></span>    <span class="keywordtype">double</span>                <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#aab553702d876b9560fcb7c1d4271be07">wetness</a>                                              = 0.0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#ad712103c5cf8af418a008ccc90b2819d">   47</a></span>    <span class="keyword">auto</span>                  <a class="code hl_function" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#ad712103c5cf8af418a008ccc90b2819d">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html">SurfaceFluidPreviewDroplet</a>&amp;) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>};</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html">   51</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html">SurfaceFluidPreviewSnapshot</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#aea7eb249323310f4b41a64ff482c0b91">   52</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">EditorStatus</a>                            <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#aea7eb249323310f4b41a64ff482c0b91">status</a>           = EditorStatus::Failed;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a618223858974b45d81d0a5e7d6c18928">   53</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">Revision</a>                                <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a618223858974b45d81d0a5e7d6c18928">documentRevision</a> = 0;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a6e8933f287dc1818c7424436f870a5be">   54</a></span>    <span class="keywordtype">double</span>                                  <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a6e8933f287dc1818c7424436f870a5be">simulatedSeconds</a> = 0.0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#af8c16da07870301dacec5158653d9d2b">   55</a></span>    std::vector&lt;SurfaceFluidPreviewDroplet&gt; <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#af8c16da07870301dacec5158653d9d2b">droplets</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a6d753e40ba5e8781a4db2b57521768f7">   56</a></span>    std::vector&lt;double&gt;                     <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a6d753e40ba5e8781a4db2b57521768f7">vertexWetness</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a34d47cf1bf11d47a2f79f773a8d1948f">   57</a></span>    std::vector&lt;EditorDiagnostic&gt;           <a class="code hl_variable" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a34d47cf1bf11d47a2f79f773a8d1948f">diagnostics</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1SurfaceFluidPreviewService.html">   61</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1SurfaceFluidPreviewService.html">SurfaceFluidPreviewService</a> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html">SurfaceFluidPreviewSnapshot</a> <a class="code hl_function" href="classeve_1_1editor_1_1SurfaceFluidPreviewService.html#aa6979e53a1d842ac96cc4b74473a4d3a">build</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html">SurfaceFluidTarget</a>&amp;         <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html">SurfaceFluidPreviewRequest</a>&amp; request) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="};">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html">   69</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html">ISurfaceFluidPreviewRenderer</a> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html#a23b22d5e2dc891a0f02a94f93cfca929">   71</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html#a23b22d5e2dc891a0f02a94f93cfca929">~ISurfaceFluidPreviewRenderer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html#aa813cce901a2f785cff033221d291b40">   73</a></span>    <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html#aa813cce901a2f785cff033221d291b40">draw</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html">SurfaceFluidPreviewSnapshot</a>&amp; snapshot) = 0;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="};">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1SurfaceFluidOffscreenPreviewService.html">   77</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1editor_1_1SurfaceFluidOffscreenPreviewService.html">SurfaceFluidOffscreenPreviewService</a> {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1SurfaceFluidOffscreenPreviewService.html#aa6b0c73e4d58cdf8e3449cd1ad20538d">   79</a></span>    <a class="code hl_function" href="classeve_1_1editor_1_1SurfaceFluidOffscreenPreviewService.html#aa6b0c73e4d58cdf8e3449cd1ad20538d">SurfaceFluidOffscreenPreviewService</a>(<a class="code hl_class" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">GraphicsOffscreenPreviewService</a>* previews,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                        <a class="code hl_class" href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html">ISurfaceFluidPreviewRenderer</a>*    renderer)</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        : previews_(previews), renderer_(renderer) {}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;OffscreenPreviewArtifact&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1SurfaceFluidOffscreenPreviewService.html#a7cabdf3be81c7b1892af8745d9ff77ee">render</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html">SurfaceFluidTarget</a>&amp;         <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html">SurfaceFluidPreviewRequest</a>&amp; request) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_class" href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">GraphicsOffscreenPreviewService</a>* previews_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_class" href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html">ISurfaceFluidPreviewRenderer</a>*    renderer_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>};</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aEditorOffscreenPreview_8h_html"><div class="ttname"><a href="EditorOffscreenPreview_8h.html">EditorOffscreenPreview.h</a></div></div>
+<div class="ttc" id="aEditorSurfaceFluidTarget_8h_html"><div class="ttname"><a href="EditorSurfaceFluidTarget_8h.html">EditorSurfaceFluidTarget.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1UuidIdAdapter_html"><div class="ttname"><a href="classeve_1_1UuidIdAdapter.html">eve::UuidIdAdapter</a></div><div class="ttdoc">UUID-backed identifier adapter for legacy textual boundaries.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00282">Identity.h:282</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ISurfaceFluidPreviewRenderer_html"><div class="ttname"><a href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html">eve::editor::ISurfaceFluidPreviewRenderer</a></div><div class="ttdoc">Narrow host boundary for drawing a validated fluid preview snapshot.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00069">EditorSurfaceFluidPreview.h:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ISurfaceFluidPreviewRenderer_html_a23b22d5e2dc891a0f02a94f93cfca929"><div class="ttname"><a href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html#a23b22d5e2dc891a0f02a94f93cfca929">eve::editor::ISurfaceFluidPreviewRenderer::~ISurfaceFluidPreviewRenderer</a></div><div class="ttdeci">virtual ~ISurfaceFluidPreviewRenderer()=default</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ISurfaceFluidPreviewRenderer_html_aa813cce901a2f785cff033221d291b40"><div class="ttname"><a href="classeve_1_1editor_1_1ISurfaceFluidPreviewRenderer.html#aa813cce901a2f785cff033221d291b40">eve::editor::ISurfaceFluidPreviewRenderer::draw</a></div><div class="ttdeci">virtual EditorResult&lt; void &gt; draw(const SurfaceFluidPreviewSnapshot &amp;snapshot)=0</div><div class="ttdoc">Draw droplets and wetness using the host's chosen 2D or 3D presentation.</div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SurfaceFluidOffscreenPreviewService_html"><div class="ttname"><a href="classeve_1_1editor_1_1SurfaceFluidOffscreenPreviewService.html">eve::editor::SurfaceFluidOffscreenPreviewService</a></div><div class="ttdoc">Builds and rasterizes surface-fluid scrub frames through shared Canvas readback.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00077">EditorSurfaceFluidPreview.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SurfaceFluidOffscreenPreviewService_html_a7cabdf3be81c7b1892af8745d9ff77ee"><div class="ttname"><a href="classeve_1_1editor_1_1SurfaceFluidOffscreenPreviewService.html#a7cabdf3be81c7b1892af8745d9ff77ee">eve::editor::SurfaceFluidOffscreenPreviewService::render</a></div><div class="ttdeci">EditorResult&lt; OffscreenPreviewArtifact &gt; render(const SurfaceFluidTarget &amp;target, const SurfaceFluidPreviewRequest &amp;request) const</div><div class="ttdoc">Replay, validate and render one revision-bound scrub frame.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidOffscreen_8cpp_source.html#l00005">EditorSurfaceFluidOffscreen.cpp:5</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SurfaceFluidOffscreenPreviewService_html_aa6b0c73e4d58cdf8e3449cd1ad20538d"><div class="ttname"><a href="classeve_1_1editor_1_1SurfaceFluidOffscreenPreviewService.html#aa6b0c73e4d58cdf8e3449cd1ad20538d">eve::editor::SurfaceFluidOffscreenPreviewService::SurfaceFluidOffscreenPreviewService</a></div><div class="ttdeci">SurfaceFluidOffscreenPreviewService(GraphicsOffscreenPreviewService *previews, ISurfaceFluidPreviewRenderer *renderer)</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00079">EditorSurfaceFluidPreview.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SurfaceFluidPreviewService_html"><div class="ttname"><a href="classeve_1_1editor_1_1SurfaceFluidPreviewService.html">eve::editor::SurfaceFluidPreviewService</a></div><div class="ttdoc">Rebuilds an isolated surface simulation for deterministic forward/backward scrub.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00061">EditorSurfaceFluidPreview.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1SurfaceFluidPreviewService_html_aa6979e53a1d842ac96cc4b74473a4d3a"><div class="ttname"><a href="classeve_1_1editor_1_1SurfaceFluidPreviewService.html#aa6979e53a1d842ac96cc4b74473a4d3a">eve::editor::SurfaceFluidPreviewService::build</a></div><div class="ttdeci">SurfaceFluidPreviewSnapshot build(const SurfaceFluidTarget &amp;target, const SurfaceFluidPreviewRequest &amp;request) const</div><div class="ttdoc">Validate, replay and capture a renderer-neutral surface-fluid frame.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8cpp_source.html#l00025">EditorSurfaceFluidPreview.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids__editing_1_1SurfaceFluidTarget_html"><div class="ttname"><a href="classeve_1_1fluids__editing_1_1SurfaceFluidTarget.html">eve::fluids_editing::SurfaceFluidTarget</a></div><div class="ttdoc">Reversible document for surface droplets, wet traces and material response.</div><div class="ttdef"><b>Definition</b> <a href="SurfaceFluidTarget_8h_source.html#l00064">SurfaceFluidTarget.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService_html"><div class="ttname"><a href="classeve_1_1graphics__editing_1_1GraphicsOffscreenPreviewService.html">eve::graphics_editing::GraphicsOffscreenPreviewService</a></div><div class="ttdoc">Concrete Graphics/Canvas preview bridge with revision-safe artifact storage.</div><div class="ttdef"><b>Definition</b> <a href="OffscreenPreview_8h_source.html#l00045">OffscreenPreview.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_aee556a1a4c69319bef3bea3c87db4db6"><div class="ttname"><a href="namespaceeve_1_1editor.html#aee556a1a4c69319bef3bea3c87db4db6">eve::editor::Revision</a></div><div class="ttdeci">eve::editing::Revision Revision</div><div class="ttdef"><b>Definition</b> <a href="EditorProtocol_8h_source.html#l00009">EditorProtocol.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597f"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::StatusCode</a></div><div class="ttdeci">StatusCode</div><div class="ttdoc">Stable outcome category for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00027">Status.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewDroplet_html"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html">eve::editor::SurfaceFluidPreviewDroplet</a></div><div class="ttdoc">Renderer-neutral world-space droplet cap produced by one scrub replay.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00039">EditorSurfaceFluidPreview.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewDroplet_html_a21d5886eea6f18be82c58a0be4440495"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a21d5886eea6f18be82c58a0be4440495">eve::editor::SurfaceFluidPreviewDroplet::majorAxis</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; majorAxis</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00043">EditorSurfaceFluidPreview.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewDroplet_html_a319de2b8611c3cdedf9f5bb86c22bd16"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a319de2b8611c3cdedf9f5bb86c22bd16">eve::editor::SurfaceFluidPreviewDroplet::minorAxis</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; minorAxis</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00044">EditorSurfaceFluidPreview.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewDroplet_html_a468ba690e9540203724fad9dc4fc38b4"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a468ba690e9540203724fad9dc4fc38b4">eve::editor::SurfaceFluidPreviewDroplet::capHeight</a></div><div class="ttdeci">double capHeight</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00045">EditorSurfaceFluidPreview.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewDroplet_html_a81267b71e1c6a0b285d10418f2d31a41"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#a81267b71e1c6a0b285d10418f2d31a41">eve::editor::SurfaceFluidPreviewDroplet::position</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00041">EditorSurfaceFluidPreview.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewDroplet_html_aab553702d876b9560fcb7c1d4271be07"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#aab553702d876b9560fcb7c1d4271be07">eve::editor::SurfaceFluidPreviewDroplet::wetness</a></div><div class="ttdeci">double wetness</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00046">EditorSurfaceFluidPreview.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewDroplet_html_abf175e51f50331f78585e927a700a561"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#abf175e51f50331f78585e927a700a561">eve::editor::SurfaceFluidPreviewDroplet::normal</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; normal</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00042">EditorSurfaceFluidPreview.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewDroplet_html_ad712103c5cf8af418a008ccc90b2819d"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewDroplet.html#ad712103c5cf8af418a008ccc90b2819d">eve::editor::SurfaceFluidPreviewDroplet::operator&lt;=&gt;</a></div><div class="ttdeci">auto operator&lt;=&gt;(const SurfaceFluidPreviewDroplet &amp;) const =default</div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html">eve::editor::SurfaceFluidPreviewRequest</a></div><div class="ttdoc">Complete deterministic input needed to replay a surface-fluid scrub.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00022">EditorSurfaceFluidPreview.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a18dedcd4b7ffe2f2c1b586a40011dce0"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a18dedcd4b7ffe2f2c1b586a40011dce0">eve::editor::SurfaceFluidPreviewRequest::uvs</a></div><div class="ttdeci">std::vector&lt; std::array&lt; double, 2 &gt; &gt; uvs</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00031">EditorSurfaceFluidPreview.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a24391efa991d60c74a3bcc5aa8ded41b"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a24391efa991d60c74a3bcc5aa8ded41b">eve::editor::SurfaceFluidPreviewRequest::positions</a></div><div class="ttdeci">std::vector&lt; std::array&lt; double, 3 &gt; &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00029">EditorSurfaceFluidPreview.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a251d08dd81a7d3eabdfc39f068315e6b"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a251d08dd81a7d3eabdfc39f068315e6b">eve::editor::SurfaceFluidPreviewRequest::maximumVertices</a></div><div class="ttdeci">std::size_t maximumVertices</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00033">EditorSurfaceFluidPreview.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a2534fd42d6c559f52a4b8a30a7bb6c70"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a2534fd42d6c559f52a4b8a30a7bb6c70">eve::editor::SurfaceFluidPreviewRequest::seconds</a></div><div class="ttdeci">double seconds</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00027">EditorSurfaceFluidPreview.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a30c4456749069008490f6a4e12ca02f4"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a30c4456749069008490f6a4e12ca02f4">eve::editor::SurfaceFluidPreviewRequest::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00026">EditorSurfaceFluidPreview.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a330e90c8c62ff776390ae000440762a4"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a330e90c8c62ff776390ae000440762a4">eve::editor::SurfaceFluidPreviewRequest::fixedStep</a></div><div class="ttdeci">double fixedStep</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00028">EditorSurfaceFluidPreview.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a37bb1428ac924c023f8d4a2bec7ac5fa"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a37bb1428ac924c023f8d4a2bec7ac5fa">eve::editor::SurfaceFluidPreviewRequest::maximumSteps</a></div><div class="ttdeci">std::size_t maximumSteps</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00035">EditorSurfaceFluidPreview.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a4b0762d7b8c5f67e5a799e6b951da005"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a4b0762d7b8c5f67e5a799e6b951da005">eve::editor::SurfaceFluidPreviewRequest::previewId</a></div><div class="ttdeci">StableId previewId</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00023">EditorSurfaceFluidPreview.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_a98f2b4a1ec31c736cb3a86c5eeb0c9c0"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#a98f2b4a1ec31c736cb3a86c5eeb0c9c0">eve::editor::SurfaceFluidPreviewRequest::maximumDroplets</a></div><div class="ttdeci">std::size_t maximumDroplets</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00034">EditorSurfaceFluidPreview.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_ab822fd266f83178868fb9ce7c9c813b9"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#ab822fd266f83178868fb9ce7c9c813b9">eve::editor::SurfaceFluidPreviewRequest::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00025">EditorSurfaceFluidPreview.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_adf908f0deaa0a1d659b06274000a68a4"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#adf908f0deaa0a1d659b06274000a68a4">eve::editor::SurfaceFluidPreviewRequest::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00024">EditorSurfaceFluidPreview.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_ae6aadcc55fa48c5a2146528f7276a0c4"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#ae6aadcc55fa48c5a2146528f7276a0c4">eve::editor::SurfaceFluidPreviewRequest::indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00030">EditorSurfaceFluidPreview.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewRequest_html_afbde48f7035b46e8fcf13b4aa1570f98"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewRequest.html#afbde48f7035b46e8fcf13b4aa1570f98">eve::editor::SurfaceFluidPreviewRequest::seeds</a></div><div class="ttdeci">std::vector&lt; SurfaceFluidPreviewSeed &gt; seeds</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00032">EditorSurfaceFluidPreview.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSeed_html"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html">eve::editor::SurfaceFluidPreviewSeed</a></div><div class="ttdoc">One stable droplet seed in material-space triangle coordinates.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00013">EditorSurfaceFluidPreview.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSeed_html_a51464aca36c2408b553dfbb954e773ba"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a51464aca36c2408b553dfbb954e773ba">eve::editor::SurfaceFluidPreviewSeed::barycentric</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; barycentric</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00015">EditorSurfaceFluidPreview.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSeed_html_a6b6061d05b23b860ec32cb18acdff4a4"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a6b6061d05b23b860ec32cb18acdff4a4">eve::editor::SurfaceFluidPreviewSeed::triangle</a></div><div class="ttdeci">std::uint32_t triangle</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00014">EditorSurfaceFluidPreview.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSeed_html_a6e143166f735df53c3ba86c03b78d213"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a6e143166f735df53c3ba86c03b78d213">eve::editor::SurfaceFluidPreviewSeed::operator&lt;=&gt;</a></div><div class="ttdeci">auto operator&lt;=&gt;(const SurfaceFluidPreviewSeed &amp;) const =default</div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSeed_html_a95291bc72cba777199c74052812b32eb"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#a95291bc72cba777199c74052812b32eb">eve::editor::SurfaceFluidPreviewSeed::velocity</a></div><div class="ttdeci">std::array&lt; double, 3 &gt; velocity</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00017">EditorSurfaceFluidPreview.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSeed_html_aad027ee0a56120c495236cb0357cfab5"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSeed.html#aad027ee0a56120c495236cb0357cfab5">eve::editor::SurfaceFluidPreviewSeed::volume</a></div><div class="ttdeci">double volume</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00016">EditorSurfaceFluidPreview.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSnapshot_html"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html">eve::editor::SurfaceFluidPreviewSnapshot</a></div><div class="ttdoc">Revision-bound result containing droplet geometry and per-vertex wetness.</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00051">EditorSurfaceFluidPreview.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSnapshot_html_a34d47cf1bf11d47a2f79f773a8d1948f"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a34d47cf1bf11d47a2f79f773a8d1948f">eve::editor::SurfaceFluidPreviewSnapshot::diagnostics</a></div><div class="ttdeci">std::vector&lt; EditorDiagnostic &gt; diagnostics</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00057">EditorSurfaceFluidPreview.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSnapshot_html_a618223858974b45d81d0a5e7d6c18928"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a618223858974b45d81d0a5e7d6c18928">eve::editor::SurfaceFluidPreviewSnapshot::documentRevision</a></div><div class="ttdeci">Revision documentRevision</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00053">EditorSurfaceFluidPreview.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSnapshot_html_a6d753e40ba5e8781a4db2b57521768f7"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a6d753e40ba5e8781a4db2b57521768f7">eve::editor::SurfaceFluidPreviewSnapshot::vertexWetness</a></div><div class="ttdeci">std::vector&lt; double &gt; vertexWetness</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00056">EditorSurfaceFluidPreview.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSnapshot_html_a6e8933f287dc1818c7424436f870a5be"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#a6e8933f287dc1818c7424436f870a5be">eve::editor::SurfaceFluidPreviewSnapshot::simulatedSeconds</a></div><div class="ttdeci">double simulatedSeconds</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00054">EditorSurfaceFluidPreview.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSnapshot_html_aea7eb249323310f4b41a64ff482c0b91"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#aea7eb249323310f4b41a64ff482c0b91">eve::editor::SurfaceFluidPreviewSnapshot::status</a></div><div class="ttdeci">EditorStatus status</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00052">EditorSurfaceFluidPreview.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1SurfaceFluidPreviewSnapshot_html_af8c16da07870301dacec5158653d9d2b"><div class="ttname"><a href="structeve_1_1editor_1_1SurfaceFluidPreviewSnapshot.html#af8c16da07870301dacec5158653d9d2b">eve::editor::SurfaceFluidPreviewSnapshot::droplets</a></div><div class="ttdeci">std::vector&lt; SurfaceFluidPreviewDroplet &gt; droplets</div><div class="ttdef"><b>Definition</b> <a href="EditorSurfaceFluidPreview_8h_source.html#l00055">EditorSurfaceFluidPreview.h:55</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

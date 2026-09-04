@@ -1,0 +1,318 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/LanguageIndex.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">LanguageIndex.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="LanguageIndex_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev_1_1lsp.html">eve::dev::lsp</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Position.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Position.html">Position</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Position.html#a1987faae1951787d086979bcda988de0">   16</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1Position.html#a1987faae1951787d086979bcda988de0">line</a>      = 0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Position.html#a32eef9f339cfd7b360a635610d876232">   17</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1Position.html#a32eef9f339cfd7b360a635610d876232">character</a> = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Range.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Range.html">Range</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Range.html#afbbe5a95e7e77a9b36a3c7b9ed62dac4">   21</a></span>    <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Position.html">Position</a> <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1Range.html#afbbe5a95e7e77a9b36a3c7b9ed62dac4">start</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Range.html#a2d0b11ed52b9bc7b901d31f28d363bd2">   22</a></span>    <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Position.html">Position</a> <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1Range.html#a2d0b11ed52b9bc7b901d31f28d363bd2">end</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Location.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Location.html">Location</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Location.html#ace2a44699a18c48c64ff1675b7862e26">   26</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1Location.html#ace2a44699a18c48c64ff1675b7862e26">uri</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1Location.html#a48d92d4fa7b26eb826cc7bbe447ecc3f">   27</a></span>    <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Range.html">Range</a>       <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1Location.html#a48d92d4fa7b26eb826cc7bbe447ecc3f">range</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1TextEdit.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1TextEdit.html">TextEdit</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1TextEdit.html#abe36c13bda105182f938968a411a9447">   31</a></span>    <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Location.html">Location</a>    <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1TextEdit.html#abe36c13bda105182f938968a411a9447">location</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1TextEdit.html#a2ba77961d57f4c3b830d44498b45d687">   32</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1TextEdit.html#a2ba77961d57f4c3b830d44498b45d687">newText</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html">   36</a></span><span class="keyword">namespace </span>SemanticTypes {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a23d3dcfb8c30eb5b52591ce400162f7a">   37</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a23d3dcfb8c30eb5b52591ce400162f7a">Namespace</a> = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#adc268da49436475037b72456659ae560">   38</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#adc268da49436475037b72456659ae560">Class</a>     = 1;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a6793ac52745140cd95d52f8eedc66f8c">   39</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a6793ac52745140cd95d52f8eedc66f8c">Function</a>  = 2;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a227d64d48bb941de9fcb731784d705fd">   40</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a227d64d48bb941de9fcb731784d705fd">Method</a>    = 3;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a0d6509f5292f4e60be44d70e0ae811ad">   41</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a0d6509f5292f4e60be44d70e0ae811ad">Variable</a>  = 4;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a33e6fa9dad394bb6903fd38d8480a8c1">   42</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a33e6fa9dad394bb6903fd38d8480a8c1">Parameter</a> = 5;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a6ee86f695090811299d9baaeac321591">   43</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a6ee86f695090811299d9baaeac321591">Property</a>  = 6;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a46621581ba4b7bcc52db504feecc675d">   44</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a46621581ba4b7bcc52db504feecc675d">Keyword</a>   = 7;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace SemanticTypes</span></div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html">   48</a></span><span class="keyword">namespace </span>SemanticMods {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#a916848f6ae973cc4a0f902403bc0d955">   49</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#a916848f6ae973cc4a0f902403bc0d955">Declaration</a>    = 1u &lt;&lt; 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#a8694449dc1d899ac61037083d68b9975">   50</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#a8694449dc1d899ac61037083d68b9975">Readonly</a>       = 1u &lt;&lt; 1;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#af7b74aed53a981c71f390d510d1d9c93">   51</a></span><span class="keyword">constexpr</span> uint32_t <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#af7b74aed53a981c71f390d510d1d9c93">DefaultLibrary</a> = 1u &lt;&lt; 2;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}  <span class="comment">// namespace SemanticMods</span></div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="};">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html">   55</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html">SemanticToken</a> {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#a6505fe4ba52d6f3c2991b2dae1bcac65">   56</a></span>    <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Position.html">Position</a>    <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#a6505fe4ba52d6f3c2991b2dae1bcac65">start</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#aaa602bb5698af0e39302e4f229079bba">   57</a></span>    <span class="keywordtype">size_t</span>      <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#aaa602bb5698af0e39302e4f229079bba">length</a>     = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ad2dc91fcc2aa8d1bdfc2a27e0ffaa194">   58</a></span>    uint32_t    <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ad2dc91fcc2aa8d1bdfc2a27e0ffaa194">type</a>       = <a class="code hl_variable" href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a0d6509f5292f4e60be44d70e0ae811ad">SemanticTypes::Variable</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ac3a6669d3cd9545067e027b5fc64cdff">   59</a></span>    uint32_t    <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ac3a6669d3cd9545067e027b5fc64cdff">modifiers</a>  = 0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ae6adc95d45b1909f905f0e07fd0dac5e">   60</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ae6adc95d45b1909f905f0e07fd0dac5e">name</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>};</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="};">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">   64</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a> <a class="code hl_class" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">WorkspaceIndex</a> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <a class="code hl_class" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">WorkspaceIndex</a>();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#a2954bb84ef187f9c16480b199664725e">   67</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#a2954bb84ef187f9c16480b199664725e">~WorkspaceIndex</a>();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#a472dd4d89f7352a91595a46b31e779f1">   68</a></span>    <a class="code hl_function" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#a472dd4d89f7352a91595a46b31e779f1">WorkspaceIndex</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">WorkspaceIndex</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#abfd72c6f65d47fdf8fcbc7cfaea8cfe4">   69</a></span>    <a class="code hl_class" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">WorkspaceIndex</a>&amp; <a class="code hl_function" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#abfd72c6f65d47fdf8fcbc7cfaea8cfe4">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">WorkspaceIndex</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> update(std::string canonicalUri, std::string clientUri, std::string <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">void</span> remove(std::string_view canonicalUri);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    std::optional&lt;Location&gt; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6628c09c9a9dbab79c7c314df8957796">definition</a>(std::string_view canonicalUri, <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Position.html">Position</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::vector&lt;Location&gt; references(std::string_view canonicalUri, <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Position.html">Position</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, <span class="keywordtype">bool</span> includeDeclaration) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    std::optional&lt;std::vector&lt;TextEdit&gt;&gt; rename(std::string_view canonicalUri, <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Position.html">Position</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                                std::string_view newName) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::vector&lt;SemanticToken&gt; semanticTokens(std::string_view canonicalUri) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Unit.html">Unit</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Target.html">Target</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Unit.html">Unit</a>*             <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>(std::string_view canonicalUri) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::optional&lt;Target&gt;   targetAt(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Unit.html">Unit</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1Position.html">Position</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    std::optional&lt;Location&gt; targetDefinition(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Target.html">Target</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::vector&lt;Location&gt;   targetReferences(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Target.html">Target</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <span class="keywordtype">bool</span> includeDeclaration) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    std::unique_ptr&lt;Impl&gt;   impl_;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>};</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}  <span class="comment">// namespace eve::dev::lsp</span></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_aa139e7c7d968328493be1eaea54c5193"><div class="ttname"><a href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a></div><div class="ttdeci">std::string target</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00113">AssetCommand.cpp:113</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_ac50a7ef919d1be66f0d2aa5c499b1834"><div class="ttname"><a href="Export_8h.html#ac50a7ef919d1be66f0d2aa5c499b1834">EVENGINE_API</a></div><div class="ttdeci">#define EVENGINE_API</div><div class="ttdoc">宿主（eve / libmain）导出宏；插件从进程导入同一批符号。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00016">Export.h:16</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a5b77101175f979d95b9601fe99c12994"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a></div><div class="ttdeci">TacticalUnit * unit</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00113">TacticsPersistence.cpp:113</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a6628c09c9a9dbab79c7c314df8957796"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a6628c09c9a9dbab79c7c314df8957796">definition</a></div><div class="ttdeci">LogicalId definition</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00115">TacticsPersistence.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1lsp_1_1WorkspaceIndex_html"><div class="ttname"><a href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html">eve::dev::lsp::WorkspaceIndex</a></div><div class="ttdoc">Cross-file semantic index for EveScript source modules.</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00064">LanguageIndex.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1lsp_1_1WorkspaceIndex_html_a2954bb84ef187f9c16480b199664725e"><div class="ttname"><a href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#a2954bb84ef187f9c16480b199664725e">eve::dev::lsp::WorkspaceIndex::~WorkspaceIndex</a></div><div class="ttdeci">~WorkspaceIndex()</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1lsp_1_1WorkspaceIndex_html_a472dd4d89f7352a91595a46b31e779f1"><div class="ttname"><a href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#a472dd4d89f7352a91595a46b31e779f1">eve::dev::lsp::WorkspaceIndex::WorkspaceIndex</a></div><div class="ttdeci">WorkspaceIndex(const WorkspaceIndex &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1dev_1_1lsp_1_1WorkspaceIndex_html_abfd72c6f65d47fdf8fcbc7cfaea8cfe4"><div class="ttname"><a href="classeve_1_1dev_1_1lsp_1_1WorkspaceIndex.html#abfd72c6f65d47fdf8fcbc7cfaea8cfe4">eve::dev::lsp::WorkspaceIndex::operator=</a></div><div class="ttdeci">WorkspaceIndex &amp; operator=(const WorkspaceIndex &amp;)=delete</div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticMods_html_a8694449dc1d899ac61037083d68b9975"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#a8694449dc1d899ac61037083d68b9975">eve::dev::lsp::SemanticMods::Readonly</a></div><div class="ttdeci">constexpr uint32_t Readonly</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00050">LanguageIndex.h:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticMods_html_a916848f6ae973cc4a0f902403bc0d955"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#a916848f6ae973cc4a0f902403bc0d955">eve::dev::lsp::SemanticMods::Declaration</a></div><div class="ttdeci">constexpr uint32_t Declaration</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00049">LanguageIndex.h:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticMods_html_af7b74aed53a981c71f390d510d1d9c93"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticMods.html#af7b74aed53a981c71f390d510d1d9c93">eve::dev::lsp::SemanticMods::DefaultLibrary</a></div><div class="ttdeci">constexpr uint32_t DefaultLibrary</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00051">LanguageIndex.h:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticTypes_html_a0d6509f5292f4e60be44d70e0ae811ad"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a0d6509f5292f4e60be44d70e0ae811ad">eve::dev::lsp::SemanticTypes::Variable</a></div><div class="ttdeci">constexpr uint32_t Variable</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00041">LanguageIndex.h:41</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticTypes_html_a227d64d48bb941de9fcb731784d705fd"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a227d64d48bb941de9fcb731784d705fd">eve::dev::lsp::SemanticTypes::Method</a></div><div class="ttdeci">constexpr uint32_t Method</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00040">LanguageIndex.h:40</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticTypes_html_a23d3dcfb8c30eb5b52591ce400162f7a"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a23d3dcfb8c30eb5b52591ce400162f7a">eve::dev::lsp::SemanticTypes::Namespace</a></div><div class="ttdeci">constexpr uint32_t Namespace</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00037">LanguageIndex.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticTypes_html_a33e6fa9dad394bb6903fd38d8480a8c1"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a33e6fa9dad394bb6903fd38d8480a8c1">eve::dev::lsp::SemanticTypes::Parameter</a></div><div class="ttdeci">constexpr uint32_t Parameter</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00042">LanguageIndex.h:42</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticTypes_html_a46621581ba4b7bcc52db504feecc675d"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a46621581ba4b7bcc52db504feecc675d">eve::dev::lsp::SemanticTypes::Keyword</a></div><div class="ttdeci">constexpr uint32_t Keyword</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00044">LanguageIndex.h:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticTypes_html_a6793ac52745140cd95d52f8eedc66f8c"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a6793ac52745140cd95d52f8eedc66f8c">eve::dev::lsp::SemanticTypes::Function</a></div><div class="ttdeci">constexpr uint32_t Function</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00039">LanguageIndex.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticTypes_html_a6ee86f695090811299d9baaeac321591"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#a6ee86f695090811299d9baaeac321591">eve::dev::lsp::SemanticTypes::Property</a></div><div class="ttdeci">constexpr uint32_t Property</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00043">LanguageIndex.h:43</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_1_1SemanticTypes_html_adc268da49436475037b72456659ae560"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp_1_1SemanticTypes.html#adc268da49436475037b72456659ae560">eve::dev::lsp::SemanticTypes::Class</a></div><div class="ttdeci">constexpr uint32_t Class</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00038">LanguageIndex.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_1_1lsp_html"><div class="ttname"><a href="namespaceeve_1_1dev_1_1lsp.html">eve::dev::lsp</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00011">LanguageIndex.cpp:11</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Location_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Location.html">eve::dev::lsp::Location</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00025">LanguageIndex.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Location_html_a48d92d4fa7b26eb826cc7bbe447ecc3f"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Location.html#a48d92d4fa7b26eb826cc7bbe447ecc3f">eve::dev::lsp::Location::range</a></div><div class="ttdeci">Range range</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00027">LanguageIndex.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Location_html_ace2a44699a18c48c64ff1675b7862e26"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Location.html#ace2a44699a18c48c64ff1675b7862e26">eve::dev::lsp::Location::uri</a></div><div class="ttdeci">std::string uri</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00026">LanguageIndex.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Position_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Position.html">eve::dev::lsp::Position</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00015">LanguageIndex.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Position_html_a1987faae1951787d086979bcda988de0"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Position.html#a1987faae1951787d086979bcda988de0">eve::dev::lsp::Position::line</a></div><div class="ttdeci">size_t line</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00016">LanguageIndex.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Position_html_a32eef9f339cfd7b360a635610d876232"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Position.html#a32eef9f339cfd7b360a635610d876232">eve::dev::lsp::Position::character</a></div><div class="ttdeci">size_t character</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00017">LanguageIndex.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Range_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Range.html">eve::dev::lsp::Range</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00020">LanguageIndex.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Range_html_a2d0b11ed52b9bc7b901d31f28d363bd2"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Range.html#a2d0b11ed52b9bc7b901d31f28d363bd2">eve::dev::lsp::Range::end</a></div><div class="ttdeci">Position end</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00022">LanguageIndex.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1Range_html_afbbe5a95e7e77a9b36a3c7b9ed62dac4"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1Range.html#afbbe5a95e7e77a9b36a3c7b9ed62dac4">eve::dev::lsp::Range::start</a></div><div class="ttdeci">Position start</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00021">LanguageIndex.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1SemanticToken_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html">eve::dev::lsp::SemanticToken</a></div><div class="ttdoc">One identifier classified for editor semantic highlighting.</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00055">LanguageIndex.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1SemanticToken_html_a6505fe4ba52d6f3c2991b2dae1bcac65"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#a6505fe4ba52d6f3c2991b2dae1bcac65">eve::dev::lsp::SemanticToken::start</a></div><div class="ttdeci">Position start</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00056">LanguageIndex.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1SemanticToken_html_aaa602bb5698af0e39302e4f229079bba"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#aaa602bb5698af0e39302e4f229079bba">eve::dev::lsp::SemanticToken::length</a></div><div class="ttdeci">size_t length</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00057">LanguageIndex.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1SemanticToken_html_ac3a6669d3cd9545067e027b5fc64cdff"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ac3a6669d3cd9545067e027b5fc64cdff">eve::dev::lsp::SemanticToken::modifiers</a></div><div class="ttdeci">uint32_t modifiers</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00059">LanguageIndex.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1SemanticToken_html_ad2dc91fcc2aa8d1bdfc2a27e0ffaa194"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ad2dc91fcc2aa8d1bdfc2a27e0ffaa194">eve::dev::lsp::SemanticToken::type</a></div><div class="ttdeci">uint32_t type</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00058">LanguageIndex.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1SemanticToken_html_ae6adc95d45b1909f905f0e07fd0dac5e"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1SemanticToken.html#ae6adc95d45b1909f905f0e07fd0dac5e">eve::dev::lsp::SemanticToken::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00060">LanguageIndex.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1TextEdit_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1TextEdit.html">eve::dev::lsp::TextEdit</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00030">LanguageIndex.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1TextEdit_html_a2ba77961d57f4c3b830d44498b45d687"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1TextEdit.html#a2ba77961d57f4c3b830d44498b45d687">eve::dev::lsp::TextEdit::newText</a></div><div class="ttdeci">std::string newText</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00032">LanguageIndex.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1TextEdit_html_abe36c13bda105182f938968a411a9447"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1TextEdit.html#abe36c13bda105182f938968a411a9447">eve::dev::lsp::TextEdit::location</a></div><div class="ttdeci">Location location</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8h_source.html#l00031">LanguageIndex.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Impl_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Impl.html">eve::dev::lsp::WorkspaceIndex::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00197">LanguageIndex.cpp:197</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Target_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Target.html">eve::dev::lsp::WorkspaceIndex::Target</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00189">LanguageIndex.cpp:189</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Unit_html"><div class="ttname"><a href="structeve_1_1dev_1_1lsp_1_1WorkspaceIndex_1_1Unit.html">eve::dev::lsp::WorkspaceIndex::Unit</a></div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00177">LanguageIndex.cpp:177</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_a95c6c972c957018b1fe5550d8e27af57"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#a95c6c972c957018b1fe5550d8e27af57">source</a></div><div class="ttdeci">glm::uvec4 source</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00076">GraphicsGpuDriven.cpp:76</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

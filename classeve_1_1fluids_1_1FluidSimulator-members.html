@@ -1,0 +1,206 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">FluidSimulator</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::fluids::FluidSimulator 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#aea9155c9c2f56bf56b748a8f74b66141">backendSelectionStatus</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a687cf27498399faa0cfcd51d842a2b7d">determinism</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a4b36139de01c9c40dbe4d95defcb64eb">FluidSimulator</a>(int maxParticles, const FluidParams &amp;params, bool preferGpu)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a3ff72e6a2316c8ee165c42a2647eb2fa">FluidSimulator</a>(const FluidSimulator &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#abd11955e77e9a1f9794f06bf53a210b9">getMaxParticles</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a9f89c67d2fb27ec86a58870d92c516a8">getParticleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a601c7a5db97851bfc4c2d48ae0b83e6c">kind</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a43a5f616a5a0ea2b947efe098bc52a4d">observation</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a849288da096d769d878306ff96ecbb66">operator=</a>(const FluidSimulator &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a2ff40aa2c476963d1a7174147331cfe3">params</a>()</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#aa42165ee360f65867388195471696049">params</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#aa7599f93e7a78c0d9c5563ebb38bdf7c">readDensities</a>(std::vector&lt; float &gt; &amp;out) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a43100797b85b917c0aa80346fce033aa">readPositions</a>(std::vector&lt; glm::vec3 &gt; &amp;out) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a056047cb3fd29e36473d5019c3c88b47">restoreObservation</a>(const eve::physics::SimulationObservation &amp;observation) override</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a61ee66df4c3e8a7b767d9ba635ff7f73">sdf</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a94ad195d4aa5397661f6ad338709a25a">setAdhesion</a>(float adhesion)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#af1010e27b6eb75a6838dbb61cc09829e">setCohesion</a>(float cohesion)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a90211eb8082665518d87417a1215d0a6">setDamping</a>(float damping)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#aae4f527ee660ddcc753966de8c219d38">setGravity</a>(float x, float y, float z)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a10ac335e0b080aa4f021597f9ff69b05">setParticleRadius</a>(float radius)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a4e4e078414d6f4ac1dab49c58490c2d2">setPbfIterations</a>(int passes)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a382665a0a8fc36a440ccfaf8b5d62ad2">setSdf</a>(const MeshSdf &amp;sdf)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a639bf2a12fca061ea8bdc3d56e114834">setSdfSphere</a>(float cx, float cy, float cz, float radius, int res)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a94d3d9e050861a6a12bcf26b049a8085">setSupportRadius</a>(float h)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a33d25a8ad89526c928309b1d59e1b74b">setViscosity</a>(float viscosity)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a8a1d86a2bc5b58d5cd69becf50c2054c">spawnDrop</a>(const glm::vec3 &amp;center, float radius, int count)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a5f79934541c7900d8d4be3404d4b21a8">step</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#ad48ba6445d52aef0e5108eec9679dfbf">step</a>(const eve::SimulationStep &amp;step, const eve::physics::SimulationSettings &amp;settings) override</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a29f1b779a3b663527abf744ae0ca6d7e">usedBackendFallback</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#a5e23cfe29323f10fd8aecb7532164900">usingGpu</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html#aa57b4a42ef451febc80c71903d475ac8">~FluidSimulator</a>()</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1FluidSimulator.html">eve::fluids::FluidSimulator</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html#a247d718f8968b22c8b1ee121d2790f7e">~ISimulationBackend</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1ISimulationBackend.html">eve::physics::ISimulationBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

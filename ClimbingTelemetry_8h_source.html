@@ -1,0 +1,319 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/climbing/ClimbingTelemetry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_137dcb18b75f9f57b9200faf376b7e13.html">climbing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ClimbingTelemetry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ClimbingTelemetry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="ClimbingPrimitives_8h.html">climbing/ClimbingPrimitives.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1climbing.html">eve::climbing</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">ClimbingWorkload</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a5681660b68aa20365a8e3279790ea419">Ordinary</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701ada0af61b22c8af030769e080c376024c">CandidateProbe</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a4d3d769b812b6faa6b76e1a8abaece2d">Active</a> };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68">   22</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68">ClimbingQueryBudgetState</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68a13727661cffa8b83aef4332c92dfad1e">WithinBudget</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799">Exceeded</a> };</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html">ClimbingQueryBudgets</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#add5b6eef1315caafd3525e681c276759">   26</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint32_t <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#add5b6eef1315caafd3525e681c276759">Ordinary</a> = 4;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#a3ae359ae9f0bc87d819ba8c6d1f943be">   27</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint32_t <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#a3ae359ae9f0bc87d819ba8c6d1f943be">CandidateProbe</a> = 16;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#a46faa9eafb043664c2368189fe7de8f7">   28</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint32_t <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#a46faa9eafb043664c2368189fe7de8f7">Active</a> = 8;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#ae3f460e2b28c84aacbd62a3dda8a6fe5">   31</a></span>    [[nodiscard]] <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint32_t <a class="code hl_function" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#ae3f460e2b28c84aacbd62a3dda8a6fe5">forWorkload</a>(<a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">ClimbingWorkload</a> workload) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">switch</span> (workload) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a5681660b68aa20365a8e3279790ea419">ClimbingWorkload::Ordinary</a>: <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#add5b6eef1315caafd3525e681c276759">Ordinary</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701ada0af61b22c8af030769e080c376024c">ClimbingWorkload::CandidateProbe</a>: <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#a3ae359ae9f0bc87d819ba8c6d1f943be">CandidateProbe</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a4d3d769b812b6faa6b76e1a8abaece2d">ClimbingWorkload::Active</a>: <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#a46faa9eafb043664c2368189fe7de8f7">Active</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">   42</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">ClimbingRuntimeCounters</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a817b556001947d887ac84f5904b882a4">   43</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">ClimbingWorkload</a>         <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a817b556001947d887ac84f5904b882a4">workload</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a5681660b68aa20365a8e3279790ea419">ClimbingWorkload::Ordinary</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a42889577eaa10e8f10d2345ccbd530a6">   44</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a42889577eaa10e8f10d2345ccbd530a6">broadPhaseQueryCount</a> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#ab7d2153480ce1503144ac6efd15493da">   45</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#ab7d2153480ce1503144ac6efd15493da">broadPhaseHitCount</a> = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#af9e65c959496fc6515b57ed204af7666">   46</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#af9e65c959496fc6515b57ed204af7666">queryCount</a> = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a3af6b2dd8f92890c00f70dff593b895c">   47</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a3af6b2dd8f92890c00f70dff593b895c">rejectCount</a> = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#afbc0e86e35351e12308d77e1a3162d66">   48</a></span>    std::int64_t             <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#afbc0e86e35351e12308d77e1a3162d66">selectedCost</a> = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a01cdf4e0c0cdc9aee916b64eb5cab63b">   49</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1Vec3.html">Vec3</a>                     <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a01cdf4e0c0cdc9aee916b64eb5cab63b">warpResidual</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a1a758bcce03dfcf19b4e1f4b2a67e8b9">   50</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a1a758bcce03dfcf19b4e1f4b2a67e8b9">moverIterations</a> = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a557b0000da9aaa0e9097870268dc1900">   51</a></span>    std::uint32_t            <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a557b0000da9aaa0e9097870268dc1900">queryBudget</a> = <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#add5b6eef1315caafd3525e681c276759">ClimbingQueryBudgets::Ordinary</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a92212e80ab7a20ed71d45f17f33d80b1">   52</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68">ClimbingQueryBudgetState</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a92212e80ab7a20ed71d45f17f33d80b1">budgetState</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68a13727661cffa8b83aef4332c92dfad1e">ClimbingQueryBudgetState::WithinBudget</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">   56</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">ClimbingTelemetrySample</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#ab3b154d1dd4bacb72cc0263c946c4c76">   57</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">eve::SimulationTick</a>     <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#ab3b154d1dd4bacb72cc0263c946c4c76">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#a80595546d08f06ec1ad88fcd4ae20d79">   58</a></span>    std::uint64_t           <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#a80595546d08f06ec1ad88fcd4ae20d79">elapsedNanoseconds</a> = 0;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#af1be14d4a4e80b2ab072271f48d30ec3">   59</a></span>    <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">ClimbingRuntimeCounters</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#af1be14d4a4e80b2ab072271f48d30ec3">counters</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="};">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">   63</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">ClimbingTelemetrySummary</a> {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a8f8525c8470881adc9ddd768cde8a8df">   64</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">ClimbingWorkload</a> <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a8f8525c8470881adc9ddd768cde8a8df">workload</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a5681660b68aa20365a8e3279790ea419">ClimbingWorkload::Ordinary</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#acd431709cb2645eb53b1c535e8d57e11">   65</a></span>    std::uint32_t    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#acd431709cb2645eb53b1c535e8d57e11">sampleCount</a> = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a2c9489bc4210c33f59b5eacffad7291a">   66</a></span>    std::uint64_t    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a2c9489bc4210c33f59b5eacffad7291a">p50Nanoseconds</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ac12df2b858c315945631868733c09dd2">   67</a></span>    std::uint64_t    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ac12df2b858c315945631868733c09dd2">p95Nanoseconds</a> = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a1f962e701edfe1faa752f8155c1e2fa3">   68</a></span>    std::uint32_t    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a1f962e701edfe1faa752f8155c1e2fa3">p50QueryCount</a> = 0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ab9555215568390d9208fe8686f1db18f">   69</a></span>    std::uint32_t    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ab9555215568390d9208fe8686f1db18f">p95QueryCount</a> = 0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a46744a8e2fdfeec075c80acbdea1d205">   70</a></span>    std::uint32_t    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a46744a8e2fdfeec075c80acbdea1d205">maxQueryCount</a> = 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#aae87e85b069bc9adb7bc97bb5d95c90b">   71</a></span>    std::uint32_t    <a class="code hl_variable" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#aae87e85b069bc9adb7bc97bb5d95c90b">budgetExceededCount</a> = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="};">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html">   80</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html">ClimbingTelemetryBuffer</a> {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#af375d8384bb19b35ac2c77b2f1f78037">   82</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::size_t <a class="code hl_variable" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#af375d8384bb19b35ac2c77b2f1f78037">Capacity</a> = 256;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#ac9db159c7d608b76af804b71b7e76868">record</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">ClimbingTelemetrySample</a> sample) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a2087c8be59a2b909f3e54b6f457bf9eb">updateLatestCounters</a>(<a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">ClimbingRuntimeCounters</a> counters) <span class="keyword">noexcept</span>;</div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="}">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a69e09f70a4c3f0262bc219f55e06fcb4">   89</a></span>    [[nodiscard]] std::span&lt;const ClimbingTelemetrySample&gt; <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a69e09f70a4c3f0262bc219f55e06fcb4">samples</a>() const noexcept {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> {samples_.data(), size_};</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">ClimbingTelemetrySummary</a> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#adf8b14949ffb76433efa523530c7ac7f">summarize</a>(<a class="code hl_enumeration" href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">ClimbingWorkload</a> workload) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a86990e86be28b34ab700b5faf0b827be">   95</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a86990e86be28b34ab700b5faf0b827be">clear</a>() noexcept {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        size_ = 0;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        next_ = 0;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::array&lt;ClimbingTelemetrySample, Capacity&gt; samples_{};</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::size_t                                   size_ = 0;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    std::size_t                                   next_ = 0;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>};</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}  <span class="comment">// namespace eve::climbing</span></div>
+<div class="ttc" id="aClimbingPrimitives_8h_html"><div class="ttname"><a href="ClimbingPrimitives_8h.html">ClimbingPrimitives.h</a></div><div class="ttdoc">Shared value types with no climbing runtime dependency.</div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html">eve::climbing::ClimbingTelemetryBuffer</a></div><div class="ttdoc">Runtime-owned fixed ring of performance samples.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00080">ClimbingTelemetry.h:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_a2087c8be59a2b909f3e54b6f457bf9eb"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a2087c8be59a2b909f3e54b6f457bf9eb">eve::climbing::ClimbingTelemetryBuffer::updateLatestCounters</a></div><div class="ttdeci">void updateLatestCounters(ClimbingRuntimeCounters counters) noexcept</div><div class="ttdoc">Replace counters on the most recent sample after a caller completes deferred hard validation.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8cpp_source.html#l00024">ClimbingTelemetry.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_a69e09f70a4c3f0262bc219f55e06fcb4"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a69e09f70a4c3f0262bc219f55e06fcb4">eve::climbing::ClimbingTelemetryBuffer::samples</a></div><div class="ttdeci">std::span&lt; const ClimbingTelemetrySample &gt; samples() const noexcept</div><div class="ttdoc">Return current samples in physical storage order; order is irrelevant to percentile summaries.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00089">ClimbingTelemetry.h:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_a86990e86be28b34ab700b5faf0b827be"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#a86990e86be28b34ab700b5faf0b827be">eve::climbing::ClimbingTelemetryBuffer::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Clear samples without releasing storage.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00095">ClimbingTelemetry.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_ac9db159c7d608b76af804b71b7e76868"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#ac9db159c7d608b76af804b71b7e76868">eve::climbing::ClimbingTelemetryBuffer::record</a></div><div class="ttdeci">void record(ClimbingTelemetrySample sample) noexcept</div><div class="ttdoc">Append one sample, overwriting the oldest sample when full.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8cpp_source.html#l00018">ClimbingTelemetry.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_adf8b14949ffb76433efa523530c7ac7f"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#adf8b14949ffb76433efa523530c7ac7f">eve::climbing::ClimbingTelemetryBuffer::summarize</a></div><div class="ttdeci">ClimbingTelemetrySummary summarize(ClimbingWorkload workload) const noexcept</div><div class="ttdoc">Compute exact nearest-rank p50/p95 values for one workload.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8cpp_source.html#l00030">ClimbingTelemetry.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1climbing_1_1ClimbingTelemetryBuffer_html_af375d8384bb19b35ac2c77b2f1f78037"><div class="ttname"><a href="classeve_1_1climbing_1_1ClimbingTelemetryBuffer.html#af375d8384bb19b35ac2c77b2f1f78037">eve::climbing::ClimbingTelemetryBuffer::Capacity</a></div><div class="ttdeci">static constexpr std::size_t Capacity</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00082">ClimbingTelemetry.h:82</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html"><div class="ttname"><a href="namespaceeve_1_1climbing.html">eve::climbing</a></div><div class="ttdef"><b>Definition</b> <a href="Climbing_8cpp_source.html#l00018">Climbing.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a6aae1964648ba2626944955ea2d7cb68"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68">eve::climbing::ClimbingQueryBudgetState</a></div><div class="ttdeci">ClimbingQueryBudgetState</div><div class="ttdoc">Named result of comparing one workload sample with its query budget.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00022">ClimbingTelemetry.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a6aae1964648ba2626944955ea2d7cb68a13727661cffa8b83aef4332c92dfad1e"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68a13727661cffa8b83aef4332c92dfad1e">eve::climbing::ClimbingQueryBudgetState::WithinBudget</a></div><div class="ttdeci">@ WithinBudget</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799"><div class="ttname"><a href="namespaceeve_1_1climbing.html#a6aae1964648ba2626944955ea2d7cb68ae2db06b840e9430b11fc2dcf488ba799">eve::climbing::ClimbingQueryBudgetState::Exceeded</a></div><div class="ttdeci">@ Exceeded</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_aca2871b7d813a9d98fd9beeeb761c701"><div class="ttname"><a href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701">eve::climbing::ClimbingWorkload</a></div><div class="ttdeci">ClimbingWorkload</div><div class="ttdoc">Stable workload classes used by the climbing performance budgets.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00019">ClimbingTelemetry.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_aca2871b7d813a9d98fd9beeeb761c701a4d3d769b812b6faa6b76e1a8abaece2d"><div class="ttname"><a href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a4d3d769b812b6faa6b76e1a8abaece2d">eve::climbing::ClimbingWorkload::Active</a></div><div class="ttdeci">@ Active</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_aca2871b7d813a9d98fd9beeeb761c701a5681660b68aa20365a8e3279790ea419"><div class="ttname"><a href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701a5681660b68aa20365a8e3279790ea419">eve::climbing::ClimbingWorkload::Ordinary</a></div><div class="ttdeci">@ Ordinary</div></div>
+<div class="ttc" id="anamespaceeve_1_1climbing_html_aca2871b7d813a9d98fd9beeeb761c701ada0af61b22c8af030769e080c376024c"><div class="ttname"><a href="namespaceeve_1_1climbing.html#aca2871b7d813a9d98fd9beeeb761c701ada0af61b22c8af030769e080c376024c">eve::climbing::ClimbingWorkload::CandidateProbe</a></div><div class="ttdeci">@ CandidateProbe</div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingQueryBudgets_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html">eve::climbing::ClimbingQueryBudgets</a></div><div class="ttdoc">Query budgets for one 60 Hz primary-character simulation tick.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00025">ClimbingTelemetry.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingQueryBudgets_html_a3ae359ae9f0bc87d819ba8c6d1f943be"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#a3ae359ae9f0bc87d819ba8c6d1f943be">eve::climbing::ClimbingQueryBudgets::CandidateProbe</a></div><div class="ttdeci">static constexpr std::uint32_t CandidateProbe</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00027">ClimbingTelemetry.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingQueryBudgets_html_a46faa9eafb043664c2368189fe7de8f7"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#a46faa9eafb043664c2368189fe7de8f7">eve::climbing::ClimbingQueryBudgets::Active</a></div><div class="ttdeci">static constexpr std::uint32_t Active</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00028">ClimbingTelemetry.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingQueryBudgets_html_add5b6eef1315caafd3525e681c276759"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#add5b6eef1315caafd3525e681c276759">eve::climbing::ClimbingQueryBudgets::Ordinary</a></div><div class="ttdeci">static constexpr std::uint32_t Ordinary</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00026">ClimbingTelemetry.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingQueryBudgets_html_ae3f460e2b28c84aacbd62a3dda8a6fe5"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingQueryBudgets.html#ae3f460e2b28c84aacbd62a3dda8a6fe5">eve::climbing::ClimbingQueryBudgets::forWorkload</a></div><div class="ttdeci">static constexpr std::uint32_t forWorkload(ClimbingWorkload workload) noexcept</div><div class="ttdoc">Return the fixed narrow-query budget for a workload.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00031">ClimbingTelemetry.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html">eve::climbing::ClimbingRuntimeCounters</a></div><div class="ttdoc">Allocation-free counters produced by the latest runtime workload.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00042">ClimbingTelemetry.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a01cdf4e0c0cdc9aee916b64eb5cab63b"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a01cdf4e0c0cdc9aee916b64eb5cab63b">eve::climbing::ClimbingRuntimeCounters::warpResidual</a></div><div class="ttdeci">Vec3 warpResidual</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00049">ClimbingTelemetry.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a1a758bcce03dfcf19b4e1f4b2a67e8b9"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a1a758bcce03dfcf19b4e1f4b2a67e8b9">eve::climbing::ClimbingRuntimeCounters::moverIterations</a></div><div class="ttdeci">std::uint32_t moverIterations</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00050">ClimbingTelemetry.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a3af6b2dd8f92890c00f70dff593b895c"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a3af6b2dd8f92890c00f70dff593b895c">eve::climbing::ClimbingRuntimeCounters::rejectCount</a></div><div class="ttdeci">std::uint32_t rejectCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00047">ClimbingTelemetry.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a42889577eaa10e8f10d2345ccbd530a6"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a42889577eaa10e8f10d2345ccbd530a6">eve::climbing::ClimbingRuntimeCounters::broadPhaseQueryCount</a></div><div class="ttdeci">std::uint32_t broadPhaseQueryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00044">ClimbingTelemetry.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a557b0000da9aaa0e9097870268dc1900"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a557b0000da9aaa0e9097870268dc1900">eve::climbing::ClimbingRuntimeCounters::queryBudget</a></div><div class="ttdeci">std::uint32_t queryBudget</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00051">ClimbingTelemetry.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a817b556001947d887ac84f5904b882a4"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a817b556001947d887ac84f5904b882a4">eve::climbing::ClimbingRuntimeCounters::workload</a></div><div class="ttdeci">ClimbingWorkload workload</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00043">ClimbingTelemetry.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_a92212e80ab7a20ed71d45f17f33d80b1"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#a92212e80ab7a20ed71d45f17f33d80b1">eve::climbing::ClimbingRuntimeCounters::budgetState</a></div><div class="ttdeci">ClimbingQueryBudgetState budgetState</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00052">ClimbingTelemetry.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_ab7d2153480ce1503144ac6efd15493da"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#ab7d2153480ce1503144ac6efd15493da">eve::climbing::ClimbingRuntimeCounters::broadPhaseHitCount</a></div><div class="ttdeci">std::uint32_t broadPhaseHitCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00045">ClimbingTelemetry.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_af9e65c959496fc6515b57ed204af7666"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#af9e65c959496fc6515b57ed204af7666">eve::climbing::ClimbingRuntimeCounters::queryCount</a></div><div class="ttdeci">std::uint32_t queryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00046">ClimbingTelemetry.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingRuntimeCounters_html_afbc0e86e35351e12308d77e1a3162d66"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingRuntimeCounters.html#afbc0e86e35351e12308d77e1a3162d66">eve::climbing::ClimbingRuntimeCounters::selectedCost</a></div><div class="ttdeci">std::int64_t selectedCost</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00048">ClimbingTelemetry.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySample_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html">eve::climbing::ClimbingTelemetrySample</a></div><div class="ttdoc">One profiler sample; elapsed time is observational and never feeds simulation state.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00056">ClimbingTelemetry.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySample_html_a80595546d08f06ec1ad88fcd4ae20d79"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#a80595546d08f06ec1ad88fcd4ae20d79">eve::climbing::ClimbingTelemetrySample::elapsedNanoseconds</a></div><div class="ttdeci">std::uint64_t elapsedNanoseconds</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00058">ClimbingTelemetry.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySample_html_ab3b154d1dd4bacb72cc0263c946c4c76"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#ab3b154d1dd4bacb72cc0263c946c4c76">eve::climbing::ClimbingTelemetrySample::tick</a></div><div class="ttdeci">eve::SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00057">ClimbingTelemetry.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySample_html_af1be14d4a4e80b2ab072271f48d30ec3"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySample.html#af1be14d4a4e80b2ab072271f48d30ec3">eve::climbing::ClimbingTelemetrySample::counters</a></div><div class="ttdeci">ClimbingRuntimeCounters counters</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00059">ClimbingTelemetry.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html">eve::climbing::ClimbingTelemetrySummary</a></div><div class="ttdoc">Fixed percentile summary for one workload without retaining dynamic storage.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00063">ClimbingTelemetry.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_a1f962e701edfe1faa752f8155c1e2fa3"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a1f962e701edfe1faa752f8155c1e2fa3">eve::climbing::ClimbingTelemetrySummary::p50QueryCount</a></div><div class="ttdeci">std::uint32_t p50QueryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00068">ClimbingTelemetry.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_a2c9489bc4210c33f59b5eacffad7291a"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a2c9489bc4210c33f59b5eacffad7291a">eve::climbing::ClimbingTelemetrySummary::p50Nanoseconds</a></div><div class="ttdeci">std::uint64_t p50Nanoseconds</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00066">ClimbingTelemetry.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_a46744a8e2fdfeec075c80acbdea1d205"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a46744a8e2fdfeec075c80acbdea1d205">eve::climbing::ClimbingTelemetrySummary::maxQueryCount</a></div><div class="ttdeci">std::uint32_t maxQueryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00070">ClimbingTelemetry.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_a8f8525c8470881adc9ddd768cde8a8df"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#a8f8525c8470881adc9ddd768cde8a8df">eve::climbing::ClimbingTelemetrySummary::workload</a></div><div class="ttdeci">ClimbingWorkload workload</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00064">ClimbingTelemetry.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_aae87e85b069bc9adb7bc97bb5d95c90b"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#aae87e85b069bc9adb7bc97bb5d95c90b">eve::climbing::ClimbingTelemetrySummary::budgetExceededCount</a></div><div class="ttdeci">std::uint32_t budgetExceededCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00071">ClimbingTelemetry.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_ab9555215568390d9208fe8686f1db18f"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ab9555215568390d9208fe8686f1db18f">eve::climbing::ClimbingTelemetrySummary::p95QueryCount</a></div><div class="ttdeci">std::uint32_t p95QueryCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00069">ClimbingTelemetry.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_ac12df2b858c315945631868733c09dd2"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#ac12df2b858c315945631868733c09dd2">eve::climbing::ClimbingTelemetrySummary::p95Nanoseconds</a></div><div class="ttdeci">std::uint64_t p95Nanoseconds</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00067">ClimbingTelemetry.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1ClimbingTelemetrySummary_html_acd431709cb2645eb53b1c535e8d57e11"><div class="ttname"><a href="structeve_1_1climbing_1_1ClimbingTelemetrySummary.html#acd431709cb2645eb53b1c535e8d57e11">eve::climbing::ClimbingTelemetrySummary::sampleCount</a></div><div class="ttdeci">std::uint32_t sampleCount</div><div class="ttdef"><b>Definition</b> <a href="ClimbingTelemetry_8h_source.html#l00065">ClimbingTelemetry.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1climbing_1_1Vec3_html"><div class="ttname"><a href="structeve_1_1climbing_1_1Vec3.html">eve::climbing::Vec3</a></div><div class="ttdoc">Small owning world-space vector used at climbing module boundaries.</div><div class="ttdef"><b>Definition</b> <a href="ClimbingPrimitives_8h_source.html#l00017">ClimbingPrimitives.h:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

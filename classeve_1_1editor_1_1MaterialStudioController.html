@@ -1,0 +1,489 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::MaterialStudioController类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.4.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html">MaterialStudioController</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1MaterialStudioController-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::MaterialStudioController类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-neutral controller for coalesced material edits and revision-safe live previews.  
+ <a href="classeve_1_1editor_1_1MaterialStudioController.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorMaterialStudio_8h_source.html">EditorMaterialStudio.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a12515965fc28dbc272aed4f1e7af1ae0" id="r_a12515965fc28dbc272aed4f1e7af1ae0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a12515965fc28dbc272aed4f1e7af1ae0">MaterialStudioController</a> (<a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a> document, <a class="el" href="namespaceeve_1_1editor.html#a2d93633f637adbbfe73a289222e4c3d0">MaterialPublishingTarget</a> &amp;<a class="el" href="AssetCommand_8cpp.html#aa139e7c7d968328493be1eaea54c5193">target</a>, <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html">IEditorTransactionBackend</a> &amp;transactions, <a class="el" href="classeve_1_1editor_1_1MaterialPreviewService.html">MaterialPreviewService</a> &amp;previews, <a class="el" href="classeve_1_1editor_1_1IMaterialPreviewRenderer.html">IMaterialPreviewRenderer</a> &amp;renderer)</td></tr>
+<tr class="separator:a12515965fc28dbc272aed4f1e7af1ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33264819994a2c3d818704f612297560" id="r_a33264819994a2c3d818704f612297560"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a33264819994a2c3d818704f612297560">setPreviewSettings</a> (<a class="el" href="structeve_1_1editor_1_1MaterialPreviewSettings.html">MaterialPreviewSettings</a> settings)</td></tr>
+<tr class="memdesc:a33264819994a2c3d818704f612297560"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace preview geometry, camera, resolution, and environment settings.  <br /></td></tr>
+<tr class="separator:a33264819994a2c3d818704f612297560"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a764d8c1a9fbff133ffee5ba8df07a2f6" id="r_a764d8c1a9fbff133ffee5ba8df07a2f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a764d8c1a9fbff133ffee5ba8df07a2f6">beginInteraction</a> (<a class="el" href="namespaceeve_1_1editor.html#a241db4084a0ec8f332caa11a3ae26baf">PropertyPath</a> <a class="el" href="EvaArchive_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a764d8c1a9fbff133ffee5ba8df07a2f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start one coalesced property gesture from the current live document revision.  <br /></td></tr>
+<tr class="separator:a764d8c1a9fbff133ffee5ba8df07a2f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96a5d43e9885b795020683e6965984da" id="r_a96a5d43e9885b795020683e6965984da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a96a5d43e9885b795020683e6965984da">updateInteraction</a> (<a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a20802748604cbe45e7931e1d4a560454">value</a>)</td></tr>
+<tr class="memdesc:a96a5d43e9885b795020683e6965984da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the owned draft and mark its isolated preview dirty.  <br /></td></tr>
+<tr class="separator:a96a5d43e9885b795020683e6965984da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07eb3f543e5c1ae86212a0c89b254c85" id="r_a07eb3f543e5c1ae86212a0c89b254c85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a07eb3f543e5c1ae86212a0c89b254c85">commitInteraction</a> ()</td></tr>
+<tr class="memdesc:a07eb3f543e5c1ae86212a0c89b254c85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish the final draft value as one undoable transaction.  <br /></td></tr>
+<tr class="separator:a07eb3f543e5c1ae86212a0c89b254c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41a41553da98c25d35b5f0682f43e173" id="r_a41a41553da98c25d35b5f0682f43e173"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a41a41553da98c25d35b5f0682f43e173">cancelInteraction</a> ()</td></tr>
+<tr class="memdesc:a41a41553da98c25d35b5f0682f43e173"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abandon the draft without changing the live material.  <br /></td></tr>
+<tr class="separator:a41a41553da98c25d35b5f0682f43e173"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1491c5b60d4ba452a22c520fc1d029a4" id="r_a1491c5b60d4ba452a22c520fc1d029a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a1491c5b60d4ba452a22c520fc1d029a4">tick</a> (std::uint64_t monotonicMilliseconds)</td></tr>
+<tr class="memdesc:a1491c5b60d4ba452a22c520fc1d029a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render a dirty preview when the injected monotonic time reaches the rate limit.  <br /></td></tr>
+<tr class="separator:a1491c5b60d4ba452a22c520fc1d029a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5052e4701ffd056ab7c3f08c09b7a3cb" id="r_a5052e4701ffd056ab7c3f08c09b7a3cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a5052e4701ffd056ab7c3f08c09b7a3cb">refreshPreview</a> ()</td></tr>
+<tr class="memdesc:a5052e4701ffd056ab7c3f08c09b7a3cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force an isolated preview of the current draft or live document.  <br /></td></tr>
+<tr class="separator:a5052e4701ffd056ab7c3f08c09b7a3cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5b5399f0a9aade6c384e1ef01b7fad5" id="r_ac5b5399f0a9aade6c384e1ef01b7fad5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#ac5b5399f0a9aade6c384e1ef01b7fad5">setPreviewRate</a> (double framesPerSecond)</td></tr>
+<tr class="memdesc:ac5b5399f0a9aade6c384e1ef01b7fad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the maximum preview rate; valid range is 1 to 240 Hz.  <br /></td></tr>
+<tr class="separator:ac5b5399f0a9aade6c384e1ef01b7fad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88df8c28f6c27811f926d5ed98490a3c" id="r_a88df8c28f6c27811f926d5ed98490a3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editor_1_1MaterialStudioState.html">MaterialStudioState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a88df8c28f6c27811f926d5ed98490a3c">state</a> () const</td></tr>
+<tr class="memdesc:a88df8c28f6c27811f926d5ed98490a3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning snapshot suitable for any developer or in-game UI host.  <br /></td></tr>
+<tr class="separator:a88df8c28f6c27811f926d5ed98490a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-neutral controller for coalesced material edits and revision-safe live previews. </p>
+<p>A host begins an interaction when a slider, color control, or asset picker becomes active, sends every intermediate value to <a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a96a5d43e9885b795020683e6965984da" title="Update the owned draft and mark its isolated preview dirty.">updateInteraction()</a>, and calls <a class="el" href="classeve_1_1editor_1_1MaterialStudioController.html#a07eb3f543e5c1ae86212a0c89b254c85" title="Atomically publish the final draft value as one undoable transaction.">commitInteraction()</a> once. Intermediate values are applied only to an owned draft and may be previewed at a bounded rate; the live material changes atomically once, so one gesture produces one undo record.</p>
+<p>@ownership The target, transaction backend, preview service, and renderer are borrowed and must outlive this controller. The draft and all presentation state are owned by this controller. @threadaffinity Owner thread only; preview rendering and transaction callbacks are synchronous. @reentrancy Do not call this controller again from renderer or transaction callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8h_source.html">EditorMaterialStudio.h</a> 第 <a class="el" href="EditorMaterialStudio_8h_source.html#l00038">38</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a12515965fc28dbc272aed4f1e7af1ae0" name="a12515965fc28dbc272aed4f1e7af1ae0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12515965fc28dbc272aed4f1e7af1ae0">&#9670;&#160;</a></span>MaterialStudioController()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::MaterialStudioController::MaterialStudioController </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#acc58ef0dbc2f7fd711d51a96e40d4ded">DocumentId</a>&#160;</td>
+          <td class="paramname"><em>document</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a2d93633f637adbbfe73a289222e4c3d0">MaterialPublishingTarget</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html">IEditorTransactionBackend</a> &amp;&#160;</td>
+          <td class="paramname"><em>transactions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1MaterialPreviewService.html">MaterialPreviewService</a> &amp;&#160;</td>
+          <td class="paramname"><em>previews</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IMaterialPreviewRenderer.html">IMaterialPreviewRenderer</a> &amp;&#160;</td>
+          <td class="paramname"><em>renderer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a764d8c1a9fbff133ffee5ba8df07a2f6" name="a764d8c1a9fbff133ffee5ba8df07a2f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a764d8c1a9fbff133ffee5ba8df07a2f6">&#9670;&#160;</a></span>beginInteraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::MaterialStudioController::beginInteraction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a241db4084a0ec8f332caa11a3ae26baf">PropertyPath</a>&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start one coalesced property gesture from the current live document revision. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a8c471519d0f91d118ab3cbca8f500436">eve::editor::IEditorTransactionBackend::active()</a>, <a class="el" href="MaterialTarget_8h_source.html#l00103">eve::material_editing::MaterialPublishingTarget::authoringTarget()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00113">descriptor</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00152">path</a> , 以及 <a class="el" href="MaterialTarget_8cpp_source.html#l00104">eve::material_editing::MaterialDocumentTarget::schema()</a>.</p>
+
+</div>
+</div>
+<a id="a41a41553da98c25d35b5f0682f43e173" name="a41a41553da98c25d35b5f0682f43e173"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41a41553da98c25d35b5f0682f43e173">&#9670;&#160;</a></span>cancelInteraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::MaterialStudioController::cancelInteraction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Abandon the draft without changing the live material. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MaterialTarget_8h_source.html#l00103">eve::material_editing::MaterialPublishingTarget::authoringTarget()</a> , 以及 <a class="el" href="MaterialTarget_8cpp_source.html#l00195">eve::material_editing::MaterialDocumentTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a07eb3f543e5c1ae86212a0c89b254c85" name="a07eb3f543e5c1ae86212a0c89b254c85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07eb3f543e5c1ae86212a0c89b254c85">&#9670;&#160;</a></span>commitInteraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a8e400d2cbd322a16daa9d448db1cd327">TransactionReceipt</a> &gt; eve::editor::MaterialStudioController::commitInteraction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically publish the final draft value as one undoable transaction. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a3941746b48195fd0674fd41fc5aa4796">eve::editor::IEditorTransactionBackend::append()</a>, <a class="el" href="MaterialTarget_8h_source.html#l00103">eve::material_editing::MaterialPublishingTarget::authoringTarget()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00086">eve::editing::TransactionSpec::baseRevision</a>, <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a5cd0fa045a0082455c892c65ac128267">eve::editor::IEditorTransactionBackend::begin()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#a696027b74f7cdcae9d7770a6b6a73b96">eve::editor::IEditorTransactionBackend::commit()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#ac9966638ae5b9dcc1330d69febc7a256">eve::editor::IEditorTransactionBackend::discard()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00082">eve::editing::TransactionSpec::id</a>, <a class="el" href="EditingProtocol_8h_source.html#l00083">eve::editing::TransactionSpec::label</a>, <a class="el" href="MaterialTarget_8cpp_source.html#l00114">eve::material_editing::MaterialDocumentTarget::makeSet()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00087">eve::editing::TransactionSpec::mergeKey</a>, <a class="el" href="classeve_1_1editor_1_1IEditorTransactionBackend.html#af041a32d38b7324e689023220337cf10">eve::editor::IEditorTransactionBackend::preview()</a>, <a class="el" href="MaterialTarget_8h_source.html#l00088">eve::material_editing::MaterialPublishingTarget::revision()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00085">eve::editing::TransactionSpec::target</a> , 以及 <a class="el" href="MaterialTarget_8h_source.html#l00087">eve::material_editing::MaterialPublishingTarget::targetId()</a>.</p>
+
+</div>
+</div>
+<a id="a5052e4701ffd056ab7c3f08c09b7a3cb" name="a5052e4701ffd056ab7c3f08c09b7a3cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5052e4701ffd056ab7c3f08c09b7a3cb">&#9670;&#160;</a></span>refreshPreview()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::MaterialStudioController::refreshPreview </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Force an isolated preview of the current draft or live document. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MaterialTarget_8h_source.html#l00103">eve::material_editing::MaterialPublishingTarget::authoringTarget()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00116">tick()</a>.</p>
+
+</div>
+</div>
+<a id="ac5b5399f0a9aade6c384e1ef01b7fad5" name="ac5b5399f0a9aade6c384e1ef01b7fad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5b5399f0a9aade6c384e1ef01b7fad5">&#9670;&#160;</a></span>setPreviewRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::MaterialStudioController::setPreviewRate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>framesPerSecond</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the maximum preview rate; valid range is 1 to 240 Hz. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33264819994a2c3d818704f612297560" name="a33264819994a2c3d818704f612297560"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33264819994a2c3d818704f612297560">&#9670;&#160;</a></span>setPreviewSettings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::MaterialStudioController::setPreviewSettings </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1editor_1_1MaterialPreviewSettings.html">MaterialPreviewSettings</a>&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace preview geometry, camera, resolution, and environment settings. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a88df8c28f6c27811f926d5ed98490a3c" name="a88df8c28f6c27811f926d5ed98490a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88df8c28f6c27811f926d5ed98490a3c">&#9670;&#160;</a></span>state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editor_1_1MaterialStudioState.html">MaterialStudioState</a> eve::editor::MaterialStudioController::state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning snapshot suitable for any developer or in-game UI host. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorMaterialStudio_8h_source.html#l00018">eve::editor::MaterialStudioState::activeProperty</a>, <a class="el" href="EditorMaterialStudio_8h_source.html#l00022">eve::editor::MaterialStudioState::diagnostics</a>, <a class="el" href="EditorMaterialStudio_8h_source.html#l00019">eve::editor::MaterialStudioState::documentRevision</a>, <a class="el" href="EditorMaterialStudio_8h_source.html#l00016">eve::editor::MaterialStudioState::interactionActive</a>, <a class="el" href="EditorMaterialStudio_8h_source.html#l00021">eve::editor::MaterialStudioState::previewArtifact</a>, <a class="el" href="EditorMaterialStudio_8h_source.html#l00017">eve::editor::MaterialStudioState::previewDirty</a>, <a class="el" href="EditorMaterialStudio_8h_source.html#l00020">eve::editor::MaterialStudioState::previewRevision</a> , 以及 <a class="el" href="MaterialTarget_8h_source.html#l00088">eve::material_editing::MaterialPublishingTarget::revision()</a>.</p>
+
+</div>
+</div>
+<a id="a1491c5b60d4ba452a22c520fc1d029a4" name="a1491c5b60d4ba452a22c520fc1d029a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1491c5b60d4ba452a22c520fc1d029a4">&#9670;&#160;</a></span>tick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::MaterialStudioController::tick </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>monotonicMilliseconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Render a dirty preview when the injected monotonic time reaches the rate limit. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">monotonicMilliseconds</td><td>Host-provided monotonic time; wall-clock time is not read. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when rendered, NoOp when clean or rate-limited, otherwise a diagnostic. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00131">refreshPreview()</a>.</p>
+
+</div>
+</div>
+<a id="a96a5d43e9885b795020683e6965984da" name="a96a5d43e9885b795020683e6965984da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96a5d43e9885b795020683e6965984da">&#9670;&#160;</a></span>updateInteraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#a704b9af19d654b64ab4ff76e3da7d187">EditorResult</a>&lt; void &gt; eve::editor::MaterialStudioController::updateInteraction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update the owned draft and mark its isolated preview dirty. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a> 第 <a class="el" href="EditorMaterialStudio_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00021">value</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/material_editor/<a class="el" href="EditorMaterialStudio_8h_source.html">EditorMaterialStudio.h</a></li>
+<li>src/modules/material_editor/<a class="el" href="EditorMaterialStudio_8cpp_source.html">EditorMaterialStudio.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
